@@ -20,11 +20,25 @@ namespace CWB.Masters.Controllers
     {
         private readonly ILoggerManager _logger;
         private readonly IBoughtOutFinishDetailService _boughtOutFinishDetailService;
+        private readonly IMasterPartService _masterPartService;
 
-        public BoughtOutFinishDetailController(ILoggerManager logger, IBoughtOutFinishDetailService boughtOutFinishDetailService)
+        public BoughtOutFinishDetailController(ILoggerManager logger, 
+            IBoughtOutFinishDetailService boughtOutFinishDetailService,
+            IMasterPartService masterPartService)
         {
             _logger = logger;
             _boughtOutFinishDetailService = boughtOutFinishDetailService;
+            _masterPartService = masterPartService;
+        }
+
+
+        [HttpGet]
+        [Route(ApiRoutes.ManufacturedPartNoDetail.GetBOFPart)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(BoughtOutFinishDetailVM))]
+        public async Task<IActionResult> GetBOFPart(int partId)
+        {
+            BoughtOutFinishDetailVM manufP = await _masterPartService.GetBOFPart(partId);
+            return Ok(manufP);
         }
 
         /// <summary>
@@ -34,13 +48,14 @@ namespace CWB.Masters.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route(ApiRoutes.BoughtOutFinishDetail.GetBoughtOutFinishDetailList)]
-        [Produces(AppContentTypes.ContentType, Type = typeof(List<BoughtOutFinishDetailListVM>))]
-        public IActionResult GetBoughtOutFinishDetailList(long tenantId)
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<BoughtOutFinishDetailVM>))]
+        public IActionResult GetBoughtOutFinishDetailList()
         {
-            var boughtoutfinishdetails = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(tenantId);
+            var boughtoutfinishdetails = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(-1);
             return Ok(boughtoutfinishdetails);
         }
 
+        
 
         /// <summary>
         /// Add/Edit BoughtOutFinishDetail
@@ -56,14 +71,6 @@ namespace CWB.Masters.Controllers
             var validationResult = await validator.ValidateAsync(boughtOutFinishDetailVM);
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
-            //if (boughtOutFinishDetailVM.ManufacturedPartType == 1)
-            //{
-            //    boughtOutFinishDetailVM.MakeFrom = "MF";
-            //}
-            //else if (boughtOutFinishDetailVM.ManufacturedPartType == 2)
-            //{
-            //    boughtOutFinishDetailVM.BOM = "BOM";
-            //}
             var result = await _boughtOutFinishDetailService.BoughtOutFinishDetail(boughtOutFinishDetailVM);
             return Ok(result);
         }

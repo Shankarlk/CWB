@@ -7,8 +7,8 @@ namespace CWB.Masters.MastersUtils.ItemMaster
         [Description("Active")]
         Active,
         [Description("Inactive")]
-        Inactive,
-        [Description("Hold")]
-        Hold
+        Inactive
+     /*   [Description("Hold")]
+        Hold*/
     }
 }

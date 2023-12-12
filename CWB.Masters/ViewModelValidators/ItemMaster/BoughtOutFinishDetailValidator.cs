@@ -14,8 +14,8 @@ namespace CWB.Masters.ViewModelValidators.ItemMaster
                    .NotEmpty().WithMessage(BoughtOutFinishDetailVMValidatorMessage.EmptyBoughtOutFinishMadeType);
             RuleFor(v => v.PartDescription)
                    .NotEmpty().WithMessage(BoughtOutFinishDetailVMValidatorMessage.EmptyPartDescription);
-            RuleFor(v => v.Supplier)
-                  .NotEmpty().WithMessage(BoughtOutFinishDetailVMValidatorMessage.EmptySupplier);
+           // RuleFor(v => v.Supplier)
+             //     .NotEmpty().WithMessage(BoughtOutFinishDetailVMValidatorMessage.EmptySupplier);
             RuleFor(v => v.TenantId)
                   .NotEmpty().WithMessage(BoughtOutFinishDetailVMValidatorMessage.EmptyTenantId);
         }

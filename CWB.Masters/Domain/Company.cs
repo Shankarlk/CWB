@@ -14,7 +14,7 @@ namespace CWB.Masters.Domain
         public long TenantId { get; set; }
         public ICollection<Division> Divisions { get; set; }
         public ICollection<ManufacturedPart> ManufacturedParts { get; set; }
-        public ICollection<PartPurchaseDetail> PartPurchaseDetails { get; set; }
+      //  public ICollection<PartPurchaseDetail> PartPurchaseDetails { get; set; }
         public ICollection<ManufacturingResourceSupplier> ManufacturingResourceSuppliers { get; set; }
     }
 }

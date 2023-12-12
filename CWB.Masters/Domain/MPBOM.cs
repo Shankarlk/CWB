@@ -5,9 +5,12 @@ namespace CWB.Masters.Domain
 {
     public class MPBOM : BaseEntity
     {
-        public string PartNumber { get; set; }
-        public string PartDesc { get; set; }
-        public long? Quantity { get; set; }       
+        //DbPart--Start
+        public int PartId { get; set; }
+        public long Quantity { get; set; }   
+        public long ManufPartId { get; set; }
+        public string PartDesc {  get; set; }    
+        //DbPart--End
         public long TenantId { get; set; }
     }
 }

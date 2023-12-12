@@ -13,14 +13,14 @@ namespace CWB.Masters.ViewModelValidators.ItemMaster
                    .NotEmpty().WithMessage(RawMaterialDetailVMValidatorMessage.EmptyRawMaterialMadeType);
             RuleFor(v => v.RawMaterialTypeId)
                    .NotEmpty().WithMessage(RawMaterialDetailVMValidatorMessage.EmptyRawMaterialTypeId);
-            RuleFor(v => v.InHousePartNo)
+            RuleFor(v => v.PartNo)
                   .NotEmpty().WithMessage(RawMaterialDetailVMValidatorMessage.EmptyInHousePartNo);
             RuleFor(v => v.PartDescription)
                   .NotEmpty().WithMessage(RawMaterialDetailVMValidatorMessage.EmptyPartDescription);
             RuleFor(v => v.BaseRawMaterialId)
                   .NotEmpty().WithMessage(RawMaterialDetailVMValidatorMessage.EmptyBaseRawMaterialId);
-            RuleFor(v => v.PurchaseDetailId)
-                  .NotEmpty().WithMessage(RawMaterialDetailVMValidatorMessage.EmptyPurchaseDetailId);
+            //RuleFor(v => v.PurchaseDetailId)
+              //    .NotEmpty().WithMessage(RawMaterialDetailVMValidatorMessage.EmptyPurchaseDetailId);
             RuleFor(v => v.TenantId)
                   .NotEmpty().WithMessage(RawMaterialDetailVMValidatorMessage.EmptyTenantId);
         }

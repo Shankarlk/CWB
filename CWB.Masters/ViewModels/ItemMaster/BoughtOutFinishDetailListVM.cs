@@ -14,15 +14,16 @@ namespace CWB.Masters.ViewModels.ItemMaster
         public string StatusChangeReason { get; set; }
         public string RevNo { get; set; }
         public DateTime RevDate { get; set; }
-        public string PurchaseDetail { get; set; }
-        public string Supplier { get; set; }
-        public string PurSupplierPartNo { get; set; }
-        public long? LeadTimeInDays { get; set; }
-        public long? MinOrderQuantity { get; set; }
-        public decimal Price { get; set; }
-        public string ShareOfBusiness { get; set; }
-        public string PurAdditionalInformation { get; set; }
-
+        //public string PurchaseDetail { get; set; }
+        //public string Supplier { get; set; }
+        //public string PurSupplierPartNo { get; set; }
+        //public long? LeadTimeInDays { get; set; }
+        //  public long? MinOrderQuantity { get; set; }
+        //    public decimal Price { get; set; }
+        //      public string ShareOfBusiness { get; set; }
+        //        public string PurAdditionalInformation { get; set; }
+        //  public long PurchaseDetailId { get; set; }
+        public long TenantId { get; set; }
 
     }
 }

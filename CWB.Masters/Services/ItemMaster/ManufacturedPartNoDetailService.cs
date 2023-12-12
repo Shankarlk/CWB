@@ -7,8 +7,10 @@ using CWB.Masters.Repositories.ItemMaster;
 using CWB.Masters.ViewModels.Company;
 using CWB.Masters.ViewModels.ItemMaster;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CWB.Masters.Domain.ItemMaster;
 
 namespace CWB.Masters.Services.ItemMaster
 {
@@ -21,10 +23,14 @@ namespace CWB.Masters.Services.ItemMaster
         private readonly IMPMakeFromRepository _mpMakeFromRepository;
         private readonly IMPBOMRepository _mpBOMRepository;
         private readonly IUOMRepository _uOMRepository;
+        private readonly IMasterPartRepository _masterPartRepository;
 
         public ManufacturedPartNoDetailService(ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork,
-            IManufacturedPartNoDetailRepository manufacturedPartNoDetailRepository, IMPMakeFromRepository mpMakeFromRepository, IMPBOMRepository mpBOMRepository,IUOMRepository uomRepository
-            )
+            IManufacturedPartNoDetailRepository manufacturedPartNoDetailRepository
+            , IMPMakeFromRepository mpMakeFromRepository
+            , IMPBOMRepository mpBOMRepository
+            ,IUOMRepository uomRepository
+            , IMasterPartRepository masterPartRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -33,16 +39,25 @@ namespace CWB.Masters.Services.ItemMaster
             _mpMakeFromRepository = mpMakeFromRepository;
             _mpBOMRepository = mpBOMRepository;
             _uOMRepository = uomRepository;
+            _masterPartRepository = masterPartRepository;
         }
 
-        public IEnumerable<ManufacturedPartNoDetailListVM> GetManufacturedPartNoDetailsByTypeTenant(long ManufPartType, string companyName)
+        public IEnumerable<ManufacturedPartNoDetailVM> GetManufacturedPartNoDetailsByTypeTenant(long ManufPartType, string companyName)
         {
-            var manufacturedpartnodetails = _manufacturedPartNoDetailRepository.GetRangeAsync(m => m.ManufacturedPartType == ManufPartType && m.CompanyName.Equals(companyName));
+            var manufacturedpartnodetails = _manufacturedPartNoDetailRepository.GetRangeAsync(m => m.ManufacturedPartType == ManufPartType && Convert.ToString(m.CompanyId).Equals(companyName));
             //_manufacturedPartNoDetailRepository.GetAllManuFByPartTypeTenantID(manPartTypeId, tenantID);
             //(m => m.TenantId == tenantID && m.ManufacturedPartType == manPartTypeId);
-            return _mapper.Map<IEnumerable<ManufacturedPartNoDetailListVM>>(manufacturedpartnodetails);
+            return _mapper.Map<IEnumerable<ManufacturedPartNoDetailVM>>(manufacturedpartnodetails);
         }
-        
+
+        public IEnumerable<ManufacturedPartNoDetailVM> GetAllManufacturedPartNoDetailsByTypeTenant()
+        {
+            var manufacturedpartnodetails = _manufacturedPartNoDetailRepository.GetRangeAsync(m => m.TenantId > -1);
+            //_manufacturedPartNoDetailRepository.GetAllManuFByPartTypeTenantID(manPartTypeId, tenantID);
+            //(m => m.TenantId == tenantID && m.ManufacturedPartType == manPartTypeId);
+            return _mapper.Map<IEnumerable<ManufacturedPartNoDetailVM>>(manufacturedpartnodetails);
+        }
+
         public IEnumerable<UOMVM> GetUOMsByTenantId(long tenantID)
         {
             var uoms = _uOMRepository.GetRangeAsync(m => m.Id > -1);
@@ -52,49 +67,122 @@ namespace CWB.Masters.Services.ItemMaster
             return _mapper.Map<IEnumerable<UOMVM>>(uoms);
         }
 
+        private int GetPartId(string partNo)
+        {
+            var rms = _masterPartRepository.GetRangeAsync(c => c.PartNo.Equals(partNo));
+            if (!rms.Any())
+            {
+                return 0;
+            }
+            MasterPart part = _mapper.Map<Domain.ItemMaster.MasterPart>(rms.First());
+            return (int)part.Id;
+        }
 
 
         public async Task<ManufacturedPartNoDetailVM> ManufacturedPartNoDetail(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM)
         {
-            var manufacturedpartnodetail = _mapper.Map<Domain.ManufacturedPartNoDetail>(manufacturedPartNoDetailVM);
-            if (manufacturedpartnodetail.Id == 0)
+            try
             {
-                await _manufacturedPartNoDetailRepository.AddAsync(manufacturedpartnodetail);
+                var manufacturedpartnodetail = _mapper.Map<Domain.ManufacturedPartNoDetail>(manufacturedPartNoDetailVM);
+                var masterPart = _mapper.Map<Domain.ItemMaster.MasterPart>(manufacturedPartNoDetailVM);
+                int id = GetPartId(masterPart.PartNo);
+                if (id == 0)
+                {
+                    masterPart.Id = 0;
+                    await _masterPartRepository.AddAsync(masterPart);
+                    await _unitOfWork.CommitAsync();
+                    manufacturedPartNoDetailVM.PartId = (int)masterPart.Id;
+                }
+                else
+                {
+                    if (id == manufacturedpartnodetail.PartId)
+                    {
+                        masterPart = await _masterPartRepository.UpdateAsync(masterPart.Id, masterPart);
+                        await _unitOfWork.CommitAsync();
+                        manufacturedPartNoDetailVM.PartId = (int)masterPart.Id;
+                    }
+                }
+                manufacturedpartnodetail.PartId = manufacturedPartNoDetailVM.PartId;
+
+                if (manufacturedpartnodetail.Id == 0)
+                {
+                    await _manufacturedPartNoDetailRepository.AddAsync(manufacturedpartnodetail);
+                }
+                else
+                {
+                    manufacturedpartnodetail = await _manufacturedPartNoDetailRepository.UpdateAsync(manufacturedpartnodetail.Id, manufacturedpartnodetail);
+                }
+
+                await _unitOfWork.CommitAsync();
+                manufacturedPartNoDetailVM.ManufacturedPartNoDetailId = manufacturedpartnodetail.Id;
             }
-            else
+            catch (Exception ex)
             {
-                manufacturedpartnodetail = await _manufacturedPartNoDetailRepository.UpdateAsync(manufacturedpartnodetail.Id, manufacturedpartnodetail);
+                string msg = ex.InnerException.Message;
+                throw ex;
             }
-            await _unitOfWork.CommitAsync();
-            manufacturedPartNoDetailVM.ManufacturedPartNoDetailId = manufacturedpartnodetail.Id;
             return manufacturedPartNoDetailVM;
         }
 
-        public async Task<ManufacturedPartNoDetailVM> MPMakeFrom(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM)
+        public async Task<MPMakeFromVM> MPMakeFrom(MPMakeFromVM mpMakeFromVM)
         {
-            var mpMakeFrom = _mapper.Map<Domain.MPMakeFrom>(manufacturedPartNoDetailVM);
-            mpMakeFrom.InputPartNo = manufacturedPartNoDetailVM.PartNumber;
+            var mpMakeFrom = _mapper.Map<Domain.MPMakeFrom>(mpMakeFromVM);
+           // mpMakeFrom.InputPartNo = manufacturedPartNoDetailVM.PartNumber;
             if (mpMakeFrom.Id == 0)
             {
-                await _mpMakeFromRepository.AddAsync(mpMakeFrom);
+                try {
+                    _mpMakeFromRepository.AddObj(mpMakeFrom);
+                } catch(Exception ex)
+                {
+                    var msg = ex.InnerException.Message;
+                    ex.GetBaseException();
+                    ex.GetType();
+                    
+
+                }
             }
             else
             {
                 mpMakeFrom = await _mpMakeFromRepository.UpdateAsync(mpMakeFrom.Id, mpMakeFrom);
             }
             await _unitOfWork.CommitAsync();
-            manufacturedPartNoDetailVM.MPMakeFromId = mpMakeFrom.Id;
-            return manufacturedPartNoDetailVM;
+            mpMakeFromVM.MPMakeFromId = mpMakeFrom.Id;
+            return mpMakeFromVM;
         }
-        public IEnumerable<MPMakeFromListVM> GetMPMakeFromListByPartNumberNTenant(string partNumber, long tenantID)
+        public IEnumerable<MPMakeFromVM> GetMPMakeFromList(string manufPartId, long tenantID)
         {
-            var mpmakefromlist = _mpMakeFromRepository.GetRangeAsync(m => m.TenantId == tenantID && m.InputPartNo == partNumber);
-            return _mapper.Map<IEnumerable<MPMakeFromListVM>>(mpmakefromlist);
+            var mpmakefromlist =  _mpMakeFromRepository.GetRangeAsync(m => m.PartId.ToString().Equals(manufPartId));
+            return _mapper.Map<IEnumerable<MPMakeFromVM>>(mpmakefromlist);
         }
-        public async Task<ManufacturedPartNoDetailVM> MPBOM(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM)
+
+
+        public async Task<MPMakeFromVM> GetMPMakeFrom(long Id)
         {
-            var mpBOM = _mapper.Map<Domain.MPBOM>(manufacturedPartNoDetailVM);
-            mpBOM.PartNumber = manufacturedPartNoDetailVM.PartNumber;
+            var mpmakefromlist = await _mpMakeFromRepository.SingleOrDefaultAsync(m => m.Id == Id);
+            return _mapper.Map<MPMakeFromVM>(mpmakefromlist);
+        }
+
+     
+
+       
+        public async Task<MPBOMVM> GetMPBOM(long Id)
+        {
+            var mpmakefromlist = await _mpBOMRepository.SingleOrDefaultAsync(m => m.Id == Id);
+            MPBOMVM mpbomvm = _mapper.Map<MPBOMVM>(mpmakefromlist);
+            var mpart = await _masterPartRepository.SingleOrDefaultAsync(m => m.Id == mpbomvm.BOMPartId);
+            MasterPartVM mpvm = _mapper.Map<MasterPartVM>(mpart);
+            mpbomvm.BOMPartNo = mpvm.PartNo;
+            return mpbomvm;
+        }
+        public IEnumerable<MPBOMVM> GetMPBOMList(string manufPartId,long tenantId)
+        {
+            var mpmakefromlist = _mpBOMRepository.GetRangeAsync(m => m.PartId.ToString().Equals(manufPartId));
+            return _mapper.Map<IEnumerable<MPBOMVM>>(mpmakefromlist);
+        }
+        public async Task<MPBOMVM> MPBOM(MPBOMVM mpBovm)
+        {
+            var mpBOM = _mapper.Map<Domain.MPBOM>(mpBovm);
+        //    mpBOM.PartNumber = manufacturedPartNoDetailVM.PartNumber;
             if (mpBOM.Id == 0)
             {
                 await _mpBOMRepository.AddAsync(mpBOM);
@@ -110,8 +198,78 @@ namespace CWB.Masters.Services.ItemMaster
             {
                 string str = ex.ToString();
             }
-            manufacturedPartNoDetailVM.MPMakeFromId = mpBOM.Id;
-            return manufacturedPartNoDetailVM;
+            mpBovm.MPBOMId = mpBOM.Id;
+            return mpBovm;
+        }
+
+        public Task<UOMVM> UOM(UOMVM uOMVm)
+        {
+            if(uOMVm.UOMId == 0)
+            {
+
+            }
+            else
+            {
+
+            }
+            throw new NotImplementedException();
+        }
+
+        public bool CheckPartNo(long partId)
+        {
+            var manufPs = _manufacturedPartNoDetailRepository.GetRangeAsync(c => c.PartId == (partId));
+            if (!manufPs.Any())
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<MPMakeFromVM> RemMakeFrom(MPMakeFromVM mPMakeFromListVM)
+        {
+            var mpMakeFrom = _mapper.Map<Domain.MPMakeFrom>(mPMakeFromListVM);
+            if (mpMakeFrom.Id > 0)
+            {
+                var dbc_mpMakeFrom = await _mpMakeFromRepository.SingleOrDefaultAsync(m => m.Id == mpMakeFrom.Id);
+                if (dbc_mpMakeFrom != null)
+                {
+                    if (dbc_mpMakeFrom.Id > 0)
+                    {
+                        _mpMakeFromRepository.Remove(dbc_mpMakeFrom);
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+            }
+            return mPMakeFromListVM; 
+        }
+
+        public async Task<MPBOMVM> RemBOM(MPBOMVM mpBOMVM)
+        {
+            var mpBOM = _mapper.Map<Domain.MPBOM>(mpBOMVM);
+            if (mpBOM.Id > 0)
+            {
+                
+                var dbc_mpBOM = await _mpBOMRepository.SingleOrDefaultAsync(m => m.Id == mpBOM.Id);
+                if (dbc_mpBOM != null)
+                {
+                    if (dbc_mpBOM.Id > 0)
+                    {
+                        _mpBOMRepository.Remove(dbc_mpBOM);
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+            }
+            return mpBOMVM;
+        }
+
+        public async Task<ManufacturedPartNoDetailVM> GetManuPart(int partId)
+        {
+            var part = await  _manufacturedPartNoDetailRepository.SingleOrDefaultAsync(m=>m.PartId == partId);
+            if(part != null)
+            {
+                return _mapper.Map<ManufacturedPartNoDetailVM>(part);
+            }
+            return new ManufacturedPartNoDetailVM { ManufacturedPartNoDetailId = -1 };
         }
     }
 }

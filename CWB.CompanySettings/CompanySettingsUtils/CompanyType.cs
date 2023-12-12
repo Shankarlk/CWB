@@ -7,8 +7,8 @@ namespace CWB.CompanySettings.CompanySettingsUtils
 
         [Description("Customer")]
         Customer,
-     //   [Description("Supplier")]
-      //  Supplier,
+        [Description("Supplier")]
+        Supplier,
         [Description("Both")]
         Both
     }

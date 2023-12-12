@@ -1,0 +1,26 @@
+﻿using CWB.Masters.Domain.ItemMaster;
+using CWB.Masters.MastersUtils.ItemMaster;
+using CWB.Masters.ViewModels.ItemMaster;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace CWB.Masters.Services.ItemMaster
+{
+    public interface IMasterPartService
+    {
+        IEnumerable<ItemMasterPartVM> GetMasterPartView();
+        int CheckPartNo(string partNo);
+        IEnumerable<PartStatusVM> GetStatuses();
+        
+        IEnumerable<MasterPartVM> GetAllMasterParts();
+
+        Task<MasterPartVM> GetMasterPart(int partId);
+        Task<ManufacturedPartNoDetailVM> GetManufPart(int partId);
+        Task<RawMaterialDetailVM> GetRMPart(int partId);
+        Task<BoughtOutFinishDetailVM> GetBOFPart(int partId);
+
+        Task<ManufacturedPartNoDetailVM> MasterPart(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM);
+
+    }
+}

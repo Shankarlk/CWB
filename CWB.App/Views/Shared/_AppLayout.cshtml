@@ -16,11 +16,13 @@
     <link href="~/css/app.min.css" rel="stylesheet" type="text/css" id="app-default-stylesheet" />
     <link href="~/css/bootstrap-dark.min.css" rel="stylesheet" type="text/css" id="bs-dark-stylesheet" />
     <link href="~/css/app-dark.min.css" rel="stylesheet" type="text/css" id="app-dark-stylesheet" />
+    
     <link href="~/css/site.css" type="text/css" rel="stylesheet" />
+    <link href="~/css/toastr.css" type="text/css" rel="stylesheet" />
     <link href="~/css/select2.min.css" type="text/css" rel="stylesheet" />
+    <link href="~/lib/jquery-ui/dist/jquery-ui.css" rel="stylesheet" />
     <!-- icons -->
     <link href="~/css/icons.min.css" rel="stylesheet" type="text/css" />
-
 </head>
 <body>
     <!-- Pre-loader -->
@@ -53,6 +55,11 @@
                     </li>
                 </ul>
                 <div class="clearfix"></div>
+                <div class="row">
+                    <div id="null" class="col-md-5 mb-2 mt-2"></div>
+                    <div id="null" class="col-md-4 mb-2 mt-2"></div>
+                    <div id="op-notifier" class="col-md-3 mb-1 mt-1"></div>
+                </div>
             </div>
         </div>
         <!-- end Topbar -->
@@ -73,9 +80,11 @@
             <partial name="_NavPartial" />
             <!-- Sidebar -left -->
         </div>
+        
         <!-- Left Sidebar End -->
         <!-- Start Page Content here -->
         <!-- ============================================================== -->
+       
         <div class="content-page">
             @RenderBody()
         </div>
@@ -90,12 +99,18 @@
     <!-- Vendor js -->
     <script src="~/js/vendor.min.js"></script>
     <!-- App js -->
-    <script src="~/js/select2.min.js"></script>
     <script src="~/js/app.min.js"></script>
-    <script src="~/js/site.js"></script>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/jquery-ui/dist/jquery-ui.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/js/select2.min.js"></script>
+    
+    <script src="~/js/site.js"></script>
+    <script src="~/js/globalvas.js"></script>
+    <script src="~/lib/toastr.js"></script>
+    <script src="~/lib/logger.js"></script>
     
     @RenderSection("Scripts", required: false)
 </body>

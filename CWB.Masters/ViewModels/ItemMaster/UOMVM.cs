@@ -4,7 +4,6 @@ namespace CWB.Masters.ViewModels.ItemMaster
     public class UOMVM
     {
         public string Name { get; set; }
-
-        public long Id { get; set; }
+        public long UOMId { get; set; }
     }
 }

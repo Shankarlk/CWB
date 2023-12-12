@@ -4,7 +4,7 @@
 @model CWB.App.Models.ItemMaster.RawMaterialDetailVM
 <input value="M-IM" type="hidden" id="hdn-nav-menu" />
 <div class="content">
-    <div class="row">
+    <div class="row" id="1">
         <!-- ====== Start col =========== -->
         <div class="col-md-12">
             <div class="card">
@@ -13,111 +13,137 @@
                     <div class="row">
                         <div class="col-md-9">
                             <ul class="nav nav-tabs nav-pills navtab-bg">
-                                <li class="nav-item">
-                                    <a href="#tab-1" data-bs-toggle="tab" aria-expanded="false" class="nav-link active"> <span class="d-inline-block d-sm-none">Raw Material</span> <span class="d-none d-sm-inline-block">Raw Material</span> </a>
+                                <li class="nav-item" id="TabRawMaterial">
+                                    <a href="#tab-1" aria-expanded="false" class="nav-link active"> 
+                                        <!--<span class="d-inline-block d-sm-none">Part Info</span>-->
+                                        <span class="d-none d-sm-inline-block">Part Info</span> 
+                                        </a>
                                 </li>
-                                <li class="nav-item" id="TabPurchaseDetailHeader">
-                                    <a href="#tab-2" data-bs-toggle="tab" aria-expanded="true" class="nav-link "> <span class="d-inline-block d-sm-none">Purchase Details</span> <span class="d-none d-sm-inline-block">Purchase Details</span> </a>
-                                </li>
-                                <li class="nav-item" id="TabHeadBalloon">
-                                    <a href="#tab-4" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
-                                        <span class="d-inline-block d-sm-none">Balloon</span>
-                                        <span class="d-none d-sm-inline-block">Balloon</span>
+                                <li class="nav-item" id="TabPurchaseDetails">
+                                    <a href="#tab-2"aria-expanded="true" class="nav-link "> 
+                                    <!--<span class="d-inline-block d-sm-none">Purchase Details</span> -->
+                                        <span class="d-none d-sm-inline-block">Purchase Details</span> 
                                     </a>
                                 </li>
                             </ul>
                         </div>
                         <div class="col-md-3 text-end">
-                            <a asp-action="Index" asp-controller="Masters"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></a>
+                            <a asp-action="Index" asp-controller="Masters">
+                                <input type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                            </a>
                         </div>
                     </div>
-                    <!-- ===============================================================  -->
-                    <!-- ===============================================================  -->
-          <form method="post" id="RawMetform">
                     <div class="tab-content">
                         <!-- ================ -->
                         <div class="tab-pane show active" id="tab-1">
-                            <div class="row">
-                                <h5 class="mb-2 mt-2"> Create New / Edit Raw Material</h5>
-                                <div class="col-md-8">
-                                    <div class="row">
-                                        <div class="col-md-3 mt-1">
-                                            <label class="form-label mb-1 font-13">Made to Print</label>
-                                                <input class="form-check-input m-l-5" type="radio" id="MadetoPrint" name="RawMetMadeType" value="1" title="Select if the Raw Material Part No is a Standard Part (Eg Plate, Bar ...) or Made to Print (against the Company's Drawing)" data-plugin="tippy" data-tippy-placement="top">
+                            <form method="post" id="RawMetform" onsubmit="return false;">
+                                <div class="row">
+                                    <h5 class="mb-2 mt-2"> Create New / Edit Raw Material</h5>
+                                    <div class="col-md-8">
+                                        <div class="row">
+                                            <div class="col-md-5 mt-1">
+                                                <label class="form-label mb-1 font-13">Own Purchased RM</label>
+                                                <input class="form-check-input m-l-5" id="OPRM" type="radio" asp-for="RawMaterialMadeType" value="1" data-plugin="tippy" data-tippy-placement="top" checked>
+                                            </div>
+                                            <!-- ---------------  -->
+                                            <div class="col-md-5 mt-1">
+                                                <label class="form-label mb-1 font-13">Customer Supplied RM</label>
+                                                <input class="form-check-input m-l-5" id="CSRM" type="radio" asp-for="RawMaterialMadeType" value="2" title="" data-plugin="tippy" data-tippy-placement="top">
+                                            </div>
+                                            <!-- ---------------  -->
                                         </div>
-                                        <!-- ---------------  -->
-                                        <div class="col-md-4 mt-1 text-center">
-                                            <label class="form-label mb-1 font-13">Standard Purchased RM</label>
-                                                <input class="form-check-input m-l-5" type="radio" id="StandardPurchasedRM" name="RawMetMadeType" value="2" title="Select" data-plugin="tippy" data-tippy-placement="top">
+                                        <div class="row">
+                                            <div class="col-md-5 mt-1">
+                                                <label class="form-label mb-1 font-13">Made to Print RM</label>
+                                                <input class="form-check-input m-l-5" type="radio" id="MPRM" asp-for="RawMaterialMadeSubType" value="1" title="Select if the Raw Material Part No is a Standard Part (Eg Plate, Bar ...) or Made to Print (against the Company's Drawing)" data-plugin="tippy" data-tippy-placement="top" checked>
+                                            </div>
+                                            <!-- ---------------  -->
+                                            <div class="col-md-5 mt-1">
+                                                <label class="form-label mb-1 font-13">Standard Purchased RM</label>
+                                                <input class="form-check-input m-l-5" type="radio" id="SPRM" asp-for="RawMaterialMadeSubType" value="2" title="Select" data-plugin="tippy" data-tippy-placement="top">
+                                            </div>
+                                            <!-- ---------------  -->
                                         </div>
-                                        <!-- ---------------  -->
-                                            <input type="hidden" id="RawMaterialMadeType" asp-for="RawMaterialMadeType" />
                                     </div>
-                                </div>
-                                <!-- ============= -->
-                                <label class="form-label col-md-1 mb-2 text-end">Status</label>
-                                <div class="col-md-3 mb-2">
-                                    <div class="input-group">
-                                            <select class="form-select form-select-sm" id="Status" asp-for="Status">
-                                            <option value="">Active </option>
-                                            <option value="">Inactive</option>
-                                            <option value="">Hold</option>
-                                        </select>
-                                        <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Click to see the Status change details" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#status-info">
-                                            <i class="fe-info color-green add-cust-btn"></i>
-                                        </button>
+                                    <label class="form-label col-md-1 mb-2 text-end">Status</label>
+                                    <div class="col-md-3 mb-2">
+                                        <div class="input-group">
+                                            <select class="form-select form-select-sm" name="Status" asp-items="ViewBag.Statuses">
+                                          
+                                            </select>
+                                            <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Click to see the Status change details" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#status-info">
+                                                <i class="fe-info color-green add-cust-btn"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                                <!-- ========================= -->
-                                <!-- ========================= -->
-                                <div class="col-md-7"></div>
-                                <!-- ========================= -->
-                                <label class="form-label col-md-2 mb-2 text-end">Status Change Reason</label>
-                                <div class="col-md-3 mb-2" title="Enter Status Change Reason" data-plugin="tippy" data-tippy-placement="top">
-                                        <input class="form-control form-control-sm" type="text" asp-for="StatusChangeReason" id="StatusChangeReason" name="time" placeholder="enter here">
-                                </div>
-                                <!-- ========================= -->
-                                <!-- ============= -->
-
-                            </div><hr>
-                            <!-- ---------------------- -->
+                                    <!-- ========================= -->
+                                    <!-- ========================= -->
+                                    <div class="col-md-7"></div>
+                                    <!-- ========================= -->
+                                    <label class="form-label col-md-2 mb-2 text-end">Status Change Reason</label>
+                                    <div class="col-md-3 mb-2" title="Enter Status Change Reason" data-plugin="tippy" data-tippy-placement="top">
+                                        <input class="form-control form-control-sm" type="text" placeholder="enter here" asp-for="StatusChangeReason">
+                                    </div>
+                                    <!-- ========================= -->
+                                    <!-- ============= -->
+                                </div><!--End of Row-->
+                                <hr>
                                 <div class="row">
                                     <!-- ========================= -->
                                     <label class="form-label col-md-2 mb-2"> Raw Material Type <span class="text-danger"> * </span></label>
                                     <div class="col-md-4 mb-2">
                                         <div class="input-group">
-                                            <select class="form-select form-select-sm" asp-for="RawMaterialTypeId" id="RawMaterialTypeId">
-                                                <option value="0">Select</option>
-                                                <option value="1">Forging</option>
-                                                <option value="2">Casting</option>
-                                                <option value="3">Sheet</option>
-                                                <option value="4">Bar Stock</option>
-                                            </select>
-                                            <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Use to add a New Raw Material Type to the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#add-rm-type">
+                                            <div class="col-md-9 mb-2">
+                                                <select class="form-select form-select-sm" id="RawMaterialTypeId" asp-for="RawMaterialTypeId" asp-items="ViewBag.RMTypes" required></select>
+                                            </div>
+
+                                            
+
+                                            <div class="col-md-3 mb-2">
+                                                <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Use to add a New Raw Material Type to the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMType">
                                                 <i class="fe-plus-square add-cust-btn"></i>
                                             </button>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">&nbsp;</div>
                                     <!-- ========================= -->
-                                    <label class="form-label col-md-2 mb-2">In House Part No</label>
+                                    <label class="form-label col-md-2 mb-2"> Supplier</label>
+                                    <div class="col-md-4 mb-2">
+                                        <div class="input-group">
+                                            <div class="col-md-9 mb-2">
+                                                <select class="form-select form-select-sm" id="SupplierId" asp-for="SupplierId" asp-items="ViewBag.Suppliers"  required></select>
+                                            </div>
+                                            
+                                            <div class="col-md-3 mb-2">
+                                                <button type="button" id="#" data-id="0" data-divisionId="0" class="btn btn-sm waves-effect waves-light" title="Add New Supplier" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-company">
+                                                    <!--<button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Use to add a New Customer Type to the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#">-->
+                                                    <i class="fe-plus-square add-cust-btn"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">&nbsp;</div>
+                                    <!-- ========================= -->
+                                    <label class="form-label col-md-2 mb-2"> Part No</label>
                                     <div class="col-md-4 mb-2" title="Enter the Inhouse Part No (Own Company's Part No). RM made to Print require a Part No. You can optionally provide inhouse Part Nos for Standard RM ParTs" data-plugin="tippy" data-tippy-placement="top">
-                                        <input class="form-control form-control-sm" type="text" id="example-time" name="time" placeholder="enter here" asp-for="InHousePartNo" id="InHousePartNo">
+                                        <input name="PartNo" asp-for="PartNo" class="form-control form-control-sm" type="text" placeholder="enter here" required>
+                                        <span asp-validation-for="PartNo"></span>
                                     </div>
                                     <!-- ========================= -->
                                     <label class="form-label col-md-1 mb-2 text-end">Rev No</label>
                                     <div class="col-md-2 mb-2" title="Enter the Rev No applicable to the Part No" data-plugin="tippy" data-tippy-placement="top">
-                                        <input class="form-control form-control-sm" type="text" id="example-time" name="time" placeholder="enter here" asp-for="RevNo" id="RevNo">
+                                        <input asp-for="RevNo" id="RevNo" class="form-control form-control-sm" type="text" placeholder="enter here" required>
                                     </div>
                                     <!-- ========================= -->
                                     <label class="form-label col-md-1 mb-2 text-end">Rev Date</label>
                                     <div class="col-md-2 mb-2" title="Enter the Rev No Date" data-plugin="tippy" data-tippy-placement="top">
-                                        <input class="form-control form-control-sm" type="date" id="example-date" name="date" asp-for="RevDate">
+                                        <input class="form-control form-control-sm" type="date" id="RevDate" asp-for="RevDate">
                                     </div>
                                     <!-- ========================= -->
                                     <label class="form-label col-md-2 mb-2">Part Description <span class="text-danger"> * </span></label>
                                     <div class="col-md-4 mb-2" title="Enter the Part Description" data-plugin="tippy" data-tippy-placement="top">
-                                        <textarea name="PartDescription" id="PartDescription" asp-for="PartDescription" class="form-control form-control-sm"></textarea>
+                                        <textarea asp-for="PartDescription" id="PartDescription" class="form-control form-control-sm" ></textarea>
                                     </div>
                                     <!-- ---------------------- -->
                                 </div>
@@ -127,391 +153,135 @@
                                     <label class="form-label col-md-2 mb-2">Base Raw Material <span class="text-danger"> * </span></label>
                                     <div class="col-md-4 mb-2">
                                         <div class="input-group">
-                                            <select class="form-select form-select-sm" asp-for="BaseRawMaterialId" title="Select the Base Raw Material from the List (Steel, Brass ...)" data-plugin="tippy" data-tippy-placement="top" required>
-                                                <option value="0">Select</option>
-                                                <option value="1">Steel</option>
+                                            <div class="col-md-9 mb-2">
+                                                <select class="form-select form-select-sm" id="BaseRawMaterialId" asp-for="BaseRawMaterialId" asp-items="ViewBag.BaseRMs" title="Select the Base Raw Material from the List (Steel, Brass ...)" data-plugin="tippy" data-tippy-placement="top" required></select>
+                                            </div>
+                                            
+                                            
+                                            <!--
+                                            <option value=""></option>
+                                                <option value="1" selected>Steel</option>
                                                 <option value="2">Cast Iron</option>
                                                 <option value="3">Brass</option>
                                                 <option value="4">Aluminum</option>
                                             </select>
-                                            <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Select to enter a new Base Raw Material to the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#add-base-rm">
+                                            -->
+                                            <div class="col-md-3 mb-2">
+                                                <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Select to enter a new Base Raw Material to the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddBaseRM">
                                                 <i class="fe-plus-square add-cust-btn"></i>
                                             </button>
+                                            </div>
                                         </div>
                                     </div>
                                     <!-- ========================= -->
                                     <label class="form-label col-md-1 mb-2 text-end">Standard</label>
                                     <div class="col-md-2 mb-2">
                                         <div class="input-group">
-                                            <select class="form-select form-select-sm" asp-for="Standard" title="Select the Standard from the List (IS, DIN, JIS ...)" data-plugin="tippy" data-tippy-placement="top">
-                                                <option value="">SAE </option>
-                                                <option value="">ISO</option>
-                                                <option value="">DIN</option>
-                                                <option value="">JIS</option>
+                                            <div class="col-md-9 mb-2">
+                                            <select class="form-select form-select-sm" id="Standard" asp-for="Standard" asp-items="ViewBag.Standards" title="Select the Standard from the List (IS, DIN, JIS ...)" data-plugin="tippy" data-tippy-placement="top" required></select>
+                                                
+                                                
+                                            <!--
+                                            <select id="Standard" class="form-select form-select-sm" title="Select the Standard from the List (IS, DIN, JIS ...)" data-plugin="tippy" data-tippy-placement="top">
+                                                <option value="1">SAE </option>
+                                                <option value="2">ISO</option>
+                                                <option value="3">DIN</option>
+                                                <option value="4">JIS</option>
                                             </select>
-                                            <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Select to enter a Standard not in the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#add-std">
+                                            -->
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Select to enter a Standard not in the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMStandard">
                                                 <i class="fe-plus-square add-cust-btn"></i>
                                             </button>
+                                            </div>
                                         </div>
                                     </div>
                                     <!-- ========================= -->
                                     <label class="form-label col-md-1 mb-2 text-end">Material Spec</label>
                                     <div class="col-md-2 mb-2">
                                         <div class="input-group">
-                                            <select class="form-select form-select-sm" asp-for="MaterialSpec" title="Enter the Material Spec as for the RM Part No. The List will show options available for the chosen Standard" data-plugin="tippy" data-tippy-placement="top">
-                                                <option value="0">Select </option>
-                                                <option value="1">New Spec</option>
-                                                <option value="2">Test Spec</option>
+                                            <div class="col-md-9 mb-2">
+                                                <select class="form-select form-select-sm" id="MaterialSpecId" asp-for="MaterialSpecId" title="Enter the Material Spec as for the RM Part No. The List will show options available for the chosen Standard" data-plugin="tippy" data-tippy-placement="top" asp-items="ViewBag.Specs" required></select>
+                                                <!--RawMaterialTypeId SupplierId  BaseRawMaterialId Standard MaterialSpecId-->
+                                                
+                                            <!--
+                                            <select id="MaterialSpec" class="form-select form-select-sm" title="Enter the Material Spec as for the RM Part No. The List will show options available for the chosen Standard" data-plugin="tippy" data-tippy-placement="top">
+                                                <option value="">Select </option>
+                                                <option value="1" selected>XXXXX</option>
+                                                <option value="2">XXXXX</option>
                                             </select>
-                                            <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Select to enter a Material Spec for the chosen Standard not in the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#add-ms">
+                                            -->
+                                            </div>
+                                            <div class="col-md-3 mb-2">
+                                                <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Select to enter a Material Spec for the chosen Standard not in the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMSpec">
                                                 <i class="fe-plus-square add-cust-btn"></i>
                                             </button>
+                                            </div>
                                         </div>
                                     </div>
                                     <!-- ========================= -->
                                 </div>
-                                <!-- ========================= -->
-                                <div class="row display-none">
-                                    <label class="form-label col-md-2 mb-2"> Unit of Measurement </label>
-                                    <div class="col-md-4 mb-2">
-                                        <div class="input-group" title="Enter the Unit of Measurement (UoM). Default is Nos" data-plugin="tippy" data-tippy-placement="top">
-                                            <select class="form-select form-select-sm">
-                                                <option value="">Numbers</option>
-                                                <option value="">Kgs</option>
-                                                <option value="">Ltr</option>
-                                            </select>
-                                            <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Select to enter a new UoM not in the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#">
-                                                <i class="fe-plus-square add-cust-btn"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- ========================= -->
                                 <div class="row">
                                     <label class="form-label col-md-2 mb-2">Raw Material Weight</label>
                                     <div class="col-md-4 mb-2" title="Enter the Raw Material Weight in Kgs" data-plugin="tippy" data-tippy-placement="top">
-                                        <input class="form-control form-control-sm" asp-for="RawMaterialWeight" type="text" id="example-time" name="time" placeholder="enter here">
+                                        <input id="RawMaterialWeight" asp-for="RawMaterialWeight" class="form-control form-control-sm" type="text" placeholder="enter here" required>
                                     </div>
                                 </div>
                                 <!-- ========================= -->
                                 <div class="row">
                                     <label class="form-label col-md-2 mb-2">Raw Material Notes</label>
                                     <div class="col-md-4 mb-2" title="Enter any relevant Notes for the Raw Material Part No" data-plugin="tippy" data-tippy-placement="top">
-                                        <textarea name="comment" asp-for="RawMaterialNotes" id="simpleinput" class="form-control form-control-sm">Enter......</textarea>
+                                        <textarea id="RawMaterialNotes" asp-for="RawMaterialNotes" class="form-control form-control-sm"></textarea>
                                     </div>
+                                    <div class="col-md-4 mb-2">
+                                        <!--<label class="form-label col-md-2 mb-2">rmdi</label>-->
+                                        <input type="text" hidden id="Supplier" value="Self" asp-for="Supplier" />
+                                        <input type="text" hidden id="MasterPartType" asp-for="MasterPartType" value="3" />
+                                        <input type="text" hidden id="PartId" asp-for="PartId"/>
+                                        <input type="text" hidden id="RawMaterialDetailId" asp-for="RawMaterialDetailId"/>
+                                    </div>
+                                  
                                     <div class="col-md-12 text-end">
                                         <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#popup-4" title="Use to Exit " data-plugin="tippy" data-tippy-placement="top">Exit</button>
-                                        <button class="btn btn-sm btn-primary" title="Use to Save the entered data" id="btnRawMaterialDetailSubmit" data-plugin="tippy" data-tippy-placement="top">Save</button>
+                                        <button type="button" id="btnRawMaterialDetailSubmit" class="btn btn-sm btn-primary" title="Use to Save the entered data" data-plugin="tippy" data-tippy-placement="top">Save</button>
                                         <button type="button" class="btn btn-sm btn-warning" title="Use to go to the next Tab" data-plugin="tippy" data-tippy-placement="top"><i class=" fas fa-arrow-right"> </i> </button>
                                     </div>
                                 </div>
-                                <input type="hidden" asp-for="RawMaterialDetailId" />
-                            <!-- ========================= -->
+                            </form>
                             <div class="row mt-2">
                                 <partial name="_ReferenceDocuments" />
                             </div>
-                            <!-- end row -->
-                            <!-- end row -->
                         </div>
-                        <!-- ==================================== -->
-                            <div class="tab-pane" id="TabHeadPurDetail">
-                            <!-- ========= -->
-                            <div class="row">
-                                <div class="col-md-9">
-                                    <div class="table-responsive">
-                                        <table class="table table-sm">
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <span class="h6">Part No:</span>  XXXXXXXXXXXXXXX
-                                                    </td>
-                                                    <td>
-                                                        <span class="h6">Part Description:</span> Lorem Ipsum is  dummy text of the printing industry.
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <!-- ========= -->
-                                <!-- ========= -->
-                                <div class="col-md-3">
-                                    <div class="table-responsive">
-                                        <table class="table table-sm  text-end w-100">
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <button class="btn btn-sm btn-dark display-none"><span class="fon-we-700">Target Date :</span> 12/08/2022</button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <!-- ========= -->
-                            </div>
-                            <!-- ========= -->
-                            <div class="row">
-                                <div class="col-md-6 dott-bord-r">
-                                        <div class="row mt-4">
-                                            <label class="form-label col-md-4 mb-2"> Supplier <span class="text-danger"> *</span> </label>
-                                            <div class="col-md-8 mb-2">
-                                                <div class="input-group">
-                                                    <select class="form-select form-select-sm" asp-for="PurchaseDetailId" title="Select the Supplier Company from the Drop Down" data-plugin="tippy" data-tippy-placement="top" required>
-                                                        <option value="0">Select </option>
-                                                        <option value="125">Supplier</option>
-                                                        <option value="126">Customer</option>
-                                                    </select>
-                                                    <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Select to enter details of the Supplier Company if it is not in the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#add-supplier">
-                                                        <i class="fe-plus-square add-cust-btn"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <!-- ========================= -->
-                                            <label class="form-label col-md-4 mb-2">Supplier Part No</label>
-                                            <div class="col-md-8 mb-2">
-                                                <input class="form-control form-control-sm" type="text" id="example-time" name="time" placeholder="enter here" title="Enter the Supplier Part No" data-plugin="tippy" data-tippy-placement="top">
-                                            </div>
-                                            <!-- ============================== -->
-                                            <label class="form-label col-md-4 mb-2">Lead Time (Days) </label>
-                                            <div class="col-md-8 mb-2">
-                                                <input class="form-control form-control-sm" type="text" id="example-time" name="time" placeholder="enter here" title="Enter the Lead time in days for procuring the RM Part No from the Supplier Company" data-plugin="tippy" data-tippy-placement="top">
-                                            </div>
-                                            <!-- ============================== -->
-                                            <label class="form-label col-md-4 mb-2">Minimum Order Quantity</label>
-                                            <div class="col-md-8 mb-2">
-                                                <input class="form-control form-control-sm" type="text" id="example-time" name="time" placeholder="enter here" title="Enter any applicable Minimum Order Quantity (MoQ)" data-plugin="tippy" data-tippy-placement="top">
-                                            </div>
-                                            <!-- ========================= -->
-                                            <label class="form-label col-md-4 mb-2">Price</label>
-                                            <div class="col-md-8 mb-2">
-                                                <input class="form-control form-control-sm" type="text" id="example-time" name="time" placeholder="enter here" title="Enter the price of the RM" data-plugin="tippy" data-tippy-placement="top">
-                                            </div>
-                                            <!-- ========================= -->
-                                            <label class="form-label col-md-4 mb-2">Share of Business</label>
-                                            <div class="col-md-8 mb-2">
-                                                <input class="form-control form-control-sm" type="text" id="example-time" name="time" placeholder="enter here" title="Enter the Share of Business (in case of multiple Suppliers) for the RM Part No (%)" data-plugin="tippy" data-tippy-placement="top">
-                                            </div>
-                                            <!-- ========================= -->
-                                            <label class="form-label col-md-4 mb-2">Additional Information</label>
-                                            <div class="col-md-8 mb-2">
-                                                <textarea name="comment" form="usrform" id="simpleinput" class="form-control form-control-sm" title="Enter any relevant comment / additional info" data-plugin="tippy" data-tippy-placement="top">Enter......</textarea>
-                                            </div>
-                                            <!-- ========================= -->
-                                            <div class="col-md-6 mb-2">
-                                                <button type="button" class="btn btn-sm btn-primary" title="Select to Add another Supplier for the RM" data-plugin="tippy" data-tippy-placement="top">Add Supplier</button>
-                                            </div>
-                                            <div class="col-md-6 mb-2 text-end">
-                                                <button class="btn btn-sm btn-primary" title="Use to Save the entered data" data-plugin="tippy" data-tippy-placement="top">Save</button>
-                                            </div>
-                                            <!-- ========================= -->
-                                        </div>
-                                </div>
-                                <!-- col end -->
-                                <div class="col-md-6">
-                                    <div class="table-responsive table-he-180 mt-3">
-                                        <table class="table table-sm table-bordered mb-3 text-center mt-1 w-100 tableFixHead" id="tblEmployee">
-                                            <thead class="  table-info th-sti">
-                                                <tr class="table-border-bottom">
-                                                    <th>Supplier</th>
-                                                    <th>Lead Time</th>
-                                                    <th>MOQ</th>
-                                                    <th>Price</th>
-                                                    <th width="5%"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td>
-                                                        <div class="dropdown float-center">
-                                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td>
-                                                        <div class="dropdown float-center">
-                                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td>
-                                                        <div class="dropdown float-center">
-                                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td>
-                                                        <div class="dropdown float-center">
-                                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td>
-                                                        <div class="dropdown float-center">
-                                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td>
-                                                        <div class="dropdown float-center">
-                                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td>
-                                                        <div class="dropdown float-center">
-                                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td>
-                                                        <div class="dropdown float-center">
-                                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td>
-                                                        <div class="dropdown float-center">
-                                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                            <div class="dropdown-menu dropdown-menu-end">
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                                <!-- item-->
-                                                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <!-- --------------  -->
-                                </div>
-                                <!-- col end -->
-                            </div>
-                            <!-- ========================= -->
-                            <div class="row">
-                                <div class="col-md-6 mt-3">
-                                    <button type="button" class="btn btn-warning btn-sm" title="Use to go to the Previous Tab" data-plugin="tippy" data-tippy-placement="top"><i class="fas fa-arrow-left"></i></button>
-                                </div>
-                                <!-- ---------- -->
-                                <div class="col-md-6 mt-3 text-end">
-                                    <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#popup-4" title="Use to Exit " data-plugin="tippy" data-tippy-placement="top">Exit</button>
-                                    <button type="button" class="btn btn-warning btn-sm" title="Use to go to the next Tab" data-plugin="tippy" data-tippy-placement="top"><i class="fas fa-arrow-right"></i></button>
-                                </div>
-                                <!-- ------end col ----- -->
-                            </div>
-                            <!-- ========================= -->
-                        </div>
-                        <!-- ==================================== -->
-                            <div class="tab-pane" id="TabHeadBalloon"></div>
-                        <!-- ======================= -->
-                    </div>
-          </form>
-
-                    <!-- ====== end tab content  ========== -->
-
+                        <!--tab-1 End-->
+                        <!--Tab2 PartPurchaseDetails-->
+                        <partial name="../Shared/_PurchaseDetails.cshtml" />
+                    </div><!--tab-content End-->
                 </div>
             </div>
         </div>
-        <!-- ====== end col =========== -->
-    </div>
-    <!-- end row -->
-</div>
-<partial name="_ReferenceDocumentUpload" />
+    </div><!--row id="1"-->
+</div><!--content-->
+<partial name="../Shared/_AddRawMaterialSpec" />
+<partial name="../Shared/_AddRawMaterialStandard" />
+<partial name="../Shared/_AddRawMaterialType" />
+<partial name="../Shared/_AddBaseRM" />
+<partial name="../Shared/_DeletePurchaseDetails" model='new CWB.App.Models.ItemMaster.PartPurchaseDetailsVM{PartPurchaseId=0}' />
+<partial name="../Shared/_EditPurchaseDetails" model='new CWB.App.Models.ItemMaster.PartPurchaseDetailsVM{PartPurchaseId=0}' />
+
+<partial name="../Shared/_ContactsDialog" model='new CWB.App.Models.Contacts.CompanyVM{CompanyId=0,DivisionId=0,Location=""}' />
 
 @section scripts {
+    <script src="~/js/addfunctions.js"></script>
+    <script src="~/js/ItemMaster/supplier.js"></script>
+    <script src="~/js/ItemMaster/Companies.js"></script>
+    <script src="~/js/contact-model.js"></script>
     <script src="~/js/ItemMaster/RawMaterial-model.js"></script>
+    <script src="~/js/ItemMaster/purchasedetails.js"></script>
+    <script src="~/js/contacts.js"></script>
+    <script>
+        var modelObj = @Html.Raw(Json.Serialize(Model));
+        modelObj["Edit"] = false;
+        $('#RawMetform').validate();
+    </script>
 }

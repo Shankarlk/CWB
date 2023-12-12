@@ -13,6 +13,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Masters\RawMaterial_bak .cshtml" />
+    <Content Remove="Views\Masters\RawMaterial_barebone.cshtml" />
+    <Content Remove="Views\Shared\_CompanyDialog.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Views\Masters\RawMaterial_withids.html.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.23" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.23" />

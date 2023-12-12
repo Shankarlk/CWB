@@ -1,25 +1,51 @@
 ﻿using CWB.CommonUtils.Common;
+using Microsoft.AspNetCore.Mvc;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace CWB.App.Models.ItemMaster
 {
     public class RawMaterialDetailVM
     {
-        public long? RawMaterialDetailId { get; set; }
+
+        //DbPart - Start
+        public long PartId { get; set; }
+        public long SupplierId { get; set; }
         public long RawMaterialMadeType { get; set; }
+        public int RawMaterialMadeSubType { get; set; }
         public long RawMaterialTypeId { get; set; }
-        public long? InHousePartNo { get; set; }
-        public string PartDescription { get; set; }
         public long BaseRawMaterialId { get; set; }
-        public long? RawMaterialWeight { get; set; }
-        public string RawMaterialNotes { get; set; } = null!;
-        public long? Status { get; set; }
-        public string StatusChangeReason { get; set; } = null!;
-        public string RevNo { get; set; } = null!;
+        public string RawMaterialWeight { get; set; }
+        public string? RawMaterialNotes { get; set; }
+        public long Standard { get; set; }
+        public long MaterialSpecId { get; set; }
+        //DbPart - End
+
+
+        //MasterParts-
+        [Display(Name = "Part No")]
+        [Required(ErrorMessage = "Please enter {0}.")]
+        [StringLength(255, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
+        [Remote(
+           "CheckPartNo",
+           "Masters",
+           AdditionalFields = "PartNo",
+           ErrorMessage = "{0} already exists. Please enter a different {0}.",
+           HttpMethod = "GET"
+       )]
+        public string PartNo { get; set; }
+        public string? PartDescription { get; set; }
+        public string Status { get; set; }
+        public string? StatusChangeReason { get; set; }
+        public string RevNo { get; set; }
         public DateTime? RevDate { get; set; }
-        public long? Standard { get; set; }
-        public string MaterialSpec { get; set; } = null!;
-        public long? PurchaseDetailId { get; set; }
+        public string MasterPartType { get; set; }
+        //MasterParts-
+        public long? RawMaterialDetailId { get; set; }
+        public string Supplier { get; set; }
+        //MasterParts
+
         public long? TenantId { get; set; }
     }
 }
+

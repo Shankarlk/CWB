@@ -16,6 +16,7 @@
             public const string PostCompany = Base + "/company";
             public const string IsCompanyExist = Base + "/check-company";
             public const string IsDivisionExist = Base + "/check-division";
+            
 
         }
 
@@ -42,33 +43,84 @@
             public const string PostMachineProcDoc = Base + "/machine-procs-doc";
         }
 
+
+        public static class Masters
+        {
+            public const string GetStatuses = Base + "/statuses";
+        }
+
         public static class ManufacturedPartNoDetail
         {
             public const string PostManufacturedPartNoDetail = Base + "/manufacturedpartnodetail";
             public const string PostMPMakeFrom = Base + "/mpmakefrom";
             public const string PostMPBOM = Base + "/mpbom";
             // Added for Listing ManufacturedPartNoDetails
+            public const string GetManufPart = Base + "/getmanufpart/{partId}";
+            public const string GetRMPart = Base + "/getrmpart/{partId}";
+            public const string GetBOFPart = Base + "/getbofpart/{partId}";
+
             public const string GetManufacturedPartNoDetailList = Base + "/getmanufacturedpartnodetailList/{ManufPartType}/{companyName}";
-            public const string GetMPMakeFromListBypartNumber = Base + "/mpmakefromlist/{partNumber}/{tenantId}";
-            public const string HelloWorld = Base + "/helloworld";
+            public const string GetAllManufacturedPartNoDetailList = Base + "/mfdlist";
+            public const string GetMPMakeFromList = Base + "/mpmakefromlist/{partNo}";
+            public const string GetMPMakeFrom = Base + "/getmakefrom/{Id}";
+            public const string RemMakeFrom = Base + "/remmakefrom";
+
+            public const string GetMPBOMList = Base + "/boms/{partNo}";
+            public const string GetMPBOM = Base + "/getbom/{Id}";
+            public const string RemBOM = Base + "/rembom";
+          //  public const string HelloWorld = Base + "/helloworld";
             public const string GetUOMs = Base + "/getuoms/{tenantId}";
-            public const string PostRawMaterialDetail = Base + "/rawmaterialdetail";
-            // Added for Listing RawMaterialDetails
-            public const string GetRawMaterialDetailList = Base + "/getrawmaterialdetailList/{tenantId}";
         }
 
         public static class RawMaterialDetail
         {
+            //rawmateriadetail
             public const string PostRawMaterialDetail = Base + "/rawmaterialdetail";
             // Added for Listing RawMaterialDetails
             public const string GetRawMaterialDetailList = Base + "/getrawmaterialdetailList/{tenantId}";
+            public const string GetRMTypes = Base + "/rmtypes";
+            public const string GetRMSpecs = Base + "/rmspecs";
+            public const string GetRMStandards = Base + "/rmstandards";
+            public const string GetBaseRMs = Base + "/baserms";
+            public const string BaseRM = Base + "/baserm";
+            public const string RMType = Base + "/rmtype";
+            public const string RMSpec = Base + "/rmspec";
+            public const string RMStandard = Base + "/rmstandard";
+
+            public const string GetPartPurchasesForPartId = Base + "/purchasesbypartId/{partId}";
+            
+            //Get All objects
+            public const string GetPartPurchases = Base + "/partpurchases";
+            //Add/Edit
+            public const string PostPartPurchaseDetail = Base + "/partpurchase";
+            //Get a single object
+            public const string GetPartPurchase = Base + "/getpartpurchase/{partPurchaseId}";
+            //public const string RemovePartPurchase = Base + "/rempartpurchase/{partPurchaseId}";
+            public const string RemPartPurchaseDetail = Base + "/rempartpurchase";
+
+
+
+            public const string OwnRMS = Base + "/ownrms";
+            public const string SupplierRMS = Base + "/supplierrms/{supplierId}";
+
+            public const string GetMasterParts = Base + "/itemmasterparts";
+            public const string GetSelectParts = Base + "/selectparts/{tenantId}";
+            //itemmasterparts
+           
+            
         }
 
+        public static class MasterParts
+        {
+            public const string CheckPartNo = Base + "/check-partno/{partNo}";
+        }
+
+       
         public static class BoughtOutFinishDetail
         {
             public const string PostBoughtOutFinishDetail = Base + "/boughtoutfinishdetail";
             // Added for Listing BoughtOutFinishDetails
-            public const string GetBoughtOutFinishDetailList = Base + "/getboughtoutfinishdetailList/{tenantId}";
+            public const string GetBoughtOutFinishDetailList = Base + "/bofs";
         }
     }
 }

@@ -4,7 +4,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="myLargeModalLabel">Company / Employee Details </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button id="btnContactClose" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -21,19 +21,19 @@
                                 <!-- ============== -->
                                 <label class=" col-md-4 form-label mb-2" asp-for="CompanyName"></label>
                                 <div class="col-md-8 mb-2" title="Enter Company Name" data-plugin="tippy" data-tippy-placement="top">
-                                    <input class="form-control form-control-sm" type="text" placeholder="Enter here" asp-for="CompanyName" />
+                                    <input class="form-control form-control-sm" type="text" placeholder="Enter here" asp-for="CompanyName" onchange="return false;"/>
                                     <span asp-validation-for="CompanyName"></span>
                                 </div>
                                 <!-- ============== -->
                                 <label class=" col-md-4 form-label mb-2" asp-for="DivisionName"></label>
                                 <div class="col-md-8 mb-2" title="Enter the Company Division or Plant if applicable. If it is the Main Plant / Division / HQ enter Main" data-plugin="tippy" data-tippy-placement="top">
-                                    <input class="form-control form-control-sm" type="text" placeholder="Enter here" asp-for="DivisionName" />
+                                    <input class="form-control form-control-sm" type="text" placeholder="Enter here" asp-for="DivisionName" onchange="return false;" />
                                     <span asp-validation-for="DivisionName"></span>
                                 </div>
                                 <!-- ============== -->
                                 <label class=" col-md-4 form-label mb-2" asp-for="Location"></label>
                                 <div class="col-md-8 mb-2" title="Enter the Company Location ... City, Country ..." data-plugin="tippy" data-tippy-placement="top">
-                                    <input class="form-control form-control-sm" type="text" placeholder="Enter here" asp-for="Location" />
+                                    <input class="form-control form-control-sm" type="text" placeholder="Enter here" asp-for="Location" onchange="return false;" />
                                     <span asp-validation-for="Location"></span>
                                 </div>
                                 <!-- ============== -->
@@ -43,7 +43,6 @@
                                     <span asp-validation-for="Notes"></span>
                                 </div>
                                 <!-- ============== -->
-                                <div id="op-notifier" class=" col-md-6 mb-2 mt-2"></div>
                                 <div class="col text-end mt-2">
                                     <input type="button" class="btn btn-sm btn-primary" title="Use to Save the entered data"
                                            data-plugin="tippy" data-tippy-placement="top" value="Save" id="btnContactSubmit" />

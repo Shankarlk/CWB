@@ -4,6 +4,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CWB.Masters.Configurations
 {
+    /*
+     *  ManufacturedPartType bigint NOT NULL,
+   CompanyId bigint NOT null,
+    PartId bigint not null,
+   FinishedWeight bigint DEFAULT NULL,
+   UOMId bigint DEFAULT NULL,
+   MFBOM varchar(10) NOT NULL,
+     */
+
     public class ManufacturedPartNoDetailConfigurations : IEntityTypeConfiguration<Domain.ManufacturedPartNoDetail>
     {
         public void Configure(EntityTypeBuilder<Domain.ManufacturedPartNoDetail> builder)
@@ -19,53 +28,38 @@ namespace CWB.Masters.Configurations
                 .HasMaxLength(255)
                 .IsRequired();
             builder
-                .Property(t => t.CompanyName)
-                .HasConversion<string>()
-                .HasColumnName("CompanyName")
-                .IsUnicode(true)
+                .Property(m => m.CompanyId)
+                .HasColumnName("CompanyId")
                 .HasMaxLength(255)
                 .IsRequired();
             builder
-                .Property(t => t.PartNumber)
-                .HasConversion<string>()
-                .HasColumnName("PartNumber")
-                .IsUnicode(true)
+                .Property(t => t.PartId)
+                .HasColumnName("PartId")
                 .HasMaxLength(255)
                 .IsRequired();
-            builder
-                .Property(t => t.PartDescription)
-                .HasConversion<string>()
-                .HasColumnName("PartDescription")
-                .IsUnicode(true)
-                .HasMaxLength(255)
-                .IsRequired();
+            
             builder
                 .Property(t => t.FinishedWeight)
                 .HasColumnName("FinishedWeight")
                 .IsUnicode(true)
                 .HasMaxLength(255);
-            builder
-                .Property(t => t.RevNo)
-                .HasConversion<string>()
-                .HasColumnName("RevNo")
-                .IsUnicode(true)
-                .HasMaxLength(255)
-                .IsRequired();
-            builder
-                .Property(t => t.RevDate)
-                .HasColumnName("RevDate")
-                .IsUnicode(true)
-                .HasMaxLength(255);
+          
             builder
                 .Property(t => t.UOMId)
                 .HasColumnName("UOMId")
-                .IsUnicode(true)
                 .HasMaxLength(255);
+            /**
+             * builder
+                .Property(t => t.PartDescription)
+                .HasConversion<string>()
+                .HasColumnName("PartDescription")
+                .IsUnicode(true)
+                .HasMaxLength(4000);
             builder
                 .Property(t => t.Status)
                 .HasColumnName("Status")
-                .IsUnicode(true)
-                .HasMaxLength(255);
+                .HasMaxLength(255)
+                .IsRequired();
             builder
                 .Property(t => t.StatusChangeReason)
                 .HasConversion<string>()
@@ -73,18 +67,16 @@ namespace CWB.Masters.Configurations
                 .IsUnicode(true)
                 .HasMaxLength(255);
             builder
-                .Property(t => t.MakeFrom)
-                .HasConversion<string>()
-                .HasColumnName("MakeFrom")
-                .IsUnicode(true)
-                .HasMaxLength(255);
+              .Property(t => t.RevNo)
+              .HasConversion<string>()
+              .HasColumnName("RevNo")
+              .IsUnicode(true)
+              .HasMaxLength(255);
             builder
-                .Property(t => t.BOM)
-                .HasConversion<string>()
-                .HasColumnName("BOM")
+                .Property(t => t.RevDate)
+                .HasColumnName("RevDate")
                 .IsUnicode(true)
-                .HasMaxLength(255);
-
+                .HasMaxLength(255);*/
             builder
                 .Property(m => m.TenantId)
                 .HasColumnName("TenantId")

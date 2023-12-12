@@ -8,6 +8,8 @@ namespace CWB.Masters.Services.ItemMaster
     public interface IBoughtOutFinishDetailService
     {
         Task<BoughtOutFinishDetailVM> BoughtOutFinishDetail(BoughtOutFinishDetailVM boughtOutFinishDetailVM);
-        public IEnumerable<BoughtOutFinishDetailListVM> GetBoughtOutFinishDetailsByTenant(long tenantID);
+        public IEnumerable<BoughtOutFinishDetailVM> GetBoughtOutFinishDetailsByTenant(long tenantID);
+        bool CheckPartNo(long partId);
+        Task<BoughtOutFinishDetailVM> GetPart(int partId);
     }
 }

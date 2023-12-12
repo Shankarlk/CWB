@@ -3,6 +3,7 @@ using CWB.Masters.Domain;
 using CWB.Masters.Domain.ItemMaster;
 using CWB.Masters.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,6 +24,22 @@ namespace CWB.Masters.Repositories.ItemMaster
         public IEnumerable<UOM> GetUOMs()
         {
             return _dbSet.ToList();
+        }
+
+
+        public bool AddUOM(UOM uom)
+        {
+            try
+            {
+                _dbSet.Add(uom);
+                Context.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.InnerException.Message;
+                return false;
+            }
+            return true;
         }
 
 

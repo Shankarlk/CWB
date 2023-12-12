@@ -7,11 +7,26 @@ namespace CWB.Masters.Services.ItemMaster
     public interface IManufacturedPartNoDetailService
     {
         Task<ManufacturedPartNoDetailVM> ManufacturedPartNoDetail(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM);
-        IEnumerable<ManufacturedPartNoDetailListVM> GetManufacturedPartNoDetailsByTypeTenant(long manPartTypeId, string companyName);
+        IEnumerable<ManufacturedPartNoDetailVM> GetManufacturedPartNoDetailsByTypeTenant(long manPartTypeId, string companyName);
 
-        Task<ManufacturedPartNoDetailVM> MPMakeFrom(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM);
-        IEnumerable<MPMakeFromListVM> GetMPMakeFromListByPartNumberNTenant(string partNumber, long tenantID);
-        Task<ManufacturedPartNoDetailVM> MPBOM(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM);
+        IEnumerable<ManufacturedPartNoDetailVM> GetAllManufacturedPartNoDetailsByTypeTenant();
+
+        Task<MPMakeFromVM> MPMakeFrom(MPMakeFromVM manufacturedPartNoDetailVM);
+        IEnumerable<MPMakeFromVM> GetMPMakeFromList(string manufPartId, long tenantID);
+        Task<MPMakeFromVM> GetMPMakeFrom(long Id);
+        Task<MPMakeFromVM> RemMakeFrom(MPMakeFromVM mPMakeFromListVM);
+
+
+
+        Task<MPBOMVM> MPBOM(MPBOMVM manufacturedPartNoDetailVM);
+        IEnumerable<MPBOMVM> GetMPBOMList(string manufPartId, long tenantID);
+        Task<MPBOMVM> GetMPBOM(long Id);
+        Task<MPBOMVM> RemBOM(MPBOMVM bomVM);
+
         IEnumerable<UOMVM> GetUOMsByTenantId(long tenantId);
+
+        Task<UOMVM> UOM(UOMVM uOMVm);
+        bool CheckPartNo(long partId);
+        Task<ManufacturedPartNoDetailVM> GetManuPart(int partId);
     }
 }

@@ -91,7 +91,7 @@
     <!-- ============================== -->
 </div>
 
-@Html.Partial("_ContactsDialog", new CWB.App.Models.Contacts.CompanyVM())
+<partial name="../Shared/_ContactsDialog" model='new CWB.App.Models.Contacts.CompanyVM{CompanyId=0,DivisionId=0,Location=""}' />
 @section scripts {
     <script src="~/js/contacts.js"></script>
     <script src="~/js/contact-model.js"></script>

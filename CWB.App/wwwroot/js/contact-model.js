@@ -3,12 +3,12 @@
 };
 var ContactsFormUtil = {
     UpdateFormIDs: (data) => {
-        debugger;
+        //////debugger;
         $("#DivisionId").val(data.divisionId);
         $("#CompanyId").val(data.companyId);
     },
     PopulateForm: (data) => {
-        debugger;
+        //////debugger;
         $("#DivisionId").val(data.divisionId);
         $("#CompanyId").val(data.companyId);
         $("#CompanyType").val(data.companyType);
@@ -18,7 +18,7 @@ var ContactsFormUtil = {
         $("#Notes").val(data.notes);
     },
     UpdateDivisonTable: (companyId, divisionId) => {
-        debugger;
+        //////debugger;
         ContactsConstants.DivisionId = divisionId;
         api.get("/contacts/divisions/" + companyId).then((data) => {
             var tablebody = $("#tbl-division tbody");
@@ -50,8 +50,12 @@ var ContactsFormUtil = {
         $("#DivisionName").val("");
         $("#Location").val("");
         $("#Notes").val("");
+    },
+    HasFunction: (obj, methodName) => {
+        return ((typeof obj[methodName]) == "function");
     }
 };
+
 $(function () {
     $("#btnAddDivision").hide();
     $('#dialog-company').on('show.bs.modal', function (event) {
@@ -59,7 +63,7 @@ $(function () {
         ContactsFormUtil.ClearConstants();
         var relatedTarget = $(event.relatedTarget);
         var companyId = relatedTarget.data("id");
-        var divisionId = relatedTarget.data("divisionid");
+        var divisionId = relatedTarget.data("divisionId");
         if (companyId == "0") {
             var tablebody = $("#tbl-division tbody");
             $(tablebody).html("");//empty tbody
@@ -73,12 +77,18 @@ $(function () {
     $('#dialog-company').on('hide.bs.modal', function (event) {
         ContactsFormUtil.ClearForm();
         ContactsFormUtil.ClearConstants();
-        $("#frmCompany").resetValidation();
+    //    alert("On hide..");
+       // $("#frmCompany").resetValidation();
         api.get("/contacts/companies").then((data) => {
             var tablebody = $("#tbl-contacts tbody");
-            $(tablebody).html("");//empty tbody
-            for (i = 0; i < data.length; i++) {
-                $(tablebody).append(AppUtil.ProcessTemplateData("company-template", data[i]));
+            if (tablebody.length) { //if there is a tablebody in the parent populate it
+                $(tablebody).html("");//empty tbody
+                for (i = 0; i < data.length; i++) {
+                    $(tablebody).append(AppUtil.ProcessTemplateData("company-template", data[i]));
+                }
+            }
+            if (typeof OnCompDialogHidden === 'function') {
+                OnCompDialogHidden();
             }
             //filter once loaded
             ContactsUtil.FilterContacts();
@@ -87,25 +97,28 @@ $(function () {
         });
     });
 
-    $("#btnContactClose").click(function () {
+    /*$("#btnContactClose").click(function () {
         $("#dialog-company").dialog("close");
-    });
+    });*/
 
     $("#btnContactSubmit").click(function () {
-        debugger;
+     //   //debugger;
         if ($("#frmCompany").valid()) {
             var formData = AppUtil.GetFormData("frmCompany");
             api.post("/contacts/company", formData).then((data) => {
                 ContactsFormUtil.UpdateFormIDs(data);
                 ContactsFormUtil.UpdateDivisonTable(data.companyId, data.divisionId);
                 $("#btnAddDivision").show();
+                if (typeof OnCompanyCreated === 'function') {
+                    OnCompanyCreated(data);
+                }
             }).catch((error) => {
                 AppUtil.HandleError("frmCompany", error);
             });
         }
     });
     $("#btnAddDivision").click(function () {
-        debugger;
+        //////debugger;
         ContactsFormUtil.ClearDivision();
         ContactsFormUtil.ClearConstants();
     });

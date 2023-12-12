@@ -3,8 +3,10 @@ using CWB.CommonUtils.Common;
 using CWB.Logging;
 using CWB.Masters.Infrastructure;
 using CWB.Masters.MastersUtils;
+using CWB.Masters.MastersUtils.ItemMaster;
 using CWB.Masters.Repositories.Company;
 using CWB.Masters.ViewModels.Company;
+using CWB.Masters.ViewModels.ItemMaster;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,6 +80,17 @@ namespace CWB.Masters.Services.Company
             companyVM.CompanyId = company.Id;
             companyVM.DivisionId = division.Id;
             return companyVM;
+        }
+
+
+        public async Task<CompanyVM> GetCompany(long companyID, long tenantId)
+        {
+            var co = await _companyRepository.SingleOrDefaultAsync(m => m.Id == companyID && m.TenantId == tenantId);
+            if (co != null)
+            { 
+                return _mapper.Map<CompanyVM>(co);
+            }
+            return new CompanyVM();
         }
 
         public async Task<IEnumerable<CompaniesVM>> GetCompaniesByCompanyNTenant(long companyID, long tenantID)

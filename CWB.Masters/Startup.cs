@@ -73,6 +73,7 @@ namespace CWB.Masters
             app.UseRouting();
             // includes initial db creation
             mastersDbContext.Database.EnsureCreated();
+
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>

@@ -29,12 +29,19 @@ namespace CWB.Masters.MastersUtils
             services.AddTransient<IManufacturedPartNoDetailRepository, ManufacturedPartNoDetailRepository>();
             services.AddTransient<IManufacturedPartNoDetailService, ManufacturedPartNoDetailService>();
             services.AddTransient<IRawMaterialDetailRepository, RawMaterialDetailRepository>();
+            services.AddTransient<IRawMaterialTypeRepository, RawMaterialTypeRespository>();
+            services.AddTransient<IRawMaterialSpecRepository, RawMaterialSpecRespository>();
+            services.AddTransient<IRawMaterialStandardRepository, RawMaterialStandardRespository>();
+            services.AddTransient<IBaseRawMaterialRepository, BaseMaterialRespository>();
             services.AddTransient<IRawMaterialDetailService, RawMaterialDetailService>();
+            services.AddTransient<IPartPurchaseDetailRepository, PartPurchaseDetailRepository>();
             services.AddTransient<IBoughtOutFinishDetailRepository, BoughtOutFinishDetailRepository>();
             services.AddTransient<IBoughtOutFinishDetailService, BoughtOutFinishDetailService>();
             services.AddTransient<IMPMakeFromRepository, MPMakeFromRepository>();
             services.AddTransient<IMPBOMRepository, MPBOMRepository>();
             services.AddTransient<IUOMRepository, UOMRepository>();
+            services.AddTransient<IMasterPartService, MasterPartService>();
+            services.AddTransient<IMasterPartRepository, MasterPartRepository>();
         }
     }
 }

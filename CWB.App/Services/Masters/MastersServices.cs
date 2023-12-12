@@ -71,12 +71,45 @@ namespace CWB.App.Services.Masters
             return await RestHelper<List<ContactsVM>>.GetAsync(uri, headers);
         }
 
+        public async Task<IEnumerable<RawMateriaTypeVM>> GetRMTypes()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/rmtypes");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<RawMateriaTypeVM>>.GetAsync(uri, headers);
+        }
+
+        public async Task<IEnumerable<RawMaterialSpecVM>> GetRMSpecs()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/rmspecs");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<RawMaterialSpecVM>>.GetAsync(uri, headers);
+        }
+
+        public async Task<IEnumerable<RawMaterialStandardVM>> GetRMStandards()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/rmstandards");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<RawMaterialStandardVM>>.GetAsync(uri, headers);
+        }
+
+        public async Task<IEnumerable<BaseRawMatrialVM>> GetBaseRMs()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/baserms");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<BaseRawMatrialVM>>.GetAsync(uri, headers);
+        }
+
+
+
+
         public async Task<IEnumerable<ManufacturedPartNoDetailVM>> GetManufacturedPartNoDetailList(long ManufPartType,string companyName)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getmanufacturedpartnodetailList/{ManufPartType}/{companyName}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<ManufacturedPartNoDetailVM>>.GetAsync(uri, headers);
         }
+
+      
 
 
         public async Task<IEnumerable<ContactsVM>> GetDivisionsByCompanyId(long Id)
@@ -93,6 +126,13 @@ namespace CWB.App.Services.Masters
             return await RestHelper<List<CompanyTypeVM>>.GetAsync(uri, headers);
         }
 
+        public async Task<IEnumerable<PartStatusVM>> GetStatuses()
+        {
+            var uri = new Uri(_apiUrls.Gateway + "/cwbms/statuses");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<PartStatusVM>>.GetAsync(uri, headers);
+        }
+
         public async Task<ManufacturedPartNoDetailVM> ManufacturedPartNoDetail(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbms/manufacturedpartnodetail");
@@ -100,29 +140,103 @@ namespace CWB.App.Services.Masters
             manufacturedPartNoDetailVM.TenantId = tenantId;
             return await RestHelper<ManufacturedPartNoDetailVM>.PostAsync(uri, manufacturedPartNoDetailVM, headers);
         }
-        public async Task<ManufacturedPartNoDetailVM> MPMakeFrom(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM)
+        public async Task<MPMakeFromVM> MPMakeFrom(MPMakeFromVM manufacturedPartNoDetailVM)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbms/mpmakefrom");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             manufacturedPartNoDetailVM.TenantId = tenantId;
-            return await RestHelper<ManufacturedPartNoDetailVM>.PostAsync(uri, manufacturedPartNoDetailVM, headers);
+            return await RestHelper<MPMakeFromVM>.PostAsync(uri, manufacturedPartNoDetailVM, headers);
         }
-        public async Task<ManufacturedPartNoDetailVM> MPBOM(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM)
+        public async Task<MPBomVM> MPBOM(MPBomVM manufacturedPartNoDetailVM)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbms/mpbom");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             manufacturedPartNoDetailVM.TenantId = tenantId;
-            return await RestHelper<ManufacturedPartNoDetailVM>.PostAsync(uri, manufacturedPartNoDetailVM, headers);
+            return await RestHelper<MPBomVM>.PostAsync(uri, manufacturedPartNoDetailVM, headers);
         }
-        public async Task<IEnumerable<MPMakeFromListVM>> GetMPMakeFromListBypartNumber(string partNumber)
+        public async Task<IEnumerable<MPMakeFromVM>> GetMPMakeFromListBypartNumber(string partNo)
         {
-            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/mpmakefromlist/{partNumber}/{tenantId}");
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/mpmakefromlist/{partNo}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
-            return await RestHelper<List<MPMakeFromListVM>>.GetAsync(uri, headers);
+            return await RestHelper<List<MPMakeFromVM>>.GetAsync(uri, headers);
         }
+
+        public async Task<MPMakeFromVM> GetMakeFrom(string id)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getmakefrom/{id}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<MPMakeFromVM>.GetAsync(uri, headers);
+        }
+
+        public async Task<MPBomVM> GetBOM(string id)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getbom/{id}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<MPBomVM>.GetAsync(uri, headers);
+        }
+
+        public async Task<IEnumerable<MPBomVM>> BOMS(string partNo)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/boms/{partNo}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<MPBomVM>>.GetAsync(uri, headers);
+        }
+
+        public async Task<IEnumerable<BoughtOutFinishDetailVM>> BOFS()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/bofs");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<BoughtOutFinishDetailVM>>.GetAsync(uri, headers);
+        }
+
+        public async Task<IEnumerable<RawMaterialDetailVM>> SupplierRMS(string supplierId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/supplierrms/{supplierId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<RawMaterialDetailVM>>.GetAsync(uri, headers);
+        }
+
+        public async Task<IEnumerable<ManufacturedPartNoDetailVM>> GetAllManufacturedPartNoDetailList()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/mfdlist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<ManufacturedPartNoDetailVM>>.GetAsync(uri, headers);
+        }
+
+        public async Task<bool> CheckPartNo(string partNo)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/check-partno/{partNo}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+
+        public async Task<ManufacturedPartNoDetailVM> GetManufPart(int partId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getmanufpart/{partId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<ManufacturedPartNoDetailVM>.GetAsync(uri, headers);
+            //
+        }
+        public async Task<RawMaterialDetailVM> GetRMPart(int partId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getrmpart/{partId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<RawMaterialDetailVM>.GetAsync(uri, headers);
+        }
+
+        public async Task<BoughtOutFinishDetailVM> GetBOFPart(int partId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getbofpart/{partId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<BoughtOutFinishDetailVM>.GetAsync(uri, headers);
+        }
+
+        
+
+
         public async Task<RawMaterialDetailVM> RawMaterialDetail(RawMaterialDetailVM rawMaterialDetailVM)
         {
-            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/rawmateriadetail");
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/rawmaterialdetail");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             rawMaterialDetailVM.TenantId = tenantId;
             return await RestHelper<RawMaterialDetailVM>.PostAsync(uri, rawMaterialDetailVM, headers);
@@ -134,5 +248,123 @@ namespace CWB.App.Services.Masters
             boughtOutFinishDetailVM.TenantId = tenantId;
             return await RestHelper<BoughtOutFinishDetailVM>.PostAsync(uri, boughtOutFinishDetailVM, headers);
         }
+
+        public async Task<PartPurchaseDetailsVM> PartPurchase(PartPurchaseDetailsVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/partpurchase");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<PartPurchaseDetailsVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+
+        
+        
+
+        public async Task<IEnumerable<PartPurchaseDetailsVM>> PartPurchases()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/partpurchases");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<PartPurchaseDetailsVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<PartPurchaseDetailsVM>> PartPurchasesFor(int partId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/purchasesbypartId/{partId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<PartPurchaseDetailsVM>>.GetAsync(uri, headers);
+        }
+        
+
+        public async Task<PartPurchaseDetailsVM> GetPartPurchase(int partPurchaseId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getpartpurchase/{partPurchaseId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<PartPurchaseDetailsVM>.GetAsync(uri, headers);
+        }
+
+        public async Task<IEnumerable<ItemMasterPartVM>> ItemMasterParts()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/itemmasterparts");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<ItemMasterPartVM>>.GetAsync(uri, headers);
+        }
+
+        public async Task<IEnumerable<SelectPartVM>> SelectParts()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/selectparts/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<SelectPartVM>>.GetAsync(uri, headers);
+        }
+
+        //redundant as of 08/11/2023
+        //'Search Raw Materials' uses partpurchases instead
+        public async Task<IEnumerable<RawMaterialDetailVM>> OwnRMS()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/ownrms");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<RawMaterialDetailVM>>.GetAsync(uri, headers);
+        }
+
+
+       
+
+        public async Task<BaseRawMatrialVM> BaseRM(BaseRawMatrialVM model)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/baserm");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            model.TenantId = tenantId;
+            return await RestHelper<BaseRawMatrialVM>.PostAsync(uri, model, headers);
+        }
+
+        public async Task<RawMaterialStandardVM> RMStandard(RawMaterialStandardVM model)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/rmstandard");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            model.TenantId = tenantId;
+            return await RestHelper<RawMaterialStandardVM>.PostAsync(uri, model, headers);
+
+        }
+
+        public async Task<RawMaterialSpecVM> RMSpec(RawMaterialSpecVM model)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/rmspec");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            model.TenantId = tenantId;
+            return await RestHelper<RawMaterialSpecVM>.PostAsync(uri, model, headers);
+
+        }
+
+        public async Task<RawMateriaTypeVM> RMType(RawMateriaTypeVM model)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/rmtype");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            model.TenantId = tenantId;
+            return await RestHelper<RawMateriaTypeVM>.PostAsync(uri, model, headers);
+        }
+
+        public async Task<MPMakeFromVM> RemMakeFrom(MPMakeFromVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/remmakefrom");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<MPMakeFromVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+
+        public async Task<MPBomVM> RemBOM(MPBomVM bomvm)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/rembom");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            bomvm.TenantId = tenantId;
+            return await RestHelper<MPBomVM>.PostAsync(uri, bomvm, headers);
+        }
+
+        public async Task<PartPurchaseDetailsVM> RemPartPurchase(PartPurchaseDetailsVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/rempartpurchase");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<PartPurchaseDetailsVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+
+
     }
 }

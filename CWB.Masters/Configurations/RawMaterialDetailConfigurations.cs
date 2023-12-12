@@ -12,10 +12,26 @@ namespace CWB.Masters.Configurations
              .ToTable("RawMaterialDetails");
             builder
                .HasKey(m => m.Id);
-
+            builder
+                .Property(t => t.PartId)
+                .HasColumnName("PartId")
+                .IsUnicode(true)
+                .HasMaxLength(255)
+                .IsRequired();
+            builder
+             .Property(t => t.SupplierId)
+             .HasColumnName("SupplierId")
+             .IsUnicode(true)
+             .HasMaxLength(255)
+             .IsRequired();
             builder
                 .Property(m => m.RawMaterialMadeType)
                 .HasColumnName("RawMaterialMadeType")
+                .HasMaxLength(255)
+                .IsRequired();
+            builder
+                .Property(m => m.RawMaterialMadeSubType)
+                .HasColumnName("RawMaterialMadeSubType")
                 .HasMaxLength(255)
                 .IsRequired();
             builder
@@ -24,28 +40,14 @@ namespace CWB.Masters.Configurations
                 .IsUnicode(true)
                 .HasMaxLength(255)
                 .IsRequired();
-            builder
-                .Property(t => t.InHousePartNo)
-                .HasColumnName("InHousePartNo")
-                .IsUnicode(true)
-                .HasMaxLength(255)
-                .IsRequired();
-            builder
-                .Property(t => t.PartDescription)
-                .HasConversion<string>()
-                .HasColumnName("PartDescription")
-                .IsUnicode(true)
-                .HasMaxLength(255)
-                .IsRequired();
+         
             builder
                  .Property(t => t.BaseRawMaterialId)
                  .HasColumnName("BaseRawMaterialId")
-                 .IsUnicode(true)
                  .HasMaxLength(255);
             builder
                  .Property(t => t.RawMaterialWeight)
                  .HasColumnName("RawMaterialWeight")
-                 .IsUnicode(true)
                  .HasMaxLength(255);
             builder
                  .Property(t => t.RawMaterialNotes)
@@ -53,6 +55,21 @@ namespace CWB.Masters.Configurations
                  .HasColumnName("RawMaterialNotes")
                  .IsUnicode(true)
                  .HasMaxLength(255);
+            builder
+              .Property(t => t.Standard)
+              .HasColumnName("Standard")
+              .HasMaxLength(255);
+            builder
+                .Property(t => t.MaterialSpecId)
+                .HasColumnName("MaterialSpecId")
+                .HasMaxLength(255);
+            /**
+             * builder
+               .Property(t => t.PartDescription)
+               .HasConversion<string>()
+               .HasColumnName("PartDescription")
+               .IsUnicode(true)
+               .HasMaxLength(255);
             builder
                 .Property(t => t.Status)
                 .HasColumnName("Status")
@@ -75,31 +92,14 @@ namespace CWB.Masters.Configurations
                 .Property(t => t.RevDate)
                 .HasColumnName("RevDate")
                 .IsUnicode(true)
-                .HasMaxLength(255);
-            builder
-                .Property(t => t.Standard)
-                .HasColumnName("Standard")
-                .IsUnicode(true)
-                .HasMaxLength(255);
-
-            builder
-                .Property(t => t.MaterialSpec)
-                .HasConversion<string>()
-                .HasColumnName("MaterialSpec")
-                .IsUnicode(true)
-                .HasMaxLength(255);
-            builder
-                .Property(t => t.PurchaseDetailId)
-                .HasColumnName("PurchaseDetailId")
-                .IsUnicode(true)
-                .HasMaxLength(255);
-
+                .HasMaxLength(255);*/
+          
             builder
                 .Property(m => m.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();
             builder.ConfigureBase();
-            builder.HasIndex(m => m.TenantId).HasDatabaseName("RawMaterialDetail_TenantId");
+            builder.HasIndex(m => m.TenantId).HasDatabaseName("RawMaterialDetails_TenantId");
         }
     }
 }

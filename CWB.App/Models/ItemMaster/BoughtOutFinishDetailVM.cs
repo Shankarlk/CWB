@@ -1,30 +1,42 @@
 ﻿using CWB.CommonUtils.Common;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace CWB.App.Models.ItemMaster
 {
     public class BoughtOutFinishDetailVM
     {
-        public long? BoughtOutFinishDetailId { get; set; }
+        //DbPart-Start
         public long BoughtOutFinishMadeType { get; set; }
-        public string PartNo { get; set; } = null!;
-        public string SupplierPartNo { get; set; } = null!;
-        public string PartDescription { get; set; }
-        public string AdditionalInformation { get; set; } = null!;
-        public long? Status { get; set; }
-        public string StatusChangeReason { get; set; } = null!;
-        public string RevNo { get; set; } = null!;
+        public int PartId { get; set; }
+        public string SupplierPartNo { get; set; }
+        public string AdditionalInfo { get; set; }
+        //DbPart-End
+
+        //MasterParts-
+        [Display(Name = "Part No")]
+        [Required(ErrorMessage = "Please enter {0}.")]
+        [StringLength(255, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
+        [Remote(
+           "CheckPartNo",
+           "Masters",
+           AdditionalFields = "PartNo",
+           ErrorMessage = "{0} already exists. Please enter a different {0}.",
+           HttpMethod = "GET"
+       )]
+        public string PartNo { get; set; }
+        public string? PartDescription { get; set; }
+        public string Status { get; set; }
+        public string? StatusChangeReason { get; set; }
+        public string RevNo { get; set; }
         public DateTime? RevDate { get; set; }
-        public string PurchaseDetail { get; set; } = null!;
-        public string Supplier { get; set; }
-        public string PurSupplierPartNo { get; set; } = null!;
-        public long? LeadTimeInDays { get; set; }
-        public long? MinOrderQuantity { get; set; }
-        public decimal? Price { get; set; }
-        public string ShareOfBusiness { get; set; } = null!;
-        public string PurAdditionalInformation { get; set; } = null!;
-        public long TenantId { get; set; }
+        public string MasterPartType { get; set; }
+        //MasterParts-
+        public long? BoughtOutFinishDetailId { get; set; }
+
+        public long? TenantId { get; set; }
 
 
     }

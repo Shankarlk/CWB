@@ -19,26 +19,18 @@ namespace CWB.Masters.Configurations.ItemMaster
                 .HasMaxLength(255)
                 .IsRequired();
             builder
-               .Property(b => b.RevNo)
-               .HasColumnName("RevNo")
-               .HasMaxLength(255);
+              .Property(b => b.PartDescription)
+              .HasColumnName("PartDescription")
+              .IsUnicode(true)
+              .HasMaxLength(4000)
+              .HasColumnType("nvarchar(MAX)");
             builder
-                .Property(b => b.RevDate)
-                .HasColumnName("RevDate")
-                .HasColumnType("datetime");
-            builder
-                .Property(b => b.PartDescription)
-                .HasColumnName("PartDescription")
-                .IsUnicode(true)
-                .HasMaxLength(4000)
-                .HasColumnType("nvarchar(MAX)");
-            builder
-                .Property(b => b.MasterPartType)
-                .HasConversion<string>()
-                .HasColumnName("MasterPartType")
-                .IsUnicode(true)
-                .HasMaxLength(25)
-                .IsRequired();
+               .Property(b => b.MasterPartType)
+               .HasConversion<string>()
+               .HasColumnName("MasterPartType")
+               .IsUnicode(true)
+               .HasMaxLength(25)
+               .IsRequired();
             builder
                 .Property(b => b.Status)
                 .HasConversion<string>()
@@ -46,12 +38,25 @@ namespace CWB.Masters.Configurations.ItemMaster
                 .IsUnicode(true)
                 .HasMaxLength(25)
                 .IsRequired();
-
+            builder
+              .Property(b => b.StatusChangeReason)
+              .HasConversion<string>()
+              .HasColumnName("StatusChangeReason")
+              .IsUnicode(true)
+              .HasMaxLength(300);
+            builder
+               .Property(b => b.RevNo)
+                .HasConversion<string>()
+               .HasColumnName("RevNo")
+               .HasMaxLength(255);
+            builder
+                .Property(b => b.RevDate)
+                .HasColumnName("RevDate")
+                .HasColumnType("datetime");
             builder
                 .Property(b => b.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();
-
             builder.ConfigureBase();
             builder.HasIndex(b => b.TenantId).HasDatabaseName("MasterPart_TenantId");
             builder.HasIndex(b => b.MasterPartType).HasDatabaseName("MasterPart_MasterPartType");

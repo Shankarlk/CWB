@@ -27,11 +27,30 @@
             $(tableRows).show();
         }
     },
-    ProcessTemplateData: (templateId, dataObj) => {
+    ProcessTemplateDataNew: (templateId, dataObj,i) => {
         var templateElement = $("#" + templateId).html();
+        templateElement = templateElement.replaceAll("{num}", i)
+        ////console.log(templateId);
         for (var key in dataObj) {
+            console.log(key + " " + dataObj[key]);
             templateElement = templateElement.replaceAll("{" + key + "}", dataObj[key])
         }
+        console.log(templateElement);
+        console.log("****************");
+        return templateElement;
+    },
+    ProcessTemplateData: (templateId, dataObj) => {
+        //debugger;
+        var templateElement = $("#" + templateId).html();
+        ////console.log(templateId);
+        for (var key in dataObj) {
+        //      console.log(key);
+        //       console.log(dataObj[key]);
+            templateElement = templateElement.replaceAll("{" + key + "}", dataObj[key])
+            
+        }
+      //  console.log(templateElement);
+       // console.log("****************");
         return templateElement;
     },
     GetFormData: (formId) => {
@@ -51,6 +70,13 @@
     }
 };
 
+function ShowDoingNotifier() {
+    let nLen = notifiers.length;
+    for (let i = 0; i < nLen; i++) {
+        AddDoingNotifier(notifiers[i]);
+    }
+};
+
 let notifiers = ["op-notifier", "op-notifier-addbom", "op-notifier-addrm"];
 function ShowSuccessNotifiers() {
     let nLen = notifiers.length;
@@ -65,6 +91,44 @@ function ShowFailureNotifiers() {
     }
 };
 
+function AddDoingNotifier(elementId) {
+
+    if (document.getElementById(elementId) != null) {
+        $('#' + elementId).html(`
+					            <div id="op-alert" class="alert alert-success" role="success">
+		                		Saving...
+			                    </div>`);
+        setInterval(function () {
+            $('#op-alert').alert('close');
+        }, 5000);
+    }
+};
+
+function ShowLoadingNotifier() {
+    let nLen = notifiers.length;
+    for (let i = 0; i < nLen; i++) {
+        AddLoadingNontifier(notifiers[i]);
+    }
+};
+
+function AddLoadingNontifier(elementId) {
+
+    if (document.getElementById(elementId) != null) {
+        $('#' + elementId).html(`
+					            <div id="op-alert" class="alert alert-success" role="success">
+		                		Loading...
+			                    </div>`);
+       /* setInterval(function () {
+            $('#op-alert').alert('close');
+        }, 8000);*/
+    }
+};
+
+function CloseOpAlert() {
+    if ($('#op-alert').length) {
+        $('#op-alert').alert('close');
+    }
+}
 function AddSuccessNotifier(elementId) {
     
     if (document.getElementById(elementId) != null) {
@@ -74,7 +138,7 @@ function AddSuccessNotifier(elementId) {
 			                    </div>`);
         setInterval(function () {
             $('#op-alert').alert('close');
-        }, 4000);
+        }, 6000);
     }
 };
 function AddFailureNotifier(elementId) {
@@ -85,13 +149,15 @@ function AddFailureNotifier(elementId) {
 			                    </div>`);
         setInterval(function () {
             $('#op-alert').alert('close');
-        }, 4000);
+        }, 10000);
     }
 };
 
 
 var api = {
     post: (url, postData) => {
+        ShowDoingNotifier();
+        //logger.logIt("Saving...", "", null, null, true, "info", 'toast-top-center');
         return new Promise((reslove, reject) => {
             $.ajax({
                 url: url,
@@ -99,11 +165,31 @@ var api = {
                 data: postData,
                 success: function (data) {
                     reslove(data);
+                    console.log(data);
+                   // logger.logIt("Saved...", "", null, null, true, "info", 'toast-top-center');
                     ShowSuccessNotifiers();
                 },
                 error: function (error) {
                     reject(error)
+                    //logger.logIt("Failure...", "", null, null, true, "info", 'toast-top-center');
                     ShowFailureNotifiers();
+                }
+            });
+        });
+    },
+    getbulk: (url) => {
+        ShowLoadingNotifier();
+        return new Promise((reslove, reject) => {
+            $.ajax({
+                url: url,
+                type: "GET",
+                success: function (data) {
+                    reslove(data);
+                    CloseOpAlert();
+                },
+                error: function (error) {
+                    ShowFailureNotifiers();
+                    reject(error)
                 }
             });
         });

@@ -11,10 +11,10 @@ namespace CWB.Masters.ViewModelValidators.ItemMaster
         {
             RuleFor(v => v.ManufacturedPartType)
                    .NotEmpty().WithMessage(ManufacturedPartNoDetailVMValidatorMessage.EmptyManufacturedPartType);
-            RuleFor(v => v.CompanyName)
+          /*  RuleFor(v => v.CompanyName)
                    .NotEmpty().WithMessage(ManufacturedPartNoDetailVMValidatorMessage.EmptyCompanyName);
             RuleFor(v => v.PartNumber)
-                  .NotEmpty().WithMessage(ManufacturedPartNoDetailVMValidatorMessage.EmptyPartNumber);
+                  .NotEmpty().WithMessage(ManufacturedPartNoDetailVMValidatorMessage.EmptyPartNumber);*/
             RuleFor(v => v.PartDescription)
                   .NotEmpty().WithMessage(ManufacturedPartNoDetailVMValidatorMessage.EmptyPartDescription);
             RuleFor(v => v.RevNo)

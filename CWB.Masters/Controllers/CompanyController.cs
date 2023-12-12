@@ -5,6 +5,7 @@ using CWB.Masters.Company.ViewModelValidators;
 using CWB.Masters.MastersUtils;
 using CWB.Masters.Services.Company;
 using CWB.Masters.ViewModels.Company;
+using CWB.Masters.ViewModels.ItemMaster;
 using CWB.Masters.ViewModelValidators.Company;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,7 @@ namespace CWB.Masters.Controllers
             var companyTypes = _companyService.GetCompanyTypes();
             return Ok(companyTypes);
         }
+
 
         /// <summary>
         /// Get All Companies by tenant

@@ -1,6 +1,7 @@
 ﻿using CWB.CommonUtils.Common;
 using CWB.Constants.UserIdentity;
 using CWB.Logging;
+using CWB.Masters.Domain;
 using CWB.Masters.MastersUtils;
 using CWB.Masters.Services.Company;
 using CWB.Masters.Services.ItemMaster;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CWB.Masters.Controllers
@@ -22,11 +24,23 @@ namespace CWB.Masters.Controllers
     {
         private readonly ILoggerManager _logger;
         private readonly IManufacturedPartNoDetailService _manufacturedPartNoDetailService;
+        private readonly IMasterPartService _masterPartService;
 
-        public ManufacturedPartNoDetailController(ILoggerManager logger, IManufacturedPartNoDetailService manufacturedPartNoDetailService)
+        public ManufacturedPartNoDetailController(ILoggerManager logger, IManufacturedPartNoDetailService manufacturedPartNoDetailService
+            ,IMasterPartService masterPartService)
         {
             _logger = logger;
             _manufacturedPartNoDetailService = manufacturedPartNoDetailService;
+            _masterPartService = masterPartService; 
+        }
+
+        [HttpGet]
+        [Route(ApiRoutes.ManufacturedPartNoDetail.GetManufPart)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(ManufacturedPartNoDetailVM))]
+        public async Task<IActionResult> GetManufPart(int partId)
+        {
+            ManufacturedPartNoDetailVM manufP = await _masterPartService.GetManufPart(partId);
+            return Ok(manufP);   
         }
 
         /// <summary>
@@ -36,21 +50,52 @@ namespace CWB.Masters.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route(ApiRoutes.ManufacturedPartNoDetail.GetManufacturedPartNoDetailList)]
-        [Produces(AppContentTypes.ContentType, Type = typeof(List<ManufacturedPartNoDetailListVM>))]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<ManufacturedPartNoDetailVM>))]
         public IActionResult GetManufacturedPartNoDetailList(long ManufPartType, string companyName)
         {
-            var manufacturedpartnodetails = _manufacturedPartNoDetailService.GetManufacturedPartNoDetailsByTypeTenant(ManufPartType, companyName);
-            return Ok(manufacturedpartnodetails);
+            List<MasterPartVM> masterParts = _masterPartService.GetAllMasterParts().ToList();
+            List<ManufacturedPartNoDetailVM> manufList = _manufacturedPartNoDetailService.GetManufacturedPartNoDetailsByTypeTenant(ManufPartType, companyName).ToList();
+
+            var query = from manuf in manufList
+                        join mp in masterParts on manuf.PartId equals mp.MasterPartId into mpjoin
+                        from scojoin in mpjoin.DefaultIfEmpty()
+                        select new ManufacturedPartNoDetailVM
+                        {
+                            ManufacturedPartType = manuf.ManufacturedPartType,
+                            PartId = scojoin.MasterPartId,
+                            CompanyId = manuf.CompanyId,
+                            FinishedWeight = manuf.FinishedWeight,
+                            UOMId = manuf.UOMId,
+                            ManufacturedPartNoDetailId = manuf.ManufacturedPartNoDetailId,
+                            PartNo = scojoin.PartNo,
+                            PartDescription = scojoin.PartDescription,
+                            RevNo = scojoin.RevNo,
+                            RevDate = scojoin.RevDate,
+                            Status = Convert.ToString(scojoin.Status),
+                            StatusChangeReason = scojoin.StatusChangeReason,
+                            MasterPartType = Convert.ToString(scojoin.MasterPartType)
+                        };
+            manufList = query.ToList();
+            return Ok(manufList);
         }
 
         [HttpGet]
+        [Route(ApiRoutes.ManufacturedPartNoDetail.GetAllManufacturedPartNoDetailList)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<ManufacturedPartNoDetailVM>))]
+        public IActionResult GetAllManufacturedPartNoDetailList(long ManufPartType, string companyName)
+        {
+            var manufacturedpartnodetails = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant();
+            return Ok(manufacturedpartnodetails);
+        }
+
+        /*[HttpGet]
         [Route(ApiRoutes.ManufacturedPartNoDetail.HelloWorld)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<ManufacturedPartNoDetailListVM>))]
         public IActionResult HelloWorld()
         {
             //var manufacturedpartnodetails = _manufacturedPartNoDetailService.GetManufacturedPartNoDetailsByTypeTenant(manPartTypeId, tenantId);
             return Ok("Hello World");
-        }
+        }*/
 
         [HttpGet]
         [Route(ApiRoutes.ManufacturedPartNoDetail.GetUOMs)]
@@ -82,25 +127,18 @@ namespace CWB.Masters.Controllers
             var validationResult = await validator.ValidateAsync(manufacturedPartNoDetailVM);
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
-            if (manufacturedPartNoDetailVM.ManufacturedPartType == 1) {
-                manufacturedPartNoDetailVM.MakeFrom = "MF";
-            }
-            else if(manufacturedPartNoDetailVM.ManufacturedPartType == 2)
-            {
-                manufacturedPartNoDetailVM.BOM = "BOM";
-            }
             var result = await _manufacturedPartNoDetailService.ManufacturedPartNoDetail(manufacturedPartNoDetailVM);
             return Ok(result);
         }
         [HttpPost]
         [Route(ApiRoutes.ManufacturedPartNoDetail.PostMPMakeFrom)]
-        [Produces(AppContentTypes.ContentType, Type = typeof(ManufacturedPartNoDetailVM))]
-        public async Task<IActionResult> PostMPMakeFrom([FromBody] ManufacturedPartNoDetailVM manufacturedPartNoDetailVM)
+        [Produces(AppContentTypes.ContentType, Type = typeof(MPMakeFromVM))]
+        public async Task<IActionResult> PostMPMakeFrom([FromBody] MPMakeFromVM manufacturedPartNoDetailVM)
         {
-            var validator = new ManufacturedPartNoDetailVMValidator();
+           /** var validator = new ManufacturedPartNoDetailVMValidator();
             var validationResult = await validator.ValidateAsync(manufacturedPartNoDetailVM);
             if (!validationResult.IsValid)
-                return BadRequest(validationResult.Errors);
+                return BadRequest(validationResult.Errors);*/
             var result = await _manufacturedPartNoDetailService.MPMakeFrom(manufacturedPartNoDetailVM);
             return Ok(result);
         }
@@ -110,24 +148,77 @@ namespace CWB.Masters.Controllers
         /// <param name="tenantID"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route(ApiRoutes.ManufacturedPartNoDetail.GetMPMakeFromListBypartNumber)]
-        [Produces(AppContentTypes.ContentType, Type = typeof(List<MPMakeFromListVM>))]
-        public IActionResult GetMPMakeFromList(string partNumber, long tenantId)
+        [Route(ApiRoutes.ManufacturedPartNoDetail.GetMPMakeFromList)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<MPMakeFromVM>))]
+        public IActionResult GetMPMakeFromList(string partNo)
         {
-            var mpmakefromlist = _manufacturedPartNoDetailService.GetMPMakeFromListByPartNumberNTenant(partNumber, tenantId);
+            var mpmakefromlist = _manufacturedPartNoDetailService.GetMPMakeFromList(partNo, -1);
+            return Ok(mpmakefromlist);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.ManufacturedPartNoDetail.GetMPMakeFrom)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(MPMakeFromVM))]
+        public async Task<IActionResult> GetMPMakeFrom(long Id)
+        {
+            var mpmakefromlist = await _manufacturedPartNoDetailService.GetMPMakeFrom(Id);
+            return Ok(mpmakefromlist);
+        }
+
+        [HttpGet]
+        [Route(ApiRoutes.ManufacturedPartNoDetail.GetMPBOM)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(MPBOMVM))]
+        public async Task<IActionResult> GetMPBOM(long Id)
+        {
+            var mpmakefromlist = await _manufacturedPartNoDetailService.GetMPBOM(Id);
+            return Ok(mpmakefromlist);
+        }
+
+        [HttpGet]
+        [Route(ApiRoutes.ManufacturedPartNoDetail.GetMPBOMList)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<MPBOMVM>))]
+        public IActionResult GetMPBOMList(string partNo)
+        {
+            var mpmakefromlist = _manufacturedPartNoDetailService.GetMPBOMList(partNo,-1);
             return Ok(mpmakefromlist);
         }
 
         [HttpPost]
         [Route(ApiRoutes.ManufacturedPartNoDetail.PostMPBOM)]
-        [Produces(AppContentTypes.ContentType, Type = typeof(ManufacturedPartNoDetailVM))]
-        public async Task<IActionResult> PostMPBOM([FromBody] ManufacturedPartNoDetailVM manufacturedPartNoDetailVM)
+        [Produces(AppContentTypes.ContentType, Type = typeof(MPBOMVM))]
+        public async Task<IActionResult> PostMPBOM([FromBody] MPBOMVM manufacturedPartNoDetailVM)
         {
-            var validator = new ManufacturedPartNoDetailVMValidator();
+            /*var validator = new ManufacturedPartNoDetailVMValidator();
             var validationResult = await validator.ValidateAsync(manufacturedPartNoDetailVM);
             if (!validationResult.IsValid)
-                return BadRequest(validationResult.Errors);
+                return BadRequest(validationResult.Errors);*/
             var result = await _manufacturedPartNoDetailService.MPBOM(manufacturedPartNoDetailVM);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route(ApiRoutes.ManufacturedPartNoDetail.RemMakeFrom)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(MPMakeFromVM))]
+        public async Task<IActionResult> RemMakeFrom([FromBody] MPMakeFromVM rawMaterialDetailVM)
+        {
+           /** var validator = new PartPurchaseDetailVMValidator();
+            var validationResult = await validator.ValidateAsync(rawMaterialDetailVM);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors);*/
+            var result = await _manufacturedPartNoDetailService.RemMakeFrom(rawMaterialDetailVM);
+            return Ok(result);
+        }
+
+
+        [HttpPost]
+        [Route(ApiRoutes.ManufacturedPartNoDetail.RemBOM)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(MPBOMVM))]
+        public async Task<IActionResult> RemBOM([FromBody] MPBOMVM rawMaterialDetailVM)
+        {
+            /**var validator = new PartPurchaseDetailVMValidator();
+            var validationResult = await validator.ValidateAsync(rawMaterialDetailVM);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Errors);*/
+            var result = await _manufacturedPartNoDetailService.RemBOM(rawMaterialDetailVM);
             return Ok(result);
         }
 

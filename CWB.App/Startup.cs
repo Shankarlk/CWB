@@ -3,6 +3,7 @@ using CWB.App.AppUtils;
 using CWB.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -12,12 +13,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace CWB.App
 {
     [ExcludeFromCodeCoverage]
     public class Startup
     {
+        private bool _enableAuth = true;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -37,6 +40,8 @@ namespace CWB.App
             //Dependency Injection..
             services.ConfigureAppDI();
 
+            if (!_enableAuth)
+                return;
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -96,8 +101,6 @@ namespace CWB.App
                     };
                 });
             services.AddAuthorization();
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -119,18 +122,23 @@ namespace CWB.App
             app.UseStaticFiles();
 
             app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
+            if (_enableAuth)
             {
-                endpoints.MapDefaultControllerRoute()
-                    .RequireAuthorization();
-            });
+                app.UseAuthentication();
+                app.UseAuthorization();
+
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapDefaultControllerRoute()
+                        .RequireAuthorization();
+                });
+            }
             //app.UseEndpoints(endpoints =>
             //{
             //    endpoints.MapControllerRoute(
             //        name: "default",
-            //        pattern: "{controller=Home}/{action=Index}/{id?}");
+            //
+            //     pattern: "{controller=Home}/{action=Index}/{id?}");
             //});
         }
     }

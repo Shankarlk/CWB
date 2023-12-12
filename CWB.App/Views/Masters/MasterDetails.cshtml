@@ -24,19 +24,19 @@
                                 <tbody title="Select the category of the Part" data-plugin="tippy" data-tippy-placement="top">
                                 <td>
                                     <label class="form-check-label" for="cars">Manufactured Part </label>
-                                    <input class="form-check-input mt-1" type="radio" name="cars" value="2">
+                                    <input class="form-check-input mt-1" type="radio" id="mp-mp" name="MasterPart" value="1" checked>
                                 </td>
                                 <td>
                                     <label class="form-check-label" for="cars">Assembly </label>
-                                    <input class="form-check-input mt-1" type="radio" name="cars" value="3">
+                                    <input class="form-check-input mt-1" type="radio" id="mp-as" name="MasterPart" value="2">
                                 </td>
                                 <td>
                                     <label class="form-check-label" for="cars">BOF </label>
-                                    <input class="form-check-input mt-1" type="radio" name="cars" value="4">
+                                    <input class="form-check-input mt-1" type="radio" id="mp-bf" name="MasterPart" value="3">
                                 </td>
                                 <td>
                                     <label class="form-check-label" for="cars">Raw Material </label>
-                                    <input class="form-check-input mt-1" type="radio" name="cars" value="5">
+                                    <input class="form-check-input mt-1" type="radio" id="mp-rm" name="MasterPart" value="4">
                                 </td>
                                 </tbody>
                             </table>
@@ -59,13 +59,14 @@
                     <div class="row mt-2">
                         <label class="form-label col-md-2 mb-2">Company</label>
                         <div class="col-md-4 mb-2">
-                            <select class="form-select form-select-sm" title="Select the Company whose Parts you wish to see. If own Company's Parts to be viewed ... select Self Company" data-plugin="tippy" data-tippy-placement="top">
+                            <!--<select class="form-select form-select-sm" title="Select the Company whose Parts you wish to see. If own Company's Parts to be viewed ... select Self Company" data-plugin="tippy" data-tippy-placement="top">
                                 <option value="">Select Company Name</option>
                                 <option value="">Dakshith</option>
                                 <option value="">Srikanth</option>
                                 <option value="">Raksitha</option>
                                 <option value="">Srinath</option>
-                            </select>
+                            </select>-->
+                            <input class="form-control form-control-sm" type="text" id="master_co" name="master_co" placeholder="enter here">
                         </div>
                         <!-- -------------------------------------  -->
                         <div class="col-md-2">
@@ -82,16 +83,17 @@
                     <div class="row mb-1">
                         <label class="form-label col-md-2 mb-2">Part Number </label>
                         <div class="col-md-4 mb-2">
-                            <select class="form-select form-select-sm" title="Select Part No from Drop Down" data-plugin="tippy" data-tippy-placement="top">
+                            <!--<select class="form-select form-select-sm" title="Select Part No from Drop Down" data-plugin="tippy" data-tippy-placement="top">
                                 <option value="">Select Part No</option>
                                 <option value="">XXXXXXXX</option>
                                 <option value="">XXXXXXXXX</option>
-                            </select>
+                            </select>-->
+                            <input class="form-control form-control-sm" type="text" id="master_partno" name="master_partno" placeholder="enter here">
                         </div>
                         <!-- =============== -->
                         <label class="form-label col-md-2 mb-2">Part Description </label>
                         <div class="col-md-4 mb-2">
-                            <textarea name="comment" form="usrform" id="simpleinput" class="form-control form-control-sm" title="Enter Part Description - full or partial to shortlist Part Nos" data-plugin="tippy" data-tippy-placement="top">Enter......</textarea>
+                            <textarea name="master_description" form="usrform" id="master_description" class="form-control form-control-sm" title="Enter Part Description - full or partial to shortlist Part Nos" data-plugin="tippy" data-tippy-placement="top"></textarea>
                         </div>
                         <!-- =============== -->
                         <label class="form-label col-md-2 mb-1">Keyword / Description</label>
@@ -209,7 +211,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="table-responsive mt-1 table-he-180">
-                            <table class="table table-sm table-bordered w-100 mb-3 tableFixHead">
+                            <table id="mptable" class="table table-sm table-bordered w-100 mb-3 tableFixHead">
                                 <thead class="  table-info th-sti text-center">
                                     <tr class="table-border-bottom">
                                         <th>Company</th>
@@ -220,115 +222,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>XXXXXXXXX</td>
-                                        <td>XXXXXXXXX</td>
-                                        <td>XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</td>
-                                        <td> Manufactured Part without Routing</td>
-                                        <td>
-                                            <div class="dropdown float-center">
-                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    <!-- item-->
-                                                    <a href="#" class="dropdown-item">Edit Part Details</a>
-                                                    <!-- item-->
-                                                    <a href="routing.html" class="dropdown-item">Edit Routing</a>
-                                                    <!-- item-->
-                                                    <a href="bom.html" class="dropdown-item">Edit BOM</a>
-                                                    <!-- item-->
-                                                    <a href="bom.html" class="dropdown-item">Create BOM</a>
-                                                    <!-- item-->
-                                                    <a href="routing.html" class="dropdown-item">Create Routing</a>
-                                                    <!-- item-->
-                                                    <a href="manf-part.html" class="dropdown-item">Create Balloon</a>
-                                                    <!-- item-->
-                                                    <a href="manf-part.html" class="dropdown-item">Edit Balloon</a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>XXXXXXXXX</td>
-                                        <td>XXXXXXXXX</td>
-                                        <td>XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</td>
-                                        <td> Manufactured Part without BOM</td>
-                                        <td>
-                                            <div class="dropdown float-center">
-                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    <!-- item-->
-                                                    <a href="#" class="dropdown-item">Edit Part Details</a>
-                                                    <!-- item-->
-                                                    <a href="routing.html" class="dropdown-item">Edit Routing</a>
-                                                    <!-- item-->
-                                                    <a href="bom.html" class="dropdown-item">Edit BOM</a>
-                                                    <!-- item-->
-                                                    <a href="bom.html" class="dropdown-item">Create BOM</a>
-                                                    <!-- item-->
-                                                    <a href="routing.html" class="dropdown-item">Create Routing</a>
-                                                    <!-- item-->
-                                                    <a href="manf-part.html" class="dropdown-item">Create Balloon</a>
-                                                    <!-- item-->
-                                                    <a href="manf-part.html" class="dropdown-item">Edit Balloon</a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>XXXXXXXXX</td>
-                                        <td>XXXXXXXXX</td>
-                                        <td>XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</td>
-                                        <td> Manufactured Part without Routing</td>
-                                        <td>
-                                            <div class="dropdown float-center">
-                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    <!-- item-->
-                                                    <a href="#" class="dropdown-item">Edit Part Details</a>
-                                                    <!-- item-->
-                                                    <a href="routing.html" class="dropdown-item">Edit Routing</a>
-                                                    <!-- item-->
-                                                    <a href="bom.html" class="dropdown-item">Edit BOM</a>
-                                                    <!-- item-->
-                                                    <a href="bom.html" class="dropdown-item">Create BOM</a>
-                                                    <!-- item-->
-                                                    <a href="routing.html" class="dropdown-item">Create Routing</a>
-                                                    <!-- item-->
-                                                    <a href="manf-part.html" class="dropdown-item">Create Balloon</a>
-                                                    <!-- item-->
-                                                    <a href="manf-part.html" class="dropdown-item">Edit Balloon</a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>XXXXXXXXX</td>
-                                        <td>XXXXXXXXX</td>
-                                        <td>XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</td>
-                                        <td> Manufactured Part without Routing</td>
-                                        <td>
-                                            <div class="dropdown float-center">
-                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                <div class="dropdown-menu dropdown-menu-end">
-                                                    <!-- item-->
-                                                    <a href="#" class="dropdown-item">Edit Part Details</a>
-                                                    <!-- item-->
-                                                    <a href="routing.html" class="dropdown-item">Edit Routing</a>
-                                                    <!-- item-->
-                                                    <a href="bom.html" class="dropdown-item">Edit BOM</a>
-                                                    <!-- item-->
-                                                    <a href="bom.html" class="dropdown-item">Create BOM</a>
-                                                    <!-- item-->
-                                                    <a href="routing.html" class="dropdown-item">Create Routing</a>
-                                                    <!-- item-->
-                                                    <a href="manf-part.html" class="dropdown-item">Create Balloon</a>
-                                                    <!-- item-->
-                                                    <a href="manf-part.html" class="dropdown-item">Edit Balloon</a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
+
                                 </tbody>
+                                <!--TODO-->
                             </table>
                         </div>
                         <!-- =========================== -->
@@ -344,3 +240,31 @@
     </div>
     <!-- end col -->
 </div>
+@section scripts {
+    <script src="~/js/addfunctions.js"></script>
+    <script src="~/js/ItemMaster/supplier.js"></script>
+    <script src="~/js/ItemMaster/Companies.js"></script>
+    <script src="~/js/contact-model.js"></script>
+    <script src="~/js/ItemMaster/RawMaterial-model.js"></script>
+    <script src="~/js/ItemMaster/masterdetails.js"></script>
+    <script src="~/js/contacts.js"></script>
+}
+
+
+<template id="MasterDetaiTemplate">
+    <tr>
+        <td data-key="Company">{company}</td>
+        <td data-key="PartNo">{partNo}</td>
+        <td data-key="Description">{description}</td>
+        <td data-key="Notes">{notes}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="/masters/editpart?partId={partId}&partType={partType}">Edit Part Details</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>

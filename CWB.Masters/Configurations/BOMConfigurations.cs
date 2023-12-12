@@ -14,26 +14,26 @@ namespace CWB.Masters.Configurations
             builder
                .HasKey(c => c.Id);
             builder
-                .Property(t => t.PartNumber)
-                .HasConversion<string>()
-                .HasColumnName("PartNumber")
+                .Property(t => t.PartId)
+                .HasColumnName("PartId")
                 .IsUnicode(true)
                 .HasMaxLength(255)
                 .IsRequired();
             builder
                 .Property(t => t.PartDesc)
-                .HasConversion<string>()
                 .HasColumnName("PartDescription")
                 .IsUnicode(true)
-                .HasMaxLength(255)
+                .HasMaxLength(4000)
                 .IsRequired();
             builder
                 .Property(t => t.Quantity)
                 .HasColumnName("Quantity")
-                .IsUnicode(true)
                 .HasMaxLength(255)
                 .IsRequired();
-           
+            builder
+                .Property(c => c.ManufPartId)
+                .HasColumnName("ManufPartId")
+                .IsRequired();
             builder
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")

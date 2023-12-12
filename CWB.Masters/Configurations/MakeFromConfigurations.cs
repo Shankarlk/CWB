@@ -14,23 +14,33 @@ namespace CWB.Masters.Configurations
             builder
                .HasKey(c => c.Id);
             builder
+                .Property(t => t.PartId)
+                .HasColumnName("PartId")
+                .HasMaxLength(255);
+            builder
                 .Property(t => t.PartMadeFrom)
                 .HasColumnName("PartMadeFrom")
-                .IsUnicode(true)
                 .HasMaxLength(255);
+            builder
+                .Property(t => t.PartDescription)
+                .HasColumnName("PartDescription")
+                .IsUnicode(true)
+                .HasMaxLength(4000)
+                .IsRequired();
             builder
                 .Property(t => t.InputWeight)
                 .HasColumnName("InputWeight")
                 .IsUnicode(true)
                 .HasMaxLength(255);
+/**            
+ *          builder
+               .Property(t => t.Description)
+               .HasConversion<string>()
+               .HasColumnName("Description")
+               .IsUnicode(true)
+               .HasMaxLength(255);*/
             builder
-                .Property(t => t.InputPartNo)
-                .HasConversion<string>()
-                .HasColumnName("InputPartNo")
-                .IsUnicode(true)
-                .HasMaxLength(255);
-            builder
-                .Property(t => t.Scrapgenerated)
+                .Property(t => t.ScrapGenerated)
                 .HasColumnName("ScrapGenerated")
                 .IsUnicode(true)
                 .HasMaxLength(255);
@@ -48,8 +58,11 @@ namespace CWB.Masters.Configurations
             builder
                 .Property(t => t.PreferedRawMaterial)
                 .HasColumnName("PreferedRawMaterial")
-                .IsUnicode(true)
                 .HasMaxLength(255);
+            builder
+                .Property(c => c.ManufPartId)
+                .HasColumnName("ManufPartId")
+                .IsRequired();
             builder
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")

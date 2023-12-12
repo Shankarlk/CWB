@@ -9,5 +9,6 @@ namespace CWB.Masters.Repositories.ItemMaster
     public interface IUOMRepository : IRepository<Domain.UOM>
     {
         public IEnumerable<UOM> GetUOMs();
+        public bool AddUOM(UOM uom);
     }
 }

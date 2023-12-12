@@ -1,32 +1,40 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace CWB.App.Models.ItemMaster
 {
-    public class ManufacturedPartNoDetailVM
+    public class ManufacturedPartNoDetailVM 
     {
-        public long? ManufacturedPartNoDetailId { get; set; }
-        public long? MPMakeFromId { get; set; }
-        public long? MPBOMId { get; set; }
         public long ManufacturedPartType { get; set; }
-        public string CompanyName { get; set; }
-        public string PartNumber { get; set; }
-        public string PartDescription { get; set; }
-        public long? FinishedWeight { get; set; }
+        public int PartId { get; set; }
+        public int CompanyId { get; set; }
+        public long FinishedWeight { get; set; }
+        public long UOMId { get; set; }
+
+
+        //MasterParts-
+        [Display(Name = "Part No")]
+        [Required(ErrorMessage = "Please enter {0}.")]
+        [StringLength(255, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
+        [Remote(
+           "CheckPartNo",
+           "Masters",
+           AdditionalFields = "PartNo",
+           ErrorMessage = "{0} already exists. Please enter a different {0}.",
+           HttpMethod = "GET"
+       )]
+        public string PartNo { get; set; }
+        public string? PartDescription { get; set; }
+        public string Status { get; set; }
+        public string? StatusChangeReason { get; set; }
         public string RevNo { get; set; }
         public DateTime? RevDate { get; set; }
-        public long? UOMId { get; set; }
-        public long? Status { get; set; }
-        public string StatusChangeReason { get; set; } = null!;
-        public long? PartMadeFrom { get; set; }
-        public string InputPartNo { get; set; } = null!;
-        public long? InputWeight { get; set; }
-        public long? ScrapGenerated { get; set; }
-        public long? QuantityPerInput { get; set; }
-        public string YieldNotes { get; set; } = null!;
-        public Boolean PreferedRawMaterial { get; set; }
-        public long? Quantity { get; set; }
-        public string MakeFrom { get; set; } = null!;
-        public string BOM { get; set; } = null!;
+        public string MasterPartType { get; set; } 
+        //MasterParts-
+
+
+        public int ManufacturedPartNoDetailId { get; set; } 
         public long TenantId { get; set; }
     }
 }
