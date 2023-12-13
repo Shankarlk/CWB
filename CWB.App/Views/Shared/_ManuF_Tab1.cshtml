@@ -1,0 +1,157 @@
+﻿<!--Included in parent page-->
+@model CWB.App.Models.ItemMaster.ManufacturedPartNoDetailVM
+<form method="post" id="ManufPartForm">
+    <div class="row mt-n1" hidden>
+        <div class="col-md-12">
+            <h5>New Manufactured Part No Details</h5>
+        </div>
+        <!-- ============= -->
+        <div class="col-md-2 mb-2">
+            &nbsp;
+        </div>
+        <!-- ============= -->
+    </div>
+    <!-- ============================= -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-4 mb-2">
+                    <table class="w-100 bord">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <label class="form-check-label" for="gp-12a">Manufactured Child Part</label>
+                                    <input class="form-check-input mt-1" type="radio" id="ManufChildPart" asp-for="ManufacturedPartType" value="1" title="Use to select if the Part No refers to a Manufactured Child Part or an Assembly - Collection of 2 or more parts assembled, welded, joined together. The Assembly Part no will require the BOM (Bill of Material) to be filled " data-plugin="tippy" data-tippy-placement="top" checked>
+                                </td>
+                                <td>
+                                    <label class="form-check-label" for="gp-12a">Assembly <span class="text-danger"> * </span></label>
+                                    <input class="form-check-input mt-1" type="radio" id="Assembly" asp-for="ManufacturedPartType" value="2" title="Use to select if the Part No refers to a Manufactured Child Part or an Assembly - Collection of 2 or more parts assembled, welded, joined together. The Assembly Part no will require the BOM (Bill of Material) to be filled " data-plugin="tippy" data-tippy-placement="top">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!--<input type="hidden" id="ManufacturedPartType" value="1" asp-for="ManufacturedPartType" />-->
+                </div>
+                <!-- ============================= -->
+                <div class="col-md-4 mb-2">
+                    <button type="button" id="createfep" name="createfep" disabled class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#existing-part" title="Use this create a New Part No from an existing Part No Data. This will automatically copy all the Part No Data other than the Part No. Edit as required " data-plugin="tippy" data-tippy-placement="top" onclick="downloadNLoadExistingParts()"> Create from Existing Part</button>
+                </div>
+                <!-- ============================= -->
+                <label class="form-label col-md-1 mb-2 text-end">Status</label>
+                <div class="col-md-3 mb-2">
+                    <div class="input-group">
+                        <select class="form-select form-select-sm" id="Status" name="Status" asp-items="ViewBag.Statuses">
+                        </select>
+                        <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title=" Click to see the Status change details" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#status-info">
+                            <i class="fe-info color-green add-cust-btn"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- ========================= -->
+                <!-- ========================= -->
+                <div class="col-md-7"></div>
+                <!-- ========================= -->
+                <label class="form-label col-md-2 mb-2 text-end">Status Change Reason</label>
+                <div class="col-md-3 mb-2" title="Enter Status Change Reason" data-plugin="tippy" data-tippy-placement="top">
+                    <input class="form-control form-control-sm" type="text" id="StatusChangeReason" asp-for="StatusChangeReason" placeholder="enter here">
+                </div>
+                <!-- ========================= -->
+            </div>
+            <!-- ---- end row ----  -->
+        </div>
+    </div>
+    <!-- ============================== -->
+    <div class="row mt-2">
+        <!-- ========================= -->
+        <label class="form-label col-md-1 mb-2"> Company <span class="text-danger"> *</span> </label>
+        <div class="col-md-3 mb-2">
+            <select class="form-select form-select-sm" id="CompanyId" asp-for="CompanyId" asp-items="ViewBag.Companies"></select>
+        </div>
+        <div class="col-md-3 mb-2">
+            <button type="button" id="#" data-id="0" data-divisionId="0" class="btn btn-sm waves-effect waves-light" title="Add New Supplier" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-company">
+                <i class="fe-plus-square add-cust-btn"></i>
+            </button>
+        </div>
+        <input type="hidden" id="CompanyName" name="CompanyName" value="" />
+        <input type="hidden" id="PartId" asp-for="PartId"/>
+        <input type="hidden" id="MasterPartType" asp-for="MasterPartType" />
+        <input type="text" hidden asp-for="ManufacturedPartNoDetailId" />
+        
+    </div>
+    <div class="row mt-2">
+        <!-- ========================= -->
+        <!-- ========================= -->
+        <label class="form-label col-md-1 mb-2">Part No <span class="text-danger"> * </span></label>
+        <div class="col-md-3 mb-2" title="Enter the Part Number (No.) - fully or Partially to shortlist the Part Nos" data-plugin="tippy" data-tippy-placement="top">
+            <input class="form-control form-control-sm" type="text" id="PartNo" asp-for="PartNo" placeholder="enter here">
+            <span asp-validation-for="PartNo"></span>
+            
+        </div>
+        <!-- ========================= -->
+        <label class="form-label col-md-1 mb-2">Rev No <span class="text-danger"> * </span></label>
+        <div class="col-md-3 mb-2" title="Enter the Revision Number (Rev No) for the Part No. If not entered, default of '0' is entered" data-plugin="tippy" data-tippy-placement="top">
+            <input class="form-control form-control-sm" type="text" id="RevNo" asp-for="RevNo" placeholder="enter here">
+        </div>
+        <!-- ========================= -->
+        <label class="form-label col-md-1 mb-2">Rev Date </label>
+        <div class="col-md-3 mb-2" title="Enter the Rev No Date if available" data-plugin="tippy" data-tippy-placement="top">
+            <input class="form-control form-control-sm" type="date" id="RevDate" asp-for="RevDate">
+        </div>
+    </div>
+    <div class="row mt-2">
+        <!-- ========================= -->
+        <label class="form-label col-md-1 mb-2">Part Desc <span class="text-danger"> * </span></label>
+        <div class="col-md-3 mb-2" title="Enter the Part Description (fully or Partially) to shortlist the Part Nos" data-plugin="tippy" data-tippy-placement="top">
+            <textarea id="PartDescription" asp-for="PartDescription" class="form-control form-control-sm"></textarea>
+        </div>
+        <!-- ========================= -->
+        <label class="form-label col-md-1 mb-2"> UOM</label>
+        <div class="col-md-3 mb-2">
+            <div class="input-group" title="Select the Unit of Measurement (UoM). Default is Numbers (Nos)" data-plugin="tippy" data-tippy-placement="top">
+                <select class="form-select form-select-sm" id="UOMId" asp-for="UOMId" asp-items="@ViewBag.UOMs"></select>
+                <!--
+                <select class="form-select form-select-sm" id="UOMId" asp-for="UOMId">
+                    <option value="0"></option>
+                    <option value="1">Numbers</option>
+                    <option value="2">Kgs</option>
+                    <option value="3">Ltr</option>
+                </select>
+                -->
+                <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Add UOM" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddUOM">
+                    <i class="fe-plus-square add-cust-btn"></i>
+                </button>
+                <!--<button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Edit UOM" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#uom" onclick="showEditUOMDialog()">
+                    <i class="fas fa-pen font-18"></i>
+                </button>
+                -->
+
+            </div>
+        </div>
+        <!-- -------------------------------------  -->
+    </div>
+    <!-- ============================== -->
+    <div class="row">
+        <label class="form-label col-md-1 mb-2">Finished Weight (Kgs)</label>
+        <div class="col-md-3 mb-2" title="Enter the Finished Weight of the Part No in Kgs" data-plugin="tippy" data-tippy-placement="top">
+            <input class="form-control form-control-sm" type="text" id="FinishedWeight" asp-for="FinishedWeight" placeholder="enter here" required>
+        </div>
+    </div>
+    <!-- ---- end row ----  -->
+    <div class="row">
+        <div class="col-md-1 mb-2">
+            <button class="btn btn-sm btn-outline-dark w-100 display-none" data-bs-toggle="modal" data-bs-target="#tree">Group</button>
+        </div>
+        <div class="col-md-3 mb-2">
+            <input class="form-control form-control-sm display-none" type="text" id="example-time" name="time" value="CNMG 120408">
+        </div>
+
+        <div class="col-md-8 text-end mb-2">
+            <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal" asp-controller="Masters" asp-action="Index">Exit</button>
+            <button class="btn btn-sm btn-primary" title="Use to Save the entered data" id="btnManufPartDetailSubmit" value="Save">Save</button>
+            @*<button type="button" class="btn btn-warning btn-sm"><i class="fas fa-arrow-right"></i></button>*@
+        </div>
+        <!-- ------ end col ----------  -->
+    </div>
+    <!-- ---- end row ----  -->
+    
+</form>

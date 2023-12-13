@@ -1,0 +1,28 @@
+﻿@model CWB.App.Models.Machine.MachineTypeVM
+<div class="modal fade" id="machine-type-dialog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Machine Type</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="frmMachineType" method="post">
+                    <div class="row">
+                        <label class="form-label col-md-4 mb-2">Type Description</label>
+                        <div class="col-md-8 mb-2">
+                            <input type="text" class="form-control form-control-sm" asp-for="MachineTypeName" placeholder="Machine Type" />
+                            <span asp-validation-for="MachineTypeName"></span>
+                        </div>
+                        <!-- ========================= -->
+                        <div class="col text-end">
+                            <input type="button" class="btn btn-sm btn-primary" id="btnMachineTypeSubmit" value="Save" />
+                        </div>
+                        <!-- ========================= -->
+                    </div>
+                    <input type="hidden" asp-for="MachineTypeTypeId" />
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>

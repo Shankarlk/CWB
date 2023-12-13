@@ -1,0 +1,45 @@
+﻿using CWB.CommonUtils.Common.Configurations;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace CWB.Masters.Configurations
+{
+    public class RoutingStepPartConfiguration : IEntityTypeConfiguration<Domain.RoutingStepPart>
+    {
+        /**  `Id` bigint NOT NULL AUTO_INCREMENT,
+    ->   `RoutingStepId` bigint NOT NULL,
+    ->   `ManufacturedPartId` bigint NOT NULL,
+    ->   `BOMId` bigint not NULL, 
+    ->   `QuantityAssembly` int NOT NULL,
+         */
+        public void Configure(EntityTypeBuilder<Domain.RoutingStepPart> builder)
+        {
+            builder
+             .ToTable("RoutingStepPart");
+            builder
+               .HasKey(m => m.Id);
+            builder
+                .Property(m => m.RoutingStepId)
+                .HasColumnName("RoutingStepId")
+                .IsRequired();
+            builder
+               .Property(m => m.ManufacturedPartId)
+               .HasColumnName("ManufacturedPartId")
+               .IsRequired();
+            builder
+               .Property(m => m.BOMId)
+               .HasColumnName("BOMId")
+               .IsRequired();
+            builder
+              .Property(m => m.QuantityAssembly)
+              .HasColumnName("QuantityAssembly")
+              .HasMaxLength(255)
+              .IsRequired();
+            builder
+                .Property(m => m.TenantId)
+                .HasColumnName("TenantId")
+                .IsRequired();
+            builder.ConfigureBase();
+        }
+    }
+}

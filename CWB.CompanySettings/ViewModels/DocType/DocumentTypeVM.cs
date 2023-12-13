@@ -1,0 +1,10 @@
+﻿namespace CWB.CompanySettings.ViewModels.DocType
+{
+    public class DocumentTypeVM
+    {
+        public long DocumentTypeId { get; set; }
+        public string Name { get; set; }
+        public long TenantId { get; set; }
+        public bool IsUploadedByUser { get; set; }
+    }
+}

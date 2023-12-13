@@ -1,0 +1,63 @@
+﻿<div id="part-reference-doc-model" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Document Upload</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- ------- -->
+                    <div class="col-md-12">
+                        <!-- =========== -->
+                        <div class="row mt-2">
+                            <label class="col-md-4 form-label mb-2">File Content / Comment <span class="text-danger"> * </span></label>
+                            <div class="col-md-8 mb-2" title="Indicate the File Content or any relevant info about the Document" data-plugin="tippy" data-tippy-placement="top">
+                                <textarea name="comment" form="usrform" id="simpleinput" class="form-control form-control-sm"></textarea>
+                            </div>
+                        </div>
+                        <!-- =========== -->
+                        <!-- =========== -->
+                        <div class="row">
+                            <label class="col-md-4 form-label mb-2">Document Type <span class="text-danger"> * </span></label>
+                            <div class="col-md-8 mb-2" title="Select the Document Type" data-plugin="tippy" data-tippy-placement="top">
+                                <select class="form-select form-select-sm" aria-label="form-select-sm">
+                                    <option value="">3D</option>
+                                    <option value="">2D</option>
+                                    <option value="">jpg</option>
+                                </select>
+                            </div>
+                            <!-- -------  -->
+                        </div>
+                        <!-- =========== -->
+                        <!-- =========== -->
+                        <div class="row mt-2">
+                            <div class="col-md-7">
+                                <div class="fileupload btn btn-sm btn-info waves-effect w-100" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <span><i class="mdi mdi-cloud-upload me-1"></i>Document Upload</span>
+                                    <input type="file" class="upload">
+                                </div>
+                            </div>
+                            <!-- ----------- -->
+                            <div class="col-md-5 text-end">
+                                <button class="btn btn-sm btn-primary" title="Use to Save the entered data" data-plugin="tippy" data-tippy-placement="top">Save</button>
+                            </div>
+                        </div>
+                        <!-- =========== -->
+                        <!-- =========== -->
+                        <div class="row mt-2 display-none">
+                            <div class="col-md-5">
+                                <button class="btn btn-sm btn-info w-100">Create New Document</button>
+                            </div>
+                            <div class="col-md-5">
+                                <button class="btn btn-sm btn-purple w-100" data-bs-toggle="modal" data-bs-target="#task-rou">Task Document Creation  <span class="badge bg-primary rounded-circle noti-icon-badge m-l-10">5</span>  </button>
+                            </div>
+                        </div>
+                        <!-- =========== -->
+                    </div>
+                    <!-- ------- -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>

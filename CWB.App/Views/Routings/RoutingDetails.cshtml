@@ -1,0 +1,130 @@
+﻿@{
+    ViewData["Title"] = "Routing";
+}
+<input value="M-IR" type="hidden" id="hdn-nav-menu" />
+<div class="content">
+    <div class="row">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="table-responsive">
+                                <table class="table table-sm text-center vam">
+                                    <tbody>
+                                        <tr>
+                                            <th>
+                                                <h4>Routing</h4>
+                                            </th>
+                                            <td>
+                                                <span class="h6">Company :</span> Ashok Leyland
+                                            </td>
+                                            <td>
+                                                <span class="h6">Part No:</span>  XXXXXXXXXXXXXXX
+                                            </td>
+                                            <td>
+                                                <span class="h6">Part Description:</span> Lorem Ipsum is  dummy text of the printing industry.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="table-responsive   display-none ">
+                                <table class="table table-sm text-end">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <button class="btn btn-sm btn-dark" title="Close & Return to Previous Screen / Menu Item" data-plugin="tippy" data-tippy-placement="top"><span class="fon-we-700">Target Date :</span> 12/08/2022</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="table-responsive">
+                                <table class="w-100 text-end ">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <a asp-action="Index" asp-controller="Routings">
+                                                    <button type="button" class="btn-close"></button>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- ================================ -->
+                        <!-- ================================ -->
+                        <div class="col-md-12 mt-n2">
+                            <ul class="nav nav-tabs nav-pills nav-justified navtab-bg font-12">
+                                <li class="nav-item">
+                                    <a href="#rs2" data-bs-toggle="tab" aria-expanded="true" class="nav-link active">
+                                        <span class="d-inline-block d-sm-none">Routing Available</span>
+                                        <span class="d-none d-sm-inline-block">Routing Available</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#rou-det" data-bs-toggle="tab" aria-expanded="true" class="nav-link">
+                                        <span class="d-inline-block d-sm-none">Routing Details</span>
+                                        <span class="d-none d-sm-inline-block">Routing Details</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#rsd" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                                        <span class="d-inline-block d-sm-none">Routing Step Details</span>
+                                        <span class="d-none d-sm-inline-block">Routing Step Details</span>
+                                    </a>
+                                </li>
+                                <!--
+                                <li class="nav-item">
+                                    <a href="#part-dwg" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                                        <span class="d-inline-block d-sm-none">Part Drawing</span>
+                                        <span class="d-none d-sm-inline-block">Part Drawing</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#task" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                                        <span class="d-inline-block d-sm-none">Task</span>
+                                        <span class="d-none d-sm-inline-block">Task</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#log" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                                        <span class="d-inline-block d-sm-none">Log</span>
+                                        <span class="d-none d-sm-inline-block">Log</span>
+                                    </a>
+                                </li>
+                                -->
+                            </ul>
+                        </div>
+                        <!-- end -->
+                        <!-- ================================ -->
+                    </div>
+                    <div class="row">
+                        <!-- ================================ -->
+                        <div class="tab-content">
+                            <div class="tab-pane show active p-2" id="rs2">
+                                <partial name="../Shared/_TabRoutingAvailable" model=@Model />
+                            </div>
+                            <div class="tab-pane p-2" id="rou-det">
+                                <partial name="../Shared/_TabRoutingDetails" model=@Model />
+                            </div>
+                            <div class="tab-pane" id="rsd">
+                                <partial name="../Shared/_TabRoutingStepDetails" model=@Model />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/js/routing/Routing-Model.js"></script>
+}

@@ -1,0 +1,182 @@
+﻿<!--Depends on partial _ManuF_Templates included in parent page-->
+@model CWB.App.Models.ItemMaster.MPMakeFromVM
+<form method="post" id="MPRawMaterial">
+    <!-- ========================= -->
+    <!-- ========= -->
+    <div class="row">
+        <div class="col-md-11">
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span class="h6">Customer:</span> <label id="lblCompanyName"></label>
+                            </td>
+                            <td>
+                                <span class="h6">Part No:</span> <label id="lblPartNumber"></label>
+                            </td>
+                            <td>
+                                <span class="h6">Part Description:</span> <label id="lblPartDescription"></label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- ========= -->
+        <div class="col-md-1 display-none">
+            <div class="table-responsive">
+                <table class="table table-sm  text-end w-100">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <button class="btn btn-sm btn-dark"><span class="fon-we-700">Target Date :</span> 12/08/2022</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- ========= -->
+    </div>
+    <!-- ========= -->
+    <div class="row">
+        <div class="col-md-2 ">
+            <label class="h6 form-label mt-n1">Part is Made from :-</label>
+        </div>
+        <div class="col-md-2" title="" data-plugin="tippy" data-tippy-placement="top">
+            <label class="form-label p-r-5">Own Raw Material</label>
+            <input class="form-check-input mt-1" type="radio" id="owrm" name="MPPartMadeFrom" value="2" title="" data-plugin="tippy" data-tippy-placement="top" checked>
+        </div>
+        <div class="col-md-3" title="" data-plugin="tippy" data-tippy-placement="top">
+            <label class="form-label p-r-5">Other Manufactured Part</label>
+            <input class="form-check-input mt-1" type="radio" id="otmp" name="MPPartMadeFrom" value="3" title="" data-plugin="tippy" data-tippy-placement="top">
+        </div>
+        <div class="col-md-4" title="" data-plugin="tippy" data-tippy-placement="top">
+            <label class="form-label p-r-5">Customer Supplied Raw Material</label>
+            <input class="form-check-input mt-1" type="radio" id="csrm" name="MPPartMadeFrom" value="1" title="Select the source of the Input Part - Customer Supplied Raw Material, Own Raw Material or Another Manufactured Part ...." data-plugin="tippy" data-tippy-placement="top">
+        </div>
+        <!-- <input type="hidden" id="PartMadeFrom" asp-for="PartMadeFrom" />-->
+        <div class="col-md-1" id="searchbtn">
+            <!--place holder for search button-->
+            <button class="btn btn-sm waves-effect waves-light" title="Select the Input Material Type" data-plugin="tippy" data-tippy-placement="top" type="button" data-bs-toggle="modal" data-bs-target="#rm-select"><i class="ri-search-2-line bom-ser-1"></i></button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2" title="" data-plugin="tippy" data-tippy-placement="top">
+            <label class="form-label">Input Part No</label>
+        </div>
+        <div class="col-md-2" title="" data-plugin="tippy" data-tippy-placement="top">
+            <input class="form-control form-control-sm" type="text" id="InputPartNo" name="InputPartNo" value="" required readonly>
+        </div>
+        <div class="col-md-2" title="" data-plugin="tippy" data-tippy-placement="top">
+            <label class="form-label">Description</label>
+        </div>
+        <div class="col-md-3" title="" data-plugin="tippy" data-tippy-placement="top">
+            <textarea id="MFDescription" name="MFDescription" class="form-control form-control-sm"></textarea>
+        </div>
+    </div>
+    <!--
+    <div class="row">
+        <label class="form-label col-md-2 mb-1">Input Part No</label>
+        <div class="col-md-2 mb-1" title="" data-plugin="tippy" data-tippy-placement="top">
+            <input class="form-control form-control-sm" type="text" id="InputPartNo" asp-for="InputPartNo">
+        </div>
+        <label class="form-label col-md-1 mb-2">Description</label>
+        <div class="col-md-5 mb-2" title="" data-plugin="tippy" data-tippy-placement="top">
+            <textarea id="MFDescription" class="form-control form-control-sm"></textarea>
+        </div>
+    </div>
+    -->
+    <!-- ====== end row =========== -->
+    <div class="row">
+        <h6 class="mt-2 mb-2">Raw Material Details</h6>
+        <div class="col-md-4">
+            <div class="row">
+                <!-- ========================= -->
+                <label class="form-label col-md-4 mb-2">Input Weight (Kgs)</label>
+                <div class="col-md-8 mb-2" title="Enter the Input Weight in kjgs" data-plugin="tippy" data-tippy-placement="top">
+                    <input class="form-control form-control-sm" type="text" id="InputWeight" asp-for="InputWeight" name="inputWeight" placeholder="enter here" required>
+                </div>
+                <!-- ========================= -->
+                <!-- ========================= -->
+                <label class="form-label col-md-4 mb-2">Scrap generated (Kgs)</label>
+                <div class="col-md-8 mb-2" title="Enter the realisable Scrap Weight in Kgs (Difference between Input, Finished Weight + any input material which cannot be collected)" data-plugin="tippy" data-tippy-placement="top">
+                    <input class="form-control form-control-sm" type="text" id="ScrapGenerated" asp-for="ScrapGenerated" name="scrapGenerated" placeholder="enter here" required>
+                </div>
+                <!-- ========================= -->
+                <!-- ========================= -->
+                <label class="form-label col-md-4 mb-2">Quantity per Input</label>
+                <div class="col-md-8 mb-2" title="Enter the number of Finished Part Nos that can manufactured from a single Input Material. Example multiple finished Part Nos can be made from a single input Bar or Sheet ..." data-plugin="tippy" data-tippy-placement="top">
+                    <input class="form-control form-control-sm" type="text" id="QuantityPerInput" asp-for="QuantityPerInput" name="quantityPerInput" placeholder="enter here" required>
+                </div>
+                <!-- ========================= -->
+                <!-- ========================= -->
+                <label class="form-label col-md-4 mb-2">Yield Notes</label>
+                <div class="col-md-8 mb-2" title="Enter any relevant notes regarding the Yield (Input & Finished Part Nos)" data-plugin="tippy" data-tippy-placement="top">
+                    <textarea id="YieldNotes" asp-for="YieldNotes" class="form-control form-control-sm"> ... </textarea>
+                </div>
+                <!-- ========================= -->
+                <div class="col-md-12">
+                    <label class="form-label p-r-5">Prefered Raw Material</label>
+                    <input class="form-check-input mt-1" id="PreferedRawMaterial" asp-for="PreferedRawMaterial" type="checkbox" title="If multiple Input Raw Material Options exist, select the Preferred Raw Material Checkbox if this is the preferred RM " data-plugin="tippy" data-tippy-placement="top">
+                    <input type="text" hidden id="MPMakeFromId" name="MPMakeFromId" value="0" />
+                    <input type="text" hidden id="MPPartId" name="MPPartId" value="0" />
+                    <input type="text" hidden id="ManufPartId" name="ManufPartId" value="0" />
+                </div>
+                <!-- ========================= -->
+                <div class="col-md-7 mt-2">
+                    <button type="button" class="btn btn-sm btn-info" title="Click this button if there are multiple Raw Material Options for making the finished Part No" data-plugin="tippy" data-tippy-placement="top" id="btnAddMPMakeFrom" onclick="AddAnotherRM()">Add Raw Material</button>
+                </div>
+
+                <!-- ========================= -->
+                <!--
+                <div class="col-md-5 mt-2 text-end">
+                        <button type="button" class="btn btn-sm btn-primary" title="Save the entered Information" data-plugin="tippy" data-tippy-placement="top" id="btnSaveMPMakeFrom">Save</button>
+                </div>
+                    -->
+                <!-- ========================= -->
+            </div>
+            <!-- ====== end row =========== -->
+        </div>
+        <!-- ====== end row =========== -->
+        <div class="col-md-1"></div>
+        <!-- ====== end row =========== -->
+        <div class="col-md-7">
+            <div class="row">
+                <div class="table-responsive table-he-180">
+                    <table class="table table-sm table-bordered w-100 mb-3 tableFixHead" id="tbl-MakeFromRM">
+                        <thead class="  table-info th-sti text-center">
+                            <tr class="table-border-bottom">
+                                <th width="75%">Input Raw Material Details</th>
+                                <th width="10%">Input Weight</th>
+                                <th width="10%">Qty per RM</th>
+                                <th width="5%"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- ---------------  -->
+                <!-- ---------------  -->
+            </div>
+        </div>
+    </div>
+    <hr>
+    <!-- ====== end row =========== -->
+    <div class="row">
+        <div class="col-md-6">
+            <button type="button" class="btn btn-warning btn-sm"><i class="fas fa-arrow-left"></i></button>
+        </div>
+        <!-- ---------- -->
+        <div class="col-md-6 text-end">
+            <a asp-action="Index" asp-controller="Masters">
+                <input type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal">Exit</input>
+            </a>
+            <button type="button" class="btn btn-warning btn-sm"><i class="fas fa-arrow-right"></i></button>
+        </div>
+        <!-- ------end col ----- -->
+    </div>
+    <!-- ====== end row =========== -->
+</form>
