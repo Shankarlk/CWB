@@ -31,19 +31,19 @@
                                                         <tbody>
                                                         <td>
                                                             <label class="form-check-label" for="cars">Manufactured Part </label>
-                                                            <input class="form-check-input mt-1" type="radio" name="cars" value="2">
+                                                            <input class="form-check-input mt-1" type="radio" name="MasterPartType" value="1" checked>
                                                         </td>
                                                         <td>
                                                             <label class="form-check-label" for="cars">Assembly </label>
-                                                            <input class="form-check-input mt-1" type="radio" name="cars" value="3">
+                                                            <input class="form-check-input mt-1" type="radio" name="MasterPartType" value="2">
                                                         </td>
                                                         <td>
                                                             <label class="form-check-label" for="cars">Routing </label>
-                                                            <input class="form-check-input mt-1" type="radio" name="cars" value="3">
+                                                            <input class="form-check-input mt-1" type="radio" name="MasterPartType" value="3">
                                                         </td>
                                                         <td>
                                                             <label class="form-check-label" for="cars">Without Routing </label>
-                                                            <input class="form-check-input mt-1" type="radio" name="cars" value="3">
+                                                            <input class="form-check-input mt-1" type="radio" name="MasterPartType" value="4">
                                                         </td>
                                                         </tbody>
                                                     </table>
@@ -53,7 +53,7 @@
                                             <div class="row mt-2">
                                                 <label class="form-label col-md-2 mb-2">Company</label>
                                                 <div class="col-md-4 mb-2">
-                                                    <select class="form-select form-select-sm" id="CompanyId" name="CompanyId" asp-items="ViewBag.Companies"></select>
+                                                    <input class="form-control form-control-sm" type="text" id="master_co" name="master_co" placeholder="enter here">
                                                 </div>
                                                 <!-- -------------------------------------  -->
                                                 <div class="col-md-2">
@@ -70,22 +70,22 @@
                                             <div class="row mb-1">
                                                 <label class="form-label col-md-2 mb-2">Part Number </label>
                                                 <div class="col-md-4 mb-2">
-                                                    <input class="form-control form-control-sm" type="text" placeholder="Enter here">
+                                                    <input class="form-control form-control-sm" type="text" id="master_partno" name="master_partno" placeholder="enter here">
                                                 </div>
                                                 <!-- =============== -->
                                                 <label class="form-label col-md-2 mb-2">Part Description </label>
                                                 <div class="col-md-4 mb-2">
-                                                    <textarea class="form-control form-control-sm">Enter......</textarea>
+                                                    <textarea typeof="text" id="partDescription" name="partDescription" class="form-control form-control-sm">Enter......</textarea>
                                                 </div>
                                                 <!-- =============== -->
                                                 <label class="form-label col-md-2 mb-1">Keyword / Description</label>
                                                 <div class="col-md-10 mb-2">
-                                                    <input class="form-control form-control-sm" type="text" placeholder="enter here">
+                                                    <input id="keyword" name="keyword" class="form-control form-control-sm" type="text" placeholder="enter here">
                                                 </div>
                                                 <!-- =============== -->
                                                 <div class="col-md-5">
                                                     <label class="form-check-label" for="cars">Show Part No Without Routing</label>
-                                                    <input class="form-check-input m-l-5" type="checkbox">
+                                                    <input class="form-check-input m-l-5" type="checkbox" id="WithoutRouting" name="WithoutRouting">
                                                 </div>
                                             </div>
                                             <!-- ---- end row ----  -->
@@ -98,7 +98,7 @@
                     </div>
                     <div class="row">
                         <div class="table-responsive mt-3 table-he-150">
-                            <table class="table table-sm table-bordered w-100 mb-3 tableFixHead">
+                            <table id="PartsRoutingsTable" class="table table-sm table-bordered w-100 mb-3 tableFixHead">
                                 <thead class="  table-info th-sti text-center">
                                     <tr class="table-border-bottom">
                                         <th>Part No</th>
@@ -112,9 +112,11 @@
                                 </tbody>
                             </table>
                         </div>
+                        <!--
                         <div class="col-md-12 text-end mt-2">
                             <button data-toggle="modal" class="btn btn-sm btn-primary" data-target="#routing-new">Add Routing</button>
                         </div>
+                        -->
                     </div>
                 </div>
             </div>
@@ -122,6 +124,23 @@
     </div>
 </div><!--End content-->
 <partial name="../Shared/_NewRoute" />
+
+<template id="Parts-Routing-Template">
+    <tr sclass="bg-grey">
+        <td data-key="PartNo">{partNo}</td>
+        <td data-key="PartDescription">{partDescription}</td>
+        <td data-key="Company">{companyName}</td>
+        <td data-key="Status">{status}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" data-manufacturedPartId="{manufacturedPartId}" data-partno="{partNo}" data-companyname="{companyName}" data-partdescription="{partDescription}" data-toggle="modal" data-target="#routing-new" class="dropdown-item">Create New Routing</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
 <!-- ================================     MODALS  Starts    ================================ -->
 <!-- ==========================================  -->
 <!-- /.modal -->

@@ -96,11 +96,14 @@ namespace CWB.Masters.Services.ItemMaster
                 var manufacturedpartnodetail = _mapper.Map<Domain.ManufacturedPartNoDetail>(manufacturedPartNoDetailVM);
                 var masterPart = _mapper.Map<Domain.ItemMaster.MasterPart>(manufacturedPartNoDetailVM);
                 int id = GetPartId(masterPart.PartNo);
+                manufacturedpartnodetail.PartId = id;
+                manufacturedPartNoDetailVM.PartId = id;
                 if (id == 0)
                 {
                     masterPart.Id = 0;
                     await _masterPartRepository.AddAsync(masterPart);
                     await _unitOfWork.CommitAsync();
+                    manufacturedpartnodetail.PartId = (int)masterPart.Id;
                     manufacturedPartNoDetailVM.PartId = (int)masterPart.Id;
                 }
                 else
@@ -109,10 +112,8 @@ namespace CWB.Masters.Services.ItemMaster
                     {
                         masterPart = await _masterPartRepository.UpdateAsync(masterPart.Id, masterPart);
                         await _unitOfWork.CommitAsync();
-                        manufacturedPartNoDetailVM.PartId = (int)masterPart.Id;
                     }
                 }
-                manufacturedpartnodetail.PartId = manufacturedPartNoDetailVM.PartId;
 
                 if (manufacturedpartnodetail.Id == 0)
                 {

@@ -14,6 +14,7 @@ namespace CWB.Masters.Services.ItemMaster
         IEnumerable<PartStatusVM> GetStatuses();
         
         IEnumerable<MasterPartVM> GetAllMasterParts();
+        IEnumerable<MasterPartVM> GetAllMasterPartsWithIds(List<int> ids);
 
         Task<MasterPartVM> GetMasterPart(int partId);
         Task<ManufacturedPartNoDetailVM> GetManufPart(int partId);

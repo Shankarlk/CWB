@@ -153,6 +153,10 @@ $(function () {
                 CURRENT_TAB = "TabPurchaseDetails";
                 var tablebody = $("#TablePurchaseDetails tbody");
                 tablebody.html("");
+                if (modelObj.Edit) {
+                    reloadPPDs(spanPartNo);
+                }
+                
             }
         }
     });

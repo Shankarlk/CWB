@@ -1,213 +1,39 @@
-﻿
+﻿@model CWB.App.Models.Routing.RoutingListItemVM
 <h5 class="p3">Routing List</h5>
 <div class="row">
     <div class="table-responsive mt-1 table-he-250">
         <table class="table table-sm table-bordered  mb-3 text-center mt-1 tableFixHead w-50">
             <thead class="  table-info th-sti">
                 <tr class="table-border-bottom">
-                    <th width="50%">Routing Name</th>
-                    <th>Status</th>
-                    <th>Date</th>
+                    <th width="5%"></th>
+                    <th width="40%">Routing Name</th>
+                    <th width="20%">Status</th>
+                    <th width ="20%">Date</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><a href="#" data-bs-toggle="modal" data-bs-target="#">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</a></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="dropdown float-center">
-                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">View</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Set as Preferred Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#alt-rout">Create Alternate Routing from this Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit-rout">Edit Routing Name</a>
+                @foreach (var routing in Model.RoutingVMs)
+                {
+                    <tr>
+                        <td><input class="form-check-input mt-1" type="radio" id="RoutingChk" name="RoutingChk" value="@routing.RoutingId" checked></td>
+                        <td data-key="RoutingName">@routing.RoutingName</td>
+                        <td data-key="RoutingStatus">----</td>
+                        <td data-key="CreationDate">----</td>
+                        <td>
+                            <div class="dropdown float-center">
+                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                <div class="dropdown-menu dropdown-menu-end">
+                                    <a href="javascript:void(0);" data-manufid="@routing.ManufacturedPartId" data-routingid="@routing.RoutingId" data-toggle="modal" data-target="#alt-rout" class="dropdown-item">Create Alternate Routing</a>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="dropdown float-center">
-                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">View</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Set as Preferred Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#alt-rout">Create Alternate Routing from this Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit-rout">Edit Routing Name</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="dropdown float-center">
-                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">View</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Set as Preferred Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#alt-rout">Create Alternate Routing from this Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit-rout">Edit Routing Name</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="dropdown float-center">
-                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">View</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Set as Preferred Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#alt-rout">Create Alternate Routing from this Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit-rout">Edit Routing Name</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="dropdown float-center">
-                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">View</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Set as Preferred Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#alt-rout">Create Alternate Routing from this Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit-rout">Edit Routing Name</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="dropdown float-center">
-                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">View</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Set as Preferred Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#alt-rout">Create Alternate Routing from this Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit-rout">Edit Routing Name</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="dropdown float-center">
-                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">View</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Set as Preferred Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#alt-rout">Create Alternate Routing from this Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit-rout">Edit Routing Name</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <div class="dropdown float-center">
-                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                            <div class="dropdown-menu dropdown-menu-end">
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">View</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">delete</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item">Set as Preferred Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#alt-rout">Create Alternate Routing from this Routing</a>
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#edit-rout">Edit Routing Name</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
-    <div class="col-md-6 text-end">
-        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#alt-rout" title="Retrieving data. Wait a few seconds and try to cut or copy again." data-plugin="tippy" data-tippy-placement="top">Create New Alternate Routing</button>
+    <div class="col-md-6 text-end" hidden>
+        <button id="BtnCreateAlRouting" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#alt-rout" title="Retrieving data. Wait a few seconds and try to cut or copy again." data-plugin="tippy" data-tippy-placement="top">Create New Alternate Routing</button>
     </div>
 </div>

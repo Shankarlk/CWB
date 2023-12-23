@@ -54,12 +54,16 @@ namespace CWB.Masters.Services.ItemMaster
                 var masterPart = _mapper.Map<Domain.ItemMaster.MasterPart>(boughtOutFinishDetailVM);
                 var boughtoutfinishdetail = _mapper.Map<Domain.BoughtOutFinishDetail>(boughtOutFinishDetailVM);
                 int id = GetPartId(masterPart.PartNo);
+                boughtoutfinishdetail.PartId = id;
+                boughtOutFinishDetailVM.PartId = id;
                 if (id == 0)
                 {
                     masterPart.Id = 0;
                     await _masterPartRepository.AddAsync(masterPart);
                     await _unitOfWork.CommitAsync();
+                    boughtoutfinishdetail.PartId = (int)masterPart.Id;
                     boughtOutFinishDetailVM.PartId = (int)masterPart.Id;
+
                 }
                 else
                 {
@@ -67,11 +71,9 @@ namespace CWB.Masters.Services.ItemMaster
                     {
                         masterPart = await _masterPartRepository.UpdateAsync(masterPart.Id, masterPart);
                         await _unitOfWork.CommitAsync();
-                        boughtOutFinishDetailVM.PartId = (int)masterPart.Id;
                     }
                 }
-                boughtoutfinishdetail.PartId = boughtOutFinishDetailVM.PartId;
-
+            
                 if (boughtoutfinishdetail.Id == 0)
                 {
                     await _boughtOutFinishDetailRepository.AddAsync(boughtoutfinishdetail);

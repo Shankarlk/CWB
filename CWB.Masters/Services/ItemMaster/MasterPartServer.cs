@@ -57,7 +57,14 @@ namespace CWB.Masters.Services.ItemMaster
             return _mapper.Map<IEnumerable<MasterPartVM>>(marsterParts);
         }
 
+        public IEnumerable<MasterPartVM> GetAllMasterPartsWithIds(List<int> ids)
+        {
+            var marsterParts = _masterPartRepository.GetRangeAsync(m => ids.Contains((int)m.Id)).ToList();
+            return _mapper.Map<IEnumerable<MasterPartVM>>(marsterParts);
+        }
         
+
+
         public async Task<ManufacturedPartNoDetailVM> MasterPart(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM)
         {
             var masterPart = _mapper.Map<Domain.ItemMaster.MasterPart>(manufacturedPartNoDetailVM);

@@ -3,15 +3,18 @@
         <div class="modal-content bxs-modal">
             <div class="modal-header">
                 <h4 class="modal-title" id="mySmallModalLabel">New Routing</h4>
-                <button id="btnNewRoutingClose" type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                <button id="BtnNewRoutingClose" type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="post" id="NewRoutingName" onsubmit="return false;">
+                <form method="post" id="FormNewRoutingName" onsubmit="return false;">
                     <div class="row">
                         <label class="form-label col-md-5 mb-2">Routing name <span class="text-danger">*</span></label>
                         <div class="col-md-7 mb-1">
                             <input class="form-control form-control-sm" id="RoutingName" name="RoutingName" type="text" title="Enter the Routing Name ... It has to be Unique" data-plugin="tippy" data-tippy-placement="top">
                             <input type="text" hidden id="ManufacturedPartId" name="ManufacturedPartId" value="0" />
+                            <input type="text" hidden id="OrigRoutingId" name="OrigRoutingId" value="0" />
+                            <input type="text" hidden id="RoutingId" name="RoutingId" value="0" />
+                            <input type="text" hidden id="Status" name="Status" value="Active" />
                         </div>
                         <!-- =========  -->
                         <div class="col text-end mt-2">

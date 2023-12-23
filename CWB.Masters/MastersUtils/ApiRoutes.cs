@@ -49,6 +49,19 @@
             public const string GetStatuses = Base + "/statuses";
         }
 
+        public static class Routings {
+            public const string RoutingListItems = Base + "/routinglistitems";
+            //public const string RoutingListItem = Base + "/routinglistitem/{manufPartId}";
+            public const string PostNewRouting = Base + "/newrouting";
+            public const string PostRoutingStep = Base + "/routingstep";
+            public const string PostRoutingStepPart = Base + "/routingsteppart";
+            public const string RoutingList = Base + "/routings/{manufPartId}";
+            public const string RoutingSteps = Base + "/routingsteps/{routingId}";
+            public const string StepParts = Base + "/stepparts/{stepId}";
+            public const string StepPartsByManufId = Base + "/steppartsbymanufid/{manufId}";
+            
+        }
+
         public static class ManufacturedPartNoDetail
         {
             public const string PostManufacturedPartNoDetail = Base + "/manufacturedpartnodetail";
