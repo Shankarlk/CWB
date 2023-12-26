@@ -1,6 +1,8 @@
 ﻿using CWB.CompanySettings.Infrastructure;
+using CWB.CompanySettings.Repositories.Designations;
 using CWB.CompanySettings.Repositories.DocType;
 using CWB.CompanySettings.Repositories.Location;
+using CWB.CompanySettings.Services.Designations;
 using CWB.CompanySettings.Services.DocType;
 using CWB.CompanySettings.Services.Location;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +20,8 @@ namespace CWB.CompanySettings.CompanySettingsUtils
             services.AddTransient<IPlantService, PlantService>();
             services.AddTransient<IDepartmentRepository, DepartmentRepository>();
             services.AddTransient<IDepartmentService, DepartmentService>();
+            services.AddTransient<IDesignationRepository, DesignationRepository>();
+            services.AddTransient<IDesignationService, DesignationService>();
 
         }
     }

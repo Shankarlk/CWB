@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CWB.CompanySettings.Domain;
+using CWB.CompanySettings.ViewModels.Designations;
 using CWB.CompanySettings.ViewModels.DocType;
 using CWB.CompanySettings.ViewModels.Location;
 
@@ -34,6 +35,13 @@ namespace CWB.CompanySettings.CompanySettingsUtils
                 .ForMember(m => m.PlantName, m => m.MapFrom(src => src.Plant.Name));
             CreateMap<ShopDepartmentVM, ShopDepartment>()
                 .ForMember(m => m.Id, m => m.MapFrom(src => src.DepartmentId));
+
+            //CreateMap<DesignationVM, Designation>()
+            //               .ForMember(m => m.Id, m => m.MapFrom(src => src.DesignationId));
+            //CreateMap<Domain.Designation, DesignationVM>()
+            //    .ForMember(m => m.DesignationId, m => m.MapFrom(src => src.Id));
+            //CreateMap<Domain.Designation, DesignationListVM>()
+            //    .ForMember(m => m.DesignationId, m => m.MapFrom(src => src.Id));
         }
     }
 }

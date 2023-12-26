@@ -56,7 +56,7 @@ namespace CWB.Masters.Services.ItemMaster
 
         public IEnumerable<RawMaterialDetailVM> GetRawMaterialDetailsByTenant(long tenantID)
         {
-            var rawmaterialdetails = _rawMaterialDetailRepository.GetRangeAsync(m => m.TenantId > -1 );
+            var rawmaterialdetails = _rawMaterialDetailRepository.GetRangeAsync(m => m.TenantId == tenantID);
             return _mapper.Map<IEnumerable<RawMaterialDetailVM>>(rawmaterialdetails);
         }
 
@@ -186,11 +186,11 @@ namespace CWB.Masters.Services.ItemMaster
             return _mapper.Map<IEnumerable<PartPurchaseDetailsVM>>(partPurchaseDetails);
         }
 
-        public IEnumerable<PartPurchaseDetailsVM> GetPartPurchases()
+        public IEnumerable<PartPurchaseDetailsVM> GetPartPurchases(long tenantId)
         {
             try
             {
-                var partPurchaseDetails = _partPurchaseRepository.GetRangeAsync(m => m.TenantId > -1);
+                var partPurchaseDetails = _partPurchaseRepository.GetRangeAsync(m => m.TenantId == tenantId);
                 return _mapper.Map<IEnumerable<PartPurchaseDetailsVM>>(partPurchaseDetails);
             }catch(Exception ex)
             {
@@ -200,15 +200,15 @@ namespace CWB.Masters.Services.ItemMaster
             return new List<PartPurchaseDetailsVM>();
         }
 
-        public IEnumerable<PartPurchaseDetailsVM> GetPartPurchasesForPartNo(int partId)
+        public IEnumerable<PartPurchaseDetailsVM> GetPartPurchasesForPartNo(int partId, long tenantId)
         {
-            var partPurchaseDetails = _partPurchaseRepository.GetRangeAsync(m => m.PartId == (partId));
+            var partPurchaseDetails = _partPurchaseRepository.GetRangeAsync(m => m.PartId == (partId) && m.TenantId == tenantId);
             return _mapper.Map<IEnumerable<PartPurchaseDetailsVM>>(partPurchaseDetails);
         }
 
-        public async Task<PartPurchaseDetailsVM> GetPartPurchase(int partPurchaseId)
+        public async Task<PartPurchaseDetailsVM> GetPartPurchase(int partPurchaseId, long tenantId)
         {
-            var partPurchaseDetails = await _partPurchaseRepository.SingleOrDefaultAsync(m => m.Id == partPurchaseId);
+            var partPurchaseDetails = await _partPurchaseRepository.SingleOrDefaultAsync(m => m.Id == partPurchaseId && m.TenantId == tenantId);
             return _mapper.Map<PartPurchaseDetailsVM>(partPurchaseDetails);
         }
 
@@ -241,9 +241,9 @@ namespace CWB.Masters.Services.ItemMaster
             }
             return (department.First().Id != checkDivisionVM.DivisionId);
         }*/
-        public IEnumerable<RawMaterialDetailVM> GetOwnRMS()
+        public IEnumerable<RawMaterialDetailVM> GetOwnRMS(long tenantId)
         {
-            var rawmaterialdetails = _rawMaterialDetailRepository.GetRangeAsync(m=>m.SupplierId==127);
+            var rawmaterialdetails = _rawMaterialDetailRepository.GetRangeAsync(m=>m.SupplierId==127 && m.TenantId == tenantId);
             return _mapper.Map<IEnumerable<RawMaterialDetailVM>>(rawmaterialdetails);
         }
 
@@ -365,9 +365,9 @@ namespace CWB.Masters.Services.ItemMaster
         }
 
 
-        public async Task<RawMaterialDetailVM> GetRMPart(int partId)
+        public async Task<RawMaterialDetailVM> GetRMPart(int partId, long tenantId)
         {
-            var part = await _rawMaterialDetailRepository.SingleOrDefaultAsync(m => m.PartId == partId);
+            var part = await _rawMaterialDetailRepository.SingleOrDefaultAsync(m => m.PartId == partId && m.TenantId == tenantId);
             if (part != null)
             {
                 return _mapper.Map<RawMaterialDetailVM>(part);

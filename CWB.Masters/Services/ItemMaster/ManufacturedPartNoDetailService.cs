@@ -42,17 +42,17 @@ namespace CWB.Masters.Services.ItemMaster
             _masterPartRepository = masterPartRepository;
         }
 
-        public IEnumerable<ManufacturedPartNoDetailVM> GetManufacturedPartNoDetailsByTypeTenant(long ManufPartType, string companyName)
+        public IEnumerable<ManufacturedPartNoDetailVM> GetManufacturedPartNoDetailsByTypeTenant(long ManufPartType, string companyName, long tenantID)
         {
-            var manufacturedpartnodetails = _manufacturedPartNoDetailRepository.GetRangeAsync(m => m.ManufacturedPartType == ManufPartType && Convert.ToString(m.CompanyId).Equals(companyName));
+            var manufacturedpartnodetails = _manufacturedPartNoDetailRepository.GetRangeAsync(m => m.ManufacturedPartType == ManufPartType && Convert.ToString(m.CompanyId).Equals(companyName) && m.TenantId == tenantID);
             //_manufacturedPartNoDetailRepository.GetAllManuFByPartTypeTenantID(manPartTypeId, tenantID);
             //(m => m.TenantId == tenantID && m.ManufacturedPartType == manPartTypeId);
             return _mapper.Map<IEnumerable<ManufacturedPartNoDetailVM>>(manufacturedpartnodetails);
         }
 
-        public IEnumerable<ManufacturedPartNoDetailVM> GetAllManufacturedPartNoDetailsByTypeTenant()
+        public IEnumerable<ManufacturedPartNoDetailVM> GetAllManufacturedPartNoDetailsByTypeTenant(long tenantID)
         {
-            var manufacturedpartnodetails = _manufacturedPartNoDetailRepository.GetRangeAsync(m => m.TenantId > -1);
+            var manufacturedpartnodetails = _manufacturedPartNoDetailRepository.GetRangeAsync(m => m.TenantId == tenantID);
             //_manufacturedPartNoDetailRepository.GetAllManuFByPartTypeTenantID(manPartTypeId, tenantID);
             //(m => m.TenantId == tenantID && m.ManufacturedPartType == manPartTypeId);
             return _mapper.Map<IEnumerable<ManufacturedPartNoDetailVM>>(manufacturedpartnodetails);
@@ -289,9 +289,9 @@ namespace CWB.Masters.Services.ItemMaster
             return mpBOMVM;
         }
 
-        public async Task<ManufacturedPartNoDetailVM> GetManuPart(int partId)
+        public async Task<ManufacturedPartNoDetailVM> GetManuPart(int partId, long tenantId)
         {
-            var part = await  _manufacturedPartNoDetailRepository.SingleOrDefaultAsync(m=>m.PartId == partId);
+            var part = await  _manufacturedPartNoDetailRepository.SingleOrDefaultAsync(m=>m.PartId == partId && m.TenantId == tenantId);
             if(part != null)
             {
                 return _mapper.Map<ManufacturedPartNoDetailVM>(part);

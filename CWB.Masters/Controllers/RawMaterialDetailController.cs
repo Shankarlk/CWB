@@ -54,9 +54,9 @@ namespace CWB.Masters.Controllers
         [HttpGet]
         [Route(ApiRoutes.ManufacturedPartNoDetail.GetRMPart)]
         [Produces(AppContentTypes.ContentType, Type = typeof(RawMaterialDetailVM))]
-        public async Task<IActionResult> GetRMPart(int partId)
+        public async Task<IActionResult> GetRMPart(int partId, long tenantId)
         {
-            RawMaterialDetailVM manufP = await _masterPartService.GetRMPart(partId);
+            RawMaterialDetailVM manufP = await _masterPartService.GetRMPart(partId, tenantId);
             return Ok(manufP);
         }
 
@@ -97,14 +97,14 @@ namespace CWB.Masters.Controllers
         [HttpGet]
         [Route(ApiRoutes.RawMaterialDetail.OwnRMS)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<RawMaterialDetailVM>))]
-        public async Task<IActionResult> GetOwnRMS()
+        public async Task<IActionResult> GetOwnRMS(long tenantId)
         {
-            var vcos = await _companyService.GetCompaniesByTenant(1);
+            var vcos = await _companyService.GetCompaniesByTenant(tenantId);
             List<CompaniesVM> cos = vcos.ToList();
 
-            List<RawMaterialDetailVM> rawmaterialdetails = _rawMaterialDetailService.GetOwnRMS().ToList();
+            List<RawMaterialDetailVM> rawmaterialdetails = _rawMaterialDetailService.GetOwnRMS(tenantId).ToList();
             List<MasterPartVM> mps = _masterPartService.GetAllMasterParts().ToList();
-            List<PartPurchaseDetailsVM> ppd = _rawMaterialDetailService.GetPartPurchases().ToList();
+            List<PartPurchaseDetailsVM> ppd = _rawMaterialDetailService.GetPartPurchases(tenantId).ToList();
            
             var query1 = from pp in ppd
                          join co in cos on pp.PSupplierId equals co.CompanyId into ppjoin
@@ -306,27 +306,27 @@ namespace CWB.Masters.Controllers
         [HttpGet]
         [Route(ApiRoutes.RawMaterialDetail.GetPartPurchases)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<PartPurchaseDetailsVM>))]
-        public IActionResult GetPartPurchases()
+        public IActionResult GetPartPurchases(long tenantId)
         {
-            var rawmaterialdetails = _rawMaterialDetailService.GetPartPurchases();
+            var rawmaterialdetails = _rawMaterialDetailService.GetPartPurchases(tenantId);
             return Ok(rawmaterialdetails);
         }
 
         [HttpGet]
         [Route(ApiRoutes.RawMaterialDetail.GetPartPurchase)]
         [Produces(AppContentTypes.ContentType, Type = typeof(PartPurchaseDetailsVM))]
-        public async Task<IActionResult> GetPartPurchase(int partPurchaseId)
+        public async Task<IActionResult> GetPartPurchase(int partPurchaseId, long tenantId)
         {
-            var result = await _rawMaterialDetailService.GetPartPurchase(partPurchaseId);
+            var result = await _rawMaterialDetailService.GetPartPurchase(partPurchaseId, tenantId);
             return Ok(result);
         }
 
         [HttpGet]
         [Route(ApiRoutes.RawMaterialDetail.GetPartPurchasesForPartId)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<PartPurchaseDetailsVM>))]
-        public IActionResult GetPartPurchasesForPartId(int partId)
+        public IActionResult GetPartPurchasesForPartId(int partId,long tenantId)
         {
-            var rawmaterialdetails = _rawMaterialDetailService.GetPartPurchasesForPartNo(partId);
+            var rawmaterialdetails = _rawMaterialDetailService.GetPartPurchasesForPartNo(partId, tenantId);
             return Ok(rawmaterialdetails);
         }
 
@@ -405,13 +405,13 @@ namespace CWB.Masters.Controllers
         [HttpGet]
         [Route(ApiRoutes.RawMaterialDetail.GetMasterParts)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<ItemMasterPartVM>))]
-        public async Task<IEnumerable<ItemMasterPartVM>> GetMasterPartView()
+        public async Task<IEnumerable<ItemMasterPartVM>> GetMasterPartView(long TenantId)
         {
             List<ItemMasterPartVM> list = new List<ItemMasterPartVM>();
             var vcos = await _companyService.GetCompaniesByTenant(1);
             List<CompaniesVM> cos = vcos.ToList();
             List<MasterPartVM> masterParts = _masterPartService.GetAllMasterParts().ToList();
-            List<ManufacturedPartNoDetailVM> manufList = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant().ToList();
+            List<ManufacturedPartNoDetailVM> manufList = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant(TenantId).ToList();
             try
             {
                 List<ItemMasterPartVM> tempList = new List<ItemMasterPartVM>();
@@ -435,7 +435,7 @@ namespace CWB.Masters.Controllers
                                 SupplierPartNo = "",
                                 Notes = mp?.PartDescription ?? string.Empty,
                                 Type = 0,
-                                TenantId = 0
+                                TenantId = manuf.TenantId
                             };
                 tempList = query.ToList();
                 
@@ -459,7 +459,7 @@ namespace CWB.Masters.Controllers
                             SupplierPartNo = "",
                             Notes = manuf.Description,
                             Type = 0,
-                            TenantId = 0
+                            TenantId = manuf.TenantId
                         };
                 list = newquery.ToList();
             }
@@ -468,8 +468,8 @@ namespace CWB.Masters.Controllers
                 string msg = ex.InnerException.Message;
                 string src = ex.Source;
             }
-            var bofs = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(-1);
-            var partPurchases = _rawMaterialDetailService.GetPartPurchases();
+            var bofs = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(TenantId);
+            var partPurchases = _rawMaterialDetailService.GetPartPurchases(TenantId);
 
             try
             {
@@ -495,6 +495,7 @@ namespace CWB.Masters.Controllers
                              SupplierPartNo = "",
                              Notes = scojoin?.PartDescription ?? string.Empty,
                              Type = 0,
+                             TenantId = bof.TenantId
                          };
                 List<ItemMasterPartVM> list1 = query1.ToList();
                 list.AddRange(list1);
@@ -504,7 +505,7 @@ namespace CWB.Masters.Controllers
                 string msg = ex.InnerException.Message;
                 string src = ex.Source;
             }
-            var rms = _rawMaterialDetailService.GetRawMaterialDetailsByTenant(-1);
+            var rms = _rawMaterialDetailService.GetRawMaterialDetailsByTenant(TenantId);
             try
             {
                 var query2 =
@@ -529,6 +530,7 @@ namespace CWB.Masters.Controllers
                      SupplierPartNo = "",
                      Notes = scojoin?.PartDescription ?? string.Empty,
                      Type = 0,
+                     TenantId = rm.TenantId
                  };
                 List<ItemMasterPartVM> list2 = query2.ToList();
                 list.AddRange(list2);
@@ -550,7 +552,7 @@ namespace CWB.Masters.Controllers
             var vcos = await _companyService.GetCompaniesByTenant(tenantId);
             List<CompaniesVM> cos = vcos.ToList();
             List<MasterPartVM> masterParts = _masterPartService.GetAllMasterParts().ToList();
-            List<ManufacturedPartNoDetailVM> manufList = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant().ToList();
+            List<ManufacturedPartNoDetailVM> manufList = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant(tenantId).ToList();
             var query = from manuf in manufList
                         join mp in masterParts on manuf.PartId equals mp.MasterPartId into mpjoin
                         from smpjoin in mpjoin.DefaultIfEmpty()
@@ -568,7 +570,7 @@ namespace CWB.Masters.Controllers
             List<SelectPartVM> list = query.ToList();
             try
             {
-                var bofs = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(-1);
+                var bofs = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(tenantId);
                 var query1 =
                     from bof in bofs
                     join mp in masterParts on bof.PartId equals mp.MasterPartId into bofjoin

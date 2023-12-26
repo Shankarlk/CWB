@@ -8,16 +8,16 @@ namespace CWB.Masters.Services.ItemMaster
     {
         Task<RawMaterialDetailVM> RawMaterialDetail(RawMaterialDetailVM rawMaterialDetailVM);
         IEnumerable<RawMaterialDetailVM> GetRawMaterialDetailsByTenant(long tenantID);
-        IEnumerable<RawMaterialDetailVM> GetOwnRMS();
+        IEnumerable<RawMaterialDetailVM> GetOwnRMS(long tenantId);
         IEnumerable<RawMaterialDetailVM> GetSupplierRMS(long supplierId);
 
         IEnumerable<PartPurchaseDetailsVM> GetParchasesByMasterPartNo(string partNo);
-        IEnumerable<PartPurchaseDetailsVM> GetPartPurchases();
-        IEnumerable<PartPurchaseDetailsVM> GetPartPurchasesForPartNo(int partId);
+        IEnumerable<PartPurchaseDetailsVM> GetPartPurchases(long tenantId);
+        IEnumerable<PartPurchaseDetailsVM> GetPartPurchasesForPartNo(int partId, long tenantId);
         Task<PartPurchaseDetailsVM> PartPurchaseDetail(PartPurchaseDetailsVM partPurchaseDetailVM);
         Task<PartPurchaseDetailsVM> RemPartPurchaseDetail(PartPurchaseDetailsVM partPurchaseDetailVM);
 
-        Task<PartPurchaseDetailsVM> GetPartPurchase(int partPurchaseId);
+        Task<PartPurchaseDetailsVM> GetPartPurchase(int partPurchaseId,long tenantId);
 
         IEnumerable<RawMaterialTypeVM> GetRMTypes(long tenantID);
         IEnumerable<RawMaterialSepcVM> GetRMSpecs(long tenantID);
@@ -29,7 +29,7 @@ namespace CWB.Masters.Services.ItemMaster
         Task<RawMaterialSepcVM> RMSpec(RawMaterialSepcVM rMSpecVm);
         Task<RawMaterialStandardVM> RMStandard(RawMaterialStandardVM rMStandardVm);
         bool CheckPartNo(long partId);
-        Task<RawMaterialDetailVM> GetRMPart(int partId);
+        Task<RawMaterialDetailVM> GetRMPart(int partId, long tenantId);
 
 
     }

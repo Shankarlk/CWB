@@ -35,9 +35,9 @@ namespace CWB.Masters.Controllers
         [HttpGet]
         [Route(ApiRoutes.ManufacturedPartNoDetail.GetBOFPart)]
         [Produces(AppContentTypes.ContentType, Type = typeof(BoughtOutFinishDetailVM))]
-        public async Task<IActionResult> GetBOFPart(int partId)
+        public async Task<IActionResult> GetBOFPart(int partId, long tenantId)
         {
-            BoughtOutFinishDetailVM manufP = await _masterPartService.GetBOFPart(partId);
+            BoughtOutFinishDetailVM manufP = await _masterPartService.GetBOFPart(partId, tenantId);
             return Ok(manufP);
         }
 
@@ -49,9 +49,9 @@ namespace CWB.Masters.Controllers
         [HttpGet]
         [Route(ApiRoutes.BoughtOutFinishDetail.GetBoughtOutFinishDetailList)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<BoughtOutFinishDetailVM>))]
-        public IActionResult GetBoughtOutFinishDetailList()
+        public IActionResult GetBoughtOutFinishDetailList(long tenantId)
         {
-            var boughtoutfinishdetails = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(-1);
+            var boughtoutfinishdetails = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(tenantId);
             return Ok(boughtoutfinishdetails);
         }
 

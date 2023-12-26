@@ -33,7 +33,7 @@ namespace CWB.Masters.Services.ItemMaster
         }
         public IEnumerable<BoughtOutFinishDetailVM> GetBoughtOutFinishDetailsByTenant(long tenantID)
         {
-            var boughtoutfinishdetails = _boughtOutFinishDetailRepository.GetRangeAsync(m => m.TenantId > tenantID);         
+            var boughtoutfinishdetails = _boughtOutFinishDetailRepository.GetRangeAsync(m => m.TenantId == tenantID);         
             return _mapper.Map<IEnumerable<BoughtOutFinishDetailVM>>(boughtoutfinishdetails);
         }
 
@@ -100,11 +100,11 @@ namespace CWB.Masters.Services.ItemMaster
             return true;
         }
 
-        public async Task<BoughtOutFinishDetailVM> GetPart(int partId)
+        public async Task<BoughtOutFinishDetailVM> GetPart(int partId, long tenantId)
         {
             try
             {
-                var part = _boughtOutFinishDetailRepository.GetRangeAsync(m => m.PartId == partId).OrderByDescending(m=>m.Id).FirstOrDefault();
+                var part = _boughtOutFinishDetailRepository.GetRangeAsync(m => m.PartId == partId && m.TenantId == tenantId).OrderByDescending(m=>m.Id).FirstOrDefault();
                 if (part != null)
                 {
                     return _mapper.Map<BoughtOutFinishDetailVM>(part);

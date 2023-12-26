@@ -7,9 +7,9 @@ namespace CWB.Masters.Services.ItemMaster
     public interface IManufacturedPartNoDetailService
     {
         Task<ManufacturedPartNoDetailVM> ManufacturedPartNoDetail(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM);
-        IEnumerable<ManufacturedPartNoDetailVM> GetManufacturedPartNoDetailsByTypeTenant(long manPartTypeId, string companyName);
+        IEnumerable<ManufacturedPartNoDetailVM> GetManufacturedPartNoDetailsByTypeTenant(long manPartTypeId, string companyName, long tenantID);
 
-        IEnumerable<ManufacturedPartNoDetailVM> GetAllManufacturedPartNoDetailsByTypeTenant();
+        IEnumerable<ManufacturedPartNoDetailVM> GetAllManufacturedPartNoDetailsByTypeTenant(long tenantID);
 
         Task<MPMakeFromVM> MPMakeFrom(MPMakeFromVM manufacturedPartNoDetailVM);
         IEnumerable<MPMakeFromVM> GetMPMakeFromList(string manufPartId, long tenantID);
@@ -27,6 +27,6 @@ namespace CWB.Masters.Services.ItemMaster
 
         Task<UOMVM> UOM(UOMVM uOMVm);
         bool CheckPartNo(long partId);
-        Task<ManufacturedPartNoDetailVM> GetManuPart(int partId);
+        Task<ManufacturedPartNoDetailVM> GetManuPart(int partId, long tenantId);
     }
 }

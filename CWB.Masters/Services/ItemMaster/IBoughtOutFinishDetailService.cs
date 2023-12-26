@@ -10,6 +10,6 @@ namespace CWB.Masters.Services.ItemMaster
         Task<BoughtOutFinishDetailVM> BoughtOutFinishDetail(BoughtOutFinishDetailVM boughtOutFinishDetailVM);
         public IEnumerable<BoughtOutFinishDetailVM> GetBoughtOutFinishDetailsByTenant(long tenantID);
         bool CheckPartNo(long partId);
-        Task<BoughtOutFinishDetailVM> GetPart(int partId);
+        Task<BoughtOutFinishDetailVM> GetPart(int partId, long tenantId);
     }
 }

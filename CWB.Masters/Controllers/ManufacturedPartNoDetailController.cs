@@ -37,9 +37,9 @@ namespace CWB.Masters.Controllers
         [HttpGet]
         [Route(ApiRoutes.ManufacturedPartNoDetail.GetManufPart)]
         [Produces(AppContentTypes.ContentType, Type = typeof(ManufacturedPartNoDetailVM))]
-        public async Task<IActionResult> GetManufPart(int partId)
+        public async Task<IActionResult> GetManufPart(int partId, long tenantId)
         {
-            ManufacturedPartNoDetailVM manufP = await _masterPartService.GetManufPart(partId);
+            ManufacturedPartNoDetailVM manufP = await _masterPartService.GetManufPart(partId, tenantId);
             return Ok(manufP);   
         }
 
@@ -51,10 +51,10 @@ namespace CWB.Masters.Controllers
         [HttpGet]
         [Route(ApiRoutes.ManufacturedPartNoDetail.GetManufacturedPartNoDetailList)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<ManufacturedPartNoDetailVM>))]
-        public IActionResult GetManufacturedPartNoDetailList(long ManufPartType, string companyName)
+        public IActionResult GetManufacturedPartNoDetailList(long ManufPartType, string companyName, long tenantID)
         {
             List<MasterPartVM> masterParts = _masterPartService.GetAllMasterParts().ToList();
-            List<ManufacturedPartNoDetailVM> manufList = _manufacturedPartNoDetailService.GetManufacturedPartNoDetailsByTypeTenant(ManufPartType, companyName).ToList();
+            List<ManufacturedPartNoDetailVM> manufList = _manufacturedPartNoDetailService.GetManufacturedPartNoDetailsByTypeTenant(ManufPartType, companyName, tenantID).ToList();
 
             var query = from manuf in manufList
                         join mp in masterParts on manuf.PartId equals mp.MasterPartId into mpjoin
@@ -82,9 +82,9 @@ namespace CWB.Masters.Controllers
         [HttpGet]
         [Route(ApiRoutes.ManufacturedPartNoDetail.GetAllManufacturedPartNoDetailList)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<ManufacturedPartNoDetailVM>))]
-        public IActionResult GetAllManufacturedPartNoDetailList(long ManufPartType, string companyName)
+        public IActionResult GetAllManufacturedPartNoDetailList(long ManufPartType, string companyName, long tenantID)
         {
-            var manufacturedpartnodetails = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant();
+            var manufacturedpartnodetails = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant(tenantID);
             return Ok(manufacturedpartnodetails);
         }
 

@@ -43,10 +43,10 @@ namespace CWB.Masters.Services.ItemMaster
         public IEnumerable<ItemMasterPartVM> GetMasterPartView()
         {
             
-            var partPurchases = _rawMaterialDetailService.GetPartPurchases();
-            var rawMaterialDetails = _rawMaterialDetailService.GetRawMaterialDetailsByTenant(-1);
-            var bofs = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(-1);
-            var manufPdetails = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant();
+            var partPurchases = _rawMaterialDetailService.GetPartPurchases(1);
+            var rawMaterialDetails = _rawMaterialDetailService.GetRawMaterialDetailsByTenant(1);
+            var bofs = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(1);
+            var manufPdetails = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant(1);
             return new List<ItemMasterPartVM>();
         }
 
@@ -103,10 +103,10 @@ namespace CWB.Masters.Services.ItemMaster
             return _mapper.Map<MasterPartVM>(rms);
         }
 
-        public async Task<ManufacturedPartNoDetailVM> GetManufPart(int partId)
+        public async Task<ManufacturedPartNoDetailVM> GetManufPart(int partId,long tenantId)
         {
             
-            ManufacturedPartNoDetailVM manufObj =  await _manufacturedPartNoDetailService.GetManuPart(partId);
+            ManufacturedPartNoDetailVM manufObj =  await _manufacturedPartNoDetailService.GetManuPart(partId, tenantId);
             if(manufObj.ManufacturedPartNoDetailId != -1)
             {
                 MasterPartVM mpVm =  await GetMasterPart(partId);
@@ -124,10 +124,10 @@ namespace CWB.Masters.Services.ItemMaster
             }
             return manufObj;
         }
-        public async Task<RawMaterialDetailVM> GetRMPart(int partId)
+        public async Task<RawMaterialDetailVM> GetRMPart(int partId, long tenantId)
         {
 
-            RawMaterialDetailVM rmObj = await _rawMaterialDetailService.GetRMPart(partId);
+            RawMaterialDetailVM rmObj = await _rawMaterialDetailService.GetRMPart(partId, tenantId);
             if (rmObj.RawMaterialDetailId != -1)
             {
                 MasterPartVM mpVm = await GetMasterPart(partId);
@@ -146,9 +146,9 @@ namespace CWB.Masters.Services.ItemMaster
             return rmObj;
         }
 
-        public async Task<BoughtOutFinishDetailVM> GetBOFPart(int partId)
+        public async Task<BoughtOutFinishDetailVM> GetBOFPart(int partId, long tenantId)
         {
-            BoughtOutFinishDetailVM rmObj = await _boughtOutFinishDetailService.GetPart(partId);
+            BoughtOutFinishDetailVM rmObj = await _boughtOutFinishDetailService.GetPart(partId,tenantId);
             if (rmObj.BoughtOutFinishDetailId != -1)
             {
                 MasterPartVM mpVm = await GetMasterPart(partId);
