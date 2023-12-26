@@ -8,6 +8,7 @@ using CWB.Masters.Services.Company;
 using CWB.Masters.Services.ItemMaster;
 using CWB.Masters.Services.Machines;
 using CWB.Masters.Services.OperationList;
+using CWB.Masters.Services.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CWB.Masters.MastersUtils
@@ -43,6 +44,7 @@ namespace CWB.Masters.MastersUtils
             services.AddTransient<IUOMRepository, UOMRepository>();
             services.AddTransient<IMasterPartService, MasterPartService>();
             services.AddTransient<IMasterPartRepository, MasterPartRepository>();
+            services.AddTransient<IRoutingService, RoutingService>();
             services.AddTransient<IRoutingRepository, RoutingRepository>();
             services.AddTransient<IRoutingStepRepository, RoutingStepRepository>();
             services.AddTransient<IRoutingStepPartRepository, RoutingStepPartRepository>();

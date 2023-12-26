@@ -37,11 +37,19 @@ namespace CWB.Masters.Configurations
             builder
                .Property(t => t.RoutingStepOperation)
                .HasColumnName("RoutingStepOperation")
+               .HasConversion<string>()
+               .HasMaxLength(300)
                .IsRequired();
             builder
                .Property(t => t.RoutingStepLocation)
                .HasColumnName("RoutingStepLocation")
+               .HasConversion<string>()
+               .HasMaxLength(300)
                .IsRequired();
+            builder
+              .Property(t => t.Status)
+              .HasColumnName("Status")
+              .IsRequired();
             builder
              .Property(t => t.RoutingStepSequence)
              .HasColumnName("RoutingStepSequence")

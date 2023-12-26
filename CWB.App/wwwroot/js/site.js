@@ -49,8 +49,8 @@
             templateElement = templateElement.replaceAll("{" + key + "}", dataObj[key])
             
         }
-      //  console.log(templateElement);
-       // console.log("****************");
+        console.log(templateElement);
+        console.log("****************");
         return templateElement;
     },
     GetFormData: (formId) => {

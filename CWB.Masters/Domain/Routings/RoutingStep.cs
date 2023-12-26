@@ -7,11 +7,13 @@ namespace CWB.Masters.Domain
     public class RoutingStep : BaseEntity
     {
         public long RoutingId { get; set; }
-        public int StepNumber { get; set; }
+        
+        public string StepNumber { get; set; }
         public string StepDescription { get; set; }
         public RoutingStepOperation RoutingStepOperation { get; set; } //Operation List
         public RoutingStepLocation RoutingStepLocation { get; set; }
         public RoutingStepSequence RoutingStepSequence { get; set; }
+        public string Status { get; set; }
         //public int SequenceType { get; set; }
         public long TenantId { get; set; }
         public Routing Routing { get; set; }

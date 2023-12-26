@@ -5,6 +5,7 @@ using CWB.Masters.ViewModels.Company;
 using CWB.Masters.ViewModels.ItemMaster;
 using CWB.Masters.ViewModels.Machines;
 using CWB.Masters.ViewModels.OperationList;
+using CWB.Masters.ViewModels.Routing;
 
 namespace CWB.Masters.MastersUtils
 {
@@ -346,9 +347,55 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(s => s.RevNo, s => s.MapFrom(src => src.RevNo))
                 .ForMember(s => s.RevDate, s => s.MapFrom(src => src.RevDate));
 
+            CreateMap<Domain.Routing, RoutingVM>()
+                .ForMember(s => s.RoutingId, s => s.MapFrom(src => src.Id))
+                .ForMember(s => s.OrigRoutingId, s => s.MapFrom(src => src.OrigRoutingId))
+                .ForMember(s => s.RoutingName, s => s.MapFrom(src => src.RoutingName))
+                .ForMember(s => s.CreationDate, s => s.MapFrom(src => src.CreationDate))
+                .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
+                .ForMember(s => s.ManufacturedPartId, s => s.MapFrom(src => src.ManufacturedPartId));
 
+            CreateMap<RoutingVM, Domain.Routing>()
+                .ForMember(s => s.Id, s => s.MapFrom(src => src.RoutingId))
+                .ForMember(s => s.OrigRoutingId, s => s.MapFrom(src => src.OrigRoutingId))
+                .ForMember(s => s.RoutingName, s => s.MapFrom(src => src.RoutingName))
+                 .ForMember(s => s.CreationDate, s => s.MapFrom(src => src.CreationDate))
+                .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
+                .ForMember(s => s.ManufacturedPartId, s => s.MapFrom(src => src.ManufacturedPartId));
 
+            CreateMap<Domain.RoutingStep, RoutingStepVM>()
+                .ForMember(s => s.StepId, s => s.MapFrom(src => src.Id))
+                .ForMember(s => s.RoutingId, s => s.MapFrom(src => src.RoutingId))
+                .ForMember(s => s.StepNumber, s => s.MapFrom(src => src.StepNumber))
+                .ForMember(s => s.StepDescription, s => s.MapFrom(src => src.StepDescription))
+                .ForMember(s => s.StepOperation, s => s.MapFrom(src => src.RoutingStepOperation))
+                .ForMember(s => s.StepLocation, s => s.MapFrom(src => src.RoutingStepLocation))
+                .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
+                .ForMember(s => s.StepSequence, s => s.MapFrom(src => src.RoutingStepSequence));
+            
+            CreateMap<RoutingStepVM,Domain.RoutingStep>()
+              .ForMember(s => s.Id, s => s.MapFrom(src => src.StepId))
+              .ForMember(s => s.RoutingId, s => s.MapFrom(src => src.RoutingId))
+              .ForMember(s => s.StepNumber, s => s.MapFrom(src => src.StepNumber))
+              .ForMember(s => s.StepDescription, s => s.MapFrom(src => src.StepDescription))
+              .ForMember(s => s.RoutingStepOperation, s => s.MapFrom(src => src.StepOperation))
+              .ForMember(s => s.RoutingStepLocation, s => s.MapFrom(src => src.StepLocation))
+              .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
+              .ForMember(s => s.RoutingStepSequence, s => s.MapFrom(src => src.StepSequence));
 
+            CreateMap<RoutingStepPartVM, Domain.RoutingStepPart>()
+               .ForMember(s => s.Id, s => s.MapFrom(src => src.StepPartId))
+               .ForMember(s => s.RoutingStepId, s => s.MapFrom(src => src.RoutingStepId))
+               .ForMember(s => s.ManufacturedPartId, s => s.MapFrom(src => src.ManufacturedPartId))
+               .ForMember(s => s.QuantityAssembly, s => s.MapFrom(src => src.QuantityAssembly))
+               .ForMember(s => s.BOMId, s => s.MapFrom(src => src.BOMId));
+
+            CreateMap<Domain.RoutingStepPart, RoutingStepPartVM>()
+              .ForMember(s => s.StepPartId, s => s.MapFrom(src => src.Id))
+              .ForMember(s => s.RoutingStepId, s => s.MapFrom(src => src.RoutingStepId))
+              .ForMember(s => s.ManufacturedPartId, s => s.MapFrom(src => src.ManufacturedPartId))
+              .ForMember(s => s.QuantityAssembly, s => s.MapFrom(src => src.QuantityAssembly))
+              .ForMember(s => s.BOMId, s => s.MapFrom(src => src.BOMId));
         }
     }
 }

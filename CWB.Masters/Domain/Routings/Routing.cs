@@ -8,8 +8,9 @@ namespace CWB.Masters.Domain
     {
         public string RoutingName { get; set; }
         public long ManufacturedPartId { get; set; }
-        
+        public int OrigRoutingId { get; set; }
         public long TenantId { get; set; }
+        public string Status { get; set; }
         public ManufacturedPart ManufacturedPart { get; set; }
         public ICollection<RoutingBatch> RoutingBatches { get; set; }
         public ICollection<RoutingBatchAssembly> RoutingBatchAssemblies { get; set; }

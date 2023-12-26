@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Routing";
 }
+@model CWB.App.Models.Routing.RoutingListItemVM
 <input value="M-IR" type="hidden" id="hdn-nav-menu" />
 <div class="content">
     <div class="row">
@@ -17,13 +18,13 @@
                                                 <h4>Routing</h4>
                                             </th>
                                             <td>
-                                                <span class="h6">Company :</span> Ashok Leyland
+                                                <span class="h6">Company :</span> @Html.DisplayFor(model => model.CompanyName)
                                             </td>
                                             <td>
-                                                <span class="h6">Part No:</span>  XXXXXXXXXXXXXXX
+                                                <span class="h6">Part No:</span>  @Html.DisplayFor(model => model.PartNo)
                                             </td>
                                             <td>
-                                                <span class="h6">Part Description:</span> Lorem Ipsum is  dummy text of the printing industry.
+                                                <span class="h6">Part Description:</span> @Html.DisplayFor(model => model.PartDescription)
                                             </td>
                                         </tr>
                                     </tbody>
@@ -62,19 +63,19 @@
                         <!-- ================================ -->
                         <div class="col-md-12 mt-n2">
                             <ul class="nav nav-tabs nav-pills nav-justified navtab-bg font-12">
-                                <li class="nav-item">
+                                <li class="nav-item" id="RoutingAvailable">
                                     <a href="#rs2" data-bs-toggle="tab" aria-expanded="true" class="nav-link active">
                                         <span class="d-inline-block d-sm-none">Routing Available</span>
                                         <span class="d-none d-sm-inline-block">Routing Available</span>
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item" id="RoutingDetails">
                                     <a href="#rou-det" data-bs-toggle="tab" aria-expanded="true" class="nav-link">
                                         <span class="d-inline-block d-sm-none">Routing Details</span>
                                         <span class="d-none d-sm-inline-block">Routing Details</span>
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item" id="RoutingStepDetails">
                                     <a href="#rsd" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
                                         <span class="d-inline-block d-sm-none">Routing Step Details</span>
                                         <span class="d-none d-sm-inline-block">Routing Step Details</span>
@@ -124,7 +125,11 @@
         </div>
     </div>
 </div>
-
+<partial name="../Shared/_AltRoute" />
 @section scripts {
+    <script>
+        var modelObj = @Html.Raw(Json.Serialize(Model));
+        console.log(modelObj);
+    </script>
     <script src="~/js/routing/Routing-Model.js"></script>
 }

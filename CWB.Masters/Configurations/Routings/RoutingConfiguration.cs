@@ -23,6 +23,14 @@ namespace CWB.Masters.Configurations
                 .HasColumnName("ManufacturedPartId")
                 .IsRequired();
             builder
+               .Property(m => m.OrigRoutingId)
+               .HasColumnName("OrigRoutingId")
+               .IsRequired();
+            builder
+              .Property(m => m.Status)
+              .HasColumnName("Status")
+              .IsRequired();
+            builder
                 .Property(m => m.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();

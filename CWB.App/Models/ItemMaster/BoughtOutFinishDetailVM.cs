@@ -22,7 +22,6 @@ namespace CWB.App.Models.ItemMaster
         [Remote(
            "CheckPartNo",
            "Masters",
-           AdditionalFields = "PartNo",
            ErrorMessage = "{0} already exists. Please enter a different {0}.",
            HttpMethod = "GET"
        )]

@@ -457,13 +457,19 @@ namespace CWB.App.Controllers
         }
         #endregion
 
-        [HttpGet]
         public async Task<JsonResult> CheckPartNo(string partNo,string partNumber="")
         {
             if(partNumber.Length>0)
             {
                 partNo = partNumber;
             }
+            var result = await _mastersService.CheckPartNo(partNo);
+            return Json(!result);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> CheckPartNo(string partNo)
+        {
             var result = await _mastersService.CheckPartNo(partNo);
             return Json(!result);
         }
