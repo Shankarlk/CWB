@@ -62,6 +62,21 @@ namespace CWB.App.Services.Routings
             return await RestHelper<RoutingStepPartVM>.PostAsync(uri, routingStepPartVM, headers);
         }
 
+        public async Task<RoutingStepSupplierVM> RoutingStepSupplier(RoutingStepSupplierVM routingStepSupplierVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/routingstepsupplier");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            routingStepSupplierVM.TenantId = (int)tenantId;
+            return await RestHelper<RoutingStepSupplierVM>.PostAsync(uri, routingStepSupplierVM, headers);
+        }
+
+        public async Task<RoutingStepMachineVM> RoutingStepMachine(RoutingStepMachineVM routingStepMachineVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/routingstepmachine");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            routingStepMachineVM.TenantId = (int)tenantId;
+            return await RestHelper<RoutingStepMachineVM>.PostAsync(uri, routingStepMachineVM, headers);
+        }
 
         public async Task<IEnumerable<RoutingVM>> Routings(int manufPartId)
         {
@@ -91,7 +106,21 @@ namespace CWB.App.Services.Routings
             return await RestHelper<IEnumerable<RoutingStepPartVM>>.GetAsync(uri, headers);
         }
 
-        
+        public async Task<IEnumerable<RoutingStepSupplierVM>> StepSuppliers(int stepId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/stepsuppliers/{stepId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<IEnumerable<RoutingStepSupplierVM>>.GetAsync(uri, headers);
+        }
+
+        public async Task<IEnumerable<RoutingStepMachineVM>> StepMachines(int stepId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/stepmachines/{stepId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<IEnumerable<RoutingStepMachineVM>>.GetAsync(uri, headers);
+        }
+
+
 
 
     }

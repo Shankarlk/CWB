@@ -32,11 +32,11 @@
         templateElement = templateElement.replaceAll("{num}", i)
         ////console.log(templateId);
         for (var key in dataObj) {
-            console.log(key + " " + dataObj[key]);
+      //      console.log(key + " " + dataObj[key]);
             templateElement = templateElement.replaceAll("{" + key + "}", dataObj[key])
         }
-        console.log(templateElement);
-        console.log("****************");
+    //    console.log(templateElement);
+ //       console.log("****************");
         return templateElement;
     },
     ProcessTemplateData: (templateId, dataObj) => {

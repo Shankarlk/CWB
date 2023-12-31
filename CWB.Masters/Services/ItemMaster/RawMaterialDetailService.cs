@@ -101,7 +101,7 @@ namespace CWB.Masters.Services.ItemMaster
         public async Task<RawMaterialDetailVM> RawMaterialDetail(RawMaterialDetailVM rawMaterialDetailVM)
         {
             try {
-                var rawmaterialdetail = _mapper.Map<Domain.RawMaterialDetail>(rawMaterialDetailVM);
+                var rawmaterialdetail = _mapper.Map<RawMaterialDetail>(rawMaterialDetailVM);
                 var masterPart = _mapper.Map<Domain.ItemMaster.MasterPart>(rawMaterialDetailVM);
                 int id = GetPartId(masterPart.PartNo);
                 if (id == 0)
@@ -241,10 +241,16 @@ namespace CWB.Masters.Services.ItemMaster
             }
             return (department.First().Id != checkDivisionVM.DivisionId);
         }*/
-        public IEnumerable<RawMaterialDetailVM> GetOwnRMS(long tenantId)
+        public async Task<IEnumerable<RawMaterialDetailVM>> GetOwnRMS(long tenantId)
         {
-            var rawmaterialdetails = _rawMaterialDetailRepository.GetRangeAsync(m=>m.SupplierId==127 && m.TenantId == tenantId);
-            return _mapper.Map<IEnumerable<RawMaterialDetailVM>>(rawmaterialdetails);
+            var co = await _companyRepository.SingleOrDefaultAsync(m => m.Name.ToLower().Equals("self"));
+
+            if(co!=null)
+            {
+                var rawmaterialdetails = _rawMaterialDetailRepository.GetRangeAsync(m => m.SupplierId == (co.Id) &&  m.TenantId == tenantId);
+                return _mapper.Map<IEnumerable<RawMaterialDetailVM>>(rawmaterialdetails);
+            }
+            return new List<RawMaterialDetailVM>();
         }
 
         public IEnumerable<RawMaterialDetailVM> GetSupplierRMS(long supplierId)

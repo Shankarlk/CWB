@@ -84,7 +84,7 @@ namespace CWB.Masters.Controllers
         [Produces(AppContentTypes.ContentType, Type = typeof(List<RoutingListItemVM>))]
         public async Task<List<RoutingListItemVM>> GetRoutingListItmes()
         {
-             var manufParts = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant().ToList();
+             var manufParts = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant(1).ToList();
              var partIds = from mfs in manufParts select mfs.PartId;
              List<int> partIdLilst = partIds.ToList();
              var mps = _masterPartService.GetAllMasterPartsWithIds(partIdLilst);
@@ -182,6 +182,63 @@ namespace CWB.Masters.Controllers
             var result = await _routingService.RoutingStepPart(routingStepPartVM);
             return Ok(result);
         }
+
+        [HttpPost]
+        [Route(ApiRoutes.Routings.PostRoutingStepSupplier)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(RoutingStepSupplierVM))]
+        public async Task<IActionResult> PostRoutingStepSupplier([FromBody] RoutingStepSupplierVM model)
+        {
+            /*  var validator = new RawMaterialDetailVMValidator();
+              var validationResult = await validator.ValidateAsync(rawMaterialDetailVM);
+              if (!validationResult.IsValid)
+                  return BadRequest(validationResult.Errors);*/
+            var result = await _routingService.RoutingStepSupplier(model);
+            return Ok(result);
+        }
+
+
+        [HttpPost]
+        [Route(ApiRoutes.Routings.PostRoutingStepMachine)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(RoutingStepMachineVM))]
+        public async Task<IActionResult> PostRoutingStepMachine([FromBody] RoutingStepMachineVM model)
+        {
+            /*  var validator = new RawMaterialDetailVMValidator();
+              var validationResult = await validator.ValidateAsync(rawMaterialDetailVM);
+              if (!validationResult.IsValid)
+                  return BadRequest(validationResult.Errors);*/
+            var result = await _routingService.RoutingStepMachine(model);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route(ApiRoutes.Routings.StepSuppliers)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(IEnumerable<RoutingStepSupplierVM>))]
+        public async Task<IActionResult> StepSuppliers(int stepId)
+        {
+            /*  var validator = new RawMaterialDetailVMValidator();
+              var validationResult = await validator.ValidateAsync(rawMaterialDetailVM);
+              if (!validationResult.IsValid)
+                  return BadRequest(validationResult.Errors);*/
+            var result = await _routingService.StepSuppliers(stepId);
+            return Ok(result);
+        }
+
+
+        [HttpGet]
+        [Route(ApiRoutes.Routings.PostRoutingStepMachine)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(IEnumerable<RoutingStepMachineVM>))]
+        public async Task<IActionResult> StepMachines(int stepId)
+        {
+            /*  var validator = new RawMaterialDetailVMValidator();
+              var validationResult = await validator.ValidateAsync(rawMaterialDetailVM);
+              if (!validationResult.IsValid)
+                  return BadRequest(validationResult.Errors);*/
+            var result = await _routingService.StepMachines(stepId);
+            return Ok(result);
+        }
+
+
+        //stepsuppliers
     }
 }
 

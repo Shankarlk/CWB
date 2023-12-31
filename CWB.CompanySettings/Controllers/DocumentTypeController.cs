@@ -34,11 +34,11 @@ namespace CWB.CompanySettings.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route(ApiRoutes.DocType.GetDocumentTypes)]
-        [Produces(AppContentTypes.ContentType, Type = typeof(List<DocumentTypeListVM>))]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<DocumentTypeVM>))]
         [Authorize(Roles = Roles.ADMIN)]
-        public IActionResult GetDocumentTypes(long Id)
+        public IActionResult GetDocumentTypes(long tenantId)
         {
-            var companyTypes = _documentTypeService.GetDocumentTypes(Id);
+            var companyTypes = _documentTypeService.GetDocumentTypes(tenantId);
             return Ok(companyTypes);
         }
 
@@ -59,12 +59,7 @@ namespace CWB.CompanySettings.Controllers
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
             //check if duplicate
-            var docTypeExist = _documentTypeService.CheckDocumentTypeExisit(new CheckDocumentTypeVM
-            {
-                DocumentTypeId = documentTypeVM.DocumentTypeId,
-                Name = documentTypeVM.Name,
-                TenantId = documentTypeVM.TenantId
-            });
+            var docTypeExist = _documentTypeService.CheckDocumentTypeExisit(documentTypeVM);
             if (docTypeExist)
             {
                 ModelState.AddModelError("Name", $"Document Type: {documentTypeVM.Name} Already Exist");
@@ -72,6 +67,26 @@ namespace CWB.CompanySettings.Controllers
             }
             var result = await _documentTypeService.DocumentType(documentTypeVM);
             return Ok(result);
+        }
+
+        [HttpGet]
+        [Route(ApiRoutes.DocType.GetDocumentType)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(DocumentTypeVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public IActionResult GetDocumentType(long docTypeId)
+        {
+            var docTypes = _documentTypeService.GetDocumentType(docTypeId);
+            return Ok(docTypes);
+        }
+
+        [HttpGet]
+        [Route(ApiRoutes.DocType.DelDocumentType)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public IActionResult DelDocumentType(long docTypeId)
+        {
+            var docTypes = _documentTypeService.DelDocumentType(docTypeId);
+            return Ok(docTypes);
         }
     }
 }

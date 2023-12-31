@@ -102,7 +102,8 @@ namespace CWB.Masters.Controllers
             var vcos = await _companyService.GetCompaniesByTenant(tenantId);
             List<CompaniesVM> cos = vcos.ToList();
 
-            List<RawMaterialDetailVM> rawmaterialdetails = _rawMaterialDetailService.GetOwnRMS(tenantId).ToList();
+            var ownRms = _rawMaterialDetailService.GetOwnRMS(tenantId);
+            List<RawMaterialDetailVM> rawmaterialdetails = ownRms.Result.ToList();
             List<MasterPartVM> mps = _masterPartService.GetAllMasterParts().ToList();
             List<PartPurchaseDetailsVM> ppd = _rawMaterialDetailService.GetPartPurchases(tenantId).ToList();
            

@@ -3,6 +3,7 @@ using CWB.CompanySettings.Infrastructure;
 using CWB.CompanySettings.Repositories.Location;
 using CWB.CompanySettings.ViewModels.Location;
 using CWB.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,10 +37,10 @@ namespace CWB.CompanySettings.Services.Location
             return (plants.First().Id != checkPlantVM.PlantId);
         }
 
-        public IEnumerable<PlantListVM> GetPlants(long TenantId)
+        public IEnumerable<PlantVM> GetPlants(long TenantId)
         {
             var plants = _plantRepository.GetRangeAsync(p => p.TenantId == TenantId);
-            return _mapper.Map<IEnumerable<PlantListVM>>(plants);
+            return _mapper.Map<IEnumerable<PlantVM>>(plants);
         }
 
         public async Task<PlantVM> Plant(PlantVM plantVM)
@@ -56,6 +57,37 @@ namespace CWB.CompanySettings.Services.Location
             await _unitOfWork.CommitAsync();
             plantVM.PlantId = plant.Id;
             return plantVM;
+        }
+
+        public async Task<PlantVM> GetPlant(long plantId)
+        {
+            var plant = await _plantRepository.SingleOrDefaultAsync(d => d.Id == plantId);
+            if (plant == null)
+            {
+                plant = new Domain.Plant { Id = -1 };
+            }
+            return _mapper.Map<PlantVM>(plant);
+        }
+        public async Task<bool> DelPlant(long plantId)
+        {
+            try
+            {
+                var plant = await _plantRepository.SingleOrDefaultAsync(d => d.Id == plantId);
+                if (plant != null)
+                {
+                    if (plant.Id > 0)
+                    {
+                        _plantRepository.Remove(plant);
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

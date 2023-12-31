@@ -55,8 +55,12 @@
             public const string PostNewRouting = Base + "/newrouting";
             public const string PostRoutingStep = Base + "/routingstep";
             public const string PostRoutingStepPart = Base + "/routingsteppart";
+            public const string PostRoutingStepSupplier = Base + "/routingstepsupplier";
+            public const string PostRoutingStepMachine = Base + "/routingstepmachine";
             public const string RoutingList = Base + "/routings/{manufPartId}";
             public const string RoutingSteps = Base + "/routingsteps/{routingId}";
+            public const string StepSuppliers = Base + "/stepsuppliers/{stepId}";
+            public const string StepMachines = Base + "/stepmachines/{stepId}";
             public const string StepParts = Base + "/stepparts/{stepId}";
             public const string StepPartsByManufId = Base + "/steppartsbymanufid/{manufId}";
             

@@ -137,7 +137,7 @@ namespace CWB.Masters.Services.ItemMaster
 
         public async Task<MPMakeFromVM> MPMakeFrom(MPMakeFromVM mpMakeFromVM)
         {
-            var mpMakeFrom = _mapper.Map<Domain.MPMakeFrom>(mpMakeFromVM);
+            var mpMakeFrom = _mapper.Map<MPMakeFrom>(mpMakeFromVM);
            // mpMakeFrom.InputPartNo = manufacturedPartNoDetailVM.PartNumber;
             if (mpMakeFrom.Id == 0)
             {
@@ -209,7 +209,7 @@ namespace CWB.Masters.Services.ItemMaster
         }
         public async Task<MPBOMVM> MPBOM(MPBOMVM mpBovm)
         {
-            var mpBOM = _mapper.Map<Domain.MPBOM>(mpBovm);
+            var mpBOM = _mapper.Map<MPBOM>(mpBovm);
         //    mpBOM.PartNumber = manufacturedPartNoDetailVM.PartNumber;
             if (mpBOM.Id == 0)
             {
@@ -255,7 +255,7 @@ namespace CWB.Masters.Services.ItemMaster
 
         public async Task<MPMakeFromVM> RemMakeFrom(MPMakeFromVM mPMakeFromListVM)
         {
-            var mpMakeFrom = _mapper.Map<Domain.MPMakeFrom>(mPMakeFromListVM);
+            var mpMakeFrom = _mapper.Map<MPMakeFrom>(mPMakeFromListVM);
             if (mpMakeFrom.Id > 0)
             {
                 var dbc_mpMakeFrom = await _mpMakeFromRepository.SingleOrDefaultAsync(m => m.Id == mpMakeFrom.Id);
@@ -273,7 +273,7 @@ namespace CWB.Masters.Services.ItemMaster
 
         public async Task<MPBOMVM> RemBOM(MPBOMVM mpBOMVM)
         {
-            var mpBOM = _mapper.Map<Domain.MPBOM>(mpBOMVM);
+            var mpBOM = _mapper.Map<MPBOM>(mpBOMVM);
             if (mpBOM.Id > 0)
             {
                 

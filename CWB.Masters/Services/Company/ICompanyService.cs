@@ -18,5 +18,7 @@ namespace CWB.Masters.Services.Company
         bool CheckIfDivisionExisit(CheckDivisionVM checkDivisionVM);
 
         Task<CompanyVM> GetCompany(long companyID,long tenantId);
+        Task<long> GetCompanyId(string co);
+
     }
 }

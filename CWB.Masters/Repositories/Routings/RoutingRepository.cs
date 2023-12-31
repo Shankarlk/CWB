@@ -1,8 +1,8 @@
 ﻿using CWB.CommonUtils.Common.Repositories;
 using CWB.Masters.Infrastructure;
-using CWB.Masters.Repositories.Routing;
+using CWB.Masters.Repositories.Routings;
 
-namespace CWB.Masters.Repositories.Company
+namespace CWB.Masters.Repositories.Routings
 {
     public class RoutingRepository : Repository<Domain.Routing>, IRoutingRepository
     {

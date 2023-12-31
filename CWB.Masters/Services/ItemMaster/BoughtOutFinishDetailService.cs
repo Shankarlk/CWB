@@ -52,7 +52,7 @@ namespace CWB.Masters.Services.ItemMaster
         {
             try { 
                 var masterPart = _mapper.Map<Domain.ItemMaster.MasterPart>(boughtOutFinishDetailVM);
-                var boughtoutfinishdetail = _mapper.Map<Domain.BoughtOutFinishDetail>(boughtOutFinishDetailVM);
+                var boughtoutfinishdetail = _mapper.Map<BoughtOutFinishDetail>(boughtOutFinishDetailVM);
                 int id = GetPartId(masterPart.PartNo);
                 boughtoutfinishdetail.PartId = id;
                 boughtOutFinishDetailVM.PartId = id;

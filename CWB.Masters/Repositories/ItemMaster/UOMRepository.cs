@@ -1,5 +1,4 @@
 ﻿using CWB.CommonUtils.Common.Repositories;
-using CWB.Masters.Domain;
 using CWB.Masters.Domain.ItemMaster;
 using CWB.Masters.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CWB.Masters.Repositories.ItemMaster
 {
-    public class UOMRepository : Repository<Domain.UOM>, IUOMRepository
+    public class UOMRepository : Repository<UOM>, IUOMRepository
     {
         private readonly DbSet<UOM> _dbSet;
         public UOMRepository(MastersDbContext context)

@@ -24,6 +24,16 @@ namespace CWB.CompanySettings.Configurations
                 .HasColumnName("IsUploadedByUser")
                 .IsRequired()
                 .HasDefaultValue(false);
+            builder
+                .Property(w => w.Description)
+                .HasColumnName("Description")
+                .IsUnicode(true)
+                .HasMaxLength(255);
+            builder
+                .Property(w => w.Extension)
+                .HasColumnName("Extension")
+                .IsUnicode(true)
+                .HasMaxLength(30);
             //builder
             //   .HasOne(m => m.ShopDepartment)
             //   .WithMany(m => m.DocumentTypes)

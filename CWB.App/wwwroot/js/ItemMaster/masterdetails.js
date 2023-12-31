@@ -89,7 +89,7 @@ function loadMPDList() {
         for (i = 0; i < data.length; i++) {
             if (!(data[i]['masterPartType'] == partType))
                 continue;
-            $(tablebody).append(ProcessTemplateDataNew("MasterDetaiTemplate", data[i],i));
+            $(tablebody).append(AppUtil.ProcessTemplateDataNew("MasterDetaiTemplate", data[i],i));
         }
     }
     else {
@@ -106,7 +106,7 @@ function loadMPDList() {
                 console.log("================");
                 if (!(data[i]['masterPartType'] == partType))
                     continue;
-                $(tablebody).append(ProcessTemplateDataNew("MasterDetaiTemplate", data[i],i));
+                $(tablebody).append(AppUtil.ProcessTemplateDataNew("MasterDetaiTemplate", data[i],i));
             }
         }).catch((error) => {
         });

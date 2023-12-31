@@ -123,3 +123,18 @@ function loadCustomers(CompanyOrSupplier) {//pass the element name
         //console.log(error);
     });
 }
+
+//RoutingSelectSupplierTable
+//RoutingSelectSupplierRow
+function loadSuppliersToTable(tableName,rowTemplate) {
+    var tablebody = $("#"+tableName+" tbody");
+    $(tablebody).html("");//empty tbody
+    api.get("/masters/suppliers").then((data) => {
+        for (i = 0; i < data.length; i++) {
+            $(tablebody).append(AppUtil.ProcessTemplateDataNew(rowTemplate, data[i],i));
+        }
+        console.log($(tablebody).html());
+    }).catch((error) => {
+        //console.log(error);
+    });
+}    

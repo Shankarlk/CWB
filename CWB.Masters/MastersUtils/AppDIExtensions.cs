@@ -3,7 +3,7 @@ using CWB.Masters.Repositories.Company;
 using CWB.Masters.Repositories.ItemMaster;
 using CWB.Masters.Repositories.Machines;
 using CWB.Masters.Repositories.OperationList;
-using CWB.Masters.Repositories.Routing;
+using CWB.Masters.Repositories.Routings;
 using CWB.Masters.Services.Company;
 using CWB.Masters.Services.ItemMaster;
 using CWB.Masters.Services.Machines;
@@ -48,6 +48,8 @@ namespace CWB.Masters.MastersUtils
             services.AddTransient<IRoutingRepository, RoutingRepository>();
             services.AddTransient<IRoutingStepRepository, RoutingStepRepository>();
             services.AddTransient<IRoutingStepPartRepository, RoutingStepPartRepository>();
+            services.AddTransient<IRoutingStepMachineRepository, RoutingStepMachineRepository>();
+            services.AddTransient<IRoutingStepSupplierRepository, RoutingStepSupplierRepository>();
         }
     }
 }

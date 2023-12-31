@@ -14,12 +14,16 @@ namespace CWB.App.Services.Routings
         Task<RoutingVM> Routing(RoutingVM routingVM);
         Task<RoutingStepVM> RoutingStep(RoutingStepVM routingStepVM);
         Task<RoutingStepPartVM> RoutingStepPart(RoutingStepPartVM routingStepPartVM);
+        Task<RoutingStepSupplierVM> RoutingStepSupplier(RoutingStepSupplierVM routingStepSupplierVM);
+        Task<RoutingStepMachineVM> RoutingStepMachine(RoutingStepMachineVM routingStepMachineVM);
 
         Task<IEnumerable<RoutingStepVM>> RoutingSteps(int routingId);
         Task<IEnumerable<RoutingVM>> Routings(int manufPartId);
         
         Task<IEnumerable<RoutingStepPartVM>> StepParts(int stepId);
         Task<IEnumerable<RoutingStepPartVM>> StepPartsByManufId(int manufId);
+        Task<IEnumerable<RoutingStepSupplierVM>> StepSuppliers(int stepId);
+        Task<IEnumerable<RoutingStepMachineVM>> StepMachines(int stepId);
 
     }
 }
