@@ -1,4 +1,5 @@
 ﻿using CWB.CommonUtils.Common.Configurations;
+using CWB.Masters.Domain.ItemMaster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,9 +14,9 @@ namespace CWB.Masters.Configurations.ItemMaster
    MFBOM varchar(10) NOT NULL,
      */
 
-    public class ManufacturedPartNoDetailConfigurations : IEntityTypeConfiguration<Domain.ManufacturedPartNoDetail>
+    public class ManufacturedPartNoDetailConfigurations : IEntityTypeConfiguration<ManufacturedPartNoDetail>
     {
-        public void Configure(EntityTypeBuilder<Domain.ManufacturedPartNoDetail> builder)
+        public void Configure(EntityTypeBuilder<ManufacturedPartNoDetail> builder)
         {
             builder
              .ToTable("ManufacturedPartNoDetails");

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CWB.Masters.Domain;
 
 namespace CWB.Masters.Services.ItemMaster
 {

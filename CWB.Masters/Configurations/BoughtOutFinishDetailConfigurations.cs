@@ -1,12 +1,13 @@
 ﻿using CWB.CommonUtils.Common.Configurations;
+using CWB.Masters.Domain.ItemMaster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CWB.Masters.Configurations
 {
-    public class BoughtOutFinishDetailConfigurations : IEntityTypeConfiguration<Domain.BoughtOutFinishDetail>
+    public class BoughtOutFinishDetailConfigurations : IEntityTypeConfiguration<BoughtOutFinishDetail>
     {
-        public void Configure(EntityTypeBuilder<Domain.BoughtOutFinishDetail> builder)
+        public void Configure(EntityTypeBuilder<BoughtOutFinishDetail> builder)
         {
             builder
              .ToTable("BoughtOutFinishDetails");

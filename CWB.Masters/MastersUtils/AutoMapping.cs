@@ -141,7 +141,7 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(s => s.StatusChangeReason, s => s.MapFrom(src => src.StatusChangeReason));
 
 
-            CreateMap<ManufacturedPartNoDetailVM, Domain.ManufacturedPartNoDetail>()
+            CreateMap<ManufacturedPartNoDetailVM, ManufacturedPartNoDetail>()
                 .ForMember(s => s.Id, s => s.MapFrom(src => src.ManufacturedPartNoDetailId))
                 .ForMember(s => s.ManufacturedPartType, s => s.MapFrom(src => src.ManufacturedPartType))
                 .ForMember(s => s.PartId, s => s.MapFrom(src => src.PartId))
@@ -154,7 +154,7 @@ namespace CWB.Masters.MastersUtils
             .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
             .ForMember(s => s.StatusChangeReason, s => s.MapFrom(src => src.StatusChangeReason));*/
 
-            CreateMap<Domain.ManufacturedPartNoDetail, ManufacturedPartNoDetailVM>()
+            CreateMap<ManufacturedPartNoDetail, ManufacturedPartNoDetailVM>()
                 .ForMember(s => s.ManufacturedPartNoDetailId, s => s.MapFrom(src => src.Id))
                 .ForMember(s => s.ManufacturedPartType, s => s.MapFrom(src => src.ManufacturedPartType))
                 .ForMember(s => s.PartId, s => s.MapFrom(src => src.PartId))

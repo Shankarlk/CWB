@@ -13,7 +13,7 @@ namespace CWB.Masters.Domain.ItemMaster
         public long RawMaterialTypeId { get; set; }
         public long BaseRawMaterialId { get; set; }
         public string RawMaterialWeight { get; set; }
-        public string RawMaterialNotes { get; set; }
+        public string? RawMaterialNotes { get; set; }
         public long Standard { get; set; }
         public long MaterialSpecId { get; set; }
         //DbPart - End

@@ -93,7 +93,7 @@ namespace CWB.Masters.Services.ItemMaster
         {
             try
             {
-                var manufacturedpartnodetail = _mapper.Map<Domain.ManufacturedPartNoDetail>(manufacturedPartNoDetailVM);
+                var manufacturedpartnodetail = _mapper.Map<ManufacturedPartNoDetail>(manufacturedPartNoDetailVM);
                 var masterPart = _mapper.Map<Domain.ItemMaster.MasterPart>(manufacturedPartNoDetailVM);
                 int id = GetPartId(masterPart.PartNo);
                 manufacturedpartnodetail.PartId = id;

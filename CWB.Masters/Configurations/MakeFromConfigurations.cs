@@ -1,5 +1,6 @@
 ﻿using CWB.CommonUtils.Common.Configurations;
 using CWB.Masters.Domain;
+using CWB.Masters.Domain.ItemMaster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

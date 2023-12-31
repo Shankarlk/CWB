@@ -1,12 +1,13 @@
 ﻿using CWB.CommonUtils.Common.Configurations;
+using CWB.Masters.Domain.ItemMaster;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CWB.Masters.Configurations
 {
-    public class RawMaterialDetailConfigurations : IEntityTypeConfiguration<Domain.RawMaterialDetail>
+    public class RawMaterialDetailConfigurations : IEntityTypeConfiguration<RawMaterialDetail>
     {
-        public void Configure(EntityTypeBuilder<Domain.RawMaterialDetail> builder)
+        public void Configure(EntityTypeBuilder<RawMaterialDetail> builder)
         {
             builder
              .ToTable("RawMaterialDetails");

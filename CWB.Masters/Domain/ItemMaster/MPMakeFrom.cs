@@ -3,6 +3,7 @@ using System;
 
 namespace CWB.Masters.Domain.ItemMaster
 {
+
     /** PartId bigint not null,
   `PartDescription` varchar(4000) COLLATE utf8mb4_cs_0900_ai_ci DEFAULT NULL,
   `PartMadeFrom` bigint NOT NULL,
@@ -21,12 +22,12 @@ namespace CWB.Masters.Domain.ItemMaster
         public long InputWeight { get; set; }
         public long ScrapGenerated { get; set; }
         public long QuantityPerInput { get; set; }
-        public string YieldNotes { get; set; }
-        public bool PreferedRawMaterial { get; set; }
+        public string? YieldNotes { get; set; }
+        public Boolean PreferedRawMaterial { get; set; }
         public int ManufPartId { get; set; }
         //DbPart-End
 
-        public string PartDescription { get; set; }
+        public string? PartDescription { get; set; }
         public long TenantId { get; set; }
     }
 }

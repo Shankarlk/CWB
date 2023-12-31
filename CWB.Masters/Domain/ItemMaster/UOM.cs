@@ -1,4 +1,5 @@
 ﻿using CWB.CommonUtils.Common;
+using CWB.Masters.Domain.ItemMaster;
 using CWB.Masters.Domain.MR;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;

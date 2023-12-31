@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CWB.Logging;
+using CWB.Masters.Domain;
 using CWB.Masters.Domain.ItemMaster;
 using CWB.Masters.Infrastructure;
 using CWB.Masters.Repositories.Company;
