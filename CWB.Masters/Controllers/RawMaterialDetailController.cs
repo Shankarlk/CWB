@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
+using System.Data;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -105,6 +106,8 @@ namespace CWB.Masters.Controllers
             List<RawMaterialDetailVM> rawmaterialdetails = _rawMaterialDetailService.GetOwnRMS(tenantId).ToList();
             List<MasterPartVM> mps = _masterPartService.GetAllMasterParts().ToList();
             List<PartPurchaseDetailsVM> ppd = _rawMaterialDetailService.GetPartPurchases(tenantId).ToList();
+            List<RawMaterialTypeVM> rmtypes = _rawMaterialDetailService.GetRMTypes(tenantId).ToList();
+            List<BaseRawMaterialVM> baserms = _rawMaterialDetailService.GetBaseRMs(tenantId).ToList();
            
             var query1 = from pp in ppd
                          join co in cos on pp.PSupplierId equals co.CompanyId into ppjoin
@@ -128,6 +131,8 @@ namespace CWB.Masters.Controllers
                        from ppj in ppjoin*/
            var query2 = from rm in rawmaterialdetails
                         join mpj in mps on rm.PartId equals mpj.MasterPartId into rmjoin
+                        join rmtype in rmtypes on rm.RawMaterialTypeId equals rmtype.RawMaterialTypeId
+                        join basermsn in baserms on rm.BaseRawMaterialId equals basermsn.BaseRawMaterialId
                         from rmj in rmjoin
             select new RawMaterialDetailVM
             {
@@ -145,12 +150,16 @@ namespace CWB.Masters.Controllers
                 PartDescription = rmj.PartDescription,
                 RawMaterialDetailId = rm.RawMaterialDetailId,
                 Supplier = string.Empty,
-                AdditionalInfo = string.Empty
+                AdditionalInfo = string.Empty,
+                RawMaterialType = rmtype?.Name ?? string.Empty,
+                BaseRawMaterial = basermsn?.Name ?? string.Empty
 
             };
             List<RawMaterialDetailVM> newrms = query2.ToList();
             var query = from rm in newrms
                         join pp in newppd on rm.RawMaterialDetailId equals pp.RMId into rmjoin_new
+                        join rmtype in rmtypes on rm.RawMaterialTypeId equals rmtype.RawMaterialTypeId
+                        join basermsn in baserms on rm.BaseRawMaterialId equals basermsn.BaseRawMaterialId
                         from rmj in rmjoin_new
                         select new RawMaterialDetailVM
                         {
@@ -168,11 +177,15 @@ namespace CWB.Masters.Controllers
                             PartDescription = rm.PartDescription,
                             RawMaterialDetailId = rm.RawMaterialDetailId,
                             Supplier = rmj?.PSupplier??string.Empty,
-                            AdditionalInfo = rmj?.PAdditionalInfo??string.Empty
+                            AdditionalInfo = rmj?.PAdditionalInfo??string.Empty,
+                            RawMaterialType = rmtype?.Name ?? string.Empty,
+                            BaseRawMaterial = basermsn?.Name ?? string.Empty
                         };
             var query0 = from rm in newrms
                         join pp in newppd on rm.RawMaterialDetailId equals pp.BOFId into rmjoin_new
-                        from rmj in rmjoin_new
+                         join rmtype in rmtypes on rm.RawMaterialTypeId equals rmtype.RawMaterialTypeId
+                         join basermsn in baserms on rm.BaseRawMaterialId equals basermsn.BaseRawMaterialId
+                         from rmj in rmjoin_new
                         select new RawMaterialDetailVM
                         {
                             PartId = rm.PartId,
@@ -189,7 +202,9 @@ namespace CWB.Masters.Controllers
                             PartDescription = rm.PartDescription,
                             RawMaterialDetailId = rm.RawMaterialDetailId,
                             Supplier = rmj?.PSupplier ?? string.Empty,
-                            AdditionalInfo = rmj?.PAdditionalInfo ?? string.Empty
+                            AdditionalInfo = rmj?.PAdditionalInfo ?? string.Empty,
+                            RawMaterialType = rmtype?.Name ?? string.Empty,
+                            BaseRawMaterial = basermsn?.Name ?? string.Empty
                         };
             List<RawMaterialDetailVM> temp = query.ToList();
             List<RawMaterialDetailVM> temp1 = query0.ToList();
@@ -200,12 +215,16 @@ namespace CWB.Masters.Controllers
         [HttpGet]
         [Route(ApiRoutes.RawMaterialDetail.SupplierRMS)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<RawMaterialDetailVM>))]
-        public IActionResult SupplierRMS(long supplierId)
+        public IActionResult SupplierRMS(long supplierId, long tenantId)
         {
             List<MasterPartVM> mps = _masterPartService.GetAllMasterParts().ToList();
             List<RawMaterialDetailVM> rawmaterialdetails = _rawMaterialDetailService.GetSupplierRMS(supplierId).ToList();
+            List<RawMaterialTypeVM> rmtypes = _rawMaterialDetailService.GetRMTypes(tenantId).ToList();
+            List<BaseRawMaterialVM> baserms = _rawMaterialDetailService.GetBaseRMs(tenantId).ToList();
             var query = from rm in rawmaterialdetails
                         join mp in mps on rm.PartId equals mp.MasterPartId into mpjoin
+                        join rmtype in rmtypes on rm.RawMaterialTypeId equals rmtype.RawMaterialTypeId
+                        join basermsn in baserms on rm.BaseRawMaterialId equals basermsn.BaseRawMaterialId
                         from scojoin in mpjoin
                         select new RawMaterialDetailVM
                         {
@@ -221,7 +240,9 @@ namespace CWB.Masters.Controllers
                             MaterialSpecId = rm.MaterialSpecId,
                             PartNo = scojoin.PartNo,
                             PartDescription = scojoin.PartDescription,
-                            RawMaterialDetailId = rm.RawMaterialDetailId
+                            RawMaterialDetailId = rm.RawMaterialDetailId,
+                            RawMaterialType = rmtype?.Name ?? string.Empty,
+                            BaseRawMaterial = basermsn?.Name ?? string.Empty
                         };
             return Ok(query.ToList());
         }

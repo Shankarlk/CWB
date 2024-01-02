@@ -114,7 +114,7 @@
 
 
             public const string OwnRMS = Base + "/ownrms/{tenantId}";
-            public const string SupplierRMS = Base + "/supplierrms/{supplierId}";
+            public const string SupplierRMS = Base + "/supplierrms/{supplierId}/{tenantId}";
 
             public const string GetMasterParts = Base + "/itemmasterparts/{tenantId}";
             public const string GetSelectParts = Base + "/selectparts/{tenantId}";

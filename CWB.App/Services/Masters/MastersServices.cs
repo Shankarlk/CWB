@@ -191,7 +191,7 @@ namespace CWB.App.Services.Masters
 
         public async Task<IEnumerable<RawMaterialDetailVM>> SupplierRMS(string supplierId)
         {
-            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/supplierrms/{supplierId}");
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/supplierrms/{supplierId}/{tenantId}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<RawMaterialDetailVM>>.GetAsync(uri, headers);
         }

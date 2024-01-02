@@ -67,7 +67,8 @@ $(function () {
     });
 });
 
-function ProcessTemplateDataNew(templateId, dataObj){
+function ProcessTemplateDataNew(templateId, dataObj) {
+    debugger;
     var templateElement = $("#" + templateId).html();
     ////console.log(templateId);
     templateElement = templateElement.replaceAll("{partType}", partType)

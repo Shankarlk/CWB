@@ -1,0 +1,98 @@
+﻿@{
+    ViewData["Title"] = "Designations";
+}
+
+@model IEnumerable<CWB.App.Models.Designation.DesignationVM>
+<input value="M-C" type="hidden" id="hdn-nav-menu" />
+<div class="content">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-11">
+                    <h5>Designation List</h5>
+                </div>
+            </div>
+            <!-- -------- -->
+
+            <div class="row mt-2">
+                <!-- -------- -->
+                <div class="col-md-3" title="Enter the Company Name Partially or Fully to shortlist " data-plugin="tippy" data-tippy-placement="top">
+                    <input class="form-control form-control-sm contact-search" type="text" data-key="CompanyName" placeholder="Company Name">
+                </div>
+                <!-- -------- -->
+            </div>
+
+            <!-- end row -->
+            <div class="table-responsive table-he-250 mt-3">
+                <table class="table table-sm table-bordered  mb-3 mt-1 tableFixHead" id="tbl-contacts">
+                    <thead class="table-info th-sti text-center">
+                        <tr class="table-border-bottom">
+                            <th width="10%"></th>
+                            <th width="50%">Designation Name</th>
+                            <th width="5%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var Designation in Model)
+                        {
+                            <tr>
+                                <td data-key="DesignationName">@Designation.Name</td>
+                                <td>
+                                    <div class="dropdown float-center">
+                                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                        <div class="dropdown-menu dropdown-menu-end">
+                                            <!-- item-->
+                                            <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#dialog-company" data-id="@Designation.DesignationId" class="dropdown-item">Designation Details</a>
+                                            <!-- item-->
+                                            <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#dialog-company" data-id="@Designation.DesignationId" class="dropdown-item">Delete Designation</a>
+                                            <!-- item-->
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- ------- -->
+            <div class="row">
+                <div class="col">
+                    <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-id="0" data-bs-target="#dialog-designation" title="Select to Add details of a Designation"
+                            data-plugin="tippy" data-tippy-placement="top">
+                        Add Designation
+                    </button>
+                </div>
+            </div>
+            <!-- ============================== -->
+        </div>
+        <!-- end card body -->
+    </div>
+    <!-- ============================== -->
+</div>
+
+<partial name="../Shared/_DesignationDialog" model='new CWB.App.Models.Designation.DesignationVM{DesignationId=0}' />
+@section scripts {
+    <script src="~/js/designations.js"></script>
+    <script src="~/js/designation-model.js"></script>
+}
+
+<!--Company Template-->
+<template id="designation-template">
+    <tr>
+        <td data-key="DesignationName">{designationName}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#dialog-designation"
+                       data-id="{designationId}" class="dropdown-item">Designation Details</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#dialog-designation"
+                       data-id="{designationId}" class="dropdown-item">Delete Designation</a>
+                    <!-- item-->
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>

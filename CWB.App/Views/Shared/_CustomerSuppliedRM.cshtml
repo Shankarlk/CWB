@@ -28,23 +28,14 @@
                     <!-- ------------------- -->
                     <label class="form-label col-md-2 mb-2"> RM Type</label>
                     <div class="col-md-4 mb-2" title="Select the Raw Material Type from the list (Casting, Forging, Plate, Bar ..." data-plugin="tippy" data-tippy-placement="top">
-                        <select id="CRawMaterialTypeId" name ="RawMaterialTypeId"class="form-select form-select-sm"></select>
-                        <!--
-                            <option value="">Forging</option>
-                            <option value="">Casting</option>
-                            <option value="">Sheet</option>
-                            <option value="">Bar Stock</option>
-                        </select>
-                        -->
+                        <input class="form-control form-control-sm" type="text" id="CRawMaterialTypeId" name="CRawMaterialTypeId" placeholder="enter here">
+
                     </div>
                     <!-- ------------------- -->
                     <label class="form-label col-md-2 mb-2"> Base Material</label>
                     <div class="col-md-4 mb-2" title="Select the Base Raw Material from the list (Steel, Brass ....)" data-plugin="tippy" data-tippy-placement="top">
-                        <select id="CBaseRawMaterialId" name="BaseRawMaterialId" class="form-select form-select-sm">
-<!--                            <option value="">XXXXX</option>
-                            <option value="">XXXXXX</option>
-                                                        -->
-                        </select>
+                        <input class="form-control form-control-sm" type="text" id="CBaseRawMaterialId" name="CBaseRawMaterialId" placeholder="enter here">
+
                     </div>
                     <!-- ------------------- -->
                     <label class="form-label col-md-2 mb-1">Keyword / Desc</label>
@@ -88,6 +79,9 @@
         <td data-key="partDescription">{partDescription}</td>
         <td data-key="rawMaterialNotes">{rawMaterialNotes}</td>
         <td style="visibility:collapse" data-key="rawMaterialDetailId">{rawMaterialDetailId}</td>
+        <td style="visibility:collapse" data-key="rmMadeSubType">{rawMaterialMadeSubType}</td>
+        <td style="visibility:collapse" data-key="rmType">{rawMaterialType}</td>
+        <td style="visibility:collapse" data-key="baseRM">{baseRawMaterial}</td>
     </tr>
 </template>
 

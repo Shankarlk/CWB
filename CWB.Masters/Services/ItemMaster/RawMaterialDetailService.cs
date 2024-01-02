@@ -243,7 +243,7 @@ namespace CWB.Masters.Services.ItemMaster
         }*/
         public IEnumerable<RawMaterialDetailVM> GetOwnRMS(long tenantId)
         {
-            var rawmaterialdetails = _rawMaterialDetailRepository.GetRangeAsync(m=>m.SupplierId==127 && m.TenantId == tenantId);
+            var rawmaterialdetails = _rawMaterialDetailRepository.GetRangeAsync(m=>m.SupplierId==1 && m.TenantId == tenantId);
             return _mapper.Map<IEnumerable<RawMaterialDetailVM>>(rawmaterialdetails);
         }
 

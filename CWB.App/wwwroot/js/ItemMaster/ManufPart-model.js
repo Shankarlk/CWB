@@ -254,7 +254,16 @@ $(document).ready(function () {
 
     });
     $("#TabHeadMakefrom").click(function (event) {
-
+        debugger;
+        var relatedTarget = $(event.relatedTarget);
+        var makefromid = relatedTarget.data("makefromid");
+        api.get("/masters/getmakefrom?Id=" + makefromid).then((data) => {
+            ownRM = data;
+            var tablebody = $("#tbl-MakeFromRM tbody");
+            $(tablebody).html("");//empty tbody
+            for (i = 0; i < data.length; i++) {
+                $(tablebody).append(AppUtil.ProcessTemplateDataNew("MakeFromRMTemplate", data[i], i));
+            }
         //  //////debugger;
         if (!ManufPartFormUtil.ValidateManufPartDetails(1)) {
         }
@@ -329,7 +338,7 @@ $(document).ready(function () {
     });
 
     $('#rm-select').on('show.bs.modal', function (event) {
-        //  //debugger;
+        debugger;
         ownRM = {};
         loadBaseRMs("OBaseRawMaterialId");
         loadRMTypes("ORawMaterialTypeId");
@@ -340,7 +349,7 @@ $(document).ready(function () {
         //OPartNo
         //OPartDescription
         api.get("/masters/ownrms").then((data) => {
-            //console.log(data);
+            console.log(data);
             ownRM = data;
             var tablebody = $("#OwnRMTable tbody");
             $(tablebody).html("");//empty tbody
@@ -367,7 +376,7 @@ $(document).ready(function () {
         var tablebody = $("#CustRMTable tbody");
         var coId = $("#CompanyId option:selected").val();
         $(tablebody).html("");//empty tbody
-        api.get("/masters/supplierrms?supplierId=" + coId).then((data) => {
+        api.get("/masters/supplierrms?supplierId=" + 1).then((data) => {
             custRM = data;
             for (i = 0; i < data.length; i++) {
                 $(tablebody).append(AppUtil.ProcessTemplateDataNew("CustomerSuppliedRMTemplate", data[i],i));
@@ -552,7 +561,7 @@ $(document).ready(function () {
     //debugger;
     var manufacturedPartType = modelObj.manufacturedPartType;
     $("#TabHeadBalloon").hide();
-    console.log(manufacturedPartType);
+   // console.log(manufacturedPartType);
     if (manufacturedPartType == 1) {
         $("#TabHeadMakefrom").show();
         $("#TabHeadBOM").hide();
@@ -675,6 +684,64 @@ $(document).ready(function () {
         }
     });
     return;
+});
+
+$("#OSupplierId").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#OwnRMTable tbody tr").filter(function () {
+        $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
+    });
+});
+
+$("#OSupplierPartNo").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#OwnRMTable tbody tr").filter(function () {
+        $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
+    });
+});
+
+$("#ORawMaterialMadeSubType").change(function () {
+    debugger;
+    var value = parseFloat($("#ORawMaterialMadeSubType option:selected").val());
+    $("#OwnRMTable tbody tr").filter(function () {
+        $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
+    });
+});
+
+$("#ORawMaterialTypeId").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#OwnRMTable tbody tr").filter(function () {
+        $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
+    });
+});
+
+$("#OBaseRawMaterialId").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#OwnRMTable tbody tr").filter(function () {
+        $(this).toggle($(this.children[7]).text().toLowerCase().indexOf(value) > -1)
+    });
+});
+
+$("#CRawMaterialMadeSubType").change(function () {
+    debugger;
+    var value = parseFloat($("#CRawMaterialMadeSubType option:selected").val());
+    $("#CustRMTable tbody tr").filter(function () {
+        $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
+    });
+});
+
+$("#CRawMaterialTypeId").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#CustRMTable tbody tr").filter(function () {
+        $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
+    });
+});
+
+$("#CBaseRawMaterialId").on("keyup", function () {
+    var value = $(this).val().toLowerCase();
+    $("#CustRMTable tbody tr").filter(function () {
+        $(this).toggle($(this.children[7]).text().toLowerCase().indexOf(value) > -1)
+    });
 });
 
 function copyBOFData() {

@@ -84,7 +84,7 @@ namespace CWB.Masters.Controllers
         [Produces(AppContentTypes.ContentType, Type = typeof(List<RoutingListItemVM>))]
         public async Task<List<RoutingListItemVM>> GetRoutingListItmes()
         {
-             var manufParts = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant().ToList();
+             var manufParts = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant(1).ToList();
              var partIds = from mfs in manufParts select mfs.PartId;
              List<int> partIdLilst = partIds.ToList();
              var mps = _masterPartService.GetAllMasterPartsWithIds(partIdLilst);
