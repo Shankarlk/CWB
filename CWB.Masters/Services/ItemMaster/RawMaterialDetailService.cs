@@ -242,11 +242,6 @@ namespace CWB.Masters.Services.ItemMaster
             }
             return (department.First().Id != checkDivisionVM.DivisionId);
         }*/
-        public IEnumerable<RawMaterialDetailVM> GetOwnRMS(long tenantId)
-        {
-            var rawmaterialdetails = _rawMaterialDetailRepository.GetRangeAsync(m=>m.SupplierId==1 && m.TenantId == tenantId);
-            return _mapper.Map<IEnumerable<RawMaterialDetailVM>>(rawmaterialdetails);
-        }
         public async Task<IEnumerable<RawMaterialDetailVM>> GetOwnRMS(long tenantId)
         {
             var co = await _companyRepository.SingleOrDefaultAsync(m => m.Name.ToLower().Equals("self"));

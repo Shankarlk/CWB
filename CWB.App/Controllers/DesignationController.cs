@@ -33,7 +33,6 @@ namespace CWB.App.Controllers
             return View(companies);
         }
 
-        private readonly ILoggerManager _logger;
         [HttpGet]
         public async Task<IActionResult> Designations()
         {
@@ -42,26 +41,22 @@ namespace CWB.App.Controllers
 
         }
 
-        public DesignationController(ILoggerManager logger)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Designation(DesignationVM model)
         {
             if (!ModelState.IsValid)
         {
-            _logger = logger;
                 return BadRequest(ModelState);
             }
             var result = await _designationservice.Designation(model);
             return Ok(result);
         }
 
-        public IActionResult Index()
         [HttpPost]
         public async Task<JsonResult> IsDesignationExist(long? DesignationId, string DesignationName)
         {
-            return View();
-        }
+        
             var result = await _designationservice.CheckIfDesignationExisit(DesignationId.HasValue ? DesignationId.Value : 0, DesignationName);
             return Json(!result);
     }
