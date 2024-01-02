@@ -1,7 +1,7 @@
 ﻿using CWB.CommonUtils.Common;
 using System;
 
-namespace CWB.Masters.Domain
+namespace CWB.Masters.Domain.ItemMaster
 {
     public class MPBOM : BaseEntity
     {

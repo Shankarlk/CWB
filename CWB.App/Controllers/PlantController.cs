@@ -1,4 +1,5 @@
-﻿using CWB.App.Services.CompanySettings;
+﻿using CWB.App.Models.CoSettings;
+using CWB.App.Services.CompanySettings;
 using CWB.Constants.UserIdentity;
 using CWB.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -27,6 +28,32 @@ namespace CWB.App.Controllers
         public async Task<JsonResult> GetPlants()
         {
             var result = await _plantService.GetPlants();
+            return Json(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Plant(PlantVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _plantService.PostPlant(model);
+            return Json(result);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetPlant(long plantId)
+        {
+            var result = await _plantService.GetPlant(plantId);
+            return Json(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DelPlant(long plantId)
+        {
+            var result = await _plantService.DelPlant(plantId);
             return Json(result);
         }
 

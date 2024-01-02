@@ -37,9 +37,6 @@
                             <div class="col-md-8 mb-2">
                                 <select id="StepOperation" name="StepOperation" class="form-select form-select-sm" required title="Select the Manufacturing Operation carried out in this Routing Step. The selection of the Operation will decide the documents that need to be generated for carrying out the step. If the Operation does not exist, it would need to be created in the 'Operations' Master" data-plugin="tippy" data-tippy-placement="top">
                                     <option value="">Select</option>
-                                    <option value="1">Machining</option>
-                                    <option value="2">Die Casting</option>
-                                    <option value="3">Heat Treatment</option>
                                 </select>
                             </div>
                             <!-- ---------------  -->
@@ -81,123 +78,8 @@
                 <!-- ------------------------------------------  -->
                 <div class="col-md-7">
                     <div class="row">
-                        <div class="col-md-12">
-                            <div class="table-responsive table-he-180 w-100 ">
-                                <table class="table table-sm table-bordered mb-3 text-center tableFixHead" id="#">
-                                    <thead class="  table-info th-sti">
-                                        <tr class="table-border-bottom">
-                                            <th width="50%">Machine</th>
-                                            <th>Floor to Floor time</th>
-                                            <th>Status</th>
-                                            <th width="5%"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <!-- ----------------- -->
-                        <label class="form-label col-md-6 mb-1 mt-3">No of Machines that can run this operation simultaneously </label>
-                        <div class="col-md-3 mb-2">
-                            <input class="form-control form-control-sm mt-3" type="number" title="For Line Balancing reasons if more than 1 machine has to run the Operation Step .... indicate the number of Machines that need to run simultaneously. Those many machines or more have to be added to the list " data-plugin="tippy" data-tippy-placement="top">
-                        </div>
-                        <!-- ============ -->
-                        <div class="col-md-3 mt-3 mb-1 text-end">
-                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#add-machine" title="" data-plugin="tippy" data-tippy-placement="top">Add Machine</button>
-                        </div>
-                        <!-- ---------------  -->
-                        <div class="col-md-12   display-none ">
-                            <div class="table-responsive mt-2 table-he-180 w-100">
-                                <table class="table table-sm table-bordered  mb-3 text-center mt-1 tableFixHead" id="#">
-                                    <thead class="  table-info th-sti">
-                                        <tr class="table-border-bottom">
-                                            <th width="55%">Supplier</th>
-                                            <th>SOB</th>
-                                            <th>Outsource Days</th>
-                                            <th width="5%"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td>
-                                                <div class="dropdown float-center">
-                                                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item">Delete</a>
-                                                        <!-- item-->
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td>
-                                                <div class="dropdown float-center">
-                                                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item">Delete</a>
-                                                        <!-- item-->
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td>
-                                                <div class="dropdown float-center">
-                                                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item">Delete</a>
-                                                        <!-- item-->
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td>
-                                                <div class="dropdown float-center">
-                                                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                        <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item">Delete</a>
-                                                        <!-- item-->
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <button class="btn btn-sm btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#add-supplier">Add Supplier</button>
-                        </div>
+                        <partial name="_RouteMachines" />
+                        <partial name="_RouteSuppliers" />
                         <!-- =============== -->
                     </div>
                 </div>
@@ -561,6 +443,10 @@
     </div>
    
 </div>
+
+<partial name="_Add-Machine" />
+<partial name="_Add-Supplier" />
+
 
 <template id="RT_BOM-template">
     <tr sclass ="bg-grey">

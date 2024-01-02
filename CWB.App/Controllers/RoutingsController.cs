@@ -212,5 +212,40 @@ namespace CWB.App.Controllers
             return Ok("hello");
         }
 
+
+
+        [HttpPost]
+        public async Task<IActionResult> SaveStepSupplier(RoutingStepSupplierVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _routingService.RoutingStepSupplier(model);
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> SaveStepMachine(RoutingStepMachineVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _routingService.RoutingStepMachine(model);
+            return Ok(result);
+        }
+
+        public async Task<IActionResult> StepSuppliers(int stepId)
+        {
+            var result = await _routingService.StepSuppliers(stepId);
+            return Ok(result);
+        }
+
+        public async Task<IActionResult> StepMachines(int stepId)
+        {
+            var result = await _routingService.StepMachines(stepId);
+            return Ok(result);
+        }
+
     }
 }

@@ -6,10 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CWB.Masters.Domain.ItemMaster;
 
 namespace CWB.Masters.Repositories.ItemMaster
 {
-    public class BoughtOutFinishDetailRepository : Repository<Domain.BoughtOutFinishDetail>, IBoughtOutFinishDetailRepository
+    public class BoughtOutFinishDetailRepository : Repository<BoughtOutFinishDetail>, IBoughtOutFinishDetailRepository
     {
        
         public BoughtOutFinishDetailRepository(MastersDbContext context)

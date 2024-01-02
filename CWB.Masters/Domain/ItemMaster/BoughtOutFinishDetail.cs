@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CWB.Masters.Domain
+namespace CWB.Masters.Domain.ItemMaster
 {
     /**
      * `BoughtOutFinishMadeType` int DEFAULT NULL,

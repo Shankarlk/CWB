@@ -6,10 +6,13 @@ namespace CWB.CompanySettings.Services.Location
 {
     public interface IPlantService
     {
-        IEnumerable<PlantListVM> GetPlants(long TenantId);
-
+        IEnumerable<PlantVM> GetPlants(long TenantId);
         Task<PlantVM> Plant(PlantVM plantVM);
-
         bool CheckPlantExisit(CheckPlantVM checkPlantVM);
+
+        Task<PlantVM> GetPlant(long plantId);
+        Task<bool> DelPlant(long plantId);
+
+
     }
 }

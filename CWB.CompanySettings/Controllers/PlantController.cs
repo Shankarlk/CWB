@@ -33,11 +33,11 @@ namespace CWB.CompanySettings.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route(ApiRoutes.Plant.GetPlants)]
-        [Produces(AppContentTypes.ContentType, Type = typeof(List<PlantListVM>))]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<PlantVM>))]
         [Authorize(Roles = Roles.ADMIN)]
-        public IActionResult GetPlants(long Id)
+        public IActionResult GetPlants(long tenantId)
         {
-            var companyTypes = _plantService.GetPlants(Id);
+            var companyTypes = _plantService.GetPlants(tenantId);
             return Ok(companyTypes);
         }
 
@@ -90,6 +90,26 @@ namespace CWB.CompanySettings.Controllers
             //check if duplicate
             var plantExist = _plantService.CheckPlantExisit(checkPlantVM);
             return Ok(plantExist);
+        }
+
+        [HttpGet]
+        [Route(ApiRoutes.Plant.GetPlant)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(PlantVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public IActionResult GetPlant(long plantId)
+        {
+            var docTypes = _plantService.GetPlant(plantId);
+            return Ok(docTypes);
+        }
+
+        [HttpGet]
+        [Route(ApiRoutes.Plant.DelPlant)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public IActionResult DelPlant(long plantId)
+        {
+            var docTypes = _plantService.DelPlant(plantId);
+            return Ok(docTypes);
         }
     }
 }

@@ -4,7 +4,7 @@ using CWB.Masters.Domain.MR;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CWB.Masters.Domain
+namespace CWB.Masters.Domain.ItemMaster
 {
     [Table("UOMs")]
     public class UOM : BaseEntity

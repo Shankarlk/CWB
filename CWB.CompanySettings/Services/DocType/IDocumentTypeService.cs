@@ -6,10 +6,11 @@ namespace CWB.CompanySettings.Services.DocType
 {
     public interface IDocumentTypeService
     {
-        IEnumerable<DocumentTypeListVM> GetDocumentTypes(long TenantId);
-
+        IEnumerable<DocumentTypeVM> GetDocumentTypes(long TenantId);
         Task<DocumentTypeVM> DocumentType(DocumentTypeVM documentTypeVM);
+        bool CheckDocumentTypeExisit(DocumentTypeVM checkDocumentTypeVM);
 
-        bool CheckDocumentTypeExisit(CheckDocumentTypeVM checkDocumentTypeVM);
+        Task<DocumentTypeVM> GetDocumentType(long docTypeId);
+        Task<bool> DelDocumentType(long docTypeId);
     }
 }

@@ -8,7 +8,7 @@ namespace CWB.Masters.Services.ItemMaster
     {
         Task<RawMaterialDetailVM> RawMaterialDetail(RawMaterialDetailVM rawMaterialDetailVM);
         IEnumerable<RawMaterialDetailVM> GetRawMaterialDetailsByTenant(long tenantID);
-        IEnumerable<RawMaterialDetailVM> GetOwnRMS(long tenantId);
+        Task<IEnumerable<RawMaterialDetailVM>> GetOwnRMS(long tenantId);
         IEnumerable<RawMaterialDetailVM> GetSupplierRMS(long supplierId);
 
         IEnumerable<PartPurchaseDetailsVM> GetParchasesByMasterPartNo(string partNo);

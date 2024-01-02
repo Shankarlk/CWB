@@ -4,10 +4,11 @@ using CWB.Masters.Infrastructure;
 using CWB.Masters.Repositories.Company;
 using Microsoft.EntityFrameworkCore;
 using System;
+using CWB.Masters.Domain.ItemMaster;
 
 namespace CWB.Masters.Repositories.ItemMaster
 {
-    public class MPBOMRepository : Repository<Domain.MPBOM>, IMPBOMRepository
+    public class MPBOMRepository : Repository<MPBOM>, IMPBOMRepository
     {
         private readonly DbSet<MPBOM> _dbSet;
         public MPBOMRepository(MastersDbContext context)

@@ -2,7 +2,7 @@
 using CWB.Masters.MastersUtils.ItemMaster;
 using System;
 
-namespace CWB.Masters.Domain
+namespace CWB.Masters.Domain.ItemMaster
 {
 
     /**

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CWB.CommonUtils.Common;
 using CWB.Masters.Domain;
+using CWB.Masters.Domain.ItemMaster;
 using CWB.Masters.ViewModels.Company;
 using CWB.Masters.ViewModels.ItemMaster;
 using CWB.Masters.ViewModels.Machines;
@@ -140,7 +141,7 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(s => s.StatusChangeReason, s => s.MapFrom(src => src.StatusChangeReason));
 
 
-            CreateMap<ManufacturedPartNoDetailVM, Domain.ManufacturedPartNoDetail>()
+            CreateMap<ManufacturedPartNoDetailVM, ManufacturedPartNoDetail>()
                 .ForMember(s => s.Id, s => s.MapFrom(src => src.ManufacturedPartNoDetailId))
                 .ForMember(s => s.ManufacturedPartType, s => s.MapFrom(src => src.ManufacturedPartType))
                 .ForMember(s => s.PartId, s => s.MapFrom(src => src.PartId))
@@ -153,7 +154,7 @@ namespace CWB.Masters.MastersUtils
             .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
             .ForMember(s => s.StatusChangeReason, s => s.MapFrom(src => src.StatusChangeReason));*/
 
-            CreateMap<Domain.ManufacturedPartNoDetail, ManufacturedPartNoDetailVM>()
+            CreateMap<ManufacturedPartNoDetail, ManufacturedPartNoDetailVM>()
                 .ForMember(s => s.ManufacturedPartNoDetailId, s => s.MapFrom(src => src.Id))
                 .ForMember(s => s.ManufacturedPartType, s => s.MapFrom(src => src.ManufacturedPartType))
                 .ForMember(s => s.PartId, s => s.MapFrom(src => src.PartId))
@@ -233,7 +234,7 @@ namespace CWB.Masters.MastersUtils
             .ForMember(s => s.PMasterPartType, s => s.MapFrom(src => src.MasterPartType));
 
 
-            CreateMap<RawMaterialDetailVM, Domain.RawMaterialDetail>()
+            CreateMap<RawMaterialDetailVM, RawMaterialDetail>()
                 .ForMember(s => s.Id, s => s.MapFrom(src => src.RawMaterialDetailId))
                 .ForMember(s => s.RawMaterialMadeType, s => s.MapFrom(src => src.RawMaterialMadeType))
                 .ForMember(s => s.RawMaterialMadeSubType, s => s.MapFrom(src => src.RawMaterialMadeSubType))
@@ -249,7 +250,7 @@ namespace CWB.Masters.MastersUtils
 
             //.ForMember(s => s.PurchaseDetailId, s => s.MapFrom(src => src.PurchaseDetailId));
 
-            CreateMap<Domain.RawMaterialDetail, RawMaterialDetailVM>()
+            CreateMap<RawMaterialDetail, RawMaterialDetailVM>()
                .ForMember(s => s.RawMaterialDetailId, s => s.MapFrom(src => src.Id))
                .ForMember(s => s.RawMaterialMadeType, s => s.MapFrom(src => src.RawMaterialMadeType))
                .ForMember(s => s.RawMaterialMadeSubType, s => s.MapFrom(src => src.RawMaterialMadeSubType))
@@ -264,14 +265,14 @@ namespace CWB.Masters.MastersUtils
                .ForMember(s => s.MaterialSpecId, s => s.MapFrom(src => src.MaterialSpecId));
 
 
-            CreateMap<BoughtOutFinishDetailVM, Domain.BoughtOutFinishDetail>()
+            CreateMap<BoughtOutFinishDetailVM, BoughtOutFinishDetail>()
                 .ForMember(s => s.Id, s => s.MapFrom(src => src.BoughtOutFinishDetailId))
                 .ForMember(s => s.BoughtOutFinishMadeType, s => s.MapFrom(src => src.BoughtOutFinishMadeType))
                 .ForMember(s => s.PartId, s => s.MapFrom(src => src.PartId))
                 .ForMember(s => s.SupplierPartNo, s => s.MapFrom(src => src.SupplierPartNo))
                 .ForMember(s => s.AdditionalInfo, s => s.MapFrom(src => src.AdditionalInfo));
 
-            CreateMap<Domain.BoughtOutFinishDetail, BoughtOutFinishDetailVM>()
+            CreateMap<BoughtOutFinishDetail, BoughtOutFinishDetailVM>()
                .ForMember(s => s.BoughtOutFinishDetailId, s => s.MapFrom(src => src.Id))
                .ForMember(s => s.BoughtOutFinishMadeType, s => s.MapFrom(src => src.BoughtOutFinishMadeType))
                .ForMember(s => s.PartId, s => s.MapFrom(src => src.PartId))
@@ -279,7 +280,7 @@ namespace CWB.Masters.MastersUtils
                .ForMember(s => s.AdditionalInfo, s => s.MapFrom(src => src.AdditionalInfo));
 
 
-            CreateMap<MPMakeFromVM, Domain.MPMakeFrom>()
+            CreateMap<MPMakeFromVM, MPMakeFrom>()
                 .ForMember(s => s.Id, s => s.MapFrom(src => src.MPMakeFromId))
                 .ForMember(s => s.PartMadeFrom, s => s.MapFrom(src => src.MPPartMadeFrom))
                 .ForMember(s => s.PartId, s => s.MapFrom(src => src.MPPartId))
@@ -291,7 +292,7 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(s => s.PartDescription, s => s.MapFrom(src => src.MFDescription))
                 .ForMember(s => s.ManufPartId, s => s.MapFrom(src => src.ManufPartId));
 
-            CreateMap<Domain.MPMakeFrom, MPMakeFromVM>()
+            CreateMap<MPMakeFrom, MPMakeFromVM>()
              .ForMember(s => s.MPMakeFromId, s => s.MapFrom(src => src.Id))
              .ForMember(s => s.MPPartMadeFrom, s => s.MapFrom(src => src.PartMadeFrom))
              .ForMember(s => s.MPPartId, s => s.MapFrom(src => src.PartId))
@@ -304,25 +305,25 @@ namespace CWB.Masters.MastersUtils
              .ForMember(s => s.ManufPartId, s => s.MapFrom(src => src.ManufPartId));
 
 
-            CreateMap<MPBOMVM, Domain.MPBOM>()
+            CreateMap<MPBOMVM, MPBOM>()
                 .ForMember(s => s.Id, s => s.MapFrom(src => src.MPBOMId))
                 .ForMember(s => s.PartId, s => s.MapFrom(src => src.BOMPartId))
                 .ForMember(s => s.Quantity, s => s.MapFrom(src => src.Quantity))
                 .ForMember(s => s.PartDesc, s => s.MapFrom(src => src.BOMPartDesc))
                 .ForMember(s => s.ManufPartId, s => s.MapFrom(src => src.BOMManufPartId));
 
-            CreateMap<Domain.MPBOM, MPBOMVM>()
+            CreateMap<MPBOM, MPBOMVM>()
                 .ForMember(s => s.MPBOMId, s => s.MapFrom(src => src.Id))
                 .ForMember(s => s.BOMPartId, s => s.MapFrom(src => src.PartId))
                 .ForMember(s => s.Quantity, s => s.MapFrom(src => src.Quantity))
                 .ForMember(s => s.BOMPartDesc, s => s.MapFrom(src => src.PartDesc))
                 .ForMember(s => s.BOMManufPartId, s => s.MapFrom(src => src.ManufPartId));
 
-            CreateMap<Domain.UOM, UOMVM>()
+            CreateMap<UOM, UOMVM>()
                 .ForMember(s => s.Name, s => s.MapFrom(src => src.Name))
                 .ForMember(s => s.UOMId, s => s.MapFrom(src => src.Id));
 
-            CreateMap<UOMVM, Domain.UOM>()
+            CreateMap<UOMVM, UOM>()
                 .ForMember(s => s.Name, s => s.MapFrom(src => src.Name))
                 .ForMember(s => s.Id, s => s.MapFrom(src => src.UOMId));
 
@@ -396,6 +397,42 @@ namespace CWB.Masters.MastersUtils
               .ForMember(s => s.ManufacturedPartId, s => s.MapFrom(src => src.ManufacturedPartId))
               .ForMember(s => s.QuantityAssembly, s => s.MapFrom(src => src.QuantityAssembly))
               .ForMember(s => s.BOMId, s => s.MapFrom(src => src.BOMId));
+
+
+            CreateMap<RoutingStepMachineVM, Domain.RoutingStepMachine>()
+             .ForMember(s => s.Id, s => s.MapFrom(src => src.RoutingStepMachineId))
+             .ForMember(s => s.RoutingStepId, s => s.MapFrom(src => src.RoutingStepId))
+             .ForMember(s => s.MachineId, s => s.MapFrom(src => src.MachineId))
+             .ForMember(s => s.SetupTime, s => s.MapFrom(src => src.SetupTime))
+             .ForMember(s => s.FloorToFloorTime, s => s.MapFrom(src => src.FloorToFloorTime))
+             .ForMember(s => s.NoOfPartsPerLoading, s => s.MapFrom(src => src.NoOfPartsPerLoading))
+             .ForMember(s => s.FirstPieceProcessingTime, s => s.MapFrom(src => src.FirstPieceProcessingTime));
+
+            CreateMap<Domain.RoutingStepMachine, RoutingStepMachineVM>()
+             .ForMember(s => s.RoutingStepMachineId, s => s.MapFrom(src => src.Id))
+             .ForMember(s => s.RoutingStepId, s => s.MapFrom(src => src.RoutingStepId))
+             .ForMember(s => s.MachineId, s => s.MapFrom(src => src.MachineId))
+             .ForMember(s => s.SetupTime, s => s.MapFrom(src => src.SetupTime))
+             .ForMember(s => s.FloorToFloorTime, s => s.MapFrom(src => src.FloorToFloorTime))
+             .ForMember(s => s.NoOfPartsPerLoading, s => s.MapFrom(src => src.NoOfPartsPerLoading))
+             .ForMember(s => s.FirstPieceProcessingTime, s => s.MapFrom(src => src.FirstPieceProcessingTime));
+
+            CreateMap<RoutingStepSupplierVM, Domain.RoutingStepSupplier>()
+            .ForMember(s => s.Id, s => s.MapFrom(src => src.RoutingStepSupplierId))
+            .ForMember(s => s.RoutingStepId, s => s.MapFrom(src => src.RoutingStepId))
+            .ForMember(s => s.SupplierId, s => s.MapFrom(src => src.SupplierId))
+            .ForMember(s => s.Supplier, s => s.MapFrom(src => src.Supplier))
+            .ForMember(s => s.OutSourceDays, s => s.MapFrom(src => src.OutSourceDays))
+            .ForMember(s => s.ShareOfBusiness, s => s.MapFrom(src => src.ShareOfBusiness))
+            .ForMember(s => s.Notes, s => s.MapFrom(src => src.Notes));
+
+            CreateMap<Domain.RoutingStepSupplier, RoutingStepSupplierVM>()
+            .ForMember(s => s.RoutingStepSupplierId, s => s.MapFrom(src => src.Id))
+            .ForMember(s => s.RoutingStepId, s => s.MapFrom(src => src.RoutingStepId))
+            .ForMember(s => s.SupplierId, s => s.MapFrom(src => src.SupplierId))
+            .ForMember(s => s.OutSourceDays, s => s.MapFrom(src => src.OutSourceDays))
+            .ForMember(s => s.ShareOfBusiness, s => s.MapFrom(src => src.ShareOfBusiness))
+            .ForMember(s => s.Notes, s => s.MapFrom(src => src.Notes));
         }
     }
 }

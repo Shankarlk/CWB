@@ -13,8 +13,12 @@ namespace CWB.Masters.Services.Routing
         IEnumerable<RoutingStepVM> GetStepsForRoutingId(int routingId);
         IEnumerable<RoutingStepPartVM> GetPartsForStepId(int stepId);
         IEnumerable<RoutingStepPartVM> GetPartsForManufId(int manufID);
-
         Task<IEnumerable<Domain.Routing>> GetAllRoutings();
+
+        Task<IEnumerable<RoutingStepMachineVM>> StepMachines(int stepId);
+        Task<IEnumerable<RoutingStepSupplierVM>> StepSuppliers(int stepId);
+        Task<RoutingStepMachineVM> RoutingStepMachine(RoutingStepMachineVM routingStepMachineVM);
+        Task<RoutingStepSupplierVM> RoutingStepSupplier(RoutingStepSupplierVM routingStepSupplierVM);
 
     }
 }

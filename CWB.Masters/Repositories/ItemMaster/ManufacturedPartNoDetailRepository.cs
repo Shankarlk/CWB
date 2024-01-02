@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CWB.Masters.Repositories.ItemMaster
 {
-    public class ManufacturedPartNoDetailRepository : Repository<Domain.ManufacturedPartNoDetail>, IManufacturedPartNoDetailRepository
+    public class ManufacturedPartNoDetailRepository : Repository<ManufacturedPartNoDetail>, IManufacturedPartNoDetailRepository
     {
         private readonly DbSet<ManufacturedPartNoDetail> _dbSet;
         public ManufacturedPartNoDetailRepository(MastersDbContext context)

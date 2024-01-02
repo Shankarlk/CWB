@@ -10,15 +10,19 @@
 
         public static class DocType
         {
-            public const string GetDocumentTypes = Base + "/document-types/{Id}";
+            public const string GetDocumentTypes = Base + "/document-types/{tenantId}";
             public const string PostDocumentType = Base + "/document-type";
+            public const string GetDocumentType = Base + "/getdoctype/{docTypeId}";
+            public const string DelDocumentType = Base + "/deldoctype/{docTypeId}";
         }
 
         public static class Plant
         {
-            public const string GetPlants = Base + "/plants/{Id}";
+            public const string GetPlants = Base + "/plants/{tenantId}";
             public const string PostPlant = Base + "/plant";
             public const string CheckPlant = Base + "/plant-exist";
+            public const string GetPlant = Base + "/getplant/{plantId}";
+            public const string DelPlant = Base + "/delplan/{plantId}";
         }
         public static class Department
         {

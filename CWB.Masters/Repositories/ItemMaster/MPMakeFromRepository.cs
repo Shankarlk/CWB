@@ -1,5 +1,4 @@
 ﻿using CWB.CommonUtils.Common.Repositories;
-using CWB.Masters.Domain;
 using CWB.Masters.Domain.ItemMaster;
 using CWB.Masters.Infrastructure;
 using CWB.Masters.Repositories.Company;
@@ -8,7 +7,7 @@ using System;
 
 namespace CWB.Masters.Repositories.ItemMaster
 {
-    public class MPMakeFromRepository : Repository<Domain.MPMakeFrom>, IMPMakeFromRepository
+    public class MPMakeFromRepository : Repository<MPMakeFrom>, IMPMakeFromRepository
     {
         private readonly DbSet<MPMakeFrom> _dbSet;
         public MPMakeFromRepository(MastersDbContext context)

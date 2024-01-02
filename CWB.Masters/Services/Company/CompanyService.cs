@@ -112,5 +112,15 @@ namespace CWB.Masters.Services.Company
                          .Select(t => new CompanyTypeVM { CompanyType = t.GetEnumDescription(), CompanyTypeValue = t.ToString() });
             return companyTypes;
         }
+
+        public async Task<long> GetCompanyId(string coName)
+        {
+            var co = await _companyRepository.SingleOrDefaultAsync(m => m.Name.Equals(coName));
+            if(co != null)
+            {
+                return co.Id;
+            }
+            return 0;
+        }
     }
 }

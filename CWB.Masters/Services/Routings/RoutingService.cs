@@ -5,7 +5,7 @@ using CWB.Masters.Infrastructure;
 using CWB.Masters.MastersUtils;
 using CWB.Masters.MastersUtils.ItemMaster;
 using CWB.Masters.Repositories.Company;
-using CWB.Masters.Repositories.Routing;
+using CWB.Masters.Repositories.Routings;
 using CWB.Masters.ViewModels.Company;
 using CWB.Masters.ViewModels.ItemMaster;
 using CWB.Masters.ViewModels.Routing;
@@ -26,9 +26,15 @@ namespace CWB.Masters.Services.Routing
         private readonly IRoutingRepository _routingRepository;
         private readonly IRoutingStepRepository _routingStepRepository;
         private readonly IRoutingStepPartRepository _routingStepPartRepository;
+        private readonly IRoutingStepMachineRepository _routingStepMachineRepository;
+        private readonly IRoutingStepSupplierRepository _routingStepSupplierRepository;
 
-        public RoutingService(ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork,
-            IRoutingRepository routingRepository, IRoutingStepRepository routingStepRepository, IRoutingStepPartRepository routingStepPartRepository)
+
+        public RoutingService(ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork
+            ,IRoutingRepository routingRepository, IRoutingStepRepository routingStepRepository 
+            ,IRoutingStepPartRepository routingStepPartRepository
+            ,IRoutingStepMachineRepository routingStepMachineRepository
+            , IRoutingStepSupplierRepository routingStepSupplierRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -36,6 +42,8 @@ namespace CWB.Masters.Services.Routing
             _routingRepository = routingRepository;
             _routingStepRepository = routingStepRepository;
             _routingStepPartRepository = routingStepPartRepository;
+            _routingStepMachineRepository = routingStepMachineRepository;
+            _routingStepSupplierRepository = routingStepSupplierRepository;
         }
 
         public IEnumerable<RoutingVM> GetRoutingsForManufId(int manufId)
@@ -161,6 +169,84 @@ namespace CWB.Masters.Services.Routing
                 string src = ex.InnerException.Source;
             }
             return routingStepPartVM;
+        }
+
+        public async Task<IEnumerable<RoutingStepMachineVM>> StepMachines(int stepId)
+        {
+            try
+            {
+                var stepMachines = _routingStepMachineRepository.GetRangeAsync(m => m.RoutingStepId == stepId).OrderBy(m => m.Id);
+                return _mapper.Map<IEnumerable<RoutingStepMachineVM>>(stepMachines);
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.InnerException.Message;
+                string src = ex.InnerException.Source;
+                return new List<RoutingStepMachineVM>();
+            }
+        }
+
+        public async Task<IEnumerable<RoutingStepSupplierVM>> StepSuppliers(int stepId)
+        {
+            try
+            {
+                var stepSuppliers = _routingStepSupplierRepository.GetRangeAsync(m => m.RoutingStepId == stepId).OrderBy(m => m.Id);
+                return _mapper.Map<IEnumerable<RoutingStepSupplierVM>>(stepSuppliers);
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.InnerException.Message;
+                string src = ex.InnerException.Source;
+                return new List<RoutingStepSupplierVM>();
+            }
+        }
+
+        public async Task<RoutingStepMachineVM> RoutingStepMachine(RoutingStepMachineVM routingStepMachineVM)
+        {
+            try
+            {
+                var routingStepMachine = _mapper.Map<Domain.RoutingStepMachine>(routingStepMachineVM);
+                if (routingStepMachine.Id == 0)
+                {
+                    await _routingStepMachineRepository.AddAsync(routingStepMachine);
+                }
+                else
+                {
+                    routingStepMachine = await _routingStepMachineRepository.UpdateAsync(routingStepMachine.Id, routingStepMachine);
+                }
+                await _unitOfWork.CommitAsync();
+                routingStepMachineVM.RoutingStepMachineId = (int)routingStepMachine.Id;
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.InnerException.Message;
+                string src = ex.InnerException.Source;
+            }
+            return routingStepMachineVM;
+        }
+
+        public async Task<RoutingStepSupplierVM> RoutingStepSupplier(RoutingStepSupplierVM routingStepSupplierVM)
+        {
+            try
+            {
+                var routingStepSupplier = _mapper.Map<Domain.RoutingStepSupplier>(routingStepSupplierVM);
+                if (routingStepSupplier.Id == 0)
+                {
+                    await _routingStepSupplierRepository.AddAsync(routingStepSupplier);
+                }
+                else
+                {
+                    routingStepSupplier = await _routingStepSupplierRepository.UpdateAsync(routingStepSupplier.Id, routingStepSupplier);
+                }
+                await _unitOfWork.CommitAsync();
+                routingStepSupplierVM.RoutingStepSupplierId = (int)routingStepSupplier.Id;
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.InnerException.Message;
+                string src = ex.InnerException.Source;
+            }
+            return routingStepSupplierVM;
         }
     }
 }

@@ -1,0 +1,351 @@
+﻿<!-- Left Sidebar End -->
+<!-- ============================================================== -->
+<!-- Start Page Content here -->
+<!-- ============================================================== -->
+@model CWB.App.Models.CoSettings.PlantVM;
+<div class="content">
+<div class="row">
+    <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="pb-1 mb-2 mt-1">Location Details</h5>
+                <div class="row">
+                    <label class="form-label col-md-1 mb-2">Name</label>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control form-control-sm" type="text" id="docname" name="text">
+                    </div>
+                    <!-- ----- -->
+                    <div class="col-md-8 mt-1">
+                        <div class="table-responsive mb-2 table-he-180">
+                            <table id ="PlantTable" class="table table-sm table-bordered w-100 mb-3 text-center">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th width="40%">Name</th>
+                                        <th>Location</th>
+                                        <th>No of Shifts</th>
+                                        <th>Weekly off</th>
+                                        <th>1st Shifts Start Time</th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-12 mt-3">
+                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#shop-details">Add Location</button>
+                        </div>
+                    </div>
+                    <!-- -------------  -->
+                    <!-- --------- -->
+                </div>
+                <!-- ==================== -->
+            </div>
+            <!-- end card body -->
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+</div>
+    <!-- end Container -->
+<!----content-page ends----->
+<!----wrapper ends----->
+<!-- END wrapper -->
+<!-- ============================================================== -->
+<!-- End Page Content here -->
+<!-- ============================================================== -->
+<!-- Right bar overlay-->
+<!-- ================================     MODALS  Starts    ======================================= -->
+<!-- ============================================================================================== -->
+<!-- ========================================  -->
+<!-- shop-details content -->
+<div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="shop-details">
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title" id="myLargeModalLabel">  Plant Details for : <span class="h6">Plant Name:  XXXXXXX</span> </h4>
+               <button type="button" id="btn-shopdetails-close" class="btn-close"  data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <ul class="nav nav-pills navtab-bg nav-justified">
+                    <li class="nav-item">
+                        <a href="#tab-001" data-bs-toggle="tab" aria-expanded="false" class="nav-link active">
+                            <span class="d-inline-block d-sm-none">Genaral</span>
+                            <span class="d-none d-sm-inline-block">Genaral</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#tab-002" data-bs-toggle="tab" aria-expanded="true" class="nav-link">
+                            <span class="d-inline-block d-sm-none">Plant Working Details</span>
+                            <span class="d-none d-sm-inline-block">Plant Working Details</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#tab-003" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                            <span class="d-inline-block d-sm-none">Holiday List</span>
+                            <span class="d-none d-sm-inline-block">Holiday List</span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content p-2">
+                    <div class="tab-pane show active" id="tab-001">
+                        <form method="post" onsubmit="return false;" id="PlantForm">
+                            <div class="row">
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-check-label" asp-for="IsMainPlant">Main Plant </label>
+                                        <input class="form-check-input mt-1 m-l-10" type="checkbox" asp-for="IsMainPlant">
+                                </div>
+                                <!-- ----- -->
+                                <div class="col-md-10 mb-2">
+                                    <label class="form-check-label">Does the Company do Product Design  </label>
+                                    <input class="form-check-input mt-1 m-l-10" type="checkbox" asp-for="IsProductDesigned">
+                                </div>
+                                <!-- ----- -->
+                                <label class="form-label col-md-1 mb-2">Plant  Name </label>
+                                <div class="col-md-4 mb-2">
+                                        <input class="form-control form-control-sm" type="text" id="Name" asp-for="Name" required>
+                                </div>
+                                <!-- ----- -->
+                                <label class="form-label col-md-2 mb-2">Location Address</label>
+                                <div class="col-md-5 mb-2">
+                                        <textarea id="Address" asp-for="Address"  class="form-control form-control-sm"></textarea>
+                                </div>
+                                <!-- ----- -->
+                                <label class="form-label col-md-1 mb-2">Notes</label>
+                                <div class="col-md-11 mb-2">
+                                        <input type="text" hidden value="0" asp-for="PlantId" name="PlantId"/>
+                                        <textarea  id="Notes" asp-for="Notes" class="form-control form-control-sm"></textarea>
+                                </div>
+                                <!-- ----- -->
+                                <div class="col text-end mb-2">
+                                     <input type="submit" id="BtnSavePlant" class="btn btn-sm btn-primary" data-plugin="tippy" data-tippy-placement="top" value="Save">
+                                </div>
+                                <!-- end col -->
+                            </div>
+                            <!-- ==================== -->
+                        </form>
+                    </div>
+                    <!-- ============================================================ -->
+                    <div class="tab-pane" id="tab-002">
+                        <div class="row mt-3">
+                            <label class=" col-md-2 form-label mb-2">Weekly Off 1</label>
+                            <div class="col-md-2 mb-2">
+                                <select class="form-select form-select-sm" aria-label="form-select-sm">
+                                    <option value="">Sunday</option>
+                                    <option value="">Monday</option>
+                                    <option value="">Tuesday</option>
+                                    <option value="">Wednesday</option>
+                                    <option value="">Thursday</option>
+                                    <option value="">Friday</option>
+                                    <option value="">Saturday</option>
+                                </select>
+                            </div>
+                            <!-- ----------  -->
+                            <label class=" col-md-2 form-label mb-2">Weekly Off 2</label>
+                            <div class="col-md-2 mb-2">
+                                <select class="form-select form-select-sm" aria-label="form-select-sm">
+                                    <option value="">Sunday</option>
+                                    <option value="">Monday</option>
+                                    <option value="">Tuesday</option>
+                                    <option value="">Wednesday</option>
+                                    <option value="">Thursday</option>
+                                    <option value="">Friday</option>
+                                    <option value="">Saturday</option>
+                                </select>
+                            </div>
+                            <!-- ----------  -->
+                        </div>
+                        <!-- =========================== -->
+                        <div class="row">
+                            <label class=" col-md-2 form-label mb-2">No of Shifts / day</label>
+                            <div class="col-md-2 mb-2">
+                                <input class="form-control form-control-sm" type="text" value="xxxxxx">
+                            </div>
+                        </div>
+                        <!-- =========================== -->
+                        <div class="row">
+                            <label class=" col-md-2 form-label mb-2">1st Shift Start Time</label>
+                            <div class="col-md-2 mb-2">
+                                <input class="form-control form-control-sm" type="time" name="time" id="example-date">
+                            </div>
+                            <!-- ----------  -->
+                            <label class=" col-md-2 form-label mb-2">2nd Shift Start Time</label>
+                            <div class="col-md-2 mb-2">
+                                <input class="form-control form-control-sm" type="time" name="time" id="example-date">
+                            </div>
+                            <!-- ----------  -->
+                            <label class=" col-md-2 form-label mb-2">3rd Shift Start Time</label>
+                            <div class="col-md-2 mb-2">
+                                <input class="form-control form-control-sm" type="time" name="time" id="example-date">
+                            </div>
+                            <!-- ----------  -->
+                        </div>
+                        <!-- =========================== -->
+                        <div class="row">
+                            <label class=" col-md-2 form-label mb-2">1st Shift Duration</label>
+                            <div class="col-md-2 mb-2">
+                                <input type="text" class="form-control form-control-sm" data-toggle="input-mask" data-mask-format="00:00:00" placeholder="e.g HH:MM:SS" ">
+                            </div>
+                            <!-- ----------  -->
+                            <label class=" col-md-2 form-label mb-2">2nd Shift Duration</label>
+                            <div class="col-md-2 mb-2">
+                                <input type="text" class="form-control form-control-sm" data-toggle="input-mask" data-mask-format="00:00:00" placeholder="e.g HH:MM:SS">
+                            </div>
+                            <!-- ----------  -->
+                            <label class="col-md-2 form-label mb-2">3rd Shift Duration</label>
+                            <div class="col-md-2 mb-2">
+                                <input class="form-control form-control-sm mb-2" type="text" name="text" value="calculated field">
+                            </div>
+                            <!-- ----------  -->
+                        </div>
+                        <!-- =========================== -->
+                        <div class="row">
+                            <div class="col-md-12 text-end">
+                                <button type="button" class="btn btn-primary btn-sm">Save</button>
+                            </div>
+                        </div>
+                        <!-- =========================== -->
+                    </div>
+                    <!-- ============================================================ -->
+                    <div class="tab-pane" id="tab-003">
+                        <div class="row">
+                            <label class=" col-md-2 form-label mb-2">Holiday Name</label>
+                            <div class="col-md-3">
+                                <input class="form-control form-control-sm mb-2" type="text" name="text">
+                            </div>
+                            <!-- -------- -->
+                            <label class=" col-md-1 form-label mb-2">Date</label>
+                            <div class="col-md-3">
+                                <input class="form-control form-control-sm mb-2" type="date" name="date">
+                            </div>
+                            <!-- -------- -->
+                            <div class="col-md-3 mb-2 text-end">
+                                <button class="btn btn-sm btn-primary">Add to List</button>
+                            </div>
+                            <!-- -------- -->
+                            <div class="col-md-12">
+                                <div class="table-responsive mb-2 table-he-150">
+                                    <table class="table table-sm table-bordered w-100 mb-3 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Holiday Name</th>
+                                                <th>Date</th>
+                                                <th>Day</th>
+                                                <th width="5%"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <div class="dropdown float-center">
+                                                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item">Edit</a>
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item">delete</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <div class="dropdown float-center">
+                                                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item">Edit</a>
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item">delete</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <div class="dropdown float-center">
+                                                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item">Edit</a>
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item">delete</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <div class="dropdown float-center">
+                                                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item">Edit</a>
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item">delete</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- -------- -->
+                        </div>
+                        <!-- --- end row ----- -->
+                    </div>
+                    <!-- ============================================================ -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.modal-content -->
+</div>
+<!-- /.modal-dialog -->
+</div>
+
+<template id="PlantRowTemplate">
+    <tr>
+        <td data-key="Name">{name}</td>
+        <td data-key="Address">{address}</td>
+        <td data-key="">---</td>
+        <td data-key="">---</td>
+        <td data-key="">---</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <!-- item-->
+                        <a href="javascript:void(0);" data-plantid="{plantId}" data-bs-toggle="modal" data-bs-target="#shop-details" class="dropdown-item">Edit</a>
+                        <!-- item-->
+                        <a href="javascript:void(0);" data-plantid="{plantId}" data-bs-toggle="modal" data-bs-target="#shop-details" class="dropdown-item">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+
+
+@section scripts {
+    <script src="/js/plant.js"></script>
+}
+

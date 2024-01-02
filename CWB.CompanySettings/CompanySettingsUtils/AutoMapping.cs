@@ -11,16 +11,32 @@ namespace CWB.CompanySettings.CompanySettingsUtils
         public AutoMapping()
         {
             CreateMap<DocumentTypeVM, DocumentType>()
-                .ForMember(m => m.Id, m => m.MapFrom(src => src.DocumentTypeId));
+                .ForMember(m => m.Id, m => m.MapFrom(src => src.DocumentTypeId))
+                .ForMember(m => m.Name, m => m.MapFrom(src => src.Name))
+                .ForMember(m => m.Description, m => m.MapFrom(src => src.Description)) 
+                .ForMember(m => m.Extension, m => m.MapFrom(src => src.Extension))
+                .ForMember(m => m.IsUploadedByUser, m => m.MapFrom(src => src.IsUploadedByUser));
             CreateMap<Domain.DocumentType, DocumentTypeVM>()
-                .ForMember(m => m.DocumentTypeId, m => m.MapFrom(src => src.Id));
-            CreateMap<Domain.DocumentType, DocumentTypeListVM>()
-                .ForMember(m => m.DocumentTypeId, m => m.MapFrom(src => src.Id));
+                 .ForMember(m => m.DocumentTypeId, m => m.MapFrom(src => src.Id))
+                .ForMember(m => m.Name, m => m.MapFrom(src => src.Name))
+                .ForMember(m => m.Description, m => m.MapFrom(src => src.Description))
+                .ForMember(m => m.Extension, m => m.MapFrom(src => src.Extension))
+                .ForMember(m => m.IsUploadedByUser, m => m.MapFrom(src => src.IsUploadedByUser));
 
             CreateMap<PlantVM, Plant>()
-                .ForMember(m => m.Id, m => m.MapFrom(src => src.PlantId));
+                .ForMember(m => m.Id, m => m.MapFrom(src => src.PlantId))
+                .ForMember(m => m.Name, m => m.MapFrom(src => src.Name))
+                .ForMember(m => m.Address, m => m.MapFrom(src => src.Address))
+                .ForMember(m => m.Notes, m => m.MapFrom(src => src.Notes))
+                .ForMember(m => m.IsMainPlant, m => m.MapFrom(src => src.IsMainPlant))
+                .ForMember(m => m.IsProductDesigned, m => m.MapFrom(src => src.IsProductDesigned));
             CreateMap<Plant, PlantVM>()
-                .ForMember(m => m.PlantId, m => m.MapFrom(src => src.Id));
+                 .ForMember(m => m.PlantId, m => m.MapFrom(src => src.Id))
+                .ForMember(m => m.Name, m => m.MapFrom(src => src.Name))
+                .ForMember(m => m.Address, m => m.MapFrom(src => src.Address))
+                .ForMember(m => m.Notes, m => m.MapFrom(src => src.Notes))
+                .ForMember(m => m.IsMainPlant, m => m.MapFrom(src => src.IsMainPlant))
+                .ForMember(m => m.IsProductDesigned, m => m.MapFrom(src => src.IsProductDesigned));
             CreateMap<Plant, PlantListVM>()
                 .ForMember(m => m.PlantId, m => m.MapFrom(src => src.Id));
 

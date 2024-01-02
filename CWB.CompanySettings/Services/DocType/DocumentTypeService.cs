@@ -3,6 +3,7 @@ using CWB.CompanySettings.Infrastructure;
 using CWB.CompanySettings.Repositories.DocType;
 using CWB.CompanySettings.ViewModels.DocType;
 using CWB.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,13 +26,28 @@ namespace CWB.CompanySettings.Services.DocType
 
         }
 
-        public bool CheckDocumentTypeExisit(CheckDocumentTypeVM checkDocumentTypeVM)
+        public bool CheckDocumentTypeExisit(DocumentTypeVM checkDocumentTypeVM)
         {
             var docTypes = _documentTypeRepository.GetRangeAsync(d => d.Name == checkDocumentTypeVM.Name &&
             d.TenantId == checkDocumentTypeVM.TenantId);
-            if (!docTypes.Any())
+            try
             {
-                return false;
+                if (docTypes == null)
+                {
+                    return false;
+                }
+                if (docTypes.Count() == 0)
+                {
+                    return false;
+                }
+                if (!docTypes.Any())
+                {
+                    return false;
+                }
+            } catch (Exception ex) {
+                var msg = ex.InnerException.Message as string;
+                var src = ex.InnerException.Source as string;
+                return false; 
             }
             return (docTypes.First().Id != checkDocumentTypeVM.DocumentTypeId);
         }
@@ -52,10 +68,40 @@ namespace CWB.CompanySettings.Services.DocType
             return documentTypeVM;
         }
 
-        public IEnumerable<DocumentTypeListVM> GetDocumentTypes(long TenantId)
+        public IEnumerable<DocumentTypeVM> GetDocumentTypes(long TenantId)
         {
             var docTypes = _documentTypeRepository.GetRangeAsync(d => d.TenantId == TenantId);
-            return _mapper.Map<IEnumerable<DocumentTypeListVM>>(docTypes);
+            return _mapper.Map<IEnumerable<DocumentTypeVM>>(docTypes);
+        }
+
+        public async Task<DocumentTypeVM> GetDocumentType(long docTypeId)
+        {
+            var docType = await _documentTypeRepository.SingleOrDefaultAsync(d => d.Id == docTypeId);
+            if(docType == null)
+            {
+                docType = new Domain.DocumentType { Id=-1};
+            }
+            return _mapper.Map<DocumentTypeVM>(docType);
+        }
+        public async Task<bool> DelDocumentType(long docTypeId)
+        {
+            try
+            {
+                var docType = await _documentTypeRepository.SingleOrDefaultAsync(d => d.Id == docTypeId);
+                if (docType != null)
+                {
+                    if (docType.Id > 0)
+                    {
+                        _documentTypeRepository.Remove(docType);
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+            }catch(Exception ex)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

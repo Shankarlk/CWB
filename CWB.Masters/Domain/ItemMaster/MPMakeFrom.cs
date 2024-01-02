@@ -1,8 +1,9 @@
 ﻿using CWB.CommonUtils.Common;
 using System;
 
-namespace CWB.Masters.Domain
+namespace CWB.Masters.Domain.ItemMaster
 {
+
     /** PartId bigint not null,
   `PartDescription` varchar(4000) COLLATE utf8mb4_cs_0900_ai_ci DEFAULT NULL,
   `PartMadeFrom` bigint NOT NULL,
