@@ -6,9 +6,9 @@ using CWB.Masters.MastersUtils;
 using CWB.Masters.MastersUtils.ItemMaster;
 using CWB.Masters.Services.Company;
 using CWB.Masters.Services.ItemMaster;
-using CWB.Masters.Services.Routing;
+using CWB.Masters.Services.Routings;
 using CWB.Masters.ViewModels.Company;
-using CWB.Masters.ViewModels.Routing;
+using CWB.Masters.ViewModels.Routings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -89,7 +89,7 @@ namespace CWB.Masters.Controllers
              List<int> partIdLilst = partIds.ToList();
              var mps = _masterPartService.GetAllMasterPartsWithIds(partIdLilst);
             var cos  = await _companyService.GetCompaniesByTenant(1);
-            var routings = await _routingService.GetAllRoutings();
+            //var routings = await _routingService.GetAllRoutings();
             var query = from manuf in manufParts
                         join co in cos on manuf.CompanyId equals co.CompanyId
                         select new RoutingListItemVM
@@ -121,7 +121,7 @@ namespace CWB.Masters.Controllers
                              HasRouting = false
                          };
             List<RoutingListItemVM> retList = query2.ToList();
-            foreach (var routing in routings)
+            /*foreach (var routing in routings)
             {
                 foreach (var item in retList)
                 {
@@ -130,7 +130,7 @@ namespace CWB.Masters.Controllers
                         item.HasRouting = true;
                     }
                 }
-            }
+            }*/
             return retList;
         }
 
@@ -168,6 +168,33 @@ namespace CWB.Masters.Controllers
             var result = await _routingService.RoutingStep(routingStepVM);
             return Ok(result);
         }
+
+        [HttpGet]
+        [Route(ApiRoutes.Routings.GetRoutingStep)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(RoutingStepVM))]
+        public async Task<IActionResult> GetRoutingStep(int stepId)
+        {
+            /* var validator = new RawMaterialDetailVMValidator();
+             var validationResult = await validator.ValidateAsync(rawMaterialDetailVM);
+             if (!validationResult.IsValid)
+                 return BadRequest(validationResult.Errors);*/
+            var result = await _routingService.GetStep(stepId);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route(ApiRoutes.Routings.DelStep)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DelStep(int stepId)
+        {
+            /* var validator = new RawMaterialDetailVMValidator();
+             var validationResult = await validator.ValidateAsync(rawMaterialDetailVM);
+             if (!validationResult.IsValid)
+                 return BadRequest(validationResult.Errors);*/
+            var result = await _routingService.DelStep(stepId);
+            return Ok(result);
+        }
+        
 
 
         [HttpPost]
@@ -225,7 +252,7 @@ namespace CWB.Masters.Controllers
 
 
         [HttpGet]
-        [Route(ApiRoutes.Routings.PostRoutingStepMachine)]
+        [Route(ApiRoutes.Routings.StepMachines)]
         [Produces(AppContentTypes.ContentType, Type = typeof(IEnumerable<RoutingStepMachineVM>))]
         public async Task<IActionResult> StepMachines(int stepId)
         {

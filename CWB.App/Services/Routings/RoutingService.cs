@@ -53,6 +53,21 @@ namespace CWB.App.Services.Routings
             return await RestHelper<RoutingStepVM>.PostAsync(uri, routingStepVM, headers);
         }
 
+        public async Task<bool> DelStep(int stepId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/delstep/{stepId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri,headers);
+        }
+        public async Task<RoutingStepVM> GetStep(int stepId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getroutingstep/{stepId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<RoutingStepVM>.GetAsync(uri, headers);
+        }
+
+
+
 
         public async Task<RoutingStepPartVM> RoutingStepPart(RoutingStepPartVM routingStepPartVM)
         {

@@ -8,7 +8,7 @@ using CWB.Masters.Services.Company;
 using CWB.Masters.Services.ItemMaster;
 using CWB.Masters.Services.Machines;
 using CWB.Masters.Services.OperationList;
-using CWB.Masters.Services.Routing;
+using CWB.Masters.Services.Routings;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CWB.Masters.MastersUtils

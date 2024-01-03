@@ -62,6 +62,8 @@
             public const string StepSuppliers = Base + "/stepsuppliers/{stepId}";
             public const string StepMachines = Base + "/stepmachines/{stepId}";
             public const string StepParts = Base + "/stepparts/{stepId}";
+            public const string DelStep = Base + "/delstep/{stepId}";
+            public const string GetRoutingStep = Base + "/getroutingstep/{stepId}";
             public const string StepPartsByManufId = Base + "/steppartsbymanufid/{manufId}";
             
         }

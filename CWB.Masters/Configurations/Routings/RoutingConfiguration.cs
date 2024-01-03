@@ -1,13 +1,14 @@
 ﻿using CWB.CommonUtils.Common.Configurations;
+using CWB.Masters.Domain.Routings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CWB.Masters.Configurations
 {
     public class RoutingConfiguration
-        : IEntityTypeConfiguration<Domain.Routing>
+        : IEntityTypeConfiguration<Routing>
     {
-        public void Configure(EntityTypeBuilder<Domain.Routing> builder)
+        public void Configure(EntityTypeBuilder<Routing> builder)
         {
             builder
              .ToTable("Routing");
@@ -25,6 +26,10 @@ namespace CWB.Masters.Configurations
             builder
                .Property(m => m.OrigRoutingId)
                .HasColumnName("OrigRoutingId")
+               .IsRequired();
+            builder
+               .Property(m => m.PreferredRouting)
+               .HasColumnName("PreferredRouting")
                .IsRequired();
             builder
               .Property(m => m.Status)

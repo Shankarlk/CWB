@@ -13,6 +13,7 @@ namespace CWB.App.Services.Routings
         Task<List<RoutingListItemVM>> GetRoutingListItems();
         Task<RoutingVM> Routing(RoutingVM routingVM);
         Task<RoutingStepVM> RoutingStep(RoutingStepVM routingStepVM);
+        Task<bool> DelStep(int stepId);
         Task<RoutingStepPartVM> RoutingStepPart(RoutingStepPartVM routingStepPartVM);
         Task<RoutingStepSupplierVM> RoutingStepSupplier(RoutingStepSupplierVM routingStepSupplierVM);
         Task<RoutingStepMachineVM> RoutingStepMachine(RoutingStepMachineVM routingStepMachineVM);

@@ -1,3 +1,5 @@
+let RoutingDetails = {};//contains page model
+
 let dataPartsRoutings = {};
 let partType = "ManufacturedPart";
 let selectedManuPartId = "";
@@ -6,9 +8,32 @@ let qtyAvailable = 0;
 let hasRouting = true;
 let stepModel = {};
 let routingModel = {};
+let routingSteps = {};
+let operations = {};
 
 
-
+function LoadLocations() {
+    var selElem = $('#StepLocation');//should be a select2 dropdown
+    if (!selElem.length)
+        return;
+    selElem.empty();
+    var div_data = "<option value=''></option>";
+    selElem.append(div_data);
+    
+    api.get("/routings/locations").then((data) => {
+        console.log(data);
+        operations = data;
+        for (i = 0; i < data.length; i++) {
+            div_data = "<option value='" +
+                data[i].id + "'>" +
+                data[i].name +
+                "</option>";
+            selElem.append(div_data);
+        }
+    }).catch((error) => {
+        //console.log(error);
+    });
+}
 
 function LoadOperations() {
     var selElem = $('#StepOperation');//should be a select2 dropdown
@@ -17,9 +42,21 @@ function LoadOperations() {
     selElem.empty();
     var div_data = "<option value=''></option>";
     selElem.append(div_data);
-    
+
+    /*if (operations.length > 0) {
+        for (i = 0; i < operations.length; i++) {
+            div_data = "<option value='" +
+                operations[i].operationId + "'>" +
+                operations[i].operation +
+                "</option>";
+            selElem.append(div_data);
+        }
+        return;
+    }*/
+
     api.get("/operationlist/operations").then((data) => {
         console.log(data);
+        operations = data;
         for (i = 0; i < data.length; i++) {
             div_data = "<option value='" +
                 data[i].operationId + "'>" +
@@ -98,6 +135,7 @@ $(function () {
     DowlonadPartsRoutings();
     //LoadBOMList(16);
     LoadOperations();
+    LoadLocations();
  
     $('#WithoutRouting').change(function () {
         if (this.checked) {
@@ -117,13 +155,15 @@ $(function () {
     $('#StepLocation').change(function () {
         //debugger;
         let selVal = $(this).val();
+        let selText = $(this).text();
         let machs = document.getElementById("Div_RouteMachines");
         let suplrs = document.getElementById("Div_RouteSuppliers");
-        if (selVal == "1")//InHouse
+        if (selVal == "1")//Inhouse
         {
             showElement(machs);
             hideElem(suplrs);
             //Div_RouteMachines show
+            loadStepMachines()
         }
         else if (selVal == "2")//SubCon
         {
@@ -167,7 +207,7 @@ $(function () {
         $("#BOMPartDescription").val(partDesc);
         $("#QuantityAssembly").val(qty);
         SetAssemblyIds();
-        console.log("manufacturedPartId / BOMRoutingStepId / RoutingStepPartId: " + modelObj.manufacturedPartId + "/" + $("#BOMRoutingStepId").val() + "/" + $("#RoutingStepPartId").val());
+        console.log("manufacturedPartId / BOMRoutingStepId / RoutingStepPartId: " + RoutingDetails.manufacturedPartId + "/" + $("#BOMRoutingStepId").val() + "/" + $("#RoutingStepPartId").val());
         console.log(bomId + ":" + partNo + ":" + partDesc + ":"+qty);
     });
 
@@ -177,30 +217,31 @@ $(function () {
         var currentrow = chkdelm.closest('tr');
         var routingId = $('input[name=RoutingChk]:checked').val();
         var routingName = currentrow.find("td:eq(1)").html();
-        modelObj["routingName"] = routingName;
-        modelObj["routingId"] = routingId;
-        modelObj["stepNumber"] = "";
+        RoutingDetails["routingName"] = routingName;
+        RoutingDetails["routingId"] = routingId;
+        RoutingDetails["stepNumber"] = "";
     };
 
     $('input[type=radio][name=RoutingChk]').change(function () {
         getRoutingInfoFromTable();
-        $("#DivRoutingName").html("<h5>Routing Name : " + modelObj.routingName + "</h5>");
-        $("#DivRoutingName1").html("<h5>Routing Selected : " + modelObj.routingName + "</h5>");
+        $("#DivRoutingName").html("<h5>Routing Name : " + RoutingDetails.routingName + "</h5>");
+        $("#DivRoutingName1").html("<h5>Routing Selected : " + RoutingDetails.routingName + "</h5>");
     });
     $("#RoutingAvailable").click(function (event) {
 
     });
 
     $("#RoutingDetails").click(function (event) {
+        LoadRoutingSteps(RoutingDetails.routingId);
         getRoutingInfoFromTable();
-        $("#DivRoutingName").html("<h5>Routing Name : " + modelObj.routingName + "</h5>");
-        $("#DivRoutingName1").html("<h5>Routing Selected : " + modelObj.routingName + "</h5>");
-        $('#StepRoutingId').val(modelObj.routingId);
-        LoadRoutingSteps(modelObj.routingId);
+        $("#DivRoutingName").html("<h5>Routing Name : " + RoutingDetails.routingName + "</h5>");
+        $("#DivRoutingName1").html("<h5>Routing Selected : " + RoutingDetails.routingName + "</h5>");
+        $('#StepRoutingId').val(RoutingDetails.routingId);
     });
 
     $("#tab-step-info").click(function (event) {
         document.getElementById("FormRoutingStep").reset();
+        emptyTables();
         var routingid = $('input[name=RoutingChk]:checked').val();
         $('#StepRoutingId').val(routingid);
         hideMachinesSuppliersTable();
@@ -220,14 +261,19 @@ $(function () {
 
     function setDialogTitles() {
         //stepModel
-        //modelObj
+        //RoutingDetails
     };
     
 
     $("#RoutingStepDetails").click(function (event) {
-        getRoutingInfoFromTable();
         hideMachinesSuppliersTable();
-        $("#BOMManufacturedPartId").val(modelObj.manufacturedPartId);
+        //document.getElementById("FormRoutingStep").reset();
+       /* RoutingDetails["stepId"] = -1;
+        RoutingDetails["stepNumber"] = -1;*/
+        emptyTables();
+        getRoutingInfoFromTable();
+        $("#BOMManufacturedPartId").val(RoutingDetails.manufacturedPartId);
+        $('#StepRoutingId').val(RoutingDetails.routingId);
     });
     
     
@@ -336,13 +382,14 @@ $(function () {
     });
 
     $('#add-supplier').on('show.bs.modal', function (event) {
+        document.getElementById("FormRoutingSupplier").reset();
         var tablebody = $("#TitleTableSupplier tbody");
         tablebody.html("");
-        $(tablebody).append(AppUtil.ProcessTemplateData("TitleRow", modelObj));
-        console.log(modelObj);
-        $("#SupplierRoutingStepId").val(modelObj["stepId"]);
+        $(tablebody).append(AppUtil.ProcessTemplateData("TitleRow", RoutingDetails));
+        console.log(RoutingDetails);
+        $("#SupplierRoutingStepId").val(RoutingDetails["stepId"]);
         console.log("====2=====");
-        console.log(modelObj["stepId"]);
+        console.log(RoutingDetails["stepId"]);
         console.log("====2-End=====");
         //RoutingSelectSupplierTable
         //RoutingSelectSupplierRow
@@ -352,10 +399,17 @@ $(function () {
         }
     });
     $('#add-machine').on('show.bs.modal', function (event) {
+        document.getElementById("FormRoutingMachine").reset();
+        
         var tablebody = $("#TitleTableMachine tbody");
         tablebody.html("");
-        $(tablebody).append(AppUtil.ProcessTemplateData("TitleRowMachine", modelObj));
-        console.log(modelObj);
+        $(tablebody).append(AppUtil.ProcessTemplateData("TitleRowMachine", RoutingDetails));
+        console.log(RoutingDetails);
+        $("#MachineRoutingStepId").val(RoutingDetails["stepId"]);
+        loadMachinesToTable("AddMachineListTable", "AddMachineListRow");
+        if ($("#stepmachine_1").length) {
+            $("#stepmachine_1").prop('checked', true);
+        }
     });
 
     $('input[type=radio][name=stepsupplierselect]').change(function () {
@@ -366,6 +420,15 @@ $(function () {
         $("#SupplierId").val(supplierId);
         $("#Supplier").val(supplierName);
     });
+
+    $('input[type=radio][name=stepmachineselect]').change(function () {
+        var chkdelm = $('input[name=stepmachineselect]:checked');
+        var currentrow = chkdelm.closest('tr');
+        var machineId = $('input[name=stepmachineselect]:checked').val();
+        var machinename = currentrow.find("td:eq(4)").html();
+        $("#MachineId").val(machineId);
+    });
+
     $("#SaveRouteSupplier").click(function (event) {
         var chkdelm = $('input[name=stepsupplierselect]:checked');
         var currentrow = chkdelm.closest('tr');
@@ -379,21 +442,33 @@ $(function () {
         //stepsupplierselect
         //alert("Save route supplier");
         //routings/addnewrouting
+        
+
         var formData = AppUtil.GetFormData("FormRoutingSupplier");
         api.post("/routings/savestepsupplier", formData).then((data) => {
             console.log(data);
             loadSetSuppliers();
+            document.getElementById("Add-Supplier-Close").click();
         }).catch((error) => {
             AppUtil.HandleError("FormRoutingSupplier", error);
         });
         event.preventDefault();
     });
 
+    function emptyTables() {
+        var tablebody = $("#RouteMachinesTable tbody");
+        $(tablebody).html("");//empty tbody
+        var tablebody = $("#RouteSuppliersTable tbody");
+        $(tablebody).html("");//empty tbody
+    };
+
     function loadSetSuppliers() {
         var tablebody = $("#RouteSuppliersTable tbody");
-        let stepId = modelObj["stepId"];
+        $(tablebody).html("");//empty tbody
+        let stepId = RoutingDetails["stepId"];
+        console.log("stepId" + stepId);
         api.get("/routings/stepsuppliers?stepId=" + stepId).then((data) => {
-            $(tablebody).html("");//empty tbody
+           
             for (i = 0; i < data.length; i++) {
                 $(tablebody).append(AppUtil.ProcessTemplateData("RouteSupplierTemplate", data[i]));
             }
@@ -407,14 +482,38 @@ $(function () {
 
     $("#SaveRouteMachine").click(function (event) {
         alert("Save route Machine");
-        /*var formData = AppUtil.GetFormData("FormRoutingMachine");
-        api.post("/routings/savesupplier", formData).then((data) => {
+        var chkdelm = $('input[name=stepmachineselect]:checked');
+        var currentrow = chkdelm.closest('tr');
+        var machineId = $('input[name=stepmachineselect]:checked').val();
+        var machinename = currentrow.find("td:eq(4)").html();
+        $("#MachineId").val(machineId);
+        var formData = AppUtil.GetFormData("FormRoutingMachine");
+        api.post("/routings/savestepmachine", formData).then((data) => {
             console.log(data);
+            loadStepMachines();
+            document.getElementById("Add-Machine-Close").click();
         }).catch((error) => {
             AppUtil.HandleError("FormRoutingMachine", error);
         });
-        event.preventDefault();*/
+        event.preventDefault();
     });
+    function loadStepMachines() {
+        //debugger;
+        var tablebody = $("#RouteMachinesTable tbody");
+        $(tablebody).html("");//empty tbody
+        let stepId = RoutingDetails["stepId"];
+        console.log("stepId" + stepId);
+        api.get("/routings/stepmachines?stepId=" + stepId).then((data) => {
+            for (i = 0; i < data.length; i++) {
+                $(tablebody).append(AppUtil.ProcessTemplateData("RouteMachinesRowTemplate", data[i]));
+            }
+            console.log(data);
+            console.log(tablebody.html());
+            //RouteSuppliersTable
+            //RouteSupplierTemplate
+        }).catch((error) => {
+        });
+    };
 
 
     $("#BtnSaveStep").click(function (event) {
@@ -422,8 +521,8 @@ $(function () {
         var formData = AppUtil.GetFormData("FormRoutingStep");
         api.post("/routings/savestep", formData).then((data) => {
             stepModel = data;
-            modelObj["stepNumber"] = data["stepNumber"];
-            modelObj["stepId"] = data["stepId"];
+            RoutingDetails["stepNumber"] = data["stepNumber"];
+            RoutingDetails["stepId"] = data["stepId"];
             console.log("====1=====");
             console.log(data);
             console.log("====1-End=====");
@@ -461,13 +560,15 @@ $(function () {
 
     $("#BtnAddNextStep").click(function (event) {
         //routings/addnewrouting
-        alert("next step... todo...");
+        //alert("next step... todo...");
+        document.getElementById("FormRoutingStep").reset();
+        $('a[href="#rsd"]').tab("show");
     });
 
 });
 
 function SetAssemblyIds() {
-    $("#BOMManufacturedPartId").val(modelObj.manufacturedPartId);
+    $("#BOMManufacturedPartId").val(RoutingDetails.manufacturedPartId);
     var stepId = $("#StepId").val();
     $("#BOMRoutingStepId").val(stepId);
 }
@@ -514,6 +615,7 @@ function LoadRoutingSteps(routingId) {
        for (i = 0; i < rData.length; i++) {
            $(tablebody).append(AppUtil.ProcessTemplateData("RoutingStepTemplate", rData[i]));
         }
+        routingSteps = rData;
         console.log(rData);
     }).catch((error) => {
     });
@@ -524,7 +626,7 @@ function LoadBOMList(stepId) {
     tablebody.html("");
     let rData = {};
     let i = 0;
-    let manufId = modelObj.manufacturedPartId;
+    let manufId = RoutingDetails.manufacturedPartId;
     api.get("/routings/boms?manufId=" + manufId + "&stepId=" + stepId).then((rData) => {
         console.log(rData);
         for (i = 0; i < rData.length; i++) {
@@ -559,4 +661,49 @@ function onlyNum() {
     }
 }
 
-        
+/**
+ * 
+ * 
+ * @param {any} stepId
+ * @param {any} stepNumber
+ * @returns
+ */
+
+function getAndShowStep(stepId,stepNumber) {
+    /*var relatedTarget = $(event.relatedTarget);
+    var stepId = relatedTarget.data("stepId");
+    var stepNumber = relatedTarget.data("stepNumber");*/
+    let data = routingSteps;
+    let step = {};
+    for (i = 0; i < data.length; i++) {
+        if (data[i]["stepId"] == stepId) {
+            console.log("******Found Data*******");
+            step = data[i];
+            console.log(data[i]);
+            console.log("*************");
+        }
+    }
+    document.getElementById("FormRoutingStep").reset();
+    $('a[href="#rsd"]').tab("show");
+    LoadOperations();
+    LoadLocations();
+    $("#Status").val(step.status);
+    $("#StepId").val(step.stepId);
+    $("#StepRoutingId").val(step.routingId);
+    $("#StepSequence").val(step.stepSequence);
+    RoutingDetails["stepId"] = step.stepId;
+    RoutingDetails["stepNumber"] = step.stepNumber;
+
+    $("#StepNumber").val(step.stepNumber);
+    $("#StepDescription").val(step.stepDescription);
+
+    $("#StepOperation").text(step.stepOperation).attr('selected', 'selected');
+    $('#StepOperation').trigger('change');
+    $("#StepLocation").text(step.stepLocation).attr('selected', 'selected');
+    $('#StepLocation').trigger('change');
+
+    
+    return false;
+}
+
+

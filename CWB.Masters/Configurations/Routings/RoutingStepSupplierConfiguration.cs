@@ -1,13 +1,14 @@
 ﻿using CWB.CommonUtils.Common.Configurations;
+using CWB.Masters.Domain.Routings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CWB.Masters.Configurations
 {
-    public class RoutingStepSupplierConfiguration : IEntityTypeConfiguration<Domain.RoutingStepSupplier>
+    public class RoutingStepSupplierConfiguration : IEntityTypeConfiguration<RoutingStepSupplier>
     {
         
-        public void Configure(EntityTypeBuilder<Domain.RoutingStepSupplier> builder)
+        public void Configure(EntityTypeBuilder<RoutingStepSupplier> builder)
         {
             builder
              .ToTable("RoutingStepSupplier");

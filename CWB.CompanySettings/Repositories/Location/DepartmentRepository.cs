@@ -17,9 +17,15 @@ namespace CWB.CompanySettings.Repositories.Location
             _dbSet = context.Set<ShopDepartment>();
         }
 
+        
         public async Task<IEnumerable<ShopDepartment>> GetAllDepartmentsByPlantNTenantAsync(long plantId, long tenantId)
         {
             return await _dbSet.Include(d => d.Plant).Where(t => t.TenantId == tenantId && t.PlantId == plantId).ToListAsync();
+        }
+
+        public async Task<IEnumerable<ShopDepartment>> GetAllDepartmentsByTenantAsync(long tenantId)
+        {
+            return await _dbSet.Include(d => d.Plant).Where(t => t.TenantId == tenantId).ToListAsync();
         }
 
         public IEnumerable<ShopDepartment> GetDepartmentsWithPlant(List<long> DepartmentIds, long TenantId)

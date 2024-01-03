@@ -1,10 +1,12 @@
 using CWB.App.Models.Routing;
+using CWB.App.Models.Routings;
 using CWB.App.Services.Masters;
 using CWB.App.Services.Routings;
 using CWB.Constants.UserIdentity;
 using CWB.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using System;
 using System.Collections.Generic;
@@ -96,6 +98,13 @@ namespace CWB.App.Controllers
                 return BadRequest(ModelState);
             }
             var result = await _routingService.RoutingStep(model);
+            return Ok(result);
+        }
+
+       
+        public async Task<IActionResult> DelStep(int stepId)
+        {
+            var result = await _routingService.DelStep(stepId);
             return Ok(result);
         }
 
@@ -246,6 +255,17 @@ namespace CWB.App.Controllers
             var result = await _routingService.StepMachines(stepId);
             return Ok(result);
         }
+
+        [HttpGet]
+        public IActionResult Locations()
+        {
+            List<LocationVM> locations = new List<LocationVM>();
+            locations.Add(new LocationVM { Id=1,Name= "Inhouse" });
+            locations.Add(new LocationVM { Id = 2, Name = "SubCon" });
+            locations.Add(new LocationVM { Id = 3, Name = "Company" });
+            return Ok(locations);
+        }
+
 
     }
 }

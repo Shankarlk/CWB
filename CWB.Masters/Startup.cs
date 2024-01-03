@@ -40,6 +40,8 @@ namespace CWB.Masters
             {
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
+            services.AddControllers().AddJsonOptions(options =>
+            options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter()));
 
             services.ConfigureAuthenticationNAuthorization(Configuration["ApiUrls:Idenitity"]);
             //automapper

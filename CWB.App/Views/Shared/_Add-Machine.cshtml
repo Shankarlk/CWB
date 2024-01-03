@@ -62,7 +62,7 @@
                                         <!-- ===================== -->
                                         <div class="row mt-2">
                                             <div class="table-responsive table-he-130">
-                                                <table class="table table-sm table-bordered w-100 mb-3 text-center tableFixHead">
+                                                <table id="AddMachineListTable" class="table table-sm table-bordered w-100 mb-3 text-center tableFixHead">
                                                     <thead class=" table-info th-sti">
                                                         <tr class="table-border-bottom">
                                                             <th width="5%"></th>
@@ -73,69 +73,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr>
-                                                            <td>
-                                                                <input class="form-check-input" type="radio" title="Select a Machine by clicking the checkbox for the Machine. Only 1 Machine can be selected at a time" data-plugin="tippy" data-tippy-placement="top">
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <input class="form-check-input" type="radio" title="Select a Machine by clicking the checkbox for the Machine. Only 1 Machine can be selected at a time" data-plugin="tippy" data-tippy-placement="top">
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <input class="form-check-input" type="radio" title="Select a Machine by clicking the checkbox for the Machine. Only 1 Machine can be selected at a time" data-plugin="tippy" data-tippy-placement="top">
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <input class="form-check-input" type="radio" title="Select a Machine by clicking the checkbox for the Machine. Only 1 Machine can be selected at a time" data-plugin="tippy" data-tippy-placement="top">
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <input class="form-check-input" type="radio" title="Select a Machine by clicking the checkbox for the Machine. Only 1 Machine can be selected at a time" data-plugin="tippy" data-tippy-placement="top">
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <input class="form-check-input" type="radio" title="Select a Machine by clicking the checkbox for the Machine. Only 1 Machine can be selected at a time" data-plugin="tippy" data-tippy-placement="top">
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <input class="form-check-input" type="radio" title="Select a Machine by clicking the checkbox for the Machine. Only 1 Machine can be selected at a time" data-plugin="tippy" data-tippy-placement="top">
-                                                            </td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                            <td></td>
-                                                        </tr>
+                                                        
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -202,17 +140,17 @@
                             <div class="row">
                                 <label class="form-label col-md-2 mb-2">Setup Time <span class="text-danger">*</span> </label>
                                 <div class="col-md-4 mb-2">
-                                    <input type="text" id="SetupTime" name="SetupTime" class="form-control form-control-sm" data-toggle="input-mask" data-mask-format="00:00:00" placeholder="e.g HH:MM:SS" required title="Enter the Setup time for the Machine for the Routing Step ... Removal / Unload of Previous Setup Hardware, Assemble / Load Hardware for the current setup, Downloading / Entering of Programs ...." data-plugin="tippy" data-tippy-placement="top">
+                                    <input value="10:00:00" type="text" id="SetupTime" name="SetupTime" class="form-control form-control-sm" required title="Enter the Setup time for the Machine for the Routing Step ... Removal / Unload of Previous Setup Hardware, Assemble / Load Hardware for the current setup, Downloading / Entering of Programs ...." data-plugin="tippy" data-tippy-placement="top">
                                 </div>
                                 <!-- ---------------  -->
                                 <label class="form-label col-md-2 mb-2">1st Piece Processing time <span class="text-danger">*</span></label>
                                 <div class="col-md-4 mb-2">
-                                    <input type="text" id="FloorToFloorTime" name="FloorToFloorTime" class="form-control form-control-sm" data-toggle="input-mask" data-mask-format="00:00:00" placeholder="e.g HH:MM:SS" required title="Enter the time for Processing the first Part inclusive of Approval of the Setup .... If there is no approval enter the Floor To Floor Time " data-plugin="tippy" data-tippy-placement="top">
+                                    <input value="10:00:00" type="text" id="FloorToFloorTime" name="FloorToFloorTime" class="form-control form-control-sm" required title="Enter the time for Processing the first Part inclusive of Approval of the Setup .... If there is no approval enter the Floor To Floor Time " data-plugin="tippy" data-tippy-placement="top">
                                 </div>
                                 <!-- ---------------  -->
                                 <label class="form-label col-md-2 mb-2">Floor to Floor Time <span class="text-danger">*</span></label>
                                 <div class="col-md-4 mb-2">
-                                    <input type="text" id="FirstPieceProcessingTime" name="FirstPieceProcessingTime" class="form-control form-control-sm" data-toggle="input-mask" data-mask-format="00:00:00" placeholder="e.g HH:MM:SS" required title="Enter the Floor to Floor Time which is the time interval between two Cycle Starts which would typically include Load / Unload and any other activity which is done serially ... Activities done in parallel to the Machine working (eg Inspection, Deburring ...) will not be a part of Floor To Floor Time" data-plugin="tippy" data-tippy-placement="top">
+                                    <input value="10:00:00" type="text" id="FirstPieceProcessingTime" name="FirstPieceProcessingTime" class="form-control form-control-sm" required title="Enter the Floor to Floor Time which is the time interval between two Cycle Starts which would typically include Load / Unload and any other activity which is done serially ... Activities done in parallel to the Machine working (eg Inspection, Deburring ...) will not be a part of Floor To Floor Time" data-plugin="tippy" data-tippy-placement="top">
                                 </div>
                                 <!-- ---------------  -->
                                 <label class="form-label  col-md-2 mb-2">No of parts per loading <span class="text-danger">*</span></label>
@@ -226,6 +164,9 @@
                                 </div>
                                 <!-- ---------------- -->
                                 <div class="col-md-6 mt-1 text-end">
+                                    <input hidden type="text" name="MachineId" value="0" id="MachineId" />
+                                    <input hidden type="text" name="RoutingStepId" value="0" id="MachineRoutingStepId" />
+                                    <input hidden type="text" name="RoutingStepMachineId" value="0" id="RoutingStepMachineId" />
                                     <input type="submit" id="SaveRouteMachine" class="btn btn-primary btn-sm" title="Use to Save the entered data" data-plugin="tippy" data-tippy-placement="top" value="Save" />
                                 </div>
                                 <!-- ---------------- -->
@@ -422,4 +363,22 @@
             <button type="button" id="Add-Machine-Close" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </td>
     </tr>
+</template>
+<!--
+     <th>Plant</th>
+                                                            <th>Shop</th>
+                                                            <th>Sl No</th>
+                                                            <th>M/c Name</th>
+-->
+<template id="AddMachineListRow">
+<tr>
+<td>
+<input class="form-check-input" type="radio" name="stepmachineselect" id="stepmachine_{num}" value="{machineId}" title="Select a Machine by clicking the checkbox for the Machine. Only 1 Machine can be selected at a time" data-plugin="tippy" data-tippy-placement="top">
+</td>
+<td>{plant}</td>
+<td>{shop}</td>
+<td>{slNo}</td>
+<td>{name}</td>
+</tr>
+<tr>
 </template>

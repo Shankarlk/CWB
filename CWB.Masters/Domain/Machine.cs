@@ -1,4 +1,5 @@
 ﻿using CWB.CommonUtils.Common;
+using CWB.Masters.Domain.Routings;
 using System.Collections.Generic;
 
 namespace CWB.Masters.Domain

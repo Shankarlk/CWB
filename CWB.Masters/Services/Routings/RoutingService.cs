@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CWB.CommonUtils.Common;
 using CWB.Logging;
+using CWB.Masters.Domain;
 using CWB.Masters.Infrastructure;
 using CWB.Masters.MastersUtils;
 using CWB.Masters.MastersUtils.ItemMaster;
@@ -8,7 +9,8 @@ using CWB.Masters.Repositories.Company;
 using CWB.Masters.Repositories.Routings;
 using CWB.Masters.ViewModels.Company;
 using CWB.Masters.ViewModels.ItemMaster;
-using CWB.Masters.ViewModels.Routing;
+using CWB.Masters.ViewModels.Routings;
+using CWB.Masters.Domain.Routings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-namespace CWB.Masters.Services.Routing
+namespace CWB.Masters.Services.Routings
 {
     public class RoutingService : IRoutingService
     {
@@ -49,7 +51,13 @@ namespace CWB.Masters.Services.Routing
         public IEnumerable<RoutingVM> GetRoutingsForManufId(int manufId)
         {
             var routings = _routingRepository.GetRangeAsync(m => m.ManufacturedPartId == manufId).OrderBy(m=>m.Id);
-            return _mapper.Map <IEnumerable<RoutingVM>>(routings);
+            try
+            {
+                return _mapper.Map<IEnumerable<RoutingVM>>(routings);
+            }
+            catch (Exception ex) {
+                return new List<RoutingVM>();
+            }
         }
 
         public IEnumerable<RoutingStepVM> GetStepsForRoutingId(int routingId)
@@ -64,6 +72,33 @@ namespace CWB.Masters.Services.Routing
                 string src = ex.InnerException.Source;
                 return new List<RoutingStepVM>();
             }
+        }
+        public async Task<RoutingStepVM> GetStep(int stepId)
+        {
+            RoutingStep step = await _routingStepRepository.SingleOrDefaultAsync(m=>m.Id == stepId);
+            if(step == null)
+            {
+                return new RoutingStepVM { StepId = -1 };
+            }
+            return _mapper.Map <RoutingStepVM>(step);
+        }
+        public async Task<bool> DelStep(int stepId)
+        {
+            try
+            {
+                var step = await GetStep(stepId);
+                RoutingStep routingStep = _mapper.Map<RoutingStep>(step);
+                if (routingStep.Id > 0)
+                {
+                    _routingStepRepository.Remove(routingStep);
+                    return true;
+                }
+                return false;
+            }catch(Exception)
+            {
+                return false;
+            }
+
         }
 
 
@@ -83,7 +118,7 @@ namespace CWB.Masters.Services.Routing
 
         }
 
-        public async Task<IEnumerable<Domain.Routing>> GetAllRoutings()
+        public async Task<IEnumerable<CWB.Masters.Domain.Routings.Routing>> GetAllRoutings()
         {
             var routings = await _routingRepository.GetAllAsync();
             return routings;
@@ -110,7 +145,7 @@ namespace CWB.Masters.Services.Routing
 
         public async Task<RoutingVM> Routing(RoutingVM routingVM)
         {
-            var routing = _mapper.Map<Domain.Routing>(routingVM);
+            var routing = _mapper.Map<CWB.Masters.Domain.Routings.Routing>(routingVM);
             if (routing.Id == 0)
             {
                 await _routingRepository.AddAsync(routing);
@@ -128,7 +163,7 @@ namespace CWB.Masters.Services.Routing
         {
             try
             {
-                var routingStep = _mapper.Map<Domain.RoutingStep>(routingStepVM);
+                var routingStep = _mapper.Map<RoutingStep>(routingStepVM);
                 if (routingStep.Id == 0)
                 {
                     await _routingStepRepository.AddAsync(routingStep);
@@ -152,7 +187,7 @@ namespace CWB.Masters.Services.Routing
         {
             try
             {
-                var routingStepPart = _mapper.Map<Domain.RoutingStepPart>(routingStepPartVM);
+                var routingStepPart = _mapper.Map<RoutingStepPart>(routingStepPartVM);
                 if (routingStepPart.Id == 0)
                 {
                     await _routingStepPartRepository.AddAsync(routingStepPart);
@@ -205,7 +240,7 @@ namespace CWB.Masters.Services.Routing
         {
             try
             {
-                var routingStepMachine = _mapper.Map<Domain.RoutingStepMachine>(routingStepMachineVM);
+                var routingStepMachine = _mapper.Map<RoutingStepMachine>(routingStepMachineVM);
                 if (routingStepMachine.Id == 0)
                 {
                     await _routingStepMachineRepository.AddAsync(routingStepMachine);
@@ -229,7 +264,7 @@ namespace CWB.Masters.Services.Routing
         {
             try
             {
-                var routingStepSupplier = _mapper.Map<Domain.RoutingStepSupplier>(routingStepSupplierVM);
+                var routingStepSupplier = _mapper.Map<RoutingStepSupplier>(routingStepSupplierVM);
                 if (routingStepSupplier.Id == 0)
                 {
                     await _routingStepSupplierRepository.AddAsync(routingStepSupplier);

@@ -1,8 +1,9 @@
-﻿using CWB.Masters.ViewModels.Routing;
+﻿using CWB.Masters.ViewModels.Routings;
+using CWB.Masters.Domain.Routings;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace CWB.Masters.Services.Routing
+namespace CWB.Masters.Services.Routings
 {
     public interface IRoutingService
     {
@@ -12,8 +13,10 @@ namespace CWB.Masters.Services.Routing
         IEnumerable<RoutingVM> GetRoutingsForManufId(int manufId);
         IEnumerable<RoutingStepVM> GetStepsForRoutingId(int routingId);
         IEnumerable<RoutingStepPartVM> GetPartsForStepId(int stepId);
+        Task<bool> DelStep(int stepId);
+        Task<RoutingStepVM> GetStep(int stepId);
         IEnumerable<RoutingStepPartVM> GetPartsForManufId(int manufID);
-        Task<IEnumerable<Domain.Routing>> GetAllRoutings();
+        Task<IEnumerable<Routing>> GetAllRoutings();
 
         Task<IEnumerable<RoutingStepMachineVM>> StepMachines(int stepId);
         Task<IEnumerable<RoutingStepSupplierVM>> StepSuppliers(int stepId);

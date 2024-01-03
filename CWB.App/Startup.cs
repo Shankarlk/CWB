@@ -39,6 +39,9 @@ namespace CWB.App
             services.Configure<ApiUrls>(Configuration.GetSection("ApiUrls"));
             //Dependency Injection..
             services.ConfigureAppDI();
+            
+            services.AddControllers().AddJsonOptions(options =>
+           options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter()));
 
             if (!_enableAuth)
                 return;
