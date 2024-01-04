@@ -264,6 +264,8 @@ $(document).ready(function () {
             for (i = 0; i < data.length; i++) {
                 $(tablebody).append(AppUtil.ProcessTemplateDataNew("MakeFromRMTemplate", data[i], i));
             }
+        });
+
         //  //////debugger;
         if (!ManufPartFormUtil.ValidateManufPartDetails(1)) {
         }
