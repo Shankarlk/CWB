@@ -1,4 +1,4 @@
-﻿namespace CWB.Masters.ViewModels.Routing
+﻿namespace CWB.Masters.ViewModels.Routings
 {
     public class RoutingStepVM
     {

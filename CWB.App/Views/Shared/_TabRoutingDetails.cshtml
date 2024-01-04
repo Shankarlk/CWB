@@ -42,7 +42,8 @@
                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
-                    <a href="javascript:void(0);" class="dropdown-item">delete</a>
+                    <a href="javascript:void(0);" data-stepNumber="{stepNumber}" data-stepId="{stepId}" class="dropdown-item">delete</a>
+                    <a href="javascript:getAndShowStep({stepId},'{stepNumber}')" class="dropdown-item">Edit</a>
                 </div>
             </div>
         </td>

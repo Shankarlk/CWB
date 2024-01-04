@@ -1,4 +1,5 @@
-﻿using CWB.App.Services.CompanySettings;
+﻿using CWB.App.Models.Departments;
+using CWB.App.Services.CompanySettings;
 using CWB.Constants.UserIdentity;
 using CWB.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -24,10 +25,22 @@ namespace CWB.App.Controllers
         }
 
         [HttpGet]
-        public async Task<JsonResult> GetDepartments(long Id)
+        public async Task<JsonResult> GetDepartments()
         {
-            var result = await _departmentService.GetDepartments(Id);
+            var result = await _departmentService.GetDepartments(1);
             return Json(result);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PostDepartment(ShopDepartmentVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _departmentService.PostDepartment(model);
+            return Ok(result);
         }
     }
 }

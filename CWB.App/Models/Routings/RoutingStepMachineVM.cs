@@ -1,4 +1,7 @@
-﻿using System;
+﻿using CWB.App.AppUtils;
+using System;
+using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace CWB.App.Models.Routing
 {
@@ -8,9 +11,13 @@ namespace CWB.App.Models.Routing
         public long TenantId { get; set; }
         public long MachineId { get; set; }
         public long RoutingStepId { get; set; }
-        public TimeSpan SetupTime { get; set; }
-        public TimeSpan FloorToFloorTime { get; set; }
-        public TimeSpan FirstPieceProcessingTime { get; set; }
+
+        //[JsonConverter(typeof(TimeSpanToStringConverter))]
+        public string SetupTime { get; set; }
+        //[JsonConverter(typeof(TimeSpanToStringConverter))]
+        public string FloorToFloorTime { get; set; }
+        //[JsonConverter(typeof(TimeSpanToStringConverter))]
+        public string FirstPieceProcessingTime { get; set; }
         public int NoOfPartsPerLoading { get; set; }
     }
 }

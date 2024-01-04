@@ -1,6 +1,6 @@
 ﻿using CWB.CommonUtils.Common;
 
-namespace CWB.Masters.Domain
+namespace CWB.Masters.Domain.Routings
 {
     public class RoutingStepDocument : BaseEntity
     {

@@ -7,5 +7,6 @@ namespace CWB.App.Services.CompanySettings
     public interface IDepartmentService
     {
         Task<IEnumerable<DepartmentListVM>> GetDepartments(long Id);
+        Task<ShopDepartmentVM> PostDepartment(ShopDepartmentVM shop);
     }
 }

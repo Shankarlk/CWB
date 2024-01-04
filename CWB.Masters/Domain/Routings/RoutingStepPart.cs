@@ -1,7 +1,7 @@
 ﻿using CWB.CommonUtils.Common;
 using CWB.Masters.Domain.ItemMaster;
 
-namespace CWB.Masters.Domain
+namespace CWB.Masters.Domain.Routings
 {
     public class RoutingStepPart : BaseEntity
     {

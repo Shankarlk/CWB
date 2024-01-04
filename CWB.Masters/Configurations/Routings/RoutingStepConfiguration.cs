@@ -1,11 +1,12 @@
 ﻿using CWB.CommonUtils.Common.Configurations;
+using CWB.Masters.Domain.Routings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CWB.Masters.Configurations
 {
     public class RoutingStepConfiguration
-        : IEntityTypeConfiguration<Domain.RoutingStep>
+        : IEntityTypeConfiguration<RoutingStep>
     {
         /***
                  *  `Id` bigint NOT NULL AUTO_INCREMENT,
@@ -14,7 +15,7 @@ namespace CWB.Masters.Configurations
           `BOMId` bigint not NULL, /*Refers to BOM entry from MPBOMs table
           `QuantityAssembly` int NOT NULL,
          */
-        public void Configure(EntityTypeBuilder<Domain.RoutingStep> builder)
+        public void Configure(EntityTypeBuilder<RoutingStep> builder)
         {
             builder
              .ToTable("RoutingStep");

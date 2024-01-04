@@ -44,9 +44,6 @@
                             <div class="col-md-8 mb-2">
                                 <select id="StepLocation" name="StepLocation" class="form-select form-select-sm" title="Indicate where this Routing Step is carried out - Inhouse or Outsourced" data-plugin="tippy" data-tippy-placement="top" required>
                                     <option value="">Select</option>
-                                    <option value="1">Inhouse</option>
-                                    <option value="2">SubCon</option>
-                                    <option value="3">Company</option>
                                 </select>
                             </div>
                             <!-- ---------------  -->
@@ -62,8 +59,8 @@
                             <!-- ---------------  -->
                             <div class="col-md-12 text-end">
                                 <input type="text" hidden id="Status" name="Status" value="Active" />
-                                <input type="text" hidden id="StepId" name="StepId" value="0" />
-                                <input type="text" hidden id="StepRoutingId" name="RoutingId" value="0" />
+                                <input type="text"  id="StepId" name="StepId" value="0" />
+                                <input type="text"  id="StepRoutingId" name="RoutingId" value="0" />
                                 <input type="text" hidden id="StepSequence" name="StepSequence" value="1" />
                                 <button id="BtnSaveStep" class="btn btn-sm btn-primary" title="Use to Save the entered data" data-plugin="tippy" data-tippy-placement="top"> Save</button>
                             </div>
@@ -339,7 +336,7 @@
                 <button class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#popup-4" title="Use to Exit " data-plugin="tippy" data-tippy-placement="top">Exit</button>
                 <button class="btn btn-sm btn-primary" title="Use to Save the entered data" data-plugin="tippy" data-tippy-placement="top">Save</button>
                 <button type="button" class="btn btn-warning btn-sm"><i class="fas fa-arrow-right"></i></button>
-                <button class="btn btn-sm btn-info" title="Use to go to the next Tab" data-plugin="tippy" data-tippy-placement="top">Add Next Step</button>
+                <button hidden class="btn btn-sm btn-info" title="Use to go to the next Tab" data-plugin="tippy" data-tippy-placement="top">Add Next Step</button>
             </div>
         </div>
         <!-- row end -->

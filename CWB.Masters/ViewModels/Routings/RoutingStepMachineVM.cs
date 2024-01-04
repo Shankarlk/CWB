@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CWB.Masters.ViewModels.Routing
+namespace CWB.Masters.ViewModels.Routings
 {
     public class RoutingStepMachineVM
     {
@@ -8,9 +8,9 @@ namespace CWB.Masters.ViewModels.Routing
         public long TenantId { get; set; }
         public long MachineId { get; set; }
         public long RoutingStepId { get; set; }
-        public TimeSpan SetupTime { get; set; }
-        public TimeSpan FloorToFloorTime { get; set; }
-        public TimeSpan FirstPieceProcessingTime { get; set; }
+        public string SetupTime { get; set; }
+        public string FloorToFloorTime { get; set; }
+        public string FirstPieceProcessingTime { get; set; }
         public int NoOfPartsPerLoading { get; set; }
     }
 }

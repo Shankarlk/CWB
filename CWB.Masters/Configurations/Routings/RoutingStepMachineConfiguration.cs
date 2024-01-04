@@ -1,10 +1,11 @@
 ﻿using CWB.CommonUtils.Common.Configurations;
+using CWB.Masters.Domain.Routings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CWB.Masters.Configurations
 {
-    public class RoutingStepMachineConfiguration : IEntityTypeConfiguration<Domain.RoutingStepMachine>
+    public class RoutingStepMachineConfiguration : IEntityTypeConfiguration<RoutingStepMachine>
     {
         /*
          * `Id` bigint NOT NULL AUTO_INCREMENT,
@@ -17,7 +18,7 @@ namespace CWB.Masters.Configurations
   `NoOfPartsPerLoading` int NOT NULL,
          */
 
-        public void Configure(EntityTypeBuilder<Domain.RoutingStepMachine> builder)
+        public void Configure(EntityTypeBuilder<RoutingStepMachine> builder)
         {
             builder
              .ToTable("RoutingStepMachine");
@@ -34,16 +35,17 @@ namespace CWB.Masters.Configurations
             builder
                .Property(m => m.SetupTime)
                .HasColumnName("SetupTime")
+               .HasMaxLength(20)
                .IsRequired();
             builder
               .Property(m => m.FloorToFloorTime)
               .HasColumnName("FloorToFloorTime")
-              .HasMaxLength(255)
+              .HasMaxLength(20)
               .IsRequired();
             builder
             .Property(m => m.FirstPieceProcessingTime)
             .HasColumnName("FirstPieceProcessingTime")
-            .HasMaxLength(255)
+            .HasMaxLength(20)
             .IsRequired();
             builder
                 .Property(m => m.NoOfPartsPerLoading)

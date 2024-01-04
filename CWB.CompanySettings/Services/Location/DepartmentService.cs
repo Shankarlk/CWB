@@ -55,9 +55,11 @@ namespace CWB.CompanySettings.Services.Location
 
         public async Task<IEnumerable<ShopDepartmentListVM>> GetAllDepartments(long PlantId, long TenantId)
         {
-            var departments = await _departmentRepository.GetAllDepartmentsByPlantNTenantAsync(PlantId, TenantId);
+            var departments = await _departmentRepository.GetAllDepartmentsByTenantAsync(TenantId);
             return _mapper.Map<IEnumerable<ShopDepartmentListVM>>(departments);
         }
+
+        
 
         public IEnumerable<DepartmentListWithPlantVM> GetDepartmentListWithPlants(List<long> DepartmentIds, long TenantId)
         {

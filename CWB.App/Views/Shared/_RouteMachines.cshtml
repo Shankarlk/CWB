@@ -16,7 +16,7 @@
     <div>
         <label class="form-label col-md-6 mb-1 mt-3">No of Machines that can run this operation simultaneously </label>
         <div class="col-md-3 mb-2">
-            <input class="form-control form-control-sm mt-3" type="number" title="For Line Balancing reasons if more than 1 machine has to run the Operation Step .... indicate the number of Machines that need to run simultaneously. Those many machines or more have to be added to the list " data-plugin="tippy" data-tippy-placement="top">
+            <input class="form-control form-control-sm mt-3" value="1" id="nummachines" name="nummachines" type="number" title="For Line Balancing reasons if more than 1 machine has to run the Operation Step .... indicate the number of Machines that need to run simultaneously. Those many machines or more have to be added to the list " data-plugin="tippy" data-tippy-placement="top">
         </div>
         <!-- ============ -->
         <div class="col-md-3 mt-3 mb-1 text-end">
@@ -25,19 +25,19 @@
     </div>
 </div>
 
-<template id="RouteMachineTemplate">
+<template id="RouteMachinesRowTemplate">
     <tr>
-        <td data-key="machine">{machine}</td>
-        <td data-key="ftoftime">{ftoftime}</td>
+        <td data-key="machine">{machineId}</td>
+        <td data-key="ftoftime">{firstPieceProcessingTime}</td>
         <td data-key="status">---</td>
         <td>
             <div class="dropdown float-center">
                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
-                    <a href="javascript:void(0);" data-makefromid="{routeMachineId}" data-bs-toggle="modal" data-bs-target="#add-machine" class="dropdown-item">Edit</a>
+                    <a href="javascript:void(0);" data-routingStepMachineId="{routingStepMachineId}" data-bs-toggle="modal" data-bs-target="#add-machine" class="dropdown-item">Edit</a>
                     <!-- item-->
-                    <a href="javascript:void(0);" data-makefromid="{routeMachineId}" data-bs-toggle="modal" data-bs-target="#add-machine" class="dropdown-item">Delete</a>
+                    <a href="javascript:void(0);" data-routingStepMachineId="{routingStepMachineId}" data-bs-toggle="modal" data-bs-target="#add-machine" class="dropdown-item">Delete</a>
                 </div>
             </div>
         </td>

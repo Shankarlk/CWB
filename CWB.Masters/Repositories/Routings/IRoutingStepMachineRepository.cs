@@ -1,8 +1,9 @@
 ﻿using CWB.CommonUtils.Common.Repositories;
+using CWB.Masters.Domain.Routings;
 
 namespace CWB.Masters.Repositories.Routings
 {
-    public interface IRoutingStepMachineRepository:IRepository<Domain.RoutingStepMachine>
+    public interface IRoutingStepMachineRepository:IRepository<RoutingStepMachine>
     {
     }
 }

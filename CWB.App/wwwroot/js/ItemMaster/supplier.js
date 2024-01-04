@@ -137,4 +137,18 @@ function loadSuppliersToTable(tableName,rowTemplate) {
     }).catch((error) => {
         //console.log(error);
     });
+}
+
+function loadMachinesToTable(tableName, rowTemplate) {
+    var tablebody = $("#" + tableName + " tbody");
+    $(tablebody).html("");//empty tbody
+    api.get("/machine/getmachines").then((data) => {
+        console.log(data);
+        for (i = 0; i < data.length; i++) {
+            $(tablebody).append(AppUtil.ProcessTemplateDataNew(rowTemplate, data[i], i));
+        }
+        console.log($(tablebody).html());
+    }).catch((error) => {
+        //console.log(error);
+    });
 }    

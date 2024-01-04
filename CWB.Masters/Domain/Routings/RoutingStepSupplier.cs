@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CWB.Masters.Domain
+namespace CWB.Masters.Domain.Routings
 {
     public class RoutingStepSupplier : BaseEntity
     {
