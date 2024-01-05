@@ -6,7 +6,7 @@ namespace CWB.CompanySettings.Services.Designations
 {
     public interface IDesignationService
     {
-        IEnumerable<DesignationListVM> GetDesignations(long TenantId);
+        IEnumerable<DesignationVM> GetDesignations(long TenantId);
 
         Task<DesignationVM> Designation(DesignationVM designationVM);
 

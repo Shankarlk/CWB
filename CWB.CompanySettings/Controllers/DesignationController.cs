@@ -33,11 +33,11 @@ namespace CWB.CompanySettings.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route(ApiRoutes.Designation.GetDesignations)]
-        [Produces(AppContentTypes.ContentType, Type = typeof(List<DesignationListVM>))]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<DesignationVM>))]
         [Authorize(Roles = Roles.ADMIN)]
-        public IActionResult GetDesignations(long Id)
+        public IActionResult GetDesignations(long tenantId)
         {
-            var designations = _designationService.GetDesignations(Id);
+            var designations = _designationService.GetDesignations(tenantId);
             return Ok(designations);
         }
 

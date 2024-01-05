@@ -22,6 +22,7 @@ var DesignationsFormUtil = {
 
 $(function () {
     $('#dialog-designation').on('show.bs.modal', function (event) {
+        debugger;
         DesignationsFormUtil.ClearForm();
         var relatedTarget = $(event.relatedTarget);
         var DesignationId = relatedTarget.data("id");

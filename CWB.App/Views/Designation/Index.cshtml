@@ -16,18 +16,17 @@
 
             <div class="row mt-2">
                 <!-- -------- -->
-                <div class="col-md-3" title="Enter the Company Name Partially or Fully to shortlist " data-plugin="tippy" data-tippy-placement="top">
-                    <input class="form-control form-control-sm contact-search" type="text" data-key="CompanyName" placeholder="Company Name">
+                <div class="col-md-3" title="Enter the Designation Name Partially or Fully to shortlist " data-plugin="tippy" data-tippy-placement="top">
+                    <input class="form-control form-control-sm designation-search" type="text" data-key="DesignationName" placeholder="Designation Name">
                 </div>
                 <!-- -------- -->
             </div>
 
             <!-- end row -->
             <div class="table-responsive table-he-250 mt-3">
-                <table class="table table-sm table-bordered  mb-3 mt-1 tableFixHead" id="tbl-contacts">
+                <table class="table table-sm table-bordered  mb-3 mt-1 tableFixHead" id="tbl-designations">
                     <thead class="table-info th-sti text-center">
                         <tr class="table-border-bottom">
-                            <th width="10%"></th>
                             <th width="50%">Designation Name</th>
                             <th width="5%"></th>
                         </tr>
@@ -72,14 +71,14 @@
 
 <partial name="../Shared/_DesignationDialog" model='new CWB.App.Models.Designation.DesignationVM{DesignationId=0}' />
 @section scripts {
-    <script src="~/js/designations.js"></script>
+    @*<script src="~/js/designations.js"></script>*@
     <script src="~/js/designation-model.js"></script>
 }
 
 <!--Company Template-->
 <template id="designation-template">
     <tr>
-        <td data-key="DesignationName">{designationName}</td>
+        <td data-key="DesignationName">{name}</td>
         <td>
             <div class="dropdown float-center">
                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>

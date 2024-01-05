@@ -20,24 +20,24 @@ namespace CWB.App.Controllers
     [Authorize(Roles = Roles.ADMIN)]
     public class DesignationController : Controller
     {
-        private readonly ILogger<ContactsController> _logger;
+        private readonly ILogger<DesignationController> _logger;
         private readonly IDesignationService _designationservice;
-        public DesignationController(ILogger<ContactsController> logger, IDesignationService designationservice)
+        public DesignationController(ILogger<DesignationController> logger, IDesignationService designationservice)
         {
             _logger = logger;
             _designationservice = designationservice;
         }
         public async Task<IActionResult> Index()
         {
-            var companies = await _designationservice.GetDesignations();
-            return View(companies);
+            var designation = await _designationservice.GetDesignations();
+            return View(designation);
         }
 
         [HttpGet]
         public async Task<IActionResult> Designations()
         {
-            var companies = await _designationservice.GetDesignations();
-            return Ok(companies);
+            var designation = await _designationservice.GetDesignations();
+            return Ok(designation);
 
         }
 

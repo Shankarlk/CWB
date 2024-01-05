@@ -52,10 +52,10 @@ namespace CWB.CompanySettings.Services.Designations
             return designationVM;
         }
 
-        public IEnumerable<DesignationListVM> GetDesignations(long TenantId)
+        public IEnumerable<DesignationVM> GetDesignations(long TenantId)
         {
             var designations = _designationRepository.GetRangeAsync(d => d.TenantId == TenantId);
-            return _mapper.Map<IEnumerable<DesignationListVM>>(designations);
+            return _mapper.Map<IEnumerable<DesignationVM>>(designations);
         }
     }
 }

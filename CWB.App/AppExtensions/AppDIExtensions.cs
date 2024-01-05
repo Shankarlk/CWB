@@ -16,6 +16,7 @@ namespace CWB.App.AppExtensions
             services.AddTransient<IPlantService, PlantService>();
             services.AddTransient<IDepartmentService, DepartmentService>();
             services.AddTransient<IDocTypeService, DocTypeService>();
+            services.AddTransient<IDesignationService, DesignationService>();
         }
     }
 }

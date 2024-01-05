@@ -34,7 +34,7 @@
 
         public static class Designation
         {
-            public const string GetDesignations = Base + "/designations/{Id}/{TenantId}";
+            public const string GetDesignations = Base + "/designations/{TenantId}";
             public const string PostDesignation = Base + "/designation";
         }
     }

@@ -58,6 +58,13 @@ namespace CWB.CompanySettings.CompanySettingsUtils
             //    .ForMember(m => m.DesignationId, m => m.MapFrom(src => src.Id));
             //CreateMap<Domain.Designation, DesignationListVM>()
             //    .ForMember(m => m.DesignationId, m => m.MapFrom(src => src.Id));
+
+            CreateMap<DesignationVM, Designation>()
+                .ForMember(m => m.Id, m => m.MapFrom(src => src.DesignationId))
+                .ForMember(m => m.Name, m => m.MapFrom(src => src.Name));
+            CreateMap<Domain.Designation, DesignationVM>()
+                 .ForMember(m => m.DesignationId, m => m.MapFrom(src => src.Id))
+                .ForMember(m => m.Name, m => m.MapFrom(src => src.Name));
         }
     }
 }
