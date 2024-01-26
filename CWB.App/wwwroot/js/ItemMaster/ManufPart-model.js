@@ -254,7 +254,7 @@ $(document).ready(function () {
 
     });
     $("#TabHeadMakefrom").click(function (event) {
-        debugger;
+       /* debugger;
         var relatedTarget = $(event.relatedTarget);
         var makefromid = relatedTarget.data("makefromid");
         api.get("/masters/getmakefrom?Id=" + makefromid).then((data) => {
@@ -264,7 +264,7 @@ $(document).ready(function () {
             for (i = 0; i < data.length; i++) {
                 $(tablebody).append(AppUtil.ProcessTemplateDataNew("MakeFromRMTemplate", data[i], i));
             }
-        });
+        });*/ 
 
         //  //////debugger;
         if (!ManufPartFormUtil.ValidateManufPartDetails(1)) {
@@ -297,7 +297,8 @@ $(document).ready(function () {
             var tablebody = $("#tbl-MakeFromRM tbody");
             tablebody.html("");
             makeFroms = new Array();
-            if (modelObj.Edit) {
+            if (modelObj.Edit)
+            {
                 reloadMakeFroms(manufPartId);
             }
         }

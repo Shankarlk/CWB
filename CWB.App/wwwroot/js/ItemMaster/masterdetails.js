@@ -68,7 +68,7 @@ $(function () {
 });
 
 function ProcessTemplateDataNew(templateId, dataObj) {
-    debugger;
+    //debugger;
     var templateElement = $("#" + templateId).html();
     ////console.log(templateId);
     templateElement = templateElement.replaceAll("{partType}", partType)
@@ -86,11 +86,15 @@ function loadMPDList() {
     //UpdatePurchaseDetailsTableFromPostData
     let i = 0;
     if (dataMPDList.length > 2) {
+        console.log(partType);
+        console.log("================");
         let data = dataMPDList;
         for (i = 0; i < data.length; i++) {
             if (!(data[i]['masterPartType'] == partType))
                 continue;
-            $(tablebody).append(AppUtil.ProcessTemplateDataNew("MasterDetaiTemplate", data[i],i));
+            var tBody = ProcessTemplateDataNew("MasterDetaiTemplate", data[i]);
+            $(tablebody).append(tBody);
+            console.log(tBody);
         }
     }
     else {
@@ -98,16 +102,18 @@ function loadMPDList() {
             //console.log(data);
             dataMPDList = data;
             for (i = 0; i < data.length; i++) {
-                for (var key in data[i]) {
+                /*for (var key in data[i]) {
                     console.log(key);
                     console.log(data[i][key]);
                     console.log("*****");
-                }
+                }*/
                 console.log(partType);
                 console.log("================");
                 if (!(data[i]['masterPartType'] == partType))
                     continue;
-                $(tablebody).append(AppUtil.ProcessTemplateDataNew("MasterDetaiTemplate", data[i],i));
+                var tBody = ProcessTemplateDataNew("MasterDetaiTemplate", data[i]);
+                $(tablebody).append(tBody);
+                console.log(tBody);
             }
         }).catch((error) => {
         });

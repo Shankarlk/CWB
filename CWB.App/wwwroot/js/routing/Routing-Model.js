@@ -562,6 +562,7 @@ $(function () {
         //routings/addnewrouting
         //alert("next step... todo...");
         document.getElementById("FormRoutingStep").reset();
+        getRoutingInfoFromTable();
         $('a[href="#rsd"]').tab("show");
     });
 
