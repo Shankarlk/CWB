@@ -26,6 +26,9 @@ namespace CWB.ProductionPlanWO.Utils
             services.AddTransient<IPODetailsRepository, PODetailsRepository>();
             services.AddTransient<IPOHeaderRepository, POHeaderRepository>();
             services.AddTransient<IPOStatusRepository, POStatusRepository>();
+            services.AddTransient<IPOLogRepository, POLogRepository>();
+            services.AddTransient<IWoSubConSupplierRepository, WoSubConRepository>();
+            services.AddTransient<IProcPlanPartPurChaseRelRepository, ProcPlanPartPurChaseRelRepository>();
             services.AddTransient<IWOService, WOService>();
         }
     }

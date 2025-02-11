@@ -82,6 +82,12 @@ namespace CWB.App.Services.ProductionPlanWo
             }
             return await RestHelper<List<BOMListVM>>.PostAsync(uri, bomlist, headers);
         }
+        public async Task<List<ProcPlanPartPurChaseRelVM>> ProcPurchasePost(IEnumerable<ProcPlanPartPurChaseRelVM> bomlist)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postprocpurchase");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<ProcPlanPartPurChaseRelVM>>.PostAsync(uri, bomlist, headers);
+        }
 
         public async Task<IEnumerable<ProcPlanVM>> GetAllProcPlan()
         {
@@ -95,6 +101,18 @@ namespace CWB.App.Services.ProductionPlanWo
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/allbomlist/{tenantId}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<IEnumerable<BOMListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<WoSubConSupplierVM>> GetAllSubCOnSupp()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/allwosubcon/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<IEnumerable<WoSubConSupplierVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<PODetailsVM>> GetAllPodetails()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/allpodetails/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<IEnumerable<PODetailsVM>>.GetAsync(uri, headers);
         }
 
         public async Task<WOStatusVM> GetWOStatus(long Id)
@@ -113,6 +131,25 @@ namespace CWB.App.Services.ProductionPlanWo
                 item.TenantId = tenantId;
             }
             return await RestHelper<List<ChildWoRelVM>>.PostAsync(uri, childWoRels, headers);
+        }
+        public async Task<bool> DeleteSubCon(long doctypeId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/delwosubcon/{doctypeId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<bool> DeleteWo(long doctypeId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletewo/{doctypeId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<WoSubConSupplierVM> PostSubConSupplier(WoSubConSupplierVM childWoRels)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postwosubcon");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            childWoRels.TenantId = tenantId;
+            return await RestHelper<WoSubConSupplierVM>.PostAsync(uri, childWoRels, headers);
         }
         public async Task<List<McTimeListVM>> PostMcTimeList(IEnumerable<McTimeListVM> mcTimeListVMs)
         {

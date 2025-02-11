@@ -31,10 +31,10 @@
                                        data-plugin="tippy" data-tippy-placement="top"
                                        placeholder="Enter Part No" id="searchPartNo">
                                 @*<button type="button" id="#" class="btn btn-sm btn-outline-dark"
-                                    title="Search Part No" data-plugin="tippy" data-tippy-placement="top"
-                                    data-bs-toggle="modal" data-bs-target="#">
-                                <i class="ri-search-2-line serch-part-btn1"></i>
-                            </button>*@
+                                            title="Search Part No" data-plugin="tippy" data-tippy-placement="top"
+                                            data-bs-toggle="modal" data-bs-target="#">
+                                        <i class="ri-search-2-line serch-part-btn1"></i>
+                                    </button>*@
                             </div>
                         </div>
                         <!-- -----------------  -->
@@ -121,8 +121,8 @@
                         </div>
                         <!-- =======================  -->
                         @*<div class="col-md-12 text-end">
-                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#popup3">Build to Stock</button>
-                    </div>*@
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#popup3">Build to Stock</button>
+                            </div>*@
                         <!-- =========== -->
                     </div>
                     <!-- =========== -->
@@ -157,7 +157,7 @@
                     <div class="col-md-4 dott-bord-r">
                         <div class="row">
                             <div class="col-md-12 mb-2">
-                                <label class="form-label"> Sales Order Qnty </label>
+                                <label class="form-label"> Sales / Reorder Order Qnty </label>
                                 <input id="SoQty" class="form-control  form-control-sm" type="text" title="" data-plugin="tippy"
                                        data-tippy-placement="top" readonly>
                             </div>
@@ -227,6 +227,7 @@
                     </div>
                     <!-- ===============  -->
                     <div id="popup1DivRouting">
+
                         <div class="col-md-4 mb-2">
                             <label class="form-label">Routing Selection</label>
                             <select id="routing" class="form-select form-select-sm" aria-label="form-select-sm" title=""
@@ -250,10 +251,35 @@
                                 <option value="">==========</option>
                             </select>
                         </div>
-                    </div>
-                    <!-- ===============  -->
-                    <div class="col-md-12 text-end">
-                        <button class="btn btn-primary btn-sm" id="updateWO">Generate WO</button>
+                        <!-- ===============  -->
+                        <div class="col-md-12 text-end">
+                            <button class="btn btn-primary btn-sm" id="updateWO">Save WO</button>
+                        </div>
+                        <div class="col-md-12" id="SubConGridDiv">
+                            <h6>SubCon Operations</h6>
+                            <div class="col-md-8">
+                                <div class="table-responsive table-he-330">
+                                    <table id="subConGridP1" class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Supplier</th>
+                                                <th>Qnty</th>
+                                                <th>Starting Opr No</th>
+                                                <th>Ending Opr No</th>
+                                                <th>Multiple Sources</th>
+                                                <th width="5%">
+
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- -------------  -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                     <!-- ===============  -->
                 </div>
@@ -478,6 +504,7 @@
                     <!-- ========================= -->
                     <div class="col-md-6 mb-2"></div>
                     <!-- ========================= -->
+
                     <div id="popup3divRouting">
                         <div class="col-md-3 mb-2">
                             <label class="form-label"> Routing</label>
@@ -516,6 +543,30 @@
                         <button class="btn btn-primary btn-sm" id="singleSaveWo">Save WO</button>
                     </div>
                     <!-- ========================= -->
+                    <div class="col-md-12" id="SubConGridDivP3">
+                        <h6>SubCon Operations</h6>
+                        <div class="col-md-8">
+                            <div class="table-responsive table-he-330">
+                                <table id="subConGridP3" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Supplier</th>
+                                            <th>Qnty</th>
+                                            <th>Starting Opr No</th>
+                                            <th>Ending Opr No</th>
+                                            <th>Multiple Sources</th>
+                                            <th width="5%">
+
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -626,6 +677,7 @@
                             </select>
                         </div>
                     </div>
+
                     <!-- ========================= -->
                     <hr>
                     <!-- ========================= -->
@@ -638,6 +690,30 @@
                         <button class="btn btn-primary btn-sm" id="ManualSaveWo">Generate WO</button>
                     </div>
                     <!-- ========================= -->
+                    <div class="col-md-12" id="SubConGridDivP3Man">
+                        <h6>SubCon Operations</h6>
+                        <div class="col-md-8">
+                            <div class="table-responsive table-he-330">
+                                <table id="subConGridP3Man" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Supplier</th>
+                                            <th>Qnty</th>
+                                            <th>Starting Opr No</th>
+                                            <th>Ending Opr No</th>
+                                            <th>Multiple Sources</th>
+                                            <th width="5%">
+
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -762,6 +838,30 @@
                         <button class="btn btn-primary btn-sm" id="NewSaveWo">Generate WO</button>
                     </div>
                     <!-- ========================= -->
+                    <div class="col-md-12" id="SubConGridDivP3New">
+                        <h6>SubCon Operations</h6>
+                        <div class="col-md-8">
+                            <div class="table-responsive table-he-330">
+                                <table id="subConGridP3New" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Supplier</th>
+                                            <th>Qnty</th>
+                                            <th>Starting Opr No</th>
+                                            <th>Ending Opr No</th>
+                                            <th>Multiple Sources</th>
+                                            <th width="5%">
+
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -864,6 +964,160 @@
                         <button class="btn btn-primary btn-sm" id="popup7SaveWo">Update WO</button>
                     </div>
                     <!-- ========================= -->
+                    <div class="col-md-12" id="SubConGridDivP7">
+                        <h6>SubCon Operations</h6>
+                        <div class="col-md-8">
+                            <div class="table-responsive table-he-330">
+                                <table id="subConGridP7" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Supplier</th>
+                                            <th>Qnty</th>
+                                            <th>Starting Opr No</th>
+                                            <th>Ending Opr No</th>
+                                            <th>Multiple Sources</th>
+                                            <th width="5%">
+
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-----popup7----->
+<!-----popup20----->
+<div class="modal fade" id="popup20" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    Sub Con work for <span id="popup20PartNo"> </span>/<span id="P20partdesc"></span> (Part No / Part Desc) Opr No <span id="P20OpnoSpan"></span>
+                    <span id="P20BRLbl" hidden>Build to Stock WO Reorder WO</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4 mb-2" style="margin-top: -2px;">
+                        <label class="form-label">Sub Con Qnty</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" placeholder="" id="P20WoQnty" readonly>
+
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2"></div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">Date Reqd.</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" placeholder="" id="P20DateReqd" readonly>
+
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <hr />
+                    <div class="col-md-7 mb-2">
+                        <label class="form-label"> Supplier</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="P20Supplier">
+                            </select>
+                            <span id="P20PreferredSpan" style="display: none;">Preferred</span>
+                        </div>
+                    </div>
+                    <div class="col-md-5 mb-2"></div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Conv Unit Price </label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P20Convprice">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Use Routing Master Price</label>
+                        <input id="chkP20RoutPrice" class="form-check-input"
+                               type="checkbox" title=""
+                               data-plugin="tippy" data-tippy-placement="top">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Unit Price   (from Routing)</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P20UnitRout" readonly>
+                    </div>
+                    <!-- ========================= -->
+                    <hr />
+                    <div class="col-md-12 mb-2" hidden>
+
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Single Delivery Date</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                            </div>
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Delivery over multiple dates</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Delivery Qnty</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P20DelQnty">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Agreed Delivery Date</label>
+                        <input class="form-control form-control-sm" type="date" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P20AgrDate">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label"> Addn Info for Supplier</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P20AddnInfo">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-12 mb-2 text-end">
+                        <input type="text" id="Popup20WoSubConId" hidden />
+                        <input type="text" id="Popup20Woid" hidden />
+                        <input type="text" id="Popup20SuppId" hidden />
+                        <input type="text" id="Popup20SubConId" hidden />
+                        <button class="btn btn-primary btn-sm" id="P20SaveWo">Save WO</button>
+                        <button class="btn btn-primary btn-sm" id="P20AddNextDel" disabled>Add Next Delivery</button>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-12" id="P20GridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P20SupplierGrid" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Supplier</th>
+                                            <th>Quantity</th>
+                                            <th>Proc. Price</th>
+                                            <th>Receipt Date</th>
+                                            <th width="5%">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-1 text-end">
+                        <button class="btn btn-primary btn-sm" id="P20AddOtherSupp">Add Order to other Supplier</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -967,6 +1221,78 @@
 </template>
 
 
+<div class="modal fade" id="ViewSoLog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-full-width">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">WO Log : <span id="SpanSoNumber"></span>                <span style="padding:100px">WO Date : <span id="SoDateSpan"></span>	<span id="SoPartNoSPan"></span><span id="SoPartDescSPan"></span></span>	</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">WO Compl Dt from</label>
+                        <input class="form-control form-control-sm" type="date" title=""
+                               data-plugin="tippy" data-tippy-placement="top" id="SoLogcomplDtFrom">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">WO Compl Dt To</label>
+                        <input class="form-control form-control-sm" type="date" title=""
+                               data-plugin="tippy" data-tippy-placement="top" id="SoLogcomplDtTo">
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Part No</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter Location" id="searchLogPartNo">
+                    </div>
+                    <!-- -----------------  -->
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Event</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter MC Type" id="searchEventLog">
+                    </div>
+                    <!-- -----------------  -->
+                    <!-- -----------------  -->
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Comment</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter Machine" id="searchLogComment">
+                    </div>
+                    <!-- ======================== -->
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table class="table table-sm table-bordered w-100 text-center" id="WoLogGrid">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Date/Time</th>
+                                        <th>User</th>
+                                        <th>Event</th>
+                                        <th>Field</th>
+                                        <th>New Value</th>
+                                        <th>Old Value</th>
+                                        <th>Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- -------------  -->
+                                    <!-- -------------  -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- -----------------  -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
 
 <template id="WorkOrderListRow">
     <tr>
@@ -1000,7 +1326,7 @@
                         @if (permissionResult.Any(r => r.Menu3 == "Work Order List View"))
                         {
                             var pr = permissionResult.Where(r => r.Menu3 == "Work Order List View").FirstOrDefault();
-                            if (pr.PermissionId >= 3)
+                            if (pr.PermissionId >= 3 || pr.PermissionId >= 4)
                             {
                                 <a href="javascript:void(0);" onclick="EditWo(this)" class="dropdown-item"
                                    data-workorderid={woid}
@@ -1047,6 +1373,18 @@
                                    data-startingopno={startingOpNo}
                                    data-endingopno={endingOpNo}
                                    data-bs-target="#wohold">Hold / Resume</a>
+                                <a href="javascript:void(0);"
+                                   class="dropdown-item" data-workorderid={woid}
+                                   data-salesorderid={salesOrderId}
+                                   data-wonumber={woNumber}
+                                   data-partno={partNo}
+                                   data-partdesc={partDesc}
+                                   data-partid={partId}
+                                   data-parttype={partType}
+                                   data-plancompletiondatestr='{planCompletionDateStr}'
+                                   data-requiredquantity={requiredQuantity}
+                                   data-calwoqty={calcWOQty}
+                                   data-wostatus={status} onclick="DeleteWo(this)">Delete</a>
                             }
                             else
                             {
@@ -1103,7 +1441,35 @@
                            data-endingopno={endingOpNo}
                            data-bs-target="#wohold">Hold / Resume</a>
                         <a href="javascript:void(0);"
-                           class="dropdown-item">Delete</a>
+                           class="dropdown-item" data-bs-toggle="modal"
+                           data-workorderid={woid}
+                           data-salesorderid={salesOrderId}
+                           data-wonumber={woNumber}
+                           data-partno={partNo}
+                           data-partdesc={partDesc}
+                           data-partid={partId}
+                           data-parttype={partType}
+                           data-plancompletiondatestr='{planCompletionDateStr}'
+                           data-requiredquantity={requiredQuantity}
+                           data-calwoqty={calcWOQty}
+                           data-wostatus={status}
+                           data-buildtostock={buildToStock}
+                           data-routingid={routingId}
+                           data-startingopno={startingOpNo}
+                           data-endingopno={endingOpNo}
+                           data-bs-target="#ViewSoLog">View Wo Log</a>
+                        <a href="javascript:void(0);"
+                           class="dropdown-item" data-workorderid={woid}
+                           data-salesorderid={salesOrderId}
+                           data-wonumber={woNumber}
+                           data-partno={partNo}
+                           data-partdesc={partDesc}
+                           data-partid={partId}
+                           data-parttype={partType}
+                           data-plancompletiondatestr='{planCompletionDateStr}'
+                           data-requiredquantity={requiredQuantity}
+                           data-calwoqty={calcWOQty}
+                           data-wostatus={status} onclick="DeleteWo(this)">Delete</a>
                     }
                     <!-- item-->
                 </div>
@@ -1113,6 +1479,138 @@
 </template>
 
 
+<template id="subConGridP1Row">
+    <tr>
+        <td>{company}</td>
+        <td>{qnty}</td>
+        <td>{startingOpNo}</td>
+        <td>{endingOpNo}</td>
+        <td>{multipleSource}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-workorderid={woid}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-bs-target="#popup20">
+                        Edit
+                    </a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+
+<template id="subConGridP3Row">
+    <tr>
+        <td>{company}</td>
+        <td>{qnty}</td>
+        <td>{startingOpNo}</td>
+        <td>{endingOpNo}</td>
+        <td>{multipleSource}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-workorderid={woid}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-bs-target="#popup20">
+                        Edit
+                    </a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="subConGridP7Row">
+    <tr>
+        <td>{company}</td>
+        <td>{qnty}</td>
+        <td>{startingOpNo}</td>
+        <td>{endingOpNo}</td>
+        <td>{multipleSource}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-workorderid={woid}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-bs-target="#popup20">
+                        Edit
+                    </a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+
+
+<template id="PORow">
+    <tr>
+        <td>{poDateStr}</td>
+        <td>{user}</td>
+        <td>{event}</td>
+        <td>{field}</td>
+        <td>{newValue}</td>
+        <td>{oldValue}</td>
+        <td>{comment}</td>
+    </tr>
+</template>
+
+<template id="P10SupplierGridRow">
+    <tr>
+        <td>{company}</td>
+        <td>{qnty}</td>
+        <td>{procPrice}</td>
+        <td>{agreedDate}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-partid="{company}" data-suppid="{supplierId}" data-qnty="{qnty}" data-price="{procPrice}"
+                       data-calcdate="{recieptDate}" data-woid="{woId}" data-subconid="{woSubConSupplierId}" data-addninfo="{addnInfo}"
+                       onclick="EditSubSupplier(this)">Edit</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-partid="{partId}" data-partno="{partNo}" data-moq="{moq}" data-uom="{uomName}"
+                       data-partdesc="{partDesc}" data-suppid="{supplierId}" data-qnty="{calc_Proc_Qnty}" data-calcdate="{calcReceiptDateStr}"
+                       data-price="{price}" data-woid="{woId}" data-subconid="{woSubConSupplierId}"
+                       onclick="DeleteSubSupplier(this)">Delete</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
 @section Scripts {
     <script src="~/js/workorderlist.js"></script>
 }

@@ -73,8 +73,8 @@
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                    <a href="#">
-                                                        <h6>Release WO for Production </h6>
+                                                    <a asp-controller="WorkOrder" asp-action="ApprovPoDetails">
+                                                        <h6>Approve Matl / SubCon PO </h6>
                                                     </a>
                                                 </div>
                                             </div>
@@ -223,6 +223,10 @@
                                                             <td><a href="#" style="font-weight: bold;">WO Total</a></td>
                                                             <td><span id="totalWO"></span></td>
                                                         </tr>
+                                                        <tr>
+                                                            <td><a href="#" style="font-weight: bold;">No of Reorder Items</a></td>
+                                                            <td><span id="NoOfReorderItem"></span></td>
+                                                        </tr>
                                                         <!-- ===========================  -->
                                                     </tbody>
                                                 </table>
@@ -274,7 +278,7 @@
                                         <!-- ========================  -->
                                         <div class="col-md-4">
                                             <div class="text-center btn-sm btn btn-outline-info w-100 mb-2">
-                                                <a href="#">
+                                                <a asp-controller="WorkOrder" asp-action="POLineList">
                                                     <h6>PO List View / Edit</h6>
                                                 </a>
                                             </div>

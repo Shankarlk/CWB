@@ -19,6 +19,8 @@ namespace CWB.App.Services.BusinessProcesses
         //Task<IEnumerable<POLogVM>> RemoveSalesOrder(long tenantId, long salesOrderId);
 
         Task<IEnumerable<POLogVM>> GetPOLogs(long customerOrderId);
+        Task<IEnumerable<POLogVM>> GetProcLogs(long poid);
+        Task<IEnumerable<POLogVM>> GetWoPOLogs(long customerOrderId);
         Task<IEnumerable<SalesOrderVM>> GetSalesOrders(long customerOrderId);
         Task<SalesOrderVM> GetOneSO(long salesOrderId);
         Task<IEnumerable<SalesOrderVM>> AllSalesOrders();

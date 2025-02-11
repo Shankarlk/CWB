@@ -15,14 +15,20 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<List<ProcPlanVM>> ProcPlanPost(IEnumerable<ProcPlanVM> procPlans);
         Task<List<WorkOrdersVM>> UpdateMultipleWorkOrder(IEnumerable<WorkOrdersVM> workOrders);
         Task<List<BOMListVM>> BomListPost(IEnumerable<BOMListVM> bomlist);
+        Task<List<ProcPlanPartPurChaseRelVM>> ProcPurchasePost(IEnumerable<ProcPlanPartPurChaseRelVM> bomlist);
         Task<IEnumerable<ProcPlanVM>> GetAllProcPlan();
         Task<IEnumerable<BOMListVM>> GetAllBomlist();
+        Task<IEnumerable<WoSubConSupplierVM>> GetAllSubCOnSupp();
+        Task<IEnumerable<PODetailsVM>> GetAllPodetails();
         Task<WOStatusVM> GetWOStatus(long Id);
         Task<List<ChildWoRelVM>> PostChildWoRel(IEnumerable<ChildWoRelVM> childWoRels);
         Task<List<McTimeListVM>> PostMcTimeList(IEnumerable<McTimeListVM> mcTimeListVMs);
         Task<IEnumerable<McTimeListVM>> GetAllMcTimeList();
         Task<IEnumerable<WorkOrdersVM>> AllParentChildWos(long parentWoId);
+        Task<WoSubConSupplierVM> PostSubConSupplier(WoSubConSupplierVM childWoRels);
 
+        Task<bool> DeleteSubCon(long doctypeId);
+        Task<bool> DeleteWo(long doctypeId);
         Task<List<PODetailsVM>> PODetails(IEnumerable<PODetailsVM> pODetails);
         Task<List<POHeaderVM>> POHeader(IEnumerable<POHeaderVM> pOHeaderVMs);
 

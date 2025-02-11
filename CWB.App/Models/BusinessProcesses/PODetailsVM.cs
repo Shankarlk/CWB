@@ -20,6 +20,19 @@ namespace CWB.App.Models.BusinessProcesses
         public int PoQntyRecd { get; set; }
         public int Status { get; set; }
         public long TenantId { get; set; }
+        public string NoOfLine { get; set; } = string.Empty;
+        public string NoOfOpenLine { get; set; } = string.Empty;
+        public string NoOfPastLine { get; set; } = string.Empty;
+        public string DateStr { get; set; } = string.Empty;
+        public string DateRed { get; set; } = string.Empty;
+        public string QntyRed { get; set; } = string.Empty;
+        public string ProcPrice { get; set; } = string.Empty;
         public string Supplier { get; set; } = string.Empty;
+        public string PoDateStr { get; set; } = string.Empty;
+        public string StatusStr { get; set; } = string.Empty;
+        public string PoType { get; set; } = string.Empty;
+        public string PartType { get; set; } = string.Empty;
+        public string Unit { get; set; } = string.Empty;
+        public string PartNo { get; set; } = string.Empty;
     }
 }

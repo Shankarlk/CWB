@@ -487,3 +487,9 @@ textarea {
     padding: 10px;
     text-align: center;
 }
+
+.disabled-link {
+    pointer-events: none;
+    color: gray;
+    cursor: not-allowed;
+}

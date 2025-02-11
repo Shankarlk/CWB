@@ -21,7 +21,11 @@ function LoadPOLines(customerOrderId) {
         $(tablebody).html("");//empty tbody
         //console.log(data);
         for (i = 0; i < data.length; i++) {
-            data[i].strStatus = OrdStatus[data[i].status];
+            if (data[i].numSalesOrder > 1) {
+                data[i].strStatus = " Multiple";
+            } else {
+                data[i].strStatus = OrdStatus[data[i].status];
+            }
             if (data[i].hold) {
                 data[i].strHold = "Y";
             }
@@ -48,11 +52,11 @@ function LoadCustomerOrders() {
         //console.log(data);
         for (i = 0; i < data.length; i++) {
             data[i].strStatus = OrdStatus[data[i].status];
-            if (data[i].hold) {
-                data[i].strHold = "Y";
-            }
-            else
-                data[i].strHold = "N";
+            //if (data[i].hold) {
+            //    data[i].strHold = "Y";
+            //}
+            //else
+            //    data[i].strHold = "N";
             if (data[i].done) {
                 data[i].strDone = "Y";
             }
@@ -84,6 +88,15 @@ function LoadTempForm() {
     $('#TotalQty').val(totalQty);
 }
 
+function showComments(comments, soNumber) {
+    if (comments.length === 0 || comments === "null" || soNumber ==="Multiple") {
+        $("#view-socomment").modal('hide');
+    } else {
+        $("#ViewSoCommentSpan").text(soNumber);
+        $("#viewCommentField").text(comments);
+        $("#view-socomment").modal('show');
+    }
+}
 function showSalesOrdersForPart(partId,partNo) {
     if (ba_masterparts.length == 0) {
         alert("Please load parts again...");
@@ -100,6 +113,7 @@ function showSalesOrdersForPart(partId,partNo) {
     $('#PartNo').val(partNo);
     $('#DSPartId').val(partId);
     $('#DSPartNo').val(partNo);
+    $('#LaunchDeliverySchedule').hide(partNo);
     $('#AggregateCustomerOrderId').val(customerorderid);
     $('#SalesCustomerOrderId').val(customerorderid);
     //console.log(partId + "/" + partNo);
@@ -108,6 +122,7 @@ function showSalesOrdersForPart(partId,partNo) {
     document.getElementById("LaunchDeliverySchedule").disabled = false;
     //document.getElementById("btnPONoDetails").click();
     $("#PONoDetailsPopup").modal('show');
+
 }
 function copyPartData() {
 
@@ -163,6 +178,9 @@ function LoadSalesOrders(customerOrderId) {
     //
     GetMasterParts();
     var partId = $('#PartId').val();
+    let totalReqdQty = 0;
+    $("#TotalCountDiv").show();
+    $("#SalesOrders").show();
     api.get("/businessaquisition/getsalesorders?customerOrderId=" + customerOrderId).then((data) => {
         var tablebody = $("#SalesOrders tbody");
         $(tablebody).html("");//empty tbody
@@ -171,6 +189,7 @@ function LoadSalesOrders(customerOrderId) {
             if (data[i].partId == partId) { }
             else { continue; }
 
+            totalReqdQty += data[i].requiredQuantity || 0;
             /*if (data[i].status == 40) {
                 continue;
             }*/
@@ -189,6 +208,8 @@ function LoadSalesOrders(customerOrderId) {
                 $(tablebody).append(AppUtil.ProcessTemplateData("SalesOrderRow", data[i]));
             }
         }
+        $("#TotalPoQnty").text(totalReqdQty);
+        $("#TotalPlanQnty").text(totalReqdQty);
         //LoadCustomerOrders();
     }).catch((error) => {
     });
@@ -200,6 +221,7 @@ function LoadPartsForSearching() {
     $(tablebody).html("");//empty tbody
     let i = 0;
     if (ba_masterparts.length > 0) {
+        ba_masterparts = ba_masterparts.filter(item => item.finalPart === "Y");
         for (i = 0; i < ba_masterparts.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateDataNew("BAParts", ba_masterparts[i], i));
         }
@@ -359,7 +381,7 @@ function PostCustomerOder() {
         alert("Customer Order Created");
         $('#CustomerOrderForm')[0].reset();
         $("#searchpart").prop("disabled", false);
-        $("#PONoDetailsPopup").modal('show');
+        //$("#PONoDetailsPopup").modal('show');
         //  $('#').val("");
         //$('#').val("");
         //document.getElementById("Btn").click();
@@ -396,6 +418,8 @@ function PostDeliverySchedule() {
             $('#ScheduleId').val("0");
             //console.log("/" + cuoid);
             LoadDeliverySchedules(cuoid);
+            LoadSalesOrders(cuoid);
+            LoadPOLines(cuoid);
         }
     }).catch((error) => {
         AppUtil.HandleError("DeliveryScheduleForm", error);
@@ -595,6 +619,14 @@ $(function () {
         //console.log($("#CustomerId option:selected").val());
         //CustomerName
         $('#CustomerName').val($("#CustomerId option:selected").text());
+        var custid = $("#CustomerId option:selected").val();
+        api.get("/masters/customers").then((data) => {
+            data = data.filter(item => item.companyId === parseInt(custid));
+            $('#POAddress').val(data[0].location);
+            $('#POCity').val(data[0].city);
+            $('#POPIN').val(data[0].pincode);
+            $('#POCountry').val(data[0].country);
+        });
         // $('#SalesPartId').val($("#PartId option:selected").val());
 
     });
@@ -675,6 +707,9 @@ $(function () {
         var relatedTarget = $(event.relatedTarget);
         var customerorderid = relatedTarget.data("customerorderid");
         //POHCustomerOrderId
+        if (customerorderid == undefined) {
+            customerorderid = $("#CustomerOrderId").val();
+        }
         LoadPOLogs(customerorderid, salesorderid);
     });
     $('#Edit-SalesOrder').on('hidden.bs.modal', function (event) {
@@ -719,9 +754,10 @@ $(function () {
         $(LaunchDeliverySchedule).prop("disabled", true);
         $("#searchpart").prop("disabled", true);
         document.getElementById("CustomerOrderForm").reset();
-        document.getElementById("DeliveryScheduleForm").reset();
         document.getElementById("AggregateObjForm").reset();
         if (IsAddOpCalled()) {
+            $("#DirectEntryDetails").hide();
+            $("#dentrylbl").hide();
             schedules = new Array();
             return;
         }
@@ -736,24 +772,43 @@ $(function () {
             var ponumber = relatedTarget.data("ponumber");
             var podate = relatedTarget.data("podate");
             var directentrydetails = relatedTarget.data("directentrydetails");
+            var poaddress = relatedTarget.data("poaddress");
+            var pocity = relatedTarget.data("pocity");
+            var popin = relatedTarget.data("popin");
+            var pocountry = relatedTarget.data("pocountry");
             $('#CustomerOrderId').val(customerorderid);
+            
             $(LaunchDeliverySchedule).prop("disabled", false);
             $("#searchpart").prop("disabled", false);
             //console.log(customerorderid+"/"+customerId);
             //$("#CustomerId").select2();
             $('#CustomerId').val(customerId);
-            $('#CustomerId').trigger('change');
+            //$('#CustomerId').trigger('change');
             //console.log("comment: " + comment);
             $('#Comment').val(comment);
             if (ordertype == 1) {
                 $("#POEntry").prop('checked', true);
+                $("#DirectEntryDetails").hide();
+                $("#dentrylbl").hide();
+                $("#polbl").show();
+                $("#PONumber").show();
+                $("#ponodiv").show();
             }
             else {
+                $("#polbl").hide();
+                $("#PONumber").hide();
+                $("#ponodiv").hide();
+                $("#DirectEntryDetails").show();
+                $("#dentrylbl").show();
                 $("#DirectEntry").prop('checked', true);
             }
             $('#PONumber').val(ponumber);
             document.getElementById('PODate').value = podate.split("-").reverse().join("-");
             $('#DirectEntryDetails').val(directentrydetails);
+            $('#POAddress').val(poaddress);
+            $('#POCity').val(pocity);
+            $('#POPIN').val(popin);
+            $('#POCountry').val(pocountry);
             $('#AggregateCustomerOrderId').val(customerorderid);
             $('#SalesCustomerOrderId').val(customerorderid);
             LoadDeliverySchedules(customerorderid);
@@ -764,6 +819,20 @@ $(function () {
             LoadSalesOrders(customerorderid);
             LoadPOLines(customerorderid);
         }
+    });
+    $('#DirectEntry').on('click', function () {
+        $("#polbl").hide();
+        $("#PONumber").hide();
+        $("#ponodiv").hide();
+        $("#DirectEntryDetails").show();
+        $("#dentrylbl").show();
+    });
+    $('#POEntry').on('click', function () {
+        $("#polbl").show();
+        $("#ponodiv").show();
+        $("#PONumber").show();
+        $("#dentrylbl").hide();
+        $("#DirectEntryDetails").hide();
     });
     $('#new-order-entry').on('hidden.bs.modal', function (e) {
         LoadCustomerOrders();
@@ -810,6 +879,7 @@ $(function () {
 
     $("#BtnAddCustomerOrder").on("click", function () {
         // alert("Add CustomerOrder clicked");
+        const POPIN = $("#POPIN").val();
         const podate = $("#PODate").val();
         const currentDate = new Date();
         const userDate = new Date(podate);
@@ -818,7 +888,11 @@ $(function () {
             $("#PODate").val('');
             return;
         }
-       PostCustomerOder();
+        if (POPIN.length === 0) {
+            return;
+        } else {
+            PostCustomerOder();
+        }
     });
 
     $("#BtnPODelete").on("click", function () {
@@ -872,7 +946,88 @@ $(function () {
         //    }
         //});
     });
+    $("#SavePoLineItem").on("click", function () {
+        //alert("Add Schedule clicked");
+        if ($("#SalesCustomerOrderId").val() == "0") {
+            alert("Please create a customer oder first.");
+            return false;
+        }
+        var partId = $("#DSPartId").val();
+        var qnty = $("#TotalQty").val();
+        var redate = $("#POReqdDate").val();
+        var PartNo = $("#PartNo").val();
+        var POSoComment = $("#POSoComment").val();
+        if (PartNo.length <= 0) {
+            var newNamevalidate = document.getElementById('PartNo');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('PartNo');
+            newNamevalidate.style.border = '';
+        }
+        if (parseInt(qnty) === 0 || isNaN(qnty) || qnty.length <= 0) {
+            var newNamevalidate = document.getElementById('TotalQty');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('TotalQty');
+            newNamevalidate.style.border = '';
+        }
+        if (redate.length <= 0) {
+            var newNamevalidate = document.getElementById('POReqdDate');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('POReqdDate');
+            newNamevalidate.style.border = '';
+        }
+        const currentDate = new Date();
+        const userDate = new Date(redate);
+        if (userDate < currentDate) {
+            alert('Please Enter A Date Greater Than Or Equal To Today\'s Date');
+            $("#POReqdDate").val('');
+            return false;
+        }
+        if (POSoComment.length <= 0) {
+            var newNamevalidate = document.getElementById('POSoComment');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('POSoComment');
+            newNamevalidate.style.border = '';
+        }
+        $("#RequiredByDate").val(redate);
+        $("#EditSORequiredByDate").val(redate);
+        $("#RequiredQuantity").val(qnty);
+        $("#EditSORequiredQuantity").val(qnty);
+        $("#DSComment").val(POSoComment);
+        $("#EditSOComment").val(POSoComment);
+        if (editSalesOrder) {
+            PostDeliverySchedule();
+        } else {
+            PostDeliverySchedule();
+        }
+        $("#LaunchDeliverySchedule").show();
+    });
 
+    $("#LaunchDeliverySchedule").on("click", function () {
+        $("#TotalQty").val('');
+        $("#POReqdDate").val('');
+        $("#POSoComment").val('');
+        editSalesOrder = false;
+        //document.getElementById("DeliveryScheduleForm").reset();
+        //document.getElementById("EditSOForm").reset();
+
+    });
+    $("#AddPoLineItem").on("click", function () {
+        $("#SalesOrders tbody").html('');
+        $("#PartNo").val('');
+        $("#POSoComment").val('');
+        $("#POReqdDate").val('');
+        $("#TotalQty").val(0);
+        $("#TotalPoQnty").text(0);
+        $("#TotalPlanQnty").text(0);
+    });
     $("#BtnEditSO").on("click", function () {
         //alert("Add Schedule clicked");
         if ($("#SalesCustomerOrderId").val() == "0") {
@@ -896,6 +1051,12 @@ $(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
     }); 
+    $("#Search-BA-Status").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#CustomerOrders tbody tr").filter(function () {
+            $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
     $("#Search-BA-PONumber").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#CustomerOrders tbody tr").filter(function () {
@@ -915,6 +1076,17 @@ $(function () {
     
     $('#PONoDetailsPopup').on('shown.bs.modal', () => {
         document.getElementById('new-order-entry').style.filter = 'blur(5px)'; // adjust the blur value as needed
+        $("#LaunchDeliverySchedule").hide();
+        //$("#SalesOrders").hide();
+        //$("#TotalCountDiv").hide();
+        var TotalQty = document.getElementById('TotalQty');
+        TotalQty.style.border = '';
+        var newNamevalidate = document.getElementById('POReqdDate');
+        newNamevalidate.style.border = '';
+        var POSoComment = document.getElementById('POSoComment');
+        POSoComment.style.border = '';
+        var PartNo = document.getElementById('PartNo');
+        PartNo.style.border = '';
     });
 
     $('#PONoDetailsPopup').on('hidden.bs.modal', () => {
@@ -922,3 +1094,37 @@ $(function () {
     });
 
 });
+
+function DeliverySechudeleLoad(element) {
+    var relatedTarget = $(element);
+    //document.getElementById('PONoDetailsPopup').style.filter = 'blur(5px)';
+    editSalesOrder = false;
+    document.getElementById("EditSOForm").reset();
+    var customerOrderId = relatedTarget.data("customerorderid");
+    var requiredbydatestr = relatedTarget.data("requiredbydatestr");
+    var requiredquantity = relatedTarget.data("requiredquantity");
+    var comment = relatedTarget.data("comment");
+    var partId = relatedTarget.data("partid");
+    var salesorder = relatedTarget.data("salesorder");
+    var scheduleid = relatedTarget.data("salesorderid");
+    document.getElementById('EditSORequiredByDate').value = requiredbydatestr.split("-").reverse().join("-");
+    document.getElementById('POReqdDate').value = requiredbydatestr.split("-").reverse().join("-");
+    $('#EditSORequiredQuantity').val(requiredquantity);
+    $('#EditSOComment').val(comment);
+    $('#EditSOPartId').val(partId);
+    $('#EditSOScheduleId').val(scheduleid);
+    $('#EditSOCustomerOrderId').val(customerOrderId);
+    $("#TotalQty").val(requiredquantity);
+    $('#POSoComment').val(comment);
+    $("#LaunchDeliverySchedule").hide();
+//    $("#POReqdDate").val();
+
+    //console.log("EditSOScheduleId: " + scheduleid);
+    //console.log("EditSOComment: " + comment);
+    //console.log("EditSOCustomerOrderId: " + customerOrderId);
+    //console.log("EditSOPartId: " + partId);
+    if (salesorder == "Y") {
+        editSalesOrder = true;
+    }
+
+}

@@ -14,6 +14,7 @@ namespace CWB.App.Models.BusinessProcesses
         public int WIP { get; set; }
         public bool Hold { get; set; }
         public bool Done { get; set; }
-  
+        public string? HoldStr { get; set; } = string.Empty;
+
     }
 }

@@ -36,23 +36,25 @@
                         </div>
                         <!-- -----------------  -->
                         <div class="col-md-2 mb-2">
-                            <label class="form-label">From</label>
+                            <label class="form-label">PO Date From</label>
                             <input class="form-control form-control-sm" type="date"
                                    title="" data-plugin="tippy" data-tippy-placement="top">
                         </div>
                         <!-- ========================= -->
                         <div class="col-md-2 mb-2">
-                            <label class="form-label">To</label>
+                            <label class="form-label">PO Date To</label>
                             <input class="form-control form-control-sm" type="date"
                                    title="" data-plugin="tippy" data-tippy-placement="top">
                         </div>
                         <!-- ======================== -->
                         <div class="col-md-2 mb-2">
                             <label class="form-label">Status</label>
-                            <select class="form-select form-select-sm" aria-label="form-select-sm" title=""
+                            @*<select class="form-select form-select-sm" aria-label="form-select-sm" title=""
                                     data-plugin="tippy" data-tippy-placement="top">
                                 <option value="">==========</option>
-                            </select>
+                            </select>*@
+                            <input class="form-control form-control-sm" type="text" id="Search-BA-Status"
+                                   title="" data-plugin="tippy" data-tippy-placement="top">
                         </div>
                         <!-- -----------------  -->
                         <!-- ======================== -->
@@ -344,7 +346,7 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="col-md-12 mt-3">
+                                <div class="col-md-10 mt-3">
                                     @if (permissionResult != null)
                                     {
                                         @if (permissionResult.Any(r => r.Menu3 == "Order Entry"))
@@ -375,9 +377,19 @@
                                         <button onclick="SetOp('add');" class="btn btn-sm btn-primary" title="" data-plugin="tippy"
                                                 data-tippy-placement="top" data-bs-toggle="modal"
                                                 data-bs-target="#new-order-entry">
-                                            New Order Entry
+                                            New Order Data Entry
+                                        </button>
+                                        <button class="btn btn-sm btn-primary" title="" data-plugin="tippy"
+                                                data-tippy-placement="top" data-bs-toggle="modal"
+                                                data-bs-target="#">
+                                            New Order File Upload
                                         </button>
                                     }
+                                </div>
+                                <div class="col-md-2 mt-3">
+                                    <a href="/WorkOrder" class="btn btn-sm btn-primary">
+                                        Go to Prodn Planning
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -399,6 +411,61 @@
 <partial name="_BA_POResume" />
 <partial name="_BA_PODelete" />
 <partial name="_BA_POLog" />
+<div class="modal fade" id="po-Qnty" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bxs-modal">
+            <form id="poresumeform" onclick="return false;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Reason for Customer PO Qnty Change * *</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="POQntyComment" name="Comment" class="form-control" placeholder="Enter Comments"></textarea>
+                </div>
+                <input type="text" hidden id="POQLogId" name="POLogId" value="0" />
+                <input type="text" hidden id="POQCustomerOrderId" name="CustomerOrderId" value="0" />
+                <input type="text" hidden id="POQSalesOrderId" name="SalesOrderId" value="0" />
+                <input type="text" hidden id="POQUser" name="User" value="Delete" />
+                <input type="text" hidden id="POQNewValue" name="NewValue" value="0" />
+                <input type="text" hidden id="POQOldValue" name="OldValue" value="0" />
+                <input type="text" hidden id="POQEvent" name="Event" value="Delete" />
+                <input type="text" hidden id="POQPartId" name="PartId" value="0" />
+                <div class="modal-footer">
+                    <span id="POQntyCust"></span>
+                    <button id="BtnPOQnty" type="button" class="btn btn-primary btn-sm">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="po-DateChng" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bxs-modal">
+            <form id="poresumeform" onclick="return false;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Reason for Customer PO Qnty Change * *</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="PODateComment" name="Comment" class="form-control" placeholder="Enter Comments"></textarea>
+                </div>
+                <input type="text" hidden id="PODLogId" name="POLogId" value="0" />
+                <input type="text" hidden id="PODCustomerOrderId" name="CustomerOrderId" value="0" />
+                <input type="text" hidden id="PODSalesOrderId" name="SalesOrderId" value="0" />
+                <input type="text" hidden id="PODUser" name="User" value="Delete" />
+                <input type="text" hidden id="PODNewValue" name="NewValue" value="0" />
+                <input type="text" hidden id="PODOldValue" name="OldValue" value="0" />
+                <input type="text" hidden id="PODEvent" name="Event" value="Delete" />
+                <input type="text" hidden id="PODPartId" name="PartId" value="0" />
+                <div class="modal-footer">
+                    <button id="BtnPODate" type="button" class="btn btn-primary btn-sm">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section scripts {
     <script src="~/js/businessaquisition/customerorders.js"></script>
@@ -421,7 +488,7 @@
         <td>{plan}</td>
         <td>{matl}</td>
         <td>{wip}</td>
-        <td>{strHold}</td>
+        <td>{holdStr}</td>
         <td>{strDone}</td>
         <td>
             <div class="dropdown float-center">
@@ -448,6 +515,10 @@
                                    data-ponumber='{poNumber}' data-podate='{poDateStr}'
                                    data-customername='{customenName}'
                                    data-directentrydetails='{directEntryDetails}'
+                                   data-poaddress='{poAddress}'
+                                   data-pocity='{poCity}'
+                                   data-popin='{popin}'
+                                   data-pocountry='{poCountry}'
                                    data-bs-target="#new-order-entry">Edit</a>
                             }
                             else
@@ -466,6 +537,10 @@
                            data-ponumber='{poNumber}' data-podate='{poDateStr}'
                            data-customername='{customenName}'
                            data-directentrydetails='{directEntryDetails}'
+                                   data-poaddress='{poAddress}'
+                                   data-pocity='{poCity}'
+                                   data-popin='{popin}'
+                                   data-pocountry='{poCountry}'
                            data-bs-target="#new-order-entry">Edit</a>
                     }
                     <a href="javascript:void(0);"

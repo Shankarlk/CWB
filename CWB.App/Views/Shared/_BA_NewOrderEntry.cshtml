@@ -8,57 +8,80 @@
             </div>
             <div class="modal-body">
                 <form id="CustomerOrderForm" onsubmit="return false;">
-                <div class="row">
-                    <div class="col-md-4 mb-2">
-                        <table class="w-100 bord">
-                            <tbody>
-                                <tr>
-                            <td>
-                                <label class="form-check-label" for="poEntry">PO Entry</label>
-                                <input class="form-check-input mt-1" type="radio" id="POEntry" name="OrderType" value="1"
-                                       title="" data-plugin="tippy" data-tippy-placement="top" checked>
-                            </td>
-                            <td>
-                                <label class="form-check-label" for="poEntry">
-                                    Direct Order Entry (without PO)
-                                    <span class="text-danger"> * </span>
-                                </label>
-                                            <input class="form-check-input mt-1" id="DirectEntry"  type="radio" name="OrderType" value="2"
-                                       title="" data-plugin="tippy" data-tippy-placement="top">
-                            </td>
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <table class="w-100 bord">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <label class="form-check-label" for="poEntry">PO Entry</label>
+                                            <input class="form-check-input mt-1" type="radio" id="POEntry" name="OrderType" value="1"
+                                                   title="" data-plugin="tippy" data-tippy-placement="top" checked>
+                                        </td>
+                                        <td>
+                                            <label class="form-check-label" for="poEntry">
+                                                Direct Order Entry (without PO)
+                                                <span class="text-danger"> * </span>
+                                            </label>
+                                            <input class="form-check-input mt-1" id="DirectEntry" type="radio" name="OrderType" value="2"
+                                                   title="" data-plugin="tippy" data-tippy-placement="top">
+                                        </td>
                                     </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- -----------------  -->
-                    <div class="col-md-8 mb-2">
-                    </div>
-                    <!-- -----------------  -->
-                    <label class="form-label col-md-1">Customer</label>
-                    <div class="col-md-2 mb-2">
-                        <select class="form-select form-select-sm" aria-label="form-select-sm" title=""
-                                data-plugin="tippy" data-tippy-placement="top" id="CustomerId" name="CustomerId" required>
-                        </select>
-                    </div>
-                    <!-- -----------------  -->
-                    <label class="form-label col-md-1">PO No</label>
-                    <div class="col-md-2 mb-2">
-                        <input class="form-control form-control-sm" id="PONumber" name="PONumber" type="text" value="" title="" data-plugin="tippy"
-                                   data-tippy-placement="top" placeholder="Enter PO No" required/>
-                    </div>
-                    <!-- -----------------  -->
-                    <label class="form-label col-md-1">Date</label>
-                    <div class="col-md-2 mb-2">
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- -----------------  -->
+                        <div class="col-md-8 mb-2">
+                        </div>
+                        <!-- -----------------  -->
+                        <label class="form-label col-md-1">Customer</label>
+                        <div class="col-md-2 mb-2">
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" title=""
+                                    data-plugin="tippy" data-tippy-placement="top" id="CustomerId" name="CustomerId" required>
+                            </select>
+                        </div>
+                        <!-- -----------------  -->
+                        <label class="form-label col-md-1" id="polbl">PO No</label>
+                        <div class="col-md-2 mb-2" id="ponodiv">
+                            <input class="form-control form-control-sm" id="PONumber" name="PONumber" type="text" value="" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" placeholder="Enter PO No" />
+                        </div>
+                        <!-- -----------------  -->
+                        <label class="form-label col-md-1">Date</label>
+                        <div class="col-md-2 mb-2">
                             <input class="form-control form-control-sm" name="PODate" id="PODate" value="" type="date" title="" data-plugin="tippy"
-                                   data-tippy-placement="top" required/>
-                    </div>
-                    <!-- -----------------  -->
-                    <div class="col-md-3 mb-2">
+                                   data-tippy-placement="top" required />
+                        </div>
+                        <div class="col-md-1 mb-2 ms-2">
+                        </div>
+                        <!-- -----------------  -->
+                        <label class="form-label col-md-1"  id="dentrylbl">Direct Entry Details*</label>
+                        <div class="col-md-3 mb-2">
                             <input class="form-control form-control-sm" name="DirectEntryDetails" value="" id="DirectEntryDetails" type="text" title="" data-plugin="tippy"
-                               data-tippy-placement="top" placeholder="Direct Entry Details *" required>
+                                   data-tippy-placement="top" placeholder="Direct Entry Details *">
+                        </div>
+                        <label class="form-label col-md-1">Shipping Address</label>
+                        <div class="col-md-2 mb-2">
+                            <textarea class="form-control form-control-sm" name="POAddress" id="POAddress" value="" type="text" title="" data-plugin="tippy"
+                                      data-tippy-placement="top" required></textarea>
+                        </div>
+                        <label class="form-label col-md-1">City *</label>
+                        <div class="col-md-2 mb-2">
+                            <input class="form-control form-control-sm" name="POCity" id="POCity" value="" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" required />
+                        </div>
+                        <label class="form-label col-md-1">PIN *</label>
+                        <div class="col-md-2 mb-2">
+                            <input class="form-control form-control-sm" name="POPIN" id="POPIN" value="" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" required />
+                        </div>
+                        <label class="form-label col-md-1">Country *</label>
+                        <div class="col-md-2 mb-2">
+                            <input class="form-control form-control-sm" name="POCountry" id="POCountry" value="" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" required />
+                        </div>
+                        <!-- -----------------  -->
                     </div>
-                    <!-- -----------------  -->
-                </div>
                 <!-- ======================== -->
                 <div class="row">
                     <label class="form-label col-md-1">Comments</label>
@@ -80,19 +103,30 @@
                         <h5>Po Line List</h5>
                     </div>
                     <div class="row">
-                        <div class="table-responsive table-he-180">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6 text-center mb-2">
+                            <button class="btn btn-sm btn-primary w-100" id="AddPoLineItem" title="" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#PONoDetailsPopup">
+                                Add PO Line Item
+                            </button>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+                    <div class="row">
+                        <div class="table-responsive table-he-250">
                             <table id="POLinesTable" class="table table-sm table-bordered w-100 text-center">
                                 <thead class="  table-info th-sti">
                                     <tr class="table-border-bottom">
-                                        <th>Part No</th>
-                                        <th>Total Qnty</th>
                                         <th># Sales Order</th>
-                                        <th># Work Order</th>
-                                        <th>Status</th>
-                                        <th>Plan</th>
+                                        <th>Part No</th>
+                                        <th>PO Reqd Date</th>
+                                        <th>PO Qnty (Total)</th>
+                                        <th>SO Delv Date</th>
+                                        <th>Plan Qnty (Total)</th>
+                                        <th>No of Lines</th>
                                         <th>Matl</th>
                                         <th>WIP</th>
                                         <th>Done</th>
+                                        <th>Status</th>
                                         <th width="2%"></th>
                                     </tr>
                                 </thead>
@@ -177,12 +211,12 @@
                             <form id="AggregateObjForm" onsubmit="return false;">
                                 <div class="row">
                                     <label class="form-label col-md-3 mb-2">
-                                        Part Number <span class="text-danger"> *</span>
+                                        Part No <span class="text-danger"> *</span>
                                     </label>
                                     <div class="col-md-8 mb-2">
                                         <div class="input-group">
                                             <input class="form-control form-control-sm" type="text" title=""
-                                                   data-plugin="tippy" data-tippy-placement="top" id="PartNo" name="PartNo" placeholder="Enter Part No" value="" required />
+                                                   data-plugin="tippy" data-tippy-placement="top" id="PartNo" name="PartNo" placeholder="Enter Part No" value="" required readonly />
                                             <input class="form-control form-control-sm" type="text" hidden title=""
                                                    data-plugin="tippy" data-tippy-placement="top" id="PartId" name="PartId" placeholder="Enter Part No" value="" required />
 
@@ -193,46 +227,92 @@
                                             </button>
 
                                             <!--  <select class="form-select form-select-sm" aria-label="form-select-sm" title=""
-                                data-plugin="tippy" data-tippy-placement="top" id="PartId" name="PartId" required>
-                        </select>-->
+                            data-plugin="tippy" data-tippy-placement="top" id="PartId" name="PartId" required>
+                    </select>-->
 
                                         </div>
                                     </div>
                                     <!-- ========================= -->
                                     <label class="form-label col-md-3 mb-2">
-                                        Total Qty <span class="text-danger">*</span>
+                                        PO Qnty <span class="text-danger">*</span>
                                     </label>
                                     <div class="col-md-8 mb-2">
-                                        <input readonly class="form-control form-control-sm" type="text" title="" value="" data-plugin="tippy"
+                                        <input class="form-control form-control-sm" type="text" title="" value="" data-plugin="tippy"
                                                data-tippy-placement="top" id="TotalQty" name="TotalQty" placeholder="Enter Total Qty" required />
                                     </div>
                                     <!-- ========================= -->
                                     <label class="form-label col-md-3 mb-2">
-                                        Delivery SCH <span class="text-danger">*</span>
+                                        PO Reqd Date <span class="text-danger">*</span>
                                     </label>
                                     <div class="col-md-8 mb-2">
+                                        <input id="POReqdDate" name="RequiredQuantity" class="form-control form-control-sm" type="date" title="" data-plugin="tippy" value="0" data-tippy-placement="top" placeholder="Enter Reqd Quantity">
+                                    </div>
+                                    <label class="form-label col-md-3 mb-2">
+                                        Comment <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="col-md-8 mb-2">
+                                        <input id="POSoComment" name="POSoComment" class="form-control form-control-sm" type="text" title="" data-plugin="tippy" value="0" data-tippy-placement="top" placeholder="Enter Reqd Quantity">
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <button type="button" id="SavePoLineItem" class="btn btn-sm btn-outline-dark w-100 mb-2">Save</button>
                                         <button type="button" id="LaunchDeliverySchedule" class="btn btn-sm btn-outline-dark w-100" title=""
                                                 data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal"
-                                                data-bs-target="#Delivery-Schedule">
-                                            Delivery Schedule
+                                                data-bs-target="#">
+                                            Add Next Delivery Details
                                         </button>
                                     </div>
                                     <!-- ========================= -->
                                     <!--
-                <label class="form-label col-md-3">Comments</label>
-                <div class="col-md-8 mb-2">
-                    <textarea id="SOComment" name="Comment" class="form-control form-control-sm" placeholder="Enter Comments"></textarea>
-                </div>
-                -->
+            <label class="form-label col-md-3">Comments</label>
+            <div class="col-md-8 mb-2">
+                <textarea id="SOComment" name="Comment" class="form-control form-control-sm" placeholder="Enter Comments"></textarea>
+            </div>
+            -->
                                     <!-- ========================= -->
                                     <div class="col-md-11 text-end">
                                         <input type="text" hidden id="SOAggregateId" name="SOAggregateId" value="0" />
                                         <input type="text" hidden value="0" id="AggregateCustomerOrderId" name="CustomerOrderId" />
                                         <!--
-                    <button id="BtnAddSalesOrder" class="btn btn-sm btn-primary ">Add</button>-->
+                <button id="BtnAddSalesOrder" class="btn btn-sm btn-primary ">Add</button>-->
                                     </div>
                                     <!-- ========================= -->
                                 </div>
+                            </form>
+                            <form id="DeliveryScheduleForm" onsubmit="return false;" hidden>
+                                <label class="form-label col-md-4 mb-2">
+                                    Reqd Date <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-md-8 mb-2">
+                                    <input id="RequiredByDate" name="RequiredByDate" class="form-control form-control-sm" type="date" title="" data-plugin="tippy"
+                                           data-tippy-placement="top">
+                                </div>
+                                <!-- ========================= -->
+                                <label class="form-label col-md-4 mb-2">
+                                    Reqd Quantity <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-md-8 mb-2">
+                                    <input id="RequiredQuantity" name="RequiredQuantity" class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                           value="0" data-tippy-placement="top" placeholder="Enter Reqd Quantity" />
+                                </div>
+                                <!-- ========================= -->
+                                <label class="form-label col-md-4 mb-2">
+                                    Comment <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-md-8 mb-2">
+                                    <textarea id="DSComment" name="Comment" class="form-control form-control-sm" placeholder="Enter Comment" value="-"></textarea>
+                                </div>
+                                <input type="text" hidden id="DSPartId" name="DSPartId" value="0" />
+                                <input type="text" hidden id="DSPartNo" name="DSPartNo" value="0" />
+
+                                <input type="text" hidden id="ScheduleId" name="ScheduleId" value="0" />
+                                <input type="text" hidden id="SalesCustomerOrderId" name="CustomerOrderId" value="0" />
+                                <!-- ========================= -->
+                                <div class="col-md-12 text-end">
+                                    <button id="BtnAddSchedule" class="btn btn-sm btn-primary ">Add</button>
+                                </div>
+                                <!-- ========================= -->
                             </form>
                         </div>
                         <!-- ================  -->
@@ -243,15 +323,16 @@
                                         <thead class="  table-info th-sti">
                                             <tr class="table-border-bottom">
                                                 <th>Sales Order #</th>
-                                                <th>Work Order #</th>
-                                                <th>Part No</th>
-                                                <th>Reqd Qnty</th>
-                                                <th>Reqd Date</th>
+                                                @*<th>Work Order #</th>*@
+                                                @*<th>Part No</th>*@
+                                                <th>PO Qnty</th>
+                                                <th>PO Reqd  Date</th>
+                                                <th>SO Delv Date</th>
                                                 <th>Status</th>
-                                                <th>Plan</th>
+                                                <th>Plan Qnty</th>
                                                 <th>Matl</th>
                                                 <th>WIP</th>
-                                                <th>Hold</th>
+                                                @*<th>Hold</th>*@
                                                 <th>Done</th>
                                                 <th width="2%"></th>
                                             </tr>
@@ -261,6 +342,23 @@
                                         </tbody>
                                     </table>
                                 </div>
+                            </div>
+                            <div class="row" id="TotalCountDiv">
+                                <div class="col-md-2">
+                                </div>
+                                <div class="col-md-3" style="padding-left: 45px;">
+                                    <label class="form-label col-md-4 mb-2">
+                                        Total : <span id="TotalPoQnty">0</span>
+                                    </label>
+                                </div>
+                                <div class="col-md-3">
+                                </div>
+                                <div class="col-md-3" style="padding-left: 30px;">
+                                    <label class="form-label col-md-4 mb-2">
+                                        Total : <span id="TotalPlanQnty">0</span>
+                                    </label>
+                                </div>
+
                             </div>
                         </div>
                         <!-- ================  -->
@@ -273,8 +371,25 @@
 </div>
 
 
+<div class="modal fade" id="view-socomment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content bxs-modal">
+            <form id="poholdform" onclick="return false;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">View Comment for SO : <span id="ViewSoCommentSpan"></span></h5>
+                    <button type="button" id="btnholdclose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="viewCommentField" name="Comment" class="form-control" placeholder="Enter Comments" readonly></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <partial name="_BA_ExistingPart" />
-<partial name="_BA_DeliverySchedule" />
+@*<partial name="_BA_DeliverySchedule" />*@
 <partial name="_BA_EditSalesOrder" />
 <partial name="_BA_POHold" />
 <partial name="_BA_POResume" />
@@ -283,15 +398,15 @@
 <template id="SalesOrderRow">
     <tr>
         <td>{soNumber}</td>
-        <td>{workOrderNo}</td>
-        <td>{partNo}</td>
+        @*<td>{workOrderNo}</td>*@
+        @*<td>{partNo}</td>*@
         <td>{requiredQuantity}</td>
         <td>{requiredByDateStr}</td>
+        <td>{requiredByDateStr}</td>
         <td>{strStatus}</td>
-        <td>{plan}</td>
+        <td>{requiredQuantity}</td>
         <td>{matl}</td>
         <td>{wip}</td>
-        <td>{strHold}</td>
         <td>{strDone}</td>
         <td>
             <div class="dropdown float-center">
@@ -310,9 +425,7 @@
                        data-requiredquantity={requiredQuantity}
                        data-comment='{comment}'
                        data-partid={partId}
-                       data-salesorder="Y"
-                       data-bs-toggle="modal"
-                       data-bs-target="#Edit-SalesOrder">Edit</a>
+                       data-salesorder="Y" onclick="DeliverySechudeleLoad(this)">Edit PO Line Detail</a>
                     <a href="javascript:void(0);" class="dropdown-item"
                        data-bs-toggle="modal" data-partno='{partNo}' 
                        data-customerorderid={customerOrderId} 
@@ -344,15 +457,17 @@
 
 <template id="POLineRow">
     <tr class="table-border-bottom">
+        <td>{soNumber}</td>
         <td>{partNo}</td>
+        <td>{poDateReqd}</td>
+        <td>{totalQty}</td>
+        <td>{poDateReqd}</td>
         <td>{totalQty}</td>
         <td>{numSalesOrder}</td>
-        <td>{woNumber}</td>
-        <td>{strStatus}</td>
-        <td>{plan}</td>
         <td>{matl}</td>
         <td>{wip}</td>
-        <td>{strDone}</td> 
+        <td>{strDone}</td>
+        <td>{strStatus}</td>
         <td>
             <div class="dropdown float-center">
                 <a href="#"
@@ -376,6 +491,9 @@
                     <a href="javascript:void(0);"
                        class="dropdown-item" data-bs-toggle="modal"
                        data-bs-target="#po-Delete">Delete</a>
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-bs-toggle="modal"
+                       onclick="showComments('{comments}','{soNumber}');">View Comment</a>
                     <a href="javascript:void(0);"
                        class="dropdown-item" data-bs-toggle="modal"
                        data-bs-target="#po-log">

@@ -88,6 +88,10 @@ namespace CWB.ProductionPlanWO.Configurations
              .HasColumnName("PlanCompletionDate")
              .HasDefaultValue(null);
             builder
+             .Property(t => t.SoComplDate)
+             .HasColumnName("SoComplDate")
+             .HasDefaultValue(null);
+            builder
              .Property(t => t.RoutingId)
              .HasColumnName("RoutingId")
              .IsRequired();

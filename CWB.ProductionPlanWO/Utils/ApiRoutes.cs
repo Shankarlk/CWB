@@ -16,14 +16,20 @@ namespace CWB.ProductionPlanWO.Utils
         public static class WO
         {
             public const string PostWorkOrder = Base + "/workorder";
+            public const string PostWoSubCon = Base + "/postwosubcon";
             public const string PostMultipleWorkOrder = Base + "/multipleworkorder";
             public const string PostUpdateMultipleWorkOrder = Base + "/updatemultipleworkorder";
             public const string HelloWorld = Base + "/helloworld";
+            public const string GetPOLogs = Base + "/getpologs/{tenantId}/{poid}";
+            public const string GetWoPOLogs = Base + "/getwopologs/{tenantId}/{customerOrderId}";
             public const string AllWorkOrders = Base + "/allworkorders/{tenantId}";
+            public const string AllSubCon = Base + "/allwosubcon/{tenantId}";
             public const string AllParentChildWos = Base + "/allparentchildwos/{parentWoId}/{tenantId}";
             public const string GetSingleWorkOrder = Base + "/getsingleworkorder/{Id}/{tenantId}";
             public const string GetSoWo = Base + "/getsowo/{workOrderId}";
+            public const string GetProCPurchase = Base + "/getprocpurchase/{procPlanId}";
             public const string PostWOSORel = Base + "/wosorel";
+            public const string PostProcPurchase = Base + "/postprocpurchase";
             public const string PostBOMTemp = Base + "/bomtemp";
             public const string PostProcPlan = Base + "/procplan";
             public const string PostBomList = Base + "/bomlistwo";
@@ -31,10 +37,13 @@ namespace CWB.ProductionPlanWO.Utils
             public const string AllBomList = Base + "/allbomlist/{tenantId}";
             public const string PostProductionPlan_Wo = Base + "/productionplan";
             public const string AllProductionPlanWo = Base + "/allproductionplanwo/{tenantId}";
+            public const string DeleteSubCon = Base + "/delwosubcon/{Id}";
+            public const string DeleteWo = Base + "/deletewo/{Id}";
             public const string GetWoStatus = Base + "/getwostatus/{Id}";
             public const string PostChildWoRel = Base + "/childworel";
             public const string PostMcTimeList = Base + "/postmctimelist";
             public const string GetAllMctimeList = Base + "/allmctimelist/{tenantId}";
+            public const string GetAllPodetails = Base + "/allpodetails/{tenantId}";
             public const string GetPoStatus = Base + "/getpostatus/{Id}";
             public const string PostMultiplePODetails = Base + "/multiplepodetails";
             public const string PostMultiplePOHeaders = Base + "/multiplepoheaders";

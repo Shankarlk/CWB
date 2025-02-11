@@ -477,7 +477,7 @@ $(function () {
                                 phoneNumber: data.phone,
                                 tenantId: "1"
                             };
-                            api.post("http://172.25.32.1:9003/account/Register", userrowData, {
+                            api.post("http://192.168.43.57:9003/account/Register", userrowData, {
                                 headers: {
                                     "Content-Type": "application/json", // or application/x-www-form-urlencoded
                                     "Accept": "application/json",

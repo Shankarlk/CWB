@@ -14,6 +14,10 @@ namespace CWB.BusinessAquisition.Domain
         public DateTime? PODate { get; set; }
         public string? Comment { get; set; }        
         public string? DirectEntryDetails {  get; set; }
+        public string? POAddress { get; set; }
+        public string? POCity { get; set; }
+        public string? POPIN { get; set; }
+        public string? POCountry { get; set; }
         public string? LineNo { get; set; }
         public int Status { get; set; }
         public int Plan { get; set; }

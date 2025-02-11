@@ -855,23 +855,24 @@ $(document).ready(function () {
 
                     });
                     var routeId = $('#singleRouting').val();
-                    $('#singleStartOpNo').prop('readonly', true);
-                    $('#singleStartOpNo').css('pointer-events', 'none');
                     $('#singleEndOpNo').prop('readonly', true);
                     $('#singleEndOpNo').css('pointer-events', 'none');
+                    $('#singleStartOpNo').prop('readonly', true);
+                    $('#singleStartOpNo').css('pointer-events', 'none');
                     api.getbulk("/WorkOrder/RoutingSteps?routingId=" + routeId).then((data) => {
                         //console.log(data);
                         const selectstartElement = $('#singleStartOpNo');
                         const selectEndOpNo = $('#singleEndOpNo');
                         selectstartElement.html("");
                         $.each(data, (index, item) => {
-                            selectstartElement.append(`<option value="${item.stepOperation}">${item.stepOperation}</option>`);
+                            selectstartElement.append(`<option value="${item.stepId}">${item.stepNumber}</option>`);
                         });
                         const reversedData = data.slice().reverse();
                         selectEndOpNo.html('');
                         $.each(reversedData, (index, item) => {
-                            selectEndOpNo.append(`<option value="${item.stepOperation}">${item.stepOperation}</option>`);
+                            selectEndOpNo.append(`<option value="${item.stepId}">${item.stepNumber}</option>`);
                         });
+                        loadWoP3SubConSIngle();
                     }).catch((error) => {
                         console.error(error);
                     });
@@ -888,10 +889,11 @@ $(document).ready(function () {
             });
             $('#singleStartOpNo').prop("disabled", false);
             $('#singleEndOpNo').prop("disabled", false);
+            $("#SubConGridDivP3").show();
         }
         else {
-
             $("#popup3divRouting").hide();
+            $("#SubConGridDivP3").hide();
             const selectElement = $('#singleRouting');
             selectElement.html("");
             selectElement.prop("disabled", true);
@@ -902,6 +904,7 @@ $(document).ready(function () {
 
 
     });
+
 
     $('#popup3').on('hidden.bs.modal', function (event) {
         const selectElement = $('#singleStartOpNo');
@@ -1335,27 +1338,27 @@ $(document).ready(function () {
 
     $('#NewRouting').on('change', (e) => {
         const routeId = $(e.target).val();
-
         api.getbulk("/WorkOrder/RoutingSteps?routingId=" + routeId).then((data) => {
             //console.log(data);
             //const uniqueData = [...new Set(data.map(item => item.stepOperation))];
-            const uniqueData = data.filter((item, index, self) =>
-                self.findIndex((t) => t.stepOperation === item.stepOperation) === index
-            );
+            //const uniqueData = data.filter((item, index, self) =>
+            //    self.findIndex((t) => t.stepOperation === item.stepOperation) === index
+            //);
             const selectElement = $('#NewStartOpNo');
             const selectEndOpNo = $('#NewEndOpNo');
             selectElement.html("");
-            $.each(uniqueData, (index, item) => {
-                selectElement.append(`<option value="${item.stepOperation}">${item.stepOperation}</option>`);
+            $.each(data, (index, item) => {
+                selectElement.append(`<option value="${item.stepId}">${item.stepNumber}</option>`);
             });
-            const reversedData = uniqueData.slice().reverse();
+            const reversedData = data.slice().reverse();
             selectEndOpNo.html('');
             $.each(reversedData, (index, item) => {
-                selectEndOpNo.append(`<option value="${item.stepOperation}">${item.stepOperation}</option>`);
+                selectEndOpNo.append(`<option value="${item.stepId}">${item.stepNumber}</option>`);
             });
         }).catch((error) => {
             //console.error(error);
         });
+
     });
     $('#popup3NewWo').on('hidden.bs.modal', function (event) {
         var $modal = $(this);
@@ -1384,7 +1387,22 @@ $(document).ready(function () {
         var partId = $("#NewpartId").val();
 
         if (partType == "1") {
+            //api.getbulk("/WorkOrder/GetRoutings?manufPartId=" + parseInt(partId)).then((data) => {
+            //    //console.log(data);
+            //    const selectElement = $('#NewRouting');
+            //    selectElement.prop("disabled", false);
+            //    $.each(data, (index, item) => {
+            //        selectElement.html("");
+            //        selectElement.append(`<option value="0">--Select--</option>`);
+            //        selectElement.append(`<option value="${item.routingId}">${item.routingName}</option>`);
+            //    });
+            //}).catch((error) => {
+            //});
+            //$('#NewStartOpNo').prop("disabled", false);
+            //$('#NewEndOpNo').prop("disabled", false);
+            //-----new 
             $("#popup3NewdivRouting").show().addClass("row");
+            $("#SubConGridDivP3").show();
             api.getbulk("/WorkOrder/GetRoutings?manufPartId=" + parseInt(partId)).then((data) => {
                 //console.log(data);
                 const selectElement = $('#NewRouting');
@@ -1408,12 +1426,12 @@ $(document).ready(function () {
                         const selectEndOpNo = $('#NewEndOpNo');
                         selectstartElement.html("");
                         $.each(data, (index, item) => {
-                            selectstartElement.append(`<option value="${item.stepOperation}">${item.stepOperation}</option>`);
+                            selectstartElement.append(`<option value="${item.stepId}">${item.stepNumber}</option>`);
                         });
                         const reversedData = data.slice().reverse();
                         selectEndOpNo.html('');
                         $.each(reversedData, (index, item) => {
-                            selectEndOpNo.append(`<option value="${item.stepOperation}">${item.stepOperation}</option>`);
+                            selectEndOpNo.append(`<option value="${item.stepId}">${item.stepNumber}</option>`);
                         });
                     }).catch((error) => {
                         console.error(error);
@@ -1426,7 +1444,7 @@ $(document).ready(function () {
 
                     });
                 }
-
+                loadWoP3SubConNew();
             }).catch((error) => {
             });
             $('#NewStartOpNo').prop("disabled", false);
@@ -1434,11 +1452,12 @@ $(document).ready(function () {
         }
         else {
             $("#popup3NewdivRouting").hide();
-            const selectElement = $('#routing');
+            $("#SubConGridDivP3").hide();
+            const selectElement = $('#NewRouting');
             selectElement.html("");
             selectElement.prop("disabled", true);
-            $('#ManualStartOpNo').html("").prop("disabled", true);
-            $('#ManualEndOpNo').html("").prop("disabled", true);
+            $('#NewStartOpNo').html("").prop("disabled", true);
+            $('#NewStartOpNo').html("").prop("disabled", true);
         }
     });
     $('#popup7').on('hidden.bs.modal', function (event) {
@@ -1455,6 +1474,7 @@ $(document).ready(function () {
         selectElement.html("");
         selectEndOpNo.html('');
     });
+
     $('#popup7').on('shown.bs.modal', function (event) {
         var relatedTarget = $(event.relatedTarget);
         var workOrderId = relatedTarget.data("workorderid");
@@ -1480,13 +1500,14 @@ $(document).ready(function () {
         $("#Popup7partId").val(partId);
         $("#Popup7partType").val(partType);
         $("#Popup7WoStatus").val(wostatus);
+        $("#popup7WoNumber").text(woNumber);
         $("#popup7QtyOnHand").val(0);
         $("#popup7BuildToStockQnty").val(0);
-        $("#popup7WoNumber").text(woNumber);
 
 
         if (partType === 1) {
             $("#popup7divRouting").show().addClass("row");
+            $("#SubConGridDivP7").show();
             api.getbulk("/WorkOrder/GetRoutings?manufPartId=" + parseInt(partId)).then((data) => {
                 //console.log(data);
                 const selectElement = $('#popup7Routing');
@@ -1510,13 +1531,14 @@ $(document).ready(function () {
                         const selectEndOpNo = $('#popup7EndingOpNo');
                         selectstartElement.html("");
                         $.each(data, (index, item) => {
-                            selectstartElement.append(`<option value="${item.stepOperation}">${item.stepOperation}</option>`);
+                            selectstartElement.append(`<option value="${item.stepId}">${item.stepNumber}</option>`);
                         });
                         const reversedData = data.slice().reverse();
                         selectEndOpNo.html('');
                         $.each(reversedData, (index, item) => {
-                            selectEndOpNo.append(`<option value="${item.stepOperation}">${item.stepOperation}</option>`);
+                            selectEndOpNo.append(`<option value="${item.stepId}">${item.stepNumber}</option>`);
                         });
+                        loadWoP7SubCon();
                     }).catch((error) => {
                         console.error(error);
                     });
@@ -1532,9 +1554,11 @@ $(document).ready(function () {
             }).catch((error) => {
             });
             $('#popup7StartingOpNo').prop("disabled", false);
-            $('#popup7EndingOpNo').prop("disabled", false);
+            $('#ManualEndOpNo').prop("disabled", false);
+
         }
         else {
+            $("#SubConGridDivP7").hide();
             $("#popup7divRouting").hide();
             const selectElement = $('#popup7Routing');
             selectElement.html("");
@@ -1695,10 +1719,388 @@ $(document).ready(function () {
         });
     });
 
+    $('#P20Supplier').on('change', (e) => {
+        const routeId = $(e.target).val();
+        var NewStartOpNo = $("#NewStartOpNo").val();
+        if (NewStartOpNo == null) {
+            StartingOpNo = $("#StartingOpNo").val();
+        }
+        if (NewStartOpNo == null) {
+            NewStartOpNo = $("#popup7StartingOpNo").val();
+        }
+        if (NewStartOpNo == null) {
+            NewStartOpNo = $("#singleStartOpNo").val();
+        }
+        api.get("/routings/subcons?stepId=" + NewStartOpNo).then((data) => {
+            var edata = data.filter(item => item.supplierId == routeId);
+            if (edata[0].strPreferredSubCon === "") {
+                $("#P20PreferredSpan").hide();
+            } else {
+                $("#P20PreferredSpan").show();
+            }
+            var cost = edata[0].costPerPart;
+            $("#P20UnitRout").val(cost);
+            if (edata[0].strPreferredSubCon === "") {
+                $("#P20PreferredSpan").hide();
+            } else {
+                $("#P20PreferredSpan").show();
+            }
+        }).catch((error) => {
+            //console.error(error);
+        });
+    });
+    $('#popup20').on('shown.bs.modal', function (event) {
+        var relatedTarget = $(event.relatedTarget);
+        var woid = relatedTarget.data("workorderid");
+        $("#flexSwitchCheckDefault").prop("disabled", false);
+        var salesOrderId = relatedTarget.data("salesorderid");
+        var woNumber = relatedTarget.data("wonumber");
+        var partNo = relatedTarget.data("partno");
+        var stepid = relatedTarget.data("stepid");
+        var planwoqty = relatedTarget.data("qntys");
+        var P20DelQnty = document.getElementById('P20DelQnty');
+        P20DelQnty.style.border = '';
+        $('#P20AgrDate').val('');
+        $('#P20AddnInfo').val('');
+        $("#flexSwitchCheckDefault").prop("checked", false);
+        $("#P20AddNextDel").prop("disabled", true);
+        var P20AddnInfo = document.getElementById('P20AddnInfo');
+        P20AddnInfo.style.border = '';
+        var P20AgrDate = document.getElementById('P20AgrDate');
+        P20AgrDate.style.border = '';
+        var P20DelQnty = document.getElementById('P20DelQnty');
+        P20DelQnty.style.border = '';
+        supdate = {};
+        subcontotal = 0;
+        if (woid === 1) {
+            //var planwoqty = $('#SoQty').val();
+            var orgwoid = $('#Popup20Woid').val();
+            var routingId = $('#routing').val();
+            var WoComplDate = $('#WoComplDate').val();
+            var partNo = $('#partNo').text();
+            var P1partdesc = $('#P1partdesc').text();
+            var NewStartOpNoText = $("#StartingOpNo option:selected").text();
+            var NewStartOpNo = $("#StartingOpNo").val();
+            GetAllSubCons(orgwoid);
+            $("#P20DelQnty").val(planwoqty);
+            $("#P20WoQnty").val(planwoqty);
+            $("#P20DateReqd").val(WoComplDate);
+            $("#popup20PartNo").text(partNo);
+            $("#P20partdesc").text(P1partdesc);
+            $("#P20OpnoSpan").text(NewStartOpNoText);
+            //$("#Popup20Woid").text(orgwoid);
+            api.get("/routings/subcons?stepId=" + NewStartOpNo).then((data) => {
+                const selectElement = $('#P20Supplier');
+                selectElement.html("");
+                $.each(data, (index, item) => {
+                    selectElement.append(`<option value="${item.supplierId}">${item.company}</option>`);
+                });
+                if (data.length == 1) {
+                    $("#P20AddOtherSupp").prop("disabled", true);
+                } else {
+                    $("#P20AddOtherSupp").prop("disabled", false);
+                }
+                var edata = data;
+                if (edata[0].strPreferredSubCon === "") {
+                    $("#P20PreferredSpan").hide();
+                } else {
+                    $("#P20PreferredSpan").show();
+                }
+            });
+            api.get("/masters/masterparts").then((data) => {
+                var edata = data.filter(item => item.partNo == partNo);
+                api.get("/WorkOrder/GetManufPart?routingId=" + edata[0].partId).then((pdata) => {
+                    var epdata = pdata;
+                    $("#P20Convprice").val(epdata.priceSettledwithCustomer_INR);
+                    $("#P20UnitRout").val(epdata.priceSettledwithCustomer_INR);
+                });
+            });
+        } else if (woid == "3N") {
+            var subqnt = $("#NewPlanWoQty").val();
+            var reqddate = $("#NewWoComplDt").val();
+            var NewRouting = $("#NewRouting").val();
+            var NewStartOpNo = $("#NewStartOpNo").val();
+            var NewStartOpNoText = $("#NewStartOpNo option:selected").text();
+            var NewpartNo = $("#NewpartNo").text();
+            var P3Npartdesc = $("#P3Npartdesc").text();
+            var Newwoid = $("#Newwoid").val();
+            GetAllSubCons(Newwoid);
+            $("#P20DelQnty").val(planwoqty);
+            $("#P20WoQnty").val(planwoqty);
+            $("#P20DateReqd").val(reqddate);
+            $("#Popup20Woid").val(Newwoid);
+            $("#popup20PartNo").text(NewpartNo);
+            $("#P20partdesc").text(P3Npartdesc);
+            $("#P20OpnoSpan").text(NewStartOpNoText);
+            api.get("/routings/subcons?stepId=" + NewStartOpNo).then((data) => {
+                const selectElement = $('#P20Supplier');
+                selectElement.html("");
+                $.each(data, (index, item) => {
+                    selectElement.append(`<option value="${item.supplierId}">${item.company}</option>`);
+                });
+                if (data.length == 1) {
+                    $("#P20AddOtherSupp").prop("disabled", true);
+                } else {
+                    $("#P20AddOtherSupp").prop("disabled", false);
+                }
+                var edata = data;
+                if (edata[0].strPreferredSubCon === "") {
+                    $("#P20PreferredSpan").hide();
+                } else {
+                    $("#P20PreferredSpan").show();
+                }
+            });
+            api.get("/masters/masterparts").then((data) => {
+                var edata = data.filter(item => item.partNo == NewpartNo);
+                api.get("/WorkOrder/GetManufPart?routingId=" + edata[0].partId).then((pdata) => {
+                    var epdata = pdata;
+                    $("#P20Convprice").val(epdata.priceSettledwithCustomer_INR);
+                    $("#P20UnitRout").val(epdata.priceSettledwithCustomer_INR);
+                });
+            });
+        } else if (woid == "3S") {
+            var subqnt = $("#singlePlanWoQty").val();
+            var reqddate = $("#singleWoComplDt").val();
+            var NewRouting = $("#singleRouting").val();
+            var NewStartOpNo = $("#singleStartOpNo").val();
+            var NewStartOpNoText = $("#singleStartOpNo option:selected").text();
+            var NewpartNo = $("#p3partNo").text();
+            var P3Npartdesc = $("#P3partdesc").text();
+            var Newwoid = $("#woid").val();
+            GetAllSubCons(Newwoid);
+            $("#P20DelQnty").val(planwoqty);
+            $("#P20WoQnty").val(planwoqty);
+            $("#P20DateReqd").val(reqddate);
+            $("#Popup20Woid").val(Newwoid);
+            $("#popup20PartNo").text(NewpartNo);
+            $("#P20partdesc").text(P3Npartdesc);
+            $("#P20OpnoSpan").text(NewStartOpNoText);
 
+            api.get("/routings/subcons?stepId=" + NewStartOpNo).then((data) => {
+                const selectElement = $('#P20Supplier');
+                selectElement.html("");
+                $.each(data, (index, item) => {
+                    selectElement.append(`<option value="${item.supplierId}">${item.company}</option>`);
+                });
+                if (data.length == 1) {
+                    $("#P20AddOtherSupp").prop("disabled", true);
+                } else {
+                    $("#P20AddOtherSupp").prop("disabled", false);
+                }
+                var edata = data;
+                if (edata[0].strPreferredSubCon === "") {
+                    $("#P20PreferredSpan").hide();
+                } else {
+                    $("#P20PreferredSpan").show();
+                }
+            });
+            api.get("/masters/masterparts").then((data) => {
+                var edata = data.filter(item => item.partNo == NewpartNo);
+                api.get("/WorkOrder/GetManufPart?routingId=" + edata[0].partId).then((pdata) => {
+                    var epdata = pdata;
+                    $("#P20Convprice").val(epdata.priceSettledwithCustomer_INR);
+                    $("#P20UnitRout").val(epdata.priceSettledwithCustomer_INR);
+                });
+            });
+        } else if (woid == 7) {
+            var subqnt = $("#popup7WoQnty").val();
+            var reqddate = $("#popup7WoComplDt").val();
+            var NewRouting = $("#popup7Routing").val();
+            var NewStartOpNo = $("#popup7StartingOpNo").val();
+            var NewStartOpNoText = $("#popup7StartingOpNo option:selected").text();
+            var NewpartNo = $("#popup7PartNo").text();
+            //var P3Npartdesc = $("#P3partdesc").text();
+            var Newwoid = $("#Popup7woid").val();
+            GetAllSubCons(Newwoid);
+            $("#P20DelQnty").val(planwoqty);
+            $("#P20WoQnty").val(planwoqty);
+            $("#P20DateReqd").val(reqddate);
+            $("#Popup20Woid").val(Newwoid);
+            $("#popup20PartNo").text(NewpartNo);
+            $("#P20partdesc").text(P3Npartdesc);
+            $("#P20OpnoSpan").text(NewStartOpNoText);
+
+            api.get("/routings/subcons?stepId=" + NewStartOpNo).then((data) => {
+                const selectElement = $('#P20Supplier');
+                selectElement.html("");
+                $.each(data, (index, item) => {
+                    selectElement.append(`<option value="${item.supplierId}">${item.company}</option>`);
+                });
+                if (data.length == 1) {
+                    $("#P20AddOtherSupp").prop("disabled", true);
+                } else {
+                    $("#P20AddOtherSupp").prop("disabled", false);
+                }
+                var edata = data;
+                if (edata[0].strPreferredSubCon === "") {
+                    $("#P20PreferredSpan").hide();
+                } else {
+                    $("#P20PreferredSpan").show();
+                }
+            });
+            api.get("/masters/masterparts").then((data) => {
+                var edata = data.filter(item => item.partNo == NewpartNo);
+                $("#P20partdesc").text(edata[0].description);
+                api.get("/WorkOrder/GetManufPart?routingId=" + edata[0].partId).then((pdata) => {
+                    var epdata = pdata;
+                    $("#P20Convprice").val(epdata.priceSettledwithCustomer_INR);
+                    $("#P20UnitRout").val(epdata.priceSettledwithCustomer_INR);
+                });
+            });
+        }
+    });
+    $("#P20AddNextDel").on("click", function () {
+        $("#P20DelQnty").val('');
+        $("#P20AgrDate").val('');
+        $("#P20Convprice").val('');
+        //$("#P10Supplier").val('');
+        $("#Popup20WoSubConId").val('');
+        $("#P20AddnInfo").val('');
+        var P20DelQnty = document.getElementById('P20DelQnty');
+        P20DelQnty.style.border = '';
+        var P20AddnInfo = document.getElementById('P20AddnInfo');
+        P20AddnInfo.style.border = '';
+        var P20AgrDate = document.getElementById('P20AgrDate');
+        P20AgrDate.style.border = '';
+
+    });
+    $("#P20AddOtherSupp").on("click", function () {
+        $("#P20DelQnty").val('');
+        $("#P20AgrDate").val('');
+        $("#P20Convprice").val('');
+        $("#P20Supplier").val('');
+        $("#Popup20WoSubConId").val('');
+        $("#P20AddnInfo").val('');
+        var P20DelQnty = document.getElementById('P20DelQnty');
+        P20DelQnty.style.border = '';
+        var P20AgrDate = document.getElementById('P20AgrDate');
+        P20AgrDate.style.border = '';
+        var P20AddnInfo = document.getElementById('P20AddnInfo');
+        P20AddnInfo.style.border = '';
+    });
+    var supdate = {};
+    var totalwoplanqnty = 0;
+    $("#P20SaveWo").on("click", function () {
+        var qntys = $("#P20DelQnty").val();
+        var P20AgrDate = $("#P20AgrDate").val();
+        var P20AddnInfo = $("#P20AddnInfo").val();
+        var P20Convprice = $("#P20Convprice").val();
+        var P20Supplier = $("#P20Supplier").val();
+        var Newwoid = $("#Popup20Woid").val();
+        var Popup20WoSubConId = $("#Popup20WoSubConId").val();
+        var P10balQnty = $("#P20WoQnty").val();
+        var balQtyToProcure = parseInt(P10balQnty);
+        var diff = parseInt(balQtyToProcure) - parseInt(subcontotal);
+        if (parseInt(qntys) > diff || subcontotal > balQtyToProcure) {
+            alert("Delivery Qnty should be less than or equal to Total Quantity.");
+            return false;
+        }
+        if (qntys.length <= 0 || parseInt(qntys) == 0) {
+            var newNamevalidate = document.getElementById('P20DelQnty');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var P20DelQnty = document.getElementById('P20DelQnty');
+            P20DelQnty.style.border = '';
+        }
+        if (P20AgrDate.length <= 0) {
+            var newNamevalidate = document.getElementById('P20AgrDate');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var P20DelQnty = document.getElementById('P20AgrDate');
+            P20DelQnty.style.border = '';
+        }
+        if (P20AddnInfo.length <= 0) {
+            var newNamevalidate = document.getElementById('P20AddnInfo');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var P20DelQnty = document.getElementById('P20AddnInfo');
+            P20DelQnty.style.border = '';
+        }
+        var rowData = {
+            woSubConSupplierId: parseInt(Popup20WoSubConId),
+            woId: parseInt(Newwoid),
+            supplierId: parseInt(P20Supplier),
+            qnty: qntys,
+            procPrice: P20Convprice,
+            addnInfo: P20AddnInfo,
+            recieptDate: P20AgrDate
+        };
+        var chekboxes = document.getElementById('flexSwitchCheckDefault');
+        if (chekboxes.checked) {
+            $("#P20AddNextDel").prop('disabled', false);
+        } else {
+            $("#P20AddNextDel").prop('disabled', true);
+
+        }
+
+        api.post("/WorkOrder/WoSubConSupplier", rowData).then((data) => {
+            //loadWO();
+            $("#Popup20WoSubConId").val('');
+            GetAllSubCons(Newwoid);
+        }).catch((error) => {
+        });
+    });
+
+    $("#searchLogPartNo").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#WoLogGrid tbody tr").filter(function () {
+            $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+    $("#searchEventLog").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#WoLogGrid tbody tr").filter(function () {
+            $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+    $("#searchLogComment").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#WoLogGrid tbody tr").filter(function () {
+            $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+    $('#ViewSoLog').on('shown.bs.modal', function (event) {
+        var relatedTarget = $(event.relatedTarget);
+        var workorderid = relatedTarget.data("workorderid");
+        var requiredbydatestr = relatedTarget.data("plancompletiondatestr");
+        var partno = relatedTarget.data("partno");
+        var partdesc = relatedTarget.data("partdesc");
+        var wonumber = relatedTarget.data("wonumber");
+        var salesorderid = relatedTarget.data("salesorderid");
+        $("#SpanSoNumber").text(wonumber);
+        $("#SoDateSpan").text(requiredbydatestr);
+        $("#SoPartNoSPan").text(partno);
+        $("#SoPartDescSPan").text(partdesc);
+        $("#SoLogcomplDtFrom").val('');
+        $("#SoLogcomplDtTo").val('');
+        $("#searchLogPartNo").val('');
+        $("#searchEventLog").val('');
+        $("#searchLogComment").val('');
+        LoadPOLogs(workorderid, workorderid);
+    });
 });
 
 
+function LoadPOLogs(customerOderId, salesOrderId) {
+    //GetMasterParts();
+    api.get("/businessaquisition/GetWoPOLogs?customerOrderId=" + customerOderId).then((data) => {
+        //console.log(data);
+        var tablebody = $("#WoLogGrid tbody");
+        $(tablebody).html("");//empty tbody
+        for (i = 0; i < data.length; i++) {
+            //data[i].partNo = GetPartNo(data[i].partId);
+            let fullDateTime = data[i].poDateStr;
+            let onlyDate = fullDateTime.split(' ')[0];
+            data[i].poDateStr = onlyDate;
+            $(tablebody).append(AppUtil.ProcessTemplateData("PORow", data[i]));
+        }
+    }).catch((error) => {
+    });
+}
 
 function EditWo(element) {
     //console.log("--Edit--");
@@ -1802,6 +2204,7 @@ function EditWo(element) {
                                         $.each(reversedData, (index, item) => {
                                             selectEndOpNo.append(`<option value="${item.stepOperation}">${item.stepOperation}</option>`);
                                         });
+                                        loadWoSubCon();
                                     }).catch((error) => {
                                         console.error(error);
                                     });
@@ -1883,4 +2286,293 @@ function EditWo(element) {
         });
     }
 
+}
+function loadWoSubCon() {
+    var routingId = parseInt($("#routing").val());
+    var planqnty = parseInt($("#PlanWoQty").val());
+    const StartingOpNo = $('#StartingOpNo option:selected').text();
+    const EndingOpNo = $('#EndingOpNo option:selected').text();
+    api.getbulk("/WorkOrder/Subcon?routingId=" + routingId).then((data) => {
+        var tablebody = $("#subConGridP1 tbody");
+        $(tablebody).html("");//empty tbody
+        //console.log(data);
+        for (i = 0; i < data.length; i++) {
+            let splitqnty = Math.round(planqnty / data.length);
+            data[i].qnty = splitqnty;
+            data[i].startingOpNo = StartingOpNo;
+            data[i].endingOpNo = EndingOpNo;
+            data[i].woid = "1";
+            if (data[i].noOfOperations == 1) {
+                data[i].multipleSource = "N";
+            } else {
+                data[i].multipleSource = "Y";
+            }
+            $(tablebody).append(AppUtil.ProcessTemplateData("subConGridP1Row", data[i]));
+        }
+    }).catch((error) => {
+    });
+}
+function loadWoP3SubConSIngle() {
+    var routingId = parseInt($("#singleRouting").val());
+    var planqnty = parseInt($("#singlePlanWoQty").val());
+    const StartingOpNo = $('#singleStartOpNo option:selected').text();
+    const EndingOpNo = $('#singleEndOpNo option:selected').text();
+    api.getbulk("/WorkOrder/Subcon?routingId=" + routingId).then((data) => {
+        var tablebody = $("#subConGridP3 tbody");
+        $(tablebody).html("");//empty tbody
+        //console.log(data);
+        let groupedData = {};
+        data.forEach((item) => {
+            if (!groupedData[item.routingStepId]) {
+                groupedData[item.routingStepId] = { ...item };
+            } else {
+                // Update only the noOfOperations field, keeping other properties of the first row intact
+                groupedData[item.routingStepId].noOfOperations += item.noOfOperations;
+            }
+        });
+        data = Object.values(groupedData);
+        for (let i = 0; i < data.length; i++) {
+            let splitqnty = Math.round(planqnty / data.length);
+            data[i].qnty = splitqnty;
+            data[i].startingOpNo = StartingOpNo;
+            data[i].endingOpNo = EndingOpNo;
+            data[i].woid = "3S";
+            if (data[i].noOfOperations == 1) {
+                data[i].multipleSource = "N";
+            } else {
+                data[i].multipleSource = "Y";
+            }
+            // Dynamically add or exclude the dropdown div
+            data[i].dropdownHTML = data[i].noOfOperations === 1
+                ? ""
+                : `
+                <div class="dropdown float-center">
+                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="mdi mdi-dots-vertical"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" 
+                           data-workorderid="${data[i].woid}" data-salesorderid="${data[i].salesOrderId}" data-stepid="${data[i].routingStepId}"
+                           data-wonumber="${data[i].woNumber}" data-qntys="${data[i].qnty}" data-partno="${data[i].partNo}"
+                           data-bs-target="#popup20">Edit</a>
+                    </div>
+                </div>`;
+        }
+
+        // Append the rows to the table
+        data.forEach((row) => {
+            let rowHTML = `
+                <tr>
+                    <td>${row.company}</td>
+                    <td>${row.qnty}</td>
+                    <td>${row.startingOpNo}</td>
+                    <td>${row.endingOpNo}</td>
+                    <td>${row.multipleSource}</td>
+                    <td>${row.dropdownHTML}</td>
+                </tr>`;
+            $(tablebody).append(rowHTML);
+        });
+    }).catch((error) => {
+    });
+}
+
+
+function loadWoP3SubConNew() {
+    var routingId = parseInt($("#NewRouting").val());
+    var planqnty = parseInt($("#NewPlanWoQty").val());
+    const StartingOpNo = "10";
+    const EndingOpNo = "20";
+    api.getbulk("/WorkOrder/Subcon?routingId=" + routingId).then((data) => {
+        var tablebody = $("#subConGridP3New tbody");
+        $(tablebody).html("");//empty tbody
+        //console.log(data);
+
+        let groupedData = {};
+        data.forEach((item) => {
+            if (!groupedData[item.routingStepId]) {
+                // Keep the first occurrence as-is
+                groupedData[item.routingStepId] = { ...item };
+            } else {
+                // Update only the noOfOperations field, keeping other properties of the first row intact
+                groupedData[item.routingStepId].noOfOperations += item.noOfOperations;
+            }
+        });
+        data = Object.values(groupedData);
+        for (let i = 0; i < data.length; i++) {
+            let splitqnty = Math.round(planqnty / data.length);
+            data[i].qnty = splitqnty;
+            data[i].startingOpNo = StartingOpNo;
+            data[i].endingOpNo = EndingOpNo;
+            data[i].woid = "3N";
+            if (data[i].noOfOperations == 1) {
+                data[i].multipleSource = "N";
+            } else {
+                data[i].multipleSource = "Y";
+            }
+            // Dynamically add or exclude the dropdown div
+            data[i].dropdownHTML = data[i].noOfOperations === 1
+                ? ""
+                : `
+                <div class="dropdown float-center">
+                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="mdi mdi-dots-vertical"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" 
+                           data-workorderid="${data[i].woid}" data-salesorderid="${data[i].salesOrderId}"  data-stepid="${data[i].routingStepId}"
+                           data-wonumber="${data[i].woNumber}" data-qntys="${data[i].qnty}" data-partno="${data[i].partNo}"
+                           data-bs-target="#popup20">Edit</a>
+                    </div>
+                </div>`;
+        }
+
+        // Append the rows to the table
+        data.forEach((row) => {
+            let rowHTML = `
+                <tr>
+                    <td>${row.company}</td>
+                    <td>${row.qnty}</td>
+                    <td>${row.startingOpNo}</td>
+                    <td>${row.endingOpNo}</td>
+                    <td>${row.multipleSource}</td>
+                    <td>${row.dropdownHTML}</td>
+                </tr>`;
+            $(tablebody).append(rowHTML);
+        });
+    }).catch((error) => {
+    });
+}
+
+function loadWoP7SubCon() {
+    var routingId = parseInt($("#popup7Routing").val());
+    var planqnty = parseInt($("#popup7WoQnty").val());
+    const StartingOpNo = $('#popup7StartingOpNo option:selected').text();
+    const EndingOpNo = $('#popup7EndingOpNo option:selected').text();
+    api.getbulk("/WorkOrder/Subcon?routingId=" + routingId).then((data) => {
+        var tablebody = $("#subConGridP7 tbody");
+        $(tablebody).html("");
+        let groupedData = {};
+        data.forEach((item) => {
+            if (!groupedData[item.routingStepId]) {
+                // Keep the first occurrence as-is
+                groupedData[item.routingStepId] = { ...item };
+            } else {
+                // Update only the noOfOperations field, keeping other properties of the first row intact
+                groupedData[item.routingStepId].noOfOperations += item.noOfOperations;
+            }
+        });
+
+        // Convert grouped data back to an array
+        data = Object.values(groupedData);
+        for (let i = 0; i < data.length; i++) {
+            let splitqnty = Math.round(planqnty / data.length);
+            data[i].qnty = splitqnty;
+            data[i].startingOpNo = StartingOpNo;
+            data[i].endingOpNo = EndingOpNo;
+            data[i].woid = "7";
+            if (data[i].noOfOperations == 1) {
+                data[i].multipleSource = "N";
+            } else {
+                data[i].multipleSource = "Y";
+            }
+            // Dynamically add or exclude the dropdown div
+            data[i].dropdownHTML = data[i].noOfOperations === 1
+                ? ""
+                : `
+                <div class="dropdown float-center">
+                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="mdi mdi-dots-vertical"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" 
+                           data-workorderid="${data[i].woid}" data-salesorderid="${data[i].salesOrderId}"  data-stepid="${data[i].routingStepId}"
+                           data-wonumber="${data[i].woNumber}" data-qntys="${data[i].qnty}" data-partno="${data[i].partNo}"
+                           data-bs-target="#popup20">Edit</a>
+                    </div>
+                </div>`;
+        }
+
+        // Append the rows to the table
+        data.forEach((row) => {
+            let rowHTML = `
+                <tr>
+                    <td>${row.company}</td>
+                    <td>${row.qnty}</td>
+                    <td>${row.startingOpNo}</td>
+                    <td>${row.endingOpNo}</td>
+                    <td>${row.multipleSource}</td>
+                    <td>${row.dropdownHTML}</td>
+                </tr>`;
+            $(tablebody).append(rowHTML);
+        });
+    }).catch((error) => {
+    });
+}
+
+
+function GetAllSubCons(woid) {
+    api.getbulk("/WorkOrder/GetAllSubCons?woid=" + woid).then((data) => {
+        //data = data.filter(item => item.woId === woid);
+        var tablebody = $("#P20SupplierGrid tbody");
+        $(tablebody).html("");//empty tbody
+        //console.log(data);
+        let totalQuantity = 0;
+        let totalprice = 0;
+        for (i = 0; i < data.length; i++) {
+            totalQuantity += Number(data[i].qnty);
+            totalprice += Number(data[i].procPrice);
+            $(tablebody).append(AppUtil.ProcessTemplateData("P10SupplierGridRow", data[i]));
+            subcontotal = totalQuantity;
+        }
+        const totalRow = `
+            <tr>
+                <td> </td>
+                <td style="text-align: center; font-weight: bold;">Total Quantity : ${totalQuantity}</td>
+                <td style="text-align: center; font-weight: bold;">Total Price : ${totalprice}</td>
+                <td> </td>
+            </tr>
+        `;
+
+        $(tablebody).append(totalRow);
+    }).catch((error) => {
+    });
+}
+function EditSubSupplier(element) {
+    var relatedTarget = $(element);
+    var calcdate = relatedTarget.data("calcdate");
+    var price = relatedTarget.data("price");
+    var qnty = relatedTarget.data("qnty");
+    var subconid = relatedTarget.data("subconid");
+    var workOrderId = relatedTarget.data("woid");
+    var suppid = relatedTarget.data("suppid");
+    var addninfo = relatedTarget.data("addninfo");
+    let datePart = calcdate.split("T")[0];
+    $("#P20Supplier").val(suppid);
+    $("#Popup20Woid").val(workOrderId);
+    $("#Popup20WoSubConId").val(subconid);
+    $("#P20AgrDate").val(datePart);
+    $("#P20DelQnty").val(qnty);
+    $("#P20AddnInfo").val(addninfo);
+    $("#P20Convprice").val(price);
+}
+function DeleteSubSupplier(element) {
+    var relatedTarget = $(element);
+    var workOrderId = relatedTarget.data("woid");
+    var subconid = relatedTarget.data("subconid");
+    api.getbulk("/WorkOrder/DeleteSubCon?id=" + subconid).then((data) => {
+        GetAllSubCons(workOrderId);
+    });
+}
+function DeleteWo(element) {
+    var relatedTarget = $(element);
+    var workOrderId = relatedTarget.data("workorderid");
+    //var subconid = relatedTarget.data("subconid");
+    api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
+        data = data.filter(item => item.status === 1 && item.woId === workOrderId);
+        if (data.length > 0) {
+            api.getbulk("/WorkOrder/DeleteWo?id=" + workOrderId).then((data) => {
+                loadWO();
+            });
+        }
+    });
 }

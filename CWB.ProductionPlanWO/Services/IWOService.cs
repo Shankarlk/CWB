@@ -10,9 +10,15 @@ namespace CWB.ProductionPlanWO.Services
     public interface IWOService
     {
         Task<WorkOrdersVM> WorkOrder(WorkOrdersVM workOrdersVM);
+        Task<WoSubConSupplierVM> PostWoSubCon(WoSubConSupplierVM workOrdersVM);
         Task<IEnumerable<WorkOrdersVM>> AllWorkOrders(long tenantId);
+        Task<IEnumerable<POLogVM>> GetWoPOLogs(long tenantId, long customerOrderId);
+        Task<IEnumerable<POLogVM>> GetPOLogs(long tenantId, long poid);
+        Task<IEnumerable<WoSubConSupplierVM>> GetAllWoSubCon(long tenantId);
         Task<IEnumerable<WorkOrdersVM>> AllParentChildWo(long ParentWoId, long tenantId);
         Task<IEnumerable<WOSOVM>> GetSoWo(long workOrderId);
+        Task<IEnumerable<ProcPlanPartPurChaseRelVM>> GetProcPurchase(long procPlanId);
+        Task<List<ProcPlanPartPurChaseRelVM>> PostProcPurchase(List<ProcPlanPartPurChaseRelVM> woso);
         Task<WorkOrdersVM> GetSingleWO(long Id, long tenantId);
         Task<List<WorkOrdersVM>> MultipleWorkOrder(List<WorkOrdersVM> workOrdersVM);
         Task<List<WorkOrdersVM>> UpdateMultipleWorkOrder(List<WorkOrdersVM> workOrdersVM);
@@ -25,9 +31,12 @@ namespace CWB.ProductionPlanWO.Services
         Task<List<ProductionPlan_WOVM>> PostProductionPlan_Wo(List<ProductionPlan_WOVM> productions);
         Task<IEnumerable<ProductionPlan_WOVM>> AllProductionWo(long tenantId);
         Task<WOStatusVM> GetWOStatus(long Id);
+        Task<bool> DeleteSubCon(long Id);
+        Task<bool> DeleteWo(long Id);
         Task<List<ChildWoRelVM>> PostChildWoRel(List<ChildWoRelVM> childWos);
         Task<List<McTimeListVM>> PostMcTimeList(List<McTimeListVM> mcTimeLists);
         Task<IEnumerable<McTimeListVM>> GetAllMcTimeListVMs(long tenantId);
+        Task<IEnumerable<PODetailsVM>> GetAllPodetails(long tenantId);
         Task<POStatusVM> GetPOStatus(long Id);
         Task<List<PODetailsVM>> MultiplePODetails(List<PODetailsVM> pODetailsVM);
         Task<List<POHeaderVM>> MultiplePOHeaders(List<POHeaderVM> pOHeaderVMs);

@@ -79,14 +79,18 @@ namespace CWB.App.Controllers
                     rout= (resultList).Take(1).FirstOrDefault();
                 }
             }
-            var result = (await _routingService.RoutingSteps(rout.RoutingId)).Take(1).FirstOrDefault();
-            workOrdersVM.RoutingId = rout.RoutingId;
-            workOrdersVM.StartingOpNo = result?.StepOperation != null
-                                        ? int.TryParse(result.StepOperation, out int opNo) ? opNo : 0
-                                        : 0;
-            workOrdersVM.EndingOpNo = result?.StepOperation != null
-                                        ? int.TryParse(result.StepOperation, out int eopNo) ? eopNo : 0
-                                        : 0;
+            if(workOrdersVM.WOID == 0)
+            {
+                var result = (await _routingService.RoutingSteps(rout.RoutingId)).Take(1).FirstOrDefault();
+                var reverse = (await _routingService.RoutingSteps(rout.RoutingId)).Take(1).LastOrDefault();
+                workOrdersVM.RoutingId = rout.RoutingId;
+                workOrdersVM.StartingOpNo = result?.StepId != null
+                                            ? int.TryParse(result.StepId.ToString(), out int opNo) ? opNo : 0
+                                            : 0;
+                workOrdersVM.EndingOpNo = reverse?.StepId != null
+                                            ? int.TryParse(reverse.StepId.ToString(), out int eopNo) ? eopNo : 0
+                                            : 0;
+            }
             if (workOrdersVM.PartType == 1)
             {
                 workOrdersVM.Parentlevel = 'N';
@@ -296,6 +300,13 @@ namespace CWB.App.Controllers
 
         }
         [HttpGet]
+        public async Task<IActionResult> GetWoPOLogs(long customerOrderId)
+        {
+            var pologs = await _baService.GetWoPOLogs(customerOrderId);
+            return Ok(pologs);
+
+        }
+        [HttpGet]
         public async Task<string> HelloWorld()
         {
             return await _baService.HelloWorld();
@@ -389,7 +400,11 @@ namespace CWB.App.Controllers
                     polineVM.Matl = sovm.Matl;
                     polineVM.WIP = sovm.WIP;
                     polineVM.NumSalesOrder = 1;
-                    polineVM.WONumber = sovm.WorkOrderNo;
+                    //polineVM.WONumber = sovm.WorkOrderNo;
+                    polineVM.SONumber = sovm.SONumber;
+                    polineVM.PoDateReqd = sovm.RequiredByDateStr;
+                    polineVM.Comments = sovm.Comment;
+                    //polineVM.WONumber = sovm.WorkOrderNo;
                     pOLines.Add(polineVM);
                 }
                 else
@@ -402,6 +417,8 @@ namespace CWB.App.Controllers
                             povm.TotalQty += sovm.RequiredQuantity;
                             foundPOLine = true;
                             povm.NumSalesOrder += 1;
+                            povm.SONumber = "Multiple";
+                            povm.PoDateReqd = "Multiple";
                         }
                     }
                     if (foundPOLine) { }
@@ -418,7 +435,10 @@ namespace CWB.App.Controllers
                         polineVM.Matl = sovm.Matl;
                         polineVM.WIP = sovm.WIP;
                         polineVM.NumSalesOrder = 1;
-                        polineVM.WONumber = sovm.WorkOrderNo;
+                        polineVM.SONumber = sovm.SONumber;
+                        polineVM.Comments = sovm.Comment;
+                        polineVM.PoDateReqd = sovm.RequiredByDateStr;
+                        //polineVM.WONumber = sovm.WorkOrderNo;
                         pOLines.Add(polineVM);
                     }
                 }

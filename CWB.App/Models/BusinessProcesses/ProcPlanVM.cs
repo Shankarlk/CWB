@@ -47,6 +47,7 @@ namespace CWB.App.Models.BusinessProcesses
         public long TenantId { get; set; }
 
 
+        public string? PlanStartDateStr { get; set; } = string.Empty;
         public string? PartNo { get; set; } = string.Empty;
         public string? PartDesc { get; set; } = string.Empty;
         public string? LeadTimeInDays { get; set; } = string.Empty;
@@ -54,5 +55,6 @@ namespace CWB.App.Models.BusinessProcesses
         public long SupplierId { get; set; }
         public string Supplier { get; set; } = string.Empty;
         public string UomName { get; set; } = string.Empty;
+        public string Price { get; set; } = string.Empty;
     }
 }

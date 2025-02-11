@@ -18,6 +18,7 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.CalcWOQty, m => m.MapFrom(src => src.CalcWOQty))
                .ForMember(m => m.BuildToStock, m => m.MapFrom(src => src.BuildToStock))
                .ForMember(m => m.PlanCompletionDate, m => m.MapFrom(src => src.PlanCompletionDate))
+               .ForMember(m => m.SoComplDate, m => m.MapFrom(src => src.SoComplDate))
                .ForMember(m => m.Status, m => m.MapFrom(src => src.Status))
                .ForMember(m => m.RoutingId, m => m.MapFrom(src => src.RoutingId))
                .ForMember(m => m.StartingOpNo, m => m.MapFrom(src => src.StartingOpNo))
@@ -38,6 +39,7 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.CalcWOQty, m => m.MapFrom(src => src.CalcWOQty))
                .ForMember(m => m.BuildToStock, m => m.MapFrom(src => src.BuildToStock))
                .ForMember(m => m.PlanCompletionDate, m => m.MapFrom(src => src.PlanCompletionDate))
+               .ForMember(m => m.SoComplDate, m => m.MapFrom(src => src.SoComplDate))
                .ForMember(m => m.Status, m => m.MapFrom(src => src.Status))
                .ForMember(m => m.WODate, m => m.MapFrom(src => src.WODate))
                .ForMember(m => m.RoutingId, m => m.MapFrom(src => src.RoutingId))
@@ -60,6 +62,19 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.SalesOrderId, m => m.MapFrom(src => src.SalesOrderId))
                .ForMember(m => m.Active, m => m.MapFrom(src => src.Active))
                .ForMember(m => m.WorkOrderId, m => m.MapFrom(src => src.WorkOrderId));
+            CreateMap<ProcPlanPartPurChaseRelVM, ProcPlanPartPurChaseRel>()
+               .ForMember(m => m.Id, m => m.MapFrom(src => src.ProcPlanPartPurChaseRelId))
+               .ForMember(m => m.PartPurchaseId, m => m.MapFrom(src => src.PartPurchaseId))
+               .ForMember(m => m.Active, m => m.MapFrom(src => src.Active))
+               .ForMember(m => m.LeadTime, m => m.MapFrom(src => src.LeadTime))
+               .ForMember(m => m.ProcPlanId, m => m.MapFrom(src => src.ProcPlanId));
+
+            CreateMap<ProcPlanPartPurChaseRel, ProcPlanPartPurChaseRelVM>()
+               .ForMember(m => m.ProcPlanPartPurChaseRelId, m => m.MapFrom(src => src.Id))
+               .ForMember(m => m.PartPurchaseId, m => m.MapFrom(src => src.PartPurchaseId))
+               .ForMember(m => m.Active, m => m.MapFrom(src => src.Active))
+               .ForMember(m => m.LeadTime, m => m.MapFrom(src => src.LeadTime))
+               .ForMember(m => m.ProcPlanId, m => m.MapFrom(src => src.ProcPlanId));
 
             CreateMap<BOMTempVM, BOMTemp>()
               .ForMember(m => m.Id, m => m.MapFrom(src => src.BomTempId))
@@ -110,6 +125,29 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(m => m.CriticalPart, m => m.MapFrom(src => src.CriticalPart))
             .ForMember(m => m.Changed, m => m.MapFrom(src => src.Changed))
             .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+
+
+            CreateMap<POLog, POLogVM>()
+                .ForMember(m => m.POLogId, m => m.MapFrom(src => src.Id))
+                .ForMember(m => m.PODate, m => m.MapFrom(src => src.CreationDate))
+                .ForMember(m => m.CustomerOrderId, m => m.MapFrom(src => src.CustomerOrderId))
+                .ForMember(m => m.SalesOrderId, m => m.MapFrom(src => src.SalesOrderId))
+                .ForMember(m => m.PartId, m => m.MapFrom(src => src.PartId))
+                .ForMember(m => m.User, m => m.MapFrom(src => src.User))
+                .ForMember(m => m.NewValue, m => m.MapFrom(src => src.NewValue))
+                .ForMember(m => m.OldValue, m => m.MapFrom(src => src.OldValue))
+                .ForMember(m => m.Comment, m => m.MapFrom(src => src.Comment))
+                .ForMember(m => m.Event, m => m.MapFrom(src => src.Event));
+            CreateMap<POLogVM, POLog>()
+                .ForMember(m => m.Id, m => m.MapFrom(src => src.POLogId))
+                .ForMember(m => m.CustomerOrderId, m => m.MapFrom(src => src.CustomerOrderId))
+                .ForMember(m => m.SalesOrderId, m => m.MapFrom(src => src.SalesOrderId))
+                .ForMember(m => m.PartId, m => m.MapFrom(src => src.PartId))
+                .ForMember(m => m.User, m => m.MapFrom(src => src.User))
+                .ForMember(m => m.NewValue, m => m.MapFrom(src => src.NewValue))
+                .ForMember(m => m.OldValue, m => m.MapFrom(src => src.OldValue))
+                .ForMember(m => m.Comment, m => m.MapFrom(src => src.Comment))
+                .ForMember(m => m.Event, m => m.MapFrom(src => src.Event));
 
             CreateMap<BOMListVM, BOMList>()
             .ForMember(m => m.Id, m => m.MapFrom(src => src.BomListId))
@@ -171,6 +209,7 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.CalcWOQty, m => m.MapFrom(src => src.CalcWOQty))
                .ForMember(m => m.BuildToStock, m => m.MapFrom(src => src.BuildToStock))
                .ForMember(m => m.PlanCompletionDate, m => m.MapFrom(src => src.PlanCompletionDate))
+               .ForMember(m => m.SoComplDate, m => m.MapFrom(src => src.SoComplDate))
                .ForMember(m => m.Status, m => m.MapFrom(src => src.Status))
                .ForMember(m => m.RoutingId, m => m.MapFrom(src => src.RoutingId))
                .ForMember(m => m.StartingOpNo, m => m.MapFrom(src => src.StartingOpNo))
@@ -192,6 +231,7 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.CalcWOQty, m => m.MapFrom(src => src.CalcWOQty))
                .ForMember(m => m.BuildToStock, m => m.MapFrom(src => src.BuildToStock))
                .ForMember(m => m.PlanCompletionDate, m => m.MapFrom(src => src.PlanCompletionDate))
+               .ForMember(m => m.SoComplDate, m => m.MapFrom(src => src.SoComplDate))
                .ForMember(m => m.Status, m => m.MapFrom(src => src.Status))
                .ForMember(m => m.RoutingId, m => m.MapFrom(src => src.RoutingId))
                .ForMember(m => m.StartingOpNo, m => m.MapFrom(src => src.StartingOpNo))
@@ -310,6 +350,28 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.PoDetailsId, m => m.MapFrom(src => src.PoDetailsId))
           .ForMember(m => m.SupplierId, m => m.MapFrom(src => src.SupplierId))
           .ForMember(m => m.PartId, m => m.MapFrom(src => src.PartId))
+          .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+
+            CreateMap<WoSubConSupplierVM, WoSubConSupplier>()
+          .ForMember(m => m.Id, m => m.MapFrom(src => src.WoSubConSupplierId))
+          .ForMember(m => m.WoId, m => m.MapFrom(src => src.WoId))
+          .ForMember(m => m.SubConId, m => m.MapFrom(src => src.ProcPlanId))
+          .ForMember(m => m.SupplierId, m => m.MapFrom(src => src.SupplierId))
+          .ForMember(m => m.Qnty, m => m.MapFrom(src => src.Qnty))
+          .ForMember(m => m.ProcPrice, m => m.MapFrom(src => src.ProcPrice))
+          .ForMember(m => m.AddnInfo, m => m.MapFrom(src => src.AddnInfo))
+          .ForMember(m => m.RecieptDate, m => m.MapFrom(src => src.RecieptDate))
+          .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+
+            CreateMap<WoSubConSupplier, WoSubConSupplierVM>()
+          .ForMember(m => m.WoSubConSupplierId, m => m.MapFrom(src => src.Id))
+          .ForMember(m => m.WoId, m => m.MapFrom(src => src.WoId))
+          .ForMember(m => m.ProcPlanId, m => m.MapFrom(src => src.SubConId))
+          .ForMember(m => m.SupplierId, m => m.MapFrom(src => src.SupplierId))
+          .ForMember(m => m.Qnty, m => m.MapFrom(src => src.Qnty))
+          .ForMember(m => m.ProcPrice, m => m.MapFrom(src => src.ProcPrice))
+          .ForMember(m => m.AddnInfo, m => m.MapFrom(src => src.AddnInfo))
+          .ForMember(m => m.RecieptDate, m => m.MapFrom(src => src.RecieptDate))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
         }
     }

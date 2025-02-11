@@ -24,6 +24,7 @@ namespace CWB.ProductionPlanWO.ViewModels
         public int Status { get; set; }
         public int PlanWOQnty { get; set; }
         public DateTime PlanCompletionDate { get; set; }
+        public DateTime SoComplDate { get; set; }
         public long RoutingId { get; set; }
         public int StartingOpNo { get; set; }
         public int EndingOpNo { get; set; }

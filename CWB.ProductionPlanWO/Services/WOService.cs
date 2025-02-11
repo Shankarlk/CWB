@@ -18,6 +18,7 @@ namespace CWB.ProductionPlanWO.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWorkOrderRepository _workOrderRepository;
         private readonly IWOSORepository _wosoRepository;
+        private readonly IProcPlanPartPurChaseRelRepository _IProcPlanPartPurChaseRelRepository;
         private readonly IBOMTempRepository _bOMTempRepository;
         private readonly IProcPlanRepository _procPlanRepository;
         private readonly IBOMListRepository _bOMListRepository;
@@ -28,13 +29,16 @@ namespace CWB.ProductionPlanWO.Services
         private readonly IPODetailsRepository _poDetailsRepository;
         private readonly IPOHeaderRepository _poHeaderRepository;
         private readonly IPOStatusRepository _poStatusRepository;
+        private readonly IWoSubConSupplierRepository _woSubConSupplierRepository;
+        private readonly IPOLogRepository _pOLogRepository;
 
         public WOService(
             ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork
-            , IWorkOrderRepository workOrderRepository
+            , IWorkOrderRepository workOrderRepository , IPOLogRepository pOLogRepository
             , IProcPlanRepository procPlanRepository, IWOSORepository woso, IBOMTempRepository bOMTempRepository, IBOMListRepository bOMListRepository,
             IProductionPlan_WORepository productionPlan_WORepository, IWOStatusRepository wOStatus, IChildWoRelRepository childWoRelRepository
-            , IMcTimeListRepository mcTimeListRepository, IPODetailsRepository pODetailsRepository,IPOHeaderRepository pOHeaderRepository,IPOStatusRepository pOStatusRepository)
+            , IMcTimeListRepository mcTimeListRepository, IPODetailsRepository pODetailsRepository,IPOHeaderRepository pOHeaderRepository,IPOStatusRepository pOStatusRepository,
+            IWoSubConSupplierRepository woSubConSupplierRepository, IProcPlanPartPurChaseRelRepository purChaseRelRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -51,11 +55,41 @@ namespace CWB.ProductionPlanWO.Services
             _poDetailsRepository = pODetailsRepository;
             _poHeaderRepository = pOHeaderRepository;
             _poStatusRepository = pOStatusRepository;
+            _woSubConSupplierRepository = woSubConSupplierRepository;
+            _pOLogRepository = pOLogRepository;
+            _IProcPlanPartPurChaseRelRepository = purChaseRelRepository;
         }
 
         public string HelloWorld()
         {
             return "Hello World";
+        }
+
+        public async Task<IEnumerable<POLogVM>> GetWoPOLogs(long tenantId, long customerOrderId)
+        {
+            var poLogs = _pOLogRepository.GetAllAsync().Result.ToList(); //d => d.TenantId == tenantId && d.CustomerOrderId == customerOrderId);
+            List<POLog> pvLogList = new List<POLog>();
+            foreach (POLog polog in poLogs)
+            {
+                if (polog.CustomerOrderId != customerOrderId)
+                    continue;
+                pvLogList.Add(polog);
+            }
+            pvLogList.Reverse();
+            return _mapper.Map<IEnumerable<POLogVM>>(pvLogList);
+        }
+        public async Task<IEnumerable<POLogVM>> GetPOLogs(long tenantId, long poid)
+        {
+            var poLogs = _pOLogRepository.GetAllAsync().Result.ToList(); //d => d.TenantId == tenantId && d.CustomerOrderId == customerOrderId);
+            List<POLog> pvLogList = new List<POLog>();
+            foreach (POLog polog in poLogs)
+            {
+                if (polog.SalesOrderId != poid)
+                    continue;
+                pvLogList.Add(polog);
+            }
+            pvLogList.Reverse();
+            return _mapper.Map<IEnumerable<POLogVM>>(pvLogList);
         }
 
         public async Task<WorkOrdersVM> WorkOrder(WorkOrdersVM workOrdersVM)
@@ -73,6 +107,18 @@ namespace CWB.ProductionPlanWO.Services
                     try
                     {
                         await _workOrderRepository.AddAsync(wo);
+                        await _unitOfWork.CommitAsync();
+                        POLogVM poLog = new POLogVM();
+                        poLog.CustomerOrderId = wo.Id;
+                        poLog.OldValue = " ";
+                        poLog.NewValue = "Entry";
+                        poLog.Event = "WOEntry";
+                        poLog.User = "Kgk1 Admin";
+                        poLog.Comment = wo.WONumber + "/" + wo.Comment + "/" + "/" + wo.SalesOrderId + "/" + wo.PlanCompletionDate;
+
+                        var poLogvm = _mapper.Map<POLog>(poLog);
+                        await _pOLogRepository.AddAsync(poLogvm);
+                        await _unitOfWork.CommitAsync();
                     }
                     catch (Exception ex)
                     {
@@ -88,9 +134,16 @@ namespace CWB.ProductionPlanWO.Services
                     {
                         return workOrdersVM;
                     }
+                    POLogVM poLog = new POLogVM();
+                    poLog.CustomerOrderId = wo.Id;
+                    poLog.OldValue = wkord.CalcWOQty.ToString();
+                    poLog.NewValue = wo.CalcWOQty.ToString();
+                    poLog.Event = "WOEdit";
+                    poLog.User = "Kgk1 Admin";
+                    poLog.Comment = wo.WONumber + "/" + wo.Comment + "/" + "/" + wo.SalesOrderId + "/" + wo.PlanCompletionDate;
                     wkord.CalcWOQty = wo.CalcWOQty;
                     wkord.PlanCompletionDate = wo.PlanCompletionDate;
-                    wkord.BuildToStock = wo.BuildToStock;
+                    //wkord.BuildToStock = wo.BuildToStock;
                     wkord.Parentlevel = wo.Parentlevel;
                     wkord.Status = wo.Status;
                     wkord.RoutingId = wo.RoutingId;
@@ -99,10 +152,12 @@ namespace CWB.ProductionPlanWO.Services
                     wkord.ReloadOption = wo.ReloadOption;
                     wkord.Active = wo.Active;
                     wo = await _workOrderRepository.UpdateAsync(wo.Id, wkord);
+                    var poLogvm = _mapper.Map<POLog>(poLog);
+                    await _pOLogRepository.AddAsync(poLogvm);
+                    await _unitOfWork.CommitAsync();
                 }
                 try
                 {
-                    await _unitOfWork.CommitAsync();
                 }
                 catch (Exception ex)
                 {
@@ -116,6 +171,43 @@ namespace CWB.ProductionPlanWO.Services
             }
 
             return workOrdersVM;
+        }
+        public async Task<WoSubConSupplierVM> PostWoSubCon(WoSubConSupplierVM workOrdersVM)
+        {
+            var wo = _mapper.Map<WoSubConSupplier>(workOrdersVM);
+                if (wo.Id == 0)
+                {
+                    try
+                    {
+                        await _woSubConSupplierRepository.AddAsync(wo);
+                    }
+                    catch (Exception ex)
+                    {
+                        Exception exa = ex.InnerException;
+                        string msg = ex.Message;
+                    }
+                }
+                else
+                {
+                    //wo.WODate = DateTime.Now;
+                    var wkord = await _woSubConSupplierRepository.SingleOrDefaultAsync(x => x.Id == wo.Id);
+                    if(wkord == null)
+                    {
+                        return workOrdersVM;
+                    }
+                    wo = await _woSubConSupplierRepository.UpdateAsync(wo.Id, wo);
+                }
+                try
+                {
+                    await _unitOfWork.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+                workOrdersVM.WoSubConSupplierId = wo.Id;
+                return workOrdersVM;
         }
 
         public async Task<List<WorkOrdersVM>> MultipleWorkOrder(List<WorkOrdersVM> workOrdersVM)
@@ -134,6 +226,17 @@ namespace CWB.ProductionPlanWO.Services
                         try
                         {
                             await _workOrderRepository.AddAsync(wo);
+                            await _unitOfWork.CommitAsync();
+                            POLogVM poLog = new POLogVM();
+                            poLog.CustomerOrderId = wo.Id;
+                            poLog.OldValue = " ";
+                            poLog.NewValue = "Entry";
+                            poLog.Event = "WOEntry";
+                            poLog.User = "Kgk1 Admin";
+                            poLog.Comment = wo.WONumber + "/" + wo.Comment + "/" + "/" + wo.SalesOrderId + "/" + wo.PlanCompletionDate;
+
+                            var poLogvm = _mapper.Map<POLog>(poLog);
+                            await _pOLogRepository.AddAsync(poLogvm);
                         }
                         catch (Exception ex)
                         {
@@ -239,6 +342,49 @@ namespace CWB.ProductionPlanWO.Services
                         }
                         wkord.Active = wosorel.Active;
                         wosorel = await _wosoRepository.UpdateAsync(wosorel.Id, wkord);
+                    }
+
+                    try
+                    {
+                        await _unitOfWork.CommitAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Exception exa = ex.InnerException;
+                        string msg = ex.Message;
+                    }
+                }
+            }
+            return woso;
+        }
+        public async Task<List<ProcPlanPartPurChaseRelVM>> PostProcPurchase(List<ProcPlanPartPurChaseRelVM> woso)
+        {
+            foreach (ProcPlanPartPurChaseRelVM item in woso)
+            {
+                var wosorel = _mapper.Map<ProcPlanPartPurChaseRel>(item);
+                if (wosorel.ProcPlanId > 0)
+                {
+                    if (wosorel.Id == 0)
+                    {
+                        try
+                        {
+                            await _IProcPlanPartPurChaseRelRepository.AddAsync(wosorel);
+                        }
+                        catch (Exception ex)
+                        {
+                            Exception exa = ex.InnerException;
+                            string msg = ex.Message;
+                        }
+                    }
+                    else
+                    {
+                        var wkord = await _IProcPlanPartPurChaseRelRepository.SingleOrDefaultAsync(x => x.Id == wosorel.Id);
+                        if (wkord == null)
+                        {
+                            return woso;
+                        }
+                        wkord.Active = wosorel.Active;
+                        wosorel = await _IProcPlanPartPurChaseRelRepository.UpdateAsync(wosorel.Id, wkord);
                     }
 
                     try
@@ -366,6 +512,96 @@ namespace CWB.ProductionPlanWO.Services
             var allwo =  _workOrderRepository.GetRangeAsync(d => d.TenantId == tenantId);
             return _mapper.Map<IEnumerable<WorkOrdersVM>>(allwo);
         }
+        public async Task<IEnumerable<WoSubConSupplierVM>> GetAllWoSubCon(long tenantId)
+        {
+            var allwo = _woSubConSupplierRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<WoSubConSupplierVM>>(allwo);
+        }
+        public async Task<bool> DeleteSubCon(long Id)
+        {
+            var co = await _woSubConSupplierRepository.SingleOrDefaultAsync(m => m.Id == Id);
+            if (co != null)
+            {
+                try
+                {
+                    _woSubConSupplierRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<bool> DeleteWo(long Id)
+        {
+            var co = await _workOrderRepository.SingleOrDefaultAsync(m => m.Id == Id);
+            if (co != null)
+            {
+                try
+                {
+                    _workOrderRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    var pwo = await _productionPlan_WORepository.AwaitGetRangeAsync(p=>p.WoId == co.Id);
+                    foreach (var item in pwo)
+                    {
+                        _productionPlan_WORepository.Remove(item);
+                        await _unitOfWork.CommitAsync();
+                    }
+                    var cworel =await _childWoRelRepository.AwaitGetRangeAsync(p => p.WoId == co.Id);
+                    foreach (var item in cworel)
+                    {
+                        _childWoRelRepository.Remove(item);
+                        await _unitOfWork.CommitAsync();
+                    }
+                    var mcTime =await _mcTimeListRepository.AwaitGetRangeAsync(p => p.WoId == co.Id);
+                    foreach (var item in mcTime)
+                    {
+                        _mcTimeListRepository.Remove(item);
+                        await _unitOfWork.CommitAsync();
+                    }
+                    var bom =await _bOMListRepository.AwaitGetRangeAsync(p => p.ParentWoId == co.Id);
+                    foreach (var item in bom)
+                    {
+                        _bOMListRepository.Remove(item);
+                        await _unitOfWork.CommitAsync();
+                    }
+                    var woso =await _wosoRepository.AwaitGetRangeAsync(p => p.WorkOrderId == co.Id);
+                    foreach (var item in woso)
+                    {
+                        _wosoRepository.Remove(item);
+                        await _unitOfWork.CommitAsync();
+                    }
+                    var procplan =await _procPlanRepository.AwaitGetRangeAsync(p => p.WorkOrderId == co.Id);
+                    foreach (var item in procplan)
+                    {
+                        _procPlanRepository.Remove(item);
+                        var Podetails =await _poDetailsRepository.AwaitGetRangeAsync(p => p.ProcPlanId == item.Id);
+                        foreach (var pod in Podetails)
+                        {
+                            var Pohead =await _poHeaderRepository.AwaitGetRangeAsync(p => p.PoDetailsId == pod.Id);
+                            foreach (var pohead in Pohead)
+                            {
+                                _poHeaderRepository.Remove(pohead);
+                                await _unitOfWork.CommitAsync();
+                            }
+                            _poDetailsRepository.Remove(pod);
+                            await _unitOfWork.CommitAsync();
+                        }
+                        var purchaseRel = await _IProcPlanPartPurChaseRelRepository.AwaitGetRangeAsync(p => p.ProcPlanId == item.Id);
+                        foreach (var pprel in purchaseRel)
+                        {
+                            _IProcPlanPartPurChaseRelRepository.Remove(pprel);
+                            await _unitOfWork.CommitAsync();
+                        }
+                        await _unitOfWork.CommitAsync();
+                    }
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
 
         public async Task<IEnumerable<WorkOrdersVM>> AllParentChildWo(long parentWoId, long tenantId)
         {
@@ -393,6 +629,18 @@ namespace CWB.ProductionPlanWO.Services
             catch (Exception ex)
             {
                 return new List<WOSOVM>();                
+            }
+        }
+        public async Task<IEnumerable<ProcPlanPartPurChaseRelVM>> GetProcPurchase(long procPlanId)
+        {
+            var so = _IProcPlanPartPurChaseRelRepository.GetRangeAsync(s => s.ProcPlanId == procPlanId).OrderBy(s => s.Id);
+            try
+            {
+                return _mapper.Map<IEnumerable<ProcPlanPartPurChaseRelVM>>(so);
+            }
+            catch (Exception ex)
+            {
+                return new List<ProcPlanPartPurChaseRelVM>();                
             }
         }
 
@@ -559,6 +807,11 @@ namespace CWB.ProductionPlanWO.Services
             var allpp = _mcTimeListRepository.GetRangeAsync(d => d.TenantId == tenantId);
             return _mapper.Map<IEnumerable<McTimeListVM>>(allpp);
         }
+        public async Task<IEnumerable<PODetailsVM>> GetAllPodetails(long tenantId)
+        {
+            var allpp = _poDetailsRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<PODetailsVM>>(allpp);
+        }
 
 
         public async Task<POStatusVM> GetPOStatus(long Id)
@@ -576,34 +829,58 @@ namespace CWB.ProductionPlanWO.Services
             foreach (PODetailsVM item in pODetailsVM)
             {
                 var po = _mapper.Map<PODetails>(item);
-                    if (po.Id == 0)
-                    {
-                        po.PoDate = DateTime.Now;
-                        po.POReference = "PO_" + po.PoDate.ToString("yyyyMMddHHmmssffff");
-                        po.Status = 1;
-                        try
-                        {
-                            await _poDetailsRepository.AddAsync(po);
-                        }
-                        catch (Exception ex)
-                        {
-                            Exception exa = ex.InnerException;
-                            string msg = ex.Message;
-                        }
-                    }
-                    else
-                    {
-
-                    }
+                if (po.Id == 0)
+                {
+                    po.PoDate = DateTime.Now;
+                    po.POReference = "PO_" + po.PoDate.ToString("yyyyMMddHHmmssffff");
+                    po.Status = 1;
                     try
                     {
-                        await _unitOfWork.CommitAsync();
+                        await _poDetailsRepository.AddAsync(po);
+                        POLogVM poLog = new POLogVM();
+                        poLog.SalesOrderId = po.Id;
+                        poLog.OldValue = " ";
+                        poLog.NewValue = "Entry";
+                        poLog.Event = "POEntry";
+                        poLog.User = "Kgk1 Admin";
+                        poLog.Comment = po.POReference + "/"+ po.Id + "/" + po.PlanPoReceiptDate;
+
+                        var poLogvm = _mapper.Map<POLog>(poLog);
+                        await _pOLogRepository.AddAsync(poLogvm);
                     }
                     catch (Exception ex)
                     {
                         Exception exa = ex.InnerException;
                         string msg = ex.Message;
                     }
+                }
+                else
+                {
+                    var upp = await _poDetailsRepository.SingleOrDefaultAsync(x => x.Id == po.Id);
+                    upp.Status = po.Status;
+                    await _poDetailsRepository.UpdateAsync(po.Id, upp);
+
+                    POLogVM poLog = new POLogVM();
+                    poLog.SalesOrderId = po.Id;
+                    poLog.OldValue = "Not Aprroved";
+                    poLog.NewValue = "PO Aprroved";
+                    poLog.Event = "Status Change";
+                    poLog.User = "Kgk1 Admin";
+                    poLog.Comment = po.POReference + "/" + po.Id + "/" + po.PlanPoReceiptDate;
+
+                    var poLogvm = _mapper.Map<POLog>(poLog);
+                    await _pOLogRepository.AddAsync(poLogvm);
+
+                }
+                try
+                {
+                    await _unitOfWork.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
                 item.PoDetailsId = po.Id;
                 item.POReference = po.POReference;
                 item.Status = po.Status;

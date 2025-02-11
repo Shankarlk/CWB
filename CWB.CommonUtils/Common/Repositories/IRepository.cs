@@ -10,6 +10,7 @@ namespace CWB.CommonUtils.Common.Repositories
         ValueTask<TEntity> GetByIdAsync(long id);
         Task<IEnumerable<TEntity>> GetAllAsync();
         IEnumerable<TEntity> GetRangeAsync(Expression<Func<TEntity, bool>> predicate);
+        Task<IEnumerable<TEntity>> AwaitGetRangeAsync(Expression<Func<TEntity, bool>> predicate);
         Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
         Task AddAsync(TEntity entity);
         Task<TEntity> UpdateAsync(long id, TEntity entity);

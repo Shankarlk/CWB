@@ -1,0 +1,410 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "Approve Matl / SubCon PO";
+}
+
+<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            @{
+                List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM> permissionResult = null;
+                var permissionsJson = HttpContextAccessor.HttpContext.Session.GetString("Permissions");
+                if (permissionsJson != null)
+                {
+                    permissionResult = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM>>(permissionsJson);
+
+                }
+            }
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 style="padding: 10px;">Released Purchase Orders for Approval</h3>
+                        </div>
+                        <!-- =============================  -->
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-2 mb-2" style="margin-top: -2px;">
+                                    <label class="form-label">Supplier</label>
+                                    <div class="input-group">
+                                        <input class="form-control form-control-sm" type="text" title=""
+                                               data-plugin="tippy" data-tippy-placement="top"
+                                               placeholder="Enter Part No" id="searchPoSupplier">
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Po For</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                            title="" data-plugin="tippy" data-tippy-placement="top" id="searchPoFor">
+                                        <option value="0">Regular Prodn</option>
+                                        <option value="1">Reorder </option>
+                                        <option value="2">Build to Order</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2" style="margin-top: -2px;">
+                                    <label class="form-label">Part No</label>
+                                    <div class="input-group">
+                                        <input class="form-control form-control-sm" type="text" title=""
+                                               data-plugin="tippy" data-tippy-placement="top"
+                                               placeholder="Enter Part No" id="searchPoPartNo">
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mb-2" style="margin-top: -2px;">
+                                    <label class="form-label">Part Desc</label>
+                                    <div class="input-group">
+                                        <input class="form-control form-control-sm" type="text" title=""
+                                               data-plugin="tippy" data-tippy-placement="top"
+                                               placeholder="Enter Part No" id="searchPoPartDesc">
+                                    </div>
+                                </div>
+                                <!-- ======================== -->
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">PO Type</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                            title="" data-plugin="tippy" data-tippy-placement="top" id="searchPoType">
+                                        <option value="0">--Select--</option>
+                                        <option value="1">Prodn</option>
+                                        <option value="2">Stock</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12 mt-3">
+                                    <div class="row">
+                                        <div class="col-md-3 mb-2">
+                                            <label class="form-label">Critical Part</label>
+                                            <input id="select-all-checkbox" class="form-check-input"
+                                                   type="checkbox" title="Select" data-plugin="tippy"
+                                                   data-tippy-placement="top">
+                                        </div>
+                                        <!-- ======================== -->
+                                        <div class="col-md-3 mb-2">
+                                            <label class="form-label">Receipt Date > Required Date</label>
+                                            <input id="checkReceiptDate" class="form-check-input"
+                                                   type="checkbox" title="Select" data-plugin="tippy"
+                                                   data-tippy-placement="top">
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label class="form-label">Total Proc Qnty < Reqd Qnty for Prodn</label>
+                                            <input id="checkparentlevel" class="form-check-input"
+                                                   type="checkbox" title="Select" data-plugin="tippy"
+                                                   data-tippy-placement="top">
+                                        </div>
+                                        <!-- ======================== -->
+                                    </div>
+                                </div>
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="table-responsive table-he-250">
+                                            <table class="table table-sm table-bordered w-100 text-center" id="PoGrid1">
+                                                <thead class="  table-info th-sti">
+                                                    <tr class="table-border-bottom">
+                                                        <th>
+                                                            <input id="PoGridChk" class="form-check-input"
+                                                                   type="checkbox" title="Select" data-plugin="tippy"
+                                                                   data-tippy-placement="top">
+                                                        </th>
+                                                        <th>PO Ref</th>
+                                                        <th>PO Date</th>
+                                                        <th>Supplier</th>
+                                                        <th>Partn No - Desc</th>
+                                                        <th>PO Qnty</th>
+                                                        <th>Unit</th>
+                                                        <th>Proc Price</th>
+                                                        <th>Agreed Receipt Date</th>
+                                                        <th>Part Type</th>
+                                                        <th>PO Type</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-md-6">
+                                        </div>
+                                        <div class="col-md-3 d-flex align-items-center">
+                                            <h6 class="mb-0 me-2">
+                                                Total PO Value of Selected POs
+                                            </h6>
+                                            <input class="form-control form-control-sm" type="text" title=""
+                                                   data-plugin="tippy" data-tippy-placement="top"
+                                                   placeholder="0" id="TotalPoValue" readonly>
+                                        </div>
+
+                                        <div class="col-md-12 mt-1 mb-2">
+                                            <!-- =============================  -->
+                                            <button class="btn btn-sm btn-primary" id="McListBtn">
+                                                Approve Selected PO
+                                            </button>
+                                            <!-- =============================  -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- =========== -->
+                            </div>
+
+                        </div>
+                        <!-- =============================  -->
+                    </div>
+                </div>
+            </div>
+            <!-- end card body -->
+            <!-- ================= -->
+        </div>
+        <!-- end card -->
+        <!-- ======================================================================== -->
+    </div>
+    <!-- end col -->
+</div>
+
+<div class="modal fade" id="popup10" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    Procurement of  <span id="popup10PartNo"> </span>
+                    @*<span id="P20BRLbl" hidden>Build to Stock WO Reorder WO</span>*@
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2" style="margin-top: -2px;">
+                        <label class="form-label">Calc. Reqt.</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" placeholder="" id="P10CalcReq" readonly>
+
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Qnty on Hand.</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy" value="0"
+                                   data-tippy-placement="top" placeholder="" id="P10QntyHand" readonly>
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Bal Qnty to Procure(Plan Proc. Qnty).</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" placeholder="" id="P10balQnty" readonly>
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Date Reqd.</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" placeholder="" id="P10DateReqd" readonly>
+
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <hr />
+                    <div class="col-md-7 mb-2">
+                        <label class="form-label"> Supplier</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="P10Supplier">
+                            </select>
+                            <span id="P10PreferredSpan" style="display: none;">Preferred</span>
+                        </div>
+                    </div>
+                    <div class="col-md-5 mb-2"></div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Total PO Qty </label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" id="P10TotalPoQnty">
+                            <span id="P10UnitSpan">Nos</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Update Proc Qnty to MOQ </label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input id="chkP10UpdateQnty" class="form-check-input"
+                                   type="checkbox" title=""
+                                   data-plugin="tippy" data-tippy-placement="top">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> MOQ </label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P10Moq" readonly>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> PO Unit Price  </label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P10Convprice">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Use Item Master Price</label>
+                        <input id="chkP10RoutPrice" class="form-check-input"
+                               type="checkbox" title=""
+                               data-plugin="tippy" data-tippy-placement="top">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Unit Price (from Item Master)</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P10UnitRout" readonly>
+                    </div>
+                    <!-- ========================= -->
+                    <hr />
+                    <div class="col-md-12 mb-2" hidden>
+
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Single Delivery Date</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                            </div>
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Delivery over multiple dates</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Delivery Qnty</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P10DelQnty">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Agreed Delivery Date</label>
+                        <input class="form-control form-control-sm" type="date" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P10AgrDate">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label"> Addn Info for Supplier</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P10AddnInfo">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-12 mb-2 text-end">
+                        <input type="text" id="Popup10WoSubConId" hidden />
+                        <input type="text" id="Popup10Woid" hidden />
+                        <input type="text" id="Popup10SuppId" hidden />
+                        <input type="text" id="Popup10SubConId" hidden />
+                        <button class="btn btn-primary btn-sm" id="P10SaveWo">Save</button>
+                        <button class="btn btn-primary btn-sm" id="P10AddNextDel" disabled>Add Next Delivery</button>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-12" id="P10GridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P10SupplierGrid" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Supplier</th>
+                                            <th>Quantity</th>
+                                            <th>Proc. Price</th>
+                                            <th>Receipt Date</th>
+                                            <th width="5%">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-1 text-end">
+                        <button class="btn btn-primary btn-sm" id="P10AddOtherSupp">Add Order to other Supplier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<template id="POGrid2Row">
+    <tr>
+        <td>
+            <input type="checkbox" class="row-checkbox" />
+        </td>
+        <td>{poReference}</td>
+        <td>{dateStr}</td>
+        <td>{supplier}</td>
+        <td>{partNo}</td>
+        <td>{poQnty}</td>
+        <td>{unit}</td>
+        <td>{procPrice}</td>
+        <td>{dateStr}</td>
+        <td>{partType}</td>
+        <td>{poType}</td>
+        <td hidden>{qntyRed}</td>
+        <td hidden>{dateRed}</td>
+        <td hidden>{poDetailsId}</td>
+        <td hidden>{partId}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" 
+                       data-poref="{poReference}"
+                       data-podate="{dateStr}"
+                       data-supp="{supplier}"
+                       data-podetails="{poDetailsId}"
+                       data-procid="{procPlanId}" data-partid="{partId}"
+                       data-partno="{partNo}" data-qnty="{poQnty}" data-supname="{supplier}" data-aggdate="{dateStr}"
+                       data-bs-toggle="modal" data-bs-target="#popup10">Edit</a>
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" >View</a>
+                    <a href="javascript:void(0);"
+                       class="dropdown-item">View Feedback for Prodn Planning</a>
+
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="P10SupplierGridRow">
+    <tr>
+        <td>{company}</td>
+        <td>{qnty}</td>
+        <td>{procPrice}</td>
+        <td>{agreedDate}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-partid="{company}" data-suppid="{supplierId}" data-qnty="{qnty}" data-price="{procPrice}"
+                       data-calcdate="{recieptDate}" data-woid="{woId}" data-subconid="{woSubConSupplierId}" data-addninfo="{addnInfo}" data-procpalnid="{procPlanId}"
+                       onclick="EditSubSupplier(this)">Edit</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-partid="{partId}" data-partno="{partNo}" data-moq="{moq}" data-uom="{uomName}"
+                       data-partdesc="{partDesc}" data-suppid="{supplierId}" data-qnty="{calc_Proc_Qnty}" data-calcdate="{calcReceiptDateStr}" data-procpalnid="{procPlanId}"
+                       data-price="{price}" data-woid="{woId}" data-subconid="{woSubConSupplierId}"
+                       onclick="DeleteSubSupplier(this)">Delete</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+
+@section Scripts {
+    <script src="~/js/PoApprov.js"></script>
+}

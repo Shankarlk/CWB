@@ -54,6 +54,7 @@ namespace CWB.App.Models.BusinessProcesses
         public int ManufDaysAvailable { get; set; }
         public int ManufDaysRequired { get; set; }
         public int Changed { get; set; }
+        public DateTime? SoComplDate { get; set; }
         public DateTime PlanStartDate { get; set; }
         public DateTime ActStartDate { get; set; }
         public DateTime ActCompletionDate { get; set; }
@@ -64,6 +65,9 @@ namespace CWB.App.Models.BusinessProcesses
         public bool Done { get; set; }
         public string? PartNo { get; set; } = string.Empty;
         public string? PartDesc { get; set; } = string.Empty;
+        public string? SoComplDateStr { get; set; } = string.Empty;
+        public string? PlanStartDateStr { get; set; } = string.Empty;
+        public string? WoRelease { get; set; } = string.Empty;
         public string Comment { get; set; }
         public long TenantId { get; set; }
     }

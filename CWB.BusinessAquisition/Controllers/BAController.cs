@@ -75,6 +75,7 @@ namespace BAapi.Controllers
             foreach(CustomerOrderVM custO in pologs)
             {
                 custO.LineNo = GetLineNoForCustomerOrder(tenantId, custO.CustomerOrderId).Result.ToString();
+                custO.HoldStr = GetHoldForCustomerOrder(tenantId, custO.CustomerOrderId).Result.ToString();
             }
             return Ok(pologs);
         }
@@ -83,6 +84,7 @@ namespace BAapi.Controllers
         {
             var salesOrders = await _baService.GetSalesOrders(tenantId, customerOrderId);
             List<long> partIds = new List<long>();
+            
             foreach(SalesOrderVM so in salesOrders)
             {
                 if(!partIds.Contains(so.PartId))
@@ -91,6 +93,19 @@ namespace BAapi.Controllers
                 }
             }
             return partIds.Count;
+        }
+        private async Task<long> GetHoldForCustomerOrder(long tenantId, long customerOrderId)
+        {
+            var salesOrders = await _baService.GetSalesOrders(tenantId, customerOrderId);
+            long hold = 0;
+            foreach (SalesOrderVM so in salesOrders)
+            {
+                if (so.Hold == true)
+                {
+                    hold++;
+                }
+            }
+            return hold;
         }
 
         [HttpGet]

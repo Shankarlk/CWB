@@ -24,7 +24,7 @@ namespace CWB.BusinessAquisition.Configurations
             builder
                 .Property(t => t.PONumber)
                 .HasColumnName("PONumber")
-                .IsRequired();
+                .HasDefaultValue(" ");
             builder
                 .Property(t => t.OrderType)
                 .HasColumnName("OrderType")
@@ -36,7 +36,23 @@ namespace CWB.BusinessAquisition.Configurations
             builder
                 .Property(t => t.DirectEntryDetails)
                 .HasColumnName("DirectEntryDetails")
-                .IsRequired();
+                .HasDefaultValue(" ");
+            builder
+                .Property(t => t.POAddress)
+                .HasColumnName("POAddress")
+                .HasDefaultValue(" ");
+            builder
+                .Property(t => t.POCity)
+                .HasColumnName("POCity")
+                .HasDefaultValue(" ");
+            builder
+                .Property(t => t.POPIN)
+                .HasColumnName("POPIN")
+                .HasDefaultValue(" ");
+            builder
+                .Property(t => t.POCountry)
+                .HasColumnName("POCountry")
+                .HasDefaultValue(" ");
             builder
                .Property(t => t.Comment)
                .HasColumnName("Comment")

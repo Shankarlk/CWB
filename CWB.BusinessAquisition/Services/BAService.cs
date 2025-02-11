@@ -84,6 +84,13 @@ namespace CWB.BusinessAquisition.Services
                 customerOrder.Done = false;
                 customerOrder.Status = (int)OrdStatus.NOTPlanned;
                 customerOrder.LineNo = "";
+                if(customerOrder.DirectEntryDetails == null)
+                {
+                    customerOrder.DirectEntryDetails = " ";
+                }if(customerOrder.PONumber == null)
+                {
+                    customerOrder.PONumber = " ";
+                }
 
                 await _customerOrderRepository.AddAsync(customerOrder);
                 await _unitOfWork.CommitAsync();
@@ -98,9 +105,20 @@ namespace CWB.BusinessAquisition.Services
                 customerOrder.PONumber = customerOrderVM.PONumber;
                 customerOrder.PODate = customerOrderVM.PODate;
                 customerOrder.DirectEntryDetails = customerOrderVM.DirectEntryDetails;
+                customerOrder.POAddress = customerOrderVM.POAddress;
+                customerOrder.POPIN = customerOrderVM.POPIN;
+                customerOrder.POCity = customerOrderVM.POCity;
+                customerOrder.POCountry = customerOrderVM.POCountry;
                 customerOrder.Comment = customerOrderVM.Comment;
                 customerOrder.OrderType = customerOrderVM.OrderType;
-
+                if (customerOrder.DirectEntryDetails == null)
+                {
+                    customerOrder.DirectEntryDetails = " ";
+                }
+                if (customerOrder.PONumber == null)
+                {
+                    customerOrder.PONumber = " ";
+                }
                 customerOrder = await _customerOrderRepository.UpdateAsync(customerOrder.Id, customerOrder);
                 await _unitOfWork.CommitAsync();
                 customerOrderVM.CustomerOrderId = customerOrder.Id;

@@ -31,6 +31,10 @@ namespace CWB.CommonUtils.Common.Repositories
         {
             return _dbSet.Where(predicate);
         }
+        public async Task<IEnumerable<TEntity>> AwaitGetRangeAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).ToListAsync();
+        }
 
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         {

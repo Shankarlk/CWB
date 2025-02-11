@@ -49,6 +49,11 @@ namespace CWB.App.Models.BusinessProcesses
             get { return planDate; }
             set { planDate = value; }
         }
+        public DateTime? SoComplDate
+        {
+            get ; 
+            set ; 
+        }
         public String PlanCompletionDateStr
         {
             get

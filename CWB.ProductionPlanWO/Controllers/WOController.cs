@@ -35,6 +35,26 @@ namespace CWB.ProductionPlanWO.Controllers
             return pologs;
         }
 
+
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetWoPOLogs)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<POLogVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetWoPOLogs(long tenantId, long customerOrderId)
+        {
+            var pologs = await _woSerivce.GetWoPOLogs(tenantId, customerOrderId);
+            return Ok(pologs);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetPOLogs)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<POLogVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetPOLogs(long tenantId, long poid)
+        {
+            var pologs = await _woSerivce.GetPOLogs(tenantId, poid);
+            return Ok(pologs);
+        }
+
         [HttpPost]
         [Route(ApiRoutes.WO.PostWorkOrder)]
         [Produces(AppContentTypes.ContentType,Type=typeof(WorkOrdersVM))]
@@ -69,6 +89,15 @@ namespace CWB.ProductionPlanWO.Controllers
         public async Task<IActionResult> PostWOSORel([FromBody] List<WOSOVM> wOSOVMs)
         {
             var woso = await _woSerivce.PostWOSO(wOSOVMs);
+            return Ok(woso);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostProcPurchase)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(ProcPlanPartPurChaseRelVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> PostProcPurchase([FromBody] List<ProcPlanPartPurChaseRelVM> wOSOVMs)
+        {
+            var woso = await _woSerivce.PostProcPurchase(wOSOVMs);
             return Ok(woso);
         }
 
@@ -120,6 +149,15 @@ namespace CWB.ProductionPlanWO.Controllers
         public async Task<IActionResult> GetSoWo(long workOrderId)
         {
             var so = await _woSerivce.GetSoWo(workOrderId);
+            return Ok(so);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetProCPurchase)]
+        [Produces(AppContentTypes.ContentType,Type =typeof(List<ProcPlanPartPurChaseRelVM>))]
+        [Authorize(Roles=Roles.ADMIN)]
+        public async Task<IActionResult> GetProCPurchase(long procPlanId)
+        {
+            var so = await _woSerivce.GetProcPurchase(procPlanId);
             return Ok(so);
         }
 
@@ -222,6 +260,15 @@ namespace CWB.ProductionPlanWO.Controllers
             var mctime = await _woSerivce.GetAllMcTimeListVMs(tenantId);
             return Ok(mctime);
         }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllPodetails)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<PODetailsVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllPodetails(long tenantId)
+        {
+            var mctime = await _woSerivce.GetAllPodetails(tenantId);
+            return Ok(mctime);
+        }
 
 
         [HttpPost]
@@ -251,6 +298,41 @@ namespace CWB.ProductionPlanWO.Controllers
         {
             var pOStatus = await _woSerivce.GetPOStatus(Id);
             return Ok(pOStatus);
+        }
+
+
+        [HttpGet]
+        [Route(ApiRoutes.WO.AllSubCon)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<WoSubConSupplierVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllWoSubCOn(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllWoSubCon(tenantId);
+            return Ok(allwo);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostWoSubCon)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(WoSubConSupplierVM))]
+        public async Task<IActionResult> PostWoSubCon([FromBody] WoSubConSupplierVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostWoSubCon(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteSubCon)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteSubCon(long Id)
+        {
+            var result = await _woSerivce.DeleteSubCon(Id);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteWo)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteWo(long Id)
+        {
+            var result = await _woSerivce.DeleteWo(Id);
+            return Ok(result);
         }
     }
 }

@@ -96,6 +96,18 @@ namespace CWB.App.Services.BusinessProcesses
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<POLogVM>>.GetAsync(uri, headers);
         }
+        public async Task<IEnumerable<POLogVM>> GetWoPOLogs(long customerOrderId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getwopologs/{tenantId}/{customerOrderId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<POLogVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<POLogVM>> GetProcLogs(long poid)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getpologs/{tenantId}/{poid}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<POLogVM>>.GetAsync(uri, headers);
+        }
 
         public async Task<IEnumerable<SalesOrderVM>> AllSalesOrders()
         {

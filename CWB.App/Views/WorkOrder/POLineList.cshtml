@@ -1,0 +1,1234 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "PO Line List";
+}
+
+<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            @{
+                List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM> permissionResult = null;
+                var permissionsJson = HttpContextAccessor.HttpContext.Session.GetString("Permissions");
+                if (permissionsJson != null)
+                {
+                    permissionResult = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM>>(permissionsJson);
+
+                }
+            }
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 style="padding: 10px;">Open Purchase Order Summary</h3>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <a asp-controller="WorkOrder" asp-action="Index" class="btn-close">
+                            </a>
+                        </div>
+                        <!-- =============================  -->
+                        <div class="col-md-12">
+                            <div class="row">
+                                <!-- ================================ -->
+                                <div class="col-md-5 col-sm-12 dott-bord-r" style="padding: 10px;">
+                                    <div class="table-responsive table-he-250">
+                                        <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
+                                            <thead class="  table-info th-sti">
+                                                <tr>
+                                                    <td>
+                                                        Regular PO
+                                                    </td>
+                                                    <td>Raw Material</td>
+                                                    <td>BOF</td>
+                                                    <td>Sub Con</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        No of PO w/f Approval
+                                                    </td>
+                                                    <td><span id="noOfPoApprv">0</span></td>
+                                                    <td><span id="noOfPoBof">0</span></td>
+                                                    <td><span id="noOfPoSub">0</span></td>
+                                                </tr>
+                                                <!-- ===========================  -->
+                                                <tr>
+                                                    <td>No of Open PO</td>
+                                                    <td><span id="noOfOpenRm">0</span></td>
+                                                    <td><span id="noOfOpenBof">0</span></td>
+                                                    <td><span id="noOfOpenSub">0</span></td>
+                                                </tr>
+                                                <!-- ===========================  -->
+                                                <tr>
+                                                    <td>Total Open PO Line Items </td>
+                                                    <td><span id="totalOpenRm">0</span></td>
+                                                    <td><span id="totalOpenBof">0</span></td>
+                                                    <td><span id="totalOpenSub">0</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>No of Past Due Line Items</td>
+                                                    <td><span id="noOfDueRm">0</span></td>
+                                                    <td><span id="noOfDueBof">0</span></td>
+                                                    <td><span id="noOfDueSub">0</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Total Value of Open PO</td>
+                                                    <td><span id="toalValOpenPoRm">0</span></td>
+                                                    <td><span id="toalValOpenPoBof">0</span></td>
+                                                    <td><span id="toalValOpenPoSub">0</span></td>
+                                                </tr>
+                                                <!-- ===========================  -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- ================================ -->
+                                <div class="col-md-2 dott-bord-r" style="padding: 10px;">
+                                </div>
+                                <!-- ================================ -->
+                                <div class="col-md-5 col-sm-6" style="padding: 10px;">
+                                    <div class="row ">
+                                        <div class="col-md-12">
+                                            <div class="table-responsive">
+                                                <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
+                                                    <thead class="  table-info th-sti">
+                                                        <tr>
+                                                            <td>
+                                                                Purchase for Stock
+                                                            </td>
+                                                            <td>Raw Material</td>
+                                                            <td>BOF</td>
+                                                            <td>Sub Con</td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                No of PO w/f Approval
+                                                            </td>
+                                                            <td><span id="PurnoOfPoApprv">0</span></td>
+                                                            <td><span id="PurnoOfPoBof">0</span></td>
+                                                            <td><span id="PurnoOfPoSub">0</span></td>
+                                                        </tr>
+                                                        <!-- ===========================  -->
+                                                        <tr>
+                                                            <td>No of Open PO</td>
+                                                            <td><span id="PurnoOfOpenRm">0</span></td>
+                                                            <td><span id="PurnoOfOpenBof">0</span></td>
+                                                            <td><span id="PurnoOfOpenSub">0</span></td>
+                                                        </tr>
+                                                        <!-- ===========================  -->
+                                                        <tr>
+                                                            <td>Total Open PO Line Items </td>
+                                                            <td><span id="PurtotalOpenRm">0</span></td>
+                                                            <td><span id="PurtotalOpenBof">0</span></td>
+                                                            <td><span id="PurtotalOpenSub">0</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>No of Past Due Line Items</td>
+                                                            <td><span id="PurnoOfDueRm">0</span></td>
+                                                            <td><span id="PurnoOfDueBof">0</span></td>
+                                                            <td><span id="PurnoOfDueSub">0</span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Total Value of Open PO</td>
+                                                            <td><span id="PurtoalValOpenPoRm">0</span></td>
+                                                            <td><span id="PurtoalValOpenPoBof">0</span></td>
+                                                            <td><span id="PurtoalValOpenPoSub">0</span></td>
+                                                        </tr>
+                                                        <!-- ===========================  -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <!-- ========================  -->
+                                        </div>
+                                    </div>
+                                    <!-- ================= -->
+                                </div>
+                                <!-- ================================ -->
+                                <!-- ================================ -->
+                            </div>
+                            <hr class="mt-2">
+                            <!-- ================================  -->
+                            <div class="row">
+                                <div class="col-md-2 mb-2" style="margin-top: -2px;">
+                                    <label class="form-label">Supplier</label>
+                                    <div class="input-group">
+                                        <input class="form-control form-control-sm" type="text" title=""
+                                               data-plugin="tippy" data-tippy-placement="top"
+                                               placeholder="Enter Part No" id="searchPoSupplier">
+                                    </div>
+                                </div>
+                                <!-- ======================== -->
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Supplier Type</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                            title="" data-plugin="tippy" data-tippy-placement="top" id="searchPoSuppType">
+                                        <option value="0">All</option>
+                                        <option value="1">RM / BOF</option>
+                                        <option value="2">Sub Con</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">PO Type</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                            title="" data-plugin="tippy" data-tippy-placement="top" id="searchPoType">
+                                        <option value="0">--Select--</option>
+                                        <option value="1">Prodn</option>
+                                        <option value="2">Stock</option>
+                                    </select>
+                                </div>
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="table-responsive table-he-250">
+                                            <table class="table table-sm table-bordered w-100 text-center" id="PoGrid1">
+                                                <thead class="  table-info th-sti">
+                                                    <tr class="table-border-bottom">
+                                                        <th>PO Ref</th>
+                                                        <th>PO Date</th>
+                                                        <th>Supplier</th>
+                                                        <th>No of Line items</th>
+                                                        <th>No of Open Line Items</th>
+                                                        <th>No of Past due Line Items</th>
+                                                        <th>PO Value</th>
+                                                        <th>Status</th>
+                                                        <th>PO Type</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-md-12 mb-2 text-end">
+                                            <!-- =============================  -->
+                                            @*<button class="btn btn-sm btn-purple w-25" data-bs-toggle="modal" data-bs-target="#McDetailedPop" id="McListBtn">
+                                                    Purchase for Stock
+                                                </button>*@
+                                            <!-- =============================  -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- =========== -->
+                                <div class="col-md-12" style="min-height: 50px;">
+                                </div>
+                                <hr />
+                                <div class="col-md-12" style="min-height: 50px;">
+                                </div>
+                                <div class="col-md-12" style="min-height: 50px;">
+                                </div>
+                                <div class="col-md-12" style="min-height: 50px;">
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h3>Open Purchase Order Line Items</h3>
+                                        </div>
+                                        <div class="col-md-2 mb-2" style="margin-top: -2px;">
+                                            <label class="form-label">Supplier</label>
+                                            <div class="input-group">
+                                                <input class="form-control form-control-sm" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top"
+                                                       placeholder="Enter Part No" id="searchPoSupplier2">
+                                            </div>
+                                        </div>
+                                        <!-- ======================== -->
+                                        <div class="col-md-2 mb-2">
+                                            <label class="form-label">Supplier Type</label>
+                                            <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                                    title="" data-plugin="tippy" data-tippy-placement="top" id="searchPoSuppType2">
+                                                <option value="0">All</option>
+                                                <option value="1">RM / BOF</option>
+                                                <option value="2">Sub Con</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 mb-2">
+                                            <label class="form-label">Part Type</label>
+                                            <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                                    title="" data-plugin="tippy" data-tippy-placement="top" id="searchPoType">
+                                                <option value="0">--Select--</option>
+                                                <option value="1">Prodn</option>
+                                                <option value="2">Stock</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 mb-2" style="margin-top: -2px;">
+                                            <label class="form-label">Status</label>
+                                            <div class="input-group">
+                                                <input class="form-control form-control-sm" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top"
+                                                       placeholder="Enter Part No" id="searchPoStatus2">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 mb-2" style="margin-top: -2px;">
+                                            <label class="form-label">Past Due Line Items</label>
+                                            <div class="input-group">
+                                                <input id="select-all-checkbox" class="form-check-input"
+                                                       type="checkbox" title="Select" data-plugin="tippy"
+                                                       data-tippy-placement="top">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 mb-2" style="margin-top: -2px;">
+                                            <label class="form-label">Part No</label>
+                                            <div class="input-group">
+                                                <input class="form-control form-control-sm" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top"
+                                                       placeholder="Enter Part No" id="searchPoPartNo2">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 mb-2" style="margin-top: -2px;">
+                                            <label class="form-label">Part Desc</label>
+                                            <div class="input-group">
+                                                <input class="form-control form-control-sm" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top"
+                                                       placeholder="Enter Part No" id="searchPoPartDesc2">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 mb-2">
+                                            <label class="form-label">PO Type</label>
+                                            <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                                    title="" data-plugin="tippy" data-tippy-placement="top" id="searchPoType">
+                                                <option value="0">--Select--</option>
+                                                <option value="1">Prodn</option>
+                                                <option value="2">Stock</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2 mb-2">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <label class="form-check-label" for="SrflexSwitchCheckDefault">PO Date</label>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" role="switch" id="SrflexSwitchCheckDefault">
+                                                </div>
+                                                <label class="form-check-label" for="SrflexSwitchCheckDefault">Delivery dates</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 mb-2" style="margin-top: -2px;">
+                                            <label class="form-label">From</label>
+                                            <div class="input-group">
+                                                <input class="form-control form-control-sm" type="date" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top"
+                                                       id="searchPoFrDate2">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2 mb-2" style="margin-top: -2px;">
+                                            <label class="form-label">To</label>
+                                            <div class="input-group">
+                                                <input class="form-control form-control-sm" type="date" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top"
+                                                       id="searchPoToDate2">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="table-responsive table-he-250">
+                                            <table class="table table-sm table-bordered w-100 text-center" id="PoGrid2">
+                                                <thead class="  table-info th-sti">
+                                                    <tr class="table-border-bottom">
+                                                        <th>PO Ref</th>
+                                                        <th>PO Date</th>
+                                                        <th>Supplier</th>
+                                                        <th>Part No - Desc</th>
+                                                        <th>PO Qnty</th>
+                                                        <th>Recd Qnty</th>
+                                                        <th>Unit</th>
+                                                        <th>Status</th>
+                                                        <th>Part Type</th>
+                                                        <th>PO Type</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- =============================  -->
+                    </div>
+                </div>
+            </div>
+            <!-- end card body -->
+            <!-- ================= -->
+        </div>
+        <!-- end card -->
+        <!-- ======================================================================== -->
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+<!-- end Container -->
+<!----content-page ends----->
+
+<div class="modal fade" id="Popup12" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-full-width">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Purchase Line Item Details</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-2 mb-2">
+                        <h6>Part No / Desc : <span id="p12SPanPartNo"></span> / <span id="p12SpanPartDesc"></span> Supplier : <span id="p12SpanSupp"></span></h6>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <h6>PO Ref / Date : <span id="p12SPanPoRef"></span> / <span id="p12SpanPoDate"></span> PO Qnty : <span id="p12SpanQnty"></span> Plan Delv Date : <span id="p12SpanDelv"></span></h6>
+                    </div>
+                    <!-- ======================== -->
+                    <div class="col-md-12">
+                        <div class="col-md-2 mb-2">
+                            <h6>Inwarding Details</h6>
+                        </div>
+                        <div class="table-responsive table-he-250">
+                            <table class="table table-sm table-bordered w-100 text-center" id="PoGridP12">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Date / Time</th>
+                                        <th>DC Ref</th>
+                                        <th>Ok Qnty </th>
+                                        <th>Rwk Qnty</th>
+                                        <th>Rej Qnty</th>
+                                        <th>Total Qnty</th>
+                                        <th>Units</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- -------------  -->
+                                    <!-- -------------  -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <h6>Balance to receive : <span id="p12SpanBalRec"></span></h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="Popup13" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-full-width">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Purchase Line Item Details</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <h6>PO Ref / Date : <span id="p13SPanPoRef"></span> / <span id="p13SpanPoDate" style="margin-right:30%"></span> Supplier : <span id="p13SpanSupp"></span></h6>
+                    </div>
+                    <hr />
+                    <!-- ======================== -->
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table class="table table-sm table-bordered w-100 text-center" id="PoGridP13">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Part No / Desc </th>
+                                        <th>Agreed Delv Date</th>
+                                        <th>PO Qnty </th>
+                                        <th>No Of Delv.</th>
+                                        <th>Total Recd Qnty</th>
+                                        <th>OK Qnty</th>
+                                        <th>Rejn Qnty</th>
+                                        <th>Rwk Qnty</th>
+                                        <th>Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- -------------  -->
+                                    <!-- -------------  -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+<div class="modal fade" id="popup10" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    Purchase for Stock - PO Creation <span style="padding:100px;"> Purchase Order Ref <span id="P10Ref"></span></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2" style="margin-top: -2px;">
+                        <label class="form-label">Part No.</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" placeholder="" id="P10PartNo" readonly>
+
+                        </div>
+                    </div>
+                    <div class="col-md-9 mb-2">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Qnty on Hand.</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy" value="0"
+                                   data-tippy-placement="top" placeholder="" id="P10QntyHand" readonly>
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Open PO Qnty</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" placeholder="" id="P10CalcReq" readonly>
+
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="col-md-7 mb-2">
+                        <label class="form-label"> Supplier</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="P10Supplier">
+                            </select>
+                            <span id="P10PreferredSpan" style="display: none;">Preferred</span>
+                        </div>
+                    </div>
+                    <div class="col-md-5 mb-2"></div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Total PO Qty </label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" id="P10TotalPoQnty">
+                            <span id="P10UnitSpan">Nos</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Update Proc Qnty to MOQ </label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input id="chkP10UpdateQnty" class="form-check-input"
+                                   type="checkbox" title=""
+                                   data-plugin="tippy" data-tippy-placement="top">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> MOQ </label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P10Moq" readonly>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> PO Unit Price  </label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P10Convprice">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Use Item Master Price</label>
+                        <input id="chkP10RoutPrice" class="form-check-input"
+                               type="checkbox" title=""
+                               data-plugin="tippy" data-tippy-placement="top">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Unit Price (from Item Master)</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P10UnitRout" readonly>
+                    </div>
+                    <!-- ========================= -->
+                    <hr />
+                    <div class="col-md-12 mb-2" hidden>
+
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Single Delivery Date</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                            </div>
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Delivery over multiple dates</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Delivery Qnty</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P10DelQnty">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Agreed Delivery Date</label>
+                        <input class="form-control form-control-sm" type="date" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P10AgrDate">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label"> Addn Info for Supplier</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P10AddnInfo">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-12 mb-2 text-end">
+                        <input type="text" id="Popup10WoSubConId" hidden />
+                        <input type="text" id="Popup10Woid" hidden />
+                        <input type="text" id="Popup10SuppId" hidden />
+                        <input type="text" id="Popup10SubConId" hidden />
+                        <button class="btn btn-primary btn-sm" id="P10SaveWo">Save</button>
+                        <button class="btn btn-primary btn-sm" id="P10AddNextDel" disabled>Add Next Delivery</button>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-12" id="P10GridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P10SupplierGrid" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Supplier</th>
+                                            <th>Quantity</th>
+                                            <th>Proc. Price</th>
+                                            <th>Unit Price</th>
+                                            <th>Receipt Date</th>
+                                            <th width="5%">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-1 text-end">
+                        <button class="btn btn-primary btn-sm" id="P10AddOtherSupp">Add Order to other Supplier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="po-lineShort" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content bxs-modal">
+            <form id="poholdform" onclick="return false;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">     Reason for Supplier PO Line Item Short Close *</h5>
+                    <button type="button" id="btnholdclose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="POHComment" name="Comment" class="form-control" placeholder="Enter Comments"></textarea>
+                </div>
+                <input type="text" hidden id="POLogId" name="POLogId" value="0" />
+                <input type="text" hidden id="POHCustomerOrderId" name="CustomerOrderId" value="0" />
+                <input type="text" hidden id="POHUser" name="User" value="Admin" />
+                <input type="text" hidden id="POHNewValue" name="NewValue" value="0" />
+                <input type="text" hidden id="POHOldValue" name="OldValue" value="0" />
+                <input type="text" hidden id="POHEvent" name="Event" value="HoldResume" />
+                <input type="text" hidden id="POHPartId" name="PartId" value="0" />
+                <div class="modal-footer">
+                    <button id="BtnPOHoldLine" type="button" class="btn btn-primary btn-sm">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="po-short" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content bxs-modal">
+            <form id="poholdform" onclick="return false;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Reason for Supplier PO Short Close *</h5>
+                    <button type="button" id="btnholdclose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="POHComment" name="Comment" class="form-control" placeholder="Enter Comments"></textarea>
+                </div>
+                <input type="text" hidden id="POLogId" name="POLogId" value="0" />
+                <input type="text" hidden id="POHCustomerOrderId" name="CustomerOrderId" value="0" />
+                <input type="text" hidden id="POHUser" name="User" value="Admin" />
+                <input type="text" hidden id="POHNewValue" name="NewValue" value="0" />
+                <input type="text" hidden id="POHOldValue" name="OldValue" value="0" />
+                <input type="text" hidden id="POHEvent" name="Event" value="HoldResume" />
+                <input type="text" hidden id="POHPartId" name="PartId" value="0" />
+                <div class="modal-footer">
+                    <button id="BtnPOHold" type="button" class="btn btn-primary btn-sm">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="po-delte" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content bxs-modal">
+            <form id="poholdform" onclick="return false;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">    Reason for Supplier PO Delete *</h5>
+                    <button type="button" id="btnholdclose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="POHComment" name="Comment" class="form-control" placeholder="Enter Comments"></textarea>
+                </div>
+                <input type="text" hidden id="POLogId" name="POLogId" value="0" />
+                <input type="text" hidden id="POHCustomerOrderId" name="CustomerOrderId" value="0" />
+                <input type="text" hidden id="POHSalesOrderId" name="SalesOrderId" value="0" />
+                <input type="text" hidden id="POHUser" name="User" value="Admin" />
+                <input type="text" hidden id="POHNewValue" name="NewValue" value="0" />
+                <input type="text" hidden id="POHOldValue" name="OldValue" value="0" />
+                <input type="text" hidden id="POHEvent" name="Event" value="HoldResume" />
+                <input type="text" hidden id="POHPartId" name="PartId" value="0" />
+                <div class="modal-footer">
+                    <button id="BtnPODel" type="button" class="btn btn-primary btn-sm">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="po-qnty" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content bxs-modal">
+            <form id="poholdform" onclick="return false;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Reason for Supplier PO Line Item Qnty Change  *</h5>
+                    <button type="button" id="btnholdclose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="POHComment" name="Comment" class="form-control" placeholder="Enter Comments"></textarea>
+                </div>
+                <input type="text" hidden id="POLogId" name="POLogId" value="0" />
+                <input type="text" hidden id="POHCustomerOrderId" name="CustomerOrderId" value="0" />
+                <input type="text" hidden id="POHSalesOrderId" name="SalesOrderId" value="0" />
+                <input type="text" hidden id="POHUser" name="User" value="Admin" />
+                <input type="text" hidden id="POHNewValue" name="NewValue" value="0" />
+                <input type="text" hidden id="POHOldValue" name="OldValue" value="0" />
+                <input type="text" hidden id="POHEvent" name="Event" value="HoldResume" />
+                <input type="text" hidden id="POHPartId" name="PartId" value="0" />
+                <div class="modal-footer">
+                    <button id="BtnPOQnt" type="button" class="btn btn-primary btn-sm">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ViewSoLog" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-full-width">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Supplier PO Log : <span id="SpanSoNumber"></span>                <span style="padding:100px">PO Date : <span id="SoDateSpan"></span>	<span id="SoPartNoSPan"></span><span id="SoPartDescSPan"></span></span>	</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">PO Compl Dt from</label>
+                        <input class="form-control form-control-sm" type="date" title=""
+                               data-plugin="tippy" data-tippy-placement="top" id="SoLogcomplDtFrom">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">PO Compl Dt To</label>
+                        <input class="form-control form-control-sm" type="date" title=""
+                               data-plugin="tippy" data-tippy-placement="top" id="SoLogcomplDtTo">
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Part No</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter Location" id="searchLogPartNo">
+                    </div>
+                    <!-- -----------------  -->
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Event</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter MC Type" id="searchEventLog">
+                    </div>
+                    <!-- -----------------  -->
+                    <!-- -----------------  -->
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Comment</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter Machine" id="searchLogComment">
+                    </div>
+                    <!-- ======================== -->
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table class="table table-sm table-bordered w-100 text-center" id="WoLogGrid">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Date/Time</th>
+                                        <th>User</th>
+                                        <th>Part No</th>
+                                        <th>Event</th>
+                                        <th>Field</th>
+                                        <th>New Value</th>
+                                        <th>Old Value</th>
+                                        <th>Comment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- -------------  -->
+                                    <!-- -------------  -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- -----------------  -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+<div class="modal fade" id="popup20" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    Sub Con work for <span id="popup20PartNo"> </span>
+                    <span id="P20BRLbl" hidden>Build to Stock WO Reorder WO</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4 mb-2" style="margin-top: -2px;">
+                        <label class="form-label">Sub Con Qnty</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" placeholder="" id="P20WoQnty" readonly>
+
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2"></div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">Date Reqd.</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" placeholder="" id="P20DateReqd" readonly>
+
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <hr />
+                    <div class="col-md-7 mb-2">
+                        <label class="form-label"> Supplier</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="P20Supplier">
+                            </select>
+                            <span id="P20PreferredSpan" style="display: none;">Preferred</span>
+                        </div>
+                    </div>
+                    <div class="col-md-5 mb-2"></div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Conv Unit Price </label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P20Convprice">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Use Routing Master Price</label>
+                        <input id="chkP20RoutPrice" class="form-check-input"
+                               type="checkbox" title=""
+                               data-plugin="tippy" data-tippy-placement="top">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Unit Price   (from Routing)</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P20UnitRout" readonly>
+                    </div>
+                    <!-- ========================= -->
+                    <hr />
+                    <div class="col-md-12 mb-2" hidden>
+
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label class="form-check-label" for="flexSwitchCheckDefault20">Single Delivery Date</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault20">
+                            </div>
+                            <label class="form-check-label" for="flexSwitchCheckDefault20">Delivery over multiple dates</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Delivery Qnty</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P20DelQnty">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label"> Agreed Delivery Date</label>
+                        <input class="form-control form-control-sm" type="date" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P20AgrDate">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label"> Addn Info for Supplier</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P20AddnInfo">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-12 mb-2 text-end">
+                        <input type="text" id="Popup20WoSubConId" hidden />
+                        <input type="text" id="Popup20Woid" hidden />
+                        <input type="text" id="Popup20SuppId" hidden />
+                        <input type="text" id="Popup20SubConId" hidden />
+                        <button class="btn btn-primary btn-sm" id="P20SaveWo">Save WO</button>
+                        <button class="btn btn-primary btn-sm" id="P20AddNextDel" disabled>Add Next Delivery</button>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-12" id="P20GridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P20SupplierGrid" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Supplier</th>
+                                            <th>Quantity</th>
+                                            <th>Proc. Price</th>
+                                            <th>Receipt Date</th>
+                                            <th width="5%">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-1 text-end">
+                        <button class="btn btn-primary btn-sm" id="P20AddOtherSupp">Add Order to other Supplier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="view-socomment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content bxs-modal">
+            <form id="poholdform" onclick="return false;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">View Comment : <span id="ViewSoCommentSpan"></span></h5>
+                    <button type="button" id="btnholdclose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="viewCommentField" name="Comment" class="form-control" placeholder="Enter Comments" readonly></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<template id="P13GridRow">
+    <tr>
+        <td>{partNo}</td>
+        <td>{poDateStr}</td>
+        <td>{poQnty}</td>
+        <td></td>
+        <td>{poQntyRecd}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>{statusStr}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- View Line Item Details -->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-poref="{poReference}"
+                       data-podate="{dateStr}"
+                       data-supp="{supplier}"
+                       data-podetails="{poDetailsId}" data-partid="{partId}"
+                       data-procid="{procPlanId}"
+                       data-partno="{partNo}" data-qnty="{poQnty}" data-supname="{supplier}" data-aggdate="{dateStr}"
+                       data-bs-target="#popup20">
+                        View Line Item Details
+                    </a>
+
+                    <!-- View Delivery Details -->
+                    <a href="javascript:void(0);" class="dropdown-item {viewDeliveryClass}" data-bs-toggle="modal"
+                       data-poref="{poReference}"
+                       data-podate="{dateStr}"
+                       data-supp="{supplier}"
+                       data-podetails="{poDetailsId}"
+                       data-procid="{procPlanId}"
+                       data-partno="{partNo}"
+                       data-bs-target="#Popup12">
+                        View Delivery Details
+                    </a>
+
+                    <!-- Short Close Line Item -->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-poref="{poReference}"
+                       data-podate="{dateStr}"
+                       data-supp="{supplier}"
+                       data-podetails="{poDetailsId}" data-partid="{partId}"
+                       data-procid="{procPlanId}"
+                       data-partno="{partNo}" data-qnty="{poQnty}" data-supname="{supplier}" data-aggdate="{dateStr}"
+                       data-bs-target="#view-socomment">
+                        View Comment
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item {shortCloseClass}" data-bs-toggle="modal"
+                       data-workorderid="{woid}"
+                       data-salesorderid="{salesOrderId}"
+                       data-wonumber="{woNumber}"
+                       data-partno="{partNo}"
+                       data-bs-target="#po-short">
+                        Short Close Line Item
+                    </a>
+
+                    <!-- Delete -->
+                    <a href="javascript:void(0);" class="dropdown-item {deleteClass}" data-bs-toggle="modal"
+                       data-workorderid="{woid}"
+                       data-salesorderid="{salesOrderId}"
+                       data-wonumber="{woNumber}"
+                       data-partno="{partNo}"
+                       data-bs-target="#po-delte">
+                        Delete
+                    </a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+
+<template id="POGrid1Row">
+    <tr>
+        <td>{poReference}</td>
+        <td>{dateStr}</td>
+        <td>{supplier}</td>
+        <td>{noOfLine}</td>
+        <td>{noOfOpenLine}</td>
+        <td>{noOfPastLine}</td>
+        <td>{poQnty}</td>
+        <td>{statusStr}</td>
+        <td>{poType}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-poref={poReference}
+                       data-podate={dateStr}
+                       data-supp={supplier}
+                       data-podetails={poDetailsId}
+                       data-procid={procPlanId}
+                       data-partno={partNo}
+                       data-bs-target="#Popup13">
+                        View PO Line Items
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-poref="{poReference}"
+                       data-podate="{dateStr}"
+                       data-supp="{supplier}"
+                       data-podetails="{poDetailsId}"
+                       data-procid="{procPlanId}" data-partid="{partId}"
+                       data-partno="{partNo}" data-qnty="{poQnty}" data-supname="{supplier}" data-aggdate="{dateStr}"
+                       data-bs-target="#popup10">
+                        Purchase To Stock
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-workorderid={woid}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-bs-target="#po-short">
+                        Short Close PO
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-workorderid={woid}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-bs-target="#po-delte">
+                        Delete
+                    </a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="POGrid2Row">
+    <tr>
+        <td>{poReference}</td>
+        <td>{dateStr}</td>
+        <td>{supplier}</td>
+        <td>{partNo}</td>
+        <td>{poQnty}</td>
+        <td>{poQntyRecd}</td>
+        <td>{unit}</td>
+        <td>{statusStr}</td>
+        <td>{partType}</td>
+        <td>{poType}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item {viewDeliveryClass}
+    {shortCloseClass}
+    {deleteClass}
+    -->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-poref="{poReference}"
+                       data-podate="{dateStr}"
+                       data-supp="{supplier}"
+                       data-podetails="{poDetailsId}" data-partid="{partId}"
+                       data-procid="{procPlanId}"
+                       data-partno="{partNo}" data-qnty="{poQnty}" data-supname="{supplier}" data-aggdate="{dateStr}"
+                       data-bs-target="#popup20">
+                        View PO Line Items
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item {viewDeliveryClass}" data-bs-toggle="modal"
+                       data-workorderid={woid}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-bs-target="#Popup12">
+                        View Delivery Details
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-poref="{poReference}"
+                       data-podate="{dateStr}"
+                       data-supp="{supplier}"
+                       data-podetails="{poDetailsId}" data-partid="{partId}"
+                       data-procid="{procPlanId}"
+                       data-partno="{partNo}" data-qnty="{poQnty}" data-supname="{supplier}" data-aggdate="{dateStr}"
+                       data-bs-target="#view-socomment">
+                        View Comment
+                    </a>
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-bs-toggle="modal"
+                       data-poref="{poReference}"
+                       data-podate="{dateStr}"
+                       data-supp="{supplier}"
+                       data-podetails="{poDetailsId}" data-partid="{partId}"
+                       data-procid="{procPlanId}"
+                       data-partno="{partNo}" data-qnty="{poQnty}" data-supname="{supplier}" data-aggdate="{dateStr}"
+                       data-bs-target="#ViewSoLog">View Supplier PO Log</a>
+                    <a href="javascript:void(0);"
+                       class="dropdown-item {shortCloseClass}" data-bs-toggle="modal"
+                       data-workorderid={woid}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-partdesc={partDesc}
+                       data-partid={partId}
+                       data-parttype={partType}
+                       data-plancompletiondatestr='{planCompletionDateStr}'
+                       data-requiredquantity={requiredQuantity}
+                       data-calwoqty={calcWOQty}
+                       data-wostatus={status}
+                       data-buildtostock={buildToStock}
+                       data-routingid={routingId}
+                       data-startingopno={startingOpNo}
+                       data-endingopno={endingOpNo}
+                       data-bs-target="#po-lineShort">Short Close Line Item</a>
+                    <a href="javascript:void(0);" class="dropdown-item {deleteClass}" data-bs-toggle="modal"
+                       data-workorderid={woid}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-bs-target="#po-delte">
+                        Delete
+                    </a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="PORow">
+    <tr>
+        <td>{poDateStr}</td>
+        <td>{user}</td>
+        <td>{partNo}</td>
+        <td>{event}</td>
+        <td>{field}</td>
+        <td>{newValue}</td>
+        <td>{oldValue}</td>
+        <td>{comment}</td>
+    </tr>
+</template>
+
+<template id="P10SupplierGridRow">
+    <tr>
+        <td>{company}</td>
+        <td>{qnty}</td>
+        <td>{procPriceQnty}</td>
+        <td>{procPrice}</td>
+        <td>{agreedDate}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-partid="{company}" data-suppid="{supplierId}" data-qnty="{qnty}" data-price="{procPrice}"
+                       data-calcdate="{recieptDate}" data-woid="{woId}" data-subconid="{woSubConSupplierId}" data-addninfo="{addnInfo}" data-procpalnid="{procPlanId}"
+                       onclick="EditSubSupplier(this)">Edit</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-partid="{partId}" data-partno="{partNo}" data-moq="{moq}" data-uom="{uomName}"
+                       data-partdesc="{partDesc}" data-suppid="{supplierId}" data-qnty="{calc_Proc_Qnty}" data-calcdate="{calcReceiptDateStr}"
+                       data-price="{price}" data-woid="{woId}" data-subconid="{woSubConSupplierId}"
+                       onclick="DeleteSubSupplier(this)">Delete</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+@section Scripts {
+    <script src="~/js/poline.js"></script>
+}

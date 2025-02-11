@@ -54,5 +54,6 @@ namespace CWB.App.Models.WorkOrder
         public string? MachineTypeName { get; set; } = string.Empty;
         public string? Location { get; set; } = string.Empty;
         public string? OprationNo { get; set; } = string.Empty;
+        public string? Inhouse { get; set; } = string.Empty;
     }
 }
