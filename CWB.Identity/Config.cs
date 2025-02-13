@@ -1,12 +1,15 @@
 ﻿using CWB.Identity.IdentityUtils;
 using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
+using System;
 using System.Collections.Generic;
 
 namespace CWB.Identity
 {
     public static class Config
     {
+        private static string GetLocalIpAddress() =>
+    Environment.GetEnvironmentVariable("HOST_DEFAULT_SWITCH_IP");
         public static IEnumerable<IdentityResource> IdentityResources =>
             new List<IdentityResource>
             {
@@ -54,10 +57,11 @@ namespace CWB.Identity
                     AlwaysIncludeUserClaimsInIdToken = true,                   
                     
                     // where to redirect to after login
-                    RedirectUris = { ConfigurationHelper.config.GetSection("ApiUrls:App").Value+ "/signin-oidc" },
-                    FrontChannelLogoutUri = ConfigurationHelper.config.GetSection("ApiUrls:App").Value+ "/signout-oidc" ,
+
+                    RedirectUris = { $"http://{GetLocalIpAddress()}:9005" + "/signin-oidc" },
+                    FrontChannelLogoutUri = $"http://{GetLocalIpAddress()}:9005"+ "/signout-oidc" ,
                     // where to redirect to after logout
-                    PostLogoutRedirectUris = { ConfigurationHelper.config.GetSection("ApiUrls:App").Value + "/signout-callback-oidc" },
+                    PostLogoutRedirectUris = { $"http://{GetLocalIpAddress()}:9005" + "/signout-callback-oidc" },
 
                     AllowedScopes = new List<string>
                     {
