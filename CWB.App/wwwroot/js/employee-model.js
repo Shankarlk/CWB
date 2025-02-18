@@ -477,9 +477,17 @@ $(function () {
                                 phoneNumber: data.phone,
                                 tenantId: "1"
                             };
-                            api.post("http://172.23.0.1:9003/account/Register", userrowData, {
+                            const getIPAddress = () => {
+                                const host = window.location.hostname; 
+                                return host;
+                            };
+
+                            const ipAddress = getIPAddress();
+                            console.log("Detected IP Address:", ipAddress);
+
+                            api.post(`http://${ipAddress}:9003/account/Register`, userrowData, {
                                 headers: {
-                                    "Content-Type": "application/json", // or application/x-www-form-urlencoded
+                                    "Content-Type": "application/json",
                                     "Accept": "application/json",
                                 },
                             })
@@ -489,6 +497,19 @@ $(function () {
                                 .catch((error) => {
                                     console.error("Error:", error);
                                 });
+
+                            //api.post("http://172.23.0.1:9003/account/Register", userrowData, {
+                            //    headers: {
+                            //        "Content-Type": "application/json", // or application/x-www-form-urlencoded
+                            //        "Accept": "application/json",
+                            //    },
+                            //})
+                            //    .then((response) => {
+                            //        console.log("Success:", response);
+                            //    })
+                            //    .catch((error) => {
+                            //        console.error("Error:", error);
+                            //    });
 
                         }).catch((error) => {
                             //AppUtil.HandleError("frmDesignation", error);
