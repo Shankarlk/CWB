@@ -80,17 +80,17 @@
                                             </div>
                                             <!-- end -->
                                         }
-                                        <div class="col-md-12">
+                                        @*<div class="col-md-12">
                                             <div class="text-center btn btn-outline-info w-100 mb-2">
                                                 <a href="#">
                                                     <h6>Release Material PO</h6>
                                                 </a>
                                             </div>
-                                        </div>
+                                        </div>*@
                                         <!-- end -->
                                         <div class="col-md-12">
                                             <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                <a href="#">
+                                                <a asp-controller="WorkOrder" asp-action="WipControl">
                                                     <h6>WIP Control</h6>
                                                 </a>
                                             </div>
@@ -361,6 +361,30 @@
                                 <!-- ================================ -->
                             </div>
                             <!-- end row -->
+                            <div class="row">
+
+                                <div class="col-md-12  dott-bord-t" style="padding: 10px;">
+                                    <div class="col-md-12  bord" style="padding: 10px;">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="text-center btn btn-outline-primary w-25 mb-2">
+                                                    <a>
+                                                        <h6>&nbsp;&nbsp;</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 text-end">
+                                                <div class="text-center btn btn-outline-primary w-25 mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="OperationsSettings">
+                                                        <h6>Settings</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <!-- =============================  -->
                     </div>

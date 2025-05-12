@@ -24,6 +24,9 @@ namespace CWB.Masters.Domain.DocumentManagement
         public long Status { get; set; }
         public long AppvStatus { get; set; }
         public long McTypeId { get; set; }
+        public long Inw_Recpt_HeaderId { get; set; }
+        public long NcLogIdId { get; set; }
+        public long Inw_Recpt_DetailsId { get; set; }
         public long McId { get; set; }
         public long TenantId { get; set; }
 

@@ -431,6 +431,7 @@ function AddPurchaseDetail(event) {
             $("#PPartId").val(MasterPartId);
             $("#PPartNo").val(MasterPartNo);
             $("#PSupplierId").val("").trigger('change');
+            $("#Pdetails").modal("hide");
         }).catch((error) => {
             AppUtil.HandleError(formName, error);
         });

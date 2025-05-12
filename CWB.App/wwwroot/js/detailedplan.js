@@ -131,27 +131,26 @@ function loadProcPlan() {
     api.getbulk("/WorkOrder/GetAllProcPlan").then((data) => {
         const transformedData = Object.values(
             data.reduce((acc, row) => {
-                const key = `${row.workorderId}_${row.partId}`;
+                const key = `${row.workOrderId}_${row.partId}`;
 
                 if (!acc[key]) {
-                    // Initialize the group if not already present
                     acc[key] = {
                         ...row,
-                        calcReceiptDateStr: row.calcReceiptDateStr,
-                        planStartDateStr: row.planStartDateStr,
                         calc_Proc_Qnty: 0,
                         plan_Proc_Qnty: 0
                     };
                 }
 
-                // Update the earliest dates
+                // Keep the earliest dates
                 acc[key].calcReceiptDateStr =
-                    acc[key].calcReceiptDateStr < row.calcReceiptDateStr ?
-                        acc[key].calcReceiptDateStr : row.calcReceiptDateStr;
+                    row.calcReceiptDateStr < acc[key].calcReceiptDateStr
+                        ? row.calcReceiptDateStr
+                        : acc[key].calcReceiptDateStr;
 
                 acc[key].planStartDateStr =
-                    acc[key].planStartDateStr < row.planStartDateStr ?
-                        acc[key].planStartDateStr : row.planStartDateStr;
+                    row.planStartDateStr < acc[key].planStartDateStr
+                        ? row.planStartDateStr
+                        : acc[key].planStartDateStr;
 
                 // Sum up the quantities
                 acc[key].calc_Proc_Qnty += row.calc_Proc_Qnty;
@@ -160,6 +159,9 @@ function loadProcPlan() {
                 return acc;
             }, {})
         );
+
+        console.log(transformedData);
+
         data = Object.values(transformedData);
         var tablebody = $("#ProcPlanGrid tbody");
         $(tablebody).html("");//empty tbody
@@ -1741,6 +1743,7 @@ $(document).ready(function () {
                 dataType: "json",
                 success: function (result) {
                     loadProcPlan();
+                    alert("Selected PO Sent For Approval");
                 }
             });
         } else {

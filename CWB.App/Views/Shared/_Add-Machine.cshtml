@@ -137,16 +137,19 @@
                                 <label class="form-label col-md-2 mb-2">Setup Time <span class="text-danger">*</span> </label>
                                 <div class="col-md-4 mb-2">
                                     <input value="10:00:00" type="text" id="SetupTime" name="SetupTime" class="form-control form-control-sm" required title="Enter the Setup time for the Machine for the Routing Step ... Removal / Unload of Previous Setup Hardware, Assemble / Load Hardware for the current setup, Downloading / Entering of Programs ...." data-plugin="tippy" data-tippy-placement="top">
+                                    <span id="SetupTimeEr" style="color:red"></span>
                                 </div>
                                 <!-- ---------------  -->
-                                <label class="form-label col-md-2 mb-2">1st Piece Processing time <span class="text-danger">*</span></label>
+                                <label class="form-label col-md-2 mb-2">Floor to Floor Time<span class="text-danger">*</span></label>
                                 <div class="col-md-4 mb-2">
                                     <input value="10:00:00" type="text" id="FloorToFloorTime" name="FloorToFloorTime" class="form-control form-control-sm" required title="Enter the time for Processing the first Part inclusive of Approval of the Setup .... If there is no approval enter the Floor To Floor Time " data-plugin="tippy" data-tippy-placement="top">
+                                    <span id="FloorToFloorTimeEr" style="color:red"></span>
                                 </div>
                                 <!-- ---------------  -->
-                                <label class="form-label col-md-2 mb-2">Floor to Floor Time <span class="text-danger">*</span></label>
+                                <label class="form-label col-md-2 mb-2"> 1st Piece Processing time <span class="text-danger">*</span></label>
                                 <div class="col-md-4 mb-2">
                                     <input value="10:00:00" type="text" id="FirstPieceProcessingTime" name="FirstPieceProcessingTime" class="form-control form-control-sm" required title="Enter the Floor to Floor Time which is the time interval between two Cycle Starts which would typically include Load / Unload and any other activity which is done serially ... Activities done in parallel to the Machine working (eg Inspection, Deburring ...) will not be a part of Floor To Floor Time" data-plugin="tippy" data-tippy-placement="top">
+                                    <span id="FirstPieceProcessingTimeEr" style="color:red"></span>
                                 </div>
                                 <!-- ---------------  -->
                                 <label class="form-label  col-md-2 mb-2">No of parts per loading <span class="text-danger">*</span></label>

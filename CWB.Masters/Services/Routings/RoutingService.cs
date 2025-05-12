@@ -208,7 +208,7 @@ namespace CWB.Masters.Services.Routings
                 RoutingStepMachine routingStepMachine = _mapper.Map<RoutingStepMachine>(step);
                 if (routingStepMachine.Id > 0)
                 {
-                    _routingStepMachineRepository.DetachEntry(routingStepMachine);
+                    //_routingStepMachineRepository.DetachEntry(routingStepMachine);
                     _routingStepMachineRepository.Remove(routingStepMachine);
                     await _unitOfWork.CommitAsync();
                     return true;

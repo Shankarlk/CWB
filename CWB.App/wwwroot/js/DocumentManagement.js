@@ -631,6 +631,7 @@ $(document).ready(function () {
                         $("#fileExtensionEditId").val('');
                         $("#fileExtensionNameEdit").val('');
                         loadFileExtnSelect();
+                        alert("File Extension Saved Successfully!");
                     }
                 });
             } else {
@@ -746,6 +747,7 @@ $(document).ready(function () {
                 success: function (result) {
                     //console.log(result);
                     loadDocType();
+                    alert("Departments that view and upload Document Type Saved Successfully!");
                     //$('#doc-type-detail').modal('hide');
 
                 }
@@ -848,6 +850,7 @@ $(document).ready(function () {
                             for (i = 0; i < data.length; i++) {
                                 $(tablebody).append(AppUtil.ProcessTemplateData("RefDocGridRow", data[i]));
                             }
+                            alert("Reference / Master File Replacement Reason Saved Successfully!");
 
                         }).catch((error) => {
 

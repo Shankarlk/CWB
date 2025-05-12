@@ -677,6 +677,9 @@ namespace CWB.Masters.MastersUtils
             .ForMember(s => s.Comments, s => s.MapFrom(src => src.Comments))
             .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
             .ForMember(s => s.McTypeId, s => s.MapFrom(src => src.McTypeId))
+            .ForMember(s => s.Inw_Recpt_DetailsId, s => s.MapFrom(src => src.Inw_Recpt_DetailsId))
+            .ForMember(s => s.Inw_Recpt_HeaderId, s => s.MapFrom(src => src.Inw_Recpt_HeaderId))
+            .ForMember(s => s.NcLogIdId, s => s.MapFrom(src => src.NcLogIdId))
             .ForMember(s => s.McId, s => s.MapFrom(src => src.McId))
             .ForMember(s => s.CreationDt, s => s.MapFrom(src => src.CreationDate));
 
@@ -692,6 +695,9 @@ namespace CWB.Masters.MastersUtils
             .ForMember(s => s.UploadUiId, s => s.MapFrom(src => src.UploadUiId))
             .ForMember(s => s.WoId, s => s.MapFrom(src => src.WoId))
             .ForMember(s => s.SoId, s => s.MapFrom(src => src.SoId))
+            .ForMember(s => s.Inw_Recpt_DetailsId, s => s.MapFrom(src => src.Inw_Recpt_DetailsId))
+            .ForMember(s => s.Inw_Recpt_HeaderId, s => s.MapFrom(src => src.Inw_Recpt_HeaderId))
+            .ForMember(s => s.NcLogIdId, s => s.MapFrom(src => src.NcLogIdId))
             .ForMember(s => s.PartId, s => s.MapFrom(src => src.PartId))
             .ForMember(s => s.RoutingId, s => s.MapFrom(src => src.RoutingId))
             .ForMember(s => s.OprNo, s => s.MapFrom(src => src.OprNo))

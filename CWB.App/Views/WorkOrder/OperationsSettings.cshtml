@@ -1,0 +1,1495 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "WIP Control";
+}
+<input value="B-BP" type="hidden" id="hdn-nav-menu" />
+
+<div class="content">
+    <div class="container mt-4">
+        <h4>Operations Settings </h4>
+        <hr class="mt-2">
+        <div class="contianer">
+            <div class="row ">
+                <div class="col-md-4">
+                    <div class="card p-1">
+                        <div class="row">
+                            <h5>Inward</h5>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#inwardDoc">Associate Inwarding Docs  with Document Type </button>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center justify-content-between mb-3 mt-2">
+                                    <h6 class="mb-0">Enable Upload of Inwarding Documents</h6>
+                                    <input class="form-check-input ms-auto me-3" type="checkbox" id="EnableUploadofInwardingDocuments">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h6 class="mb-0">Enable Upload of Supplier Inspection Documents</h6>
+                                    <input class="form-check-input ms-auto me-3" type="checkbox" id="EnableUploadofSupplierInspectionDocuments">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h6 class="mb-0">Enable Printing of Inwarding Labels</h6>
+                                    <input class="form-check-input ms-auto me-3" type="checkbox" id="EnablePrintingofInwardingLabels">
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card p-1">
+                        <div class="row">
+                            <h5>Inspection</h5>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#inspectDoc">Associate Inward Inpsection Docs with Document Type </button>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#lineDoc">Associate Line Inpsection Docs with Document Type </button>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#finalDoc">Associate Final Inpsection Docs with Document Type </button>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#rcacaDoc">Associate RCA & CA Docs with Document Type </button>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h6 class="mb-0">Enable Viewing of Part Inspection Documents</h6>
+                                    <input class="form-check-input ms-auto me-2" type="checkbox" id="EnableViewingofPartInspectionDocuments">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h6 class="mb-0">Enable Viewing of Supplier Inspection Documents</h6>
+                                    <input class="form-check-input ms-auto me-2" type="checkbox" id="EnableViewingofSupplierInspectionDocuments">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h6 class="mb-0">Enable Upload of Our Inward Inspection Documents</h6>
+                                    <input class="form-check-input ms-auto me-2" type="checkbox" id="EnableUploadofOurInwardInspectionDocuments">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h6 class="mb-0">Enable Upload of Root Cause Analysis & Corrective Action Report</h6>
+                                    <input class="form-check-input ms-auto me-2" type="checkbox" id="EnableUploadofRootCauseAnalysis&CorrectiveActionReport">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h6 class="mb-0">Enable Printing of Inspection Labels</h6>
+                                    <input class="form-check-input ms-auto me-2" type="checkbox" id="EnablePrintingofInspectionLabels">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h6 class="mb-0">Allow User with Permission to open NC Disposal UI without RCA & CA uploaded</h6>
+                                    <input class="form-check-input ms-auto me-2" type="checkbox" id="AllowUserwithPermissiontoopenNCDisposalUIwithoutRCA&CAuploaded">
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-50" id="UiEnableBtn">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card p-1">
+                        <div class="row">
+                            <h5>Non Conformance</h5>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#NcPopup1">NC Work Step Template</button>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#NcPopup4">NC Disposal Decision List</button>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#NcPopup6">Customer Response vs NC Disposal Decision Matrix</button>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#NcPopup8">Set NC Disposal Decision Malers (Level 1 / 2)</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <!-- end col -->
+</div>
+
+<div class="modal fade" id="inwardDoc" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Associate PO Docs with Document Type</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <h5>Documents Types to be uploaded for PO</h5>
+                    <div class="col-md-6 mt-3 dott-bord-r">
+                        <div class="row">
+                            <!-- ----------- -->
+                            <label class="form-label col-md-5 mb-2">Document Type Name * </label>
+                            <div class="col-md-7 mb-2">
+                                <select class="form-select form-select-sm" id="inwardDocDocTypeName" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="0">--Select--</option>
+                                </select>
+                            </div>
+                            <!-- ----------- -->
+                            <div class="col-md-12">
+                                <label class="form-check-label">Document Upload Mandatory</label>
+                                <input class="form-check-input m-l-15 mt-1" id="inwardDocUploadMandatory" type="checkbox">
+                                <input type="text" id="DocTypeId" hidden />
+                                <input type="text" id="InwardDocId" hidden />
+                            </div>
+                            <!-- ----------- -->
+                            <div class="col mt-12 text-end">
+                                <button type="button" class="btn btn-primary btn-sm" id="AddToinwardDocList">Add to List</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <span id="Text-Error-inwardDoc"></span>
+                        </div>
+                    </div>
+                    <!-- ----------- -->
+                    <div class="col-md-6 mt-3">
+                        <div class="table-responsive mt-1 table-he-180">
+                            <table class="table table-sm table-bordered w-100 mb-3 tableFixHead" id="inwardDocGrid">
+                                <thead class="  table-info th-sti text-center">
+                                    <tr class="table-border-bottom">
+                                        <th width="75%">Document Type</th>
+                                        <th>Mandatory</th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+                                        <td></td>
+                                        <td>y</td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>n</td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- =========================== -->
+                    </div>
+                    <!-- ----------- -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="inspectDoc" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Associate Inward Inspection Docs with Document Type</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <h5>Documents Types to be uploaded for PO</h5>
+                    <div class="col-md-6 mt-3 dott-bord-r">
+                        <div class="row">
+                            <!-- ----------- -->
+                            <label class="form-label col-md-5 mb-2">Document Type Name * </label>
+                            <div class="col-md-7 mb-2">
+                                <select class="form-select form-select-sm" id="inspectDocDocTypeName" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="0">--Select--</option>
+                                </select>
+                            </div>
+                            <!-- ----------- -->
+                            <div class="col-md-12">
+                                <label class="form-check-label">Document Upload Mandatory</label>
+                                <input class="form-check-input m-l-15 mt-1" id="inspectDocUploadMandatory" type="checkbox">
+                                <input type="text" id="DocTypeId" hidden />
+                                <input type="text" id="inspectDocId" hidden />
+                            </div>
+                            <!-- ----------- -->
+                            <div class="col mt-12 text-end">
+                                <button type="button" class="btn btn-primary btn-sm" id="AddToinspectDoc">Add to List</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <span id="Text-Error-inspectDoc"></span>
+                        </div>
+                    </div>
+                    <!-- ----------- -->
+                    <div class="col-md-6 mt-3">
+                        <div class="table-responsive mt-1 table-he-180">
+                            <table class="table table-sm table-bordered w-100 mb-3 tableFixHead" id="inspectDocGrid">
+                                <thead class="  table-info th-sti text-center">
+                                    <tr class="table-border-bottom">
+                                        <th width="75%">Document Type</th>
+                                        <th>Mandatory</th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+                                        <td></td>
+                                        <td>y</td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>n</td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- =========================== -->
+                    </div>
+                    <!-- ----------- -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="lineDoc" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Associate Line Inspection Docs with Document Type</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <h5>Documents Types to be uploaded for PO</h5>
+                    <div class="col-md-6 mt-3 dott-bord-r">
+                        <div class="row">
+                            <!-- ----------- -->
+                            <label class="form-label col-md-5 mb-2">Document Type Name * </label>
+                            <div class="col-md-7 mb-2">
+                                <select class="form-select form-select-sm" id="lineDocTypeName" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="0">--Select--</option>
+                                </select>
+                            </div>
+                            <!-- ----------- -->
+                            <div class="col-md-12">
+                                <label class="form-check-label">Document Upload Mandatory</label>
+                                <input class="form-check-input m-l-15 mt-1" id="lineDocUploadMandatory" type="checkbox">
+                                <input type="text" id="DocTypeId" hidden />
+                                <input type="text" id="lineDocId" hidden />
+                            </div>
+                            <!-- ----------- -->
+                            <div class="col mt-12 text-end">
+                                <button type="button" class="btn btn-primary btn-sm" id="AddTolineDocList">Add to List</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <span id="Text-Error-lineDoc"></span>
+                        </div>
+                    </div>
+                    <!-- ----------- -->
+                    <div class="col-md-6 mt-3">
+                        <div class="table-responsive mt-1 table-he-180">
+                            <table class="table table-sm table-bordered w-100 mb-3 tableFixHead" id="lineDocGrid">
+                                <thead class="  table-info th-sti text-center">
+                                    <tr class="table-border-bottom">
+                                        <th width="75%">Document Type</th>
+                                        <th>Mandatory</th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+                                        <td></td>
+                                        <td>y</td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>n</td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- =========================== -->
+                    </div>
+                    <!-- ----------- -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="finalDoc" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Associate Final Inspection Docs with Document Type</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <h5>Documents Types to be uploaded for PO</h5>
+                    <div class="col-md-6 mt-3 dott-bord-r">
+                        <div class="row">
+                            <!-- ----------- -->
+                            <label class="form-label col-md-5 mb-2">Document Type Name * </label>
+                            <div class="col-md-7 mb-2">
+                                <select class="form-select form-select-sm" id="finalDocTypeName" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="0">--Select--</option>
+                                </select>
+                            </div>
+                            <!-- ----------- -->
+                            <div class="col-md-12">
+                                <label class="form-check-label">Document Upload Mandatory</label>
+                                <input class="form-check-input m-l-15 mt-1" id="finalDocUploadMandatory" type="checkbox">
+                                <input type="text" id="DocTypeId" hidden />
+                                <input type="text" id="finalDocId" hidden />
+                            </div>
+                            <!-- ----------- -->
+                            <div class="col mt-12 text-end">
+                                <button type="button" class="btn btn-primary btn-sm" id="AddTofinalDocList">Add to List</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <span id="Text-Error-finalDoc"></span>
+                        </div>
+                    </div>
+                    <!-- ----------- -->
+                    <div class="col-md-6 mt-3">
+                        <div class="table-responsive mt-1 table-he-180">
+                            <table class="table table-sm table-bordered w-100 mb-3 tableFixHead" id="finalDocGrid">
+                                <thead class="  table-info th-sti text-center">
+                                    <tr class="table-border-bottom">
+                                        <th width="75%">Document Type</th>
+                                        <th>Mandatory</th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+                                        <td></td>
+                                        <td>y</td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>n</td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- =========================== -->
+                    </div>
+                    <!-- ----------- -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="rcacaDoc" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Associate Root Cause Analysis & Corrective Action Docs with Document Type</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <h5>Documents Types to be uploaded for PO</h5>
+                    <div class="col-md-6 mt-3 dott-bord-r">
+                        <div class="row">
+                            <!-- ----------- -->
+                            <label class="form-label col-md-5 mb-2">Document Type Name * </label>
+                            <div class="col-md-7 mb-2">
+                                <select class="form-select form-select-sm" id="rcacaDocTypeName" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="0">--Select--</option>
+                                </select>
+                            </div>
+                            <!-- ----------- -->
+                            <div class="col-md-12">
+                                <label class="form-check-label">Document Upload Mandatory</label>
+                                <input class="form-check-input m-l-15 mt-1" id="rcacaDocUploadMandatory" type="checkbox">
+                                <input type="text" id="DocTypeId" hidden />
+                                <input type="text" id="rccaDocId" hidden />
+                            </div>
+                            <!-- ----------- -->
+                            <div class="col mt-12 text-end">
+                                <button type="button" class="btn btn-primary btn-sm" id="AddTorcacaDocList">Add to List</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <span id="Text-Error-rcacaDoc"></span>
+                        </div>
+                    </div>
+                    <!-- ----------- -->
+                    <div class="col-md-6 mt-3">
+                        <div class="table-responsive mt-1 table-he-180">
+                            <table class="table table-sm table-bordered w-100 mb-3 tableFixHead" id="rcacaDocGrid">
+                                <thead class="  table-info th-sti text-center">
+                                    <tr class="table-border-bottom">
+                                        <th width="75%">Document Type</th>
+                                        <th>Mandatory</th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+                                        <td></td>
+                                        <td>y</td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>n</td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- =========================== -->
+                    </div>
+                    <!-- ----------- -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="NcPopup1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">NC Work Step Template Management</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- <h5>NC Work Step Template Management</h5> -->
+                    <!-- ----------- -->
+                    <div class="col-md-12 mt-2">
+                        <div class="table-responsive mt-1 table-he-180">
+                            <table class="table table-sm table-bordered w-100 mb-3 tableFixHead" id="NcPopup1Grid">
+                                <thead class="  table-info th-sti text-center">
+                                    <tr class="table-border-bottom">
+                                        <th>NC Disposal Decision</th>
+                                        <th>No of Step</th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- =========================== -->
+                    </div>
+                    <div class="col-md-12 ">
+                        <button class="btn btn-primary w-25 mb-2" id="NcPopup2OpenBtn" data-bs-toggle="modal" data-bs-target="#NcPopup2">Include Steps for New NC Disposal Decision</button>
+                    </div>
+                    <!-- ----------- -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="NcPopup2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Add New NC Disposal Decision to List</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <label class="form-label col-md-5 mb-2">NC Disposal Decision * </label>
+                            <div class="col-md-7 mb-2">
+                                <select class="form-select form-select-sm" id="NcPopup2Decision" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="0">--Select--</option>
+                                </select>
+                            </div>
+                            <div class="col text-end">
+                                <button class="btn btn-sm btn-primary" id="NcPopup2Save">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="NcPopup3" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Step list for NC Disposal Decision </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label class="form-label col-md-5 mb-2">NC Disposal Decision  </label>
+                    <div class="col-md-7 mb-2">
+                        <input class="form-control" id="P3NcDisp" type="text" readonly>
+                    </div>
+                    <label class="form-label col-md-5 mb-2">Seq. No </label>
+                    <div class="col-md-7 mb-2">
+                        <input class="form-control" id="P3SeqNo" type="number">
+                    </div>
+                    <label class="form-label col-md-5 mb-2">Work Step Desc * </label>
+                    <div class="col-md-7 mb-2">
+                        <input class="form-control" id="P3WorkDesc" placeholder="Enter Step Desc" type="text">
+                    </div>
+                    <label class="form-label col-md-5 mb-2">UI * </label>
+                    <div class="col-md-7 mb-2">
+                        <select class="form-select form-select-sm" id="P3Ui" title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="0">--Select--</option>
+                        </select>
+                    </div>
+                    <!-- ----------- -->
+                    <label class="form-label col-md-5 mb-2">Resp Dept *</label>
+                    <div class="col-md-7 mb-2">
+                        <select class="form-select form-select-sm" id="P3Resp" title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="0">--Select--</option>
+                        </select>
+                    </div>
+                    <input type="text" id="DocTypeId" hidden />
+                    <input type="text" id="ItemDocId" hidden />
+                    <!-- ----------- -->
+                    <div class="col mt-12 text-end">
+                        <button type="button" class="btn btn-primary btn-sm" id="P3Save">Save</button>
+                    </div>
+                    <!-- ----------- -->
+                    <div class="col-md-12 mt-2">
+                        <div class="table-responsive mt-1 table-he-180">
+                            <table class="table table-sm table-bordered w-100 mb-3 tableFixHead" id="NcPopup3Grid">
+                                <thead class="  table-info th-sti text-center">
+                                    <tr class="table-border-bottom">
+                                        <th>Seq No</th>
+                                        <th>Work Step</th>
+                                        <th>UI</th>
+                                        <th>Resp Dept</th>
+                                        <th></th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit Steps</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete from List</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- =========================== -->
+                    </div>
+                    <div class="col-md-12 ">
+                        <button class="btn btn-primary w-25 mb-2" id="P3addNew">Add New Work Step</button>
+                    </div>
+                    <!-- ----------- -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="NcPopup4" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">NC Disposal Decision List</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- <h5>NC Work Step Template Management</h5> -->
+                    <!-- ----------- -->
+                    <div class="col-md-12 mt-2">
+                        <div class="table-responsive mt-1 table-he-180">
+                            <table class="table table-sm table-bordered w-100 mb-3 tableFixHead" id="NcPopup4Grid">
+                                <thead class="  table-info th-sti text-center">
+                                    <tr>
+                                        <th class="bg-light"></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th>Applicability</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th class="bg-light"></th>
+                                        <th class="bg-light"></th>
+                                        <th class="bg-light"></th>
+                                    </tr>
+                                    <tr class="table-border-bottom">
+                                        <th>NC Disposal Decision</th>
+                                        <th>RM</th>
+                                        <th>BOF</th>
+                                        <th>Subcon</th>
+                                        <th>CMP</th>
+                                        <th>Assy</th>
+                                        <th>Instruction</th>
+                                        <th>Level 2 Approval</th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- =========================== -->
+                    </div>
+                    <div class="col-md-12 ">
+                        <button class="btn btn-primary w-25 mb-2" data-bs-toggle="modal" data-bs-target="#NcPopup5" id="P4AddNewDesc">Add New Disposal Decision </button>
+                    </div>
+                    <!-- ----------- -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="NcPopup5" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">NC Disposal Decision List</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- <h5>NC Work Step Template Management</h5> -->
+                    <!-- ----------- -->
+
+                    <label class="form-label col-md-5 mb-2">NC Disposal Decision  *</label>
+                    <div class="col-md-7 mb-2">
+                        <select class="form-select form-select-sm" id="P5NcDispDec" title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="0">--Select--</option>
+                        </select>
+                    </div>
+                    <label class="form-label col-md-5 mb-2">Level 2 Approval Reqd </label>
+                    <div class="col-md-7 mb-2">
+                        <input class="form-check-input mt-1 " id="P5Lvl2Chk" type="checkbox">
+                    </div>
+                    <h6>Applicability</h6>
+                    <label class="form-label col-md-5 mb-2">Raw Material (RM)  </label>
+                    <div class="col-md-7 mb-2">
+                        <input class="form-check-input mt-1 " id="P5RMChk" type="checkbox">
+                    </div>
+                    <label class="form-label col-md-5 mb-2">Bought out Finish (BOF) </label>
+                    <div class="col-md-7 mb-2">
+                        <input class="form-check-input mt-1 " id="P5BofChk" type="checkbox">
+                    </div>
+                    <label class="form-label col-md-5 mb-2">Sub Contract (Subcon)  </label>
+                    <div class="col-md-7 mb-2">
+                        <input class="form-check-input mt-1 " id="P5SubChk" type="checkbox">
+                    </div>
+                    <label class="form-label col-md-5 mb-2">Child Manufactured Part (CMP)</label>
+                    <div class="col-md-7 mb-2">
+                        <input class="form-check-input mt-1 " id="P5CmpChk" type="checkbox">
+                    </div>
+                    <label class="form-label col-md-5 mb-2">Assembly (Assy)</label>
+                    <div class="col-md-7 mb-2">
+                        <input class="form-check-input mt-1 " id="P5AssyChk" type="checkbox">
+                        <input class="form-check-input mt-1 " id="P5NcDispAplId" type="text" hidden>
+                    </div>
+                    <!-- ----------- -->
+                    <div class="col-md-12 text-end">
+                        <button class="btn btn-primary w-25 mb-2" id="NcP5Save">Save</button>
+                    </div>
+                    <!-- ----------- -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="NcPopup6" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Request to Customer (NC) / Feedback from Customer vs NC Disposal Decision List</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- <h5>NC Work Step Template Management</h5> -->
+                    <!-- ----------- -->
+                    <div class="col-md-12 mt-2">
+                        <div class="table-responsive mt-1 table-he-180">
+                            <table class="table table-sm table-bordered w-100 mb-3 tableFixHead" id="NcP6Grid">
+                                <thead class="  table-info th-sti text-center">
+                                    <tr class="table-border-bottom">
+                                        <th>Request to Customer</th>
+                                        <th>Feedback from Customer</th>
+                                        <th>Allowed NC Disposal Decisions</th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" data-bs-toggle="modal" data-bs-target="#NcPopup7">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <div class="dropdown float-center">
+                                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="EditItemMasterDoc(this)">Edit</a>
+                                                    <!-- item-->
+                                                    <a href="javascript:void(0);" class="dropdown-item"
+                                                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                                                       data-masterdocid="{itemMasterDocListId}" onclick="DeleteItemMasterDoc(this)">Delete</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- =========================== -->
+                    </div>
+                    <div class="col-md-12 ">
+                        <button class="btn btn-primary w-25 mb-2" data-bs-toggle="modal" data-bs-target="#NcPopup7">Add New Row</button>
+                    </div>
+                    <!-- ----------- -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="NcPopup7" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Step list for NC Disposal Decision </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- <h5>NC Work Step Template Management</h5> -->
+                    <label class="form-label col-md-5 mb-2">Request to Customer * </label>
+                    <div class="col-md-7 mb-2">
+                        <select class="form-select form-select-sm" id="P7RtoCust" title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="0">--Select--</option>
+                        </select>
+                    </div>
+                    <!-- ----------- -->
+                    <label class="form-label col-md-5 mb-2">Feedback from Customer *</label>
+                    <div class="col-md-7 mb-2">
+                        <select class="form-select form-select-sm" id="P7Feed" title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="0">--Select--</option>
+                        </select>
+                    </div>
+                    <input type="text" id="P7MatrixId" hidden />
+                    <input type="text" id="P7OptId" hidden />
+                    <!-- ----------- -->
+                    <div class="col mt-12 text-end">
+                        <button type="button" class="btn btn-primary btn-sm" id="P7Save">Save</button>
+                    </div>
+                    <!-- ----------- -->
+                    <h6>NC Disposal Decision allowed for this Combination</h6>
+                    <div class="col-md-12 mt-2">
+                        <div class="table-responsive mt-1 table-he-180">
+                            <table class="table table-sm table-bordered w-100 mb-3 tableFixHead" id="P7Grid">
+                                <thead class="  table-info th-sti text-center">
+                                    <tr class="table-border-bottom">
+                                        <th></th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-center">
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- =========================== -->
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-primary mb-2" id="OpenPopup27" data-bs-toggle="modal" data-bs-target="#NcPopup27">Include New NC Disposal Decision</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-primary mb-2" id="P7Save2">Save</button>
+                    </div>
+                    <!-- ----------- -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="NcPopup8" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">NC Disposal Decision </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <label class="form-label col-md-5 mb-2">NC Disposal Decision Maker Level 1 * </label>
+                            <div class="col-md-7 mb-2">
+                                <select class="form-select form-select-sm" id="P8lvl1" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="0">--Select--</option>
+                                </select>
+                            </div>
+                            <label class="form-label col-md-5 mb-2">NC Disposal Decision Maker Level 2 </label>
+                            <div class="col-md-7 mb-2">
+                                <select class="form-select form-select-sm" id="P8lvl2" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="0">--Select--</option>
+                                </select>
+                            </div>
+                            <div class="col text-end">
+                                <button class="btn btn-sm btn-primary" id="SaveUOM">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="NcPopup27" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Add New NC Disposal Decision to List</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <label class="form-label col-md-5 mb-2">NC Disposal Decision * </label>
+                            <div class="col-md-7 mb-2">
+                                <select class="form-select form-select-sm" id="NcPopup27Decision" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="0">--Select--</option>
+                                </select>
+                            </div>
+                            <div class="col text-end">
+                                <button class="btn btn-sm btn-primary" id="NcPopup27Save">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<template id="inwardDocRow">
+
+    <tr>
+        <td>{documentTypeName}</td>
+        <td>{mandatory}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}"
+                       data-masterdocid="{inwardDocTypeId}" onclick="EditinwardDoc(this)">Edit</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-docname="{documentTypeId}" data-mandatory="{mandatory}"
+                       data-masterdocid="{inwardDocTypeId}" onclick="DeleteinwardDoc(this)">Delete</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="inspectDocRow">
+
+    <tr>
+        <td>{documentTypeName}</td>
+        <td>{mandatory}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}"
+                       data-masterdocid="{inspectDocTypeId}" onclick="EditinspectDoc(this)">Edit</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-docname="{documentTypeId}" data-mandatory="{mandatory}"
+                       data-masterdocid="{inspectDocTypeId}" onclick="DeleteinspectDoc(this)">Delete</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="lineDocRow">
+
+    <tr>
+        <td>{documentTypeName}</td>
+        <td>{mandatory}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}"
+                       data-masterdocid="{lineInspectDocTypeId}" onclick="EditlineDoc(this)">Edit</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-docname="{documentTypeId}" data-mandatory="{mandatory}"
+                       data-masterdocid="{lineInspectDocTypeId}" onclick="DeletelineDoc(this)">Delete</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="finalDocRow">
+
+    <tr>
+        <td>{documentTypeName}</td>
+        <td>{mandatory}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}"
+                       data-masterdocid="{finalInspectDocTypeId}" onclick="EditfinalDoc(this)">Edit</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-docname="{documentTypeId}" data-mandatory="{mandatory}"
+                       data-masterdocid="{finalInspectDocTypeId}" onclick="DeletefinalDoc(this)">Delete</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="rcacaDocRow">
+
+    <tr>
+        <td>{documentTypeName}</td>
+        <td>{mandatory}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{documentTypeId}" data-mandatory="{mandatory}"
+                       data-masterdocid="{rcCaDocTypeId}" onclick="EditRcaCaDoc(this)">Edit</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-docname="{documentTypeId}" data-mandatory="{mandatory}"
+                       data-masterdocid="{rcCaDocTypeId}" onclick="DeleteRcaCaDoc(this)">Delete</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="NcPopup3GridRow">
+    <tr>
+        <td>{seq_no}</td>
+        <td>{nC_Wk_Step_Desc}</td>
+        <td>{uI_Name}</td>
+        <td>{resp_DeptName}</td>
+        <td></td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-seqno="{seq_no}" data-id="{nC_Wk_List_Tmpl_DetId}" data-headid="{nC_Wk_List_Tmpl_Appl_Id}" data-ncwkdesc="{nC_Wk_Step_Desc}" data-uiid="{uI_ID}"
+                       data-respdept="{resp_Dept}" onclick="EditNcPopup3(this)">Edit Steps</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-docname="{documentTypeId}" data-mandatory="{mandatory}"  data-headid="{nC_Wk_List_Tmpl_Appl_Id}"
+                       data-masterdocid="{nC_Wk_List_Tmpl_DetId}" onclick="DeleteNcPopup3(this)">Delete from List</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="NcPopup1GridRow">
+    <tr>
+        <td class="nc-description">{nC_Disp_Decision_Name}</td>
+        <td>{no_of_steps}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-docname="{nC_Wk_List_Tmpl_HeadId}" data-mandatory="{nC_Disp_Decision_Id}" data-mastercontent="{no_of_steps}"
+                       data-masterdocid="{nC_Disp_Decision_Name}" data-bs-toggle="modal" data-bs-target="#NcPopup3">Edit Steps</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                       data-masterdocid="{nC_Wk_List_Tmpl_HeadId}" onclick="DeleteNcPopup1(this)">Delete from List</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="NcPopup4GridRow">
+    <tr>
+        <td class="nc-description">{nC_Disp_Decision_Name}</td>
+        <td>{rm}</td>
+        <td>{bof}</td>
+        <td>{subCon}</td>
+        <td>{cmp}</td>
+        <td>{assy}</td>
+        <td></td>
+        <td>{level_2_Dec_Reqd}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-id="{nC_Disp_Decs_Appl_ListId}" data-rm="{rm}" data-bof="{bof}" data-ncname="{nC_Disp_Decision_Name}" data-ncdispid="{nC_Disp_Decision_Id}"
+                       data-subcon="{subCon}" data-cmp="{cmp}" data-assy="{assy}" data-level="{level_2_Dec_Reqd}" data-bs-toggle="modal" data-bs-target="#NcPopup5">Edit</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                       data-masterdocid="{nC_Disp_Decs_Appl_ListId}" onclick="DeleteP4NcDelete(this)">Delete</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="NcPopup6GridRow">
+    <tr>
+        <td>{request}</td>
+        <td>{feed}</td>
+        <td>{ncDecision}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-id="{cust_NC_Decs_MatrixId}" data-rm="{cust_Request_Id}" data-bof="{cust_Feedback_Id}"
+                       data-bs-toggle="modal" data-bs-target="#NcPopup7">Edit</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-mastercontent="{contentId}"
+                       data-masterdocid="{cust_NC_Decs_MatrixId}" onclick="DeleteP6NcDelete(this)">Delete</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="NcPopup7GridRow">
+    <tr>
+        <td class="nc-description">{ncDecision}</td>
+        <td><a href="javascript:void(0);" id="delete-extn-link" onclick="DeleteP7({cust_NC_Decs_Matrix_OptId})"><i class="fas fa-trash"></i></a></td>
+    </tr>
+</template>
+
+@section Scripts {
+    <script src="~/js/OperationSettings.js"></script>
+}

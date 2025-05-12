@@ -288,7 +288,7 @@ $(function () {
 function checkTokenExpiry(expiryTime) {
     if (!expiryTime) return;
 
-    const logoutUrl = "Home/Logout"; 
+    const logoutUrl = "/Home/Logout"; 
     const interval = 1000;
 
     // Periodically check the current time against the expiry time

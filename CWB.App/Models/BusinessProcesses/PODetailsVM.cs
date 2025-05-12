@@ -20,6 +20,7 @@ namespace CWB.App.Models.BusinessProcesses
         public int PoQntyRecd { get; set; }
         public int Status { get; set; }
         public long TenantId { get; set; }
+        public string DocStatus { get; set; } = string.Empty;
         public string NoOfLine { get; set; } = string.Empty;
         public string NoOfOpenLine { get; set; } = string.Empty;
         public string NoOfPastLine { get; set; } = string.Empty;
@@ -34,5 +35,8 @@ namespace CWB.App.Models.BusinessProcesses
         public string PartType { get; set; } = string.Empty;
         public string Unit { get; set; } = string.Empty;
         public string PartNo { get; set; } = string.Empty;
+        public string InwDate { get; set; } = string.Empty;
+        public long? WoId { get; set; } = 0;
+        public long InwHeaderId { get; set; } = 0;
     }
 }

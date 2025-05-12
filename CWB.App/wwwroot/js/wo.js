@@ -20,6 +20,9 @@ function loadSO() {
         $(tablebody).html("");//empty tbody
         //console.log(data);
         for (i = 0; i < data.length; i++) {
+            if (data[i].poNumber == null) {
+                continue;
+            }
             $(tablebody).append(AppUtil.ProcessTemplateData("SalesOrderRow1", data[i]));
         }
     }).catch((error) => {

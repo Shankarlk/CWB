@@ -31,6 +31,33 @@ namespace CWB.ProductionPlanWO.Services
         private readonly IPOStatusRepository _poStatusRepository;
         private readonly IWoSubConSupplierRepository _woSubConSupplierRepository;
         private readonly IPOLogRepository _pOLogRepository;
+        private readonly IInward_Condn_listRepository _IInward_Condn_listRepository;
+        private readonly IInsp_Outcome_DetailsRepository _iInsp_Outcome_DetailsRepository;
+        private readonly IInsp_Outcome_ListRepository _IInsp_Outcome_ListRepository;
+        private readonly IInventory_MasterRepository _IInventory_MasterRepository;
+        private readonly IInv_Trans_LogRepository _IInv_Trans_LogRepository;
+        private readonly IInw_Recpt_DetailsRepository _IInw_Recpt_DetailsRepository;
+        private readonly IInw_Recpt_HeaderRepository _IInw_Recpt_HeaderRepository;
+        private readonly IInw_Recpt_Part_NoRepository _IInw_Recpt_Part_NoRepository;
+        private readonly IInwardDocTypeRepository _IInwardDocTypeRepository;
+        private readonly IRcCaDocTypeRepository _IRcCaDocTypeRepository;
+        private readonly ILineInspectDocTypeRepository _ILineInspectDocTypeRepository;
+        private readonly IFinalInspectDocTypeRepository _IFinalInspectDocTypeRepository;
+        private readonly IOperationSettingsRepository _operationSettingsRepository;
+        private readonly ICont_RCA_CA_LogRepository _Cont_RCA_CA_LogRepository;
+        private readonly INC_Decision_LogRepository _NC_Decision_LogRepository;
+        private readonly INC_Wk_List_Tmpl_DetRepository _NC_Wk_List_Tmpl_DetRepository;
+        private readonly INC_Disp_Decs_Appl_ListRepository _NC_Disp_Decs_Appl_ListRepository;
+        private readonly INC_Wk_List_Tmpl_HeadRepository _NC_Wk_List_Tmpl_HeadRepository;
+        private readonly INC_Work_ListRepository _NC_Work_ListRepository;
+        private readonly INC_Wk_List_HeaderRepository _NC_Wk_List_HeaderRepository;
+        private readonly ICust_NC_Decs_Matrix_OptRepositoy _Cust_NC_Decs_Matrix_OptRepository;
+        private readonly ICust_NC_Decs_MatrixRepository _Cust_NC_Decs_MatrixRepository;
+        private readonly ICont_RCA_CA_Status_ListRepository _Cont_RCA_CA_Status_ListRepository;
+        private readonly INC_Disp_Decision_ListRepository _NC_Disp_Decision_ListRepository;
+        private readonly INC_work_StatusRepository _NC_work_StatusRepository;
+        private readonly IInspectDocTypeRepository _IInspectDocTypeRepository;
+        private readonly INcLogStatusRepository _INcLogStatusRepository;
 
         public WOService(
             ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork
@@ -38,7 +65,17 @@ namespace CWB.ProductionPlanWO.Services
             , IProcPlanRepository procPlanRepository, IWOSORepository woso, IBOMTempRepository bOMTempRepository, IBOMListRepository bOMListRepository,
             IProductionPlan_WORepository productionPlan_WORepository, IWOStatusRepository wOStatus, IChildWoRelRepository childWoRelRepository
             , IMcTimeListRepository mcTimeListRepository, IPODetailsRepository pODetailsRepository,IPOHeaderRepository pOHeaderRepository,IPOStatusRepository pOStatusRepository,
-            IWoSubConSupplierRepository woSubConSupplierRepository, IProcPlanPartPurChaseRelRepository purChaseRelRepository)
+            IWoSubConSupplierRepository woSubConSupplierRepository, IProcPlanPartPurChaseRelRepository purChaseRelRepository, IInward_Condn_listRepository IInward_Condn_listRepository,
+            IInsp_Outcome_DetailsRepository iInsp_Outcome_DetailsRepository, 
+            IInsp_Outcome_ListRepository insp_Outcome_ListRepository, IInventory_MasterRepository Inventory_Master
+            ,IInv_Trans_LogRepository inv_Trans_LogRepository, IInw_Recpt_DetailsRepository inw_Recpt_DetailsRepository
+            ,IInw_Recpt_HeaderRepository Inw_Recpt_Header, IInw_Recpt_Part_NoRepository Inw_Recpt_Part_No,
+            IInwardDocTypeRepository InwardDocTypeRepository,IRcCaDocTypeRepository RcCaDocTypeRepository
+            , ILineInspectDocTypeRepository LineInspectDocTypeRepository, IFinalInspectDocTypeRepository FinalInspectDocTypeRepository,
+            IInspectDocTypeRepository InspectDocTypeRepository,INcLogStatusRepository ncLogStatusRepository,IOperationSettingsRepository operationSettingsRepository,ICont_RCA_CA_LogRepository Cont_RCA_CA_LogRepository
+            ,INC_Decision_LogRepository NC_Decision_LogRepository,INC_Wk_List_Tmpl_DetRepository NC_Wk_List_Tmpl_DetRepository ,INC_Disp_Decs_Appl_ListRepository NC_Disp_Decs_Appl_ListRepository  ,INC_Wk_List_Tmpl_HeadRepository NC_Wk_List_Tmpl_HeadRepository  ,INC_Work_ListRepository NC_Work_ListRepository ,INC_Wk_List_HeaderRepository NC_Wk_List_HeaderRepository ,ICust_NC_Decs_Matrix_OptRepositoy Cust_NC_Decs_Matrix_OptRepository
+            ,ICust_NC_Decs_MatrixRepository Cust_NC_Decs_MatrixRepository ,ICont_RCA_CA_Status_ListRepository Cont_RCA_CA_Status_ListRepository,INC_Disp_Decision_ListRepository NC_Disp_Decision_ListRepository
+            ,INC_work_StatusRepository NC_work_StatusRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -58,6 +95,33 @@ namespace CWB.ProductionPlanWO.Services
             _woSubConSupplierRepository = woSubConSupplierRepository;
             _pOLogRepository = pOLogRepository;
             _IProcPlanPartPurChaseRelRepository = purChaseRelRepository;
+            _IInward_Condn_listRepository = IInward_Condn_listRepository;
+            _IInventory_MasterRepository = Inventory_Master;
+            _IInsp_Outcome_ListRepository = insp_Outcome_ListRepository;
+            _IInv_Trans_LogRepository = inv_Trans_LogRepository;
+            _IInw_Recpt_DetailsRepository = inw_Recpt_DetailsRepository;
+            _IInw_Recpt_HeaderRepository = Inw_Recpt_Header;
+            _IInw_Recpt_Part_NoRepository = Inw_Recpt_Part_No;
+            _iInsp_Outcome_DetailsRepository = iInsp_Outcome_DetailsRepository;
+            _IInwardDocTypeRepository = InwardDocTypeRepository;
+            _ILineInspectDocTypeRepository = LineInspectDocTypeRepository;
+            _IFinalInspectDocTypeRepository = FinalInspectDocTypeRepository;
+            _IRcCaDocTypeRepository = RcCaDocTypeRepository;
+            _IInspectDocTypeRepository = InspectDocTypeRepository;
+            _INcLogStatusRepository = ncLogStatusRepository;
+            _operationSettingsRepository = operationSettingsRepository;
+            _Cont_RCA_CA_LogRepository = Cont_RCA_CA_LogRepository;
+            _NC_Decision_LogRepository = NC_Decision_LogRepository;
+            _NC_Wk_List_Tmpl_DetRepository = NC_Wk_List_Tmpl_DetRepository;
+            _NC_Disp_Decs_Appl_ListRepository = NC_Disp_Decs_Appl_ListRepository;
+            _NC_Wk_List_Tmpl_HeadRepository = NC_Wk_List_Tmpl_HeadRepository;
+            _NC_Work_ListRepository = NC_Work_ListRepository;
+            _NC_Wk_List_HeaderRepository = NC_Wk_List_HeaderRepository;
+            _Cust_NC_Decs_Matrix_OptRepository = Cust_NC_Decs_Matrix_OptRepository;
+            _Cust_NC_Decs_MatrixRepository = Cust_NC_Decs_MatrixRepository;
+            _Cont_RCA_CA_Status_ListRepository = Cont_RCA_CA_Status_ListRepository;
+            _NC_work_StatusRepository = NC_work_StatusRepository;
+            _NC_Disp_Decision_ListRepository = NC_Disp_Decision_ListRepository;
         }
 
         public string HelloWorld()
@@ -921,6 +985,1489 @@ namespace CWB.ProductionPlanWO.Services
                 item.PoDetailsId = po.Id;
             }
             return pOHeaderVMs;
+        }
+
+        public async Task<IEnumerable<Insp_Outcome_DetailsVM>> GetAllInsp_Outcome_Details(long tenantId)
+        {
+            var allwo = _iInsp_Outcome_DetailsRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Insp_Outcome_DetailsVM>>(allwo);
+        }
+        public async Task<IEnumerable<Insp_Outcome_ListVM>> GetAllInsp_Outcome_List()
+        {
+            var allwo = await _IInsp_Outcome_ListRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<Insp_Outcome_ListVM>>(allwo);
+        }
+        public async Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_Master(long tenantId)
+        {
+            var allwo = _IInventory_MasterRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Inventory_MasterVM>>(allwo);
+        }
+        public async Task<IEnumerable<Inv_Trans_LogVM>> GetAllInvTransLog(long tenantId)
+        {
+            var allwo = _IInv_Trans_LogRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Inv_Trans_LogVM>>(allwo);
+        }
+        public async Task<IEnumerable<Inw_Recpt_DetailsVM>> GetAllInw_Recpt_Details(long tenantId)
+        {
+            var allwo = _IInw_Recpt_DetailsRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Inw_Recpt_DetailsVM>>(allwo);
+        }
+        public async Task<IEnumerable<Inw_Recpt_HeaderVM>> GetAlInw_Recpt_Header(long tenantId)
+        {
+            var allwo = _IInw_Recpt_HeaderRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Inw_Recpt_HeaderVM>>(allwo);
+        }
+        public async Task<IEnumerable<Inw_Recpt_Part_NoVM>> GetAlInw_Recpt_Part_No(long tenantId)
+        {
+            var allwo = _IInw_Recpt_Part_NoRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Inw_Recpt_Part_NoVM>>(allwo);
+        }
+        public async Task<IEnumerable<Inward_Condn_listVM>> GetAllInward_Condn_list()
+        {
+            var allwo = await _IInward_Condn_listRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<Inward_Condn_listVM>>(allwo);
+        }
+        public async Task<Insp_Outcome_DetailsVM> PostInsp_Outcome_Details(Insp_Outcome_DetailsVM workOrdersVM)
+        {
+            var wo = _mapper.Map<Insp_Outcome_Details>(workOrdersVM);
+            if (wo.Id == 0)
+            {
+                try
+                {
+                    var dt = DateTime.Now;
+                    wo.NC_Tracking_No = "NC_" + dt.ToString("yyyyMMddHHmmssffff");
+                    await _iInsp_Outcome_DetailsRepository.AddAsync(wo);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var wkord = await _iInsp_Outcome_DetailsRepository.SingleOrDefaultAsync(x => x.Id == wo.Id);
+                wo.NC_Tracking_No = wkord.NC_Tracking_No;
+                if (wkord == null)
+                {
+                    return workOrdersVM;
+                }
+                wo = await _iInsp_Outcome_DetailsRepository.UpdateAsync(wo.Id, wo);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            workOrdersVM.Insp_Outcome_Details_Id = wo.Id;
+            return workOrdersVM;
+        }
+        public async Task<Insp_Outcome_ListVM> PostInsp_Outcome_List(Insp_Outcome_ListVM workOrdersVM)
+        {
+            var wo = _mapper.Map<Insp_Outcome_List>(workOrdersVM);
+            if (wo.Id == 0)
+            {
+                try
+                {
+                    await _IInsp_Outcome_ListRepository.AddAsync(wo);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var wkord = await _IInsp_Outcome_ListRepository.SingleOrDefaultAsync(x => x.Id == wo.Id);
+                if (wkord == null)
+                {
+                    return workOrdersVM;
+                }
+                wo = await _IInsp_Outcome_ListRepository.UpdateAsync(wo.Id, wo);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            workOrdersVM.Insp_Outcome_ListId = wo.Id;
+            return workOrdersVM;
+        }
+        public async Task<Inventory_MasterVM> PostInventory_Master(Inventory_MasterVM workOrdersVM)
+        {
+            var wo = _mapper.Map<Inventory_Master>(workOrdersVM);
+            wo.Dt_time = DateTime.Now;
+            if (wo.Id == 0)
+            {
+                try
+                {
+                    await _IInventory_MasterRepository.AddAsync(wo);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var wkord = await _IInventory_MasterRepository.SingleOrDefaultAsync(x => x.Id == wo.Inv_Trans_Log_Id);
+                wo.Current_QntOnHand = wkord.Current_QntOnHand + wo.Current_QntOnHand;
+                if (wkord == null)
+                {
+                    return workOrdersVM;
+                }
+                wo = await _IInventory_MasterRepository.UpdateAsync(wo.Id, wo);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            workOrdersVM.Inventory_MasterId = wo.Id;
+            return workOrdersVM;
+        }
+        public async Task<Inv_Trans_LogVM> PostInv_Trans_Log(Inv_Trans_LogVM workOrdersVM)
+        {
+            var wo = _mapper.Map<Inv_Trans_Log>(workOrdersVM);
+            if (wo.Id == 0)
+            {
+                try
+                {
+                    wo.Dt_time = DateTime.Now;
+                    await _IInv_Trans_LogRepository.AddAsync(wo);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                wo.Dt_time = DateTime.Now;
+                var wkord = await _IInv_Trans_LogRepository.SingleOrDefaultAsync(x => x.Id == wo.Id);
+                if (wkord == null)
+                {
+                    return workOrdersVM;
+                }
+                wo = await _IInv_Trans_LogRepository.UpdateAsync(wo.Id, wo);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            workOrdersVM.Inv_Trans_LogId = wo.Id;
+            return workOrdersVM;
+        }
+        public async Task<Inw_Recpt_DetailsVM> PostInw_Recpt_Details(Inw_Recpt_DetailsVM workOrdersVM)
+        {
+            var wo = _mapper.Map<Inw_Recpt_Details>(workOrdersVM);
+            if (wo.Id == 0)
+            {
+                try
+                {
+                    await _IInw_Recpt_DetailsRepository.AddAsync(wo);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var wkord = await _IInw_Recpt_DetailsRepository.SingleOrDefaultAsync(x => x.Id == wo.Id);
+                if (wkord == null)
+                {
+                    return workOrdersVM;
+                }
+                wo = await _IInw_Recpt_DetailsRepository.UpdateAsync(wo.Id, wo);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            workOrdersVM.Inw_Recpt_DetailsId = wo.Id;
+            return workOrdersVM;
+        }
+        public async Task<Inw_Recpt_HeaderVM> PostInw_Recpt_Header(Inw_Recpt_HeaderVM workOrdersVM)
+        {
+            var wo = _mapper.Map<Inw_Recpt_Header>(workOrdersVM);
+            if (wo.Id == 0)
+            {
+                try
+                {
+                    await _IInw_Recpt_HeaderRepository.AddAsync(wo);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var wkord = await _IInw_Recpt_HeaderRepository.SingleOrDefaultAsync(x => x.Id == wo.Id);
+                if (wkord == null)
+                {
+                    return workOrdersVM;
+                }
+                wo = await _IInw_Recpt_HeaderRepository.UpdateAsync(wo.Id, wo);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            workOrdersVM.Inw_Recpt_HeaderId = wo.Id;
+            return workOrdersVM;
+        }
+        public async Task<Inw_Recpt_Part_NoVM> PostInw_Recpt_Part_No(Inw_Recpt_Part_NoVM workOrdersVM)
+        {
+            var wo = _mapper.Map<Inw_Recpt_Part_No>(workOrdersVM);
+            if (wo.Id == 0)
+            {
+                try
+                {
+                    await _IInw_Recpt_Part_NoRepository.AddAsync(wo);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var wkord = await _IInw_Recpt_Part_NoRepository.SingleOrDefaultAsync(x => x.Id == wo.Id);
+                if (wkord == null)
+                {
+                    return workOrdersVM;
+                }
+                wo = await _IInw_Recpt_Part_NoRepository.UpdateAsync(wo.Id, wo);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            workOrdersVM.Inw_Recpt_Part_No_Id = wo.Id;
+            return workOrdersVM;
+        }
+        public async Task<Inward_Condn_listVM> PostInward_Condn_list(Inward_Condn_listVM workOrdersVM)
+        {
+            var wo = _mapper.Map<Inward_Condn_list>(workOrdersVM);
+            if (wo.Id == 0)
+            {
+                try
+                {
+                    await _IInward_Condn_listRepository.AddAsync(wo);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var wkord = await _IInward_Condn_listRepository.SingleOrDefaultAsync(x => x.Id == wo.Id);
+                if (wkord == null)
+                {
+                    return workOrdersVM;
+                }
+                wo = await _IInward_Condn_listRepository.UpdateAsync(wo.Id, wo);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            workOrdersVM.Inward_Condn_listId = wo.Id;
+            return workOrdersVM;
+        }
+
+        public async Task<bool> DeleteInsp_OutcomeDetails(long Id)
+        {
+            var co = await _iInsp_Outcome_DetailsRepository.SingleOrDefaultAsync(m => m.Id == Id);
+            if (co != null)
+            {
+                try
+                {
+                    _iInsp_Outcome_DetailsRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<bool> DeleteInventory_Master(long Id)
+        {
+            var co = await _IInventory_MasterRepository.SingleOrDefaultAsync(m => m.Id == Id);
+            if (co != null)
+            {
+                try
+                {
+                    _IInventory_MasterRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<bool> DeleteInv_Trans_Log(long Id)
+        {
+            var co = await _IInv_Trans_LogRepository.SingleOrDefaultAsync(m => m.Id == Id);
+            if (co != null)
+            {
+                try
+                {
+                    _IInv_Trans_LogRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<bool> DeleteInw_Recpt_Details(long Id)
+        {
+            var co = await _IInw_Recpt_DetailsRepository.SingleOrDefaultAsync(m => m.Id == Id);
+            if (co != null)
+            {
+                try
+                {
+                    _IInw_Recpt_DetailsRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<bool> DeleteInw_Recpt_Header(long Id)
+        {
+            var co = await _IInw_Recpt_HeaderRepository.SingleOrDefaultAsync(m => m.Id == Id);
+            if (co != null)
+            {
+                try
+                {
+                    _IInw_Recpt_HeaderRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<bool> DeleteInw_Recpt_Part_No(long Id)
+        {
+            var co = await _IInw_Recpt_Part_NoRepository.SingleOrDefaultAsync(m => m.Id == Id);
+            if (co != null)
+            {
+                try
+                {
+                    _IInw_Recpt_Part_NoRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<InwardDocTypeVM>> GetAllInwardDocList(long tenantId)
+        {
+            var allDocuType = _IInwardDocTypeRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<InwardDocTypeVM>>(allDocuType);
+        }
+        public async Task<InwardDocTypeVM> PostInwardDocList(InwardDocTypeVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<InwardDocType>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _IInwardDocTypeRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _IInwardDocTypeRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _IInwardDocTypeRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.InwardDocTypeId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteInwardDoc(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _IInwardDocTypeRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _IInwardDocTypeRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<InspectDocTypeVM>> GetAllInspectDocList(long tenantId)
+        {
+            var allDocuType = _IInspectDocTypeRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<InspectDocTypeVM>>(allDocuType);
+        }
+        public async Task<InspectDocTypeVM> PostInspectDocList(InspectDocTypeVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<InspectDocType>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _IInspectDocTypeRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _IInspectDocTypeRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _IInspectDocTypeRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.InspectDocTypeId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteInspectDoc(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _IInspectDocTypeRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _IInspectDocTypeRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+
+        public async Task<IEnumerable<LineInspectDocTypeVM>> GetAllLineInspectDocList(long tenantId)
+        {
+            var allDocuType = _ILineInspectDocTypeRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<LineInspectDocTypeVM>>(allDocuType);
+        }
+        public async Task<LineInspectDocTypeVM> PostLineInspectDocList(LineInspectDocTypeVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<LineInspectDocType>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _ILineInspectDocTypeRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _ILineInspectDocTypeRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _ILineInspectDocTypeRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.LineInspectDocTypeId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteCont_RCA_CA_Log(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _Cont_RCA_CA_LogRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _Cont_RCA_CA_LogRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<bool> DeleteLineInspectDoc(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _ILineInspectDocTypeRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _ILineInspectDocTypeRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<FinalInspectDocTypeVM>> GetAllFinalInspectDocList(long tenantId)
+        {
+            var allDocuType = _IFinalInspectDocTypeRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<FinalInspectDocTypeVM>>(allDocuType);
+        }
+        public async Task<FinalInspectDocTypeVM> PostFinalInspectDocList(FinalInspectDocTypeVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<FinalInspectDocType>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _IFinalInspectDocTypeRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _IFinalInspectDocTypeRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _IFinalInspectDocTypeRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.FinalInspectDocTypeId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteFinalInspectDoc(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _IFinalInspectDocTypeRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _IFinalInspectDocTypeRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+
+
+        public async Task<IEnumerable<RcCaDocTypeVM>> GetAllRcCaDocList(long tenantId)
+        {
+            var allDocuType = _IRcCaDocTypeRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<RcCaDocTypeVM>>(allDocuType);
+        }
+        public async Task<RcCaDocTypeVM> PostRcCaDocList(RcCaDocTypeVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<RcCaDocType>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _IRcCaDocTypeRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _IRcCaDocTypeRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _IRcCaDocTypeRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.RcCaDocTypeId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteRcCaDoc(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _IRcCaDocTypeRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _IRcCaDocTypeRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<NcLogStatusVM>> GetAllNcLogStatusList()
+        {
+            var allDocuType =await _INcLogStatusRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<NcLogStatusVM>>(allDocuType);
+        }
+        public async Task<NcLogStatusVM> PostNcLogStatusList(NcLogStatusVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<NcLogStatus>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _INcLogStatusRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _INcLogStatusRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _INcLogStatusRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.NC_Log_Status_List_Id = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteNcLogStatus(long itemMasterDocListId)
+        {
+            var co = await _INcLogStatusRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId );
+            if (co != null)
+            {
+                try
+                {
+                    _INcLogStatusRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+
+        public async Task<OperationSettingsVM> PostOperationSettings(OperationSettingsVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<OperationSettings>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _operationSettingsRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _operationSettingsRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _operationSettingsRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.OperationSettingsId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<Cont_RCA_CA_LogVM> PostCont_RCA_CA_Log(Cont_RCA_CA_LogVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Cont_RCA_CA_Log>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Cont_RCA_CA_LogRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Cont_RCA_CA_LogRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Cont_RCA_CA_LogRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Cont_RCA_CA_LogId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<IEnumerable<OperationSettingsVM>> GetAllOperationSettings()
+        {
+            var allDocuType = await _operationSettingsRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<OperationSettingsVM>>(allDocuType);
+        }
+        public async Task<IEnumerable<Cont_RCA_CA_LogVM>> GetAllCont_RCA_CA_Log(long tenantId)
+        {
+            var allDocuType = _Cont_RCA_CA_LogRepository.GetRangeAsync(c=>c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Cont_RCA_CA_LogVM>>(allDocuType);
+        }
+        public async Task<IEnumerable<NC_Decision_LogVM>> GetAllNC_Decision_Log(long tenantId)
+        {
+            var allDocuType = _NC_Decision_LogRepository.GetRangeAsync(c=>c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<NC_Decision_LogVM>>(allDocuType);
+        }
+        public async Task<NC_Decision_LogVM> PostNC_Decision_Log(NC_Decision_LogVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<NC_Decision_Log>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _NC_Decision_LogRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _NC_Decision_LogRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _NC_Decision_LogRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.NC_Decision_LogId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteNC_Decision_Log(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _NC_Decision_LogRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _NC_Decision_LogRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        
+        public async Task<IEnumerable<NC_Wk_List_Tmpl_DetVM>> GetAllNC_Wk_List_Tmpl_Det(long tenantId)
+        {
+            var allDocuType = _NC_Wk_List_Tmpl_DetRepository.GetRangeAsync(c=>c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<NC_Wk_List_Tmpl_DetVM>>(allDocuType);
+        }
+        public async Task<NC_Wk_List_Tmpl_DetVM> PostNC_Wk_List_Tmpl_Det(NC_Wk_List_Tmpl_DetVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<NC_Wk_List_Tmpl_Det>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _NC_Wk_List_Tmpl_DetRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _NC_Wk_List_Tmpl_DetRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _NC_Wk_List_Tmpl_DetRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.NC_Wk_List_Tmpl_DetId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteNC_Wk_List_Tmpl_Det(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _NC_Wk_List_Tmpl_DetRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _NC_Wk_List_Tmpl_DetRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        
+        public async Task<IEnumerable<NC_Disp_Decs_Appl_ListVM>> GetAllNC_Disp_Decs_Appl_List(long tenantId)
+        {
+            var allDocuType = _NC_Disp_Decs_Appl_ListRepository.GetRangeAsync(c=>c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<NC_Disp_Decs_Appl_ListVM>>(allDocuType);
+        }
+        public async Task<NC_Disp_Decs_Appl_ListVM> PostNC_Disp_Decs_Appl_List(NC_Disp_Decs_Appl_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<NC_Disp_Decs_Appl_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _NC_Disp_Decs_Appl_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _NC_Disp_Decs_Appl_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _NC_Disp_Decs_Appl_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.NC_Disp_Decs_Appl_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteNC_Disp_Decs_Appl_List(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _NC_Disp_Decs_Appl_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _NC_Disp_Decs_Appl_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        
+        public async Task<IEnumerable<NC_Wk_List_Tmpl_HeadVM>> GetAllNC_Wk_List_Tmpl_Head(long tenantId)
+        {
+            var allDocuType = _NC_Wk_List_Tmpl_HeadRepository.GetRangeAsync(c=>c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<NC_Wk_List_Tmpl_HeadVM>>(allDocuType);
+        }
+        public async Task<NC_Wk_List_Tmpl_HeadVM> PostNC_Wk_List_Tmpl_Head(NC_Wk_List_Tmpl_HeadVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<NC_Wk_List_Tmpl_Head>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _NC_Wk_List_Tmpl_HeadRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _NC_Wk_List_Tmpl_HeadRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _NC_Wk_List_Tmpl_HeadRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.NC_Wk_List_Tmpl_HeadId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteNC_Wk_List_Tmpl_Head(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _NC_Wk_List_Tmpl_HeadRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _NC_Wk_List_Tmpl_HeadRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<NC_Work_ListVM>> GetAllNC_Work_List(long tenantId)
+        {
+            var allDocuType = _NC_Work_ListRepository.GetRangeAsync(c=>c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<NC_Work_ListVM>>(allDocuType);
+        }
+        public async Task<NC_Work_ListVM> PostNC_Work_List(NC_Work_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<NC_Work_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _NC_Work_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _NC_Work_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _NC_Work_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.NC_Work_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteNC_Work_List(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _NC_Work_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _NC_Work_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<NC_Wk_List_HeaderVM>> GetAllNC_Wk_List_Header(long tenantId)
+        {
+            var allDocuType = _NC_Wk_List_HeaderRepository.GetRangeAsync(c=>c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<NC_Wk_List_HeaderVM>>(allDocuType);
+        }
+        public async Task<NC_Wk_List_HeaderVM> PostNC_Wk_List_Header(NC_Wk_List_HeaderVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<NC_Wk_List_Header>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _NC_Wk_List_HeaderRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _NC_Wk_List_HeaderRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _NC_Wk_List_HeaderRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.NC_Wk_List_HeaderId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteNC_Wk_List_Header(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _NC_Wk_List_HeaderRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _NC_Wk_List_HeaderRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<Cust_NC_Decs_Matrix_OptVM>> GetAllCust_NC_Decs_Matrix_Opt(long tenantId)
+        {
+            var allDocuType = _Cust_NC_Decs_Matrix_OptRepository.GetRangeAsync(c=>c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Cust_NC_Decs_Matrix_OptVM>>(allDocuType);
+        }
+        public async Task<Cust_NC_Decs_Matrix_OptVM> PostCust_NC_Decs_Matrix_Opt(Cust_NC_Decs_Matrix_OptVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Cust_NC_Decs_Matrix_Opt>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Cust_NC_Decs_Matrix_OptRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Cust_NC_Decs_Matrix_OptRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Cust_NC_Decs_Matrix_OptRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Cust_NC_Decs_Matrix_OptId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteCust_NC_Decs_Matrix_Opt(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _Cust_NC_Decs_Matrix_OptRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _Cust_NC_Decs_Matrix_OptRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<Cust_NC_Decs_MatrixVM>> GetAllCust_NC_Decs_Matrix(long tenantId)
+        {
+            var allDocuType = _Cust_NC_Decs_MatrixRepository.GetRangeAsync(c=>c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Cust_NC_Decs_MatrixVM>>(allDocuType);
+        }
+        public async Task<Cust_NC_Decs_MatrixVM> PostCust_NC_Decs_Matrix(Cust_NC_Decs_MatrixVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Cust_NC_Decs_Matrix>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Cust_NC_Decs_MatrixRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Cust_NC_Decs_MatrixRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Cust_NC_Decs_MatrixRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Cust_NC_Decs_MatrixId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteCust_NC_Decs_Matrix(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _Cust_NC_Decs_MatrixRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _Cust_NC_Decs_MatrixRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<Cont_RCA_CA_Status_ListVM>> GetAllCont_RCA_CA_Status_List()
+        {
+            var allDocuType = _Cont_RCA_CA_Status_ListRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<Cont_RCA_CA_Status_ListVM>>(allDocuType);
+        }
+        public async Task<Cont_RCA_CA_Status_ListVM> PostCont_RCA_CA_Status_List(Cont_RCA_CA_Status_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Cont_RCA_CA_Status_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Cont_RCA_CA_Status_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Cont_RCA_CA_Status_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Cont_RCA_CA_Status_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Cont_RCA_CA_Status_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteCont_RCA_CA_Status_List(long itemMasterDocListId)
+        {
+            var co = await _Cont_RCA_CA_Status_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId );
+            if (co != null)
+            {
+                try
+                {
+                    _Cont_RCA_CA_Status_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<NC_Disp_Decision_ListVM>> GetAllNC_Disp_Decision_List()
+        {
+            var allDocuType =await _NC_Disp_Decision_ListRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<NC_Disp_Decision_ListVM>>(allDocuType);
+        }
+        public async Task<NC_Disp_Decision_ListVM> PostNC_Disp_Decision_List(NC_Disp_Decision_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<NC_Disp_Decision_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _NC_Disp_Decision_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _NC_Disp_Decision_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _NC_Disp_Decision_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.NC_Disp_Decision_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteNC_Disp_Decision_List(long itemMasterDocListId)
+        {
+            var co = await _NC_Disp_Decision_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId );
+            if (co != null)
+            {
+                try
+                {
+                    _NC_Disp_Decision_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<NC_work_StatusVM>> GetAllNC_work_Status()
+        {
+            var allDocuType = _NC_work_StatusRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<NC_work_StatusVM>>(allDocuType);
+        }
+        public async Task<NC_work_StatusVM> PostNC_work_Status(NC_work_StatusVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<NC_work_Status>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _NC_work_StatusRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _NC_work_StatusRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _NC_work_StatusRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.NC_work_StatusId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteNC_work_Status(long itemMasterDocListId)
+        {
+            var co = await _NC_work_StatusRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId );
+            if (co != null)
+            {
+                try
+                {
+                    _NC_work_StatusRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
         }
     }
 }

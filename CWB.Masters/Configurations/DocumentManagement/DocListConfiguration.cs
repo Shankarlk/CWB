@@ -73,6 +73,15 @@ namespace CWB.Masters.Configurations.DocumentManagement
                 .HasColumnName("McTypeId")
                 .IsRequired();
             builder
+                .Property(c => c.Inw_Recpt_HeaderId)
+                .HasColumnName("Inw_Recpt_HeaderId");
+            builder
+                .Property(c => c.Inw_Recpt_DetailsId)
+                .HasColumnName("Inw_Recpt_DetailsId");
+            builder
+                .Property(c => c.NcLogIdId)
+                .HasColumnName("NcLogIdId");
+            builder
                 .Property(c => c.McId)
                 .HasColumnName("McId")
                 .IsRequired();

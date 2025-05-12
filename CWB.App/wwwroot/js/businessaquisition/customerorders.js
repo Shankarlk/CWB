@@ -703,7 +703,10 @@ $(function () {
         var customerorderid = relatedTarget.data("customerorderid");
         var salesorderid = relatedTarget.data("salesorderid");
         var salesorder = relatedTarget.data("salesorder");
-
+        var podate = relatedTarget.data("podate");
+        var ponumber = relatedTarget.data("ponumber");
+        $("#SpPoNo").text(ponumber);
+        $("#SpPoDate").text(podate);
         var relatedTarget = $(event.relatedTarget);
         var customerorderid = relatedTarget.data("customerorderid");
         //POHCustomerOrderId
@@ -1037,7 +1040,58 @@ $(function () {
         PostDeliverySchedule();
     });
 
+    $("#PoLogToSr").on("change keyup", function () {
+        var fromDate = $("#PoLogFromSr").val().trim();
+        var toDate = $("#PoLogToSr").val().trim();
 
+        $("#POLogTable tbody tr").each(function () {
+            var rowDateTime = $(this).find("td:eq(0)").text().trim(); 
+            var rowDate = rowDateTime.split(" ")[0]; 
+            var formattedRowDate = convertToISODate(rowDate);
+            var formattedFromDate = convertToISODate(fromDate);
+            var formattedToDate = convertToISODate(toDate);
+            var showRow = true;
+
+            if (formattedFromDate && formattedRowDate < formattedFromDate) {
+                showRow = false; // Hide if before FromDate
+            }
+            if (formattedToDate && formattedRowDate > formattedToDate) {
+                showRow = false; // Hide if after ToDate
+            }
+
+            $(this).toggle(showRow);
+        });
+    });
+
+    function convertToISODate(dateString) {
+        if (!dateString) return "";
+
+        var dateParts = dateString.split("-");
+        if (dateParts.length === 3) {
+            return `${dateParts[2]}-${dateParts[1].padStart(2, '0')}-${dateParts[0].padStart(2, '0')}`;
+        }
+        return "";
+    }
+
+
+    $("#PoLogPartNoSr").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#POLogTable tbody tr").filter(function () {
+            $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+    $("#PoLogEventSr").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#POLogTable tbody tr").filter(function () {
+            $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+    $("#PoLogComSr").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#POLogTable tbody tr").filter(function () {
+            $(this).toggle($(this.children[8]).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
     $("#baeppn").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#tbl-ba-existingparts tbody tr").filter(function () {

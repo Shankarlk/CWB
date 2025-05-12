@@ -1161,12 +1161,22 @@ $(document).ready(function () {
     //    var modal = bootstrap.Modal.getInstance(modalElement);
     //    modal.hide();
     //});
-    document.addEventListener("DOMContentLoaded", function () {
-    var myModal = new bootstrap.Modal(document.getElementById('inputpart'));
-    document.getElementById("inputpartCloseBtn").addEventListener("click", function () {
-        myModal.hide();
-    });
-});
+//    document.addEventListener("DOMContentLoaded", function () {
+//    var myModal = new bootstrap.Modal(document.getElementById('inputpart'));
+//    document.getElementById("inputpartCloseBtn").addEventListener("click", function () {
+//        myModal.hide();
+//    });
+//});
+    //$('.modal-child').on('show.bs.modal', function () {
+    //    var modalParent = $(this).attr('data-modal-parent');
+    //    $(modalParent).css('opacity', 0);
+    //});
+
+    //$('.modal-child').on('hidden.bs.modal', function () {
+    //    var modalParent = $(this).attr('data-modal-parent');
+    //    $(modalParent).css('opacity', 1);
+    //});
+    $.fn.modal.Constructor.prototype._enforceFocus = function () { };
 
     $("#AddInputPart").click(function (event) {
         const selectedValue = document.getElementById('MPPartMadeFrom').value;
@@ -1178,8 +1188,9 @@ $(document).ready(function () {
         }
             var newNamevalidate = document.getElementById('MPPartMadeFrom');
             newNamevalidate.style.border = '';
-            var myModal = new bootstrap.Modal(document.getElementById('inputpart'));
-            myModal.show();
+            //var myModal = new bootstrap.Modal(document.getElementById('inputpart'));
+            //myModal.show();
+            $("#inputpart").modal("show");
             $("#MPMKMadefrom").val(newNamevalidate.value);
     });
     const selectElement = document.querySelector('select[name="MPPartMadeFrom"]');
@@ -1196,7 +1207,6 @@ $(document).ready(function () {
         $("#TabHeadMakefrom").hide();
         $("#TabHeadBOM").show();
     }
-
 
     $("#CompanyId").on('change',function () {
         setCo();
@@ -1306,7 +1316,8 @@ $(document).ready(function () {
     });
 
     $("#AddDeptClose").click(function (event) {
-        window.location.reload();
+        //window.location.reload();
+        $("#inputpart").modal("hide");
     });
     $("#btnAddMPMakeFrom").click(function (event) {
         if (ManufPartFormUtil.ValidateMPMakeFrom()) {
@@ -1342,7 +1353,8 @@ $(document).ready(function () {
                     $("#lblPartDescription").text(partDesc);
                     $("#ManufPartId").val(manufPartId);
                     $("#MPPartId").val(mpPartId);
-                    window.location.reload();
+                    //window.location.reload();
+                    $("#AddDeptClose").click();
                     $("#Scrap-Error").text("");
                 }).catch((error) => {
                     AppUtil.HandleError("MPRawMaterial", error);

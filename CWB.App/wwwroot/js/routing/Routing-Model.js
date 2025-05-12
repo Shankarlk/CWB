@@ -354,7 +354,7 @@ function AddSubCon() {
         $("#SubConWSSubConDetailsId").val(data.subConDetailsId);
         $("#SubConWSRoutingStepId").val(RoutingDetails["stepId"]);
         $("#SaveSubCon").prop('disabled', true);
-
+        alert("Subcon Created Successfully.");
         //document.getElementById("Btn").click();  SaveSubCon
     }).catch((error) => {
         AppUtil.HandleError("FormSubCon", error);
@@ -374,6 +374,7 @@ function AddSubConWS() {
         document.getElementById("FormSubConWS").reset();
         $("#SubConWSSubConDetailsId").val(wsid);
         $("#SubConWSRoutingStepId").val(stepid);
+        alert("Subcon Step Work Details Created Successfully.");
         //document.getElementById("Btn").click();
     }).catch((error) => {
         AppUtil.HandleError("FormSubConWS", error);
@@ -1976,6 +1977,15 @@ $(function () {
                     $("#BtnNewRoutingClose").trigger("click");
                     $("#BtnAddNextStep").trigger("click");
                     $('#StepRoutingId').val(data.routingId);
+                    RoutingDetails["routingId"] = data.routingId;
+                    RoutingDetails["routingName"] = data.routingName;
+                    RoutingDetails["manufacturedPartId"] = data.manufacturedPartId;
+                    var apartName = $("#SpanPartName").text();
+                    var apDesc = $("#SpanPartDesc").text();
+                    var aComp = $("#SpanComp").text();
+                    RoutingDetails["partNo"] = apartName;
+                    RoutingDetails["partDescription"] = apDesc;
+                    RoutingDetails["companyName"] = aComp;
                 }
             });
             //window.location.href = "/routings/routingdetails?manufPartId=" + selectedManuPartId;
@@ -2046,10 +2056,22 @@ $(function () {
         });
     });
 
-    
+
+    $('#add-subcon').on('hidden.bs.modal', function (event) {
+        $("#RoutingDetailsClose").click();
+    });
+    $('#add-machine').on('hidden.bs.modal', function (event) {
+        $("#RoutingDetailsClose").click();
+    });
     
     ////SubConWSSubConDetailsId//SubConWSRoutingStepId//SubConWSDetailsId //WorkStepDesc//MachineType//FloorToFloorTime//SetupTime//NoOfPartsPerLoading
     $('#add-machine').on('shown.bs.modal', function (event) {
+        let SetupTimeEr = document.getElementById("SetupTimeEr");
+        SetupTimeEr.textContent = "";
+        let FirstPieceProcessingTimeEr = document.getElementById("FirstPieceProcessingTimeEr");
+        FirstPieceProcessingTimeEr.textContent = "";
+        let FloorToFloorTimeEr = document.getElementById("FloorToFloorTimeEr");
+        FloorToFloorTimeEr.textContent = "";
         if ($("#StepId").val() == "0") {
             alert("Save routing step before adding machine.");
             document.getElementById("Add-Machine-Close").click();
@@ -2334,6 +2356,18 @@ $(function () {
             // Remove the red border if the input is valid
             FloorToFloorTime.style.border = '';
         }
+        let timeInput = document.getElementById("SubConFloorToFloorTime");
+        let timePattern = /^(\d{1,3}):[0-5]\d:[0-5]\d$/;   // HH:MM:SS format validation
+        let errorSpan = document.getElementById("floorError");
+
+        if (!timePattern.test(timeInput.value.trim())) {
+            errorSpan.textContent = "Invalid format! Use HH:MM:SS (e.g., 10:00:00)";
+            timeInput.classList.add("is-invalid");
+        } else {
+            errorSpan.textContent = "";
+            timeInput.classList.remove("is-invalid");
+            //alert("Valid time format");
+        }
         var SetupTime = document.getElementById('SetupTime');
         if (!SetupTime.value) {
             // Add red border directly using inline style
@@ -2342,6 +2376,18 @@ $(function () {
         } else {
             // Remove the red border if the input is valid
             SetupTime.style.border = '';
+        }
+        let SetupTimetimeInput = document.getElementById("SetupTime");
+        let SetupTimetimePattern = /^(\d{1,3}):[0-5]\d:[0-5]\d$/;   // HH:MM:SS format validation
+        let SetupTimeerrorSpan = document.getElementById("SetupError");
+
+        if (!SetupTimetimePattern.test(SetupTimetimeInput.value.trim())) {
+            SetupTimeerrorSpan.textContent = "Invalid format! Use HH:MM:SS (e.g., 10:00:00)";
+            SetupTimetimeInput.classList.add("is-invalid");
+        } else {
+            SetupTimeerrorSpan.textContent = "";
+            SetupTimetimeInput.classList.remove("is-invalid");
+            //alert("Valid time format");
         }
         var NoOfPartsPerLoading = document.getElementById('NoOfPartsPerLoading');
         if (!NoOfPartsPerLoading.value) {
@@ -2409,6 +2455,45 @@ $(function () {
     });
     $("#SaveRouteMachine").click(function (event) {
         //alert("Save route Machine");
+        let SetupTime = document.getElementById("SetupTime");
+        let timePattern = /^(\d{1,3}):[0-5]\d:[0-5]\d$/;   // HH:MM:SS format validation
+        let SetupTimeEr = document.getElementById("SetupTimeEr");
+
+        if (!timePattern.test(SetupTime.value.trim())) {
+            SetupTimeEr.textContent = "Invalid format! Use HH:MM:SS (e.g., 10:00:00)";
+            return false;
+            //SetupTime.classList.add("is-invalid");
+        } else {
+            SetupTimeEr.textContent = "";
+            //SetupTime.classList.remove("is-invalid");
+            //alert("Valid time format");
+        }
+        let timeInput = document.getElementById("FloorToFloorTime");
+       // let timePattern = /^(\d{1,3}):[0-5]\d:[0-5]\d$/;   // HH:MM:SS format validation
+        let errorSpan = document.getElementById("FloorToFloorTimeEr");
+
+        if (!timePattern.test(timeInput.value.trim())) {
+            errorSpan.textContent = "Invalid format! Use HH:MM:SS (e.g., 10:00:00)";
+            return false;
+            //timeInput.classList.add("is-invalid");
+        } else {
+            errorSpan.textContent = "";
+            //timeInput.classList.remove("is-invalid");
+            //alert("Valid time format");
+        }
+        let FirstPieceProcessingTime = document.getElementById("FirstPieceProcessingTime");
+        //let timePattern = /^(\d{1,3}):[0-5]\d:[0-5]\d$/;   // HH:MM:SS format validation
+        let FirstPieceProcessingTimeEr = document.getElementById("FirstPieceProcessingTimeEr");
+
+        if (!timePattern.test(FirstPieceProcessingTime.value.trim())) {
+            FirstPieceProcessingTimeEr.textContent = "Invalid format! Use HH:MM:SS (e.g., 10:00:00)";
+            return false;
+            //FirstPieceProcessingTime.classList.add("is-invalid");
+        } else {
+            FirstPieceProcessingTimeEr.textContent = "";
+            //FirstPieceProcessingTime.classList.remove("is-invalid");
+            //alert("Valid time format");
+        }
         var chkdelm = $('input[name=stepmachineselect]:checked');
         var currentrow = chkdelm.closest('tr');
         var machineId = $('input[name=stepmachineselect]:checked').val();
@@ -2425,6 +2510,7 @@ $(function () {
             const params = new Proxy(new URLSearchParams(window.location.search), {
                 get: (searchParams, prop) => searchParams.get(prop),
             });
+            alert("Machine Added Successfully!");
             //var encodedManufPartId = params.manufPartId;
             //var parttypeurl = params.partType;
             //window.location.href = "/routings/routingdetails?manufPartId=" + encodedManufPartId + "&partType=" + parttypeurl;
@@ -2497,6 +2583,7 @@ $(function () {
             StepOperation.style.border = '';
             var StepLocation = document.getElementById('StepLocation');
             StepLocation.style.border = '';
+            alert("Step Basic Info Saved Successfully!");
 
         }).catch((error) => {
             AppUtil.HandleError("FormRoutingStep", error);
@@ -2616,10 +2703,33 @@ $(function () {
             var tablebody = $("#BomUsedGridDisplay tbody");
             tablebody.html("");
         }
+        if ($("#StepTable tbody tr").length > 0) {
+            let firstRowLocation = $("#StepTable tbody tr").first().find("td:eq(3)").text().trim();
+            let locationMapping = {
+                "Inhouse": "1",
+                "Subcon": "2",
+                "Company": "3"
+            };
+            //let stepLocationSelect = document.getElementById("StepLocation");
+            if (locationMapping[firstRowLocation]) {
+                //stepLocationSelect.value = locationMapping[firstRowLocation];
+                $("#StepLocation").val(locationMapping[firstRowLocation]).trigger('change');
+            }
+            var selectStepLoc = document.getElementById('StepLocation');
+            selectStepLoc.style.pointerEvents = 'none';
+        } else {
+            var selectStepLoc = document.getElementById('StepLocation');
+            selectStepLoc.style.pointerEvents = 'auto';
+        }
     });
 
     $('#addWorkStep').on('hidden.bs.modal', function (event) {
         document.getElementById("FormSubConWS").reset();
+        let errorSpan = document.getElementById("floorError");
+        errorSpan.textContent = "";
+        let SetupError = document.getElementById("SetupError");
+        SetupError.textContent = "";
+
     });
     $('#doc-item').on('hidden.bs.modal', function (event) {
         var InfoComments = document.getElementById('InfoComments');

@@ -1,0 +1,1339 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "Material Inwarding";
+}
+<input value="B-BP" type="hidden" id="hdn-nav-menu" />
+<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 style="padding: 10px;">Material Inwarding</h3>
+                        </div>
+                        <!-- =============================  -->
+                        <div class="col-md-12">
+                            <hr class="mt-2">
+                            <!-- ================================  -->
+                            <div class="row">
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">PO No</label>
+                                    <div class="input-group">
+                                        <input class="form-control form-control-sm" type="text" title=""
+                                               data-plugin="tippy" data-tippy-placement="top"
+                                               placeholder="Enter Part No" id="searchPoNo">
+                                    </div>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Supplier</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="searchPoSupplier" data-plugin="tippy" data-tippy-placement="top">
+                                        <option value="">==========</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Part Type</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top" id="searchPartNo">
+                                        <option value="0">--Select</option>
+                                        <option value="1">RawMaterial</option>
+                                        <option value="2">BOF</option>
+                                        <option value="3">Sub Con</option>
+                                    </select>
+                                </div>
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="table-responsive table-he-250">
+                                            <table class="table table-sm table-bordered w-100 text-center" id="PoGrid1">
+                                                <thead class="  table-info th-sti">
+                                                    <tr class="table-border-bottom">
+                                                        <th>PO No </th>
+                                                        <th>Supplier</th>
+                                                        <th>Part Type</th>
+                                                        <th>Total Line Items</th>
+                                                        <th># Open Line Items </th>
+                                                        <th>Docs Uploaded</th>
+                                                        <th># Qnty Mismatch</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- -------------  -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- =========== -->
+                            </div>
+                            <!-- =========== -->
+                            <!-- =============================================  -->
+                            <!-- =============  end row  ================  -->
+                            <!-- end accordion -->
+                        </div>
+                        <!-- =============================  -->
+                    </div>
+                </div>
+            </div>
+            <!-- end card body -->
+            <!-- ================= -->
+        </div>
+        <!-- end card -->
+        <!-- ======================================================================== -->
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+<!-- Modal -->
+<div class="modal fade" id="popupInward" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    Inwarding Data Entry -  Supplier : <span id="popupInwardSpanSup"></span>     Our PO : <span id="popupInwardSpanPo"></span> / Date : <span id="popupInwardSpanDate"></span> <br />
+                    Inwarding Date : <span id="popupInwardSpanInwDate"></span>      by      <span id="popupInwardSpanInwBy"></span>
+                </h5>
+                <button type="button" class="btn-close" id="popupInwardClose"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2" style="margin-top: -2px;">
+                        <label class="form-label">Supplier DC Ref *</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy" data-tippy-placement="top" placeholder="Enter DC Reference"
+                                   id="popupInwardDcref">
+
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label"> Supplier DC Date *</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="date" title="" data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                   id="popupInwardDcDate">
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Supplier Invoice Ref *</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" placeholder="Enter Supplier Invoice Ref" id="popupInwardInvRef">
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Supplier Inv Date *</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="date" title="" data-plugin="tippy" data-tippy-placement="top"
+                                   placeholder="" id="popupInvDate">
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-2 d-flex align-items-center justify-content-end">
+                        <label class="form-label">Balance No of Line Items to Inward </label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy" data-tippy-placement="top"
+                                   placeholder="" id="popupBalLine" readonly="">
+
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+
+                    </div>
+                    <div class="col-md-3 mb-2 d-flex align-items-center justify-content-end">
+                        <label class="form-label">No of Line Items being Inwarded * </label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" placeholder="" id="popupInwNoLine">
+
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-12 mb-2 text-end">
+                        <input type="text" id="popupInwardHeaderId" hidden="">
+                        <input type="text" id="popupPoHeaderId" hidden="">
+                        <input type="text" id="popupPoPartId" hidden="">
+                        <button class="btn btn-primary btn-sm" id="popupInwardSaveWo">Save</button>
+                    </div>
+                    <!-- ========================= -->
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5>Upload Inwarding Documents</h5>
+                        </div>
+                        <div class="col-md-12" id="popupInwardDocGridDiv">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="popupInwardDocGrid" class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Document Type</th>
+                                                <th>Mandatory</th>
+                                                <th>Info / Comment</th>
+                                                <th>Uploaded by</th>
+                                                <th>Uploaded on</th>
+                                                <th>View</th>
+                                                <th>Download</th>
+                                                <th width="5%">
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- -------------  -->
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <a href="javascript:void(0);">
+                                                        <i class="fas fa-eye btn btn-sm"></i>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a href="javascript:void(0);">
+                                                        <i class="fas fa-download btn btn-sm"></i>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <div class="dropdown float-center">
+                                                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#popupInward">Upload</a>
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item">Edit</a>
+                                                            <a href="javascript:void(0);" class="dropdown-item">Delete</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mt-1">
+                            <button class="btn btn-primary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#doc-item" data-plugin="tippy" data-tippy-placement="top" id="UploadOrtherDoc" data-tippy="" data-original-title="Click to Add a document">
+                                Upload Other Related
+                                Documents
+                            </button>
+                        </div>
+                    </div>
+                    <hr class="mt-1">
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <h5>Balance Line Items to Inward</h5>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <div class="d-flex align-items-center justify-content-end">
+                                <h6 class="me-2 mb-0">Balance Items to Inward</h6>
+                                <input class="form-control form-control-sm w-50" type="text" title="" data-plugin="tippy"
+                                       data-tippy-placement="top" placeholder="" id="popupInwardBalVM" readonly="">
+                            </div>
+                        </div>
+                        <div class="col-md-12" id="BalanceItemGrid">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="popupBalanceItemGrid" class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Part No - Desc</th>
+                                                <th>PO Qnty</th>
+                                                <th>Qnty Already Recd</th>
+                                                <th>Qnty Recd Today</th>
+                                                <th>Bal to Recieve</th>
+                                                <th>Units</th>
+                                                <th>Insp Docs Avl</th>
+                                                <th>Status</th>
+                                                <th width="5%">
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- -------------  -->
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <div class="dropdown float-center">
+                                                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#popupInward">Inward</a>
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item">View Details</a>
+                                                            <a href="javascript:void(0);" class="dropdown-item">Edit</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+    <!-- end Container -->
+    <!----content-page ends----->
+
+
+
+</div>
+
+<div class="modal fade" id="popupInward2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    Inwarding Data Entry -  Supplier : <span id="popupInward2SpanSup"></span>     Our PO : <span id="popupInward2SpanPo"></span> / date <span id="popupInward2SpanDate"></span> <br />
+                    Inwarding Date : <span id="popupInward2SpanInwDate"></span>      by      <span id="popupInward2SpanInwBy"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2" style="margin-top: -2px;">
+                        <label class="form-label">Supplier DC Ref *</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title=""
+                                   data-plugin="tippy" data-tippy-placement="top"
+                                   placeholder="Enter DC Reference" id="popupInward2Dcref">
+
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label"> Supplier DC Date *</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="date" title=""
+                                   data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                   id="popupInward2DcDate">
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Supplier Invoice Ref *</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title=""
+                                   data-plugin="tippy" value="0" data-tippy-placement="top" placeholder=""
+                                   id="popupInward2InvRef">
+
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Supplier Inv Date *</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="date" title=""
+                                   data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                   id="popupInward2InvDate">
+
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="d-flex align-items-center justify-content-end">
+                            <h6 class="me-2 mb-0">Balance No of Line Items to Inward</h6>
+                            <input class="form-control form-control-sm w-25" type="text" title=""
+                                   data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                   id="popup2BalLine" readonly="">
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <div class="d-flex align-items-center justify-content-end">
+                            <h6 class="me-2 mb-0">No of Line Items being Inwarded * </h6>
+                            <input class="form-control form-control-sm w-25" type="text" title=""
+                                   data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                   id="popupInw2NoLine">
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-6 mb-2">
+                        @*<button class="btn btn-primary btn-sm" id="popupInward2ShortClose">
+                            Short-Close
+                            PO
+                        </button>*@
+                    </div>
+                    <div class="col-md-6 mb-2 text-end">
+                        <input type="text" id="popupInwardHeaderId2" hidden="">
+                        <input type="text" id="popupPoHeaderId2" hidden="">
+                        <input type="text" id="popupPoPartId2" hidden="">
+                        <button class="btn btn-primary btn-sm" id="popupInward2Save">Save</button>
+                    </div>
+                    <!-- ========================= -->
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5>Upload Inwarding Documents</h5>
+                        </div>
+                        <div class="col-md-12" id="popupInward2GridDiv">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="popupInward2SupplierGrid"
+                                           class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Document Type</th>
+                                                <th>Mandatory</th>
+                                                <th>Info / Comment</th>
+                                                <th>Uploaded by</th>
+                                                <th>Uploaded on</th>
+                                                <th>View</th>
+                                                <th>Download</th>
+                                                <th width="5%">
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- -------------  -->
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <a href="javascript:void(0);">
+                                                        <i class="fas fa-eye btn btn-sm"></i>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a href="javascript:void(0);">
+                                                        <i class="fas fa-download btn btn-sm"></i>
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <div class="dropdown float-center">
+                                                        <a href="#"
+                                                           class="dropdown-toggle arrow-none card-drop"
+                                                           data-bs-toggle="dropdown"
+                                                           aria-expanded="false">
+                                                            <i class="mdi mdi-dots-vertical"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);"
+                                                               class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#doc-item">Upload</a>
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);"
+                                                               class="dropdown-item">Edit</a>
+                                                            <a href="javascript:void(0);"
+                                                               class="dropdown-item">Delete</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mt-1">
+                            <button class="btn btn-primary btn-sm" id="popupInward2AddOtherSupp">
+                                Upload Other
+                                Related Documents
+                            </button>
+                        </div>
+                    </div>
+                    <hr class="mt-1">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Balance Line Items to Inward</h5>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <div class="d-flex align-items-center justify-content-end">
+                                <h6 class="me-2 mb-0">Balance Items to Inward</h6>
+                                <input class="form-control form-control-sm w-50" type="text" title=""
+                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                       id="popupInward2BalVM" readonly="">
+                            </div>
+                        </div>
+                        <div class="col-md-12" id="BalanceItemGrid2">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="popup2BalanceItemGrid"
+                                           class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>PO No</th>
+                                                <th>Part No - Desc</th>
+                                                <th>Routing </th>
+                                                <th>Opr No</th>
+                                                <th>PO Qnty</th>
+                                                <th>Total Qnty Dispached</th>
+                                                <th>Bal to Dispached</th>
+                                                <th>Qnty Already Recd</th>
+                                                <th>Qnty Recd Today</th>
+                                                <th>Bal to Recieve</th>
+                                                <th>Units</th>
+                                                <th>Insp Docs Avl</th>
+                                                <th>Status</th>
+                                                <th width="5%">
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- -------------  -->
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <div class="dropdown float-center">
+                                                        <a href="#"
+                                                           class="dropdown-toggle arrow-none card-drop"
+                                                           data-bs-toggle="dropdown"
+                                                           aria-expanded="false">
+                                                            <i class="mdi mdi-dots-vertical"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);"
+                                                               class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#popupInward2">Inward</a>
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);"
+                                                               class="dropdown-item">View Details</a>
+                                                            <a href="javascript:void(0);"
+                                                               class="dropdown-item">Edit</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+</div>
+
+<div class="modal fade" id="popup4PoLineData" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <div class="col-md-5">
+                    <h5 class="modal-title" id="staticBackdropLabel">
+                        PO Line Item Inward Data Entry <br>
+                        for Part No / Desc : <span id="P4SpanPartNo"></span> from <span id="P4SpanSupp"></span> <br>
+                        <span id="P4RoutingSpan"> Routing : <span id="P4SpanRouting"></span> Opr No : <span id="P4SpanOprNo"></span></span>
+                    </h5>
+                </div>
+                <div class="col-md-3 mb-2 ">
+                </div>
+                <div class="col-md-3 mb-2">
+                    <label class="form-label"> PO Line Item Status</label>
+                    <div class="input-group w-100 text-end">
+                        <input class="form-control form-control-sm " type="text" title="" value="0"
+                               data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                               id="popupInwardPoStatusVM" readonly>
+
+                    </div>
+                </div>
+                <button type="button" class="btn-close" id="P4BtnClose"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12 text-center mb-1">
+                        <button class="btn btn-primary btn-sm w-50" id="popup4Capture">Capture Inwarding Data</button>
+                    </div>
+
+                    <div class="col-md-12" id="popupInwardGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="popupInwardSupplierGrid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th width="311px">Inwarding Data</th>
+                                            <th width="45px">Our Count</th>
+                                            <th width="45px">Supplier DC Count</thwidth="45px">
+                                            <th width="45px">Comment</th>
+                                            <th>Input Part No</th>
+                                            <th width="5%">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="table-responsive table-he-330">
+                                <table id="popupInwardSupplierGridVM"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr>
+                                            <th width="311px"></th>
+                                            <th width="45px"></th>
+                                            <th width="45px"></th>
+                                            <th width="45px"></th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="font-weight: bold;" class="text-end">Total</td>
+                                            <td id="ourCountVM">0</td>
+                                            <td id="suppCountVM">0</td>
+                                            <td id="unitsTbVM">Units</td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6 mb-1" id="RmVMFDiv">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-borderless mb-3 text-center tableFixHead w-100">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-fornt">
+                                                    <h6 class="me-2 mb-0">Plan Receipt till Date</h6>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm w-100" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                       id="popupInwardPlanRecpt" readonly>
+                                            </td>
+                                            <td id="popupInwardPlanRecptUnit">Units</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-fornt">
+                                                    <h6 class="me-2 mb-0">Actual Receipt till Date (incl. Today's)</h6>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm w-100" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                       id="popupInwardActlDate" readonly>
+                                            </td>
+                                            <td id="popupInwardActlDateUnit">Units</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-fornt">
+                                                    <h6 class="me-2 mb-0">Balance to Receive</h6>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm w-100" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                       id="popupInwardBalToRecVM" readonly>
+                                            </td>
+                                            <td id="popupInwardBalToRecVMUnit">Units</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-1" id="SubconVFDiv" hidden>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-borderless mb-3 text-center tableFixHead w-100">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-fornt">
+                                                    <h6 class="me-2 mb-0">Plan Dispatch till Date</h6>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm w-100" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                       id="P4SubConPlanDate" readonly>
+                                            </td>
+                                            <td id="P4SubConPlanDateUnit">Units</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-fornt">
+                                                    <h6 class="me-2 mb-0">Actual Dispatch till Date </h6>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm w-100" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                       id="P4SubConActDate" readonly>
+                                            </td>
+                                            <td id="P4SubConActDateunit">Units</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-fornt">
+                                                    <h6 class="me-2 mb-0">Balance to Receive</h6>
+
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm w-100" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                       id="P4SubConBalToRc" readonly>
+                                                <input class="form-control form-control-sm w-100" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                       id="P4PoId" hidden>
+                                            </td>
+                                            <td id="P4SubConBalToRcIUnit">Units</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-12 text-center mb-1">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <span style="color: black;background-color: rgb(66, 153, 66);width: 100%;" id="P4MessageBox"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <button class="btn btn-primary btn-sm w-50" id="popup4LineComplete">Line Item Inwarding Complete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="mt-1">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button class="btn btn-primary btn-sm w-50" id="popup4PrintCapture">Print Identification Labels</button>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <div class="d-flex align-items-center justify-content-fornt">
+                                <h6 class="me-2 mb-0">Confirm NC Label(s) fixed to Bin(s) / Part(s)</h6>
+                                <input class="form-check-input mt-1" type="checkbox" title=""
+                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                       id="ChkNcLabel">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <hr class="mt-2">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5>Upload Vendor Inspection Reports</h5>
+                        </div>
+                        <div class="col-md-12" id="popupInwardVendorDocGridDiv">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="popupInwardVendorDocGrid"
+                                           class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Document Type</th>
+                                                <th>Mandatory</th>
+                                                <th>Info / Comment</th>
+                                                <th>Uploaded by</th>
+                                                <th>Uploaded on</th>
+                                                <th>View</th>
+                                                <th>Download</th>
+                                                <th width="5%">
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mt-1">
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#doc-item" data-plugin="tippy" data-tippy-placement="top" id="UploadOtherVendorDoc" data-tippy="" data-original-title="Click to Add a document">
+                                Upload Other
+                                Related Documents
+                            </button>
+                        </div>
+                        <div class="col-md-12 text-end">
+                            <button class="btn btn-primary btn-sm" id="popupInwardExitBtn" disabled>Exit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+</div>
+
+<div id="doc-item" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Upload Document</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- ------- -->
+                    <div class="col-md-12">
+                        <!-- =========== -->
+                        <div class="row mt-2">
+                            <label class="col-md-4 form-label mb-2">
+                                Document Type <span class="text-danger">
+                                    *
+                                </span>
+                            </label>
+                            <div class="col-md-8 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="Indicate the File Content or any relevant info about the Document">
+                                <input type="text" class="form-control form-control-sm" id="DocTypeName"
+                                       readonly>
+                            </div>
+                            <!-- =========== -->
+                            <label class="col-md-4 form-label mb-2">
+                                Allowed File Extn. <span class="text-danger">
+                                    *
+                                </span>
+                            </label>
+                            <div class="col-md-8 mb-2">
+                                <input type="text" class="form-control form-control-sm" id="FileExtnName"
+                                       readonly>
+                            </div>
+                            <!-- =========== -->
+                            <label class="col-md-4 form-label mb-2">
+                                Info / Comment<span class="text-danger">
+                                    *
+                                </span>
+                            </label>
+                            <div class="col-md-8 mb-2">
+                                <input type="text" class="form-control form-control-sm"
+                                       placeholder="Enter  Info / Comment" id="InfoComments">
+                            </div>
+                            <!-- =========== -->
+                            <div class="col-md-4 mb-2">
+                                <div class="fileupload btn btn-sm btn-info waves-effect w-100" title=""
+                                     data-plugin="tippy" data-tippy-placement="top">
+                                    <span>
+                                        <i class="mdi mdi-cloud-upload me-1"></i>Document
+                                        Upload
+                                    </span>
+                                    <input type="file" class="upload" name="uploadedFile"
+                                           id="fileUploadInput" onchange="displayFileName()">
+                                </div>
+                            </div>
+                            <!-- =========== -->
+                            <div class="col-md-8 mb-2">
+                                <input type="text" class="form-control form-control-sm"
+                                       placeholder="Show uploaded File Name" id="fileNameDisplay" readonly>
+                                <input type="text" id="doclistidFile" hidden />
+                                <input type="text" id="docTypeIdFile" hidden />
+                                <input type="date" id="deletiondate" hidden />
+                            </div>
+                            <!-- =========== -->
+                            <div class="col-md-12 text-end">
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#RefDocReason" title="" data-plugin="tippy"
+                                        data-tippy-placement="top" hidden id="Resonbtn">
+                                    Reason
+                                </button>
+                                <button class="btn btn-sm btn-primary" data-plugin="tippy"
+                                        data-tippy-placement="top" data-tippy=""
+                                        data-original-title="Use to Save the entered data"
+                                        id="UploadFileSave">
+                                    Save
+                                </button>
+                            </div>
+                            <!-- =========== -->
+                        </div>
+                        <!-- =========== -->
+                        <!-- =========== -->
+                        <div class="row mt-2 display-none">
+                            <div class="col-md-5">
+                                <button class="btn btn-sm btn-info w-100">Create New Document</button>
+                            </div>
+                            <div class="col-md-5">
+                                <button class="btn btn-sm btn-purple w-100" data-bs-toggle="modal"
+                                        data-bs-target="#task-rou">
+                                    Task Document Creation <span class="badge bg-primary rounded-circle noti-icon-badge m-l-10">5</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- =========== -->
+                    </div>
+                    <!-- ------- -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade modal-fullscreen-xl-down" id="viewDoc" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content bxs-modal" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">View Documents</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- ========================= -->
+                    <div class="col-md-12 dott-bord-r">
+                        <div class="table-responsive table-he-150">
+                            <table class="table table-sm table-bordered w-100 text-center">
+                                <thead class="table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Document Type : <span id="DocTypenameText"></span></td>
+                                        <td>Uploaded by <span id="UploadByText"></span> on <span id="UpdatedDateText"></span></td>
+                                        <td>Part No / Desc : <span id="PartNoText"></span> / <span id="PartDescText"></span></td>
+                                        <td>Customer : <span id="CustomerText"></span> </td>
+                                        <td>PO No / WO No : <span id="PoNoText"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Retention Date : <span id="RetentionDateText"></span></td>
+                                        <td>Routing No : <span id="RoutingNameText"></span></td>
+                                        <td>Opr No : <span id="OprNoText"></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-12">
+                        <iframe id="fileViewer" src="" style="width: 100vw; height: 100vh;"></iframe>
+                        @*<img src="https://skala.or.id/wp-content/uploads/2024/01/dummy-post-square-1-1.jpg" alt="img" style="width: 100%; height: 400px;">*@
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="popup8" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Inspection Label Printing
+                    <br>
+                    Part No / Desc : <span id="P8PartNoSpan"></span> from <span id="P8SuppSpan"></span> <br>
+                    <span id="P8RoutingSpan"> Routing : <span id="P8SpanRouting"></span> Opr No : <span id="P8SpanOprNo"></span></span>
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <label class="form-label col-md-4 mb-2">
+                                Status :
+                            </label>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control form-control-sm " id="P8Status" value="" readonly>
+                            </div>
+                            <div class="d-flex">
+                                <label class="form-label col-md-2 m-2">
+                                    No of Labels to Print
+                                </label>
+                                <div class="col-md-2  m-2">
+                                    <input type="text" class="form-control form-control-sm" id="P8NoLbl" value="" readonly>
+                                </div>
+                                <label class="form-label col-md-2 m-2">
+                                    with
+                                </label>
+                                <div class="col-md-2  m-2">
+                                    <input type="text" class="form-control form-control-sm" id="P8With" value="" readonly>
+                                </div>
+                                <label class="form-label col-md-2  m-2">Qnty / Container</label>
+                            </div>
+                            <div class="col-md-12 text-end">
+                                <button class="btn btn-sm btn-primary" id="P8Print">Print</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="popup5" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Inwarding Data Entry for Part No / Desc : <span id="P5PartNoSpan"></span> from <span id="P5SuppSpan"></span> <br>
+                    <span id="P5RoutingSpan" hidden> Routing : <span id="P5SpanRouting"></span> Opr No : <span id="P5SpanOprNo"></span></span>
+                </h4>
+                <button type="button" class="btn-close" id="P5BtnClose"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="#" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <label class="col-md-6 form-label mb-2">
+                                Inwarding Condition *
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <select class="form-select form-select-sm" id="P5Condition" aria-label="form-select-sm"
+                                        title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="0">Choose Condtion</option>
+                                </select>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Our Count *
+                            </label>
+                            <div class="col-md-6 mb-2 d-flex" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" class="form-control form-control-sm w-25" id="P5OurCount">
+                                <span id="P5QurUnit" class="m-1">Units</span>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Supplier DC Qnty *
+                            </label>
+                            <div class="col-md-6 mb-2 d-flex" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" class="form-control form-control-sm w-25" id="P5SuppCount">
+                                <span id="P5SuppUnit" class="m-1">Units</span>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Comment
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" class="form-control form-control-sm" id="P5Comment">
+                            </div>
+                            <div class="col text-end">
+                                <input type="text" class="form-control form-control-sm" id="P5InwDetailsId" hidden>
+                                <button class="btn btn-sm btn-primary" id="P5Save">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="warning" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" style="color: red;" id="mySmallModalLabel">Warning !</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <label class="form-label col-md-4 mb-2">
+                                Entered Data will not be Saved
+                            </label>
+                            <div class="col text-end">
+                                <button class="btn btn-sm btn-primary" id="ExitWarningBtn">Exit without Saving Entered Data</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="NotUploaded" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Warning - Inward Files not Uploaded</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <label class="form-label col-md-12 mb-2">
+                                Inward files to be uploaded ... Not Uploaded ....
+                            </label>
+                            <div class="col-md-8 mb-2">
+                            </div>
+                            <div class="col text-center">
+                                <button class="btn btn-sm btn-primary" id="EP7Return">Return to Popup to Upload Files</button>
+                                <button class="btn btn-sm mt-1 btn-primary" id="EP7Exit">Exit without Saving Entered Data</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="ErrorMessage1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content"style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Count Mismatch Error Message</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <h6>Our Count is not matching Supplier DC count. </h6>
+                            <label class="form-label col-md-6 mb-2">
+                                <br>
+
+                                Recheck Our counts
+                                <br>
+                                or
+                                <br>
+                                Supplier DC Count has an error and requires
+                                clarification with Supplier. Inward Data has to be
+                                reentered for this line item.
+                                <br>
+                                (This line item will not show in the Inward
+                                Inspection List. If Supplier documentation
+                                changes, it would have to be uploaded again)
+                            </label>
+                            <div class="col-md-6 text-center">
+                                <button class="btn btn-sm btn-primary mt-3" id="Error1Edit">Edit Entered Data</button>
+                                <button class="btn btn-sm mt-4 btn-primary" id="Error1WithOutExit">Exit without Saving Entered Data</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="ErrorMessage2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">SubCon Material Reconcialation Error</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <h6>Total Qnty sent by Supplier <span id="ErSp2Sent"></span> is greater than Quantity sent by us to Supplier  <span id="ErSp2To"></span>  </h6>
+                            <label class="form-label col-md-6 mb-2">
+
+                                Recheck Our counts
+                                <br>
+                                or
+                                <br>
+                                Supplier DC Count has an error and requires
+                                clarification with Supplier. Inward Data has to be
+                                reentered for this line item.
+                                <br>
+                                (This line item will not show in the Inward
+                                Inspection List. If Supplier documentation
+                                changes, it would have to be uploaded again)
+                            </label>
+                            <div class="col-md-6 text-center">
+                                <button class="btn btn-sm btn-primary" id="Error2Edit">Edit Entered Data</button>
+                                <button class="btn btn-sm mt-5 btn-primary" id="Error2WithOutExit">Exit without Saving Entered Data</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="ErrorMessage3" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Excess Material Sent by RM / BOF Supplier</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <h6> Total Qnty sent by Supplier <span id="ErSp3Sent"></span> is greater than PO Quantity <span id="ErSp3To"></span> </h6>
+                            <label class="form-label col-md-6 mb-2">
+
+                                <br>
+
+                                Recheck Our counts
+                                <br>
+                                or
+                                <br>
+                                we accept excess quantity
+                                <br>
+                                or
+                                <br>
+                                Count has to be clarified with Supplier
+                                <br>
+                                (This line item will not show up in the Inward
+                                Inspection List. If Supplier documentation
+                                changes. It would have to be uploaded again)
+
+
+                            </label>
+                            <div class="col-md-6 text-center">
+                                <button class="btn btn-sm btn-primary" id="Error3Edit">Edit Entered Data</button>
+                                <br>
+                                <button class="btn btn-sm mt-4 btn-primary" id="Error3Exit">Save & Exit</button>
+                                <button class="btn btn-sm mt-4 btn-primary" id="Error3WithOutExit">Exit without Saving Entered Data</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<template id="POGrid1Row">
+    <tr>
+        <td>{poReference}</td>
+        <td>{supplier}</td>
+        <td>{partType}</td>
+        <td>{noOfLine}</td>
+        <td>{noOfOpenLine}</td>
+        <td>{docStatus}</td>
+        <td>0</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-poref={poReference}
+                       data-podate={dateStr}
+                       data-porcptdate={planPoReceiptDate}
+                       data-supp={supplier}
+                       data-units={unit}
+                       data-docavl={docStatus}
+                       data-parttype={partType}
+                       data-noofline={noOfLine}
+                       data-postatus={statusStr}
+                       data-podetails={poDetailsId}
+                       data-procid={procPlanId}
+                       data-partno={partNo}
+                       data-poqnty={poQnty}
+                       data-poqntyrecd={poQntyRecd}
+                       data-partid={partId} data-edit={0}
+                       data-bs-target="#popupInward">
+                        Inward
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-poref="{poReference}"
+                       data-podate="{dateStr}"
+                       data-postatus={statusStr}
+                       data-units={unit}
+                       data-docavl={docStatus}
+                       data-porcptdate={planPoReceiptDate}
+                       data-supp="{supplier}"
+                       data-podetails="{poDetailsId}"
+                       data-procid="{procPlanId}" data-partid="{partId}"
+                       data-partno="{partNo}" data-qnty="{poQnty}" data-supname="{supplier}" data-aggdate="{dateStr}"
+                       data-bs-target="#">
+                        View Details
+                    </a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-poref={poReference}
+                       data-podate={dateStr}
+                       data-docavl={docStatus}
+                       data-porcptdate={planPoReceiptDate}
+                       data-supp={supplier}
+                       data-poqnty={poQnty}
+                       data-parttype={partType}
+                       data-units={unit}
+                       data-postatus={statusStr}
+                       data-poqntyrecd={poQntyRecd}
+                       data-noofline={noOfLine}
+                       data-podetails={poDetailsId}
+                       data-procid={procPlanId}
+                       data-partno={partNo}
+                       data-partid={partId} data-edit={1}
+                       data-bs-target="#popupInward">
+                        Edit
+                    </a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="P4inwardGridRow">
+    <tr>
+        <td>{inward_ConditionName}</td>
+        <td>{our_count}</td>
+        <td>{vendor_DC_count}</td>
+        <td>{comment}</td>
+        <td>{inw_Recpt_Part_No_Name}</td>
+        <td>
+            <a href="javascript:void(0);" data-condition="{inward_Condition}" data-id="{inw_Recpt_DetailsId}" data-headerid="{inw_Recpt_Header_Id}"
+               data-ourcount="{our_count}" data-vendorcount="{vendor_DC_count}" data-comment="{comment}" onclick="EditCaptureDetails(this)">
+                <i class="fas fa-pencil-alt btn btn-sm"></i>
+            </a>
+        </td>
+    </tr>
+</template>
+
+
+
+@section Scripts {
+    <script src="~/js/InwardPo.js"></script>
+}

@@ -220,6 +220,7 @@
                             </label>
                             <div class="col-md-8 mb-2">
                                 <input value="10:00:00" id="SubConFloorToFloorTime" name="FloorToFloorTime" type="text" class="form-control form-control-sm" data-toggle="input-mask" data-mask-format="00:00:00" placeholder="10:00:00" required="" data-plugin="tippy" data-tippy-placement="top" data-tippy="" data-original-title="Enter the Floor to Floor Time which is the time interval between two Cycle Starts which would typically include Load / Unload and any other activity which is done serially ... Activities done in parallel to the Machine working (eg Inspection, Deburring ...) will not be a part of Floor To Floor Time">
+                                <span id="floorError" style="color:red"></span>
                             </div>
                             <!-- ----------  -->
                             <!-- ---------------  -->
@@ -229,6 +230,7 @@
                             </label>
                             <div class="col-md-8 mb-2">
                                 <input value="10:00:00" id="SubConSetupTime" name="SetupTime" type="text" class="form-control form-control-sm" data-toggle="input-mask" data-mask-format="00:00:00" placeholder="10:00:00" required="" data-plugin="tippy" data-tippy-placement="top" data-tippy="" data-original-title="Enter the Setup time for the Machine for the Routing Step ... Removal / Unload of Previous Setup Hardware, Assemble / Load Hardware for the current setup, Downloading / Entering of Programs ....">
+                                <span id="SetupError" style="color:red"></span>
                             </div>
                             <!-- ---------------  -->
                             <label class="form-label  col-md-4 mb-2">

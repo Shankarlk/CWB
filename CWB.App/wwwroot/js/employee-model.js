@@ -102,6 +102,8 @@ $(function () {
         EPloc.style.border = '';
         var EPDateOfLeave = document.getElementById('EPDateOfLeave');
         EPDateOfLeave.style.border = '';
+        var EPEmpRoleid = document.getElementById('EPEmpRoles');
+        EPEmpRoleid.style.border = '';
         //var EPUserName = document.getElementById('EPUserName');
         //EPUserName.style.border = '';
         var EPPassword = document.getElementById('EPPassword');
@@ -323,6 +325,14 @@ $(function () {
             var newNamevalidate = document.getElementById('EPDept');
             newNamevalidate.style.border = '';
         }
+        if (EPEmpRoleid.length <= 0) {
+            var newNamevalidate = document.getElementById('EPEmpRoles');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('EPEmpRoles');
+            newNamevalidate.style.border = '';
+        }
         if (EPCell.length <= 0) {
             var newNamevalidate = document.getElementById('EPCell');
             newNamevalidate.style.border = '2px solid red';
@@ -493,6 +503,7 @@ $(function () {
                             })
                                 .then((response) => {
                                     console.log("Success:", response);
+                                    alert("Employee Saved Successfully!");
                                 })
                                 .catch((error) => {
                                     console.error("Error:", error);
@@ -787,6 +798,7 @@ $(function () {
                             // loadSelectRole();
                             $("#addOrgChart").modal("hide");
                         }
+                        alert("Org Chart Position Details Saved Successfully!");
                     }).catch((error) => {
                     });
                 }
@@ -945,6 +957,7 @@ $(function () {
         //        $("#error-uiname").text("").css("color", "red");
                 api.post("/Employee/PostUilist", rowData).then((data) => {
                     loadUiList();
+                    alert("UI Details Saved Successfully!");
                 }).catch((error) => {
                     //AppUtil.HandleError("frmDesignation", error);
                 });
@@ -1287,6 +1300,7 @@ $(function () {
             LoadRoleUiById(UiAccessRRoleid);
             LoadRoleUiAll();
             $("#addUiAccessRole").modal("hide");
+            alert("UI Access Saved Successfully!");
                     //LoadEmployee();
                     //loadSelectRole();
                 }).catch((error) => {
@@ -1335,6 +1349,7 @@ $(function () {
                     loadSelectRole();
                     LoadRoleUiAll();
                     LoadRoleUiById(data.role_ListId);
+                    alert("Role Saved Successfully!");
                 }).catch((error) => {
                     //AppUtil.HandleError("frmDesignation", error);
                 });

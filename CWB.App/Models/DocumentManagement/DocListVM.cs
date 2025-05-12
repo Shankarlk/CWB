@@ -18,6 +18,9 @@ namespace CWB.App.Models.DocumentManagement
         public long WoId { get; set; }
         public long SoId { get; set; }
         public long PartId { get; set; }
+        public long Inw_Recpt_HeaderId { get; set; }
+        public long Inw_Recpt_DetailsId { get; set; }
+        public long NcLogIdId { get; set; }
         public long RoutingId { get; set; }
         public long OprNo { get; set; }
         public DateTime DeletionDate

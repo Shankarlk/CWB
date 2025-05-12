@@ -25,6 +25,9 @@ namespace CWB.Masters.ViewModels.DocumentManagement
         public long AppvStatus { get; set; }
         public DateTime CreationDt { get; set; }
         public long McTypeId { get; set; }
+        public long NcLogIdId { get; set; }
+        public long Inw_Recpt_HeaderId { get; set; }
+        public long Inw_Recpt_DetailsId { get; set; }
         public long McId { get; set; }
         public long TenantId { get; set; }
     }

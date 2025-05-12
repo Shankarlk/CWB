@@ -156,6 +156,36 @@ $(document).ready(function () {
         SearchDocCat.val(0).trigger('change');
         $("#SearchRefDocCat").val(0);
     });
+    $("#SearchOrpNo").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#DocViewListGrid tbody tr").filter(function () {
+            $(this).toggle($(this.children[11]).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+    $("#SearchRoutingName").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#DocViewListGrid tbody tr").filter(function () {
+            $(this).toggle($(this.children[10]).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+    $("#SearchWo").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#DocViewListGrid tbody tr").filter(function () {
+            $(this).toggle($(this.children[8]).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+    $("#SearchApprovBy").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#DocViewListGrid tbody tr").filter(function () {
+            $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+    $("#SearchUploadedBy").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#DocViewListGrid tbody tr").filter(function () {
+            $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
     $("#SearchDocTypeName").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#DocViewListGrid tbody tr").filter(function () {

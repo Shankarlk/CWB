@@ -1,0 +1,441 @@
+﻿
+<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 style="padding: 10px;">Material Movement / Receipt Confirmation</h3>
+                        </div>
+                        <!-- =============================  -->
+                        <div class="col-md-12">
+                            <hr class="mt-2">
+                            <!-- ================================  -->
+                            <div class="row">
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">From (Sender)</label>
+                                    <input class="form-control form-control-sm w-100" type="text" title=""
+                                           data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                           id="searchFromSend">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">To (Receiver)</label>
+                                    <input class="form-control form-control-sm w-100" type="text" title=""
+                                           data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                           id="searchToSend">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Part Status</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                            title="" data-plugin="tippy" data-tippy-placement="top" id="searchPartType">
+                                        <option value="0">--Select--</option>
+                                        <option value="1">Accepted</option>
+                                        <option value="2">Rework</option>
+                                        <option value="3">Rejected</option>
+                                    </select>
+                                </div>
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="table-responsive table-he-250">
+                                            <table class="table table-sm table-bordered w-100 text-center" id="MoveGrid">
+                                                <thead class="  table-info th-sti">
+                                                    <tr class="table-border-bottom">
+                                                        <th>
+                                                            <input id="NcGridChk" class="form-check-input"
+                                                                   type="checkbox" title="Select" data-plugin="tippy"
+                                                                   data-tippy-placement="top">
+                                                        </th>
+                                                        <th>Part No / Desc</th>
+                                                        <th>Routing / Opr No</th>
+                                                        <th>From (Sender)</th>
+                                                        <th>To (Receiver)</th>
+                                                        <th>Part Status</th>
+                                                        <th>Qnty </th>
+                                                        <th>Update Resp.</th>
+                                                        <th> Mismatch Qnty</th>
+                                                        <th> Mismatch Status</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12" hidden>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#popup16">
+                                        Popup 16
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#popup17">
+                                        Popup 17
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#popup18">
+                                        Popup 18
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#ErrorMessage9">
+                                        ErrorMessage 9
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#ErrorMessage10">
+                                        ErrorMessage 10
+                                    </button>
+                                </div>
+                                <!-- =========== -->
+                            </div>
+                            <!-- =========== -->
+                            <!-- =============================================  -->
+                            <!-- =============  end row  ================  -->
+                            <!-- end accordion -->
+                        </div>
+                        <!-- =============================  -->
+                    </div>
+                </div>
+            </div>
+            <!-- end card body -->
+            <!-- ================= -->
+        </div>
+        <!-- end card -->
+        <!-- ======================================================================== -->
+    </div>
+    <!-- end col -->
+</div>
+
+<div class="modal fade" id="popup16" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Material Receipt Confirmation
+                    Part No / Desc : <span id="P16PartNo"></span> from <span id="P16FromSend"></span> to <span id="P16ToSend"></span> <br>
+                    Routing : <span id="P16Routing"></span> Opr No : <span id="P16OprNo"></span> <br>
+                    <br>
+                    Sending Dept : <span id="P16SendDpt"></span> <br>
+                    Receiving Dept : <span id="P16RecDpt"></span> <br>
+
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="#" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <h6>
+                                Part Status				 	: <span id="P16PartStatus"></span> <br>
+                                Quantity Sent		  			: <span id="P16SpanQnty"></span> <br>
+                            </h6>
+                            <label class="col-md-6 form-label mb-2" id="CommentDiv">
+                                Comment (after resolution)
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="" id="CommentFieldDiv">
+                                <textarea type="text" class="form-control form-control-sm w-25" id="P16Comment"> </textarea>
+                            </div>
+                            <hr class="mt-2">
+                            <label class="col-md-6 form-label mb-2">
+                                Quantity Recd
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <div class="d-flex">
+                                    <input type="text" placeholder="Balloon No" class="form-control form-control-sm w-25" id="P16QntyRec">
+                                    <span id="Unit1"></span>
+                                </div>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Mismatch Qnty
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <div class="d-flex">
+                                    <input type="text" placeholder="Balloon No" class="form-control form-control-sm w-25" id="P16MisQnty" readonly>
+                                    <input type="text" placeholder="Balloon No" class="form-control form-control-sm w-25" id="P16id" hidden>
+                                    <span id="Unit2"></span>
+                                </div>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Comment *
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <textarea type="text" placeholder="NC Description " class="form-control form-control-sm w-75" id="P16Comment2"> </textarea>
+                            </div>
+                            <div class="col text-end">
+                                <button class="btn btn-sm btn-primary" id="P16Save">Update</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="popup17" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel"  aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Material Receipt Confirmation for Multiple Parts
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <h6>
+                        Material Receipt Confirmation for Multiple Parts
+                    </h6>
+                    <div class="row mt-2">
+                        <div class="table-responsive table-he-250">
+                            <table class="table table-sm table-bordered w-100 text-center" id="P17Grid">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Part No / Desc</th>
+                                        <th>Routing / Opr No</th>
+                                        <th>From (Sender)</th>
+                                        <th>To (Receiver)</th>
+                                        <th>Part Status</th>
+                                        <th>Qnty </th>
+                                        <th>Update Resp.</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-12 text-end">
+                            <button class="btn btn-sm btn-primary" id="P17Save">Confirm Receipt</button>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="popup18" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel"  aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Scrap Movement   for Part No / Desc : <span id="P18PartNo"></span> <br>
+                    Routing : <span id="P18Routing"></span> Opr No : <span id="P18OprNo"></span> <br>
+                    NC Location : <span id="P18NcLoc"></span>
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <h6>
+                        Qnty confirmed to be scrapped		 	: <span id="P18Qnty"></span> <br>
+                        NC Disposal Decisoin Date				: <span id="P18NcDate"></span>
+                    </h6>
+                    <!-- ========================= -->
+                    <div class="col-md-12 text-end mb-2">
+                        <button class="btn btn-sm btn-primary" id="SaveUOM">View NC Disposal Decision</button>
+                    </div>
+
+                    <label class="col-md-6 form-label mb-2">
+                        Confirm Movement to Scrap Location *
+                    </label>
+                    <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                         data-tippy=""
+                         data-original-title="">
+                        <div class="d-flex align-items-end justify-content-end">
+                            <input type="text" class="form-control form-control-sm w-25 me-2" id="P18CnfQnty">
+                            <span id="Unit18">Units</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>If there is a qnty mismatch .. abort & raise matter to Seniors to take required action</h6>
+                    </div>
+                    <div class="col-md-6 text-end ">
+                        <input type="text" placeholder="Balloon No" class="form-control form-control-sm w-25" id="P18id" hidden>
+                        <button class="btn btn-sm btn-primary" id="P18Save">Save</button>
+                    </div>
+
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="ErrorMessage9" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Quanitity Mismatch Error</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <h6>
+                                Indicated Total Qnty Sent does not match Received Qnty Checked <br>
+                                xxx Extra / xxxx Less
+                            </h6>
+                            <label class="form-label col-md-6 mb-2">
+                                <br>
+
+                                Recheck Our counts
+                                <br class="mt-1">
+                                or
+                                <br class="mt-1">
+                                Confirm Mismatch
+                                <br>
+                            </label>
+                            <div class="col-md-5 text-center">
+                                <button class="btn btn-sm btn-primary mt-3 mb-1" id="ErP9Edit">Edit Entered Data</button>
+                                <button class="btn btn-sm mt-1 btn-primary" id="ErP9Return">Save & Exit</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="ErrorMessage10" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Multiple Item Receipt Qnty Confirmation</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <label class="form-label col-md-6 mb-2">
+                                <br>
+                                Indicated Sent Qnty for all chosen Part Nos matches Received Qnty
+                                <br>
+                                or
+                                <br>
+                                Recheck counts
+                                <br>
+                            </label>
+                            <div class="col-md-5 text-center">
+                                <button class="btn btn-sm btn-primary mt-3 mb-1" id="ErP10Edit">Save & Exit</button>
+                                <button class="btn btn-sm mt-2 btn-primary" id="ErP10Return">Return to Popup</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<template id="MoveGridRow">
+    <tr>
+        <td>
+            <input type="checkbox" class="row-checkbox" />
+        </td>
+        <td>{partNo}</td>
+        <td>{routingName}/{oprNo}</td>
+        <td>{fromSender}</td>
+        <td>{toSender}</td>
+        <td>{partStatus}</td>
+        <td>{qnty}</td>
+        <td>{updateResp}</td>
+        <td>{qnty_Mismatch}</td>
+        <td>{misMatchStatus}</td>
+        <td hidden>{inv_Trans_LogId}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);"
+                       class="dropdown-item"
+                       data-fromsend="{fromSender}"
+                       data-tosend="{toSender}"
+                       data-rout="{routingName}"
+                       data-opr="{oprNo}"
+                       data-qntymis="{qnty_Mismatch}"
+                       data-qntycom="{qnty_Mismatch_Comment}"
+                       data-partstatus="{partStatus}" data-partid="{partId}"
+                       data-partno="{partNo}" data-qnty="{qnty}"
+                       data-id="{inv_Trans_LogId}"
+                       data-bs-toggle="modal" data-bs-target="#popup16">Update Receipt</a>
+                    <a href="javascript:void(0);"
+                       class="dropdown-item"
+                       data-fromsend="{fromSender}"
+                       data-tosend="{toSender}"
+                       data-rout="{routingName}"
+                       data-opr="{oprNo}"
+                       data-partstatus="{partStatus}" data-partid="{partId}"
+                       data-partno="{partNo}" data-qnty="{qnty}"
+                       data-id="{inv_Trans_LogId}"
+                       data-bs-toggle="modal" data-bs-target="#popup17">Update Multiple Select OK</a>
+                    
+                    @*<a href="javascript:void(0);"
+                       class="dropdown-item"
+                       data-fromsend="{fromSender}"
+                       data-tosend="{toSender}"
+                       data-rout="{routingName}"
+                       data-opr="{oprNo}"
+                       data-partstatus="{partStatus}" data-partid="{partId}"
+                       data-partno="{partNo}" data-qnty="{qnty}"
+                       data-id="{inv_Trans_LogId}"
+                       data-bs-toggle="modal" data-bs-target="#popup18">Move to Scrap (for Rejected Parts)</a>*@
+                    
+
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+
+
+@section Scripts {
+    <script src="~/js/MaterialMovement.js"></script>
+}

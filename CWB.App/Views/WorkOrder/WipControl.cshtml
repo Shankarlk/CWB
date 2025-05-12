@@ -1,0 +1,355 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "WIP Control";
+}
+<input value="B-BP" type="hidden" id="hdn-nav-menu" />
+
+<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 style="padding: 10px;">WIP Control</h3>
+                        </div>
+                        <div class="col-md-3 dott-bord-r">
+                            <div class="card p-1">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                            <a asp-controller="WorkOrder" asp-action="InwardPo">
+                                                <h6>Inward Material against PO</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
+                                                <tbody>
+                                                    <tr><td style="border: 1px solid black;">Sub Con</td><td style="border: 1px solid black;"><span id="subconInw">0</span></td></tr>
+                                                    <tr><td style="border: 1px solid black;">Raw Matl</td><td style="border: 1px solid black;"><span id="rmInw">0</span></td></tr>
+                                                    <tr><td style="border: 1px solid black;">BOF</td><td style="border: 1px solid black;"><span id="bofInw">0</span></td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                            <a href="#">
+                                                <h6>Inward Material against our RGP</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
+                                                <tbody>
+                                                    <tr><td style="border: 1px solid black;">Sub Con</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">Raw Matl</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">BOF</td><td style="border: 1px solid black;">0</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2">
+                                            <a href="#">
+                                                <h6>Inward Customer Material</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2">
+                                            <a href="#">
+                                                <h6>Adhoc / Non Plan Material Inwarding</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 dott-bord-r">
+                            <div class="card p-1">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                            <a asp-controller="WorkOrder" asp-action="Inspection">
+                                                <h6>Inward Inspection</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
+                                                <tbody>
+                                                    <tr><td style="border: 1px solid black;">Sub Con</td><td style="border: 1px solid black;"><span id="subconInsp">0</span></td></tr>
+                                                    <tr><td style="border: 1px solid black;">Raw Matl</td><td style="border: 1px solid black;"><span id="rmInsp">0</span></td></tr>
+                                                    <tr><td style="border: 1px solid black;">BOF</td><td style="border: 1px solid black;"><span id="bofInsp">0</span></td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                    <a href="#">
+                                        <h6>Inward Inspection for Customer / Other Parts</h6>
+                                    </a>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                            <a asp-controller="WorkOrder" asp-action="NcAwaitingDecision">
+                                                <h6>NC Awaiting Disposal Decision</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
+                                                <tbody>
+                                                    <tr><td style="border: 1px solid black;">Inhouse</td><td style="border: 1px solid black;" id="ncInhouse">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">Sub Con</td><td style="border: 1px solid black;" id="ncSubCon">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">Raw Matl</td><td style="border: 1px solid black;" id="ncRm">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">BOF</td><td style="border: 1px solid black;" id="ncBof">0</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                            <a href="#">
+                                                <h6>NC Work Completion Status</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
+                                                <tbody>
+                                                    <tr><td style="border: 1px solid black;">Inhouse</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">Sub Con</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">Raw Matl</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">BOF</td><td style="border: 1px solid black;">0</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                            <a asp-controller="WorkOrder" asp-action="#">
+                                                <h6>Scrap Note Approval / Closure</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
+                                                <tbody>
+                                                    <tr><td style="border: 1px solid black;">Inhouse</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">Sub Con</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">Raw Matl</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">BOF</td><td style="border: 1px solid black;">0</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 dott-bord-r">
+                            <div class="card p-1">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                            <a asp-controller="WorkOrder" asp-action="#">
+                                                <h6>Issue Material</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
+                                                <tbody>
+                                                    <tr><td style="border: 1px solid black;">Sub Con</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">Inhouse</td><td style="border: 1px solid black;">0</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                            <a asp-controller="WorkOrder" asp-action="#">
+                                                <h6>Dispatch Rework Parts thru RGP</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
+                                                <tbody>
+                                                    <tr><td style="border: 1px solid black;">Sub Con</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">Raw Matl</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">BOF</td><td style="border: 1px solid black;">0</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2">
+                                            <a asp-controller="WorkOrder" asp-action="MaterialMovement">
+                                                <h6>Confrim Matl Movement / Receipt</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="table-responsive mt-1">
+                                            <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
+                                                <tbody>
+                                                    <tr><td style="border: 1px solid black;">Shop</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">Stores</td><td style="border: 1px solid black;">0</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2">
+                                            <a asp-controller="WorkOrder" asp-action="#">
+                                                <h6>Return Material to Supplier</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2">
+                                            <a asp-controller="WorkOrder" asp-action="#">
+                                                <h6>Dispatch other Parts thru RGP</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 dott-bord-r">
+                            <div class="card p-1">
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2">
+                                            <a asp-controller="WorkOrder" asp-action="#">
+                                                <h6>WIP View / Control</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
+                                                <tbody>
+                                                    <tr><td style="border: 1px solid black;">Sub Con</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">Raw Matl</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">BOF</td><td style="border: 1px solid black;">0</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2">
+                                            <a asp-controller="WorkOrder" asp-action="#">
+                                                <h6>Shop Bookout</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="table-responsive mt-1">
+                                            <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
+                                                <tbody>
+                                                    <tr><td style="border: 1px solid black;">0</td><td style="border: 1px solid black;">0</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2">
+                                            <a asp-controller="WorkOrder" asp-action="#">
+                                                <h6>Final Inspection</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="table-responsive mt-1">
+                                            <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
+                                                <tbody>
+                                                    <tr><td style="border: 1px solid black;">0</td><td style="border: 1px solid black;">0</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2">
+                                            <a asp-controller="WorkOrder" asp-action="#">
+                                                <h6>Dispatch</h6>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="table-responsive mt-1">
+                                            <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
+                                                <tbody>
+                                                    <tr><td style="border: 1px solid black;">0</td><td style="border: 1px solid black;">0</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card p-1 mt-3">
+                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                    <a asp-controller="WorkOrder" asp-action="#">
+                                        <h6>View Inventory Transaction Log</h6>
+                                    </a>
+                                </div>
+                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                    <a asp-controller="WorkOrder" asp-action="#">
+                                        <h6>View Inventory Master</h6>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+@section Scripts {
+    <script src="~/js/WipControl.js"></script>
+}
