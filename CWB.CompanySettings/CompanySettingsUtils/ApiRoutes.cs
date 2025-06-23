@@ -48,6 +48,8 @@
         {
             public const string GetPlants = Base + "/plants/{tenantId}";
             public const string GetCitys = Base + "/getcitys/{tenantId}";
+            public const string GetNoOfDaysTimeSlots = Base + "/getnoofdaystimeslot";
+            public const string GetTimeSlotDurations = Base + "/gettimeslotduration";
             public const string GetCountrys = Base + "/getcountry/{tenantId}";
             public const string CheckCountrys = Base + "/checkcountry/{country}";
             public const string CheckCity = Base + "/checkcity/{city}";

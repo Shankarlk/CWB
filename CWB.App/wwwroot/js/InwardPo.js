@@ -1604,6 +1604,7 @@ function OpenPopup4(element) {
         }
     } else {
 
+        $("#popup4PoLineData").modal("show");
         var inwheaderid = parseInt($("#popupInwardHeaderId").val());
         loadInwardDetails(inwheaderid);
         var supp = relatedTarget.data("supp");

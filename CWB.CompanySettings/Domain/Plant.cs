@@ -16,6 +16,7 @@ namespace CWB.CompanySettings.Domain
         public string Country { get; set; }
         public string GstNo { get; set; }
         public string PanNo { get; set; }
+        public char Change_flag { get; set; }
         public ICollection<ShopDepartment> ShopDepartments { get; set; }
     }
 }

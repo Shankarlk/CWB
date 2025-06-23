@@ -39,4 +39,16 @@
 $(document).ready(function () {
 
     landingPage();
+
+    $("#simulation").on("click", function () {
+        $.ajax({
+            type: "POST",
+            url: '/WorkOrder/PostReadForProdWoWaitList',
+            contentType: "application/json; charset=utf-8",
+            headers: { 'Content-Type': 'application/json' },
+            success: function (result) {
+                console.log("Success:", result);
+            }
+        });
+    });
 });

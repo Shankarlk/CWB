@@ -17,6 +17,8 @@ namespace CWB.App.Services.CompanySettings
         Task<PlantWorkingDetailsVM> PostPlantWD(PlantWorkingDetailsVM model);
         Task<HolidayVM> PlantHoliday(HolidayVM model);
         Task<IEnumerable<CityVM>> GetCities();
+        Task<IEnumerable<TimeSlotDurationVM>> GetTimeSlotDurations();
+        Task<IEnumerable<NoOfDaysTimeSlotVM>> GetNoOfDaysTimeSlots();
         Task<IEnumerable<CountryVM>> GetCountries();
         Task<CityVM> PostCity(CityVM model);
         Task<bool> CheckCity(string city);

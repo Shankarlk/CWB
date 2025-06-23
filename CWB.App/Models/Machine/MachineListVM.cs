@@ -9,6 +9,9 @@
         public long PlantId { get; set; }
         public string Plant { get; set; }
         public long ShopId { get; set; }
+        public long MachineTypeId { get; set; }
         public string Shop { get; set; }
+        public string MachineType { get; set; }
+        public string NextOprTime { get; set; }
     }
 }

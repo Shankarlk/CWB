@@ -10,6 +10,7 @@ namespace CWB.App.Models.WorkOrder
         public long Insp_Outcome_Details_Id { get; set; }
         public long Inw_Recpt_Header_Id { get; set; }
         public long Inw_Recpt_Part_No_Id { get; set; }
+        public long McWaitId { get; set; }
         public string Inw_Recpt_Part_No_Name { get; set; } = string.Empty;
         public string PartType { get; set; } = string.Empty;
         public string Lvldesc { get; set; } = string.Empty;
@@ -32,6 +33,8 @@ namespace CWB.App.Models.WorkOrder
         public string Storage_Location { get; set; }
         public string Label_Type { get; set; }
         public long NC_Log_status_Id { get; set; }
+        public long Routing_Id { get; set; }
+        public long Opr_No_Id { get; set; }
         public DateTime NcDate { get; set; }
         public long TenantId { get; set; }
         public long NoOfDays { get; set; }

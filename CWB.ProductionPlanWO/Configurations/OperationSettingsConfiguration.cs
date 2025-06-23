@@ -36,7 +36,9 @@ namespace CWB.ProductionPlanWO.Configurations
         new OperationSettings { Id = 6, UiName = "Enable Upload of Our Inward Inspection Documents",EnableDisable='Y'},
         new OperationSettings { Id = 7, UiName = "Enable Upload of Root Cause Analysis & Corrective Action Report",EnableDisable='Y'},
         new OperationSettings { Id = 8, UiName = "Enable Printing of Inspection Labels",EnableDisable='Y'},
-        new OperationSettings { Id = 9, UiName = "Allow User with Permission to open NC Disposal UI without RCA & CA uploaded",EnableDisable='Y'}
+        new OperationSettings { Id = 9, UiName = "Allow User with Permission to open NC Disposal UI without RCA & CA uploaded",EnableDisable='Y'},
+        new OperationSettings { Id = 10, UiName = "Allow Loading to Prodn if NC not Closed", EnableDisable='Y'},
+        new OperationSettings { Id = 11, UiName = "Allow Loading to Prodn if Docs not approved", EnableDisable='Y'}
     );
         }
     }

@@ -56,6 +56,28 @@ namespace CWB.ProductionPlanWO.Services
         private readonly ICont_RCA_CA_Status_ListRepository _Cont_RCA_CA_Status_ListRepository;
         private readonly INC_Disp_Decision_ListRepository _NC_Disp_Decision_ListRepository;
         private readonly INC_work_StatusRepository _NC_work_StatusRepository;
+        private readonly IMc_Not_Avl_ReasonRepository _Mc_Not_Avl_ReasonRepository;
+        private readonly IMode_ListRepository _Mode_ListRepository;
+        private readonly INon_Plan_Wk_type_ListRepository _Non_Plan_Wk_type_ListRepository;
+        private readonly ITime_Slot_AllocationRepository _Time_Slot_AllocationRepository;
+        private readonly IMc_Timeslot_ListRepository _Mc_Timeslot_ListRepository;
+        private readonly ITempMc_Timeslot_ListRepository _TempMc_Timeslot_ListRepository;
+        private readonly INon_Plan_Wk_ListRepository _Non_Plan_Wk_ListRepository;
+        private readonly IWO_Wait_ListRepository _WO_Wait_ListRepository;
+        private readonly ITempWO_Wait_ListRepository _TempWO_Wait_ListRepository;
+        private readonly IWO_Bookout_LogRepository _WO_Bookout_LogRepository;
+        private readonly ITimeslot_SettingRepository _Timeslot_SettingRepository;
+        private readonly ITimeslot_ListRepository _Timeslot_ListRepository;
+        private readonly IRwk_ListRepository _Rwk_ListRepository;
+        private readonly IOpr_ListRepository _Opr_ListRepository;
+        private readonly ITempOpr_ListRepository _TempOpr_ListRepository;
+        private readonly IShop_Insp_LogRepository _Shop_Insp_LogRepository;
+        private readonly ISubCon_ListRepository _SubCon_ListRepository;
+        private readonly ITempSubCon_ListRepository _TempSubCon_ListRepository;
+        private readonly IMc_Wait_ListRepository _Mc_Wait_ListRepository;
+        private readonly IMatl_Issue_SettingsRepository _Matl_Issue_SettingsRepository;
+        private readonly IMatl_Issue_ListRepository _Matl_Issue_ListRepository;
+        private readonly ITempMc_Wait_ListRepository _TempMc_Wait_ListRepository;
         private readonly IInspectDocTypeRepository _IInspectDocTypeRepository;
         private readonly INcLogStatusRepository _INcLogStatusRepository;
 
@@ -75,7 +97,10 @@ namespace CWB.ProductionPlanWO.Services
             IInspectDocTypeRepository InspectDocTypeRepository,INcLogStatusRepository ncLogStatusRepository,IOperationSettingsRepository operationSettingsRepository,ICont_RCA_CA_LogRepository Cont_RCA_CA_LogRepository
             ,INC_Decision_LogRepository NC_Decision_LogRepository,INC_Wk_List_Tmpl_DetRepository NC_Wk_List_Tmpl_DetRepository ,INC_Disp_Decs_Appl_ListRepository NC_Disp_Decs_Appl_ListRepository  ,INC_Wk_List_Tmpl_HeadRepository NC_Wk_List_Tmpl_HeadRepository  ,INC_Work_ListRepository NC_Work_ListRepository ,INC_Wk_List_HeaderRepository NC_Wk_List_HeaderRepository ,ICust_NC_Decs_Matrix_OptRepositoy Cust_NC_Decs_Matrix_OptRepository
             ,ICust_NC_Decs_MatrixRepository Cust_NC_Decs_MatrixRepository ,ICont_RCA_CA_Status_ListRepository Cont_RCA_CA_Status_ListRepository,INC_Disp_Decision_ListRepository NC_Disp_Decision_ListRepository
-            ,INC_work_StatusRepository NC_work_StatusRepository)
+            ,INC_work_StatusRepository NC_work_StatusRepository, IMc_Not_Avl_ReasonRepository Mc_Not_Avl_ReasonRepository, IMode_ListRepository Mode_ListRepository,
+            IMc_Timeslot_ListRepository Mc_Timeslot_ListRepository,ITempMc_Timeslot_ListRepository TempMc_Timeslot_ListRepository,
+            INon_Plan_Wk_ListRepository Non_Plan_Wk_ListRepository,IWO_Wait_ListRepository WO_Wait_ListRepository,ITempWO_Wait_ListRepository TempWO_Wait_ListRepository,IWO_Bookout_LogRepository WO_Bookout_LogRepository,ITimeslot_SettingRepository Timeslot_SettingRepository,ITimeslot_ListRepository Timeslot_ListRepository,IRwk_ListRepository Rwk_ListRepository,IOpr_ListRepository Opr_ListRepository,ITempOpr_ListRepository TempOpr_ListRepository,IShop_Insp_LogRepository Shop_Insp_LogRepository,ISubCon_ListRepository SubCon_ListRepository,ITempSubCon_ListRepository TempSubCon_ListRepository, IMc_Wait_ListRepository Mc_Wait_ListRepository,IMatl_Issue_SettingsRepository Matl_Issue_SettingsRepository,IMatl_Issue_ListRepository Matl_Issue_ListRepository,
+            ITempMc_Wait_ListRepository TempMc_Wait_ListRepository, INon_Plan_Wk_type_ListRepository Non_Plan_Wk_type_ListRepository, ITime_Slot_AllocationRepository Time_Slot_AllocationRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -122,6 +147,28 @@ namespace CWB.ProductionPlanWO.Services
             _Cont_RCA_CA_Status_ListRepository = Cont_RCA_CA_Status_ListRepository;
             _NC_work_StatusRepository = NC_work_StatusRepository;
             _NC_Disp_Decision_ListRepository = NC_Disp_Decision_ListRepository;
+            _Mode_ListRepository = Mode_ListRepository;
+            _Non_Plan_Wk_type_ListRepository = Non_Plan_Wk_type_ListRepository;
+            _Time_Slot_AllocationRepository = Time_Slot_AllocationRepository;
+            _Mc_Not_Avl_ReasonRepository = Mc_Not_Avl_ReasonRepository;
+            _Mc_Timeslot_ListRepository = Mc_Timeslot_ListRepository;
+            _TempMc_Timeslot_ListRepository = TempMc_Timeslot_ListRepository;
+            _Non_Plan_Wk_ListRepository = Non_Plan_Wk_ListRepository;
+            _WO_Wait_ListRepository = WO_Wait_ListRepository;
+            _TempWO_Wait_ListRepository = TempWO_Wait_ListRepository;
+            _WO_Bookout_LogRepository = WO_Bookout_LogRepository;
+            _Timeslot_SettingRepository = Timeslot_SettingRepository;
+            _Timeslot_ListRepository = Timeslot_ListRepository;
+            _Rwk_ListRepository = Rwk_ListRepository;
+            _Opr_ListRepository = Opr_ListRepository;
+            _TempOpr_ListRepository = TempOpr_ListRepository;
+            _Shop_Insp_LogRepository = Shop_Insp_LogRepository;
+            _SubCon_ListRepository = SubCon_ListRepository;
+            _TempSubCon_ListRepository = TempSubCon_ListRepository;
+            _Mc_Wait_ListRepository = Mc_Wait_ListRepository;
+            _Matl_Issue_SettingsRepository = Matl_Issue_SettingsRepository;
+            _Matl_Issue_ListRepository = Matl_Issue_ListRepository;
+            _TempMc_Wait_ListRepository = TempMc_Wait_ListRepository;
         }
 
         public string HelloWorld()
@@ -763,6 +810,7 @@ namespace CWB.ProductionPlanWO.Services
                         upp.EndingOpNo = pp.EndingOpNo;
                         upp.ReloadOption = pp.ReloadOption;
                         upp.Active = pp.Active;
+                        upp.Changed = 1;
                         pp = await _productionPlan_WORepository.UpdateAsync(pp.Id, upp);
                     }
                     try
@@ -779,6 +827,30 @@ namespace CWB.ProductionPlanWO.Services
                 item.PPNumber = pp.PPNumber;
                 item.WONumber = pp.WONumber;
                 item.TestData = pp.TestData;
+            }
+            return productions;
+        }
+        public async Task<ProductionPlan_WOVM> UpdateProductionPlan_Wo(ProductionPlan_WOVM productions)
+        {
+            var pp = _mapper.Map<ProductionPlan_WO>(productions);
+            var upp = await _productionPlan_WORepository.SingleOrDefaultAsync(x => x.Id == pp.Id);
+            if (upp == null)
+            {
+                return productions;
+            }
+            upp.RoutingId = pp.RoutingId;
+            upp.StartingOpNo = pp.StartingOpNo;
+            upp.EndingOpNo = pp.EndingOpNo;
+            upp.Changed = 1;
+            pp = await _productionPlan_WORepository.UpdateAsync(pp.Id, upp);
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
             }
             return productions;
         }
@@ -2469,5 +2541,1098 @@ namespace CWB.ProductionPlanWO.Services
             }
             return false;
         }
+
+        public async Task<IEnumerable<Mc_Not_Avl_ReasonVM>> GetAllMc_Not_Avl_Reason(long tenantId)
+        {
+            var allDocuType = _Mc_Not_Avl_ReasonRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Mc_Not_Avl_ReasonVM>>(allDocuType);
+        }
+        public async Task<IEnumerable<Mode_ListVM>> GetAllMode_List()
+        {
+            var allDocuType = await _Mode_ListRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<Mode_ListVM>>(allDocuType);
+        }
+        public async Task<IEnumerable<Non_Plan_Wk_type_ListVM>> GetAllNon_Plan_Wk_type_List()
+        {
+            var allDocuType = await _Non_Plan_Wk_type_ListRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<Non_Plan_Wk_type_ListVM>>(allDocuType);
+        }
+        public async Task<IEnumerable<Time_Slot_AllocationVM>> GetAllTime_Slot_Allocation()
+        {
+            var allDocuType = await _Time_Slot_AllocationRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<Time_Slot_AllocationVM>>(allDocuType);
+        }
+        public async Task<Mc_Not_Avl_ReasonVM> PostMc_Not_Avl_Reason(Mc_Not_Avl_ReasonVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Mc_Not_Avl_Reason>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Mc_Not_Avl_ReasonRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Mc_Not_Avl_ReasonRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Mc_Not_Avl_ReasonRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Mc_Not_Avl_ReasonId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+
+        public async Task<IEnumerable<Mc_Timeslot_ListVM>> GetAllMc_Timeslot_List(long tenantId)
+        {
+            var allDocuType = _Mc_Timeslot_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Mc_Timeslot_ListVM>>(allDocuType);
+        }
+        public async Task<Mc_Timeslot_ListVM> PostMc_Timeslot_List(Mc_Timeslot_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Mc_Timeslot_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Mc_Timeslot_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Mc_Timeslot_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Mc_Timeslot_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Mc_Timeslot_List_Id = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<IEnumerable<Mc_Timeslot_ListVM>> GetAllMc_Timeslot_ListByMcWait(long mcWaitId, long tenantId)
+        {
+            var allDocuType = _Mc_Timeslot_ListRepository.GetRangeAsync(c => c.Mc_Wait_List_Id == mcWaitId && c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Mc_Timeslot_ListVM>>(allDocuType);
+        }
+        public async Task<bool> DeleteMc_Timeslot_List(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _Mc_Timeslot_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _Mc_Timeslot_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<TempMc_Timeslot_ListVM>> GetAllTempMc_Timeslot_List(long tenantId)
+        {
+            var allDocuType = _TempMc_Timeslot_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<TempMc_Timeslot_ListVM>>(allDocuType);
+        }
+        public async Task<TempMc_Timeslot_ListVM> PostTempMc_Timeslot_List(TempMc_Timeslot_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<TempMc_Timeslot_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _TempMc_Timeslot_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _TempMc_Timeslot_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _TempMc_Timeslot_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.TempMc_Timeslot_List_Id = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<IEnumerable<TempMc_Timeslot_ListVM>> GetAllTempMc_Timeslot_ListByMcWait(long mcWaitId, long tenantId)
+        {
+            var allDocuType = _TempMc_Timeslot_ListRepository.GetRangeAsync(c => c.Mc_Wait_List_Id == mcWaitId && c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<TempMc_Timeslot_ListVM>>(allDocuType);
+        }
+        public async Task<bool> DeleteTempMc_Timeslot_List(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _TempMc_Timeslot_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _TempMc_Timeslot_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<Non_Plan_Wk_ListVM>> GetAllNon_Plan_Wk_List(long tenantId)
+        {
+            var allDocuType = _Non_Plan_Wk_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Non_Plan_Wk_ListVM>>(allDocuType);
+        }
+        public async Task<Non_Plan_Wk_ListVM> PostNon_Plan_Wk_List(Non_Plan_Wk_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Non_Plan_Wk_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    itemMaster.Allocated = 'N';
+                    await _Non_Plan_Wk_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Non_Plan_Wk_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Non_Plan_Wk_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Non_Plan_Wk_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteNon_Plan_Wk_List(long itemMasterDocListId,long tenantId)
+        {
+            var co = await _Non_Plan_Wk_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _Non_Plan_Wk_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<WO_Wait_ListVM>> GetAllWO_Wait_List(long tenantId)
+        {
+            var allDocuType = _WO_Wait_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<WO_Wait_ListVM>>(allDocuType);
+        }
+        public async Task<WO_Wait_ListVM> PostWO_Wait_List(WO_Wait_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<WO_Wait_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _WO_Wait_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _WO_Wait_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _WO_Wait_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.WO_Wait_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteWO_Wait_List(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _WO_Wait_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _WO_Wait_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<TempWO_Wait_ListVM>> GetAllTempWO_Wait_List(long tenantId)
+        {
+            var allDocuType = _TempWO_Wait_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<TempWO_Wait_ListVM>>(allDocuType);
+        }
+        public async Task<TempWO_Wait_ListVM> PostTempWO_Wait_List(TempWO_Wait_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<TempWO_Wait_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _TempWO_Wait_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _TempWO_Wait_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _TempWO_Wait_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.TempWO_Wait_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteTempWO_Wait_List(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _TempWO_Wait_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _TempWO_Wait_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<WO_Bookout_LogVM>> GetAllWO_Bookout_Log(long tenantId)
+        {
+            var allDocuType = _WO_Bookout_LogRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<WO_Bookout_LogVM>>(allDocuType);
+        }
+        public async Task<WO_Bookout_LogVM> PostWO_Bookout_Log(WO_Bookout_LogVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<WO_Bookout_Log>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _WO_Bookout_LogRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _WO_Bookout_LogRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _WO_Bookout_LogRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.WO_Bookout_LogId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteWO_Bookout_Log(long itemMasterDocListId)
+        {
+            var co = await _WO_Bookout_LogRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId);
+            if (co != null)
+            {
+                try
+                {
+                    _WO_Bookout_LogRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<Timeslot_SettingVM>> GetAllTimeslot_Setting(long tenantId)
+        {
+            var allDocuType = _Timeslot_SettingRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Timeslot_SettingVM>>(allDocuType);
+        }
+        public async Task<Timeslot_SettingVM> PostTimeslot_Setting(Timeslot_SettingVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Timeslot_Setting>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Timeslot_SettingRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Timeslot_SettingRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Timeslot_SettingRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Timeslot_SettingId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteTimeslot_Setting(long itemMasterDocListId)
+        {
+            var co = await _Timeslot_SettingRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId);
+            if (co != null)
+            {
+                try
+                {
+                    _Timeslot_SettingRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<Timeslot_ListVM>> GetAllTimeslot_List(long tenantId)
+        {
+            var allDocuType = _Timeslot_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Timeslot_ListVM>>(allDocuType);
+        }
+        public async Task<Timeslot_ListVM> PostTimeslot_List(Timeslot_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Timeslot_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Timeslot_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Timeslot_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Timeslot_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Timeslot_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteTimeslot_List(long itemMasterDocListId,long tenantId)
+        {
+            var co = await _Timeslot_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _Timeslot_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<Rwk_ListVM>> GetAllRwk_List(long tenantId)
+        {
+            var allDocuType = _Rwk_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Rwk_ListVM>>(allDocuType);
+        }
+        public async Task<Rwk_ListVM> PostRwk_List(Rwk_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Rwk_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Rwk_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Rwk_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Rwk_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Rwk_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteRwk_List(long itemMasterDocListId,long tenantId)
+        {
+            var co = await _Rwk_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _Rwk_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<Opr_ListVM>> GetAllOpr_List(long tenantId)
+        {
+            var allDocuType = _Opr_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Opr_ListVM>>(allDocuType);
+        }
+        public async Task<Opr_ListVM> PostOpr_List(Opr_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Opr_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Opr_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Opr_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Opr_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Opr_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteOpr_List(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _Opr_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _Opr_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<TempOpr_ListVM>> GetAllTempOpr_List(long tenantId)
+        {
+            var allDocuType = _TempOpr_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<TempOpr_ListVM>>(allDocuType);
+        }
+        public async Task<TempOpr_ListVM> PostTempOpr_List(TempOpr_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<TempOpr_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _TempOpr_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _TempOpr_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _TempOpr_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.TempOpr_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteTempOpr_List(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _TempOpr_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _TempOpr_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<Shop_Insp_LogVM>> GetAllShop_Insp_Log(long tenantId)
+        {
+            var allDocuType = _Shop_Insp_LogRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Shop_Insp_LogVM>>(allDocuType);
+        }
+        public async Task<Shop_Insp_LogVM> PostShop_Insp_Log(Shop_Insp_LogVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Shop_Insp_Log>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Shop_Insp_LogRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Shop_Insp_LogRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Shop_Insp_LogRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Shop_Insp_LogId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteShop_Insp_Log(long itemMasterDocListId,long tenantId)
+        {
+            var co = await _Shop_Insp_LogRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId== tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _Shop_Insp_LogRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        
+        public async Task<IEnumerable<SubCon_ListVM>> GetAllSubCon_List(long tenantId)
+        {
+            var allDocuType = _SubCon_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<SubCon_ListVM>>(allDocuType);
+        }
+        public async Task<SubCon_ListVM> PostSubCon_List(SubCon_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<SubCon_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _SubCon_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _SubCon_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _SubCon_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.SubCon_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteSubCon_List(long itemMasterDocListId,long tenantId)
+        {
+            var co = await _SubCon_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId== tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _SubCon_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+       
+        public async Task<IEnumerable<TempSubCon_ListVM>> GetAllTempSubCon_List(long tenantId)
+        {
+            var allDocuType = _TempSubCon_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<TempSubCon_ListVM>>(allDocuType);
+        }
+        public async Task<TempSubCon_ListVM> PostTempSubCon_List(TempSubCon_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<TempSubCon_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _TempSubCon_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _TempSubCon_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _TempSubCon_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.TempSubCon_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteTempSubCon_List(long itemMasterDocListId,long tenantId)
+        {
+            var co = await _TempSubCon_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId== tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _TempSubCon_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<Mc_Wait_ListVM>> GetAllMc_Wait_List(long tenantId)
+        {
+            var allDocuType = _Mc_Wait_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Mc_Wait_ListVM>>(allDocuType);
+        }
+        public async Task<Mc_Wait_ListVM> PostMc_Wait_List(Mc_Wait_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Mc_Wait_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Mc_Wait_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Mc_Wait_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Mc_Wait_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Mc_Wait_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<IEnumerable<Mc_Wait_ListVM>> GetAllMc_Wait_ListByMcWait(long mcWaitId, long tenantId)
+        {
+            var allDocuType = _Mc_Wait_ListRepository.GetRangeAsync(c => c.Wo_Id == mcWaitId && c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Mc_Wait_ListVM>>(allDocuType);
+        }
+        public async Task<bool> DeleteMc_Wait_List(long itemMasterDocListId,long tenantId)
+        {
+            var co = await _Mc_Wait_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId== tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _Mc_Wait_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<TempMc_Wait_ListVM>> GetAllTempMc_Wait_List(long tenantId)
+        {
+            var allDocuType = _TempMc_Wait_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<TempMc_Wait_ListVM>>(allDocuType);
+        }
+        public async Task<TempMc_Wait_ListVM> PostTempMc_Wait_List(TempMc_Wait_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<TempMc_Wait_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _TempMc_Wait_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _TempMc_Wait_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _TempMc_Wait_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.TempMc_Wait_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<IEnumerable<TempMc_Wait_ListVM>> GetAllTempMc_Wait_ListByMcWait(long mcWaitId, long tenantId)
+        {
+            var allDocuType = _TempMc_Wait_ListRepository.GetRangeAsync(c => c.Wo_Id == mcWaitId && c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<TempMc_Wait_ListVM>>(allDocuType);
+        }
+        public async Task<bool> DeleteTempMc_Wait_List(long itemMasterDocListId,long tenantId)
+        {
+            var co = await _TempMc_Wait_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId== tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _TempMc_Wait_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+
+        public async Task<IEnumerable<Matl_Issue_ListVM>> GetAllMatl_Issue_List(long tenantId)
+        {
+            var allDocuType = _Matl_Issue_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Matl_Issue_ListVM>>(allDocuType);
+        }
+        public async Task<Matl_Issue_ListVM> PostMatl_Issue_List(Matl_Issue_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Matl_Issue_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Matl_Issue_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Matl_Issue_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Matl_Issue_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Matl_Issue_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteMatl_Issue_List(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _Matl_Issue_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _Matl_Issue_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        
+        public async Task<IEnumerable<Matl_Issue_SettingsVM>> GetAllMatl_Issue_Settings(long tenantId)
+        {
+            var allDocuType = _Matl_Issue_SettingsRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Matl_Issue_SettingsVM>>(allDocuType);
+        }
+        public async Task<Matl_Issue_SettingsVM> PostMatl_Issue_Settings(Matl_Issue_SettingsVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Matl_Issue_Settings>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Matl_Issue_SettingsRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Matl_Issue_SettingsRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Matl_Issue_SettingsRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Matl_Issue_SettingsId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteMatl_Issue_Settings(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _Matl_Issue_SettingsRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _Matl_Issue_SettingsRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+
+
     }
 }

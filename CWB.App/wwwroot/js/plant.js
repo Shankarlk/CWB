@@ -44,6 +44,7 @@ function AddHolidayToList() {
         $("#HolidayId").val("0");
         $("#HName").val("");
         $("#HolidayDate").val("");
+        alert("Holiday for the Plant Saved!");  
     }).catch((error) => {
         AppUtil.HandleError("HolidayForm", error);
     });
@@ -62,12 +63,34 @@ function GetPlantWD(plantId) {
             $("#WeeklyOff2").val("Sunday");
         }
         $("#NoOfShifts").val(data.noOfShifts);
+        for (let i = 1; i <= 3; i++) {
+            if (i <= data.noOfShifts) {
+                $('#shift' + i).show();
+                $('#shiftdur' + i).show();
+                $('#shiftbreakd' + i).show();
+                $('#shiftbreakdur' + i).show();
+            } else {
+                $('#shift' + i).hide();
+                $('#shiftdur' + i).hide();
+                $('#shiftbreakd' + i).hide();
+                $('#shiftbreakdur' + i).hide();
+            }
+        }
         $("#FirstShiftStartTime").val(data.firstShiftStartTime);
         $("#SecondShiftStartTime").val(data.secondShiftStartTime);
         $("#ThirdShiftStartTime").val(data.thirdShiftStartTime);
         $("#FirstShiftDuration").val(data.firstShiftDuration);
         $("#SecondShiftDuration").val(data.secondShiftDuration);
         $("#ThirdShiftDuration").val(data.thirdShiftDuration);
+        $("#No_of_span_days").val(data.no_of_span_days);
+        $("#Timeslot_duration").val(data.timeslot_duration);
+        $("#Retention_Days").val(data.retention_Days);
+        $("#First_Shift_Break_duration").val(data.first_Shift_Break_duration);
+        $("#First_Shift_Break_start_time").val(data.first_Shift_Break_start_time);
+        $("#Sec_Shift_Break_duration").val(data.sec_Shift_Break_duration);
+        $("#Sec_Shift_Break_start_time").val(data.sec_Shift_Break_start_time);
+        $("#Third_Shift_Break_duration").val(data.third_Shift_Break_duration);
+        $("#Third_Shift_Break_start_time").val(data.third_Shift_Break_start_time);
     }).catch((error) => {
         //console.log(error);
     });
@@ -79,6 +102,30 @@ function AddWorkingDetails() {
         //console.log(data);
         $("#WDId").val(data.wdId);
         $("#WDPlantId").val(data.plantId);
+        alert("Plant Working Details Saved!");
+        $.ajax({
+            type: "POST",
+            url: '/WorkOrder/PostTimeslot_List',
+            contentType: "application/json; charset=utf-8",
+            headers: { 'Content-Type': 'application/json' },
+            success: function (result) {
+                console.log("Success:", result);
+            }
+        });
+        //$("#NoOfShifts").val(1);
+        //for (let i = 1; i <= 3; i++) {
+        //    if (i <= 1) {
+        //        $('#shift' + i).show();
+        //        $('#shiftdur' + i).show();
+        //        $('#shiftbreakd' + i).show();
+        //        $('#shiftbreakdur' + i).show();
+        //    } else {
+        //        $('#shift' + i).hide();
+        //        $('#shiftdur' + i).hide();
+        //        $('#shiftbreakd' + i).hide();
+        //        $('#shiftbreakdur' + i).hide();
+        //    }
+        //}
         //document.getElementById("WDForm").reset();
     }).catch((error) => {
         AppUtil.HandleError("WDForm", error);
@@ -140,12 +187,20 @@ $(function () {
         $("#tab-002").hide();
         $("#tab-003").hide();
     });
-    $("#PWD").on("click", function(){
+    $("#PWD").on("click", function (e) {
+        if ($(this).hasClass("disabled-tab")) {
+            e.preventDefault();
+            return; // stop execution if disabled
+        }
         $("#tab-001").hide();
         $("#tab-002").show();
         $("#tab-003").hide();
     });
-    $("#HLI").on("click", function(){
+    $("#HLI").on("click", function (e) {
+        if ($(this).hasClass("disabled-tab")) {
+            e.preventDefault();
+            return; // stop execution if disabled
+        }
         $("#tab-001").hide();
         $("#tab-002").hide();
         $("#tab-003").show();
@@ -164,7 +219,30 @@ $(function () {
             $(tablebody).html("");
             loadCity();
             loadCountrys();
+            $("#PWD").addClass("disabled-tab");
+            $("#HLI").addClass("disabled-tab");
+            $("#PWD a").addClass("disabled");
+            $("#HLI a").addClass("disabled");
+            $("#NoOfShifts").val(1);
+            for (let i = 1; i <= 3; i++) {
+                if (i <= 1) {
+                    $('#shift' + i).show();
+                    $('#shiftdur' + i).show();
+                    $('#shiftbreakd' + i).show();
+                    $('#shiftbreakdur' + i).show();
+                } else {
+                    $('#shift' + i).hide();
+                    $('#shiftdur' + i).hide();
+                    $('#shiftbreakd' + i).hide();
+                    $('#shiftbreakdur' + i).hide();
+                }
+            }
             return;
+        } else {
+            $("#PWD").removeClass("disabled-tab");
+            $("#HLI").removeClass("disabled-tab");
+            $("#PWD a").removeClass("disabled");
+            $("#HLI a").removeClass("disabled");
         }
         $("#GEN").show();
         const navItem = document.getElementById("GEN");
@@ -261,6 +339,7 @@ $(function () {
         document.getElementById("plantname").innerHTML = '';
         var newNamevalidate = $('#CitySelect').next('.select2-container');
         newNamevalidate.css('border', '');
+        $("#Plant-error").text('');
         var CountrySelect = $('#CountrySelect').next('.select2-container');
         CountrySelect.css('border', '');
         var Name = document.getElementById('Name');
@@ -279,6 +358,28 @@ $(function () {
         SecondShiftDuration.style.border = '';
         var ThirdShiftDuration = document.getElementById('ThirdShiftDuration');
         ThirdShiftDuration.style.border = '';
+        var First_Shift_Break_start_time = document.getElementById('First_Shift_Break_start_time');
+        First_Shift_Break_start_time.style.border = '';
+        var Sec_Shift_Break_start_time = document.getElementById('Sec_Shift_Break_start_time');
+        Sec_Shift_Break_start_time.style.border = '';
+        var Third_Shift_Break_start_time = document.getElementById('Third_Shift_Break_start_time');
+        Third_Shift_Break_start_time.style.border = '';
+        var First_Shift_Break_duration = document.getElementById('First_Shift_Break_duration');
+        First_Shift_Break_duration.style.border = '';
+        var Sec_Shift_Break_duration = document.getElementById('Sec_Shift_Break_duration');
+        Sec_Shift_Break_duration.style.border = '';
+        var Third_Shift_Break_duration = document.getElementById('Third_Shift_Break_duration');
+        Third_Shift_Break_duration.style.border = '';
+        var Timeslot_duration = document.getElementById('Timeslot_duration');
+        Timeslot_duration.style.border = '';
+        var No_of_span_days = document.getElementById('No_of_span_days');
+        No_of_span_days.style.border = '';
+        var Retention_Days = document.getElementById('Retention_Days');
+        Retention_Days.style.border = '';
+        var WeeklyOff1 = document.getElementById('WeeklyOff1');
+        WeeklyOff1.style.border = '';
+        var WeeklyOff2 = document.getElementById('WeeklyOff2');
+        WeeklyOff2.style.border = '';
         var HolidayDate = document.getElementById('HolidayDate');
         HolidayDate.style.border = '';
         var HName = document.getElementById('HName');
@@ -318,10 +419,28 @@ $(function () {
     //SaveWorkDetails
     //AddHoliday
     $("#SaveWorkDetails").on('click', function (event) {
+        var WeeklyOff2 = document.getElementById('WeeklyOff2');
+        var WeeklyOff1 = document.getElementById('WeeklyOff1');
+        if (WeeklyOff2.value === WeeklyOff1.value) {
+            WeeklyOff1.style.border = '2px solid red';
+            WeeklyOff2.style.border = '2px solid red';
+            alert("Weekly Off 1 and Weekly Off 2 should be different.");
+            return false;
+        } else {
+            WeeklyOff1.style.border = '';
+            WeeklyOff2.style.border = '';
+        }
         var noofshitfs = document.getElementById('NoOfShifts');
-        if (!noofshitfs.value) {
+        if (!noofshitfs.value || parseInt(noofshitfs.value) <=0) {
             noofshitfs.style.border = '2px solid red';
-            alert(" No Of Shifts Field is Empty");
+            //alert(" No Of Shifts Field is Empty");
+            return false;
+        } else {
+            noofshitfs.style.border = '';
+        }
+        if (parseInt(noofshitfs.value) > 3) {
+            noofshitfs.style.border = '2px solid red';
+            alert("No of Shifts / day can not be Greater Than 3");
             return false;
         } else {
             noofshitfs.style.border = '';
@@ -334,41 +453,130 @@ $(function () {
             FirstShiftStartTime.style.border = '';
         }
         var SecondShiftStartTime = document.getElementById('SecondShiftStartTime');
-        if (!SecondShiftStartTime.value) {
+        if (!SecondShiftStartTime.value && parseInt(noofshitfs.value) == 2) {
             SecondShiftStartTime.style.border = '2px solid red';
             return false;
         } else {
             SecondShiftStartTime.style.border = '';
         }
         var ThirdShiftStartTime = document.getElementById('ThirdShiftStartTime');
-        if (!ThirdShiftStartTime.value) {
+        if (!ThirdShiftStartTime.value && parseInt(noofshitfs.value) == 3) {
             ThirdShiftStartTime.style.border = '2px solid red';
             return false;
         } else {
             ThirdShiftStartTime.style.border = '';
         }
         var FirstShiftDuration = document.getElementById('FirstShiftDuration');
-        if (!FirstShiftDuration.value) {
+        var timePatternShift = /^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$/;
+        if (!FirstShiftDuration.value || !timePatternShift.test(FirstShiftDuration.value)) {
             FirstShiftDuration.style.border = '2px solid red';
             return false;
         } else {
             FirstShiftDuration.style.border = '';
         }
         var SecondShiftDuration = document.getElementById('SecondShiftDuration');
-        if (!SecondShiftDuration.value) {
-            SecondShiftDuration.style.border = '2px solid red';
-            return false;
-        } else {
-            SecondShiftDuration.style.border = '';
+        if (parseInt(noofshitfs.value) >= 2) {
+            if (!SecondShiftDuration.value || !timePatternShift.test(SecondShiftDuration.value)) {
+                SecondShiftDuration.style.border = '2px solid red';
+                return false;
+            } else {
+                SecondShiftDuration.style.border = '';
+            }
         }
         var ThirdShiftDuration = document.getElementById('ThirdShiftDuration');
-        if (!ThirdShiftDuration.value) {
-            ThirdShiftDuration.style.border = '2px solid red';
+        if (parseInt(noofshitfs.value) == 3) {
+            if (!ThirdShiftDuration.value || !timePatternShift.test(ThirdShiftDuration.value)) {
+                ThirdShiftDuration.style.border = '2px solid red';
+                return false;
+            } else {
+                ThirdShiftDuration.style.border = '';
+            }
+        }
+        var Timeslot_duration = document.getElementById('Timeslot_duration');
+        if (!Timeslot_duration.value || parseInt(Timeslot_duration.value) <= 0) {
+            Timeslot_duration.style.border = '2px solid red';
             return false;
         } else {
-            ThirdShiftDuration.style.border = '';
+            Timeslot_duration.style.border = '';
         }
-       
+        var No_of_span_days = document.getElementById('No_of_span_days');
+        if (!No_of_span_days.value || parseInt(No_of_span_days.value) <= 0) {
+            No_of_span_days.style.border = '2px solid red';
+            return false;
+        } else {
+            No_of_span_days.style.border = '';
+        }
+        var Retention_Days = document.getElementById('Retention_Days');
+        if (!Retention_Days.value || parseInt(Retention_Days.value) <= 0) {
+            Retention_Days.style.border = '2px solid red';
+            return false;
+        } else {
+            Retention_Days.style.border = '';
+        }
+        var First_Shift_Break_start_time = document.getElementById('First_Shift_Break_start_time');
+        if (!First_Shift_Break_start_time.value && parseInt(noofshitfs.value) >= 1) {
+            First_Shift_Break_start_time.style.border = '2px solid red';
+            return false;
+        } else {
+            First_Shift_Break_start_time.style.border = '';
+        }
+        var Sec_Shift_Break_start_time = document.getElementById('Sec_Shift_Break_start_time');
+        if (!Sec_Shift_Break_start_time.value && parseInt(noofshitfs.value) >= 2) {
+            Sec_Shift_Break_start_time.style.border = '2px solid red';
+            return false;
+        } else {
+            Sec_Shift_Break_start_time.style.border = '';
+        }
+        var Third_Shift_Break_start_time = document.getElementById('Third_Shift_Break_start_time');
+        if (!Third_Shift_Break_start_time.value && parseInt(noofshitfs.value) == 3) {
+            Third_Shift_Break_start_time.style.border = '2px solid red';
+            return false;
+        } else {
+            Third_Shift_Break_start_time.style.border = '';
+        }
+        var First_Shift_Break_duration = document.getElementById('First_Shift_Break_duration');
+        var timePattern = /^([0-5]?[0-9]):[0-5][0-9]$/; // matches 0–59 minutes and 0–59 seconds
+
+        if (parseInt(noofshitfs.value) >= 1) {
+            if (!First_Shift_Break_duration.value || !timePattern.test(First_Shift_Break_duration.value)) {
+                First_Shift_Break_duration.style.border = '2px solid red';
+                return false;
+            } else {
+                First_Shift_Break_duration.style.border = '';
+            }
+        }
+
+        var Sec_Shift_Break_duration = document.getElementById('Sec_Shift_Break_duration');
+
+        if (parseInt(noofshitfs.value) >= 2) {
+            if (!Sec_Shift_Break_duration.value || !timePattern.test(Sec_Shift_Break_duration.value)) {
+                Sec_Shift_Break_duration.style.border = '2px solid red';
+                return false;
+            } else {
+                Sec_Shift_Break_duration.style.border = '';
+            }
+        }
+        var Third_Shift_Break_duration = document.getElementById('Third_Shift_Break_duration');
+        if (parseInt(noofshitfs.value) == 3) {
+            if (!Third_Shift_Break_duration.value || !timePattern.test(Third_Shift_Break_duration.value)) {
+                Third_Shift_Break_duration.style.border = '2px solid red';
+                return false;
+            } else {
+                Third_Shift_Break_duration.style.border = '';
+            }
+        }
+        var isvalid = validateShifts();
+        if (isvalid) {
+            //AddWorkingDetails();
+        } else {
+            return false;
+        }
+        var isvalidBreak = validateBreakStartWithinShift();
+        if (isvalidBreak) {
+            //AddWorkingDetails();
+        } else {
+            return false;
+        }
         AddWorkingDetails();
         $("#btn-shopdetails-close").prop('disabled', false);
     });
@@ -484,6 +692,30 @@ $(function () {
         });
         // }
     });
+    $('#NoOfShifts').on('input', function () {
+        let val = parseInt($(this).val().trim());
+
+        if (isNaN(val)) val = 1;
+        if (val > 3) {
+            alert("No of Shifts / day can not be Greater Than 3");
+            //$('#NoOfShifts').val(3);
+        }
+
+        // Loop to show/hide shift inputs
+        for (let i = 1; i <= 3; i++) {
+            if (i <= val) {
+                $('#shift' + i).show();
+                $('#shiftdur' + i).show();
+                $('#shiftbreakd' + i).show();
+                $('#shiftbreakdur' + i).show();
+            } else {
+                $('#shift' + i).hide();
+                $('#shiftdur' + i).hide();
+                $('#shiftbreakd' + i).hide();
+                $('#shiftbreakdur' + i).hide();
+            }
+        }
+    }).trigger('input');
     $("#SaveCountry").on('click', function () {
         var name = $("#CoName").val();
         if (name.length == 0) {
@@ -567,47 +799,80 @@ $(function () {
             PanNo.style.border = '';
         }
         var formData = AppUtil.GetFormData("PlantForm");
-        api.post("/plant/plant", formData).then((data) => {
-           // console.log(data);
-           //document.getElementById("btn-shopdetails-close").click();
-            //document.getElementById("PlantForm").reset();
-            var wd = $("#WDPlantId").val();
-            //if (wd === "0") {
-            //    $("#btn-shopdetails-close").prop('disabled', true);
-            //} else {
-            //    $("#btn-shopdetails-close").prop('disabled', false);
-            //}
-            var plantID = data.plantId;
-            $("#WDPlantId").val(plantID);
-            $("#HolidayPlantId").val(plantID);
-            alert("Please Save the Work Details !");
-            $("#tab-002").show();
-            $("#tab-001").hide();
-            $("#GEN").show();
-            const navItem = document.getElementById("PWD");
-            navItem.classList.add("active");
-            const navLink = navItem.querySelector("a");
-            if (navLink) {
-                navLink.classList.add("active");
+        api.getbulk("/Plant/getplants").then((data) => {
+            data = data.filter(item => item.name == Name.value);
+            if (data.length === 0 || formData.PlantId > 0) {
+
+                api.post("/plant/plant", formData).then((data) => {
+                    // console.log(data);
+                    //document.getElementById("btn-shopdetails-close").click();
+                    //document.getElementById("PlantForm").reset();
+                    var wd = $("#WDPlantId").val();
+                    //if (wd === "0") {
+                    //    $("#btn-shopdetails-close").prop('disabled', true);
+                    //} else {
+                    //    $("#btn-shopdetails-close").prop('disabled', false);
+                    //}
+                    var plantID = data.plantId;
+                    $("#PWD").removeClass("disabled-tab");
+                    $("#HLI").removeClass("disabled-tab");
+                    $("#PWD a").removeClass("disabled");
+                    $("#HLI a").removeClass("disabled");
+                    $("#WDPlantId").val(plantID);
+                    $("#HolidayPlantId").val(plantID);
+                    alert("Plant Details Genaral Saved!");
+                    $("#tab-002").show();
+                    $("#tab-001").hide();
+                    $("#GEN").show();
+
+                    const navItem = document.getElementById("PWD");
+                    navItem.classList.add("active");
+                    const navLink = navItem.querySelector("a");
+                    if (navLink) {
+                        navLink.classList.add("active");
+                    }
+                    const navItemP = document.getElementById("GEN");
+                    navItemP.classList.remove("active");
+                    const navLinkp = navItemP.querySelector("a");
+                    if (navLinkp) {
+                        navLinkp.classList.remove("active");
+                    }
+                    const navItemH = document.getElementById("HLI");
+                    navItemH.classList.remove("active");
+                    const navLinkH = navItemH.querySelector("a");
+                    if (navLinkH) {
+                        navLinkH.classList.remove("active");
+                    }
+                }).catch((error) => {
+                    AppUtil.HandleError("PlantForm", error);
+                });
+            } else {
+                //alert("The Plant Name Already Exists.");  
+                $("#Plant-error").text('The Plant Name Already Exists.').css('color', 'red');;
             }
-            const navItemP = document.getElementById("GEN");
-            navItemP.classList.remove("active");
-            const navLinkp = navItemP.querySelector("a");
-            if (navLinkp) {
-                navLinkp.classList.remove("active");
-            }
-            const navItemH = document.getElementById("HLI");
-            navItemH.classList.remove("active");
-            const navLinkH = navItemH.querySelector("a");
-            if (navLinkH) {
-                navLinkH.classList.remove("active");
-            }
-        }).catch((error) => {
-            AppUtil.HandleError("PlantForm", error);
         });
     });
    
     LoadPlants();
+    loadTimeSlotDuration();
+    loadNoOfDaysTimeSlot();
+    // Initialize all timepickers
+    $('#FirstShiftStartTime, #SecondShiftStartTime, #ThirdShiftStartTime, #First_Shift_Break_start_time, #Sec_Shift_Break_start_time, #Third_Shift_Break_start_time').timepicker({
+        timeFormat: 'h:i A',
+        step: 5,
+        disableTextInput: true
+    });
+    $('#FirstShiftStartTime').on('input', function () {
+        let val = $(this).val().toLowerCase().replace(/\s+/g, '');
+        $('.ui-timepicker-list li').each(function () {
+            let text = $(this).text().toLowerCase().replace(/\s+/g, '');
+            $(this).toggle(text.startsWith(val));
+        });
+    });
+
+    $('#FirstShiftStartTime, #FirstShiftDuration').on('change input', updateSecondShiftMinTime);
+    $('#SecondShiftStartTime, #SecondShiftDuration').on('change input', updateThirdShiftMinTime);
+    $('#ThirdShiftStartTime, #ThirdShiftDuration').on('change input', validateThirdShiftWithin24Hours);
 });
 
 function loadCity() {
@@ -624,6 +889,30 @@ function loadCity() {
     });
 
 }
+function loadNoOfDaysTimeSlot() {
+    var selElem = $('#Timeslot_duration');
+    selElem.html('');
+    api.getbulk("/Plant/GetTimeSlotDurations").then((data) => {
+
+        for (i = 0; i < data.length; i++) {
+            div_data = "<option value='" + data[i].duration + "'>" + data[i].duration + "</option>";
+            selElem.append(div_data);
+        }
+    });
+
+}
+function loadTimeSlotDuration() {
+    var selElem = $('#No_of_span_days');
+    selElem.html('');
+    api.getbulk("/Plant/GetNoOfDaysTimeSlots").then((data) => {
+
+        for (i = 0; i < data.length; i++) {
+            div_data = "<option value='" + data[i].days + "'>" + data[i].days + "</option>";
+            selElem.append(div_data);
+        }
+    });
+
+}
 function loadCountrys() {
     var selElem = $('#CountrySelect');
     selElem.html('');
@@ -635,4 +924,201 @@ function loadCountrys() {
         }
     });
 
+}
+function parseTimeToMinutes(timeStr) {
+    const date = new Date("1970-01-01T" + timeStr);
+    return date.getHours() * 60 + date.getMinutes();
+}
+
+function validateShifts() {
+    const shiftCount = parseInt(document.getElementById('NoOfShifts').value);
+
+    const start1 = parseTimeToMinutes(document.getElementById('FirstShiftStartTime').value);
+    const dur1 = parseFloat(document.getElementById('FirstShiftDuration').value) * 60;
+    const end1 = start1 + dur1;
+
+    let start2 = 0, dur2 = 0, end2 = 0;
+    if (shiftCount >= 2) {
+        start2 = parseTimeToMinutes(document.getElementById('SecondShiftStartTime').value);
+        dur2 = parseFloat(document.getElementById('SecondShiftDuration').value) * 60;
+        if (start2 < start1) start2 += 1440; // next day
+        end2 = start2 + dur2;
+
+        if (start2 <= end1) {
+            alert("Second shift must start after first shift ends.");
+            return false;
+        }
+    }
+
+    let start3 = 0, dur3 = 0, end3 = 0;
+    if (shiftCount === 3) {
+        start3 = parseTimeToMinutes(document.getElementById('ThirdShiftStartTime').value);
+        dur3 = parseFloat(document.getElementById('ThirdShiftDuration').value) * 60;
+        if (start3 < start2) start3 += 1440; // next day
+        end3 = start3 + dur3;
+
+        if (start3 <= end2) {
+            alert("Third shift must start after second shift ends.");
+            return false;
+        }
+
+        // Compare 3rd shift end with next day's 1st shift start
+        const nextDayStart1 = start1 + 1440;
+        if (end3 > nextDayStart1) {
+            alert("Third shift ends after next day's first shift starts.");
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function parseTime(timeStr) {
+    const [time, modifier] = timeStr.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+
+    if (modifier === 'PM' && hours !== 12) hours += 12;
+    if (modifier === 'AM' && hours === 12) hours = 0;
+
+    const date = new Date();
+    date.setHours(hours, minutes, 0, 0);
+    return date;
+}
+
+function validateBreakStartWithinShift() {
+    const shiftCount = parseInt(document.getElementById('NoOfShifts').value);
+
+    if (shiftCount >= 1) {
+        const shiftStart = parseTime(document.getElementById('FirstShiftStartTime').value);
+        const duration = parseFloat(document.getElementById('FirstShiftDuration').value);
+        const shiftEnd = new Date(shiftStart.getTime() + duration * 60 * 60 * 1000);
+        const breakStartField = document.getElementById('First_Shift_Break_start_time');
+        const breakStart = parseTime(breakStartField.value);
+
+        if (!(breakStart >= shiftStart && breakStart < shiftEnd)) {
+            breakStartField.style.border = '2px solid red';
+            alert('1st Shift Break Start must be within 1st Shift time.');
+            return false;
+        } else {
+            breakStartField.style.border = '';
+        }
+    }
+
+    if (shiftCount >= 2) {
+        const shiftStart = parseTime(document.getElementById('SecondShiftStartTime').value);
+        const duration = parseFloat(document.getElementById('SecondShiftDuration').value);
+        const shiftEnd = new Date(shiftStart.getTime() + duration * 60 * 60 * 1000);
+        const breakStartField = document.getElementById('Sec_Shift_Break_start_time');
+        const breakStart = parseTime(breakStartField.value);
+
+        if (!(breakStart >= shiftStart && breakStart < shiftEnd)) {
+            breakStartField.style.border = '2px solid red';
+            alert('2nd Shift Break Start must be within 2nd Shift time.');
+            return false;
+        } else {
+            breakStartField.style.border = '';
+        }
+    }
+
+    if (shiftCount >= 3) {
+        const shiftStart = parseTime(document.getElementById('ThirdShiftStartTime').value);
+        const duration = parseFloat(document.getElementById('ThirdShiftDuration').value);
+        const shiftEnd = new Date(shiftStart.getTime() + duration * 60 * 60 * 1000);
+        const breakStartField = document.getElementById('Third_Shift_Break_start_time');
+        const breakStart = parseTime(breakStartField.value);
+
+        if (!(breakStart >= shiftStart && breakStart < shiftEnd)) {
+            breakStartField.style.border = '2px solid red';
+            alert('3rd Shift Break Start must be within 3rd Shift time.');
+            return false;
+        } else {
+            breakStartField.style.border = '';
+        }
+    }
+
+    return true;
+}
+
+
+
+function durationToSeconds(duration) {
+    const parts = duration.split(':').map(Number);
+    return parts[0] * 3600 + parts[1] * 60 + (parts[2] || 0);
+}
+
+function getShiftEndTime(start, duration) {
+    const [time, modifier] = start.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+
+    if (modifier === 'PM' && hours < 12) hours += 12;
+    if (modifier === 'AM' && hours === 12) hours = 0;
+
+    const date = new Date();
+    date.setHours(hours, minutes, 0, 0);
+    return new Date(date.getTime() + durationToSeconds(duration) * 1000);
+}
+
+function formatTime12hr(date) {
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 0 becomes 12
+    return `${hours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+}
+
+
+function updateSecondShiftMinTime() {
+    const start = $('#FirstShiftStartTime').val();
+    const duration = $('#FirstShiftDuration').val();
+    if (!start || !duration) return;
+
+    const endTime = getShiftEndTime(start, duration);
+    const formattedMin = formatTime12hr(endTime);
+    $('#SecondShiftStartTime').timepicker('option', 'minTime', formattedMin);
+
+    const current = $('#SecondShiftStartTime').val();
+    if (current && getShiftEndTime(current, '00:00:00') < endTime) {
+        $('#SecondShiftStartTime').val('');
+    }
+
+    updateThirdShiftMinTime();
+}
+
+function updateThirdShiftMinTime() {
+    const start = $('#SecondShiftStartTime').val();
+    const duration = $('#SecondShiftDuration').val();
+    if (!start || !duration) return;
+
+    const endTime = getShiftEndTime(start, duration);
+    const formattedMin = formatTime12hr(endTime);
+    $('#ThirdShiftStartTime').timepicker('option', 'minTime', formattedMin);
+
+    const current = $('#ThirdShiftStartTime').val();
+    if (current && getShiftEndTime(current, '00:00:00') < endTime) {
+        $('#ThirdShiftStartTime').val('');
+    }
+}
+function validateThirdShiftWithin24Hours() {
+    const firstStart = $('#FirstShiftStartTime').val();
+    const firstDuration = $('#FirstShiftDuration').val();
+    const secondStart = $('#SecondShiftStartTime').val();
+    const secondDuration = $('#SecondShiftDuration').val();
+    const thirdStart = $('#ThirdShiftStartTime').val();
+    const thirdDuration = $('#ThirdShiftDuration').val();
+
+    if (!firstStart || !firstDuration || !secondStart || !secondDuration || !thirdStart || !thirdDuration) {
+        return; // Wait until all values are filled
+    }
+
+    const firstStartTime = getShiftEndTime(firstStart, '00:00:00');
+    const totalAllowedEnd = new Date(firstStartTime.getTime() + 24 * 3600 * 1000);
+
+    const thirdEndTime = getShiftEndTime(thirdStart, thirdDuration);
+
+    if (thirdEndTime > totalAllowedEnd) {
+        alert("The combined duration of all three shifts exceeds 24 hours. Please adjust shift start time and shift duration.");
+        $('#ThirdShiftDuration').val('');
+    }
 }

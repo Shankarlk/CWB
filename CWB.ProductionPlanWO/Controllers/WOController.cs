@@ -191,6 +191,15 @@ namespace CWB.ProductionPlanWO.Controllers
             var productionPlan = await _woSerivce.PostProductionPlan_Wo(productions);
             return Ok(productionPlan);
         }
+        [HttpPost]
+        [Route(ApiRoutes.WO.UpdateProductionPlan_Wo)]
+        [Produces(AppContentTypes.ContentType, Type =typeof(ProductionPlan_WOVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> UpdateProductionPlan_Wo([FromBody] ProductionPlan_WOVM productions)
+        {
+            var productionPlan = await _woSerivce.UpdateProductionPlan_Wo(productions);
+            return Ok(productionPlan);
+        }
 
         [HttpGet]
         [Route(ApiRoutes.WO.AllProductionPlanWo)]
@@ -972,5 +981,543 @@ namespace CWB.ProductionPlanWO.Controllers
             var result = await _woSerivce.DeleteNC_work_Status(Id);
             return Ok(result);
         }
+
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostMc_Not_Avl_Reason)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Mc_Not_Avl_ReasonVM))]
+        public async Task<IActionResult> PostMc_Not_Avl_Reason([FromBody] Mc_Not_Avl_ReasonVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostMc_Not_Avl_Reason(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllMc_Not_Avl_Reason)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Mc_Not_Avl_ReasonVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllMc_Not_Avl_Reason(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllMc_Not_Avl_Reason(tenantId);
+            return Ok(allwo);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostMc_Timeslot_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Mc_Timeslot_ListVM))]
+        public async Task<IActionResult> PostMc_Timeslot_List([FromBody] Mc_Timeslot_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostMc_Timeslot_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllMc_Timeslot_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Mc_Timeslot_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllMc_Timeslot_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllMc_Timeslot_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllMc_Timeslot_ListByMcWait)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Mc_Timeslot_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllMc_Timeslot_ListByMcWait(long mcWaitId, long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllMc_Timeslot_ListByMcWait(mcWaitId, tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteMc_Timeslot_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteMc_Timeslot_List(long Id,long tenantId)
+        {
+            var result = await _woSerivce.DeleteMc_Timeslot_List(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostTempMc_Timeslot_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(TempMc_Timeslot_ListVM))]
+        public async Task<IActionResult> PostTempMc_Timeslot_List([FromBody] TempMc_Timeslot_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostTempMc_Timeslot_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllTempMc_Timeslot_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<TempMc_Timeslot_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllTempMc_Timeslot_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllTempMc_Timeslot_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllTempMc_Timeslot_ListByMcWait)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<TempMc_Timeslot_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllTempMc_Timeslot_ListByMcWait(long mcWaitId, long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllTempMc_Timeslot_ListByMcWait(mcWaitId, tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteTempMc_Timeslot_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteTempMc_Timeslot_List(long Id,long tenantId)
+        {
+            var result = await _woSerivce.DeleteTempMc_Timeslot_List(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostNon_Plan_Wk_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Non_Plan_Wk_ListVM))]
+        public async Task<IActionResult> PostNon_Plan_Wk_List([FromBody] Non_Plan_Wk_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostNon_Plan_Wk_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllNon_Plan_Wk_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Non_Plan_Wk_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllNon_Plan_Wk_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllNon_Plan_Wk_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteNon_Plan_Wk_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteNon_Plan_Wk_List(long Id,long tenantId)
+        {
+            var result = await _woSerivce.DeleteNon_Plan_Wk_List(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostWO_Wait_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(WO_Wait_ListVM))]
+        public async Task<IActionResult> PostWO_Wait_List([FromBody] WO_Wait_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostWO_Wait_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllWO_Wait_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<WO_Wait_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllWO_Wait_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllWO_Wait_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteWO_Wait_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteWO_Wait_List(long Id, long tenantId)
+        {
+            var result = await _woSerivce.DeleteWO_Wait_List(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostTempWO_Wait_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(TempWO_Wait_ListVM))]
+        public async Task<IActionResult> PostTempWO_Wait_List([FromBody] TempWO_Wait_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostTempWO_Wait_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllTempWO_Wait_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<TempWO_Wait_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllTempWO_Wait_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllTempWO_Wait_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteTempWO_Wait_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteTempWO_Wait_List(long Id, long tenantId)
+        {
+            var result = await _woSerivce.DeleteTempWO_Wait_List(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostWO_Bookout_Log)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(WO_Bookout_LogVM))]
+        public async Task<IActionResult> PostWO_Bookout_Log([FromBody] WO_Bookout_LogVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostWO_Bookout_Log(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllWO_Bookout_Log)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<WO_Bookout_LogVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllWO_Bookout_Log(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllWO_Bookout_Log(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteWO_Bookout_Log)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteWO_Bookout_Log(long Id)
+        {
+            var result = await _woSerivce.DeleteWO_Bookout_Log(Id);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostTimeslot_Setting)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Timeslot_SettingVM))]
+        public async Task<IActionResult> PostTimeslot_Setting([FromBody] Timeslot_SettingVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostTimeslot_Setting(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllTimeslot_Setting)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Timeslot_SettingVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllTimeslot_Setting(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllTimeslot_Setting(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteTimeslot_Setting)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteTimeslot_Setting(long Id)
+        {
+            var result = await _woSerivce.DeleteTimeslot_Setting(Id);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostTimeslot_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Timeslot_ListVM))]
+        public async Task<IActionResult> PostTimeslot_List([FromBody] Timeslot_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostTimeslot_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllTimeslot_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Timeslot_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllTimeslot_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllTimeslot_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteTimeslot_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteTimeslot_List(long Id,long tenantId)
+        {
+            var result = await _woSerivce.DeleteTimeslot_List(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostRwk_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Rwk_ListVM))]
+        public async Task<IActionResult> PostRwk_List([FromBody] Rwk_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostRwk_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllRwk_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Rwk_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllRwk_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllRwk_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteRwk_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteRwk_List(long Id, long tenantId)
+        {
+            var result = await _woSerivce.DeleteRwk_List(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostOpr_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Opr_ListVM))]
+        public async Task<IActionResult> PostOpr_List([FromBody] Opr_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostOpr_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllOpr_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Opr_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllOpr_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllOpr_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteOpr_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteOpr_List(long Id, long tenantId)
+        {
+            var result = await _woSerivce.DeleteOpr_List(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostTempOpr_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(TempOpr_ListVM))]
+        public async Task<IActionResult> PostTempOpr_List([FromBody] TempOpr_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostTempOpr_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllTempOpr_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<TempOpr_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllTempOpr_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllTempOpr_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteTempOpr_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteTempOpr_List(long Id, long tenantId)
+        {
+            var result = await _woSerivce.DeleteTempOpr_List(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostShop_Insp_Log)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Shop_Insp_LogVM))]
+        public async Task<IActionResult> PostShop_Insp_Log([FromBody] Shop_Insp_LogVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostShop_Insp_Log(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllShop_Insp_Log)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Shop_Insp_LogVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllShop_Insp_Log(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllShop_Insp_Log(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteShop_Insp_Log)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteShop_Insp_Log(long Id,long tenantId)
+        {
+            var result = await _woSerivce.DeleteShop_Insp_Log(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostSubCon_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(SubCon_ListVM))]
+        public async Task<IActionResult> PostSubCon_List([FromBody] SubCon_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostSubCon_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllSubCon_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<SubCon_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllSubCon_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllSubCon_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteSubCon_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteSubCon_List(long Id,long tenantId)
+        {
+            var result = await _woSerivce.DeleteSubCon_List(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostTempSubCon_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(TempSubCon_ListVM))]
+        public async Task<IActionResult> PostTempSubCon_List([FromBody] TempSubCon_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostTempSubCon_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllTempSubCon_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<TempSubCon_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllTempSubCon_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllTempSubCon_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteTempSubCon_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteTempSubCon_List(long Id,long tenantId)
+        {
+            var result = await _woSerivce.DeleteTempSubCon_List(Id, tenantId);
+            return Ok(result);
+        }
+
+
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostMc_Wait_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Mc_Wait_ListVM))]
+        public async Task<IActionResult> PostMc_Wait_List([FromBody] Mc_Wait_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostMc_Wait_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllMc_Wait_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Mc_Wait_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllMc_Wait_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllMc_Wait_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllMc_Wait_ListByWoId)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Mc_Wait_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllMc_Wait_ListByWoId(long mcWaitId, long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllMc_Wait_ListByMcWait(mcWaitId, tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteMc_Wait_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteMc_Wait_List(long Id,long tenantId)
+        {
+            var result = await _woSerivce.DeleteMc_Wait_List(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostTempMc_Wait_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(TempMc_Wait_ListVM))]
+        public async Task<IActionResult> PostTempMc_Wait_List([FromBody] TempMc_Wait_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostTempMc_Wait_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllTempMc_Wait_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<TempMc_Wait_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllTempMc_Wait_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllTempMc_Wait_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllTempMc_Wait_ListByWoId)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<TempMc_Wait_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllTempMc_Wait_ListByWoId(long mcWaitId, long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllTempMc_Wait_ListByMcWait(mcWaitId, tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteTempMc_Wait_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteTempMc_Wait_List(long Id,long tenantId)
+        {
+            var result = await _woSerivce.DeleteTempMc_Wait_List(Id, tenantId);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllNon_Plan_Wk_type_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Mode_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllNon_Plan_Wk_type_List()
+        {
+            var allwo = await _woSerivce.GetAllNon_Plan_Wk_type_List();
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllTime_Slot_Allocation)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Mode_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllTime_Slot_Allocation()
+        {
+            var allwo = await _woSerivce.GetAllTime_Slot_Allocation();
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllMode_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Mode_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllMode_List()
+        {
+            var allwo = await _woSerivce.GetAllMode_List();
+            return Ok(allwo);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostMatl_Issue_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Matl_Issue_ListVM))]
+        public async Task<IActionResult> PostMatl_Issue_List([FromBody] Matl_Issue_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostMatl_Issue_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllMatl_Issue_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Matl_Issue_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllMatl_Issue_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllMatl_Issue_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteMatl_Issue_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteMatl_Issue_List(long Id, long tenantId)
+        {
+            var result = await _woSerivce.DeleteMatl_Issue_List(Id, tenantId);
+            return Ok(result);
+        }
+        
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostMatl_Issue_Settings)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Matl_Issue_SettingsVM))]
+        public async Task<IActionResult> PostMatl_Issue_Settings([FromBody] Matl_Issue_SettingsVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostMatl_Issue_Settings(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllMatl_Issue_Settings)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Matl_Issue_SettingsVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllMatl_Issue_Settings(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllMatl_Issue_Settings(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteMatl_Issue_Settings)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteMatl_Issue_Settings(long Id, long tenantId)
+        {
+            var result = await _woSerivce.DeleteMatl_Issue_Settings(Id, tenantId);
+            return Ok(result);
+        }
+        
+
+    
     }
 }

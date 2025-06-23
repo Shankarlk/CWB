@@ -18,6 +18,7 @@
         public string WeeklyOff1 { get; set; }
         public int NoOfShifts { get; set; }
         public string FirstShiftStartTime { get; set; }
+        public char Change_flag { get; set; }
         public long TenantId { get; set; }
     }
 }

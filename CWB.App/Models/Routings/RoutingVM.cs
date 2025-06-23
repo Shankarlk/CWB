@@ -20,6 +20,8 @@
         public string NRPartDescription { get; set; }
         public string BGColor { get; set; }
         public string StrPreferredRouting { get; set; } = string.Empty;
+        public string StartingOpr { get; set; } = string.Empty;
+        public string Tpt { get; set; } = string.Empty;
         public string MKPartName { get; set; } = string.Empty;
         public string MandocAvl { get; set; } = string.Empty;
         public int InhouseNo { get; set; } = 0;

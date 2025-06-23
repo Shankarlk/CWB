@@ -53,6 +53,16 @@
                                                     </div>
                                                 </div>
                                             }
+                                            @if (permissionResult.Any(r => r.Menu3 == "Approve Matl / SubCon PO"))
+                                            {
+                                                <div class="col-md-12">
+                                                    <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                        <a asp-controller="WorkOrder" asp-action="ApprovPoDetails">
+                                                            <h6>Approve Matl / SubCon PO </h6>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            }
                                         }
                                         else
                                         {
@@ -81,28 +91,82 @@
                                             <!-- end -->
                                         }
                                         @*<div class="col-md-12">
-                                            <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                <a href="#">
-                                                    <h6>Release Material PO</h6>
-                                                </a>
-                                            </div>
-                                        </div>*@
+            <div class="text-center btn btn-outline-info w-100 mb-2">
+                <a href="#">
+                    <h6>Release Material PO</h6>
+                </a>
+            </div>
+        </div>*@
                                         <!-- end -->
-                                        <div class="col-md-12">
-                                            <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                <a asp-controller="WorkOrder" asp-action="WipControl">
-                                                    <h6>WIP Control</h6>
-                                                </a>
+                                        @if (permissionResult != null)
+                                        {
+                                            @if (permissionResult.Any(r => r.Menu3 == "Simulate"))
+                                            {
+                                                <div class="col-md-12">
+                                                    <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                        <a asp-controller="WorkOrder" asp-action="SimulationPage">
+                                                            <h6>Simulate</h6>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            }
+                                            <div class="col-md-12">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                    <a href="#">
+                                                        <h6>Select WO for Production</h6>
+                                                    </a>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <!-- end -->
-                                        <div class="col-md-12">
-                                            <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                <a href="#">
-                                                    <h6>SO Ready for Dispatch</h6>
-                                                </a>
+                                            @if (permissionResult.Any(r => r.Menu3 == "WIP Control"))
+                                            {
+                                                <div class="col-md-12">
+                                                    <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                        <a asp-controller="WorkOrder" asp-action="WipControl">
+                                                            <h6>WIP Control</h6>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            }
+                                            <div class="col-md-12">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                    <a href="#">
+                                                        <h6>SO Ready for Dispatch</h6>
+                                                    </a>
+                                                </div>
                                             </div>
-                                        </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-md-12">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="SimulationPage">
+                                                        <h6>Simulate</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                    <a href="#">
+                                                        <h6>Select WO for Production</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="WipControl">
+                                                        <h6>WIP Control</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <!-- end -->
+                                            <div class="col-md-12">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                    <a href="#">
+                                                        <h6>SO Ready for Dispatch</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        }
                                         <!-- end -->
                                         <!-- end -->
                                         <!-- end -->
@@ -256,6 +320,16 @@
                                                     </div>
                                                 </div>
                                             }
+                                            @if (permissionResult.Any(r => r.Menu3 == "PO List View / Edit"))
+                                            {
+                                                <div class="col-md-4">
+                                                    <div class="text-center btn-sm btn btn-outline-info w-100 mb-2">
+                                                        <a asp-controller="WorkOrder" asp-action="POLineList">
+                                                            <h6>PO List View / Edit</h6>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            }
                                         }
                                         else
                                         {
@@ -273,16 +347,16 @@
                                                     </a>
                                                 </div>
                                             </div>
+                                            <div class="col-md-4">
+                                                <div class="text-center btn-sm btn btn-outline-info w-100 mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="POLineList">
+                                                        <h6>PO List View / Edit</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
                                         }
                                         <!-- ========================  -->
                                         <!-- ========================  -->
-                                        <div class="col-md-4">
-                                            <div class="text-center btn-sm btn btn-outline-info w-100 mb-2">
-                                                <a asp-controller="WorkOrder" asp-action="POLineList">
-                                                    <h6>PO List View / Edit</h6>
-                                                </a>
-                                            </div>
-                                        </div>
                                         <!-- ========================  -->
                                         <!-- end -->
                                     </div>
@@ -373,13 +447,29 @@
                                                     </a>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6 text-end">
-                                                <div class="text-center btn btn-outline-primary w-25 mb-2">
-                                                    <a asp-controller="WorkOrder" asp-action="OperationsSettings">
-                                                        <h6>Settings</h6>
-                                                    </a>
+                                            @if (permissionResult != null)
+                                            {
+                                                @if (permissionResult.Any(r => r.Menu3 == "Settings"))
+                                                {
+                                                    <div class="col-md-6 text-end">
+                                                        <div class="text-center btn btn-outline-primary w-25 mb-2">
+                                                            <a asp-controller="WorkOrder" asp-action="OperationsSettings">
+                                                                <h6>Settings</h6>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="col-md-6 text-end">
+                                                    <div class="text-center btn btn-outline-primary w-25 mb-2">
+                                                        <a asp-controller="WorkOrder" asp-action="OperationsSettings">
+                                                            <h6>Settings</h6>
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            }
 
                                         </div>
                                     </div>

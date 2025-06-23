@@ -94,7 +94,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="myLargeModalLabel">  Plant Details for : <span class="h6" id="plantname"></span> </h4>
+                <h4 class="modal-title" id="myLargeModalLabel">  Plant Details : <span class="h4" id="plantname"></span> </h4>
                 <button type="button" id="btn-shopdetails-close" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -136,6 +136,7 @@
                                     <label class="form-label col-md-2 mb-2">Plant  Name </label>
                                     <div class="col-md-4 mb-2">
                                         <input class="form-control form-control-sm" type="text" id="Name" name="Name" required>
+                                        <span id="Plant-error"></span>
                                     </div>
                                     <!-- ----- -->
                                     <label class="form-label col-md-2 mb-2">GST</label>
@@ -240,47 +241,137 @@
                                 </div>
 
                                 <!-- =========================== -->
-                                <div class="row">
-                                    <label class=" col-md-2 form-label mb-2">1st Shift Start Time</label>
-                                    <div class="col-md-2 mb-2">
-                                        <input class="form-control form-control-sm" type="time" name="FirstShiftStartTime" id="FirstShiftStartTime" required>
+                                <div class="row mt-1">
+                                    <div id="shift1" style="display: none;" class="col-md-4">
+                                        <label class=" col-md-6 form-label mb-2">1st Shift Start Time</label>
+                                        <div class="col-md-6 mb-2">
+                                            <input class="form-control form-control-sm" type="text" name="FirstShiftStartTime" id="FirstShiftStartTime" required>
+                                        </div>
                                     </div>
                                     <!-- ----------  -->
-                                    <label class=" col-md-2 form-label mb-2">2nd Shift Start Time</label>
-                                    <div class="col-md-2 mb-2">
-                                        <input class="form-control form-control-sm" type="time" name="SecondShiftStartTime" id="SecondShiftStartTime" required>
+                                    <div id="shift2" style="display: none;" class="col-md-4">
+                                        <label class=" col-md-6 form-label mb-2">2nd Shift Start Time</label>
+                                        <div class="col-md-6 mb-2">
+                                            <input class="form-control form-control-sm" type="text" name="SecondShiftStartTime" id="SecondShiftStartTime" required>
+                                        </div>
                                     </div>
-                                    <!-- ----------  -->
-                                    <label class=" col-md-2 form-label mb-2">3rd Shift Start Time</label>
-                                    <div class="col-md-2 mb-2">
-                                        <input class="form-control form-control-sm" type="time" name="ThirdShiftStartTime" id="ThirdShiftStartTime" required>
+                                    <div id="shift3" style="display: none;" class="col-md-4">
+                                        <label class=" col-md-6 form-label mb-2">3rd Shift Start Time</label>
+                                        <div class="col-md-6 mb-2">
+                                            <input class="form-control form-control-sm" type="text" name="ThirdShiftStartTime" id="ThirdShiftStartTime" required>
+                                        </div>
                                     </div>
-                                    <!-- ----------  -->
                                 </div>
 
                                 <!-- =========================== -->
-                                <div class="row">
-                                    <label class=" col-md-2 form-label mb-2">1st Shift Duration</label>
-                                    <div class="col-md-2 mb-2">
-                                        <input type="text" class="form-control form-control-sm" data-toggle="input-mask" data-mask-format="00:00:00" placeholder="e.g HH:MM:SS" name="FirstShiftDuration" id="FirstShiftDuration" required>
+                                <div class="row mt-1">
+                                    <div id="shiftdur1" style="display: none;" class="col-md-4">
+                                        <label class=" col-md-6 form-label mb-2">1st Shift Duration (Hrs)</label>
+                                        <div class="col-md-6 mb-2">
+                                            <input type="text" class="form-control form-control-sm" data-toggle="input-mask" data-mask-format="00:00:00" placeholder="e.g HH:MM:SS" name="FirstShiftDuration" id="FirstShiftDuration" required>
+                                        </div>
+                                    </div>
+
+                                    <!-- ----------  -->
+                                    <div id="shiftdur2" style="display: none;" class="col-md-4">
+                                        <label class=" col-md-6 form-label mb-2">2nd Shift Duration (Hrs)</label>
+                                        <div class="col-md-6 mb-2">
+                                            <input type="text" class="form-control form-control-sm" data-toggle="input-mask" data-mask-format="00:00:00" placeholder="e.g HH:MM:SS" name="SecondShiftDuration" id="SecondShiftDuration" required>
+                                        </div>
                                     </div>
                                     <!-- ----------  -->
-                                    <label class=" col-md-2 form-label mb-2">2nd Shift Duration</label>
-                                    <div class="col-md-2 mb-2">
-                                        <input type="text" class="form-control form-control-sm" data-toggle="input-mask" data-mask-format="00:00:00" placeholder="e.g HH:MM:SS" name="SecondShiftDuration" id="SecondShiftDuration" required>
-                                    </div>
-                                    <!-- ----------  -->
-                                    <label class="col-md-2 form-label mb-2">3rd Shift Duration</label>
-                                    <div class="col-md-2 mb-2">
-                                        <input class="form-control form-control-sm mb-2" type="text" name="ThirdShiftDuration" id="ThirdShiftDuration" data-toggle="input-mask" data-mask-format="00:00:00" placeholder="e.g HH:MM:SS" required>
+                                    <div id="shiftdur3" style="display: none;" class="col-md-4">
+                                        <label class="col-md-26form-label mb-2">3rd Shift Duration (Hrs)</label>
+                                        <div class="col-md-6 mb-2">
+                                            <input class="form-control form-control-sm mb-2" type="text" name="ThirdShiftDuration" id="ThirdShiftDuration" data-toggle="input-mask" data-mask-format="00:00:00" placeholder="e.g HH:MM:SS" required>
+                                        </div>
                                     </div>
                                     <!-- ----------  -->
                                 </div>
                                 <input type="text" id="WDPlantId" name="PlantId" value="0" hidden />
                                 <input type="text" id="WDId" name="WDId" value="0" hidden />
+                                <input type="text" id="Change_flag" name="Change_flag" value="N" hidden />
                                 <!-- =========================== -->
+
+                                <hr>
                                 <div class="row">
-                                    <div class="col-md-12 text-end">
+                                    <h4 style="font-weight: bold; margin-left: 1%;">Timeslot Settings</h4>
+                                    <div style="display: block;" class="col-md-4">
+                                        <label class="form-label col-md-6 mb-2">Timeslot Duration (Min)</label>
+                                        <div class="col-md-6 mb-2">
+                                            <select class="form-select form-select-sm w-75" id="Timeslot_duration" title="" data-plugin="tippy"
+                                                    data-tippy-placement="top" name="Timeslot_duration">
+                                                <option value="0">-Select-</option>
+                                                <option value="5">5</option>
+                                                <option value="10">10</option>
+                                                <option value="15">15</option>
+                                                <option value="30">30</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div style="display: block;" class="col-md-4">
+                                        <label class="form-label col-md-6 mb-2">No of Days of Timeslots to be created </label>
+                                        <div class="col-md-6 mb-2">
+                                            <select class="form-select form-select-sm w-75" id="No_of_span_days" name="No_of_span_days" title="" data-plugin="tippy"
+                                                    data-tippy-placement="top">
+                                                <option value="0">-Select-</option>
+                                                <option value="30">30</option>
+                                                <option value="60">60</option>
+                                                <option value="90">90</option>
+                                                <option value="120">120</option>
+                                                <option value="150">150</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div style="display: block;" class="col-md-4">
+                                        <label class="form-label col-md-6 mb-2">No of Retention Days for Timeslots </label>
+                                        <div class="col-md-6 mb-2">
+                                            <input class="form-control form-control-sm w-75" name="Retention_Days" id="Retention_Days" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div id="shiftbreakd1" style="display: block;" class="col-md-4">
+                                        <label class="form-label col-md-6 mb-2" id="McP11FirstStartTimelbl">1st Shift Break start time</label>
+                                        <div class="col-md-6 mb-2">
+                                            <input class="form-control form-control-sm" id="First_Shift_Break_start_time" name="First_Shift_Break_start_time" type="text">
+                                        </div>
+                                    </div>
+                                    <div id="shiftbreakd2" style="display: block;" class="col-md-4">
+                                        <label class="form-label col-md-6 mb-2" id="McP11SecStartTimelbl">2nd Shift Break start time</label>
+                                        <div class="col-md-6 mb-2">
+                                            <input class="form-control form-control-sm" id="Sec_Shift_Break_start_time" name="Sec_Shift_Break_start_time" type="text">
+                                        </div>
+                                    </div>
+                                    <div id="shiftbreakd3" style="display: block;" class="col-md-4">
+                                        <label class="form-label col-md-6 mb-2" id="McP11ThirdStartTimelbl">3rd Shift Break start time</label>
+                                        <div class="col-md-6 mb-2">
+                                            <input class="form-control form-control-sm" id="Third_Shift_Break_start_time" name="Third_Shift_Break_start_time" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div id="shiftbreakdur1" style="display: block;" class="col-md-4">
+                                        <label class="form-label col-md-6 mb-2" id="McP11FirstDurlbl">1st Shift Break Duration (min)</label>
+                                        <div class="col-md-6 mb-2">
+                                            <input class="form-control form-control-sm w-75" id="First_Shift_Break_duration" name="First_Shift_Break_duration" placeholder="00:00" type="text">
+                                        </div>
+                                    </div>
+                                    <div id="shiftbreakdur2" style="display: block;" class="col-md-4">
+                                        <label class="form-label col-md-6 mb-2" id="McP11SecDurlbl">2nd Shift Break Duration (min)</label>
+                                        <div class="col-md-6 mb-2">
+                                            <input class="form-control form-control-sm w-75" id="Sec_Shift_Break_duration" name="Sec_Shift_Break_duration" placeholder="00:00" type="text">
+                                        </div>
+                                    </div>
+                                    <div id="shiftbreakdur3" style="display: block;" class="col-md-4">
+                                        <label class="form-label col-md-6 mb-2" id="McP11ThirdDurlbl">3rd Shift Break Duration (min)</label>
+                                        <div class="col-md-6 mb-2">
+                                            <input class="form-control form-control-sm w-75" id="Third_Shift_Break_duration" name="Third_Shift_Break_duration" placeholder="00:00" type="text">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                   <div class="col-md-12 text-end">
                                         <button id="SaveWorkDetails" type="button" class="btn btn-primary btn-sm">Save</button>
                                     </div>
                                 </div>

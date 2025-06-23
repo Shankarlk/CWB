@@ -20,6 +20,8 @@ namespace CWB.CompanySettings.Services.Location
         Task<CityVM> PostCity(CityVM plantWd);
         Task<CountryVM> PostCountry(CountryVM plantWd);
         IEnumerable<CityVM> GetCitys(long TenantId);
+        Task<IEnumerable<NoOfDaysTimeSlotVM>> GetNoOfDaysTimeSlots();
+        Task<IEnumerable<TimeSlotDurationVM>> GetTimeSlotDurations();
         IEnumerable<CountryVM> GetCountrys(long TenantId);
         Task<bool> CheckCity(string city);
         Task<bool> CheckCountry(string country);

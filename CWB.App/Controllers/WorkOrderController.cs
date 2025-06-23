@@ -3,6 +3,7 @@ using CWB.App.Models.BusinessProcesses;
 using CWB.App.Models.Contacts;
 using CWB.App.Models.DocumentManagement;
 using CWB.App.Models.ItemMaster;
+using CWB.App.Models.Machine;
 using CWB.App.Models.Plants;
 using CWB.App.Models.Routing;
 using CWB.App.Models.WorkOrder;
@@ -19,6 +20,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -40,6 +42,11 @@ namespace CWB.App.Controllers
         private readonly IDepartmentService _departmentService;
         private readonly IOperationService _operationService;
         private readonly IEmployeeService _employeeService;
+        public static class SimulationState
+        {
+            public static bool IsPaused { get; set; } = false;
+            public static bool IsStopped { get; set; } = false;
+        }
         public WorkOrderController(ILogger<WorkOrderController> logger, IWOService wOService, 
             IBAService baService, IRoutingService routingService, IMastersServices masterServices, IPlantService plantService
             , IMachineService machineService, IDepartmentService departmentService, IEmployeeService employeeService, IDocMangService docMangService, IOperationService operationService)
@@ -115,6 +122,36 @@ namespace CWB.App.Controllers
             return View();
         }
         public IActionResult MaterialMovement()
+        {
+            return View();
+        }
+        [Route("~/S!M@l@T!L")]
+        public IActionResult SimulationPage()
+        {
+            return View();
+        }
+        [Route("~/S!M@l@T!LO0")]
+        public IActionResult SimulationOutPage()
+        {
+            return View();
+        }
+        [Route("~/M@H1NE!P")]
+        public IActionResult MachinceListPage()
+        {
+            return View();
+        }
+        [Route("~/SYBC0!NK")]
+        public IActionResult SubConListPage()
+        {
+            return View();
+        }
+        [Route("~/IS$SUE@!")]
+        public IActionResult IssueMatl()
+        {
+            return View();
+        }
+        [Route("~/B00IK0u!@!")]
+        public IActionResult BookOutPage()
         {
             return View();
         }
@@ -208,12 +245,150 @@ namespace CWB.App.Controllers
             var sortedList = resultList.OrderByDescending(x => x.PreferredRouting == 1).ThenBy(x => x.PreferredRouting).ToList();
             return Ok(sortedList);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetSimRoutings(int manufPartId,int Qnty)
+        {
+            ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart(manufPartId);
+            var shops = await _departmentService.GetDepartments(1);
+            var mcList = await _machineService.GetMachinesList();
+            var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+            var sortedList = resultList.OrderByDescending(x => x.PreferredRouting == 1).ThenBy(x => x.PreferredRouting).ToList();
+            foreach (var item in sortedList)
+            {
+                var steps = await _routingService.RoutingSteps(item.RoutingId);
+
+                if (item.PreferredRouting == 1)
+                {
+                    item.StrPreferredRouting = "Y";
+                }
+                else
+                {
+                    item.StrPreferredRouting = "N";
+                }
+                item.NoOprns = steps.Count();
+                var steploc = steps.FirstOrDefault().StepLocation == "1";
+                if(steploc)
+                {
+
+                var stepmcList = await _routingService.StepMachines((int)steps.FirstOrDefault().StepId);
+                var preferredStepMc = stepmcList.FirstOrDefault(x => x.PreferredMachine == 1);
+                var stepmc = preferredStepMc ?? stepmcList.FirstOrDefault();
+                var machince = await _machineService.GetMachine(stepmc.MachineId);
+                item.StartingOpr = machince.MachineMachineName + " - " + shops.FirstOrDefault(s=>s.DepartmentId == machince.MachineDepartmentId).Name;
+                int oprQty = Qnty; // A = Quantity for the operation
+
+                TimeSpan totalTpt = TimeSpan.Zero;
+
+                foreach (var mc in stepmcList)
+                {
+                    TimeSpan setupTime = TimeSpan.TryParse(mc.SetupTime, out var st) ? st : TimeSpan.Zero;
+                    TimeSpan cycleTime = TimeSpan.TryParse(mc.FloorToFloorTime, out var ct) ? ct : TimeSpan.Zero;
+
+                    TimeSpan tpt = setupTime + TimeSpan.FromTicks(cycleTime.Ticks * oprQty);
+
+                    totalTpt += tpt;
+                }
+                string totalTptStr = totalTpt.ToString(@"hh\:mm");
+                item.Tpt = totalTptStr;
+                }
+                else
+                {
+                    var subconList = await _routingService.SubCons((int)steps.FirstOrDefault().StepId);
+                    var subtransport = subconList.FirstOrDefault(s => s.PreferredSubcon == 1) ?? subconList.FirstOrDefault();
+                    if(subtransport != null)
+                    {
+
+                        TimeSpan totalTpt = TimeSpan.Zero;
+                        var subconwss = await _routingService.SubConWSS((int)steps.FirstOrDefault().StepId, subtransport.SubConDetailsId);
+                        var subconwsf = subconwss.FirstOrDefault();
+                        var machince = mcList.Where(m=>m.MachineTypeId == subconwsf.MachineType).FirstOrDefault();
+                        item.StartingOpr = machince.Name + " - " + machince.Shop;
+                        // Time calculations
+                        foreach (var subconws in subconwss)
+                        {
+                            var trans = TimeSpan.Parse(subtransport.TransportTime); // "01:00:00"
+                            var setupTime = TimeSpan.Parse(subconws.SetupTime); // "01:00:00"
+                            var floorToFloorTime = TimeSpan.Parse(subconws.FloorToFloorTime);
+                            TimeSpan tpt = trans + setupTime + TimeSpan.FromTicks(floorToFloorTime.Ticks * Qnty);
+
+                            totalTpt += tpt;
+                        }
+                        string totalTptStr = totalTpt.ToString(@"hh\:mm");
+                        item.Tpt = totalTptStr;
+                    }
+
+
+                }
+
+
+            }
+            return Ok(sortedList);
+        }
 
         [HttpGet]
         public async Task<IActionResult> RoutingSteps(int routingId)
         {
             var result = await _routingService.RoutingSteps(routingId);
             return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> RoutingStepsMcSub(int routingId, int Qnty)
+        {
+            var result = await _routingService.RoutingSteps(routingId);
+            var companies = await _masterService.GetCompanies();
+            var shops = await _departmentService.GetDepartments(1);
+            List<RoutingStepVM> steplist = new List<RoutingStepVM>();
+            foreach (var item in result)
+            {
+                if(item.StepLocation == "1")
+                {
+                    item.LocationName = "Inhouse";
+                    var stepmcs = await _routingService.StepMachines((int)item.StepId);
+                    foreach (var stepmc in stepmcs)
+                    {
+                        var machince = await _machineService.GetMachine(stepmc.MachineId);
+                        item.MachineName = machince.MachineMachineName + " - " + shops.FirstOrDefault(s => s.DepartmentId == machince.MachineDepartmentId).Name;
+                        item.PreferredStr = stepmc.PreferredMachine == 1 ? "Y" : "N";
+                        var cycleTime = TimeSpan.Parse(stepmc.FloorToFloorTime);
+                        var setupTime = TimeSpan.Parse(stepmc.SetupTime);
+                        item.CycleTime = cycleTime.TotalMinutes.ToString(); 
+                        var residenceTime = setupTime + TimeSpan.FromTicks(cycleTime.Ticks * Qnty);
+                        item.ResidenceTime = ((int)residenceTime.TotalHours).ToString("00") + ":" + residenceTime.Minutes.ToString("00");
+                        steplist.Add(item);
+                    }
+                }
+                else
+                {
+                    item.LocationName = "SubCon";
+                    var subcons = await _routingService.SubCons((int)item.StepId);
+                    foreach (var subcon in subcons)
+                    {
+                        var transport = subcon.TransportTime;
+                        item.PreferredStr = subcon.PreferredSubcon == 1 ? "Y" : "N";
+                        var subconwds = await _routingService.SubConWSS((int)item.StepId, subcon.SubConDetailsId);
+                        var cycleTimes = subconwds.Select(s => TimeSpan.Parse(s.FloorToFloorTime)).ToList();
+                        var setupTimes = subconwds.Select(s => TimeSpan.Parse(s.SetupTime)).ToList();
+
+                        var totalCycleTime = new TimeSpan(cycleTimes.Sum(ct => ct.Ticks));
+                        var totalSetupTime = new TimeSpan(setupTimes.Sum(st => st.Ticks));
+
+                        var residenceTime = totalSetupTime + TimeSpan.FromTicks(totalCycleTime.Ticks * Qnty);
+
+                        item.CycleTime = totalCycleTime.TotalMinutes.ToString();
+                        item.ResidenceTime = ((int)residenceTime.TotalHours).ToString("00") + ":" + residenceTime.Minutes.ToString("00");
+                        foreach (ContactsVM mobj in companies)
+                        {
+                            if (subcon.SupplierId == mobj.CompanyId)
+                            {
+                                subcon.Company = mobj.CompanyName;
+                                item.MachineName = mobj.CompanyName;
+                            }
+                        }
+                        steplist.Add(item);
+                    }
+                }
+            }
+            return Ok(steplist);
         }
 
         [HttpGet]
@@ -1952,16 +2127,21 @@ namespace CWB.App.Controllers
             var productions = await _woService.AllProductionPlan_Wo();
             var masterparts = await _masterService.ItemMasterParts();
             var procplan = await _woService.GetAllProcPlan();
+            var customer = await _baService.GetCustomerOrders();
+            var nclogs = await _woService.GetAllNcLog();
+            var trans = await _woService.GetAllInv_Trans_Log();
             foreach (ProductionPlan_WoVM item in productions)
             {
                 if(item.PartType == 2)
                 {
                     item.PlanStartDateStr = item.PlanStartDate.ToString("dd-MM-yyyy");
+                    item.PartTypeName = "Assembly";
                 }
                 else
                 {
                     var findpp = procplan.Where(p => p.WorkOrderId == item.WoId).FirstOrDefault().CalcReceiptDate.ToString("dd-MM-yyyy");
                     item.PlanStartDateStr = findpp;
+                    item.PartTypeName = "Child Part";
                 }
                 item.SoComplDateStr = item.SoComplDate.Value.ToString("dd-MM-yyyy");
                 foreach (ItemMasterPartVM imp in masterparts)
@@ -1983,6 +2163,13 @@ namespace CWB.App.Controllers
                     {
                         item.WoRelease = "N";
                     }
+                    foreach (CustomerOrderVM cu in customer)
+                    {
+                        if (so.CustomerOrderId == cu.CustomerOrderId)
+                        {
+                            item.Customer = cu.CustomerName;
+                        }
+                    }
                 }
                 else
                 {
@@ -2002,8 +2189,42 @@ namespace CWB.App.Controllers
                         {
                             item.WoRelease = "N";
                         }
+                        foreach (CustomerOrderVM cu in customer)
+                        {
+                            if (sos.CustomerOrderId == cu.CustomerOrderId)
+                            {
+                                item.Customer = cu.CustomerName;
+                            }
+                        }
                     }
                 }
+                item.NoOfOpenNc = nclogs.Where(n => n.Inw_Recpt_Part_No_Id == item.PartId).Count();
+                var procplanwo = procplan.Where(p => p.WorkOrderId == item.WoId).FirstOrDefault();
+                var tran = trans.Where(n => (n.Input_Part_NoId == procplanwo.PartId || n.Output_Part_No == procplanwo.PartId) && n.Qnty >= procplanwo.Calc_Proc_Qnty).FirstOrDefault();
+                if (tran != null)
+                {
+                item.ReadyForProd = "Y";
+                }
+                else
+                {
+                    item.ReadyForProd = "N";
+                }
+                var oprnos = await _routingService.RoutingSteps((int)item.RoutingId);
+                int docPendingApprovalCount = 0;
+                foreach (var op in oprnos)
+                {
+                    var docmand = await _operationService.GetOperationalDocTypesByOptId(Convert.ToInt64(op.StepOperation));
+
+                    if (docmand.Any())
+                    {
+                        var docListVMs = await _docMangService.GetAllDocList();
+                        docPendingApprovalCount += docListVMs.Count(doc =>
+                            doc.AppvStatus == 1 &&
+                            docmand.Any(docMand => doc.DocumentTypeId == docMand.DocumentTypeId &&
+                                                   doc.RoutingId == item.RoutingId));
+                    }
+                }
+                item.NoOfDocWf = docPendingApprovalCount;
             }
             return Ok(productions);
         }   
@@ -3097,6 +3318,12 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> PostNC_Decision_Log(NC_Decision_LogVM masterDocListVM)
         {
             var result = await _woService.PostNC_Decision_Log(masterDocListVM);
+            if(result.NC_Disp_Deci_Lvl2_Id == 4 || result.NC_Disp_Deci_Lvl1_Id == 4)
+            {
+                var rwkadd = new Rwk_ListVM();
+                rwkadd.NC_Log_Id = result.NcLogId;
+                var postrwk = await _woService.PostRwk_List(rwkadd);
+            }
             return Ok(result);
         }
         [HttpGet]
@@ -3176,6 +3403,14 @@ namespace CWB.App.Controllers
             var masterparts = await _masterService.ItemMasterParts();
             foreach (var item in result)
             {
+                if(item.Output_Part_No == 0)
+                {
+                    item.Output_Part_No = item.Input_Part_NoId;
+                }
+                if(item.Output_Routing_Id == 0)
+                {
+                    item.Output_Routing_Id = item.Input_Routing_Id;
+                }
                 foreach (var m in masterparts)
                 {
                     if (item.Output_Part_No == m.PartId)
@@ -3648,9 +3883,9 @@ namespace CWB.App.Controllers
                 {
                     if(inward.Inw_Recpt_DetailsId == item.Inw_Recpt_Header_Id && inward.Inward_Condition == 2)
                     {
-                        listnc.Add(item);
                     }
                 }
+                listnc.Add(item);
             }
             return Ok(listnc);
         }
@@ -4060,5 +4295,4854 @@ namespace CWB.App.Controllers
                 }
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllWO_Wait_List()
+        {
+            var result = await _woService.GetAllWO_Wait_List();
+            var prodnWos = await _woService.AllProductionPlan_Wo();
+            var masterparts = await _masterService.ItemMasterParts();
+            var customer = await _baService.GetCustomerOrders();
+            var nclogs = await _woService.GetAllNcLog();
+            foreach (var item in result)
+            {
+                var prodwo = prodnWos.Where(w => w.ProductionPlanId == item.Wo_Id).FirstOrDefault();
+                item.WoNumber = prodwo?.WONumber;
+                foreach (ItemMasterPartVM imp in masterparts)
+                {
+                    if (prodwo.PartId == imp.PartId)
+                    {
+                        item.Part = imp.PartNo + " / "+ imp.Description;
+                    }
+                    if(prodwo.PartId == 2)
+                    {
+                        item.PartType = "Assembly";
+                    }
+                    else
+                    {
+                        item.PartType = "Child Part";
+                    }
+                }
+                var so = await _baService.GetOneSO(prodwo.SalesOrderId);
+                if (so != null)
+                {
+                    foreach (CustomerOrderVM cu in customer)
+                    {
+                        if (so.CustomerOrderId == cu.CustomerOrderId)
+                        {
+                            item.Customer = cu.CustomerName;
+                        }
+                    }
+                }
+                else
+                {
+                    var wosos = await _woService.GetSoWoRel(prodwo.WoId);
+                    foreach (var woso in wosos)
+                    {
+                        var sos = await _baService.GetOneSO(woso.SalesOrderId);
+                        foreach (CustomerOrderVM cu in customer)
+                        {
+                            if (sos.CustomerOrderId == cu.CustomerOrderId)
+                            {
+                                item.Customer = cu.CustomerName;
+                            }
+                        }
+                    }
+                }
+                item.ModeName = "Test";
+                item.Tpt = item.Total_TPT.ToString();
+                item.PlanStartStr = item.Plan_Start_Date.ToString("dd-MM-yyyy hh:mm tt"); ;
+                item.PlanEndStr = item.Plan_End_Date.ToString("dd-MM-yyyy hh:mm tt"); ;
+            }
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostWO_Wait_List(WO_Wait_ListVM masterDocListVM)
+        {
+            var result = await _woService.PostWO_Wait_List(masterDocListVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteWO_Wait_List(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteWO_Wait_List(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllMc_not_avl_reason()
+        {
+            var result = await _woService.GetAllMc_not_avl_reason();
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostMc_not_avl_reason(Mc_Not_Avl_ReasonVM masterDocListVM)
+        {
+            var result = await _woService.PostMc_not_avl_reason(masterDocListVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllTimeslot_Setting()
+        {
+            var result = await _woService.GetAllTimeslot_Setting();
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostTimeslot_Setting(Timeslot_SettingVM masterDocListVM)
+        {
+            var result = await _woService.PostTimeslot_Setting(masterDocListVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteTimeslot_Setting(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteTimeslot_Setting(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllTimeslot_List()
+        {
+            var result = await _woService.GetAllTimeslot_List();
+            return Ok(result);
+        }
+        //[HttpPost]
+        //public async Task<IActionResult> PostTimeslot_List()
+        //{
+        //    var result = await _plantService.GetPlants();
+        //    var alltimeslotsettings = await _woService.GetAllTimeslot_Setting();
+        //    var timeslotsettings = alltimeslotsettings.LastOrDefault(); // get latest config
+        //    int totalDays = timeslotsettings.No_of_span_days;
+        //    int slotDurationMins = timeslotsettings.Timeslot_duration;
+
+        //    foreach (var plant in result)
+        //    {
+        //        var holidayList = await _plantService.GetHolidays(plant.PlantId); // List<DateTime>
+        //        var wd = await _plantService.GetPlantWD(plant.PlantId);
+
+        //        plant.NoOfShifts = wd.NoOfShifts;
+        //        plant.WeeklyOff1 = wd.WeeklyOff1 ?? " ";
+        //        plant.FirstShiftStartTime = wd.FirstShiftStartTime ?? " ";
+
+        //        DateTime currentDate = DateTime.Today;
+
+        //        for (int d = 0; d < totalDays; d++)
+        //        {
+        //            var day = currentDate.AddDays(d);
+
+        //            // Skip weekly offs
+        //            if (wd.WeeklyOff1 != null && day.DayOfWeek.ToString() == wd.WeeklyOff1)
+        //                continue;
+
+        //            // Skip holidays
+        //            if (holidayList.Any(h => h.HolidayDate == day.Date))
+        //                continue;
+
+        //            if (!TimeSpan.TryParse(wd.FirstShiftStartTime, out TimeSpan shiftStart))
+        //                continue;
+
+        //            DateTime shiftStartTime = day.Date.Add(shiftStart);
+        //            int totalMinutes = wd.NoOfShifts * 8 * 60; 
+        //            int slotCount = totalMinutes / slotDurationMins;
+
+        //            for (int s = 0; s < slotCount; s++)
+        //            {
+        //                DateTime startTime = shiftStartTime.AddMinutes(s * slotDurationMins);
+        //                DateTime endTime = startTime.AddMinutes(slotDurationMins);
+
+        //                // Check if this time falls in break (pseudo example)
+        //                bool isBreak = IsBreakTime(startTime);
+
+        //                var timeslot = new Timeslot_ListVM
+        //                {
+        //                    Start_time = startTime,
+        //                    End_time = endTime,
+        //                    Break_Slot = isBreak ? 'Y' : 'N'
+        //                };
+
+        //                await _woService.PostTimeslot_List(timeslot);
+        //            }
+        //        }
+        //    }
+        //    return Ok(result);
+        //}
+        [HttpPost]
+        public async Task<IActionResult> PostTimeslot_List()
+        {
+            var result = await _plantService.GetPlants();
+
+            foreach (var plant in result)
+            {
+                var holiday = await _plantService.GetHolidays(plant.PlantId); 
+                var holidayList = holiday.Select(h=>h.HolidayDate).ToList(); // List<DateTime>
+                var wd = await _plantService.GetPlantWD(plant.PlantId);
+
+                plant.NoOfShifts = wd.NoOfShifts;
+                plant.WeeklyOff1 = wd.WeeklyOff1 ?? " ";
+                plant.FirstShiftStartTime = wd.FirstShiftStartTime ?? " ";
+
+                var changeFlag = plant.Change_flag == 'Y' || wd.Change_flag == 'Y';
+                var spanDays = wd.No_of_span_days;
+                var slotDuration = wd.Timeslot_duration; // in minutes
+                var retentionDays = wd.Retention_Days;
+
+                var existingSlots = (await _woService.GetAllTimeslot_List())
+                    .Where(t => t.PlantId == plant.PlantId)
+                    .ToList();
+                var today = DateTime.Today;
+                var lastDate = existingSlots.OrderByDescending(t => t.Start_time).FirstOrDefault()?.Start_time ?? today;
+
+                if (changeFlag)
+                {
+                    // Remove future timeslots
+                    //await RemoveTimeslotsBefore(plant.PlantId, today);
+
+                    // Recreate timeslots from today for spanDays
+                    await GenerateTimeslots(plant, wd, today, today.AddDays(spanDays - 1), holidayList);
+                    plant.Change_flag = 'N';
+                    wd.Change_flag = 'N';
+                    var plantupdate =await _plantService.PostPlant(plant);
+                    var plantdetailsUpdate =await _plantService.PostPlantWD(wd);
+                }
+                else
+                {
+                    // Add 1 extra future working day
+                    var nextWorking = await GetNextWorkingDate(wd, lastDate.AddDays(1), holidayList);
+                    if (nextWorking != null)
+                    {
+                        await GenerateTimeslots(plant, wd, nextWorking.Value, nextWorking.Value, holidayList);
+                    }
+
+                    // Remove timeslots older than retention
+                    var removeBefore = today.AddDays(-retentionDays);
+                    //await RemoveTimeslotsBefore(plant.PlantId, removeBefore);
+                }
+            }
+
+            return Ok("Timeslot list updated successfully.");
+        }
+        private async Task RemoveTimeslotsBefore(long PlantId, DateTime startDate)
+        {
+            var alltimeslots = await _woService.GetAllTimeslot_List();
+            var timeslotsPlant = alltimeslots
+    .Where(t => t.PlantId == PlantId && t.Start_time >= startDate)
+    .ToList();
+            foreach (var item in timeslotsPlant)
+            {
+                var result = await _woService.DeleteTimeslot_List(item.Timeslot_ListId);
+            }
+        }
+
+        private async Task GenerateTimeslots(Models.CoSettings.PlantVM plant, PlantWorkingDetailsVM wd, DateTime from, DateTime to, List<DateTime?> holidays)
+        {
+            for (var date = from; date <= to; date = date.AddDays(1))
+            {
+                if (holidays.Contains(date.Date) || date.DayOfWeek.ToString() == wd.WeeklyOff1 || date.DayOfWeek.ToString() == wd.WeeklyOff2)
+                    continue;
+
+
+                for (int shift = 1; shift <= wd.NoOfShifts; shift++)
+                {
+                    string shiftStartTime = shift == 1 ? wd.FirstShiftStartTime : shift == 2 ? wd.SecondShiftStartTime : wd.ThirdShiftStartTime;
+                    string shiftDurationStr = shift == 1 ? wd.FirstShiftDuration : shift == 2 ? wd.SecondShiftDuration : wd.ThirdShiftDuration;
+                    string breakStartStr = shift == 1 ? wd.First_Shift_Break_start_time : shift == 2 ? wd.Sec_Shift_Break_start_time : wd.Third_Shift_Break_start_time;
+                    string breakDurationStr = shift == 1 ? wd.First_Shift_Break_duration : shift == 2 ? wd.Sec_Shift_Break_duration : wd.Third_Shift_Break_duration;
+
+                    if (string.IsNullOrWhiteSpace(shiftStartTime) || string.IsNullOrWhiteSpace(shiftDurationStr)) continue;
+
+                    DateTime shiftStart = DateTime.Parse($"{date:yyyy-MM-dd} {shiftStartTime}");
+                    TimeSpan shiftDuration = TimeSpan.Parse(shiftDurationStr);
+                    DateTime shiftEnd = shiftStart.Add(shiftDuration);
+
+                    DateTime? breakStart = null;
+                    DateTime? breakEnd = null;
+                    if (!string.IsNullOrWhiteSpace(breakStartStr) && !string.IsNullOrWhiteSpace(breakDurationStr))
+                    {
+                        breakStart = DateTime.Parse($"{date:yyyy-MM-dd} {breakStartStr}");
+                        if (breakDurationStr.Count(c => c == ':') == 1)
+                        {
+                            breakDurationStr = "00:" + breakDurationStr; // converts "30:00" → "00:30:00"
+                        }
+                        breakEnd = breakStart.Value.Add(TimeSpan.Parse(breakDurationStr));
+                    }
+
+                    DateTime currentSlotStart = shiftStart;
+                    while (currentSlotStart < shiftEnd)
+                    {
+                        DateTime currentSlotEnd = currentSlotStart.AddMinutes(wd.Timeslot_duration);
+                        if (currentSlotEnd > shiftEnd) break;
+
+                        bool isBreak = breakStart.HasValue && breakEnd.HasValue &&
+                                       currentSlotStart >= breakStart.Value && currentSlotStart < breakEnd.Value;
+
+                        await _woService.PostTimeslot_List(new Timeslot_ListVM
+                        {
+                            PlantId = plant.PlantId,
+                            Start_time = currentSlotStart,
+                            End_time = currentSlotEnd,
+                            Break_Slot = isBreak ? 'Y' : 'N'
+                        });
+
+                        currentSlotStart = currentSlotEnd;
+                    }
+                }
+            }
+        }
+
+        private async Task<DateTime?> GetNextWorkingDate(PlantWorkingDetailsVM plant, DateTime startDate, List<DateTime?> holidays)
+        {
+            for (int i = 0; i < 30; i++)
+            {
+                var date = startDate.AddDays(i);
+                if (!holidays.Contains(date.Date) && date.DayOfWeek.ToString() != plant.WeeklyOff1 && date.DayOfWeek.ToString() != plant.WeeklyOff2)
+                {
+                    return date;
+                }
+            }
+            return null;
+        }
+
+        private bool IsBreakTime(DateTime startTime)
+        {
+            // Example: hardcode or fetch break times from settings
+            var breakPeriods = new List<(TimeSpan Start, TimeSpan End)>
+            {
+                (new TimeSpan(10, 0, 0), new TimeSpan(10, 30, 0)), // 10:00 to 10:30
+                (new TimeSpan(14, 0, 0), new TimeSpan(14, 30, 0))  // 2:00 to 2:30
+            };
+
+            var timeOnly = startTime.TimeOfDay;
+            return breakPeriods.Any(b => timeOnly >= b.Start && timeOnly < b.End);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteTimeslot_List(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteTimeslot_List(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllMc_Timeslot_List()
+        {
+            var allMachines = await _woService.GetAllMc_Timeslot_List();
+            var timeresult = await _woService.GetAllTimeslot_List();
+            var machineGroups = allMachines
+                .GroupBy(mc => mc.Mc_Id);
+            var machineResidenceTimes = new List<(long MachineId, TimeSpan ResidenceTime)>();
+
+            foreach (var group in machineGroups)
+            {
+                long machineId = group.Key;
+                var timeSlots = group
+                    .SelectMany(mc => timeresult
+                        .Where(ts => ts.Timeslot_ListId == mc.Timeslot_List_Id))
+                    .ToList();
+
+                if (timeSlots.Count > 0)
+                {
+                    var startTimes = timeSlots.Select(ts => ts.Start_time).ToList();
+                    var endTimes = timeSlots.Select(ts => ts.End_time).ToList();
+                    DateTime earliestStart = startTimes.Min();
+                    DateTime latestEnd = endTimes.Max();
+
+                    TimeSpan residenceTime = latestEnd - earliestStart;
+
+                    machineResidenceTimes.Add((machineId, residenceTime));
+                }
+            }
+            return Ok(machineResidenceTimes);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostMc_Timeslot_List()
+        {
+            var machineslist = await _machineService.GetMachinesList();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+
+            foreach (var machine in machineslist)
+            {
+                var plantId = machine.PlantId;
+                var holidays = await _plantService.GetHolidays(plantId);
+                var holidayDates = holidays.Select(h => h.HolidayDate).ToList();
+                var wd = await _plantService.GetPlantWD(plantId);
+
+                foreach (var slot in allTimeslots.Where(t => t.PlantId == plantId))
+                {
+                    if (holidayDates.Contains(slot.Start_time.Date) ||
+                        slot.Start_time.DayOfWeek.ToString() == wd.WeeklyOff1 ||
+                        slot.Start_time.DayOfWeek.ToString() == wd.WeeklyOff2)
+                        continue;
+
+
+                    var mcSlot = new Mc_Timeslot_ListVM
+                    {
+                        Mc_Id = machine.MachineId,
+                        Timeslot_List_Id = slot.Timeslot_ListId,
+                        Allocation = 1,
+                        Slot_Not_Avl = 'N', 
+                        Not_Avl_reason = 0
+                    };
+
+                    await _woService.PostMc_Timeslot_List(mcSlot);
+                }
+            }
+
+            return Ok("Mc_Timeslot_List created for all machines.");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostTempMc_Timeslot_List()
+        {
+            var machineslist = await _machineService.GetMachinesList();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+
+            foreach (var machine in machineslist)
+            {
+                var plantId = machine.PlantId;
+                var holidays = await _plantService.GetHolidays(plantId);
+                var holidayDates = holidays.Select(h => h.HolidayDate).ToList();
+                var wd = await _plantService.GetPlantWD(plantId);
+
+                foreach (var slot in allTimeslots.Where(t => t.PlantId == plantId))
+                {
+                    if (holidayDates.Contains(slot.Start_time.Date) ||
+                        slot.Start_time.DayOfWeek.ToString() == wd.WeeklyOff1 ||
+                        slot.Start_time.DayOfWeek.ToString() == wd.WeeklyOff2)
+                        continue;
+
+                    var tempMcSlot = new TempMc_Timeslot_ListVM
+                    {
+                        Mc_Id = machine.MachineId,
+                        Timeslot_List_Id = slot.Timeslot_ListId,
+                        Allocation = 1,
+                        Slot_Not_Avl = 'N',
+                        Not_Avl_reason = 0
+                    };
+
+                    await _woService.PostTempMc_Timeslot_List(tempMcSlot);
+                }
+            }
+
+            return Ok("TempMc_Timeslot_List created for all machines.");
+        }
+        [HttpPost]
+        public async Task<IActionResult> SimulateMc_Wait_List()
+        {
+            var _allocatedSlotIds = new HashSet<long>();
+            var woList = (await _woService.GetAllWO_Wait_List())
+                .ToList();
+            var prodnWos = await _woService.AllProductionPlan_Wo();
+
+            var allOprs = await _woService.GetAllOpr_List();
+
+            // Sort WO: Rwk > NonPlan > Normal → Then by Plan Completion Date → Then TPT
+            var orderedWOList = woList
+                .OrderBy(wo => wo.Rework_Wo == 'Y' ? 0 : wo.NC_Log_Ref > 0 ? 1 : 2)
+                .ThenBy(wo => wo.Plan_End_Date)
+                .ThenBy(wo => wo.Total_TPT)
+                .ToList();
+
+            foreach (var wo in orderedWOList)
+            {
+                var oprList = allOprs
+                    .Where(o => o.Wo_Id == wo.Wo_Id)
+                    .OrderBy(o => o.Opr_No)
+                    .ToList();
+
+                foreach (var opr in oprList)
+                {
+
+                    var oprMachines = await _routingService.StepMachines((int)opr.Opr_No);
+                    var prodwo = prodnWos.Where(w => w.ProductionPlanId == wo.Wo_Id).FirstOrDefault();
+                    var routingsteps = await _routingService.RoutingSteps((int)prodwo.RoutingId);
+                    var routingstep = routingsteps.FirstOrDefault(r => r.StepId == opr.Opr_No);
+                    int noOfSimultMcs = routingstep.NumberOfSimMachines;
+                    var allEligibleMachines = await GetMachinesForOpr(opr.Opr_No);
+
+                    int machineAllocCount = 0;
+
+                    foreach (var oprMc in oprMachines)
+                    {
+                        var mc = allEligibleMachines.FirstOrDefault(m => m.MachineId == oprMc.MachineId);
+                        if (mc == null) continue;
+
+                        var timeslot = await GetEarliestFreeTimeslot(mc.MachineId, _allocatedSlotIds);
+                        if (timeslot == null) continue;
+
+                        var waitSeq = await CalculateNextWaitSeqNo(mc.MachineId);
+                        TimeSpan setupTime = TimeSpan.Parse(oprMc.SetupTime);
+                        TimeSpan firstPieceTime = TimeSpan.Parse(oprMc.FirstPieceProcessingTime);
+                        TimeSpan floorToFloorTime = TimeSpan.Parse(oprMc.FloorToFloorTime);
+
+                        int planQty = Math.Max(0, opr.Plan_Qnty - 1);
+                        TimeSpan totalTPT = setupTime + firstPieceTime + (floorToFloorTime * planQty);
+
+                        var mcWait = new Mc_Wait_ListVM
+                        {
+                            Wo_Id = wo.Wo_Id,
+                            Opr_No_Id = opr.Opr_No,
+                            Mc_Id = mc.MachineId,
+                            Mode = wo.Mode,
+                            Wait_Seq_No = waitSeq,
+                            Plan_Qnty = opr.Plan_Qnty,
+                            Act_Qnty = 0,
+                            Bal_Qnty = opr.Plan_Qnty,
+                            Rework_Wo = wo.Rework_Wo,
+                            Non_Plan_Wk = wo.NC_Log_Ref > 0 ? 'Y' : 'N',
+                            Non_Plan_wk_Id = wo.NC_Log_Ref,
+                            Plan_start_time_Id = timeslot.Mc_Timeslot_List_Id,
+                            Plan_end_time_Id = timeslot.Mc_Timeslot_List_Id,
+                            Next_Opr_Start_time_Id = 0,
+                            Setup_Start_time = null,
+                            Setup_Apprvl_time = null,
+                            Act_End_time = null,
+                            Mc_TPT = (decimal)totalTPT.TotalMinutes
+                        };
+
+                        await _woService.PostMc_Wait_List(mcWait);
+                        machineAllocCount++;
+
+                        if (machineAllocCount >= noOfSimultMcs)
+                            break;
+                    }
+                }
+            }
+
+            return Ok("Mc_Wait_List simulation completed.");
+        }
+
+        private HashSet<long> _allocatedSlotIds = new HashSet<long>();
+
+        public async Task<Mc_Timeslot_ListVM?> GetEarliestFreeTimeslot(long machineId, HashSet<long> _allocatedSlotIds)
+        {
+            var allMachineSlots = await _woService.GetAllMc_Timeslot_List();
+            var allTimeSlots = await _woService.GetAllTimeslot_List();
+            var now = DateTime.Now;
+
+            var query = from mcSlot in allMachineSlots
+                        join ts in allTimeSlots on mcSlot.Timeslot_List_Id equals ts.Timeslot_ListId
+                        where mcSlot.Mc_Id == machineId
+                              && mcSlot.Allocation == 1
+                              && !_allocatedSlotIds.Contains(mcSlot.Mc_Timeslot_List_Id)
+                              && ts.Start_time > now
+                        orderby ts.Start_time
+                        select new { MachineSlot = mcSlot, SlotStartTime = ts.Start_time };
+
+            var earliest = query.FirstOrDefault();
+
+            if (earliest != null)
+            {
+                lock (_allocatedSlotIds)
+                {
+                    _allocatedSlotIds.Add(earliest.MachineSlot.Mc_Timeslot_List_Id);
+                }
+                return earliest.MachineSlot;
+            }
+
+            return null;
+        }
+        [HttpPost]
+        public async Task<IActionResult> SimulateTempMc_Wait_List()
+        {
+            var _allocatedTempSlotIds = new HashSet<long>();
+            var woList = (await _woService.GetAllTempWo_Wait_List())
+                .ToList();
+
+            var prodnWos = await _woService.AllProductionPlan_Wo();
+            var allOprs = await _woService.GetAllTempOpr_List();
+
+            // Sort WOs by Rework > NonPlan > Normal > Plan Date > TPT
+            var orderedWOList = woList
+                .OrderBy(wo => wo.Rework_Wo == 'Y' ? 0 : wo.NC_Log_Ref > 0 ? 1 : 2)
+                .ThenBy(wo => wo.Plan_End_Date)
+                .ThenBy(wo => wo.Total_TPT)
+                .ToList();
+
+            foreach (var wo in orderedWOList)
+            {
+                var oprList = allOprs
+                    .Where(o => o.Wo_Id == wo.Wo_Id)
+                    .OrderBy(o => o.Opr_No)
+                    .ToList();
+
+                foreach (var opr in oprList)
+                {
+                    var oprMachines = await _routingService.StepMachines((int)opr.Opr_No);
+                    var prodwo = prodnWos.Where(w => w.ProductionPlanId == wo.Wo_Id).FirstOrDefault();
+                    var routingsteps = await _routingService.RoutingSteps((int)prodwo.RoutingId);
+                    var routingstep = routingsteps.FirstOrDefault(r => r.StepId == opr.Opr_No);
+                    int noOfSimultMcs = routingstep.NumberOfSimMachines;
+
+                    var allEligibleMachines = await GetMachinesForOpr(opr.Opr_No);
+
+                    int machineAllocCount = 0;
+
+                    foreach (var oprMc in oprMachines)
+                    {
+                        var mc = allEligibleMachines.FirstOrDefault(m => m.MachineId == oprMc.MachineId);
+                        if (mc == null) continue;
+
+                        var timeslot = await GetEarliestFreeTempTimeslot(mc.MachineId, _allocatedTempSlotIds);
+                        if (timeslot == null) continue;
+
+                        var waitSeq = await CalculateNextTempWaitSeqNo(mc.MachineId);
+
+                        TimeSpan setupTime = TimeSpan.Parse(oprMc.SetupTime);
+                        TimeSpan firstPieceTime = TimeSpan.Parse(oprMc.FirstPieceProcessingTime);
+                        TimeSpan floorToFloorTime = TimeSpan.Parse(oprMc.FloorToFloorTime);
+
+                        int planQty = Math.Max(0, opr.Plan_Qnty - 1);
+                        TimeSpan totalTPT = setupTime + firstPieceTime + (floorToFloorTime * planQty);
+
+                        var tempMcWait = new TempMc_Wait_ListVM
+                        {
+                            Wo_Id = wo.Wo_Id,
+                            Opr_No_Id = opr.Opr_No,
+                            Mc_Id = mc.MachineId,
+                            Mode = wo.Mode,
+                            Wait_Seq_No = waitSeq,
+                            Plan_Qnty = opr.Plan_Qnty,
+                            Act_Qnty = 0,
+                            Bal_Qnty = opr.Plan_Qnty,
+                            Rework_Wo = wo.Rework_Wo,
+                            Non_Plan_Wk = wo.NC_Log_Ref > 0 ?'Y':'N',
+                            Non_Plan_wk_Id = wo.NC_Log_Ref,
+                            Plan_start_time_Id = timeslot.TempMc_Timeslot_List_Id,
+                            Plan_end_time_Id = timeslot.TempMc_Timeslot_List_Id,
+                            Next_Opr_Start_time_Id = 0,
+                            Setup_Start_time = null,
+                            Setup_Apprvl_time = null,
+                            Act_End_time = null,
+                            Mc_TPT = (decimal)totalTPT.TotalMinutes
+                        };
+
+                        await _woService.PostTempMc_Wait_List(tempMcWait);
+                        machineAllocCount++;
+
+                        if (machineAllocCount >= noOfSimultMcs)
+                            break;
+                    }
+                }
+            }
+
+            return Ok("TempMc_Wait_List simulation completed.");
+        }
+
+        private HashSet<long> _allocatedTempSlotIds = new HashSet<long>();
+        public async Task<TempMc_Timeslot_ListVM?> GetEarliestFreeTempTimeslot(long machineId, HashSet<long> _allocatedTempSlotIds)
+        {
+            var allMachineSlots = await _woService.GetAllTempMc_Timeslot_List();
+            var allTimeSlots = await _woService.GetAllTimeslot_List();
+
+            var now = DateTime.Now;
+
+            var query = from mcSlot in allMachineSlots
+                        join ts in allTimeSlots on mcSlot.Timeslot_List_Id equals ts.Timeslot_ListId
+                        where mcSlot.Mc_Id == machineId
+                              && mcSlot.Allocation == 1
+                              && !_allocatedTempSlotIds.Contains(mcSlot.TempMc_Timeslot_List_Id)
+                              && ts.Start_time > now
+                        orderby ts.Start_time
+                        select new { MachineSlot = mcSlot, SlotStartTime = ts.Start_time };
+
+            var earliest = query.FirstOrDefault();
+
+            if (earliest != null)
+            {
+                lock (_allocatedTempSlotIds)
+                {
+                    _allocatedTempSlotIds.Add(earliest.MachineSlot.TempMc_Timeslot_List_Id);
+                }
+                return earliest.MachineSlot;
+            }
+
+            return null;
+        }
+
+        public async Task<int> CalculateNextTempWaitSeqNo(long mcId)
+        {
+            var mcWaits = await _woService.GetAllTempMc_Wait_List();
+            var maxSeq = mcWaits
+                .Where(m => m.Mc_Id == mcId)
+                .Select(m => m.Wait_Seq_No)
+                .DefaultIfEmpty(-1)
+                .Max();
+            return (int)(maxSeq + 1);
+        }
+        public async Task<List<MachineListVM>> GetMachinesForOpr(long oprId)
+        {
+            var allMachines = await _machineService.GetMachinesList();
+            var oprMachines = await _routingService.StepMachines((int)oprId);
+            var oprMachineIds = oprMachines.Select(rsm => rsm.MachineId).ToHashSet();
+            return allMachines.Where(m => oprMachineIds.Contains(m.MachineId)).ToList();
+        }
+        public async Task<int> CalculateNextWaitSeqNo(long mcId)
+        {
+            var mcWaits = await _woService.GetAllMc_Wait_List();
+            var maxSeq = mcWaits
+                .Where(m => m.Mc_Id == mcId)
+                .Select(m => m.Wait_Seq_No)
+                .DefaultIfEmpty(0)
+                .Max();
+            return (int)(maxSeq + 1);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteMc_Timeslot_List(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteMc_Timeslot_List(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetMachines()
+        {
+            var machinesList = await _machineService.GetMachinesList();
+            var machineType = await _machineService.GetMachineTypes();
+            var machineWaitList = await _woService.GetAllMc_Wait_List();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+
+            foreach (var item in machinesList)
+            {
+                // Set Machine Type Name
+                foreach (var mctype in machineType)
+                {
+                    if (item.MachineTypeId == mctype.MachineTypeTypeId)
+                    {
+                        item.MachineType = mctype.MachineTypeName;
+                        break;
+                    }
+                }
+
+                // Find corresponding wait list entry
+                var waitEntry = machineWaitList.FirstOrDefault(w => w.Mc_Id == item.MachineId);
+                if (waitEntry != null && waitEntry.Next_Opr_Start_time_Id != null)
+                {
+                    var nextSlot = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == waitEntry.Next_Opr_Start_time_Id);
+                    if (nextSlot != null)
+                    {
+                        item.NextOprTime = nextSlot.Start_time.ToString("dd-MM-yyyy hh:mm tt"); 
+                    }
+                    else
+                    {
+                        item.NextOprTime = "";
+                    }
+                }
+                else
+                {
+                    item.NextOprTime = "";
+                }
+            }
+
+            return Ok(machinesList);
+
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllMc_Wait_List()
+        {
+            var result = new List<TempMc_Wait_ListVM>();
+            var wowaitList = await _woService.GetAllTempWo_Wait_List();
+            var waitList = await _woService.GetAllTempMc_Wait_List();
+            var timeslots = await _woService.GetAllTempMc_Timeslot_List();
+            var mcactive = await _woService.GetAllMc_Timeslot_List();
+            var allTimeSlots = await _woService.GetAllTimeslot_List();
+            var machineTypes = await _machineService.GetMachineTypes();
+            var getshop = await _departmentService.GetDepartments(1);
+            var masterparts = await _masterService.ItemMasterParts();
+            var alProductionWOs = await _woService.AllProductionPlan_Wo();
+            var partinQ = 0;
+            foreach (var item in waitList)
+            {
+                var mcId = item.Mc_Id;
+                var machine = await _machineService.GetMachine(mcId);
+                var mcName = machine?.MachineMachineName ?? "Unknown";
+                var mcTypeName = machineTypes.FirstOrDefault(m => m.MachineTypeTypeId == machine.MachineMachineTypeId)?.MachineTypeName ?? "Unknown";
+                var shopName = getshop.First(s => s.DepartmentId == machine.MachineDepartmentId).Name ?? "Unknown";
+
+                var plantwd = await _plantService.GetPlantWD(machine.MachinePlantId);
+                var duration = plantwd.Timeslot_duration;
+                var mcSlots = timeslots.Where(t => t.Mc_Wait_List_Id == item.TempMc_Wait_ListId).ToList();
+                double hrsBooked = 0;
+                if (mcSlots.Any())
+                {
+                    var startSlotId = mcSlots.First().Timeslot_List_Id;
+                    var endSlotId = mcSlots.First().EndTimeslot_List_Id;
+
+                    var startSlot = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == startSlotId);
+                    var endSlot = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == endSlotId);
+
+                    if (startSlot != null && endSlot != null)
+                    {
+                        var timeDiff = (endSlot.End_time - startSlot.Start_time).TotalMinutes;
+                        hrsBooked = timeDiff / 60.0;
+                    }
+                }
+                item.McName = mcName;
+                item.McTypeName = mcTypeName;
+                item.ShopName = shopName;
+                item.PartInQueue = partinQ++;
+                item.HrsBooked = hrsBooked.ToString("0.00");
+                var mcNotAvlSlots = mcactive
+                    .Where(t => t.Mc_Id == mcId && t.Slot_Not_Avl == 'Y')
+                    .ToList();
+                double mcNotAvlHrs = 0;
+                foreach (var slot in mcNotAvlSlots)
+                {
+                    var start = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == slot.Timeslot_List_Id)?.Start_time;
+                    var end = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == slot.EndTimeslot_List_Id)?.End_time;
+
+                    if (start != null && end != null)
+                    {
+                        mcNotAvlHrs += (end.Value - start.Value).TotalMinutes / 60.0;
+                    }
+                }
+                item.McNotAvlHrs = mcNotAvlHrs.ToString("0.00");
+                double simulationDurationHrs = 0;
+                if (mcSlots.Any())
+                {
+                    var simStart = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == mcSlots.First().Timeslot_List_Id)?.Start_time;
+                    var simEnd = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == mcSlots.First().EndTimeslot_List_Id)?.End_time;
+
+                    if (simStart != null && simEnd != null)
+                    {
+                        simulationDurationHrs = (simEnd.Value - simStart.Value).TotalMinutes / 60.0;
+                    }
+                }
+                var freeHrs = simulationDurationHrs - hrsBooked - mcNotAvlHrs;
+                if (freeHrs < 0) freeHrs = 0;
+                var percentUsed = simulationDurationHrs > 0 ? (hrsBooked * 100.0) / simulationDurationHrs : 0;
+                item.FreeHrs = freeHrs.ToString("0.00");
+                item.SimulationDurationHrs = simulationDurationHrs.ToString("0.00");
+                item.PercentHrsUsed = percentUsed.ToString("0.00");
+                var lastWoEndSlotId = wowaitList
+                    .Where(w => w.Wo_Id == item.Wo_Id)
+                    .OrderByDescending(w => w.Plan_End_Date)
+                    .FirstOrDefault()?.Plan_End_Date;
+                var pp = alProductionWOs.Where(p => p.ProductionPlanId == item.Wo_Id).FirstOrDefault();
+                if (lastWoEndSlotId != null)
+                {
+                    item.DateMcNotLoaded = lastWoEndSlotId?.ToString("dd-MM-yyyy hh:mm tt");
+                }
+                else
+                {
+                    var csend = allTimeSlots.Where(t => t.Timeslot_ListId == item.Plan_end_time_Id).FirstOrDefault();
+                    item.DateMcNotLoaded = csend.Start_time.ToString("dd-MM-yyyy hh:mm tt");
+                }
+                var routste = await _routingService.RoutingSteps((int)pp.RoutingId);
+                item.PartNo = masterparts.FirstOrDefault(m=>m.PartId == pp.PartId).PartNo + " / " + routste.FirstOrDefault().StepNumber;
+                
+                if (item.Rework_Wo == 'Y')
+                {
+                    // Store rework hours on the item (we'll sum it later)
+                    item.ReworkHrs = hrsBooked.ToString("0.00");
+                    item.IsReworkCount = 1;
+                }
+                else
+                {
+                    item.ReworkHrs = "0.00";
+                }
+                bool isNonPlan = item.Non_Plan_Wk == 'Y';
+                item.NonPlanHrs = isNonPlan ? hrsBooked.ToString("0.00") : "0.00";
+                item.IsNonPlanCount = isNonPlan ? 1 : 0;
+            }
+            var groupedResult = waitList
+      .GroupBy(w => w.Mc_Id)
+      .Select(g =>
+      {
+          var first = g.First(); // Take common fields like names from the first item
+          
+        double totalHrsBooked = g.Sum(x => double.TryParse(x.HrsBooked, out var val) ? val : 0);
+          double totalMcNotAvlHrs = double.TryParse(g.First().McNotAvlHrs, out var val) ? val : 0;
+          double totalSimulationDuration = g.Sum(x => double.TryParse(x.SimulationDurationHrs, out var val) ? val : 0);
+          double totalFreeHrs = g.Sum(x => double.TryParse(x.FreeHrs, out var val) ? val : 0);
+          double totalReworkHrs = g.Sum(x => double.TryParse(x.ReworkHrs, out var val) ? val : 0);
+          double percentUsed = totalSimulationDuration > 0 ? (totalHrsBooked * 100.0) / totalSimulationDuration : 0;
+          int totalReworkCount = g.Sum(x => x.IsReworkCount);
+          double totalNonPlanHrs = g.Sum(x => double.TryParse(x.NonPlanHrs, out var val) ? val : 0);
+          int totalNonPlanCount = g.Sum(x => x.IsNonPlanCount);
+          var datenot = first.DateMcNotLoaded;
+          string FormatHours(double hours)
+          {
+              var time = TimeSpan.FromHours(hours);
+              return $"{(int)time.TotalHours:D2}:{time.Minutes:D2}";
+          }
+          return new TempMc_Wait_ListVM
+          {
+              Mc_Id = g.Key,
+              McName = first.McName,
+              McTypeName = first.McTypeName,
+              ShopName = first.ShopName,
+              HrsBooked = FormatHours(totalHrsBooked),
+              McNotAvlHrs = FormatHours(totalMcNotAvlHrs),
+              SimulationDurationHrs = FormatHours(totalSimulationDuration),
+              FreeHrs = FormatHours(totalFreeHrs),
+              ReworkHrs = FormatHours(totalReworkHrs),
+              ReworkCount = totalReworkCount,
+              NonPlanHrs = FormatHours(totalNonPlanHrs),
+              NonPlanCount = totalNonPlanCount,
+              PercentHrsUsed = percentUsed.ToString("0.00"),
+              DateMcNotLoaded = datenot,
+              PartNo = g.Select(x => x.PartNo).FirstOrDefault()
+          };
+      })
+      .ToList();
+
+            return Ok(groupedResult);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostMc_Wait_List(Mc_Wait_ListVM masterDocListVM)
+        {
+            var result = await _woService.PostMc_Wait_List(masterDocListVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetNotAvlMcTimeslot()
+        {
+            var getMCList = await _woService.GetAllMc_Timeslot_List();
+            var result = getMCList.Where(m => m.Slot_Not_Avl == 'Y').ToList();
+
+            if (!result.Any())
+                return Ok(result);
+
+            var getmachince = await _machineService.GetMachinesList();
+            var nonavlRess = await _woService.GetAllMc_not_avl_reason();
+            var alltimeSlotList = await _woService.GetAllTimeslot_List();
+
+            // Pre-index the lists to avoid repeated searching
+            var machineDict = getmachince.ToDictionary(m => m.MachineId);
+            var reasonDict = nonavlRess.ToDictionary(r => r.Mc_Not_Avl_ReasonId);
+            var timeslotDict = alltimeSlotList.ToDictionary(t => t.Timeslot_ListId);
+
+            foreach (var item in result)
+            {
+                if (machineDict.TryGetValue(item.Mc_Id, out var mc))
+                {
+                    item.McName = mc.Name;
+                    item.ShopName = mc.Shop;
+                    item.ShopId = mc.ShopId;
+                }
+
+                if (reasonDict.TryGetValue(item.Not_Avl_reason, out var reason))
+                {
+                    item.NonAvlReas = reason.Reason_Desc;
+                }
+
+                if (timeslotDict.TryGetValue(item.Timeslot_List_Id, out var startSlot))
+                {
+                    item.StartTime = startSlot.Start_time.ToString("dd-MM-yyyy hh:mm tt");
+                }
+
+                if (timeslotDict.TryGetValue(item.EndTimeslot_List_Id, out var endSlot))
+                {
+                    item.EndTime = endSlot.End_time.ToString("dd-MM-yyyy hh:mm tt");
+                }
+            }
+
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostNotAvlMcTimeslot(Mc_Timeslot_ListVM masterDocListVM)
+        {
+            var getTimeSlotLists = await _woService.GetAllTimeslot_List();
+            var getStTimeSlotList = getTimeSlotLists
+                .Where(t => t.Start_time <= masterDocListVM.GetStartTime)
+                .OrderByDescending(t => t.Start_time)
+                .FirstOrDefault();
+            var getEndTimeSlotList = getTimeSlotLists
+                .Where(t => t.End_time >= masterDocListVM.GetEndTime)
+                .OrderBy(t => t.End_time)
+                .FirstOrDefault();
+            masterDocListVM.Timeslot_List_Id = getStTimeSlotList.Timeslot_ListId;
+            masterDocListVM.EndTimeslot_List_Id = getEndTimeSlotList.Timeslot_ListId;
+            var result = await _woService.PostMc_Timeslot_List(masterDocListVM);
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateSetupMc_Wait_List(Mc_Wait_ListVM masterDocListVM)
+        {
+            var mc_Wait_Lists = await _woService.GetAllMc_Wait_List();
+            var mcWait = mc_Wait_Lists.Where(m => m.Mc_Wait_ListId == masterDocListVM.Mc_Wait_ListId).FirstOrDefault();
+            if(mcWait!= null)
+            {
+                mcWait.Setup_Start_time = masterDocListVM.Setup_Start_time;
+                ClaimsPrincipal userClaim = HttpContext.User;
+                long LoggedId = long.Parse(AppUtil.GetTenantId(userClaim));
+                mcWait.Setup_start_time_entry = LoggedId;
+                var result = await _woService.PostMc_Wait_List(mcWait);
+                return Ok(result);
+            }
+            return Ok("Not Found McWait");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateSetupAplMc_Wait_List(Mc_Wait_ListVM masterDocListVM)
+        {
+            var mc_Wait_Lists = await _woService.GetAllMc_Wait_List();
+            var mcWait = mc_Wait_Lists.Where(m => m.Mc_Wait_ListId == masterDocListVM.Mc_Wait_ListId).FirstOrDefault();
+            if (mcWait != null)
+            {
+                mcWait.Setup_Appvl_Doc_Ref = masterDocListVM.Setup_Appvl_Doc_Ref;
+                mcWait.Setup_Apprvl_time = DateTime.Now;
+                mcWait.Setup_FTR = masterDocListVM.Setup_FTR;
+                mcWait.Setup_comments = masterDocListVM.Setup_comments;
+                var result = await _woService.PostMc_Wait_List(mcWait);
+                return Ok(result);
+            }
+            return Ok("Not Found McWait");
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteMc_Wait_List(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteMc_Wait_List(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostMatl_Issue_Settings(Matl_Issue_SettingsVM masterDocListVM)
+        {
+                var result = await _woService.PostMatl_Issue_Settings(masterDocListVM);
+                return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllMatl_Issue_Settings()
+        {
+            var matl_Issue_Settings = await _woService.GetAllMatl_Issue_Settings();
+            var shops = await _departmentService.GetDepartments(1);
+            var result = new List<Matl_Issue_SettingsVM>();
+            foreach (var item in shops)
+            {
+                var setting = matl_Issue_Settings.FirstOrDefault(x => x.Shop_Id == item.DepartmentId);
+                result.Add(new Matl_Issue_SettingsVM
+                {
+                    Shop = item.Name,
+                    NoOfShifts = Convert.ToString(item?.NoOfShifts ?? 0),
+                    Shop_Id = item?.DepartmentId ?? 0,
+                    Matl_Issue_SettingsId = setting?.Matl_Issue_SettingsId ?? 0,
+                    No_days_coverage = setting?.No_days_coverage ?? 0,
+                    IssueDay = setting?.IssueDay ?? 0,
+                    IssueDayStr = setting?.IssueDay == 1 ? "Day of Prodn"
+                 : setting?.IssueDay == 2 ? "Prev Day"
+                 : "-",
+                    LastIssueTime = setting?.LastIssueTime ?? DateTime.MinValue,
+                    LastIssueTimeStr = setting?.IssueDay == 1 ? setting.LastIssueTime.ToString("hh:mm tt") : "-"
+
+            });
+            }
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteMatl_Issue_Settings(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteMatl_Issue_Settings(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostMatl_Issue_List(Matl_Issue_ListVM masterDocListVM)
+        {
+                var result = await _woService.PostMatl_Issue_List(masterDocListVM);
+                return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllMatl_Issue_List()
+        {
+            var result = await _woService.GetAllMatl_Issue_List();
+            var tempoprs = await _woService.GetAllTempOpr_List();
+            var depts = await _departmentService.GetDepartments(1);
+            var prodns = await _woService.AllProductionPlan_Wo();
+            var translog = await _woService.GetAllInv_Trans_Log();
+            var masterparts = await _masterService.ItemMasterParts();
+            var finalresult = new List<Matl_Issue_ListVM>();
+            foreach (var item in result)
+            {
+                var tempopr = tempoprs.Where(o => o.TempOpr_ListId == item.Part_Ref).FirstOrDefault();
+                var translogs = translog.Where(t => t.Input_Opr_No == tempopr.Opr_No && t.Movement_Compl == 'N').FirstOrDefault();
+                if(translogs != null)
+                {
+                    continue;
+                }
+                var pp= prodns.Where(p => p.ProductionPlanId == tempopr.Wo_Id).FirstOrDefault();
+                var todept = depts.FirstOrDefault(d => d.DepartmentId == item.To_Location)?.Name ?? "Stores"; 
+                var fromdept = depts.FirstOrDefault(d => d.DepartmentId == item.From_Location)?.Name ?? "Stores";
+                item.To_LocationStr = todept;
+                item.From_LocationStr = fromdept;
+                if(todept != "Stores")
+                {
+                    item.Shop = todept;
+                }
+                else if (fromdept != "Stores")
+                {
+                    item.Shop = fromdept;
+                }
+                item.WoNumber = pp.WONumber ?? "";
+                var masterpart = masterparts.Where(m => m.PartId == pp.PartId).FirstOrDefault();
+                item.PartNo = masterpart.PartNo ?? "" + " / " + masterpart.Description;
+                var mf = await _masterService.GetManufPart((int)pp.PartId);
+                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                var routstep = await _routingService.RoutingSteps((int)pp.RoutingId);
+                item.RoutingName = routingList.Where(r => r.RoutingId == pp.RoutingId).FirstOrDefault().RoutingName;
+                item.OpNo = routstep.FirstOrDefault(s => s.StepId == tempopr.Opr_No).StepNumber ?? "";
+                item.BalWoQnty = pp.CalcWOQty.ToString() ?? "0";
+                item.QntyAvl = 0;
+                item.BookOutQnty = 0;
+                item.QntyRecdCnf = "Not Confirmed";
+                finalresult.Add(item);
+            }
+            return Ok(finalresult);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostIssueInv_Trans_Log([FromBody] List<int> selectedMatlIds)
+        {
+            try
+            {
+                var tempoprs = await _woService.GetAllTempOpr_List();
+                var depts = await _departmentService.GetDepartments(1);
+                var prodns = await _woService.AllProductionPlan_Wo();
+                var masterparts = await _masterService.ItemMasterParts();
+                var matl_Issue_Lists = await _woService.GetAllMatl_Issue_List();
+                foreach (var item in selectedMatlIds)
+                {
+                    var invdata = new Inv_Trans_LogVM();
+                    var matl_Issue_List = matl_Issue_Lists.Where(m => m.Matl_Issue_ListId == item).FirstOrDefault();
+                    var tempopr = tempoprs.Where(o => o.TempOpr_ListId == matl_Issue_List.Part_Ref).FirstOrDefault();
+                    var pp = prodns.Where(p => p.ProductionPlanId == tempopr.Wo_Id).FirstOrDefault();
+                    invdata.Wo_Id = pp.WoId;
+                    invdata.Qnty = tempopr.Plan_Qnty; //matl_Issue_List.Issue_Qnty
+                    invdata.Part_Status = 1;
+                    invdata.From_Location_Id = 0;
+                    invdata.To_Location_Id = matl_Issue_List.To_Location;
+                    invdata.Input_Part_NoId = pp.PartId;
+                    invdata.Input_Routing_Id = pp.RoutingId;
+                    invdata.Input_Opr_No = tempopr.Opr_No;
+                    invdata.Movement_Started = 'Y';
+                    invdata.Movement_Compl = 'Y';
+                    var result = await _woService.PostInv_Trans_Log(invdata);
+                    var invMaster = new Inventory_MasterVM();
+                    invMaster.Part_NoId = result.Input_Part_NoId;
+                    invMaster.Routing_Id = result.Input_Routing_Id;
+                    invMaster.Opr_No_Id = result.Input_Opr_No;
+                    invMaster.Current_QntOnHand = result.Qnty;
+                    invMaster.Location_Id = result.To_Location_Id;
+                    var inmaster = await _woService.PostInventory_Master(invMaster);
+                }
+                return Json(new { message = "Material Issued." });
+            }
+            catch (Exception)
+            {
+
+                return Json(new { message = "Material Issue Failed ." });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllIssueSubCon()
+        {
+            var subconOps = await _woService.GetAllTempSubCon_List();
+            var productions = await _woService.AllProductionPlan_Wo();
+            var masterparts = await _masterService.ItemMasterParts();
+            var compaines = await _masterService.GetCompanies();
+            foreach (var item in subconOps)
+            {
+                var pwo = productions.Where(p => p.ProductionPlanId == item.Wo_Id).FirstOrDefault();
+                item.WoNumber = pwo.WONumber;
+                item.IssueQnty = pwo.CalcWOQty;
+                item.Bal_Qnty = pwo.CalcWOQty;
+                item.Supplier = compaines.FirstOrDefault(c => c.CompanyId == item.Supplier_Id).CompanyName;
+                item.QntyAvl = 0;
+                var imp = masterparts.Where(im => im.PartId == pwo.PartId).FirstOrDefault();
+                item.PartNo = imp.PartNo + " / " + imp.Description;
+                var mf = await _masterService.GetManufPart((int)pwo.PartId);
+                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                var routingStep = await _routingService.RoutingSteps((int)pwo.RoutingId);
+                item.RoutingName = routingList.First(r => r.RoutingId == pwo.RoutingId).RoutingName;
+                item.OprNoName = routingStep.First(r => r.StepId == item.Opr_No).StepNumber;
+            }
+            return Ok(subconOps);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostIssueInvSubCon([FromBody] List<int> selectedMatlIds)
+        {
+            try
+            {
+                var tempoprs = await _woService.GetAllTempOpr_List();
+                var depts = await _departmentService.GetDepartments(1);
+                var prodns = await _woService.AllProductionPlan_Wo();
+                var masterparts = await _masterService.ItemMasterParts();
+                var tempSubCon_Lists = await _woService.GetAllTempSubCon_List();
+                var procplans = await _woService.GetAllProcPlan();
+                var podetails = await _woService.GetAllPodetails();
+                foreach (var item in selectedMatlIds)
+                {
+                    var invdata = new Inv_Trans_LogVM();
+                    var tempSubCon_List = tempSubCon_Lists.Where(m => m.TempSubCon_ListId == item).FirstOrDefault();
+                    var tempopr = tempoprs.Where(o => o.TempOpr_ListId == tempSubCon_List.Opr_No).FirstOrDefault();
+                    var pp = prodns.Where(p => p.ProductionPlanId == tempopr.Wo_Id).FirstOrDefault();
+                    var procplan = procplans.Where(p => p.WorkOrderId == pp.WoId).LastOrDefault();
+                    var podetail = podetails.Where(p => p.ProcPlanId == procplan.ProcPlanId).LastOrDefault();
+                    invdata.Input_Part_NoId = pp.PartId;
+                    invdata.Input_Routing_Id = pp.RoutingId;
+                    invdata.Input_Opr_No = tempSubCon_List.Opr_No;
+                    invdata.Wo_Id = pp.WoId;
+                    invdata.Part_Status = 1;
+                    invdata.PO_No_Id = podetail.PoDetailsId;
+                    invdata.Qnty = pp.CalcWOQty;
+                    invdata.From_Location_Id = 0;
+                    invdata.To_Location_Id = tempSubCon_List.Supplier_Id;
+                    invdata.Movement_Started = 'Y';
+                    invdata.Movement_Compl = 'Y';
+                    var result = await _woService.PostInv_Trans_Log(invdata);
+                    var invMaster = new Inventory_MasterVM();
+                    invMaster.Part_NoId = result.Input_Part_NoId;
+                    invMaster.Routing_Id = result.Input_Routing_Id;
+                    invMaster.Opr_No_Id = result.Input_Opr_No;
+                    invMaster.Current_QntOnHand = result.Qnty;
+                    invMaster.Location_Id = result.To_Location_Id;
+                    var inmaster = await _woService.PostInventory_Master(invMaster);
+                }
+                return Json(new { message = "SubCon Issued." });
+            }
+            catch (Exception ex)
+            {
+
+                return Json(new { message = "SubCon Issue Failed." });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPartsLoadedInShop()
+        {
+            var result = new List<TempMc_Wait_ListVM>();
+
+            var waitList = await _woService.GetAllTempMc_Wait_List();
+            var timeslots = await _woService.GetAllTempMc_Timeslot_List();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+            var parts = await _masterService.ItemMasterParts();
+            var machines = await _machineService.GetMachinesList();
+            var shops = await _departmentService.GetDepartments(1);
+            var allWO = await _woService.AllProductionPlan_Wo();
+
+            foreach (var mcWait in waitList)
+            {
+                var wo = allWO.FirstOrDefault(p => p.ProductionPlanId == mcWait.Wo_Id);
+                var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
+                var machine = machines.FirstOrDefault(m => m.MachineId == mcWait.Mc_Id);
+                var shop = shops.FirstOrDefault(s => s.DepartmentId == machine.ShopId);
+
+                var routing = await _routingService.RoutingSteps((int)wo.RoutingId);
+                var routingstep = routing.FirstOrDefault(r => r.StepId == mcWait.Opr_No_Id);
+                var stepMachines = await _routingService.StepMachines((int)routingstep.StepId);
+                var step = stepMachines.FirstOrDefault(sm => sm.PreferredMachine == 1)
+                               ?? stepMachines.FirstOrDefault();
+
+                // --- Calculate Bookout & Issue ---
+                var matlIssue = await _woService.GetAllMatl_Issue_List();
+                long issuedQty = matlIssue.FirstOrDefault(m => m.Part_Ref == mcWait.Opr_No_Id)?.Issue_Qnty ?? wo.CalcWOQty;
+                int bookedQty = 0;//await _woService.GetTotalBookoutQty(mcWait.Wo_Id, mcWait.Opr_No_Id) 
+                int balanceToBookout = Math.Max(wo.CalcWOQty - bookedQty, 0);
+                int wipQty = Math.Max((int)issuedQty - bookedQty, 0);
+
+                TimeSpan cycleTime = TimeSpan.TryParse(step?.FloorToFloorTime, out var ct) ? ct : TimeSpan.Zero;
+                TimeSpan setupTime = TimeSpan.TryParse(step?.SetupTime, out var st) ? st : TimeSpan.Zero;
+                TimeSpan timePerPart = cycleTime + setupTime;
+                TimeSpan totalTimeRequired = TimeSpan.FromTicks(timePerPart.Ticks * wipQty);
+
+                bool isPartInMc = timeslots.Any(t => t.Mc_Wait_List_Id == mcWait.TempMc_Wait_ListId);
+
+                result.Add(new TempMc_Wait_ListVM
+                {
+                    ShopName = shop?.Name ?? "",
+                    WoNumber = wo?.WONumber ?? "",
+                    McName = machine?.Name ?? "",
+                    PartNo = part?.PartNo + " / " + part?.Description,
+                    Wait_Seq_No = mcWait.Wait_Seq_No,
+                    WoQnty = wo?.CalcWOQty.ToString() ?? "0",
+                    Bal_Qnty = balanceToBookout,
+                    QtyWfProcessing = wipQty,
+                    BalTimeForAvlQtyHrs = $"{(int)totalTimeRequired.TotalHours:D2}:{totalTimeRequired.Minutes:D2}",
+                    PartInMc ="-"
+                });
+            }
+
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPartsLoadedInSubCon()
+        {
+            var subconWos = await _woService.GetAllTempSubCon_List();
+            var woList = await _woService.AllProductionPlan_Wo();
+            var companies = await _masterService.GetCompanies();
+            var parts = await _masterService.ItemMasterParts();
+            var transactions = await _woService.GetAllInv_Trans_Log();
+
+            var result = new List<TempSubCon_ListVM>();
+
+            foreach (var item in subconWos)
+            {
+                var wo = woList.FirstOrDefault(p => p.ProductionPlanId == item.Wo_Id);
+                var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
+                var company = companies.FirstOrDefault(c => c.CompanyId == item.Supplier_Id);
+
+                // Sum qty sent and qty received from Inv_Transaction_Log
+                int qtySent = (int)transactions
+                    .Where(t => t.Wo_Id == item.Wo_Id && t.Input_Opr_No == item.Opr_No)
+                    .Sum(t => t.Qnty);
+
+                int qtyRecd = (int)transactions
+                    .Where(t => t.Wo_Id == item.Wo_Id && t.Input_Opr_No == item.Opr_No)
+                    .Sum(t => t.Qnty);
+
+                string oprNoName = "-";
+
+                if (wo != null)
+                {
+                    var routingSteps = await _routingService.RoutingSteps((int)wo.RoutingId);
+                    oprNoName = routingSteps.FirstOrDefault(r => r.StepId == item.Opr_No)?.StepNumber ?? "-";
+                }
+                var partno = part?.PartNo ?? "" + " / " + part?.Description ?? "";
+                result.Add(new TempSubCon_ListVM
+                {
+                    Supplier = company?.CompanyName ?? "Unknown",
+                    WoNumber = wo?.WONumber ?? item.Wo_Id.ToString(),
+                    PartNo = partno ?? "Unknown",
+                    OprNoName = oprNoName,
+                    Plan_Qnty = wo?.CalcWOQty ?? 0,
+                    QntySent = qtySent,
+                    QntyRecd = qtyRecd,
+                    BalToReceive = qtySent - qtyRecd
+                });
+            }
+
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllSetUpCnfList()
+        {
+            var result = new List<TempMc_Wait_ListVM>();
+
+            var waitList = await _woService.GetAllMc_Wait_List();
+            var timeslots = await _woService.GetAllTempMc_Timeslot_List();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+            var parts = await _masterService.ItemMasterParts();
+            var machines = await _machineService.GetMachinesList();
+            var shops = await _departmentService.GetDepartments(1);
+            var allWO = await _woService.AllProductionPlan_Wo();
+            var translogs = await _woService.GetAllInv_Trans_Log();
+            var allTimeSlots = await _woService.GetAllTimeslot_List();
+
+            foreach (var mcWait in waitList)
+            {
+                if(mcWait.Wait_Seq_No != 0)
+                {
+                    continue;
+                }
+                var wo = allWO.FirstOrDefault(p => p.ProductionPlanId == mcWait.Wo_Id);
+                var translog = translogs.Where(t => t.Input_Part_NoId == wo.PartId || t.Output_Part_No == wo.PartId).FirstOrDefault();
+                if (translog == null)
+                {
+                    continue;
+                }
+                var matltime = translog.Dt_time.ToString("hh:mm tt") ?? "";
+                var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
+                var machine = machines.FirstOrDefault(m => m.MachineId == mcWait.Mc_Id);
+                var shop = shops.FirstOrDefault(s => s.DepartmentId == machine.ShopId);
+                var mf = await _masterService.GetManufPart((int)wo.PartId);
+                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+
+                var routing = await _routingService.RoutingSteps((int)wo.RoutingId);
+                var routingstep = routing.FirstOrDefault(r => r.StepId == mcWait.Opr_No_Id);
+                var stepMachines = await _routingService.StepMachines((int)routingstep.StepId);
+                var currentStart = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == mcWait.Plan_start_time_Id)?.Start_time;
+                result.Add(new TempMc_Wait_ListVM
+                {
+                    ShopName = shop?.Name ?? "",
+                    McName = machine?.Name ?? "",
+                    WoNumber = wo?.WONumber ?? "",
+                    PartNo = part?.PartNo + " / " + part?.Description,
+                    RoutingName = routingList.First(r => r.RoutingId == wo.RoutingId).RoutingName ?? "",
+                    OprNoName = routingstep?.StepNumber ?? "",
+                    WoQnty = wo?.CalcWOQty.ToString() ?? "0",
+                    Plan_Qnty = mcWait.Plan_Qnty,
+                    ActiveId = mcWait.Mc_Wait_ListId,
+                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString() ?? "0",
+                    PlanStartStr = currentStart.Value.ToString("hh:mm tt"),
+                    MatlReceptTime = matltime,
+                    Rework_Wo ='N'
+                });
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSetUpApprolList()
+        {
+            var result = new List<TempMc_Wait_ListVM>();
+
+            var waitList = await _woService.GetAllMc_Wait_List();
+            var timeslots = await _woService.GetAllTempMc_Timeslot_List();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+            var parts = await _masterService.ItemMasterParts();
+            var machines = await _machineService.GetMachinesList();
+            var shops = await _departmentService.GetDepartments(1);
+            var allWO = await _woService.AllProductionPlan_Wo();
+            var translogs = await _woService.GetAllInv_Trans_Log();
+            var allTimeSlots = await _woService.GetAllTimeslot_List();
+
+            foreach (var mcWait in waitList)
+            {
+                if (mcWait.Wait_Seq_No != 1)
+                {
+                    continue;
+                }
+                if (mcWait.Setup_Start_time == null || mcWait.Setup_Apprvl_time != null)
+                {
+                    continue;
+                }
+
+                var wo = allWO.FirstOrDefault(p => p.ProductionPlanId == mcWait.Wo_Id);
+                var translog = translogs.Where(t => t.Input_Part_NoId == wo.PartId || t.Output_Part_No == wo.PartId).FirstOrDefault();
+                if (translog == null)
+                {
+                    continue;
+                }
+                var matltime = translog.Dt_time.ToString("hh:mm tt") ?? "";
+                var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
+                var machine = machines.FirstOrDefault(m => m.MachineId == mcWait.Mc_Id);
+                var shop = shops.FirstOrDefault(s => s.DepartmentId == machine.ShopId);
+                var mf = await _masterService.GetManufPart((int)wo.PartId);
+                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+
+                var routing = await _routingService.RoutingSteps((int)wo.RoutingId);
+                var routingstep = routing.FirstOrDefault(r => r.StepId == mcWait.Opr_No_Id);
+                var stepMachines = await _routingService.StepMachines((int)routingstep.StepId);
+                var currentStart = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == mcWait.Plan_start_time_Id)?.Start_time;
+                result.Add(new TempMc_Wait_ListVM
+                {
+                    ShopName = shop?.Name ?? "",
+                    McName = machine?.Name ?? "",
+                    WoNumber = wo?.WONumber ?? "",
+                    PartNo = part?.PartNo + " / " + part?.Description,
+                    RoutingName = routingList.First(r => r.RoutingId == wo.RoutingId).RoutingName ?? "",
+                    OprNoName = routingstep?.StepNumber ?? "",
+                    WoQnty = wo?.CalcWOQty.ToString() ?? "0",
+                    Plan_Qnty = mcWait.Plan_Qnty,
+                    ActiveId = mcWait.Mc_Wait_ListId,
+                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString() ?? "0",
+                    PlanStartStr = currentStart.Value.ToString("hh:mm tt"),
+                    SetUpTimeStr = mcWait.Setup_Start_time.Value.ToString("hh:mm tt"),
+                    MatlReceptTime = matltime,
+                    Rework_Wo = 'N'
+                });
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllBookOutList()
+        {
+            var result = new List<TempMc_Wait_ListVM>();
+
+            var waitList = await _woService.GetAllMc_Wait_List();
+            var timeslots = await _woService.GetAllTempMc_Timeslot_List();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+            var parts = await _masterService.ItemMasterParts();
+            var machines = await _machineService.GetMachinesList();
+            var shops = await _departmentService.GetDepartments(1);
+            var allWO = await _woService.AllProductionPlan_Wo();
+            var translogs = await _woService.GetAllInv_Trans_Log();
+            var allTimeSlots = await _woService.GetAllTimeslot_List();
+            var uoms = await _masterService.GetUOMs();
+
+            foreach (var mcWait in waitList)
+            {
+                if (mcWait.Wait_Seq_No != 1)
+                {
+                    continue;
+                }
+                if (mcWait.Setup_Apprvl_time == null)
+                {
+                    continue;
+                }
+
+                var wo = allWO.FirstOrDefault(p => p.ProductionPlanId == mcWait.Wo_Id);
+                var translog = translogs.Where(t => t.Input_Part_NoId == wo.PartId || t.Output_Part_No == wo.PartId).FirstOrDefault();
+                if (translog == null)
+                {
+                    continue;
+                }
+                var matltime = translog.Dt_time.ToString("hh:mm tt") ?? "";
+                var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
+                var machine = machines.FirstOrDefault(m => m.MachineId == mcWait.Mc_Id);
+                var shop = shops.FirstOrDefault(s => s.DepartmentId == machine.ShopId);
+                var mf = await _masterService.GetManufPart((int)wo.PartId);
+                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+
+                var routing = await _routingService.RoutingSteps((int)wo.RoutingId);
+                var routingstep = routing.FirstOrDefault(r => r.StepId == mcWait.Opr_No_Id);
+                var stepMachines = await _routingService.StepMachines((int)routingstep.StepId);
+                var currentStart = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == mcWait.Plan_start_time_Id)?.Start_time;
+                var uomName = uoms.FirstOrDefault(u => u.UOMId == mf.UOMId).Name ?? "";
+
+                result.Add(new TempMc_Wait_ListVM
+                {
+                    ShopName = shop?.Name ?? "",
+                    McName = machine?.Name ?? "",
+                    WoNumber = wo?.WONumber ?? "",
+                    Wo_Id = wo?.WoId ?? 0,
+                    PartId = (long)(wo?.PartId),
+                    PartNo = part?.PartNo + " / " + part?.Description,
+                    RoutingName = routingList.First(r => r.RoutingId == wo.RoutingId).RoutingName ?? "",
+                    OprNoName = routingstep?.StepNumber ?? "",
+                    WoQnty = wo?.CalcWOQty.ToString() ?? "0",
+                    Opr_No_Id = mcWait.Opr_No_Id,
+                    Plan_Qnty = mcWait.Plan_Qnty,
+                    ActiveId = mcWait.Mc_Wait_ListId,
+                    QntyOffered = mcWait.QntyOffered,
+                    Accepted = mcWait.Accepted,
+                    NonConQnty = mcWait.NonConQnty,
+                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString() ?? "0",
+                    PlanStartStr = currentStart.Value.ToString("hh:mm tt"),
+                    SetUpTimeStr = mcWait.Setup_Apprvl_time.HasValue
+    ? TimeZoneInfo.ConvertTimeFromUtc(mcWait.Setup_Apprvl_time.Value, TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata"))
+        .ToString("hh:mm tt")
+    : "",
+                    MatlReceptTime = matltime,
+                    UomName = uomName,
+                    Rework_Wo = 'N'
+                });
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateQntyMc_Wait_List(Mc_Wait_ListVM masterDocListVM)
+        {
+            var mc_Wait_Lists = await _woService.GetAllMc_Wait_List();
+            var mcWait = mc_Wait_Lists.Where(m => m.Mc_Wait_ListId == masterDocListVM.Mc_Wait_ListId).FirstOrDefault();
+            if (mcWait != null)
+            {
+                mcWait.NonConQnty = masterDocListVM.NonConQnty;
+                mcWait.Accepted = masterDocListVM.Accepted;
+                mcWait.QntyOffered = masterDocListVM.QntyOffered;
+                var result = await _woService.PostMc_Wait_List(mcWait);
+                return Ok(result);
+            }
+            return Ok("Not Found McWait");
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetSetupSummaryByShop()
+        {
+            // Fetch all 3 lists
+            var waitingList = await GetAllSetUpCnfList() as OkObjectResult;
+            var approvalList = await GetAllSetUpApprolList() as OkObjectResult;
+            var bookoutList = await GetAllBookOutList() as OkObjectResult;
+
+            var waitingData = waitingList?.Value as List<TempMc_Wait_ListVM> ?? new List<TempMc_Wait_ListVM>();
+            var approvalData = approvalList?.Value as List<TempMc_Wait_ListVM> ?? new List<TempMc_Wait_ListVM>();
+            var bookoutData = bookoutList?.Value as List<TempMc_Wait_ListVM> ?? new List<TempMc_Wait_ListVM>();
+
+            // Combine all shop names
+            var allShops = waitingData.Select(x => x.ShopName)
+                            .Union(approvalData.Select(x => x.ShopName))
+                            .Union(bookoutData.Select(x => x.ShopName))
+                            .Distinct()
+                            .ToList();
+
+            // Prepare final summary result
+            var summaryList = allShops.Select(shop => new
+            {
+                Shop = shop,
+                WaitingForSetupStart = waitingData.Count(x => x.ShopName == shop),
+                ReadyForSetupApproval = approvalData.Count(x => x.ShopName == shop),
+                Bookout = bookoutData.Count(x => x.ShopName == shop)
+            }).ToList();
+
+            return Ok(summaryList);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteMatl_Issue_List(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteMatl_Issue_List(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllNon_Plan_Wk_ListData()
+        {
+            var result = await _woService.GetAllNon_Plan_Wk_List();
+            var machines = await _machineService.GetMachinesList();
+            var mcWaitList = await _woService.GetAllMc_Wait_List();
+            foreach (var item in result)
+            {
+                var machine = machines.Where(m => m.MachineId == item.Mc_Id).FirstOrDefault();
+                item.MachineName = machine?.Name ?? "Unknown";
+                item.ShopName = machine?.Shop ?? "Unknown";
+                item.ReqDateStr = item.Plan_start_time.ToString("dd-MM-yyyy hh:mm tt");
+                item.PlannedStr = item.PlannedDate.ToString("dd-MM-yyyy");
+                if(mcWaitList.Any(m=>m.Non_Plan_wk_Id == item.Non_Plan_Wk_ListId))
+                {
+                    item.InProcess = "Y";
+                }
+                else
+                {
+                    item.InProcess = "N";
+                }
+
+            }
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllNon_Plan_Wk_List()
+        {
+            var result = await _woService.GetAllNon_Plan_Wk_List();
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllNon_Plan_Wk_type_List()
+        {
+            var result = await _woService.GetAllNon_Plan_Wk_type_List();
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostNon_Plan_Wk_List(Non_Plan_Wk_ListVM masterDocListVM)
+        {
+            var result = await _woService.PostNon_Plan_Wk_List(masterDocListVM);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteNon_Plan_Wk_List(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteNon_Plan_Wk_List(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllRwk_List()
+        {
+            var result = await _woService.GetAllRwk_List();
+            var nclogs = await _woService.GetAllNcLog();
+            var recpts = await _woService.GetAllInw_Recpt_Header();
+            var podetails = await _woService.GetAllPodetails();
+            var procplans = await _woService.GetAllProcPlan();
+            var prodnwos = await _woService.AllProductionPlan_Wo();
+            var masterparts = await _masterService.ItemMasterParts();
+            var machines = await _machineService.GetMachinesList();
+            var mcWaitList = await _woService.GetAllTempMc_Wait_List();
+            foreach (var item in result)
+            {
+                var nclog = nclogs.Where(n => n.Insp_Outcome_Details_Id == item.NC_Log_Id).FirstOrDefault();
+                var recpt = recpts.Where(r => r.Inw_Recpt_HeaderId == nclog.Inw_Recpt_Header_Id).FirstOrDefault();
+                var podetail = podetails.Where(p => p.PoDetailsId == recpt.PoHeaderId).FirstOrDefault();
+                var procplan = procplans.Where(pp => pp.ProcPlanId == podetail.ProcPlanId).FirstOrDefault();
+                var prodnwo = prodnwos.Where(w => w.WoId == procplan.WorkOrderId).FirstOrDefault();
+                var masterprt = masterparts.Where(m => m.PartId == prodnwo.PartId).FirstOrDefault();
+                item.WoNumber = prodnwo.WONumber;
+                item.PartNo = masterprt.PartNo + " / " + masterprt.Description;
+                item.RwkQnty = (int)nclog.NC_Qnty;
+                item.Planndt = prodnwo.WODate.Value.ToString("dd-MM-yyyy");
+                item.RecdComplDt = prodnwo.PlanCompletionDate.Value.ToString("dd-MM-yyyy");
+                var machine = machines.Where(m => m.MachineId == item.Mc_Id).FirstOrDefault();
+                item.MachineName = machine?.Name ?? "";
+                item.ShopName = machine?.Shop ?? "";
+                if (mcWaitList.Any(m => m.Wo_Id == prodnwo.ProductionPlanId))
+                {
+                    item.InProcess = "Y";
+                }
+                else
+                {
+                   item.InProcess = "N";
+                }
+                if(item.Plan_Duration == null)
+                {
+                    item.Plan_Duration = string.Empty;
+                }
+                var mf = await _masterService.GetManufPart((int)prodnwo.PartId);
+                item.PartType = mf.ManufacturedPartType;
+                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                item.RoutingName = routingList.First(r => r.RoutingId == prodnwo.RoutingId).RoutingName;
+            }
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostRwk_List(Rwk_ListVM masterDocListVM)
+        {
+            var rwk_Lists = await _woService.GetAllRwk_List();
+            var rwkList = rwk_Lists.Where(r => r.Rwk_ListId == masterDocListVM.Rwk_ListId).FirstOrDefault();
+            rwkList.RequiredStartTime = masterDocListVM.RequiredStartTime;
+            rwkList.Mc_Id = masterDocListVM.Mc_Id;
+            rwkList.Plan_Duration = masterDocListVM.Plan_Duration;
+            rwkList.Actual_Start_Time = masterDocListVM.Actual_Start_Time;
+            rwkList.Actual_end_Time = masterDocListVM.Actual_end_Time;
+            rwkList.Actual_Duration = masterDocListVM.Actual_Duration;
+            rwkList.Closure_Comment = masterDocListVM.Closure_Comment;
+            var result = await _woService.PostRwk_List(rwkList);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteRwk_List(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteRwk_List(itemMasterDocListId);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateInventory_Master(Inventory_MasterVM masterDocListVM)
+        {
+            var findInv = await _woService.GetAllInventory_Master();
+            var update = findInv.Where(i => i.Opr_No_Id == masterDocListVM.Opr_No_Id).FirstOrDefault();
+            if(update != null)
+            {
+                update.Current_QntOnHand = masterDocListVM.Current_QntOnHand;
+                update.Opr_No_Id = masterDocListVM.Opr_No_Id;
+                var result = await _woService.PostInventory_Master(update);
+                return Ok(result);
+            }
+            return Ok(masterDocListVM);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllShop_Insp_Log()
+        {
+            var result = await _woService.GetAllShop_Insp_Log();
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostShop_Insp_Log(Shop_Insp_LogVM masterDocListVM)
+        {
+            var result = await _woService.PostShop_Insp_Log(masterDocListVM);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteShop_Insp_Log(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteShop_Insp_Log(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllSubCon_List()
+        {
+            var result = await _woService.GetAllSubCon_List();
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostSubCon_List(SubCon_ListVM masterDocListVM)
+        {
+            var result = await _woService.PostSubCon_List(masterDocListVM);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteSubCon_List(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteSubCon_List(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllTempSubCon_List()
+        {
+            var result = await _woService.GetAllTempSubCon_List();
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateTempSubCon_List(TempSubCon_ListVM masterDocListVM)
+        {
+            var subs = await _woService.GetAllTempSubCon_List();
+            var sub = subs.Where(s => s.TempSubCon_ListId == masterDocListVM.TempSubCon_ListId).FirstOrDefault();
+            sub.Plan_Disp_date = masterDocListVM.Plan_Disp_date;
+            sub.Plan_Recpt_date = masterDocListVM.Plan_Recpt_date;
+            sub.Changed = 1;
+            var result = await _woService.PostTempSubCon_List(sub);
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteTempSubCon_List(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteTempSubCon_List(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllOpr_List()
+        {
+            var result = await _woService.GetAllOpr_List();
+            var prodnWos = await _woService.AllProductionPlan_Wo();
+            foreach (var item in result)
+            {
+                var prodwo = prodnWos.Where(w => w.ProductionPlanId == item.Wo_Id).FirstOrDefault();
+                var oprs =await _routingService.RoutingSteps((int)prodwo.RoutingId);
+                var opr = oprs.Where(o => o.StepId == item.Opr_No).FirstOrDefault();
+                if (opr != null)
+                {
+                    item.OprName = opr.StepNumber ?? "Unknown";
+                    item.ModeName = "Test";
+                    item.IniTpt = item.Initial_Opr_TPT.ToString();
+                    item.RolledTpt = item.Rolledup_Opr_TPT.ToString();
+                }
+            }
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostOpr_List(Opr_ListVM masterDocListVM)
+        {
+            var result = await _woService.PostOpr_List(masterDocListVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteOpr_List(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteOpr_List(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> ClearTemp()
+        {
+            var opr_Lists = await _woService.GetAllTempOpr_List();
+            foreach (var item in opr_Lists)
+            {
+                var delopr = await _woService.DeleteTempOpr_List(item.TempOpr_ListId);
+            }
+            var tempWO_Wait_Lists = await _woService.GetAllTempWo_Wait_List();
+            foreach (var item in tempWO_Wait_Lists)
+            {
+                var delopr = await _woService.DeleteTempWo_Wait_List(item.TempWO_Wait_ListId);
+            }
+            var tempSubCon_Lists = await _woService.GetAllTempSubCon_List();
+            foreach (var item in tempSubCon_Lists)
+            {
+                var delopr = await _woService.DeleteTempSubCon_List(item.TempSubCon_ListId);
+            }
+            var tempMc_Wait_Lists = await _woService.GetAllTempMc_Wait_List();
+            foreach (var item in tempMc_Wait_Lists)
+            {
+                var delopr = await _woService.DeleteTempMc_Wait_List(item.TempMc_Wait_ListId);
+            }
+            return Ok(opr_Lists);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SimulateWOAllocation([FromBody]List<int> selectedWOIds)
+        {
+            var productions = await _woService.AllProductionPlan_Wo();
+            var allOprs = new List<TempOpr_ListVM>();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+            var allMcTimeslots = await _woService.GetAllTempMc_Timeslot_List();
+            var allmac = await _machineService.GetMachinesList();
+            var reworkList = await _woService.GetAllRwk_List();
+            var nclogs = await _woService.GetAllNcLog();
+            var recpts = await _woService.GetAllInw_Recpt_Header();
+            var podetails = await _woService.GetAllPodetails();
+            var procplans = await _woService.GetAllProcPlan();
+            var prodnwos = productions;
+            List<TempWO_Wait_ListVM> readyWOs = new List<TempWO_Wait_ListVM>();
+            SimulationState.IsStopped = false;
+
+            var pendingReworks = reworkList
+                .Where(rwk => (rwk.Allocated == 'N' || rwk.Allocated == ' ' || rwk.Allocated == '\0') && rwk.Mc_Id > 0)
+                .ToList();
+
+            foreach (var rwk in pendingReworks)
+            {
+                await CheckPauseAsync();
+                var machine = await _machineService.GetMachine(rwk.Mc_Id);
+                if (machine == null) continue;
+
+                var plant = await _plantService.GetPlantWD(machine.MachinePlantId);
+                if (plant == null) continue;
+
+                int timeslotDuration = plant.Timeslot_duration;
+                rwk.Plan_Duration = "00:" + rwk.Plan_Duration;
+                int durationInMinutes = (int)TimeSpan.Parse(rwk.Plan_Duration).TotalMinutes;
+                int requiredSlots = (int)Math.Ceiling((double)durationInMinutes / timeslotDuration);
+
+                var timeslots = allTimeslots
+                    .Where(t => t.PlantId == machine.MachinePlantId && t.Start_time >= DateTime.Now && t.Break_Slot != 'Y')
+                    .OrderBy(t => t.Start_time)
+                    .ToList();
+                var nclog = nclogs.Where(n => n.Insp_Outcome_Details_Id == rwk.NC_Log_Id).FirstOrDefault();
+                var recpt = recpts.Where(r => r.Inw_Recpt_HeaderId == nclog.Inw_Recpt_Header_Id).FirstOrDefault();
+                var podetail = podetails.Where(p => p.PoDetailsId == recpt.PoHeaderId).FirstOrDefault();
+                var procplan = procplans.Where(pp => pp.ProcPlanId == podetail.ProcPlanId).FirstOrDefault();
+                var prodnwo = prodnwos.Where(w => w.WoId == procplan.WorkOrderId).FirstOrDefault();
+                var availableSlots = timeslots.Take(requiredSlots).ToList();
+                if (availableSlots.Count < requiredSlots) continue;
+
+                // Create Mc_Wait_List entry
+                var mcWait = new TempMc_Wait_ListVM
+                {
+                    Wo_Id = prodnwo.ProductionPlanId,
+                    Opr_No_Id = prodnwo.StartingOpNo,
+                    Mc_Id = rwk.Mc_Id,
+                    Wait_Seq_No = await CalculateNextTempWaitSeqNo(rwk.Mc_Id),
+                    Plan_start_time_Id = availableSlots.First().Timeslot_ListId,
+                    Plan_end_time_Id = availableSlots.Last().Timeslot_ListId,
+                    Mc_TPT = durationInMinutes,
+                    Rework_Wo = 'Y',
+                    Mode = 1,
+                    Plan_Qnty = (long)nclog.NC_Qnty
+                };
+                mcWait = await _woService.PostTempMc_Wait_List(mcWait);
+
+                // Create Mc_Timeslot_List entry
+                var newMcSlot = new TempMc_Timeslot_ListVM
+                {
+                    Mc_Id = rwk.Mc_Id,
+                    Timeslot_List_Id = availableSlots.First().Timeslot_ListId,
+                    EndTimeslot_List_Id = availableSlots.Last().Timeslot_ListId,
+                    Mc_Wait_List_Id = mcWait.TempMc_Wait_ListId,
+                    Allocation = 2, // Rework
+                    Slot_Not_Avl = 'N',
+                    Not_Avl_reason = 0
+                };
+                await _woService.PostTempMc_Timeslot_List(newMcSlot);
+
+                // Update the Rework entry
+                rwk.Allocated = 'Y';
+                await _woService.PostRwk_List(rwk);
+            }
+            var nonPlanList = await _woService.GetAllNon_Plan_Wk_List(); // Allocated = 'N' and Mc_Id != null
+            foreach (var np in nonPlanList.Where(n => n.Allocated == 'N' || n.Allocated == ' ' || n.Allocated == '\0' && n.Mc_Id > 0))
+            {
+                await CheckPauseAsync();
+
+                var machine = await _machineService.GetMachine(np.Mc_Id);
+                if (machine == null) continue;
+
+                var plant = await _plantService.GetPlantWD(machine.MachinePlantId);
+                if (plant == null) continue;
+
+                int timeslotDuration = plant.Timeslot_duration;
+                np.Plan_Duration = "00:" + np.Plan_Duration;
+                int durationInMinutes = (int)TimeSpan.Parse(np.Plan_Duration).TotalMinutes;
+                int requiredSlots = (int)Math.Ceiling((double)durationInMinutes / timeslotDuration);
+
+                var timeslots = allTimeslots
+                    .Where(t => t.PlantId == machine.MachinePlantId && t.Start_time >= np.Plan_start_time && t.Break_Slot != 'Y')
+                    .OrderBy(t => t.Start_time)
+                    .ToList();
+
+                var availableSlots = timeslots.Take(requiredSlots).ToList();
+                if (availableSlots.Count < requiredSlots) continue;
+
+                // Create Mc_Wait_List record
+                var mcWait = new TempMc_Wait_ListVM
+                {
+                    Wo_Id = 0,
+                    Non_Plan_Wk = 'Y',
+                    Non_Plan_wk_Id = np.Non_Plan_Wk_ListId,
+                    Opr_No_Id = 0,
+                    Mc_Id = np.Mc_Id,
+                    Wait_Seq_No = await CalculateNextTempWaitSeqNo(np.Mc_Id),
+                    Plan_start_time_Id = availableSlots.First().Timeslot_ListId,
+                    Plan_end_time_Id = availableSlots.Last().Timeslot_ListId,
+                    Mc_TPT = durationInMinutes,
+                    Mode = 9, // Non-Plan mode
+                    Plan_Qnty = 0
+                };
+                mcWait = await _woService.PostTempMc_Wait_List(mcWait);
+
+                // Allocate in Mc_Timeslot_List
+                var newMcSlot = new TempMc_Timeslot_ListVM
+                {
+                    Mc_Id = np.Mc_Id,
+                    Timeslot_List_Id = availableSlots.First().Timeslot_ListId,
+                    EndTimeslot_List_Id = availableSlots.Last().Timeslot_ListId,
+                    Mc_Wait_List_Id = mcWait.TempMc_Wait_ListId,
+                    Allocation = 1, // Non-plan work
+                    Slot_Not_Avl = 'N',
+                    Not_Avl_reason = 0
+                };
+                await _woService.PostTempMc_Timeslot_List(newMcSlot);
+
+                // Mark the non-plan record as allocated
+                np.Allocated = 'Y';
+                await _woService.PostNon_Plan_Wk_List(np);
+            }
+
+            // Step 1: Create WO_Wait_List and Opr_List entries
+            foreach (var woId in selectedWOIds)
+            {
+                await CheckPauseAsync();
+
+                var item = productions.FirstOrDefault(p => p.ProductionPlanId == woId);
+                if (item == null) continue;
+
+                var addData = new TempWO_Wait_ListVM
+                {
+                    Wo_Id = item.ProductionPlanId,
+                    Mode = 1,
+                    Allow_Routing_Chg = 'Y',
+                    Total_TPT = 0,
+                    Rework_Wo = 'N',
+                    NC_Log_Ref = 0,
+                    WO_Wait_Seq_No = 0,
+                    Plan_Start_Date = item.PlanStartDate,
+                    Plan_End_Date = (DateTime)item.PlanCompletionDate,
+                    Plan_Simul_Qnty = item.CalcWOQty
+                };
+
+                var woResult = await _woService.PostTempWo_Wait_List(addData);
+                readyWOs.Add(woResult);
+
+                var mf = await _masterService.GetManufPart((int)item.PartId);
+                var route = (await _routingService.Routings(mf.ManufacturedPartNoDetailId))
+                            .FirstOrDefault(r => r.RoutingId == item.RoutingId);
+                if (route == null) continue;
+
+                var routingSteps = await _routingService.RoutingSteps(route.RoutingId);
+
+                foreach (var step in routingSteps)
+                {
+                    await CheckPauseAsync();
+
+                    var tptResult = await GetTPT(step);
+                    var tptStepItem = (RoutingStepVM)((OkObjectResult)tptResult).Value;
+                    int setup = int.Parse(tptStepItem.SetupTime ?? "0");
+                    int firstPiece = int.Parse(tptStepItem.FirstPieceTime ?? "0");
+                    int cycle = int.Parse(tptStepItem.CycleTime ?? "0");
+                    int quantity = item.CalcWOQty;
+
+                    var opr = new TempOpr_ListVM
+                    {
+                        Wo_Id = item.ProductionPlanId,
+                        Opr_No = step.StepId,
+                        Mode = 1,
+                        Rework_Wo = 'N',
+                        NC_Log_Ref = 0,
+                        Act_Qnty = 0,
+                        Plan_Qnty = quantity,
+                        No_of_Simult_Mcs = step.NumberOfSimMachines,
+                        Initial_Opr_TPT = setup + firstPiece + cycle * (quantity - 1)
+                    };
+                    var oprResult = await _woService.PostTempOpr_List(opr);
+                    allOprs.Add(oprResult);
+                }
+            }
+
+            // Step 2: Recalculate Total TPT and Sequence WOs
+            foreach (var wo in readyWOs)
+            {
+                var oprs = allOprs.Where(o => o.Wo_Id == wo.Wo_Id).OrderBy(o => o.Opr_No).ToList();
+                double totalTPT = oprs.Sum(o => o.Initial_Opr_TPT);
+                wo.Total_TPT = Convert.ToInt32(totalTPT);
+                await _woService.PostTempWo_Wait_List(wo);
+            }
+
+            // Step 3: Sequence WOs
+            var sequencedWOs = readyWOs.OrderBy(w => w.Plan_End_Date).ThenBy(w => w.Total_TPT).ToList();
+            for (int i = 0; i < sequencedWOs.Count; i++)
+            {
+                sequencedWOs[i].WO_Wait_Seq_No = i ;
+                await _woService.PostTempWo_Wait_List(sequencedWOs[i]);
+            }
+
+            // Step 4: Allocate timeslots
+            foreach (var wo in sequencedWOs)
+            {
+                await CheckPauseAsync();
+                var oprs = allOprs.Where(o => o.Wo_Id == wo.Wo_Id).OrderBy(o => o.Opr_No).ToList();
+                var prodwo = productions.First(p => p.ProductionPlanId == wo.Wo_Id);
+                var routingSteps = await _routingService.RoutingSteps((int)prodwo.RoutingId);
+
+                foreach (var opr in oprs)
+                {
+                    await CheckPauseAsync();
+                    var step = routingSteps.FirstOrDefault(s => s.StepId == opr.Opr_No);
+                    var oprMachines = await _routingService.StepMachines((int)opr.Opr_No);
+                    if (step == null) continue;
+
+                    int noOfSimultMcs = step.NumberOfSimMachines;
+                    if (step.StepLocation == "2") // SubCon
+                    {
+                        var subconList = await _routingService.SubCons((int)opr.Opr_No);
+                        var subtransport = subconList.FirstOrDefault(s => s.PreferredSubcon == 1) ?? subconList.FirstOrDefault();
+
+                        if (subtransport != null)
+                        {
+                            var subconwss = await _routingService.SubConWSS((int)opr.Opr_No, subtransport.SubConDetailsId);
+                            var subconws = subconwss.FirstOrDefault();
+                            // Time calculations
+                            var trans = TimeSpan.Parse(subtransport.TransportTime); // "01:00:00"
+                            var setupTime = TimeSpan.Parse(subconws.SetupTime); // "01:00:00"
+                            var floorToFloorTime = TimeSpan.Parse(subconws.FloorToFloorTime);
+                            int qty = wo.Plan_Simul_Qnty;
+                            double totalMinutes = trans.TotalMinutes + setupTime.TotalMinutes + (floorToFloorTime.TotalMinutes * qty);
+
+                            // Get plant working duration per day from any machine's plant
+                            var anyMachine = await _machineService.GetMachine(allmac.FirstOrDefault(m=>m.MachineTypeId == subconws.MachineType).MachineId);
+                            var plant = await _plantService.GetPlantWD(anyMachine.MachinePlantId);
+
+                            int totalWorkingMinutes = 0;
+
+                            if (plant.NoOfShifts >= 1)
+                                totalWorkingMinutes += (int)TimeSpan.Parse(plant.FirstShiftDuration).TotalMinutes;
+                            if (plant.NoOfShifts >= 2)
+                                totalWorkingMinutes += (int)TimeSpan.Parse(plant.SecondShiftDuration).TotalMinutes;
+                            if (plant.NoOfShifts == 3)
+                                totalWorkingMinutes += (int)TimeSpan.Parse(plant.ThirdShiftDuration).TotalMinutes;
+
+                            int slotsPerDay = totalWorkingMinutes / plant.Timeslot_duration;
+                            int subconDays = (int)Math.Ceiling(totalMinutes / totalWorkingMinutes);
+
+
+                            // Timeslot allocation logic
+                            DateTime today = DateTime.Now.Date;
+                            var futureSlots = allTimeslots
+                                .Where(t => t.Start_time.Date > today)
+                                .OrderBy(t => t.Start_time)
+                                .ToList();
+
+                            DateTime subconStartDate = futureSlots.First().Start_time.Date;
+                            DateTime subconEndDate = subconStartDate.AddDays(subconDays - 1);
+
+                            long? startId = futureSlots
+                                .FirstOrDefault(t => t.Start_time.Date == subconStartDate)?.Timeslot_ListId;
+                            long? endId = futureSlots
+                                .Where(t => t.Start_time.Date == subconEndDate)
+                                .LastOrDefault()?.Timeslot_ListId;
+                            DateTime planDispDate;
+                            if (opr.Opr_No== prodwo.StartingOpNo)
+                            {
+                                // SubCon is first operation
+                                planDispDate = DateTime.Now.AddDays(1);
+                            }
+                            else
+                            {
+                                // SubCon comes after in-house Opr
+                                var currentIndex = oprs.FindIndex(o => o.Opr_No == opr.Opr_No);
+                                var prevOpr = currentIndex > 0 ? oprs[currentIndex - 1] : null; 
+                                if (prevOpr != null)
+                                {
+                                    var endTimeslot = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == prevOpr.Shop_Plan_end_time);
+                                    if (endTimeslot != null)
+                                        planDispDate = endTimeslot.End_time.AddDays(1);
+                                    else
+                                        planDispDate = DateTime.Now.AddDays(1);
+                                }
+                                else
+                                {
+                                    planDispDate = DateTime.Now.AddDays(1);
+                                }
+                            }
+                            var tempSubCon_List = new TempSubCon_ListVM
+                            {
+                                Wo_Id = wo.Wo_Id,
+                                Opr_No = opr.Opr_No,
+                                Supplier_Id = subtransport.SupplierId,
+                                Rework_Wo = 'N',
+                                Loaded = 'N',
+                                Mode = 1,
+                                Changed=0,
+                                Plan_Disp_date = planDispDate,
+                                Plan_Qnty = wo.Plan_Simul_Qnty
+                            };
+                            var stepConvTime = subconws.FloorToFloorTime; // e.g., "01:00:00"
+                            if (TimeSpan.TryParse(stepConvTime, out TimeSpan convTime))
+                            {
+                                tempSubCon_List.Plan_Recpt_date = planDispDate.Add(convTime);
+                            }
+                            else
+                            {
+                                tempSubCon_List.Plan_Recpt_date = planDispDate;
+                            }
+                            await _woService.PostTempSubCon_List(tempSubCon_List);
+                            if (startId.HasValue && endId.HasValue)
+                            {
+                                opr.Subcon_plan_start_time = startId.Value;
+                                opr.Subcon_plan_end_time = endId.Value;
+                                opr.Rolledup_Opr_TPT = opr.Initial_Opr_TPT;
+
+                                await _woService.PostTempOpr_List(opr);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        int noOfMcs = noOfSimultMcs;
+                        int qtyPerMc = wo.Plan_Simul_Qnty / noOfMcs;
+                        var machines = await _routingService.StepMachines((int)opr.Opr_No);
+                        List<TempMc_Wait_ListVM> mcWaits = new List<TempMc_Wait_ListVM>();
+                        var insttempMCTime = new TempMc_Timeslot_ListVM();
+                        foreach (var mc in machines.Take(noOfMcs))
+                        {
+                            await CheckPauseAsync();
+                            var setupTime = TimeSpan.Parse(mc.SetupTime); // e.g., "00:15:00"
+                            var floorToFloorTime = TimeSpan.Parse(mc.FloorToFloorTime);
+                            var tpt = setupTime.TotalMinutes + (floorToFloorTime.TotalMinutes * qtyPerMc); // total time in minutes
+                            var getmachine = await _machineService.GetMachine(mc.MachineId);
+                            var plantwd = await _plantService.GetPlantWD(getmachine.MachinePlantId);
+                            int slotsRequired = (int)Math.Ceiling(tpt / plantwd.Timeslot_duration);
+
+                            var plantSlots = allTimeslots
+                                .Where(t => t.PlantId == getmachine.MachinePlantId && t.Break_Slot !='Y')
+                                .OrderBy(t => t.Timeslot_ListId)
+                                .ToList();
+                            allMcTimeslots = await _woService.GetAllTempMc_Timeslot_List();
+                            var existingMcSlots = allMcTimeslots
+                                .Where(s => s.Mc_Id == mc.MachineId && s.Allocation == 2)
+                                .OrderByDescending(s => s.EndTimeslot_List_Id)
+                                .ToList();
+                            long startFromTimeslotId = 0;
+                            if (existingMcSlots.Any())
+                            {
+                                startFromTimeslotId = existingMcSlots.First().EndTimeslot_List_Id;
+                            }
+                            var availableTimeslots = plantSlots
+                                .Where(t => t.Timeslot_ListId > startFromTimeslotId && t.Start_time > DateTime.Now)
+                                .Take(slotsRequired)
+                                .ToList();
+
+                            //var mcTimeslots = allMcTimeslots
+                            //    .Where(s => s.Mc_Id == mc.MachineId && s.Allocation == 1 && s.Slot_Not_Avl != 'Y')
+                            //    .OrderBy(s => s.Timeslot_List_Id) // use Timeslot_List_Id order
+                            //    .ToList();
+
+                            //var startIdx = mcTimeslots.FindIndex(s =>
+                            //{
+                            //    var slotTime = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == s.Timeslot_List_Id)?.Start_time;
+                            //    return slotTime.HasValue && slotTime.Value > DateTime.Now;
+                            //});
+
+                            //if (startIdx >= 0 && (startIdx + slotsRequired) <= mcTimeslots.Count)
+                            //{
+                            //    var availableSlots = mcTimeslots.Skip(startIdx).Take(slotsRequired).ToList();
+
+                                var mcWait = new TempMc_Wait_ListVM
+                                {
+                                    Wo_Id = wo.Wo_Id,
+                                    Opr_No_Id = opr.Opr_No,
+                                    Mc_Id = mc.MachineId,
+                                    Wait_Seq_No = await CalculateNextTempWaitSeqNo(mc.MachineId),
+                                    Plan_start_time_Id = availableTimeslots.First().Timeslot_ListId,
+                                    Plan_end_time_Id = availableTimeslots.Last().Timeslot_ListId,
+                                    Mc_TPT = Convert.ToDecimal(tpt),
+                                    Mode = 1,
+                                    Plan_Qnty = qtyPerMc
+                                };
+
+                                mcWait = await _woService.PostTempMc_Wait_List(mcWait);
+
+                                //foreach (var slot in availableSlots)
+                                //{
+                                    await CheckPauseAsync();
+                                    var newMcSlot = new TempMc_Timeslot_ListVM
+                                    {
+                                        Mc_Id = mc.MachineId,
+                                        Timeslot_List_Id = availableTimeslots.First().Timeslot_ListId,
+                                        EndTimeslot_List_Id = availableTimeslots.Last().Timeslot_ListId, // if applicable
+                                        Mc_Wait_List_Id = mcWait.TempMc_Wait_ListId, // Will set after mcWait is created
+                                        Allocation = 2,
+                                        Slot_Not_Avl = 'N',
+                                        Not_Avl_reason = 0// set appropriately
+                                    };
+                                    insttempMCTime = await _woService.PostTempMc_Timeslot_List(newMcSlot);
+                                //}
+
+                                mcWaits.Add(mcWait);
+                            //}
+                        }
+
+                        // Update Opr_List with aggregated info
+                        if (!mcWaits.Any())
+                            continue;
+                        opr.Shop_Plan_start_time = mcWaits.Min(mw => mw.Plan_start_time_Id);
+                        opr.Shop_Plan_end_time = mcWaits.Max(mw => mw.Plan_end_time_Id);
+                        opr.Rolledup_Opr_TPT = mcWaits.Sum(mw => Convert.ToInt64(mw.Mc_TPT));
+                        await _woService.PostTempOpr_List(opr);
+
+                        // Calculate Mc_Wait_List.Next_Opr_Start_time_ID
+                        foreach (var mcWait in mcWaits)
+                        {
+                            var startSlot = insttempMCTime;
+                            var startTime = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == startSlot.Timeslot_List_Id)?.Start_time ?? DateTime.Now;
+
+                            // Find the corresponding machine again
+                            var mc = machines.First(m => m.MachineId == mcWait.Mc_Id);
+
+                            var setupTime = TimeSpan.Parse(mc.SetupTime);
+                            var partTime = TimeSpan.FromMinutes(TimeSpan.Parse(mc.FloorToFloorTime).TotalMinutes * Math.Min(qtyPerMc, 1));
+                            var requiredTime = setupTime + partTime;
+
+                            var nextSlotTime = startTime.Add(requiredTime);
+                            var nextSlot = allTimeslots.FirstOrDefault(t => t.Start_time >= nextSlotTime);
+
+                            mcWait.Next_Opr_Start_time_Id = nextSlot?.Timeslot_ListId ?? mcWait.Plan_end_time_Id;
+                            await _woService.PostTempMc_Wait_List(mcWait);
+                        }
+
+                    }
+                }
+
+                // Update final WO Start & End Date
+                allMcTimeslots = await _woService.GetAllTempMc_Timeslot_List();
+                var startMcSlotId = oprs.First().Shop_Plan_start_time;
+                var endMcSlotId = oprs.Last().Shop_Plan_end_time;
+                var startMcSlot = allMcTimeslots.FirstOrDefault(ts => ts.Timeslot_List_Id == startMcSlotId);
+                var endMcSlot = allMcTimeslots.FirstOrDefault(ts => ts.EndTimeslot_List_Id == endMcSlotId);
+                var startTs = allTimeslots.FirstOrDefault(ts => ts.Timeslot_ListId == startMcSlot?.Timeslot_List_Id);
+                var endTs = allTimeslots.FirstOrDefault(ts => ts.Timeslot_ListId == endMcSlot?.EndTimeslot_List_Id);
+
+                if (startTs?.Start_time != null && endTs?.End_time != null)
+                {
+                    wo.Plan_Start_Date = startTs.Start_time;
+                    wo.Plan_End_Date = endTs.End_time;
+                    wo.NoOfSimulation = wo.NoOfSimulation + 1;
+                    await _woService.PostTempWo_Wait_List(wo);
+                }
+                var oprsForWO = allOprs.Where(o => o.Wo_Id == wo.Wo_Id).OrderBy(o => o.Opr_No).ToList();
+                foreach (var opr in oprsForWO)
+                {
+                    var oprMcWaits = await _woService.GetAllTempMc_Wait_List(); // You’ll need this helper
+                    var oprMcWait = oprMcWaits.Where(m => m.Wo_Id == wo.Wo_Id && m.Opr_No_Id == opr.Opr_No).ToList();
+                    foreach (var mcWait in oprMcWaits)
+                    {
+                        // 1️⃣ Check if it's a first operation in a shop (Mc_Seq_No = 0)
+                        bool isFirstOpInShop = mcWait.Wait_Seq_No == 0;
+
+                        if (isFirstOpInShop)
+                        {
+                            // Load Matl_Issue_Settings
+                            var machine = await _machineService.GetMachine(mcWait.Mc_Id);
+                            long deptId = machine.MachineDepartmentId;
+                            var allSettings = await _woService.GetAllMatl_Issue_Settings();
+                            var setting = allSettings.FirstOrDefault(s => s.Shop_Id == deptId);// map Mc_Id → Shop_Id
+
+                            int daysCoverage = setting?.No_days_coverage ?? 0;
+                            int planQty =(int) mcWait.Plan_Qnty;
+
+                            var tsStart = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == mcWait.Plan_start_time_Id);
+                            DateTime simStartTime = tsStart?.Start_time ?? DateTime.Now;
+
+                            // Material issued FROM Stores to Shop
+                            DateTime issueDate = simStartTime.Date.AddDays(-1);
+                            if (issueDate < DateTime.Today)
+                                issueDate = DateTime.Today;
+
+                            int cumulativeQty = 0;
+                            DateTime nextIssueDate = issueDate;
+
+                            while (cumulativeQty < planQty)
+                            {
+                                int issuedQty = await CalculateIssueQty(mcWait.Mc_Id, opr.Opr_No, nextIssueDate, daysCoverage, planQty - cumulativeQty);
+                                if (issuedQty <= 0) break; // Avoid infinite loop on 0 qty
+
+                                await _woService.PostMatl_Issue_List(new Matl_Issue_ListVM
+                                {
+                                    Part_Ref = opr.TempOpr_ListId,
+                                    Issue_Mov_date = nextIssueDate,
+                                    Issue_Qnty = issuedQty,
+                                    Mode = 3,
+                                    Immediate_Movmt = 'N',
+                                    Issue_Mov_Compl = 'N',
+                                    From_Location = 0,
+                                    To_Location = machine.MachineDepartmentId
+                                });
+
+                                cumulativeQty += issuedQty;
+                                nextIssueDate = nextIssueDate.AddDays(daysCoverage);
+                            }
+                        }
+
+                        // 2️⃣ If shop changes in next operation
+                        var nextOpr = oprsForWO.FirstOrDefault(x => x.Opr_No > opr.Opr_No);
+                        if (nextOpr != null)
+                        {
+                            var machine = await _machineService.GetMachine(mcWait.Mc_Id);
+                            long deptId = machine.MachineDepartmentId;
+                            var currShop = deptId;
+                            var nextMcWaits = await _woService.GetAllTempMc_Wait_List();
+                            var nextMcWaitss = nextMcWaits.Where(n => n.Wo_Id == wo.Wo_Id && n.Opr_No_Id == nextOpr.Opr_No).ToList();
+                            var nextMc = nextMcWaits.FirstOrDefault();
+
+                            if (nextMc != null)
+                            {
+                                var machineNext = await _machineService.GetMachine(nextMc.Mc_Id);
+                                long deptIdNext = machineNext.MachineDepartmentId;
+                                var nextShop = deptIdNext;
+                                if (currShop != nextShop)
+                                {
+                                    var currEnd = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == mcWait.Plan_end_time_Id)?.End_time;
+                                    var nextStart = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == nextMc.Plan_start_time_Id)?.Start_time;
+
+                                    if (currEnd.HasValue && nextStart.HasValue &&
+                                        currEnd.Value.Date == nextStart.Value.Date &&
+                                        nextMc.Wait_Seq_No == 0)
+                                    {
+                                        // Direct shop-to-shop movement
+                                        await _woService.PostMatl_Issue_List(new Matl_Issue_ListVM
+                                        {
+                                            Part_Ref = nextOpr.TempOpr_ListId,
+                                            Issue_Mov_date = currEnd.Value.Date,
+                                            Immediate_Movmt = 'Y',
+                                            Mode = 3,
+                                            Issue_Mov_Compl = 'N',
+                                            From_Location = currShop,
+                                            To_Location = nextShop
+                                        });
+                                    }
+                                    else
+                                    {
+                                        // Delayed movement via stores
+                                        var settings = await _woService.GetAllMatl_Issue_Settings();
+                                        var setting = settings.Where(s => s.Shop_Id == nextMc.Mc_Id).FirstOrDefault();
+                                        int daysCoverage = setting?.No_days_coverage ?? 0;
+                                        DateTime issueDate = (nextStart?.Date.AddDays(-1)) ?? DateTime.Today;
+                                        if (issueDate < DateTime.Today)
+                                            issueDate = DateTime.Today;
+
+                                        int issuedQty = await CalculateIssueQty(nextMc.Mc_Id, nextOpr.Opr_No, nextStart ?? DateTime.Now, daysCoverage, nextOpr.Plan_Qnty);
+
+                                        await _woService.PostMatl_Issue_List(new Matl_Issue_ListVM
+                                        {
+                                            Part_Ref = nextOpr.TempOpr_ListId,
+                                            Issue_Mov_date = issueDate,
+                                            Issue_Qnty = opr.Plan_Qnty,
+                                            Immediate_Movmt = 'N',
+                                            Mode = 3,
+                                            Issue_Mov_Compl = 'N',
+                                            From_Location = 0,
+                                            To_Location = nextShop
+                                        });
+                                    }
+                                }
+                                else
+                                {
+                                    var tsStart = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == mcWait.Plan_start_time_Id);
+                                    DateTime simStartTime = tsStart?.Start_time ?? DateTime.Now;
+                                    DateTime issueDate = simStartTime.Date.AddDays(-1);
+                                    await _woService.PostMatl_Issue_List(new Matl_Issue_ListVM
+                                    {
+                                        Part_Ref = nextOpr.TempOpr_ListId,
+                                        Issue_Mov_date = issueDate,
+                                        Issue_Qnty = nextOpr.Plan_Qnty,
+                                        Immediate_Movmt = 'Y',
+                                        Mode = 3,
+                                        Issue_Mov_Compl = 'N',
+                                        From_Location = currShop,
+                                        To_Location = nextShop
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+            try
+            {
+                SimulationState.IsPaused = false;
+                SimulationState.IsStopped = false;
+                // your simulation logic here...
+
+                return Json(new { message = "Simulation completed." });
+            }
+            catch (OperationCanceledException ex)
+            {
+                return Json(new { message = "Simulation stopped." });
+            }
+        }
+        public async Task<int> CalculateIssueQty(long mcId, long oprNo, DateTime simStartTime, int noDaysCoverage, int planQty)
+        {
+            // Get the shop of the current machine
+            var machine = await _machineService.GetMachine(mcId);
+            if (machine == null) return 0;
+
+            long shopId = machine.MachineDepartmentId;
+            DateTime coverageEndDate = simStartTime.Date.AddDays(noDaysCoverage);
+
+            // Get all machines in this shop
+            var machinesInShop = (await _machineService.GetMachinesList())
+                .Where(m => m.ShopId == shopId)
+                .Select(m => m.MachineId)
+                .ToList();
+
+            // Get all machine wait list entries and their times
+            var allMcWaits = await _woService.GetAllTempMc_Wait_List();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+
+            int totalQty = 0;
+
+            foreach (var wait in allMcWaits)
+            {
+                if (!machinesInShop.Contains(wait.Mc_Id)) continue;
+                if (wait.Opr_No_Id != oprNo) continue;
+
+                var slotStart = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == wait.Plan_start_time_Id);
+                if (slotStart == null) continue;
+
+                if (slotStart.Start_time.Date >= simStartTime.Date && slotStart.Start_time.Date < coverageEndDate)
+                {
+                    totalQty += (int) wait.Plan_Qnty;
+                }
+            }
+
+            // Don't exceed original planQty
+            return Math.Min(totalQty, planQty);
+        }
+
+        [HttpPost]
+        public IActionResult PauseSimulation()
+        {
+            SimulationState.IsPaused = true;
+            return Ok("Simulation paused.");
+        }
+        [HttpPost]
+        public IActionResult ResumeSimulation()
+        {
+            SimulationState.IsPaused = false;
+            return Ok("Simulation resumed.");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> StopSimulation()
+        {
+            SimulationState.IsStopped = true;
+            SimulationState.IsPaused = false;
+            var availableSlots = await _woService.GetAllTempMc_Timeslot_List();
+            var allocate = availableSlots.Where(a => a.Allocation == 2).ToList();
+            foreach (var slot in allocate)
+            {
+                slot.Allocation = 1;
+                await _woService.PostTempMc_Timeslot_List(slot);
+            }
+            var tempWO_Wait_Lists = await _woService.GetAllTempWo_Wait_List();
+            foreach (var item in tempWO_Wait_Lists)
+            {
+                var delopr = await _woService.DeleteTempWo_Wait_List(item.TempWO_Wait_ListId);
+            }
+            return Ok("Simulation Has Canceled");
+        }
+        private async Task CheckPauseAsync()
+        {
+            while (SimulationState.IsPaused)
+            {
+                await Task.Delay(500); 
+            }
+
+            if (SimulationState.IsStopped)
+                throw new OperationCanceledException("Simulation stopped by user.");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostReadForProdWoWaitList(List<int> selectedWOIds)
+        {
+            var productions = await _woService.AllProductionPlan_Wo();
+            var procplan = await _woService.GetAllProcPlan();
+            var postresult = new WO_Wait_ListVM(); 
+            List<ProductionPlan_WoVM> result = new List<ProductionPlan_WoVM>();
+            foreach (var woId in selectedWOIds)
+            {
+                foreach (ProductionPlan_WoVM item in productions)
+                {
+                    if (item.ProductionPlanId == woId)
+                    {
+                        result.Add(item);
+                    }
+                }
+            }
+            if (result.Count > 0)
+            {
+                foreach (var item in result)
+                {
+                    WO_Wait_ListVM addData = new WO_Wait_ListVM();
+                    addData.Wo_Id = item.ProductionPlanId;
+                    addData.Mode = 1;
+                    addData.Allow_Routing_Chg = 'Y';
+                    addData.Total_TPT = 0;
+                    addData.Rework_Wo = 'N';
+                    addData.NC_Log_Ref = 0;
+                    addData.WO_Wait_Seq_No = 0;
+                    addData.Plan_Start_Date = item.PlanStartDate;
+                    addData.Plan_End_Date = (DateTime)item.PlanCompletionDate;
+                    addData.Plan_Simul_Qnty = item.CalcWOQty;
+                    postresult = await _woService.PostWO_Wait_List(addData);
+                    ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart((int)item.PartId);
+                    var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                    var route = routingList.Where(r => r.RoutingId == item.RoutingId).FirstOrDefault();
+                    if (route != null)
+                    {
+                        var routingSteps = await _routingService.RoutingSteps(route.RoutingId);
+
+                        foreach (var step in routingSteps)
+                        {
+                            Opr_ListVM addOprData = new Opr_ListVM();
+                            addOprData.Wo_Id = item.ProductionPlanId;
+                            addOprData.Opr_No = step.StepId;
+                            addOprData.Mode = 1;
+                            addOprData.Rework_Wo = 'N';
+                            addOprData.NC_Log_Ref = 0;
+                            addOprData.Act_Qnty = 0;
+                            addOprData.Plan_Qnty = item.CalcWOQty;
+                            addOprData.No_of_Simult_Mcs = step.NumberOfSimMachines;
+                            var tpt = await GetTPT(step);
+                            var tptStepItem = (RoutingStepVM)((OkObjectResult)tpt).Value;
+
+                            int setup = int.Parse(tptStepItem.SetupTime ?? "0");
+                            int firstPiece = int.Parse(tptStepItem.FirstPieceTime ?? "0");
+                            int cycle = int.Parse(tptStepItem.CycleTime ?? "0");
+                            int quantity = item.CalcWOQty;
+                            addOprData.Initial_Opr_TPT = setup + firstPiece + cycle * (quantity - 1);
+                            var postOprresult = await _woService.PostOpr_List(addOprData);
+
+                            //if (step.StepLocation == "1")
+                            //{
+                            //    var stepmc = await _routingService.StepMachines((int)step.StepId);
+                            //    if (stepmc.Count() != 0)
+                            //    {
+                            //        foreach (var mc in stepmc)
+                            //        {
+                            //            Mc_Wait_ListVM addMcWaitData = new Mc_Wait_ListVM();
+                            //            addMcWaitData.Wo_Id = item.ProductionPlanId;
+                            //            addMcWaitData.Opr_No_Id = step.StepId;
+                            //            addMcWaitData.Mc_Id = mc.MachineId;
+                            //            addMcWaitData.Mode = 1;
+                            //            addMcWaitData.Wait_Seq_No = 0;
+                            //            addMcWaitData.Plan_Qnty = item.CalcWOQty;
+                            //            addMcWaitData.Rework_Wo = 'N';
+                            //            addMcWaitData.Non_Plan_Wk = 'N';
+                            //            addMcWaitData.Mc_TPT = setup + firstPiece + cycle * (quantity - 1);
+                            //            var postMcwaitresult = await _woService.PostMc_Wait_List(addMcWaitData);
+                            //        }
+                            //    }
+                            //}
+                        }
+                    }
+                }
+            }
+            return Ok(postresult);
+        }
+        public async Task<IActionResult> GetTPT(RoutingStepVM item)
+        {
+            int mcminutes = 0;
+            int mcFirstminutes = 0;
+            int subminutes = 0;
+            int mcsetminutes = 0;
+            int subsetminutes = 0;
+            var stepmc = await _routingService.StepMachines((int)item.StepId);
+            if (stepmc.Count() != 0)
+            {
+                foreach (var mc in stepmc)
+                {
+                    // if (mc.PreferredMachine == 1)
+                    //{
+                    TimeSpan time = TimeSpan.Parse(mc.FloorToFloorTime);
+                    mcminutes = (int)time.TotalMinutes;
+                    TimeSpan Settime = TimeSpan.Parse(mc.SetupTime);
+                    mcsetminutes = (int)Settime.TotalMinutes;
+                    TimeSpan firsttime = TimeSpan.Parse(mc.FirstPieceProcessingTime);
+                    mcFirstminutes = (int)firsttime.TotalMinutes;
+                    //}
+                }
+                item.CycleTime = mcminutes.ToString();
+                item.SetupTime = mcsetminutes.ToString();
+                item.FirstPieceTime = mcFirstminutes.ToString();
+                return Ok(item);
+            }
+            var stepsubcon = await _routingService.SubCons((int)item.StepId);
+            if (stepsubcon.Count() != 0)
+            {
+                foreach (var sub in stepsubcon)
+                {
+                    //if (sub.PreferredSubcon == 1)
+                    //{
+                    var subworkdetails = await _routingService.SubConWSS((int)item.StepId, sub.SubConDetailsId);
+                    if (subworkdetails.Count() != 0)
+                    {
+                        foreach (var mc in subworkdetails)
+                        {
+                            TimeSpan time = TimeSpan.Parse(mc.FloorToFloorTime);
+                            subminutes = (int)time.TotalMinutes;
+                            TimeSpan Settime = TimeSpan.Parse(mc.SetupTime);
+                            subsetminutes = (int)Settime.TotalMinutes;
+                        }
+                    }
+                    //}
+                }
+                item.CycleTime = subminutes.ToString();
+                item.SetupTime = subsetminutes.ToString();
+                return Ok(item);
+            }
+            return Ok(item);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostReadForTempProdWoWaitList()
+        {
+            var productions = await _woService.AllProductionPlan_Wo();
+            var procplan = await _woService.GetAllProcPlan();
+
+            List<ProductionPlan_WoVM> result = new List<ProductionPlan_WoVM>();
+
+            foreach (var item in productions)
+            {
+                if (item.PartType == 2)
+                {
+                    item.PlanStartDateStr = item.PlanStartDate.ToString("dd-MM-yyyy");
+                }
+                else
+                {
+                    var findpp = procplan.FirstOrDefault(p => p.WorkOrderId == item.WoId)?.CalcReceiptDate;
+                    item.PlanStartDateStr = findpp?.ToString("dd-MM-yyyy");
+                }
+
+                var so = await _baService.GetOneSO(item.SalesOrderId);
+                if (so != null)
+                {
+                    if (item.PlanCompletionDate >= so.RequiredByDate && item.CalcWOQty >= so.RequiredQuantity)
+                    {
+                        item.WoRelease = "Y";
+                        result.Add(item);
+                    }
+                    else
+                    {
+                        item.WoRelease = "N";
+                    }
+                }
+                else
+                {
+                    var wosos = await _woService.GetSoWoRel(item.WoId);
+                    foreach (var woso in wosos)
+                    {
+                        var sos = await _baService.GetOneSO(woso.SalesOrderId);
+                        if (sos != null) item.SoComplDateStr = sos.RequiredByDateStr;
+
+                        if (sos.RequiredByDate > item.PlanCompletionDate)
+                        {
+                            item.WoRelease = "Y";
+                            result.Add(item);
+                        }
+                        else
+                        {
+                            item.WoRelease = "N";
+                        }
+                    }
+                }
+            }
+
+            // Prioritize: Rework > NonPlan > Production
+            //var reworkWos = result.Where(r => r.Rework_Wo == 'Y').ToList();
+            //var nonPlanWos = result.Where(r => r.NonPlan_Wk == 'Y').ToList();
+            var prodWos = result.OrderBy(r => r.PlanCompletionDate).ToList();
+
+            //var fullOrderedList = reworkWos.Concat(nonPlanWos).Concat(prodWos).ToList();
+            var fullOrderedList = prodWos.ToList();
+            int seqNo = 1;
+
+            foreach (var item in fullOrderedList)
+            {
+                var addData = new TempWO_Wait_ListVM
+                {
+                    Wo_Id = item.ProductionPlanId,
+                    Mode = 1,
+                    Allow_Routing_Chg = 'Y',
+                    Total_TPT = 0,
+                    Rework_Wo = 'N',
+                    NC_Log_Ref = 0,
+                    WO_Wait_Seq_No = seqNo++,
+                    Plan_Start_Date = item.PlanStartDate,
+                    Plan_End_Date = (DateTime)item.PlanCompletionDate,
+                    Plan_Simul_Qnty = item.CalcWOQty
+                };
+
+                await _woService.PostTempWo_Wait_List(addData);
+
+                var mf = await _masterService.GetManufPart((int)item.PartId);
+                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                var route = routingList.FirstOrDefault(r => r.RoutingId == item.RoutingId);
+                if (route == null) continue;
+
+                var routingSteps = await _routingService.RoutingSteps(route.RoutingId);
+
+                foreach (var step in routingSteps)
+                {
+                    var tpt = await GetTPT(step);
+                    var tptStepItem = (RoutingStepVM)((OkObjectResult)tpt).Value;
+
+                    int setup = int.Parse(tptStepItem.SetupTime ?? "0");
+                    int firstPiece = int.Parse(tptStepItem.FirstPieceTime ?? "0");
+                    int cycle = int.Parse(tptStepItem.CycleTime ?? "0");
+                    int quantity = item.CalcWOQty;
+
+                    var addOprData = new TempOpr_ListVM
+                    {
+                        Wo_Id = item.ProductionPlanId,
+                        Opr_No = step.StepId,
+                        Mode = 1,
+                        Rework_Wo = 'N',
+                        NC_Log_Ref = 0,
+                        Act_Qnty = 0,
+                        Plan_Qnty = quantity,
+                        No_of_Simult_Mcs = step.NumberOfSimMachines,
+                        Initial_Opr_TPT = setup + firstPiece + cycle * (quantity - 1)
+                    };
+
+                    await _woService.PostTempOpr_List(addOprData);
+                }
+            }
+
+            return Ok("TempWO_Wait_List and TempOpr_List posted with priority-based sequencing.");
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostTempToActiveWaitList()
+        {
+            var tempWOs = await _woService.GetAllTempWo_Wait_List();
+            var activeWOs = await _woService.GetAllWO_Wait_List();
+
+            // Remove duplicates (same WO_Id) already existing in active list
+            var filteredTemp = tempWOs.Where(temp => !activeWOs.Any(active => active.Wo_Id == temp.Wo_Id)).ToList();
+
+            // Prioritize: Rework → NonPlan → Production
+            var reworkWos = filteredTemp.Where(w => w.Rework_Wo == 'Y').ToList();
+            var nonPlanWos = filteredTemp.Where(w => w.Rework_Wo != 'Y' && w.NC_Log_Ref > 0).ToList(); // assume NonPlan if NC_Log_Ref > 0
+            var prodWos = filteredTemp.Except(reworkWos).Except(nonPlanWos)
+                                      .OrderBy(w => w.Plan_End_Date).ToList();
+
+            var orderedList = reworkWos.Concat(nonPlanWos).Concat(prodWos).ToList();
+
+            int startSeq = 0;
+
+            foreach (var item in orderedList)
+            {
+                var activeWO = new WO_Wait_ListVM
+                {
+                    Wo_Id = item.Wo_Id,
+                    Mode = item.Mode,
+                    Allow_Routing_Chg = item.Allow_Routing_Chg,
+                    Total_TPT = item.Total_TPT,
+                    Rework_Wo = item.Rework_Wo,
+                    NC_Log_Ref = item.NC_Log_Ref,
+                    WO_Wait_Seq_No = startSeq++,
+                    Plan_Start_Date = item.Plan_Start_Date,
+                    Plan_End_Date = item.Plan_End_Date,
+                    Plan_Simul_Qnty = item.Plan_Simul_Qnty
+                };
+
+                await _woService.PostWO_Wait_List(activeWO);
+
+                // Now move the Opr steps
+                var tempOprsList = await _woService.GetAllTempOpr_List();
+                var tempOprs = tempOprsList.Where(o => o.Wo_Id == item.Wo_Id).ToList();
+                foreach (var tempOpr in tempOprs)
+                {
+                    var activeOpr = new Opr_ListVM
+                    {
+                        Wo_Id = tempOpr.Wo_Id,
+                        Opr_No = tempOpr.Opr_No,
+                        Mode = tempOpr.Mode,
+                        Rework_Wo = tempOpr.Rework_Wo,
+                        NC_Log_Ref = tempOpr.NC_Log_Ref,
+                        Act_Qnty = tempOpr.Act_Qnty,
+                        Plan_Qnty = tempOpr.Plan_Qnty,
+                        No_of_Simult_Mcs = tempOpr.No_of_Simult_Mcs,
+                        Initial_Opr_TPT = tempOpr.Initial_Opr_TPT
+                    };
+
+                    await _woService.PostOpr_List(activeOpr);
+                }
+            }
+
+            return Ok("Temp data promoted to active tables with correct WO_Wait_Seq_No based on priority.");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UpdateWO_Wait_List(long itemMasterDocListId)
+        {
+            var result = await _woService.GetAllWO_Wait_List();
+            var findWowait = result.Where(w => w.WO_Wait_ListId == itemMasterDocListId).FirstOrDefault();
+            if(findWowait != null)
+            {
+                findWowait.Mode = 2;
+                var postresult = await _woService.PostWO_Wait_List(findWowait);
+                return Ok(postresult);
+            }
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> UpdateMc_Timeslot_List(long itemMasterDocListId)
+        {
+            var result = await _woService.GetAllMc_Timeslot_List();
+            var findWowait = result.Where(w => w.Mc_Timeslot_List_Id == itemMasterDocListId).FirstOrDefault();
+            if(findWowait != null)
+            {
+                findWowait.Allocation = 2;
+                var postresult = await _woService.PostMc_Timeslot_List(findWowait);
+                return Ok(postresult);
+            }
+            return Ok(result);
+        } 
+        [HttpGet]
+        public async Task<IActionResult> UpdateProdWo(long pwoid,long routingId)
+        {
+            var result = await _woService.AllProductionPlan_Wo();
+            var findWowait = result.Where(w => w.ProductionPlanId == pwoid).FirstOrDefault();
+            if(findWowait != null)
+            {
+                var findrout = await _routingService.RoutingSteps((int)routingId);
+                findWowait.RoutingId = routingId;
+                findWowait.StartingOpNo = (int)findrout.FirstOrDefault().StepId;
+                findWowait.EndingOpNo = (int)findrout.LastOrDefault().StepId;
+                var procdutionpost = await _woService.UpdateProductionPlan_Wo(findWowait);
+                return Ok(procdutionpost);
+            }
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllReadyforProductionWo()
+        {
+            var productions = await _woService.AllProductionPlan_Wo();
+            var masterparts = await _masterService.ItemMasterParts();
+            var procplan = await _woService.GetAllProcPlan();
+            var customer = await _baService.GetCustomerOrders();
+            var wO_Wait_Lists = await _woService.GetAllTempWo_Wait_List();
+            var activewO_Wait_Lists = await _woService.GetAllWO_Wait_List();
+            var opr_Lists = await _woService.GetAllOpr_List();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+            var allMcTimeslots = await _woService.GetAllMc_Timeslot_List();
+            List<ProductionPlan_WoVM> result = new List<ProductionPlan_WoVM>();
+            foreach (ProductionPlan_WoVM item in productions)
+            {
+                if (item.PartType == 2)
+                {
+                    item.PlanStartDateStr = item.PlanStartDate.ToString("dd-MM-yyyy");
+                }
+                else
+                {
+                    var findpp = procplan.Where(p => p.WorkOrderId == item.WoId).FirstOrDefault().CalcReceiptDate.ToString("dd-MM-yyyy");
+                    item.PlanStartDateStr = findpp;
+                }
+                item.SoComplDateStr = item.SoComplDate.Value.ToString("dd-MM-yyyy");
+                foreach (ItemMasterPartVM imp in masterparts)
+                {
+                    if (item.PartId == imp.PartId)
+                    {
+                        item.PartNo = imp.PartNo;
+                        item.PartDesc = imp.Description;
+                        bool isParentWo = productions.Any(x => x.ParentWoId == item.WoId);
+
+                        if (item.PartType == 1 && item.ParentWoId == 0)
+                        {
+                            item.PartTypeName = isParentWo ? "Parent CMP" : "CMP";
+                        }
+                        else if (item.PartType == 2)
+                        {
+                            item.PartTypeName = "Assembly";
+                        }
+                    }
+                }
+                var so = await _baService.GetOneSO(item.SalesOrderId);
+                if (so != null)
+                {
+                    foreach (CustomerOrderVM cu in customer)
+                    {
+                        if (so.CustomerOrderId == cu.CustomerOrderId)
+                        {
+                            item.Customer = cu.CustomerName;
+                        }
+                    }
+                    //if (item.PlanCompletionDate >= so.RequiredByDate && item.CalcWOQty >= so.RequiredQuantity)
+                    //{
+                    //    item.WoRelease = "Y";
+                    //    result.Add(item);
+                    //}
+                    //else
+                    //{
+                    //    item.WoRelease = "N";
+                    //}
+                }
+                else
+                {
+                    var wosos = await _woService.GetSoWoRel(item.WoId);
+                    foreach (var woso in wosos)
+                    {
+                        var sos = await _baService.GetOneSO(woso.SalesOrderId);
+                        if (sos != null)
+                        {
+                            item.SoComplDateStr = sos.RequiredByDateStr;
+                        }
+                        if (sos.RequiredByDate > item.PlanCompletionDate)
+                        {
+                            item.WoRelease = "Y";
+                            result.Add(item);
+                        }
+                        else
+                        {
+                            item.WoRelease = "N";
+                        }
+                        foreach (CustomerOrderVM cu in customer)
+                        {
+                            if (sos.CustomerOrderId == cu.CustomerOrderId)
+                            {
+                                item.Customer = cu.CustomerName;
+                            }
+                        }
+                    }
+                }
+                DateTime? earliestStartTime = null;
+
+                foreach (var opr in opr_Lists.Where(w => w.Wo_Id == item.ProductionPlanId))
+                {
+                    var mcTimeslot = allMcTimeslots.FirstOrDefault(m => m.Mc_Timeslot_List_Id == opr.Shop_Plan_start_time);
+                    if (mcTimeslot != null)
+                    {
+                        var timeslot = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == mcTimeslot.Timeslot_List_Id);
+                        if (timeslot != null)
+                        {
+                            if (earliestStartTime == null || timeslot.Start_time < earliestStartTime)
+                            {
+                                earliestStartTime = timeslot.Start_time;
+                            }
+                        }
+                    }
+                }
+
+                if (earliestStartTime != null)
+                {
+                    item.ActStartDateStr = earliestStartTime.Value.ToString("dd-MM-yyyy");
+                }
+                    item.DataChange = (item.Changed == 0) ? "N" : "Y";
+                var wO_Wait_List = wO_Wait_Lists.Where(w => w.Wo_Id == item.ProductionPlanId).FirstOrDefault();
+                var activewO_Wait_List = activewO_Wait_Lists.Where(w => w.Wo_Id == item.ProductionPlanId).FirstOrDefault();
+                if (wO_Wait_List != null)
+                {
+                    item.CsStartDate = wO_Wait_List.Plan_Start_Date.ToString("dd-MM-yyyy");
+                    item.CsEndDate = wO_Wait_List.Plan_End_Date.ToString("dd-MM-yyyy");
+                    if(activewO_Wait_List != null)
+                    {
+                        item.PsStartDate = activewO_Wait_List.Plan_Start_Date.ToString("dd-MM-yyyy");
+                        item.PsEndDate = activewO_Wait_List.Plan_End_Date.ToString("dd-MM-yyyy");
+                    }
+                    item.CriticalParts = (wO_Wait_List.Plan_End_Date > item.PlanCompletionDate) ? "Y" : "N";
+                    var mf = await _masterService.GetManufPart((int)item.PartId);
+                    var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                    item.NoOfRoutes = routingList.Count();
+                    result.Add(item);
+                }
+            }
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CompareMcTimeSlot(long McWaitId)
+        {
+            // Get all necessary data
+            var mcWaitList = await _woService.GetAllMc_Wait_List();
+            var mcWait = mcWaitList.FirstOrDefault(m => m.Mc_Wait_ListId == McWaitId);
+            if (mcWait == null)
+                return NotFound("Invalid McWait ID");
+
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+            var allPlannedMcTimeSlots = await _woService.GetAllMc_Timeslot_List();
+
+            // Get planned timeslots for this McWaitId (you should ideally filter by McWaitId or WO_Id)
+            var plannedTimeSlots = allPlannedMcTimeSlots
+                .Where(pt => pt.Mc_Wait_List_Id == McWaitId)
+                .ToList();
+
+            if (!plannedTimeSlots.Any())
+                return NotFound("No planned timeslots found for this McWait ID.");
+
+            // Simulate actual completion for now (you can replace this with actual completed qty logic)
+            var actualCompletedQty = mcWait.Plan_Qnty; // You should replace this with bookout logs
+            var totalPlannedQty = mcWait.Plan_Qnty;
+            var balanceQty = totalPlannedQty - actualCompletedQty;
+
+            // Get the corresponding timeslot range from Timeslot_List
+            var timeslotIds = plannedTimeSlots.Select(pt => pt.Timeslot_List_Id).ToList();
+            var relevantTimeslots = allTimeslots
+                .Where(t => timeslotIds.Contains(t.Timeslot_ListId))
+                .OrderBy(t => t.Start_time) // assuming StartTime exists
+                .ToList();
+
+            var result = new
+            {
+                McWaitId,
+                PlannedStart = relevantTimeslots.First().Start_time,
+                PlannedEnd = relevantTimeslots.Last().End_time,
+                ActualCompletedQty = actualCompletedQty,
+                BalanceQty = balanceQty,
+                ProjectedCompletionTime = relevantTimeslots.Last().End_time 
+            };
+
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> CopyFromTempToActiveTable()
+        {
+            var tempMc_Timeslots = await _woService.GetAllTempMc_Timeslot_List();
+            var tempMc_Wait_Lists = await _woService.GetAllTempMc_Wait_List();
+            var tempOpr_Lists = await _woService.GetAllTempOpr_List();
+            var tempWO_Wait_Lists = await _woService.GetAllTempWo_Wait_List();
+            var activeMc_Timeslots = await _woService.GetAllMc_Timeslot_List();
+            var activeMc_Wait_Lists = await _woService.GetAllMc_Wait_List();
+            var activeOpr_Lists = await _woService.GetAllOpr_List();
+            var activeWO_Wait_Lists = await _woService.GetAllWO_Wait_List();
+
+            foreach (var temp in tempMc_Timeslots)
+            {
+                var active = activeMc_Timeslots.FirstOrDefault(a => a.Mc_Timeslot_List_Id == temp.ActiveId);
+                if (active != null)
+                {
+                    active.Mc_Id = temp.Mc_Id;
+                    active.Allocation = temp.Allocation;
+                    active.Timeslot_List_Id = temp.Timeslot_List_Id;
+                    active.Slot_Not_Avl = temp.Slot_Not_Avl;
+                    active.Not_Avl_reason = temp.Not_Avl_reason;
+                    active.Mc_Wait_List_Id = temp.Mc_Wait_List_Id;
+                }
+            }
+            foreach (var temp in tempMc_Wait_Lists)
+            {
+                var active = activeMc_Wait_Lists.FirstOrDefault(a => a.Mc_Wait_ListId == temp.ActiveId);
+                if (active != null)
+                {
+                    active.Mc_Id = temp.Mc_Id;
+                    active.Wo_Id = temp.Wo_Id;
+                    active.Opr_No_Id = temp.Opr_No_Id;
+                    active.Bal_Qnty = active.Plan_Qnty -temp.Plan_Qnty;
+                    active.Plan_Qnty = temp.Plan_Qnty;
+                    active.Plan_start_time_Id = temp.Plan_start_time_Id;
+                    active.Plan_end_time_Id = temp.Plan_end_time_Id;
+                    active.Next_Opr_Start_time_Id = temp.Next_Opr_Start_time_Id;
+                    active.Setup_Apprvl_time = temp.Setup_Apprvl_time;
+                    active.Act_End_time = temp.Act_End_time;
+                    active.Mc_TPT = temp.Mc_TPT;
+                    active.Setup_Start_time = temp.Setup_Start_time;
+                    active.Rework_Wo = temp.Rework_Wo;
+                    active.Non_Plan_Wk = temp.Non_Plan_Wk;
+                    active.Non_Plan_wk_Id = temp.Non_Plan_wk_Id;
+                    active.Mode = temp.Mode;
+                    active.Wait_Seq_No = temp.Wait_Seq_No;
+                }
+            }
+            foreach (var temp in tempOpr_Lists)
+            {
+                var active = activeOpr_Lists.FirstOrDefault(a => a.Opr_ListId == temp.ActiveId);
+                if (active != null)
+                {
+                    active.Opr_No = temp.Opr_No;
+                    active.Wo_Id = temp.Wo_Id;
+                    active.Mode = temp.Mode;
+                    active.Initial_Opr_TPT = temp.Initial_Opr_TPT;
+                    active.Rolledup_Opr_TPT = temp.Rolledup_Opr_TPT;
+                    active.Rework_Wo = temp.Rework_Wo;
+                    active.NC_Log_Ref = temp.NC_Log_Ref;
+                    active.Act_Qnty = temp.Act_Qnty;
+                    active.Plan_Qnty = temp.Plan_Qnty;
+                    active.No_of_Simult_Mcs = temp.No_of_Simult_Mcs;
+                    active.Shop_Plan_start_time = temp.Shop_Plan_start_time;
+                    active.Shop_Plan_end_time = temp.Shop_Plan_end_time;
+                    active.Subcon_plan_start_time = temp.Subcon_plan_start_time;
+                    active.Subcon_plan_end_time = temp.Subcon_plan_end_time;
+                    active.Setup_Start_time = temp.Setup_Start_time;
+                    active.Act_End_time = temp.Act_End_time;
+                }
+            }
+            foreach (var temp in tempWO_Wait_Lists)
+            {
+                var active = activeWO_Wait_Lists.FirstOrDefault(a => a.WO_Wait_ListId == temp.ActiveId);
+                if (active != null)
+                {
+                    active.Wo_Id = temp.Wo_Id;
+                    active.Mode = temp.Mode;
+                    active.Allow_Routing_Chg = temp.Allow_Routing_Chg;
+                    active.Total_TPT = temp.Total_TPT;
+                    active.Rework_Wo = temp.Rework_Wo;
+                    active.NC_Log_Ref = temp.NC_Log_Ref;
+                    active.WO_Wait_Seq_No = temp.WO_Wait_Seq_No;
+                    active.Plan_Start_Date = temp.Plan_Start_Date;
+                    active.Plan_End_Date = temp.Plan_End_Date;
+                    active.Plan_Simul_Qnty = temp.Plan_Simul_Qnty;
+                }
+            }
+            return Ok("Data Copied From Temp Tables To Active Tables Sucessfully.");
+        }
+        [HttpPost]
+        public async Task<IActionResult> AllocateRwkMcTimeslots()
+        {
+            var rwkList = await _woService.GetAllRwk_List();
+            var allTimeSlots = await _woService.GetAllTimeslot_List();
+            var allMcTimeSlots = await _woService.GetAllMc_Timeslot_List();
+
+            foreach (var rwk in rwkList.Where(r => r.Allocated == 'N' && r.Mc_Id > 0))
+            {
+                // Get only slots for this machine
+                var machineSlots = allMcTimeSlots
+                    .Where(slot => slot.Mc_Id == rwk.Mc_Id && slot.Allocation == 1)
+                    .Join(allTimeSlots,
+                          mc => mc.Timeslot_List_Id,
+                          ts => ts.Timeslot_ListId,
+                          (mc, ts) => new { Slot = mc, StartTime = ts.Start_time })
+                    .OrderBy(s => s.StartTime)
+                    .ToList();
+
+                if (!machineSlots.Any())
+                    continue;
+
+                // Calculate how many slots are needed
+                double planDuration = Convert.ToDouble(rwk.Plan_Duration);
+                double slotDuration = (machineSlots.Count >= 2)
+                    ? (machineSlots[1].StartTime - machineSlots[0].StartTime).TotalMinutes
+                    : 30; 
+
+                int neededSlots = (int)Math.Ceiling(planDuration / slotDuration);
+                if (neededSlots > machineSlots.Count)
+                    continue;
+
+                var selectedSlots = machineSlots.Take(neededSlots).Select(ms => ms.Slot).ToList();
+
+                foreach (var slot in selectedSlots)
+                {
+                    slot.Mc_Id = rwk.Mc_Id;
+                    slot.Allocation = 3;
+
+                    await _woService.PostMc_Timeslot_List(slot);
+                }
+
+                rwk.Allocated = 'Y';
+                await _woService.PostRwk_List(rwk);
+            }
+
+            return Ok("Rework Timeslots Allocated Successfully");
+        }
+        [HttpPost]
+        public async Task<IActionResult> AllocateNonPlanMcTimeslots()
+        {
+            var nonPlanList = await _woService.GetAllNon_Plan_Wk_List(); // assumes a method to get all non-plan work
+            var allTimeSlots = await _woService.GetAllTimeslot_List();
+            var allMcTimeSlots = await _woService.GetAllMc_Timeslot_List();
+
+            foreach (var nonPlan in nonPlanList.Where(n => n.Allocated == 'N' && n.Mc_Id > 0))
+            {
+                var planStartDate = nonPlan.Plan_start_time;
+
+                // Filter machine timeslots for that machine and on or after plan start date
+                var machineSlots = allMcTimeSlots
+                    .Where(slot => slot.Mc_Id == nonPlan.Mc_Id && slot.Allocation == 1)
+                    .Join(allTimeSlots,
+                          mc => mc.Timeslot_List_Id,
+                          ts => ts.Timeslot_ListId,
+                          (mc, ts) => new { Slot = mc, StartTime = ts.Start_time })
+                    .Where(s => s.StartTime >= planStartDate)
+                    .OrderBy(s => s.StartTime)
+                    .ToList();
+
+                if (machineSlots.Count < 1)
+                    continue;
+
+                // Estimate duration per slot
+                double slotDuration = (machineSlots.Count >= 2)
+                    ? (machineSlots[1].StartTime - machineSlots[0].StartTime).TotalMinutes
+                    : 60; // default to 60 mins if unknown
+
+                int neededSlots = (int)Math.Ceiling(Convert.ToDouble(nonPlan.Plan_Duration) / slotDuration);
+                if (neededSlots > machineSlots.Count)
+                    continue;
+
+                var selectedSlots = machineSlots.Take(neededSlots).Select(ms => ms.Slot).ToList();
+
+                // Update timeslot allocations
+                foreach (var slot in selectedSlots)
+                {
+                    slot.Mc_Id = nonPlan.Mc_Id;
+                    slot.Allocation = 2;
+
+                    await _woService.PostMc_Timeslot_List(slot); // update in DB
+                }
+
+                // Optionally mark the Non-Plan work as Allocated
+                nonPlan.Allocated = 'Y';
+                await _woService.PostNon_Plan_Wk_List(nonPlan);
+            }
+
+            return Ok("Non-Plan Timeslots allocated successfully.");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateCurrentProductionStatus()
+        {
+            try
+            {
+                var now = DateTime.Now;
+
+                // Fetch all required data
+                var allTimeslots = await _woService.GetAllTimeslot_List();
+                var allMcTimeslots = await _woService.GetAllMc_Timeslot_List();
+                var allOprList = await _woService.GetAllOpr_List();
+                var allMcWaitList = await _woService.GetAllMc_Wait_List();
+                var allShopInspLogs = await _woService.GetAllShop_Insp_Log();
+                var allNcLogs = await _woService.GetAllNcLog();
+
+                // 1. Copy Mc_Timeslot_List to TempMc_Timeslot_List from now for each Mc
+                foreach (var group in allMcTimeslots.GroupBy(m => m.Mc_Id))
+                {
+                    var futureSlots = group
+                        .Where(g => allTimeslots.First(t => t.Timeslot_ListId == g.Timeslot_List_Id).Start_time >= now)
+                        .ToList();
+
+                    foreach (var slot in futureSlots)
+                    {
+                        var tempSlot = new TempMc_Timeslot_ListVM
+                        {
+                            Mc_Id = slot.Mc_Id,
+                            Timeslot_List_Id = slot.Timeslot_List_Id,
+                            EndTimeslot_List_Id = slot.EndTimeslot_List_Id,
+                            Slot_Not_Avl = slot.Slot_Not_Avl,
+                            Not_Avl_reason = slot.Not_Avl_reason,
+                            Allocation = 1, // Default
+                            ActiveId = slot.Mc_Timeslot_List_Id
+                        };
+                        await _woService.PostTempMc_Timeslot_List(tempSlot);
+                    }
+                }
+
+                // 2. Copy Opr_List entries for Opr_Nos in M/C (Mc_Wait_List.Wait_Seq_No = 0)
+                var oprInMc = allMcWaitList.Where(w => w.Wait_Seq_No == 0).Select(w => w.Opr_No_Id).ToList();
+                foreach (var opr in allOprList.Where(o => oprInMc.Contains(o.Opr_No)))
+                {
+                    var tempOpr = opr;
+                    tempOpr.Shop_Plan_end_time = 0;
+                    tempOpr.Subcon_plan_end_time = 0;
+                    tempOpr.Act_Qnty = 0;
+                    await _woService.PostOpr_List(tempOpr);
+                }
+
+                // 3. Copy Mc_Wait_List.Wait_Seq_No = 0 to Temp
+                foreach (var mcw in allMcWaitList.Where(w => w.Wait_Seq_No == 0))
+                {
+                    var tempMcWait = new TempMc_Wait_ListVM
+                    {
+                        Wo_Id = mcw.Wo_Id,
+                        Opr_No_Id = mcw.Opr_No_Id,
+                        Mc_Id = mcw.Mc_Id,
+                        Wait_Seq_No = 0,
+                        Plan_start_time_Id = mcw.Plan_start_time_Id,
+                        Mc_TPT = mcw.Mc_TPT,
+                        Mode = mcw.Mode,
+                        Plan_Qnty = mcw.Plan_Qnty,
+                        Rework_Wo = mcw.Rework_Wo
+                    };
+                    tempMcWait.Bal_Qnty = (long)(mcw.Plan_Qnty -
+                        (allNcLogs.Where(n => n.Opr_No_Id == mcw.Opr_No_Id).Sum(n => n.NC_Qnty) +
+                        allShopInspLogs.Where(s => s.Input_Opr_NoId == mcw.Opr_No_Id).Sum(s => s.Qnty_OK_finished)));
+
+                    await _woService.PostTempMc_Wait_List(tempMcWait);
+                }
+
+                // 4. Re-simulate for current balance using existing logic (reuse AllocateForReadyWOs steps)
+                await AllocateForReadyWOs();
+
+                return Ok(new { message = "Current production status checked and simulated." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Error in status update", error = ex.Message });
+            }
+        }
+
+        public async Task<IActionResult> AllocateForReadyWOs()
+        {
+            // 1. Fetch all ready WOs
+            var readyWOs = await _woService.GetAllTempWo_Wait_List();
+            var allOprs = await _woService.GetAllTempOpr_List();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+            var allMcTimeslots = await _woService.GetAllMc_Timeslot_List();
+            var nclogs = await _woService.GetAllNcLog();
+            var recpts = await _woService.GetAllInw_Recpt_Header();
+            var podetails = await _woService.GetAllPodetails();
+            var procplans = await _woService.GetAllProcPlan();
+            var prodnwos = await _woService.AllProductionPlan_Wo();
+            var reworkList = await _woService.GetAllRwk_List(); // Implement this method
+            var pendingReworks = reworkList
+                .Where(rwk => rwk.Allocated == 'N' && rwk.Mc_Id > 0)
+                .ToList();
+
+            foreach (var rwk in pendingReworks)
+            {
+                await CheckPauseAsync();
+                var machine = await _machineService.GetMachine(rwk.Mc_Id);
+                if (machine == null) continue;
+
+                var plant = await _plantService.GetPlantWD(machine.MachinePlantId);
+                if (plant == null) continue;
+
+                int timeslotDuration = plant.Timeslot_duration;
+                int durationInMinutes = (int)TimeSpan.Parse(rwk.Plan_Duration).TotalMinutes;
+                int requiredSlots = (int)Math.Ceiling((double)durationInMinutes / timeslotDuration);
+
+                var timeslots = allTimeslots
+                    .Where(t => t.PlantId == machine.MachinePlantId && t.Start_time >= DateTime.Now && t.Break_Slot != 'Y')
+                    .OrderBy(t => t.Start_time)
+                    .ToList();
+                var nclog = nclogs.Where(n => n.Insp_Outcome_Details_Id == rwk.NC_Log_Id ).FirstOrDefault();
+                var recpt = recpts.Where(r => r.Inw_Recpt_HeaderId == nclog.Inw_Recpt_Header_Id).FirstOrDefault();
+                var podetail = podetails.Where(p => p.PoDetailsId == recpt.PoHeaderId).FirstOrDefault();
+                var procplan = procplans.Where(pp=>pp.ProcPlanId == podetail.ProcPlanId).FirstOrDefault();
+                var prodnwo = prodnwos.Where(w => w.WoId == procplan.WorkOrderId).FirstOrDefault();
+                var availableSlots = timeslots.Take(requiredSlots).ToList();
+                if (availableSlots.Count < requiredSlots) continue;
+
+                // Create Mc_Wait_List entry
+                var mcWait = new TempMc_Wait_ListVM
+                {
+                    Wo_Id = prodnwo.ProductionPlanId,
+                    Opr_No_Id = prodnwo.StartingOpNo,
+                    Mc_Id = rwk.Mc_Id,
+                    Wait_Seq_No = await CalculateNextTempWaitSeqNo(rwk.Mc_Id),
+                    Plan_start_time_Id = availableSlots.First().Timeslot_ListId,
+                    Plan_end_time_Id = availableSlots.Last().Timeslot_ListId,
+                    Mc_TPT = durationInMinutes,
+                    Rework_Wo = 'Y',
+                    Mode = 1, 
+                    Plan_Qnty = (long)nclog.NC_Qnty
+                };
+                mcWait = await _woService.PostTempMc_Wait_List(mcWait);
+
+                // Create Mc_Timeslot_List entry
+                var newMcSlot = new TempMc_Timeslot_ListVM
+                {
+                    Mc_Id = rwk.Mc_Id,
+                    Timeslot_List_Id = availableSlots.First().Timeslot_ListId,
+                    EndTimeslot_List_Id = availableSlots.Last().Timeslot_ListId,
+                    Mc_Wait_List_Id = mcWait.TempMc_Wait_ListId,
+                    Allocation = 2, // Rework
+                    Slot_Not_Avl = 'N',
+                    Not_Avl_reason = 0
+                };
+                await _woService.PostTempMc_Timeslot_List(newMcSlot);
+
+                // Update the Rework entry
+                rwk.Allocated = 'Y';
+                await _woService.PostRwk_List(rwk);
+            }
+            var prodnWos = await _woService.AllProductionPlan_Wo();
+
+
+            var nonPlanList = await _woService.GetAllNon_Plan_Wk_List(); // Allocated = 'N' and Mc_Id != null
+            foreach (var np in nonPlanList.Where(n => n.Allocated == 'N' && n.Mc_Id > 0))
+            {
+                await CheckPauseAsync();
+
+                var machine = await _machineService.GetMachine(np.Mc_Id);
+                if (machine == null) continue;
+
+                var plant = await _plantService.GetPlantWD(machine.MachinePlantId);
+                if (plant == null) continue;
+
+                int timeslotDuration = plant.Timeslot_duration;
+                int durationInMinutes = (int)TimeSpan.Parse(np.Plan_Duration).TotalMinutes;
+                int requiredSlots = (int)Math.Ceiling((double)durationInMinutes / timeslotDuration);
+
+                var timeslots = allTimeslots
+                    .Where(t => t.PlantId == machine.MachinePlantId && t.Start_time >= np.Plan_start_time && t.Break_Slot != 'Y')
+                    .OrderBy(t => t.Start_time)
+                    .ToList();
+
+                var availableSlots = timeslots.Take(requiredSlots).ToList();
+                if (availableSlots.Count < requiredSlots) continue;
+
+                // Create Mc_Wait_List record
+                var mcWait = new TempMc_Wait_ListVM
+                {
+                    Wo_Id = 0,
+                    Opr_No_Id = 0,
+                    Mc_Id = np.Mc_Id,
+                    Wait_Seq_No = await CalculateNextTempWaitSeqNo(np.Mc_Id),
+                    Plan_start_time_Id = availableSlots.First().Timeslot_ListId,
+                    Plan_end_time_Id = availableSlots.Last().Timeslot_ListId,
+                    Mc_TPT = durationInMinutes,
+                    Mode = 9, // Non-Plan mode
+                    Plan_Qnty = 0
+                };
+                mcWait = await _woService.PostTempMc_Wait_List(mcWait);
+
+                // Allocate in Mc_Timeslot_List
+                var newMcSlot = new TempMc_Timeslot_ListVM
+                {
+                    Mc_Id = np.Mc_Id,
+                    Timeslot_List_Id = availableSlots.First().Timeslot_ListId,
+                    EndTimeslot_List_Id = availableSlots.Last().Timeslot_ListId,
+                    Mc_Wait_List_Id = mcWait.TempMc_Wait_ListId,
+                    Allocation = 3, // Non-plan work
+                    Slot_Not_Avl = 'N',
+                    Not_Avl_reason = 0
+                };
+                await _woService.PostTempMc_Timeslot_List(newMcSlot);
+
+                // Mark the non-plan record as allocated
+                np.Allocated = 'Y';
+                await _woService.PostNon_Plan_Wk_List(np);
+            }
+
+            // 2. Calculate TPT for each Opr
+            foreach (var wo in readyWOs)
+            {
+                await CheckPauseAsync();
+                var oprs = allOprs.Where(o => o.Wo_Id == wo.Wo_Id).OrderBy(o => o.Opr_No).ToList();
+                double totalTPT = 0;
+
+                foreach (var opr in oprs)
+                {
+                    //var routingInfo = await _routingService.GetRoutingInfo(opr.Opr_No);
+                    //var routingSteps = await _routingService.RoutingSteps(opr.Opr_No);
+                    //double setupTime = routingInfo.SetupTime;
+                    //double floorToFloorTime = routingInfo.FloorToFloorTime;
+                    //double tpt = setupTime + (floorToFloorTime * wo.Plan_Simul_Qnty);
+                    opr.Initial_Opr_TPT = opr.Initial_Opr_TPT;
+                    await _woService.PostTempOpr_List(opr);
+                    totalTPT += opr.Initial_Opr_TPT;
+                }
+
+                wo.Total_TPT = Convert.ToInt32(totalTPT);
+                await _woService.PostTempWo_Wait_List(wo);
+            }
+
+            // 3. Sequence WOs
+            var sequencedWOs = readyWOs
+                .OrderBy(wo => wo.Plan_End_Date)
+                .ThenBy(wo => wo.Total_TPT)
+                .ToList();
+
+            int seq = 1;
+            foreach (var wo in sequencedWOs)
+            {
+                await CheckPauseAsync();
+                wo.WO_Wait_Seq_No = seq++;
+                await _woService.PostTempWo_Wait_List(wo);
+            }
+
+            // 4. Allocate Timeslots per WO & Operation
+            foreach (var wo in sequencedWOs)
+            {
+                await CheckPauseAsync();
+                var oprs = allOprs.Where(o => o.Wo_Id == wo.Wo_Id).OrderBy(o => o.Opr_No).ToList();
+
+                foreach (var opr in oprs)
+                {
+                    await CheckPauseAsync();
+                    var oprMachines = await _routingService.StepMachines((int)opr.Opr_No);
+                    var prodwo = prodnWos.Where(w => w.ProductionPlanId == wo.Wo_Id).FirstOrDefault();
+                    var routingsteps = await _routingService.RoutingSteps((int)prodwo.RoutingId);
+                    var routingstep = routingsteps.FirstOrDefault(r => r.StepId == opr.Opr_No);
+                    int noOfSimultMcs = routingstep.NumberOfSimMachines;
+                    if (routingstep.StepLocation == "2") // SubCon
+                    {
+                        var subconList = await _routingService.SubCons((int)opr.Opr_No);
+                        var subtransport = subconList.FirstOrDefault(s => s.PreferredSubcon == 1) ?? subconList.FirstOrDefault();
+
+                        if (subtransport != null)
+                        {
+                            var subconwss = await _routingService.SubConWSS((int)opr.Opr_No, subtransport.SubConDetailsId);
+                            var subconws = subconwss.FirstOrDefault();
+                            // Time calculations
+                            var trans = TimeSpan.Parse(subtransport.TransportTime); // "01:00:00"
+                            var setupTime = TimeSpan.Parse(subconws.SetupTime); // "01:00:00"
+                            var floorToFloorTime = TimeSpan.Parse(subconws.FloorToFloorTime);
+                            int qty = wo.Plan_Simul_Qnty;
+                            double totalMinutes = trans.TotalMinutes + setupTime.TotalMinutes + (floorToFloorTime.TotalMinutes * qty);
+
+                            // Get plant working duration per day from any machine's plant
+                            var anyMachine = await _machineService.GetMachine(oprMachines.First().MachineId);
+                            var plant = await _plantService.GetPlantWD(anyMachine.MachinePlantId);
+
+                            int totalWorkingMinutes = 0;
+
+                            if (plant.NoOfShifts >= 1)
+                                totalWorkingMinutes += (int)TimeSpan.Parse(plant.FirstShiftDuration).TotalMinutes;
+                            if (plant.NoOfShifts >= 2)
+                                totalWorkingMinutes += (int)TimeSpan.Parse(plant.SecondShiftDuration).TotalMinutes;
+                            if (plant.NoOfShifts == 3)
+                                totalWorkingMinutes += (int)TimeSpan.Parse(plant.ThirdShiftDuration).TotalMinutes;
+
+                            int slotsPerDay = totalWorkingMinutes / plant.Timeslot_duration;
+                            int subconDays = (int)Math.Ceiling(totalMinutes / totalWorkingMinutes);
+
+
+                            // Timeslot allocation logic
+                            DateTime today = DateTime.Now.Date;
+                            var futureSlots = allTimeslots
+                                .Where(t => t.Start_time.Date > today)
+                                .OrderBy(t => t.Start_time)
+                                .ToList();
+
+                            DateTime subconStartDate = futureSlots.First().Start_time.Date;
+                            DateTime subconEndDate = subconStartDate.AddDays(subconDays - 1);
+
+                            long? startId = futureSlots
+                                .FirstOrDefault(t => t.Start_time.Date == subconStartDate)?.Timeslot_ListId;
+                            long? endId = futureSlots
+                                .Where(t => t.Start_time.Date == subconEndDate)
+                                .LastOrDefault()?.Timeslot_ListId;
+
+                            if (startId.HasValue && endId.HasValue)
+                            {
+                                opr.Subcon_plan_start_time = startId.Value;
+                                opr.Subcon_plan_end_time = endId.Value;
+                                opr.Rolledup_Opr_TPT = opr.Initial_Opr_TPT;
+
+                                await _woService.PostTempOpr_List(opr);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        int noOfMcs = noOfSimultMcs;
+                        int qtyPerMc = wo.Plan_Simul_Qnty / noOfMcs;
+                        var machines = await _routingService.StepMachines((int)opr.Opr_No);
+                        List<Mc_Wait_ListVM> mcWaits = new List<Mc_Wait_ListVM>();
+
+                        foreach (var mc in machines.Take(noOfMcs))
+                        {
+                            var setupTime = TimeSpan.Parse(mc.SetupTime); // e.g., "00:15:00"
+                            var floorToFloorTime = TimeSpan.Parse(mc.FloorToFloorTime);
+                            var tpt = setupTime.TotalMinutes + (floorToFloorTime.TotalMinutes * qtyPerMc); // total time in minutes
+                            var getmachine =await _machineService.GetMachine(mc.MachineId);
+                            var plantwd = await _plantService.GetPlantWD(getmachine.MachinePlantId);
+                            int slotsRequired = (int)Math.Ceiling(tpt / plantwd.Timeslot_duration);
+
+                            var mcTimeslots = allMcTimeslots
+                                .Where(s => s.Mc_Id == mc.MachineId && s.Allocation == 1 && s.Slot_Not_Avl != 'Y')
+                                .OrderBy(s => s.Timeslot_List_Id) // use Timeslot_List_Id order
+                                .ToList();
+
+                            var startIdx = mcTimeslots.FindIndex(s =>
+                            {
+                                var slotTime = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == s.Timeslot_List_Id)?.Start_time;
+                                return slotTime.HasValue && slotTime.Value > DateTime.Now;
+                            });
+
+                            if (startIdx >= 0 && (startIdx + slotsRequired) <= mcTimeslots.Count)
+                            {
+                                var availableSlots = mcTimeslots.Skip(startIdx).Take(slotsRequired).ToList();
+
+                                var mcWait = new Mc_Wait_ListVM
+                                {
+                                    Wo_Id = wo.Wo_Id,
+                                    Opr_No_Id = opr.Opr_No,
+                                    Mc_Id = mc.MachineId,
+                                    Plan_start_time_Id = availableSlots.First().Mc_Timeslot_List_Id,
+                                    Plan_end_time_Id = availableSlots.Last().Mc_Timeslot_List_Id,
+                                    Mc_TPT = Convert.ToDecimal(tpt),
+                                    Mode = 1,
+                                    Plan_Qnty = qtyPerMc
+                                };
+
+                                mcWait = await _woService.PostMc_Wait_List(mcWait);
+
+                                foreach (var slot in availableSlots)
+                                {
+                                    slot.Allocation = 2;
+                                    slot.Mc_Wait_List_Id = mcWait.Mc_Wait_ListId;
+                                    await _woService.PostMc_Timeslot_List(slot);
+                                }
+
+                                mcWaits.Add(mcWait);
+                            }
+                        }
+
+                        // Update Opr_List with aggregated info
+                        if (!mcWaits.Any())
+                            continue;
+                        opr.Shop_Plan_start_time = mcWaits.Min(mw => mw.Plan_start_time_Id);
+                        opr.Shop_Plan_end_time = mcWaits.Max(mw => mw.Plan_end_time_Id);
+                        opr.Rolledup_Opr_TPT = mcWaits.Sum(mw => Convert.ToInt64(mw.Mc_TPT));
+                        await _woService.PostTempOpr_List(opr);
+
+                        // Calculate Mc_Wait_List.Next_Opr_Start_time_ID
+                        foreach (var mcWait in mcWaits)
+                        {
+                            var startSlot = allMcTimeslots.FirstOrDefault(s => s.Mc_Timeslot_List_Id == mcWait.Plan_start_time_Id);
+                            var startTime = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == startSlot.Timeslot_List_Id)?.Start_time ?? DateTime.Now;
+
+                            // Find the corresponding machine again
+                            var mc = machines.First(m => m.MachineId == mcWait.Mc_Id);
+
+                            var setupTime = TimeSpan.Parse(mc.SetupTime);
+                            var partTime = TimeSpan.FromMinutes(TimeSpan.Parse(mc.FloorToFloorTime).TotalMinutes * Math.Min(qtyPerMc, 1));
+                            var requiredTime = setupTime + partTime;
+
+                            var nextSlotTime = startTime.Add(requiredTime);
+                            var nextSlot = allTimeslots.FirstOrDefault(t => t.Start_time >= nextSlotTime);
+
+                            mcWait.Next_Opr_Start_time_Id = nextSlot?.Timeslot_ListId ?? mcWait.Plan_end_time_Id;
+                            await _woService.PostMc_Wait_List(mcWait);
+                        }
+
+                    }
+                }
+                if (!allTimeslots.Any() || !allMcTimeslots.Any())
+                    continue;
+
+                // Get the start and end Mc_Timeslot_List entries from Shop_Plan_start_time and end_time
+                var startMcSlotId = oprs.First().Shop_Plan_start_time;
+                var endMcSlotId = oprs.Last().Shop_Plan_end_time;
+
+                var startMcSlot = allMcTimeslots.FirstOrDefault(ts => ts.Mc_Timeslot_List_Id == startMcSlotId);
+                var endMcSlot = allMcTimeslots.FirstOrDefault(ts => ts.Mc_Timeslot_List_Id == endMcSlotId);
+
+                // Now get the corresponding Timeslot_List entries
+                var startTimeslot = allTimeslots.FirstOrDefault(ts => ts.Timeslot_ListId == startMcSlot?.Timeslot_List_Id);
+                var endTimeslot = allTimeslots.FirstOrDefault(ts => ts.Timeslot_ListId == endMcSlot?.Timeslot_List_Id);
+
+                if (startTimeslot?.Start_time != null && endTimeslot?.End_time != null)
+                {
+                    wo.Plan_Start_Date = startTimeslot.Start_time;
+                    wo.Plan_End_Date = endTimeslot.End_time;
+                    await _woService.PostTempWo_Wait_List(wo);
+                }
+
+            }
+            try
+            {
+                SimulationState.IsPaused = false;
+                SimulationState.IsStopped = false;
+                // your simulation logic here...
+
+                return Json(new { message = "Update Production Completion Status completed." });
+            }
+            catch (OperationCanceledException ex)
+            {
+                return Json(new { message = "Update Production Completion Status stopped." });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> FreezeSimulation([FromBody]List<int> selectedWOIds)
+        {
+            foreach (var woId in selectedWOIds)
+            {
+                var wos = await _woService.GetAllTempWo_Wait_List();
+                var tempwo = wos.Where(w => w.Wo_Id == woId).FirstOrDefault();
+                var wo = new WO_Wait_ListVM()
+                {
+                    Wo_Id = tempwo.Wo_Id,
+                    Allow_Routing_Chg = tempwo.Allow_Routing_Chg,
+                    Total_TPT = tempwo.Total_TPT,
+                    Rework_Wo = tempwo.Rework_Wo,
+                    NC_Log_Ref = tempwo.NC_Log_Ref,
+                    WO_Wait_Seq_No = tempwo.WO_Wait_Seq_No,
+                    Plan_Start_Date = tempwo.Plan_Start_Date,
+                    Plan_End_Date = tempwo.Plan_End_Date,
+                    Plan_Simul_Qnty = tempwo.Plan_Simul_Qnty,
+                    Mode = 2
+                };
+                await _woService.PostWO_Wait_List(wo);
+
+                var oprs = await _woService.GetAllTempOpr_List();
+                var ops = oprs.Where(o => o.Wo_Id == woId).ToList();
+                foreach (var tempopr in oprs)
+                {
+                    var opr = new Opr_ListVM()
+                    {
+                        Wo_Id = tempopr.Wo_Id,
+                        Opr_No = tempopr.Opr_No,
+                        Initial_Opr_TPT = tempopr.Initial_Opr_TPT,
+                        Rolledup_Opr_TPT = tempopr.Rolledup_Opr_TPT,
+                        Rework_Wo = tempopr.Rework_Wo,
+                        NC_Log_Ref = tempopr.NC_Log_Ref,
+                        Act_Qnty = tempopr.Act_Qnty,
+                        Plan_Qnty = tempopr.Plan_Qnty,
+                        No_of_Simult_Mcs = tempopr.No_of_Simult_Mcs,
+                        Shop_Plan_start_time = tempopr.Shop_Plan_start_time,
+                        Shop_Plan_end_time = tempopr.Shop_Plan_end_time,
+                        Subcon_plan_start_time = tempopr.Subcon_plan_start_time,
+                        Subcon_plan_end_time = tempopr.Subcon_plan_end_time,
+                        Setup_Start_time = tempopr.Setup_Start_time,
+                        Act_End_time = tempopr.Act_End_time,
+                        Mode = 2
+                    };
+                    await _woService.PostOpr_List(opr);
+                }
+
+                var mcWaits = await _woService.GetAllTempMc_Wait_List();
+                var mcWait = mcWaits.Where(o => o.Wo_Id == woId).ToList();
+                foreach (var tempmw in mcWait)
+                {
+                    var mw = new Mc_Wait_ListVM()
+                    {
+                        Wo_Id = tempmw.Wo_Id,
+                        Opr_No_Id = tempmw.Opr_No_Id,
+                        Mc_Id = tempmw.Mc_Id,
+                        Wait_Seq_No = tempmw.Wait_Seq_No,
+                        Plan_Qnty = tempmw.Plan_Qnty,
+                        Rework_Wo = tempmw.Rework_Wo,
+                        Non_Plan_Wk = tempmw.Non_Plan_Wk,
+                        Non_Plan_wk_Id = tempmw.Non_Plan_wk_Id,
+                        Plan_start_time_Id = tempmw.Plan_start_time_Id,
+                        Plan_end_time_Id = tempmw.Plan_end_time_Id,
+                        Next_Opr_Start_time_Id = tempmw.Next_Opr_Start_time_Id,
+                        Setup_Apprvl_time = tempmw.Setup_Apprvl_time,
+                        Act_End_time = tempmw.Act_End_time,
+                        Mc_TPT = tempmw.Mc_TPT,
+                        Setup_Start_time = tempmw.Setup_Start_time,
+                        Mode = 2
+                    };
+                   var activemw = await _woService.PostMc_Wait_List(mw);
+
+                    var slots = await _woService.GetAllTempMc_Timeslot_List();
+                    var slotsmc = slots.Where(s => s.Mc_Wait_List_Id == tempmw.TempMc_Wait_ListId).ToList();
+                    foreach (var tempslot in slotsmc)
+                    {
+                        var slot = new Mc_Timeslot_ListVM()
+                        {
+                            Timeslot_List_Id = tempslot.Timeslot_List_Id,
+                            EndTimeslot_List_Id = tempslot.EndTimeslot_List_Id,
+                            Mc_Id = tempslot.Mc_Id,
+                            Mc_Wait_List_Id = activemw.Mc_Wait_ListId,
+                            Slot_Not_Avl = tempslot.Slot_Not_Avl,
+                            Not_Avl_reason = tempslot.Not_Avl_reason,
+                            Allocation = 3
+                        };
+                        await _woService.PostMc_Timeslot_List(slot);
+                    }
+                }
+                var tempSubCons = await _woService.GetAllTempSubCon_List();
+                var tempSubConss = tempSubCons.Where(o => o.Wo_Id == woId).ToList(); foreach (var tempSubCon in tempSubConss)
+                {
+                    var subCon = new SubCon_ListVM()
+                    {
+                        Wo_Id = tempSubCon.Wo_Id,
+                        Opr_No = tempSubCon.Opr_No,
+                        Supplier_Id = tempSubCon.Supplier_Id,
+                        Mode = tempSubCon.Mode,
+                        Act_Qnty = tempSubCon.Act_Qnty,
+                        Plan_Qnty = tempSubCon.Plan_Qnty,
+                        Loaded = tempSubCon.Loaded,
+                        Rework_Wo = tempSubCon.Rework_Wo,
+                        Plan_Disp_date = tempSubCon.Plan_Disp_date,
+                        Plan_Recpt_date = tempSubCon.Plan_Recpt_date,
+                        Act_Disp_date = tempSubCon.Act_Disp_date,
+                        Act_Recpt_date = tempSubCon.Act_Recpt_date
+                    };
+
+                    await _woService.PostSubCon_List(subCon); 
+                }
+            }
+            return Json(new { message = "Simulation Freezed." });
+        }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetAllSimOutputWo()
+        {
+            var productions = await _woService.AllProductionPlan_Wo();
+            var masterparts = await _masterService.ItemMasterParts();
+            var procplan = await _woService.GetAllProcPlan();
+            var customer = await _baService.GetCustomerOrders();
+            var wO_Wait_Lists = await _woService.GetAllTempWo_Wait_List();
+            var opr_Lists = await _woService.GetAllOpr_List();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+            var activewO_Wait_Lists = await _woService.GetAllWO_Wait_List();
+            var allMcTimeslots = await _woService.GetAllMc_Timeslot_List();
+            var rwkList = await _woService.GetAllRwk_List();
+            var ncLogs = await _woService.GetAllNcLog();
+            var recpts = await _woService.GetAllInw_Recpt_Header();
+            var poDetails = await _woService.GetAllPodetails();
+            var customerDict = customer.ToDictionary(c => c.CustomerOrderId);
+            var masterPartDict = masterparts.ToDictionary(p => p.PartId);
+            var procPlanDict = procplan
+    .GroupBy(p => p.WorkOrderId)
+    .ToDictionary(g => g.Key, g => g.ToList());
+            var timeslotDict = allTimeslots.ToDictionary(t => t.Timeslot_ListId);
+            var mcTimeslotDict = allMcTimeslots.ToDictionary(m => m.Mc_Timeslot_List_Id);
+            //var woWaitListDict = wO_Wait_Lists.GroupBy(o => o.Wo_Id).ToDictionary(w => w.Key, w => w);
+            var oprLookup = opr_Lists.GroupBy(o => o.Wo_Id).ToDictionary(g => g.Key, g => g.ToList());
+
+            var result = new List<ProductionPlan_WoVM>();
+            var rwkWoIds = new HashSet<int>();
+
+            foreach (var rwk in rwkList)
+            {
+                var ncLog = ncLogs.FirstOrDefault(n => n.Insp_Outcome_Details_Id == rwk.NC_Log_Id);
+                if (ncLog == null) continue;
+
+                var recpt = recpts.FirstOrDefault(r => r.Inw_Recpt_HeaderId == ncLog.Inw_Recpt_Header_Id);
+                if (recpt == null) continue;
+
+                var po = poDetails.FirstOrDefault(p => p.PoDetailsId == recpt.PoHeaderId);
+                if (po == null) continue;
+
+                var relatedProcPlan = procplan.FirstOrDefault(pp => pp.ProcPlanId == po.ProcPlanId);
+                if (relatedProcPlan == null) continue;
+
+                rwkWoIds.Add((int)relatedProcPlan.WorkOrderId); // This is the WoId
+            }
+
+            foreach (var item in productions)
+            {
+                item.PlanStartDateStr = (item.PartType == 2)
+                 ? item.PlanStartDate.ToString("dd-MM-yyyy")
+                 : (procPlanDict.TryGetValue(item.WoId, out var plans) && plans.Any()
+                     ? plans.OrderByDescending(p => p.CalcReceiptDate).First().CalcReceiptDate.ToString("dd-MM-yyyy")
+                     : string.Empty);
+
+                item.SoComplDateStr = item.SoComplDate?.ToString("dd-MM-yyyy");
+
+                if (masterPartDict.TryGetValue(item.PartId, out var part))
+                {
+                    item.PartNo = part.PartNo;
+                    item.PartDesc = part.Description;
+                    bool isParentWo = productions.Any(x => x.ParentWoId == item.WoId);
+
+                    if (item.PartType == 1 && item.ParentWoId == 0)
+                        item.PartTypeName = isParentWo ? "Parent CMP" : "CMP";
+                    else if (item.PartType == 2)
+                        item.PartTypeName = "Assembly";
+                }
+
+                var so = await _baService.GetOneSO(item.SalesOrderId); // Consider caching GetOneSO results if reused
+                if (so != null)
+                {
+                    if (customerDict.TryGetValue(so.CustomerOrderId, out var cust))
+                    {
+                        item.Customer = cust.CustomerName;
+                    }
+
+                    // Release condition skipped/commented logic
+                }
+                else
+                {
+                    var wosos = await _woService.GetSoWoRel(item.WoId);
+                    foreach (var woso in wosos)
+                    {
+                        var sos = await _baService.GetOneSO(woso.SalesOrderId); // Again, consider caching
+                        if (sos != null)
+                        {
+                            if (customerDict.TryGetValue(sos.CustomerOrderId, out var cus))
+                            {
+                                item.Customer = cus.CustomerName;
+                            }
+                        }
+                    }
+                }
+
+                // Earliest Start Time
+                if (oprLookup.TryGetValue(item.ProductionPlanId, out var itemOprs))
+                {
+                    var startTimes = itemOprs
+                        .Select(o => mcTimeslotDict.TryGetValue(o.Shop_Plan_start_time, out var mcTime)
+                                        && timeslotDict.TryGetValue(mcTime.Timeslot_List_Id, out var slot)
+                                        ? slot.Start_time
+                                        : (DateTime?)null)
+                        .Where(t => t != null)
+                        .ToList();
+
+                    if (startTimes.Any())
+                    {
+                        item.ActStartDateStr = startTimes.Min().Value.ToString("dd-MM-yyyy");
+                    }
+                }
+
+                item.DataChange = (item.Changed == 0) ? "N" : "Y";
+                var waitItem = wO_Wait_Lists.Where(w => w.Wo_Id == item.ProductionPlanId).FirstOrDefault();
+                if (waitItem != null)
+                {
+                    item.CsStartDate = waitItem.Plan_Start_Date.ToString("dd-MM-yyyy");
+                    item.CsEndDate = waitItem.Plan_End_Date.ToString("dd-MM-yyyy");
+                    item.CriticalParts = (waitItem.Plan_End_Date > item.PlanCompletionDate) ? "Y" : "N";
+                    if(item.ActStartDateStr == string.Empty)
+                    {
+                        item.ActStartDateStr = waitItem.Plan_Start_Date.ToString("dd-MM-yyyy");
+                    }
+                    var activewO_Wait_List = activewO_Wait_Lists.Where(w => w.Wo_Id == item.ProductionPlanId).FirstOrDefault();
+                    if (activewO_Wait_List != null)
+                    {
+                        item.PsStartDate = activewO_Wait_List.Plan_Start_Date.ToString("dd-MM-yyyy");
+                        item.PsEndDate = activewO_Wait_List.Plan_End_Date.ToString("dd-MM-yyyy");
+                    }
+                    var mf = await _masterService.GetManufPart((int)item.PartId);  // Consider caching this call
+                    var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                    var routingStep = await _routingService.RoutingSteps((int)item.RoutingId);
+                    item.NoOfRoutes = routingList.Count();
+                    item.RoutingName = routingList.First(r=>r.RoutingId == item.RoutingId).RoutingName;
+                    item.CurOpr = routingStep.First(r=>r.StepId == item.StartingOpNo).StepNumber;
+                    item.ReworkWo = rwkWoIds.Contains((int)item.WoId) ? "Y" : "N";
+                    result.Add(item);
+                }
+            }
+
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllChildPartAssem(long woId)
+        {
+            var productions = await _woService.AllProductionPlan_Wo();
+            var procplan = await _woService.GetAllProcPlan();
+            var findwo = productions.Where(p => p.WoId == woId && p.ParentWoId == 0).FirstOrDefault();
+            var childwos = productions.Where(p => p.ParentWoId == woId).ToList();
+            var childpros = procplan.Where(p => p.WorkOrderId == woId).ToList();
+            var masterparts = await _masterService.ItemMasterParts();
+            var pODetails = await _woService.GetAllPodetails();
+            var masterPartDict = masterparts.ToDictionary(p => p.PartId);
+            List<ProductionPlan_WoVM> result = new List<ProductionPlan_WoVM>();
+            foreach (var item in childwos)
+            {
+                if (masterPartDict.TryGetValue(item.PartId, out var part))
+                {
+                    item.PartNo = part.PartNo;
+                    bool isParentWo = productions.Any(x => x.ParentWoId == item.WoId);
+
+                    if (item.PartType == 1 )
+                        item.PartTypeName = "Child Manf Part";
+                    else if (item.PartType == 2)
+                        item.PartTypeName = "Sub Assy";
+
+                    var wostatus = await _woService.GetWOStatus(item.Status);
+                    item.WoStatus = wostatus.Status;
+                    item.FinQnty = "0";
+                    item.PoNumber = "-";
+                    item.PoStatus = "-";
+                    result.Add(item);
+                }
+            }
+            foreach (var pp in childpros)
+            {
+                if (pp.PartType == "RawMaterial")
+                {
+                    continue;
+                }
+                var po = pODetails.Where(po => po.ProcPlanId == pp.ProcPlanId).FirstOrDefault();
+                if(po!=null)
+                {
+                    ProductionPlan_WoVM item = new ProductionPlan_WoVM();
+                    item.PoNumber = pp.Reference;
+                    if (masterPartDict.TryGetValue(pp.PartId, out var part))
+                    {
+                        item.PartNo = part.PartNo;
+                    }
+                    if (findwo != null)
+                    {
+                        item.CalcWOQty = findwo.CalcWOQty;
+                        var wostatus = await _woService.GetWOStatus(findwo.Status);
+                        item.WoStatus = wostatus.Status;
+                    }
+                    item.PoQnty = po.PoQnty.ToString();
+                    item.WONumber = "-";
+                    if (po.Status == 1)
+                    {
+                        item.PoStatus = "Not Approved";
+                    }
+                    else if (po.Status == 2)
+                    {
+                        item.PoStatus = "PO Approved";
+                    }
+                    else if (po.Status == 3)
+                    {
+                        item.PoStatus = "Completed";
+                    }
+                    item.PartTypeName = pp.PartType;
+                    item.FinQnty = "0";
+                    result.Add(item);
+                }
+            }
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateWOStatusOnBookout(long woId, int oprNo, int mcId, int balBookoutQty, DateTime bookoutTime)
+        {
+            var wos = await _woService.AllProductionPlan_Wo();
+            var allTransLogs = await _woService.GetAllInv_Trans_Log();
+            var wo = wos.Where(w => w.ProductionPlanId == woId).FirstOrDefault();
+            if (wo == null) return NotFound("WO not found");
+
+            var totalBookoutQty = allTransLogs
+    .Where(t => t.Wo_Id == woId )
+    .Sum(t => t.Qnty);
+
+            bool isFinalOpr = (oprNo == wo.EndingOpNo);
+
+
+            // ----- CASE 1: Last Operation + No Balance -----
+            if (isFinalOpr && balBookoutQty == 0)
+            {
+                wo.Status = 6;
+                wo.ActWOQty = (int)totalBookoutQty;
+                wo.ActCompletionDate = bookoutTime;
+                await _woService.UpdateProductionPlan_Wo(wo);
+                return Ok("WO marked Complete");
+            }
+
+            // ----- CASE 2: Not Final Opr + No Balance (allow next step) -----
+            if (!isFinalOpr && balBookoutQty == 0)
+            {
+                wo.Status = 5;
+                await _woService.UpdateProductionPlan_Wo(wo);
+                return Ok("WO WIP - current operation completed");
+            }
+
+            // ----- CASE 3: Not Final Opr + Balance remaining (shift-end partial) -----
+            if (!isFinalOpr && balBookoutQty > 0)
+            {
+                wo.Status = 5;
+                await _woService.UpdateProductionPlan_Wo(wo);
+                return Ok("WO WIP - partial bookout");
+            }
+
+            return Ok("No matching condition found");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllMcWos(long mcId)
+        {
+            var productions = await _woService.AllProductionPlan_Wo();
+            var masterparts = await _masterService.ItemMasterParts();
+            var mcwaitList = await _woService.GetAllTempMc_Wait_List();
+            var allTimeSlots = await _woService.GetAllTimeslot_List();
+            var mcwaits = mcwaitList.Where(m => m.Mc_Id == mcId).ToList();
+            var wO_Wait_Lists = await _woService.GetAllTempWo_Wait_List();
+            var nclogs = await _woService.GetAllNcLog();
+            var recpts = await _woService.GetAllInw_Recpt_Header();
+            var podetails = await _woService.GetAllPodetails();
+            var procplans = await _woService.GetAllProcPlan();
+            var rwkList = await _woService.GetAllRwk_List();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+            foreach (var item in mcwaits)
+            {
+                var pwo = productions.Where(p => p.ProductionPlanId == item.Wo_Id).FirstOrDefault();
+                item.WoNumber = pwo.WONumber;
+                item.DataChanged = (pwo.Changed == 0) ? "N" : "Y";
+                item.WoQnty = pwo.CalcWOQty.ToString();
+                item.Bal_Qnty = pwo.CalcWOQty;
+                var imp = masterparts.Where(im => im.PartId == pwo.PartId).FirstOrDefault();
+                item.PartNo = imp.PartNo + " / "+imp.Description;
+                var mf = await _masterService.GetManufPart((int)pwo.PartId);  // Consider caching this call
+                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                var routingStep = await _routingService.RoutingSteps((int)pwo.RoutingId);
+                item.RoutingName =routingList.First(r => r.RoutingId == pwo.RoutingId).RoutingName;
+                item.OprNoName = routingStep.First(r => r.StepId == item.Opr_No_Id).StepNumber;
+                var waitItem = wO_Wait_Lists.Where(w => w.Wo_Id == pwo.ProductionPlanId).FirstOrDefault();
+                if(waitItem != null)
+                {
+                item.CsStartDate = waitItem.Plan_Start_Date.ToString("dd-MM-yyyy");
+                item.CsEndDate = waitItem.Plan_End_Date.ToString("dd-MM-yyyy");
+                item.ActStartDate = waitItem.Plan_Start_Date.ToString("dd-MM-yyyy");
+                    item.Rework_Wo = 'N';
+                }
+                else
+                {
+                    var procplan = procplans.Where(pp => pp.WorkOrderId == pwo.WoId).FirstOrDefault();
+                    var podetail = podetails.Where(p => p.PartId == procplan.PartId).FirstOrDefault();
+                    var recpt = recpts.Where(r => r.PoHeaderId == podetail.PoDetailsId).FirstOrDefault();
+                    var nclog = nclogs.Where(n => n.Inw_Recpt_Header_Id == recpt.Inw_Recpt_HeaderId).FirstOrDefault();
+                    var rewk = rwkList.Where(w => w.NC_Log_Id == nclog.Insp_Outcome_Details_Id).FirstOrDefault();
+                    var csstart = allTimeslots.Where(t => t.Timeslot_ListId == item.Plan_start_time_Id).FirstOrDefault();
+                    var csend = allTimeslots.Where(t => t.Timeslot_ListId == item.Plan_end_time_Id).FirstOrDefault();
+                    item.CsStartDate = csstart.Start_time.ToString("dd-MM-yyyy");
+                    item.CsEndDate = csend.End_time.ToString("dd-MM-yyyy");
+                    item.ActStartDate = rewk.Actual_Start_Time.ToString("dd-MM-yyyy");
+                    item.Rework_Wo = 'Y';
+                }
+                item.MatlIssued = "";
+                item.Non_Plan_Wk = 'N';
+                var routingMcs = await _routingService.StepMachines((int)item.Opr_No_Id);
+                var routingMc = routingMcs.FirstOrDefault(r => r.PreferredMachine==1);
+                if(routingMc == null)
+                {
+                    routingMc = routingMcs.FirstOrDefault();
+                }
+                if(item.Wait_Seq_No == 0)
+                {
+                    if (TimeSpan.TryParse(routingMc.FloorToFloorTime, out var f2fTime))
+                    {
+                        double f2fHrs = f2fTime.TotalHours;
+                        double totalHrs = item.Bal_Qnty * f2fHrs;
+                        TimeSpan hrsBooked = TimeSpan.FromHours(totalHrs);
+                        item.HrsBooked = $"{(int)hrsBooked.TotalHours:D2}:{hrsBooked.Minutes:D2}";
+                    }
+                    else
+                    {
+                        item.HrsBooked = "00:00";
+                    }
+                    item.WaitTime = "";
+                }
+                else
+                {
+                    if (TimeSpan.TryParse(routingMc.SetupTime, out var setupTime) &&
+                        TimeSpan.TryParse(routingMc.FloorToFloorTime, out var cycleTime))
+                    {
+                        double setupHrs = setupTime.TotalHours;
+                        double cycleHrs = cycleTime.TotalHours;
+                        double totalHrs = setupHrs + (item.Bal_Qnty * cycleHrs);
+                        TimeSpan hrsBooked = TimeSpan.FromHours(totalHrs);
+                        item.HrsBooked = $"{(int)hrsBooked.TotalHours:D2}:{hrsBooked.Minutes:D2}";
+                    }
+                    else
+                    {
+                        item.HrsBooked = "00:00";
+                    }
+                    var currentStart = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == item.Plan_start_time_Id)?.Start_time;
+                    var prevTask = mcwaits
+                        .Where(w => w.Mc_Id == item.Mc_Id && w.Wait_Seq_No == item.Wait_Seq_No - 1)
+                        .FirstOrDefault();
+                    DateTime? prevEnd = null;
+                    if (prevTask != null)
+                    {
+                        prevEnd = allTimeSlots
+                            .FirstOrDefault(t => t.Timeslot_ListId == prevTask.Plan_end_time_Id)?.End_time;
+                    }
+                    if (currentStart != null && prevEnd != null)
+                    {
+                        if (currentStart == prevEnd)
+                        {
+                            item.WaitTime = "0"; // Starts immediately after previous
+                        }
+                        else
+                        {
+                            item.WaitTime = currentStart.Value.ToString("dd-MM-yyyy hh:mm tt");
+                        }
+                    }
+                    else
+                    {
+                        item.WaitTime = "-"; // Could not determine time
+                    }
+
+                }
+            }
+            return Ok(mcwaits);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSubconWos()
+        {
+            var tempsubconList = await _woService.GetAllTempSubCon_List();
+            var prodnwos = await _woService.AllProductionPlan_Wo();
+            var compaines = await _masterService.GetCompanies();
+            foreach (var item in tempsubconList)
+            {
+                item.Supplier = compaines.FirstOrDefault(c => c.CompanyId == item.Supplier_Id).CompanyName;
+                item.PartCount = prodnwos.Count(p => p.ProductionPlanId == item.Wo_Id);
+            }
+            var groupedSubcons = tempsubconList
+                .GroupBy(s => new { s.Supplier_Id, s.Supplier })
+                .Select(g => new TempSubCon_ListVM()
+                {
+                    Supplier_Id = g.Key.Supplier_Id,
+                    Supplier = g.Key.Supplier,
+                    PartCount = g.Sum(x => x.PartCount),
+                    PartMatlSent = 0,
+                    PartToSent = 0,
+                    DateNotLoaded = g.LastOrDefault(x => x.Loaded == 'N')?.Plan_Recpt_date.ToString("dd-MM-yyyy") ?? "-"
+                })
+                .ToList();
+            return Ok(groupedSubcons);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetSubConMachineHoursMatrix()
+        {
+            // 1. Fetch all planned subcon operations
+            var subconOps = await _woService.GetAllTempSubCon_List(); // Contains Wo_Id, Opr_No, Supplier_Id, Plan_Qnty, etc.
+
+            var compaines = await _masterService.GetCompanies();
+            var mactypes = await _machineService.GetMachineTypes();
+            // 2. Group by SubCon and MachineType
+            var subconMatrix = new Dictionary<string, Dictionary<string, double>>(); // SubConName => (MachineType => TotalHours)
+
+            foreach (var subconOp in subconOps)
+            {
+                var subconList = await _routingService.SubCons((int)subconOp.Opr_No);
+                var subtransport = subconList.FirstOrDefault(s => s.PreferredSubcon == 1) ?? subconList.FirstOrDefault();
+                var subconWSS = await _routingService.SubConWSS((int)subconOp.Opr_No, subtransport.SubConDetailsId);
+                var subconWS = subconWSS.FirstOrDefault();
+                if (subconWS == null) continue;
+
+                var subcon = compaines.Where(c=>c.CompanyId == subconOp.Supplier_Id).FirstOrDefault(); // get name
+                var subconName = subcon?.CompanyName ?? "Unknown";
+                var machineType = mactypes.Where(mt=>mt.MachineTypeTypeId == subconWS.MachineType).FirstOrDefault()?.MachineTypeName;
+
+                var floorToFloorTime = TimeSpan.TryParse(subconWS.FloorToFloorTime, out var ftf) ? ftf : TimeSpan.Zero;
+                var hours = (floorToFloorTime.TotalMinutes * subconOp.Plan_Qnty) / 60.0;
+
+                // Add to matrix
+                if (!subconMatrix.ContainsKey(subconName))
+                    subconMatrix[subconName] = new Dictionary<string, double>();
+
+                if (!subconMatrix[subconName].ContainsKey(machineType))
+                    subconMatrix[subconName][machineType] = 0;
+
+                subconMatrix[subconName][machineType] += hours;
+            }
+
+            // 3. Build flat list for frontend binding
+            var allMachineTypes = subconMatrix.SelectMany(x => x.Value.Keys).Distinct().ToList();
+            var result = new List<Dictionary<string, object>>();
+
+            foreach (var mType in allMachineTypes)
+            {
+                var row = new Dictionary<string, object>();
+                row["MachineType"] = mType;
+                double rowTotal = 0;
+
+                foreach (var subcon in subconMatrix.Keys)
+                {
+                    double hrs = subconMatrix[subcon].ContainsKey(mType) ? subconMatrix[subcon][mType] : 0;
+                    row[subcon] = Math.Round(hrs, 2);
+                    rowTotal += hrs;
+                }
+
+                row["TotalHrs"] = Math.Round(rowTotal, 2);
+                result.Add(row);
+            }
+
+            // 4. Add final row for Total Hrs per subcon
+            var totalRow = new Dictionary<string, object>();
+            totalRow["MachineType"] = "Total Hrs";
+            double grandTotal = 0;
+
+            foreach (var subcon in subconMatrix.Keys)
+            {
+                double colTotal = subconMatrix[subcon].Values.Sum();
+                totalRow[subcon] = Math.Round(colTotal, 2);
+                grandTotal += colTotal;
+            }
+            totalRow["TotalHrs"] = Math.Round(grandTotal, 2);
+            result.Add(totalRow);
+
+            // Return as:
+            return Ok(new
+            {
+                Columns = new List<string> { "MachineType" }.Concat(subconMatrix.Keys).Concat(new[] { "TotalHrs" }).ToList(),
+                Rows = result
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSimWosBySuppiler(long Suppid)
+        {
+            var subconOps = await _woService.GetAllTempSubCon_List();
+            var activesubconOps = await _woService.GetAllSubCon_List();
+            var subcons = subconOps.Where(s => s.Supplier_Id == Suppid).ToList();
+            var productions = await _woService.AllProductionPlan_Wo();
+            var wO_Wait_Lists = await _woService.GetAllTempWo_Wait_List();
+            var masterparts = await _masterService.ItemMasterParts();
+            foreach (var item in subcons)
+            {
+                var pwo = productions.Where(p => p.ProductionPlanId == item.Wo_Id).FirstOrDefault();
+                item.WoNumber = pwo.WONumber;
+                item.DataChanged = (item.Changed == 0) ? "N" : "Y";
+                var imp = masterparts.Where(im => im.PartId == pwo.PartId).FirstOrDefault();
+                item.PartNo = imp.PartNo + " / " + imp.Description;
+                var mf = await _masterService.GetManufPart((int)pwo.PartId);  
+                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                var routingStep = await _routingService.RoutingSteps((int)pwo.RoutingId);
+                item.RoutingName = routingList.First(r => r.RoutingId == pwo.RoutingId).RoutingName;
+                item.OprNoName = routingStep.First(r => r.StepId == item.Opr_No).StepNumber;
+                var waitItem = wO_Wait_Lists.Where(w => w.Wo_Id == pwo.ProductionPlanId).FirstOrDefault();
+                var activesubconOp = activesubconOps.Where(w => w.Wo_Id == item.Wo_Id).FirstOrDefault();
+                if (activesubconOp != null)
+                {
+                    item.PsStartDate = activesubconOp.Plan_Disp_date.ToString("dd-MM-yyyy");
+                    item.PsEndDate = activesubconOp.Plan_Recpt_date.ToString("dd-MM-yyyy");
+                }
+                item.CsStartDate = item.Plan_Disp_date.ToString("dd-MM-yyyy");
+                item.CsEndDate = item.Plan_Recpt_date.ToString("dd-MM-yyyy");
+
+            }
+            return Ok(subcons);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ReSimulateWOAllocation([FromBody] List<int> selectedWOIds)
+        {
+            var productions = await _woService.AllProductionPlan_Wo();
+            var allOprs = new List<TempOpr_ListVM>();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+            var allPrevWo = await _woService.GetAllTempWo_Wait_List();
+            var allMcTimeslots = await _woService.GetAllTempMc_Timeslot_List();
+            var allmac = await _machineService.GetMachinesList();
+            List<TempWO_Wait_ListVM> readyWOs = new List<TempWO_Wait_ListVM>();
+            SimulationState.IsStopped = false;
+            // Step 1: Create WO_Wait_List and Opr_List entries
+            foreach (var woId in selectedWOIds)
+            {
+                await CheckPauseAsync();
+
+                var item = productions.FirstOrDefault(p => p.ProductionPlanId == woId);
+                if (item == null) continue;
+                var prev = allPrevWo.FirstOrDefault(p => p.Wo_Id == woId);
+                var addData = new TempWO_Wait_ListVM
+                {
+                    TempWO_Wait_ListId = prev.TempWO_Wait_ListId,
+                    Wo_Id = item.ProductionPlanId,
+                    Mode = 1,
+                    Allow_Routing_Chg = 'Y',
+                    Total_TPT = 0,
+                    Rework_Wo = 'N',
+                    NC_Log_Ref = 0,
+                    WO_Wait_Seq_No = 0,
+                    Plan_Start_Date = item.PlanStartDate,
+                    Plan_End_Date = (DateTime)item.PlanCompletionDate,
+                    Plan_Simul_Qnty = item.CalcWOQty
+                };
+
+                var woResult = await _woService.PostTempWo_Wait_List(addData);
+                readyWOs.Add(woResult);
+
+                var mf = await _masterService.GetManufPart((int)item.PartId);
+                var route = (await _routingService.Routings(mf.ManufacturedPartNoDetailId))
+                            .FirstOrDefault(r => r.RoutingId == item.RoutingId);
+                if (route == null) continue;
+
+                var routingSteps = await _routingService.RoutingSteps(route.RoutingId);
+
+                foreach (var step in routingSteps)
+                {
+                    await CheckPauseAsync();
+
+                    var tptResult = await GetTPT(step);
+                    var tptStepItem = (RoutingStepVM)((OkObjectResult)tptResult).Value;
+                    int setup = int.Parse(tptStepItem.SetupTime ?? "0");
+                    int firstPiece = int.Parse(tptStepItem.FirstPieceTime ?? "0");
+                    int cycle = int.Parse(tptStepItem.CycleTime ?? "0");
+                    int quantity = item.CalcWOQty;
+
+                    var opr = new TempOpr_ListVM
+                    {
+                        Wo_Id = item.ProductionPlanId,
+                        Opr_No = step.StepId,
+                        Mode = 1,
+                        Rework_Wo = 'N',
+                        NC_Log_Ref = 0,
+                        Act_Qnty = 0,
+                        Plan_Qnty = quantity,
+                        No_of_Simult_Mcs = step.NumberOfSimMachines,
+                        Initial_Opr_TPT = setup + firstPiece + cycle * (quantity - 1)
+                    };
+                    var oprResult = await _woService.PostTempOpr_List(opr);
+                    allOprs.Add(oprResult);
+                }
+            }
+
+            // Step 2: Recalculate Total TPT and Sequence WOs
+            foreach (var wo in readyWOs)
+            {
+                var oprs = allOprs.Where(o => o.Wo_Id == wo.Wo_Id).OrderBy(o => o.Opr_No).ToList();
+                double totalTPT = oprs.Sum(o => o.Initial_Opr_TPT);
+                wo.Total_TPT = Convert.ToInt32(totalTPT);
+                await _woService.PostTempWo_Wait_List(wo);
+            }
+
+            // Step 3: Sequence WOs
+            var sequencedWOs = readyWOs.OrderBy(w => w.Plan_End_Date).ThenBy(w => w.Total_TPT).ToList();
+            for (int i = 0; i < sequencedWOs.Count; i++)
+            {
+                sequencedWOs[i].WO_Wait_Seq_No = i + 1;
+                await _woService.PostTempWo_Wait_List(sequencedWOs[i]);
+            }
+
+            // Step 4: Allocate timeslots
+            foreach (var wo in sequencedWOs)
+            {
+                await CheckPauseAsync();
+                var oprs = allOprs.Where(o => o.Wo_Id == wo.Wo_Id).OrderBy(o => o.Opr_No).ToList();
+                var prodwo = productions.First(p => p.ProductionPlanId == wo.Wo_Id);
+                var routingSteps = await _routingService.RoutingSteps((int)prodwo.RoutingId);
+
+                foreach (var opr in oprs)
+                {
+                    await CheckPauseAsync();
+                    var step = routingSteps.FirstOrDefault(s => s.StepId == opr.Opr_No);
+                    var oprMachines = await _routingService.StepMachines((int)opr.Opr_No);
+                    if (step == null) continue;
+
+                    int noOfSimultMcs = step.NumberOfSimMachines;
+                    if (step.StepLocation == "2") // SubCon
+                    {
+                        var subconList = await _routingService.SubCons((int)opr.Opr_No);
+                        var subtransport = subconList.FirstOrDefault(s => s.PreferredSubcon == 1) ?? subconList.FirstOrDefault();
+
+                        if (subtransport != null)
+                        {
+                            var subconwss = await _routingService.SubConWSS((int)opr.Opr_No, subtransport.SubConDetailsId);
+                            var subconws = subconwss.FirstOrDefault();
+                            // Time calculations
+                            var trans = TimeSpan.Parse(subtransport.TransportTime); // "01:00:00"
+                            var setupTime = TimeSpan.Parse(subconws.SetupTime); // "01:00:00"
+                            var floorToFloorTime = TimeSpan.Parse(subconws.FloorToFloorTime);
+                            int qty = wo.Plan_Simul_Qnty;
+                            double totalMinutes = trans.TotalMinutes + setupTime.TotalMinutes + (floorToFloorTime.TotalMinutes * qty);
+
+                            // Get plant working duration per day from any machine's plant
+                            var anyMachine = await _machineService.GetMachine(allmac.FirstOrDefault(m => m.MachineTypeId == subconws.MachineType).MachineId);
+                            var plant = await _plantService.GetPlantWD(anyMachine.MachinePlantId);
+
+                            int totalWorkingMinutes = 0;
+
+                            if (plant.NoOfShifts >= 1)
+                                totalWorkingMinutes += (int)TimeSpan.Parse(plant.FirstShiftDuration).TotalMinutes;
+                            if (plant.NoOfShifts >= 2)
+                                totalWorkingMinutes += (int)TimeSpan.Parse(plant.SecondShiftDuration).TotalMinutes;
+                            if (plant.NoOfShifts == 3)
+                                totalWorkingMinutes += (int)TimeSpan.Parse(plant.ThirdShiftDuration).TotalMinutes;
+
+                            int slotsPerDay = totalWorkingMinutes / plant.Timeslot_duration;
+                            int subconDays = (int)Math.Ceiling(totalMinutes / totalWorkingMinutes);
+
+
+                            // Timeslot allocation logic
+                            DateTime today = DateTime.Now.Date;
+                            var futureSlots = allTimeslots
+                                .Where(t => t.Start_time.Date > today)
+                                .OrderBy(t => t.Start_time)
+                                .ToList();
+
+                            DateTime subconStartDate = futureSlots.First().Start_time.Date;
+                            DateTime subconEndDate = subconStartDate.AddDays(subconDays - 1);
+
+                            long? startId = futureSlots
+                                .FirstOrDefault(t => t.Start_time.Date == subconStartDate)?.Timeslot_ListId;
+                            long? endId = futureSlots
+                                .Where(t => t.Start_time.Date == subconEndDate)
+                                .LastOrDefault()?.Timeslot_ListId;
+                            DateTime planDispDate;
+                            if (opr.Opr_No == prodwo.StartingOpNo)
+                            {
+                                // SubCon is first operation
+                                planDispDate = DateTime.Now.AddDays(1);
+                            }
+                            else
+                            {
+                                // SubCon comes after in-house Opr
+                                var currentIndex = oprs.FindIndex(o => o.Opr_No == opr.Opr_No);
+                                var prevOpr = currentIndex > 0 ? oprs[currentIndex - 1] : null;
+                                if (prevOpr != null)
+                                {
+                                    var endTimeslot = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == prevOpr.Shop_Plan_end_time);
+                                    if (endTimeslot != null)
+                                        planDispDate = endTimeslot.End_time.AddDays(1);
+                                    else
+                                        planDispDate = DateTime.Now.AddDays(1);
+                                }
+                                else
+                                {
+                                    planDispDate = DateTime.Now.AddDays(1);
+                                }
+                            }
+                            var tempSubCon_List = new TempSubCon_ListVM
+                            {
+                                Wo_Id = wo.Wo_Id,
+                                Opr_No = opr.Opr_No,
+                                Supplier_Id = subtransport.SupplierId,
+                                Rework_Wo = 'N',
+                                Loaded = 'N',
+                                Mode = 1,
+                                Changed = 0,
+                                Plan_Disp_date = planDispDate,
+                                Plan_Qnty = wo.Plan_Simul_Qnty
+                            };
+                            var stepConvTime = subconws.FloorToFloorTime; // e.g., "01:00:00"
+                            if (TimeSpan.TryParse(stepConvTime, out TimeSpan convTime))
+                            {
+                                tempSubCon_List.Plan_Recpt_date = planDispDate.Add(convTime);
+                            }
+                            else
+                            {
+                                tempSubCon_List.Plan_Recpt_date = planDispDate;
+                            }
+                            await _woService.PostTempSubCon_List(tempSubCon_List);
+                            if (startId.HasValue && endId.HasValue)
+                            {
+                                opr.Subcon_plan_start_time = startId.Value;
+                                opr.Subcon_plan_end_time = endId.Value;
+                                opr.Rolledup_Opr_TPT = opr.Initial_Opr_TPT;
+
+                                await _woService.PostTempOpr_List(opr);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        int noOfMcs = noOfSimultMcs;
+                        int qtyPerMc = wo.Plan_Simul_Qnty / noOfMcs;
+                        var machines = await _routingService.StepMachines((int)opr.Opr_No);
+                        List<TempMc_Wait_ListVM> mcWaits = new List<TempMc_Wait_ListVM>();
+                        var insttempMCTime = new TempMc_Timeslot_ListVM();
+                        foreach (var mc in machines.Take(noOfMcs))
+                        {
+                            await CheckPauseAsync();
+                            var setupTime = TimeSpan.Parse(mc.SetupTime); // e.g., "00:15:00"
+                            var floorToFloorTime = TimeSpan.Parse(mc.FloorToFloorTime);
+                            var tpt = setupTime.TotalMinutes + (floorToFloorTime.TotalMinutes * qtyPerMc); // total time in minutes
+                            var getmachine = await _machineService.GetMachine(mc.MachineId);
+                            var plantwd = await _plantService.GetPlantWD(getmachine.MachinePlantId);
+                            int slotsRequired = (int)Math.Ceiling(tpt / plantwd.Timeslot_duration);
+
+                            var plantSlots = allTimeslots
+                                .Where(t => t.PlantId == getmachine.MachinePlantId && t.Break_Slot != 'Y')
+                                .OrderBy(t => t.Timeslot_ListId)
+                                .ToList();
+                            allMcTimeslots = await _woService.GetAllTempMc_Timeslot_List();
+                            var existingMcSlots = allMcTimeslots
+                                .Where(s => s.Mc_Id == mc.MachineId && s.Allocation == 2)
+                                .OrderByDescending(s => s.EndTimeslot_List_Id)
+                                .ToList();
+                            long startFromTimeslotId = 0;
+                            if (existingMcSlots.Any())
+                            {
+                                startFromTimeslotId = existingMcSlots.First().EndTimeslot_List_Id;
+                            }
+                            var availableTimeslots = plantSlots
+                                .Where(t => t.Timeslot_ListId > startFromTimeslotId && t.Start_time > DateTime.Now)
+                                .Take(slotsRequired)
+                                .ToList();
+
+                            //var mcTimeslots = allMcTimeslots
+                            //    .Where(s => s.Mc_Id == mc.MachineId && s.Allocation == 1 && s.Slot_Not_Avl != 'Y')
+                            //    .OrderBy(s => s.Timeslot_List_Id) // use Timeslot_List_Id order
+                            //    .ToList();
+
+                            //var startIdx = mcTimeslots.FindIndex(s =>
+                            //{
+                            //    var slotTime = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == s.Timeslot_List_Id)?.Start_time;
+                            //    return slotTime.HasValue && slotTime.Value > DateTime.Now;
+                            //});
+
+                            //if (startIdx >= 0 && (startIdx + slotsRequired) <= mcTimeslots.Count)
+                            //{
+                            //    var availableSlots = mcTimeslots.Skip(startIdx).Take(slotsRequired).ToList();
+
+                            var mcWait = new TempMc_Wait_ListVM
+                            {
+                                Wo_Id = wo.Wo_Id,
+                                Opr_No_Id = opr.Opr_No,
+                                Mc_Id = mc.MachineId,
+                                Wait_Seq_No = await CalculateNextTempWaitSeqNo(mc.MachineId),
+                                Plan_start_time_Id = availableTimeslots.First().Timeslot_ListId,
+                                Plan_end_time_Id = availableTimeslots.Last().Timeslot_ListId,
+                                Mc_TPT = Convert.ToDecimal(tpt),
+                                Mode = 1,
+                                Plan_Qnty = qtyPerMc
+                            };
+
+                            mcWait = await _woService.PostTempMc_Wait_List(mcWait);
+
+                            //foreach (var slot in availableSlots)
+                            //{
+                            await CheckPauseAsync();
+                            var newMcSlot = new TempMc_Timeslot_ListVM
+                            {
+                                Mc_Id = mc.MachineId,
+                                Timeslot_List_Id = availableTimeslots.First().Timeslot_ListId,
+                                EndTimeslot_List_Id = availableTimeslots.Last().Timeslot_ListId, // if applicable
+                                Mc_Wait_List_Id = mcWait.TempMc_Wait_ListId, // Will set after mcWait is created
+                                Allocation = 2,
+                                Slot_Not_Avl = 'N',
+                                Not_Avl_reason = 0// set appropriately
+                            };
+                            insttempMCTime = await _woService.PostTempMc_Timeslot_List(newMcSlot);
+                            //}
+
+                            mcWaits.Add(mcWait);
+                            //}
+                        }
+
+                        // Update Opr_List with aggregated info
+                        if (!mcWaits.Any())
+                            continue;
+                        opr.Shop_Plan_start_time = mcWaits.Min(mw => mw.Plan_start_time_Id);
+                        opr.Shop_Plan_end_time = mcWaits.Max(mw => mw.Plan_end_time_Id);
+                        opr.Rolledup_Opr_TPT = mcWaits.Sum(mw => Convert.ToInt64(mw.Mc_TPT));
+                        await _woService.PostTempOpr_List(opr);
+
+                        // Calculate Mc_Wait_List.Next_Opr_Start_time_ID
+                        foreach (var mcWait in mcWaits)
+                        {
+                            var startSlot = insttempMCTime;
+                            var startTime = allTimeslots.FirstOrDefault(t => t.Timeslot_ListId == startSlot.Timeslot_List_Id)?.Start_time ?? DateTime.Now;
+
+                            // Find the corresponding machine again
+                            var mc = machines.First(m => m.MachineId == mcWait.Mc_Id);
+
+                            var setupTime = TimeSpan.Parse(mc.SetupTime);
+                            var partTime = TimeSpan.FromMinutes(TimeSpan.Parse(mc.FloorToFloorTime).TotalMinutes * Math.Min(qtyPerMc, 1));
+                            var requiredTime = setupTime + partTime;
+
+                            var nextSlotTime = startTime.Add(requiredTime);
+                            var nextSlot = allTimeslots.FirstOrDefault(t => t.Start_time >= nextSlotTime);
+
+                            mcWait.Next_Opr_Start_time_Id = nextSlot?.Timeslot_ListId ?? mcWait.Plan_end_time_Id;
+                            await _woService.PostTempMc_Wait_List(mcWait);
+                        }
+
+                    }
+                }
+
+                // Update final WO Start & End Date
+                allMcTimeslots = await _woService.GetAllTempMc_Timeslot_List();
+                var startMcSlotId = oprs.First().Shop_Plan_start_time;
+                var endMcSlotId = oprs.Last().Shop_Plan_end_time;
+                var startMcSlot = allMcTimeslots.FirstOrDefault(ts => ts.Timeslot_List_Id == startMcSlotId);
+                var endMcSlot = allMcTimeslots.FirstOrDefault(ts => ts.EndTimeslot_List_Id == endMcSlotId);
+                var startTs = allTimeslots.FirstOrDefault(ts => ts.Timeslot_ListId == startMcSlot?.Timeslot_List_Id);
+                var endTs = allTimeslots.FirstOrDefault(ts => ts.Timeslot_ListId == endMcSlot?.EndTimeslot_List_Id);
+
+                if (startTs?.Start_time != null && endTs?.End_time != null)
+                {
+                    wo.Plan_Start_Date = startTs.Start_time;
+                    wo.Plan_End_Date = endTs.End_time;
+                    await _woService.PostTempWo_Wait_List(wo);
+                }
+            }
+            try
+            {
+                SimulationState.IsPaused = false;
+                SimulationState.IsStopped = false;
+                // your simulation logic here...
+
+                return Json(new { message = "Re-Simulation completed." });
+            }
+            catch (OperationCanceledException ex)
+            {
+                return Json(new { message = "Re-Simulation stopped." });
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSimulationMove()
+        {
+            var result = await _woService.GetAllMatl_Issue_List();
+            var tempoprs = await _woService.GetAllTempOpr_List();
+            var depts = await _departmentService.GetDepartments(1);
+            var prodns = await _woService.AllProductionPlan_Wo();
+            var masterparts = await _masterService.ItemMasterParts();
+            foreach (var item in result)
+            {
+                var tempopr = tempoprs.Where(o => o.TempOpr_ListId == item.Part_Ref).FirstOrDefault();
+                var pp = prodns.Where(p => p.ProductionPlanId == tempopr.Wo_Id).FirstOrDefault();
+                var todept = depts.FirstOrDefault(d => d.DepartmentId == item.To_Location)?.Name ?? "Stores";
+                var fromdept = depts.FirstOrDefault(d => d.DepartmentId == item.From_Location)?.Name ?? "Stores";
+                item.To_LocationStr = todept;
+                item.From_LocationStr = fromdept;
+                if (todept != "Stores")
+                {
+                    item.Shop = todept;
+                }
+                else if (fromdept != "Stores")
+                {
+                    item.Shop = fromdept;
+                }
+                item.WoNumber = pp.WONumber ?? "";
+                var masterpart = masterparts.Where(m => m.PartId == pp.PartId).FirstOrDefault();
+                item.PartNo = masterpart.PartNo ?? "" + " / " + masterpart.Description;
+                var mf = await _masterService.GetManufPart((int)pp.PartId);
+                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                if (mf.ManufacturedPartType == 1)
+                {
+                    var routing = routingList.Where(r => r.RoutingId == pp.RoutingId).FirstOrDefault();
+                    var getmkfrom = await _masterService.ItemMasterPartById((int)routing.MKPartId);
+                    item.InputPartNo = getmkfrom.PartNo + " / " + getmkfrom.PartDescription;
+                }
+                else
+                {
+                    var bom = await _masterService.BOMS(mf.ManufacturedPartNoDetailId.ToString());
+                    var boms = bom.FirstOrDefault();
+                    if(boms != null)
+                    {
+                        item.InputPartNo = bom.FirstOrDefault().BOMPartNo + " / " + bom.FirstOrDefault().BOMPartDesc;
+                    }
+                    else
+                    {
+                        item.InputPartNo = string.Empty;
+                    }
+
+                }
+                var routstep = await _routingService.RoutingSteps((int)pp.RoutingId);
+                item.RoutingName = routingList.Where(r => r.RoutingId == pp.RoutingId).FirstOrDefault().RoutingName;
+                item.OpNo = routstep.FirstOrDefault(s=>s.StepId == tempopr.Opr_No).StepNumber ?? "";
+                item.BalWoQnty = pp.CalcWOQty.ToString() ?? "0";
+                item.QntyAvl = 0;
+                item.BookOutQnty = 0;
+                item.IssueMovDtStr = item.Issue_Mov_date.ToString("dd-MM-yyyy");
+            }
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllMcWaitSetupList()
+        {
+            var result = new List<TempMc_Wait_ListVM>();
+
+            var waitList = await _woService.GetAllMc_Wait_List();
+            var timeslots = await _woService.GetAllTempMc_Timeslot_List();
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+            var parts = await _masterService.ItemMasterParts();
+            var machines = await _machineService.GetMachinesList();
+            var shops = await _departmentService.GetDepartments(1);
+            var allWO = await _woService.AllProductionPlan_Wo();
+            var translogs = await _woService.GetAllInv_Trans_Log();
+            var allTimeSlots = await _woService.GetAllTimeslot_List();
+
+            foreach (var mcWait in waitList)
+            {
+                var wo = allWO.FirstOrDefault(p => p.ProductionPlanId == mcWait.Wo_Id);
+                var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
+                var machine = machines.FirstOrDefault(m => m.MachineId == mcWait.Mc_Id);
+                var shop = shops.FirstOrDefault(s => s.DepartmentId == machine.ShopId);
+                var mf = await _masterService.GetManufPart((int)wo.PartId);
+                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                var plantwd = await _plantService.GetPlantWD(machine.PlantId);
+                var routing = await _routingService.RoutingSteps((int)wo.RoutingId);
+                var routingstep = routing.FirstOrDefault(r => r.StepId == mcWait.Opr_No_Id);
+                var stepMachines = await _routingService.StepMachines((int)routingstep.StepId);
+                var currentStart = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == mcWait.Plan_start_time_Id)?.Start_time;
+                var shiftName = GetShiftName(currentStart.Value, plantwd);
+                result.Add(new TempMc_Wait_ListVM
+                {
+                    ShopName = shop?.Name ?? "",
+                    McName = machine?.Name ?? "",
+                    WoNumber = wo?.WONumber ?? "",
+                    PartNo = part?.PartNo + " / " + part?.Description,
+                    RoutingName = routingList.First(r => r.RoutingId == wo.RoutingId).RoutingName ?? "",
+                    OprNoName = routingstep?.StepNumber ?? "",
+                    WoQnty = wo?.CalcWOQty.ToString() ?? "0",
+                    Plan_Qnty = mcWait.Plan_Qnty,
+                    ActiveId = mcWait.Mc_Wait_ListId,
+                    ShiftName = shiftName,
+                    PlanStartStr = currentStart.Value.ToString("dd-MM-yyyy hh:mm tt")
+                });
+            }
+
+            return Ok(result);
+        }
+        string GetShiftName(DateTime currentStart, PlantWorkingDetailsVM plantwd)
+        {
+            var currentTime = currentStart.TimeOfDay;
+
+            // Helper function to check shift time range with midnight handling
+            bool IsInShift(TimeSpan start, TimeSpan duration)
+            {
+                var end = start + duration;
+
+                if (end >= TimeSpan.FromHours(24)) // wrap around midnight
+                    end -= TimeSpan.FromHours(24);
+
+                if (start < end)
+                    return currentTime >= start && currentTime < end;
+                else
+                    return currentTime >= start || currentTime < end;
+            }
+
+            // First Shift
+            if (DateTime.TryParseExact(plantwd.FirstShiftStartTime, "hh:mm tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out var firstStartDT) &&
+                TimeSpan.TryParse(plantwd.FirstShiftDuration, out var firstDur))
+            {
+                if (IsInShift(firstStartDT.TimeOfDay, firstDur))
+                    return "1st Shift";
+            }
+
+            // Second Shift
+            if (plantwd.NoOfShifts >= 2 &&
+                DateTime.TryParseExact(plantwd.SecondShiftStartTime, "hh:mm tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out var secondStartDT) &&
+                TimeSpan.TryParse(plantwd.SecondShiftDuration, out var secondDur))
+            {
+                if (IsInShift(secondStartDT.TimeOfDay, secondDur))
+                    return "2nd Shift";
+            }
+
+            // Third Shift
+            if (plantwd.NoOfShifts == 3 &&
+                DateTime.TryParseExact(plantwd.ThirdShiftStartTime, "hh:mm tt", CultureInfo.InvariantCulture, DateTimeStyles.None, out var thirdStartDT) &&
+                TimeSpan.TryParse(plantwd.ThirdShiftDuration, out var thirdDur))
+            {
+                if (IsInShift(thirdStartDT.TimeOfDay, thirdDur))
+                    return "3rd Shift";
+            }
+
+            return "Unknown Shift";
+        }
+
+
     }
 }

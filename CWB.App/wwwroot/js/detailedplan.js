@@ -751,16 +751,12 @@ $(document).ready(function () {
                         //--
                         $.ajax({
                             type: "POST",
-                            url: '/BusinessAquisition/PostWoSoRel',
+                            url: '/BusinessAquisition/PostReadForProdWoWaitList',
                             contentType: "application/json; charset=utf-8",
                             headers: { 'Content-Type': 'application/json' },
                             data: JSON.stringify(wosomethod),
                             dataType: "json",
                             success: function (result) {
-                                window.locationre = result.url;
-                                noofWOCreation = [];
-                                $("#MultipleWo").prop('disabled', true);
-                                requestInProgress = false;
                             }
                         });
 

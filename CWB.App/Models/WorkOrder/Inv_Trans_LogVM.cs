@@ -23,6 +23,8 @@ namespace CWB.App.Models.WorkOrder
         public long From_Location_Id { get; set; }
         public long To_Location_Id { get; set; }
         public long Part_Status { get; set; }
+        public char Ready_for_issue { get; set; }
+        public char Movement_Started { get; set; }
         public char Movement_Compl { get; set; }
         public decimal Qnty_Mismatch { get; set; }
         public long Qnty_mismatch_status { get; set; }

@@ -8,6 +8,7 @@ using CWB.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CWB.CompanySettings.Controllers
@@ -138,6 +139,31 @@ namespace CWB.CompanySettings.Controllers
         [Authorize(Roles = Roles.ADMIN)]
         public async Task<IActionResult> PostHoliday([FromBody] HolidayVM holidayVM)
         {
+            var existingHolidays = _plantService.Holidays(holidayVM.PlantId);
+
+            var existingHoliday = existingHolidays.FirstOrDefault(h => h.HolidayId == holidayVM.HolidayId);
+
+            bool isNewOrChanged = false;
+
+            if (existingHoliday == null)
+            {
+                isNewOrChanged = true;
+            }
+            else
+            {
+                if (existingHoliday.HolidayDate != holidayVM.HolidayDate || existingHoliday.Name != holidayVM.Name)
+                {
+                    isNewOrChanged = true;
+                }
+            }
+
+            if (isNewOrChanged)
+            {
+                var plant = await _plantService.GetPlant(holidayVM.PlantId);
+                plant.Change_flag = 'Y';
+               var updateplant =  await _plantService.Plant(plant); 
+            }
+
             var result = await _plantService.PostHoliday(holidayVM);
             return Ok(result);
         }
@@ -177,6 +203,24 @@ namespace CWB.CompanySettings.Controllers
         {
             // var companyTypes = _plantService.GetPlants(tenantId);
             var plants =  _plantService.GetCitys(tenantId);
+            return Ok(plants);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Plant.GetNoOfDaysTimeSlots)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<PlantVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetNoOfDaysTimeSlots()
+        {
+            var plants =  await _plantService.GetNoOfDaysTimeSlots();
+            return Ok(plants);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Plant.GetTimeSlotDurations)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<PlantVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetTimeSlotDurations()
+        {
+            var plants =  await _plantService.GetTimeSlotDurations();
             return Ok(plants);
         }
         [HttpGet]

@@ -13,6 +13,7 @@
         public string Country { get; set; }
         public string GstNo { get; set; }
         public string PanNo { get; set; }
+        public char Change_flag { get; set; }
         public long WDId { get; set; }
         public string WeeklyOff1 { get; set; }
         public int NoOfShifts { get; set; }

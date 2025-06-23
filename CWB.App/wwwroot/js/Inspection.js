@@ -40,15 +40,23 @@ function calculateTotals() {
 
     // Display totals in footer
     document.getElementById("P6TbTotalOff").value = ourCountTotal;
-    var P6TbInspTotal = $("#P6TbInspTotal").val();
+    var P6TbInspTotal = $("#P6TbTotalNc").val();
     if (isNaN(P6TbInspTotal)) {
         P6TbInspTotal = 0;
     }
-    document.getElementById("P6TotalInsp").value = Math.max(0, ourCountTotal - P6TbInspTotal);
+    document.getElementById("P6TotalInsp").value = 0;
     //document.getElementById("P6TotalInsp").value = ourCountTotal - P6TbInspTotal;
     //document.getElementById("unitsTbVM").innerText = "Nos";
     //document.getElementById("P6TbInspTotalUnit").innerText = "Nos";
     //document.getElementById("P6TbTotalNcUnit").innerText = "Nos";
+}
+function calculateTotalInsp() {
+    let inspTotal = parseFloat($("#P6TbInspTotal").val()) || 0;
+    let totalNc = parseFloat($("#P6TbTotalNc").val()) || 0;
+    let unpro = parseFloat($("#P6TbUnpro").val()) || 0;
+
+    let total = inspTotal + totalNc + unpro;
+    $("#P6TotalInsp").val(total);
 }
 async function showPopup() {
     const popup = document.querySelector('#popupInspect6');
@@ -100,7 +108,6 @@ function loadNclog(inwheaderid) {
             $("#P6TotalNc").val(totalQuantity);
             $("#P6TbTotalNc").val(totalQuantity);
             $("#P6TotalInsp").val(totalQuantity);
-            $("#P6TbInspTotal").val(totalQuantity);
             calculateTotals();
         }
     }).catch((error) => {
@@ -235,6 +242,7 @@ $(document).ready(function () {
         $("#popup7").modal("hide");
         $("#NotUploaded").modal("hide");
     });
+    $("#P6TbInspTotal, #P6TbTotalNc, #P6TbUnpro").on("input", calculateTotalInsp);
     $('#popupInspect6').on('show.bs.modal', function (event) {
         $("#P6TbInspTotal").val(0);
         $("#P6TotalInsp").val(0);
@@ -466,22 +474,31 @@ $(document).ready(function () {
         $("#P8PartNoSpan").text(partno);
     });
     $("#P6LineInspupdate").on("click", function () {
-        var ourCountVM = $("#P6TotalInsp").val();
+        var ourCountVM = $("#P6TbInspTotal").val();
+        var P6TbUnpro = $("#P6TbUnpro").val();
         var suppCountVM = $("#P6TbTotalOff").val();
-        if (parseInt(suppCountVM) != parseInt(ourCountVM)) {
+        var P6TbTotalNc = $("#P6TbTotalNc").val();
+        if (P6TbTotalNc === "") {
+            P6TbTotalNc = 0;
+        }
+        if (P6TbUnpro === "") {
+            P6TbUnpro = 0;
+        }
+        var totalinps = parseInt(ourCountVM) + parseInt(P6TbTotalNc) + parseInt(P6TbUnpro);
+        if (parseInt(suppCountVM) != parseInt(totalinps)) {
             $("#ErrorMessage4").modal("show");
-        } else if (parseInt(suppCountVM) > parseInt(ourCountVM)) {
+        } else if (parseInt(suppCountVM) > parseInt(totalinps)) {
             //$("#ErrorMessage5").modal("show");
         } else {
             var partType = $("#P6Ncparttype").val();
             if (partType === "RawMaterial" || partType === "BOF") {
-                var qnty = parseInt($("#P6TotalNc").val());
+                var qnty = parseInt($("#P6TotalInsp").val());
                 var P6PartId = parseInt($("#P6PartId").val());
                 var P6PoId = parseInt($("#P6PoId").val());
 
                 api.getbulk("/WorkOrder/GetAllInv_Trans_Log").then((logdata) => {
                     var heid = parseInt($("#P7InwHeaderId").val());
-                    logdata = logdata.filter(item => item.inw_Recpt_Header_Id === heid);
+                    logdata = logdata.filter(item => item.pO_No_Id === heid);
                     var logId = 0;
                     if (Array.isArray(logdata) && logdata.length > 0) {
                         logId = logdata[logdata.length - 1].inv_Trans_LogId || 0;
@@ -529,7 +546,7 @@ $(document).ready(function () {
                 });
             } else {
 
-                var qnty = parseInt($("#P6TotalNc").val());
+                var qnty = parseInt($("#P6TotalInsp").val());
                 var P6PartId = parseInt($("#P6PartId").val());
                 var P6PoId = parseInt($("#P6PoId").val());
                 var P6WoId = parseInt($("#P6WoId").val());
@@ -548,7 +565,7 @@ $(document).ready(function () {
                     } else {
                     api.getbulk("/WorkOrder/GetAllInv_Trans_Log").then((logdata) => {
                         var heid = parseInt($("#P7InwHeaderId").val());
-                        logdata = logdata.filter(item => item.inw_Recpt_Header_Id === heid);
+                        logdata = logdata.filter(item => item.pO_No_Id === heid);
                         var logId = 0;
                         if (Array.isArray(logdata) && logdata.length > 0) {
                             logId = logdata[logdata.length - 1].inv_Trans_LogId || 0;
@@ -573,7 +590,7 @@ $(document).ready(function () {
                                     From_Location_Id: stepdata[0].stepLocation,
                                     To_Location_Id: 1,
                                     Part_Status: 1,
-                                    Movement_Compl: 'Y'
+                                    Movement_Compl: 'N'
                                 };
                                 api.post("/WorkOrder/PostInv_Trans_Log", rowData).then((Insdata) => {
                                     $("#P6MessageBox").text("Inspection Complete");

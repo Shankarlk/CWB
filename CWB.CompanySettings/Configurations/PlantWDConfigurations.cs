@@ -47,33 +47,57 @@ namespace CWB.CompanySettings.Configurations
             builder
                 .Property(o => o.FirstShiftStartTime)
                 .HasColumnName("FirstShiftStartTime")
-                .HasMaxLength(255)
-                .IsRequired();
+                .HasMaxLength(255);
             builder
                 .Property(o => o.SecondShiftStartTime)
                 .HasColumnName("SecondShiftStartTime")
-                .HasMaxLength(255)
-                .IsRequired();
+                .HasMaxLength(255);
             builder
                 .Property(o => o.ThirdShiftStartTime)
                 .HasColumnName("ThirdShiftStartTime")
-                .HasMaxLength(255)
-                .IsRequired();
+                .HasMaxLength(255);
             builder
                 .Property(o => o.FirstShiftDuration)
                 .HasColumnName("FirstShiftDuration")
-                .HasMaxLength(255)
-                .IsRequired();
+                .HasMaxLength(255);
             builder
                 .Property(o => o.SecondShiftDuration)
                 .HasColumnName("SecondShiftDuration")
-                .HasMaxLength(255)
-                .IsRequired();
+                .HasMaxLength(255);
             builder
                 .Property(o => o.ThirdShiftDuration)
                 .HasColumnName("ThirdShiftDuration")
-                .HasMaxLength(255)
-                .IsRequired();
+                .HasMaxLength(255);
+            builder
+                .Property(b => b.Timeslot_duration)
+                .HasColumnName("Timeslot_duration");
+            builder
+                .Property(b => b.No_of_span_days)
+                .HasColumnName("No_of_span_days");
+            builder
+                .Property(b => b.Retention_Days)
+                .HasColumnName("Retention_Days");
+            builder
+                .Property(b => b.First_Shift_Break_start_time)
+                .HasColumnName("First_Shift_Break_start_time");
+            builder
+                .Property(b => b.First_Shift_Break_duration)
+                .HasColumnName("First_Shift_Break_duration");
+            builder
+                .Property(b => b.Sec_Shift_Break_start_time)
+                .HasColumnName("Sec_Shift_Break_start_time");
+            builder
+                .Property(b => b.Sec_Shift_Break_duration)
+                .HasColumnName("Sec_Shift_Break_duration");
+            builder
+                .Property(b => b.Third_Shift_Break_start_time)
+                .HasColumnName("Third_Shift_Break_start_time");
+            builder
+                .Property(b => b.Third_Shift_Break_duration)
+                .HasColumnName("Third_Shift_Break_duration");
+            builder
+                .Property(b => b.Change_flag)
+                .HasColumnName("Change_flag");
             builder.HasIndex(m => m.TenantId).HasDatabaseName("PlantWorkingDetails_TenantId");
         }
     }

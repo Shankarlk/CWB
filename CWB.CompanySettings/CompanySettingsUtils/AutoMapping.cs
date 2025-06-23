@@ -35,6 +35,7 @@ namespace CWB.CompanySettings.CompanySettingsUtils
                 .ForMember(m => m.GstNo, m => m.MapFrom(src => src.GstNo))
                 .ForMember(m => m.PanNo, m => m.MapFrom(src => src.PanNo))
                 .ForMember(m => m.IsMainPlant, m => m.MapFrom(src => src.IsMainPlant))
+                .ForMember(m => m.Change_flag, m => m.MapFrom(src => src.Change_flag))
                 .ForMember(m => m.IsProductDesigned, m => m.MapFrom(src => src.IsProductDesigned));
             CreateMap<Plant, PlantVM>()
                  .ForMember(m => m.PlantId, m => m.MapFrom(src => src.Id))
@@ -47,6 +48,7 @@ namespace CWB.CompanySettings.CompanySettingsUtils
                 .ForMember(m => m.GstNo, m => m.MapFrom(src => src.GstNo))
                 .ForMember(m => m.PanNo, m => m.MapFrom(src => src.PanNo))
                 .ForMember(m => m.IsMainPlant, m => m.MapFrom(src => src.IsMainPlant))
+                .ForMember(m => m.Change_flag, m => m.MapFrom(src => src.Change_flag))
                 .ForMember(m => m.IsProductDesigned, m => m.MapFrom(src => src.IsProductDesigned));
 
 
@@ -59,6 +61,20 @@ namespace CWB.CompanySettings.CompanySettingsUtils
              .ForMember(m => m.CityId, m => m.MapFrom(src => src.Id))
              .ForMember(m => m.Name, m => m.MapFrom(src => src.Name))
              .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+
+            CreateMap<TimeSlotDurationVM, TimeSlotDuration>()
+                .ForMember(m => m.Id, m => m.MapFrom(src => src.TimeSlotDurationId))
+                .ForMember(m => m.Duration, m => m.MapFrom(src => src.Duration));
+            CreateMap<TimeSlotDuration, TimeSlotDurationVM>()
+             .ForMember(m => m.TimeSlotDurationId, m => m.MapFrom(src => src.Id))
+                .ForMember(m => m.Duration, m => m.MapFrom(src => src.Duration));
+
+            CreateMap<NoOfDaysTimeSlotVM, NoOfDaysTimeSlot>()
+                .ForMember(m => m.Id, m => m.MapFrom(src => src.NoOfDaysTimeSlotId))
+                .ForMember(m => m.Days, m => m.MapFrom(src => src.Days));
+            CreateMap<NoOfDaysTimeSlot, NoOfDaysTimeSlotVM>()
+             .ForMember(m => m.NoOfDaysTimeSlotId, m => m.MapFrom(src => src.Id))
+                .ForMember(m => m.Days, m => m.MapFrom(src => src.Days));
 
             CreateMap<CountryVM, Country>()
                 .ForMember(m => m.Id, m => m.MapFrom(src => src.CountryId))
@@ -116,7 +132,17 @@ namespace CWB.CompanySettings.CompanySettingsUtils
                .ForMember(m => m.ThirdShiftStartTime, m => m.MapFrom(src => src.ThirdShiftStartTime))
                .ForMember(m => m.FirstShiftDuration, m => m.MapFrom(src => src.FirstShiftDuration))
                .ForMember(m => m.SecondShiftDuration, m => m.MapFrom(src => src.SecondShiftDuration))
-               .ForMember(m => m.ThirdShiftDuration, m => m.MapFrom(src => src.ThirdShiftDuration));
+               .ForMember(m => m.ThirdShiftDuration, m => m.MapFrom(src => src.ThirdShiftDuration))
+            .ForMember(s => s.Timeslot_duration, s => s.MapFrom(src => src.Timeslot_duration))
+            .ForMember(s => s.No_of_span_days, s => s.MapFrom(src => src.No_of_span_days))
+            .ForMember(s => s.Retention_Days, s => s.MapFrom(src => src.Retention_Days))
+            .ForMember(s => s.First_Shift_Break_start_time, s => s.MapFrom(src => src.First_Shift_Break_start_time))
+            .ForMember(s => s.First_Shift_Break_duration, s => s.MapFrom(src => src.First_Shift_Break_duration))
+            .ForMember(s => s.Third_Shift_Break_start_time, s => s.MapFrom(src => src.Third_Shift_Break_start_time))
+            .ForMember(s => s.Third_Shift_Break_duration, s => s.MapFrom(src => src.Third_Shift_Break_duration))
+            .ForMember(s => s.Sec_Shift_Break_start_time, s => s.MapFrom(src => src.Sec_Shift_Break_start_time))
+            .ForMember(s => s.Sec_Shift_Break_duration, s => s.MapFrom(src => src.Sec_Shift_Break_duration))
+            .ForMember(s => s.Change_flag, s => s.MapFrom(src => src.Change_flag));
 
             CreateMap<Holiday, HolidayVM>()
                 .ForMember(m => m.HolidayId, m => m.MapFrom(src => src.Id))
@@ -135,7 +161,17 @@ namespace CWB.CompanySettings.CompanySettingsUtils
                .ForMember(m => m.ThirdShiftStartTime, m => m.MapFrom(src => src.ThirdShiftStartTime))
                .ForMember(m => m.FirstShiftDuration, m => m.MapFrom(src => src.FirstShiftDuration))
                .ForMember(m => m.SecondShiftDuration, m => m.MapFrom(src => src.SecondShiftDuration))
-               .ForMember(m => m.ThirdShiftDuration, m => m.MapFrom(src => src.ThirdShiftDuration));
+               .ForMember(m => m.ThirdShiftDuration, m => m.MapFrom(src => src.ThirdShiftDuration))
+            .ForMember(s => s.Timeslot_duration, s => s.MapFrom(src => src.Timeslot_duration))
+            .ForMember(s => s.No_of_span_days, s => s.MapFrom(src => src.No_of_span_days))
+            .ForMember(s => s.Retention_Days, s => s.MapFrom(src => src.Retention_Days))
+            .ForMember(s => s.First_Shift_Break_start_time, s => s.MapFrom(src => src.First_Shift_Break_start_time))
+            .ForMember(s => s.First_Shift_Break_duration, s => s.MapFrom(src => src.First_Shift_Break_duration))
+            .ForMember(s => s.Third_Shift_Break_start_time, s => s.MapFrom(src => src.Third_Shift_Break_start_time))
+            .ForMember(s => s.Third_Shift_Break_duration, s => s.MapFrom(src => src.Third_Shift_Break_duration))
+            .ForMember(s => s.Sec_Shift_Break_start_time, s => s.MapFrom(src => src.Sec_Shift_Break_start_time))
+            .ForMember(s => s.Sec_Shift_Break_duration, s => s.MapFrom(src => src.Sec_Shift_Break_duration))
+            .ForMember(s => s.Change_flag, s => s.MapFrom(src => src.Change_flag));
 
             CreateMap<PlantWorkingDetails, PlantVM>()
           .ForMember(m => m.WDId, m => m.MapFrom(src => src.Id))
@@ -147,7 +183,8 @@ namespace CWB.CompanySettings.CompanySettingsUtils
           .ForMember(m => m.Notes, m => m.MapFrom(src => src.Plant.Notes))
           .ForMember(m => m.WeeklyOff1, m => m.MapFrom(src => src.WeeklyOff1))
           .ForMember(m => m.NoOfShifts, m => m.MapFrom(src => src.NoOfShifts))
-          .ForMember(m => m.FirstShiftStartTime, m => m.MapFrom(src => src.FirstShiftStartTime));
+          .ForMember(m => m.FirstShiftStartTime, m => m.MapFrom(src => src.FirstShiftStartTime))
+            .ForMember(s => s.Change_flag, s => s.MapFrom(src => src.Change_flag));
 
             CreateMap<PlantVM, PlantWorkingDetails>()
                  .ForMember(m => m.Id, m => m.MapFrom(src => src.WDId))

@@ -60,7 +60,7 @@ namespace CWB.Masters.Services.Routings
 
         public IEnumerable<RoutingVM> GetRoutingsForManufId(int manufId)
         {
-            var routings = _routingRepository.GetRangeAsync(m => m.ManufacturedPartId == manufId).OrderBy(m=>m.Id);
+            var routings = _routingRepository.GetRangeAsync(m => m.ManufacturedPartId == manufId && m.Deleted == 0).OrderBy(m=>m.Id);
             try
             {
                 return _mapper.Map<IEnumerable<RoutingVM>>(routings);

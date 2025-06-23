@@ -56,6 +56,28 @@ namespace CWB.ProductionPlanWO.Utils
             services.AddTransient<ICont_RCA_CA_LogRepository, Cont_RCA_CA_LogRepository>();
             services.AddTransient<ICust_NC_Decs_MatrixRepository, Cust_NC_Decs_MatrixRepository>();
             services.AddTransient<ICust_NC_Decs_Matrix_OptRepositoy, Cust_NC_Decs_Matrix_OptRepository>();
+            services.AddTransient<IMc_Not_Avl_ReasonRepository, Mc_Not_Avl_ReasonRepository>();
+            services.AddTransient<IMc_Timeslot_ListRepository, Mc_Timeslot_ListRepository>();
+            services.AddTransient<ITempMc_Timeslot_ListRepository, TempMc_Timeslot_ListRepository>();
+            services.AddTransient<IMc_Wait_ListRepository, Mc_Wait_ListRepository>();
+            services.AddTransient<IMatl_Issue_SettingsRepository, Matl_Issue_SettingsRepository>();
+            services.AddTransient<IMatl_Issue_ListRepository, Matl_Issue_ListRepository>();
+            services.AddTransient<ITempMc_Wait_ListRepository, TempMc_Wait_ListRepository>();
+            services.AddTransient<IMode_ListRepository, Mode_ListRepository>();
+            services.AddTransient<INon_Plan_Wk_ListRepository, Non_Plan_Wk_ListRepository>();
+            services.AddTransient<IWO_Wait_ListRepository, WO_Wait_ListRepository>();
+            services.AddTransient<ITempWO_Wait_ListRepository, TempWO_Wait_ListRepository>();
+            services.AddTransient<IWO_Bookout_LogRepository, WO_Bookout_LogRepository>();
+            services.AddTransient<ITimeslot_SettingRepository, Timeslot_SettingRepository>();
+            services.AddTransient<ITimeslot_ListRepository, Timeslot_ListRepository>();
+            services.AddTransient<ITime_Slot_AllocationRepository, Time_Slot_AllocationRepository>();
+            services.AddTransient<IRwk_ListRepository, Rwk_ListRepository>();
+            services.AddTransient<IShop_Insp_LogRepository, Shop_Insp_LogRepository>();
+            services.AddTransient<ISubCon_ListRepository, SubCon_ListRepository>();
+            services.AddTransient<ITempSubCon_ListRepository, TempSubCon_ListRepository>();
+            services.AddTransient<INon_Plan_Wk_type_ListRepository, Non_Plan_Wk_type_ListRepository>();
+            services.AddTransient<IOpr_ListRepository, Opr_ListRepository>();
+            services.AddTransient<ITempOpr_ListRepository, TempOpr_ListRepository>();
             services.AddTransient<IWOService, WOService>();
         }
     }

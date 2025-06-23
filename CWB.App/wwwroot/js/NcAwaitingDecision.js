@@ -181,14 +181,14 @@ function GetAllNC_Decision_Log(nclogId) {
             $("#P10RequestedDate").val(dateValue);
             $("#P10FeedbackReceiptDate").val(P10FeedbackReceiptDate);
             $("#P10NClvl1").val(data[data.length - 1].nC_Disp_Deci_Lvl1_Id);
-            $("#P10NClvl2").val(data[data.length - 1].NC_Disp_Deci_Lvl2_Id);
+            $("#P10NClvl2").val(data[data.length - 1].nC_Disp_Deci_Lvl2_Id);
             $("#P10NCInslvl1").val(data[data.length - 1].nC_Disp_Inst_Lvl1);
             $("#P10NCInslvl2").val(data[data.length - 1].nC_Disp_Inst_Lvl2);
             $("#P10RequestDecision").val(data[data.length - 1].cust_feedback_Id);
             $("#P10FeedbackConditionalAcceptance").val(data[data.length - 1].cust_Feedback_Desc);
 
         }
-        loadSelectNCDispDecision();
+        //loadSelectNCDispDecision();
     }).catch((error) => {
     });
 }
@@ -392,6 +392,7 @@ $(document).ready(function () {
                 newNamevalidate.style.border = '';
             }
         }
+        formattedDate = P10RequestedDate.toISOString();
         var formdata = {
             nC_Decision_LogId: 0,
             ncLogId: parseInt(P10NCLogId),
@@ -423,10 +424,10 @@ $(document).ready(function () {
             } else {
                 var P14RCLogId = parseInt($("#P14RCLogId").val());
                 var rowdata = {
-                    insp_Outcome_Details_Id: P14RCLogId,
-                    nC_Log_status_Id: 2
+                    cont_RCA_CA_LogId: P14RCLogId,
+                    cont_RCA_CA_Status_Id: 2
                 };
-                api.post("/WorkOrder/UpdateNclog", rowdata).then((data) => {
+                api.post("/WorkOrder/UpdateCont_RCA_CA_log", rowdata).then((data) => {
 
                 });
             }
@@ -1326,8 +1327,15 @@ function loadNCLog() {
                     <a href="javascript:void(0);" class="dropdown-item approval-level"
                        data-bs-toggle="modal"
                        data-balno="${ncItem.balloon_No}"
-                       data-id="${ncItem.insp_Outcome_Details_Id}"
-                       data-bs-target="#popupApprovalLvl2">Approval (Level 2)</a>`;
+                       data-partno="${ncItem.inw_Recpt_Part_No_Name}"
+                       data-partid="${ncItem.inw_Recpt_Part_No_Id}"
+                       data-parttype="${ncItem.partType}"
+                       data-locnam="${ncItem.locationName}"
+                       data-baldesc="${ncItem.balloon_No_Dir}" data-ncdes="${ncItem.nC_Descrip}" data-declsup="${ncItem.decl_by_Supplier}"
+                       data-nctrack="${ncItem.nC_Tracking_No}" data-qnty="${ncItem.nC_Qnty}"
+                       data-loc="${ncItem.storage_Location}" data-id="${ncItem.insp_Outcome_Details_Id}"
+                       data-headid="${ncItem.inw_Recpt_Header_Id}" data-inspid="${ncItem.inw_Insp_Log_Id}"
+                       data-bs-target="#popup10">Approval (Level 2)</a>`;
                 }
 
                 const rowHtml = `
@@ -1366,7 +1374,7 @@ function loadNCLog() {
             });
         });
 
-        loadSelectNCDispDecision();
+        //loadSelectNCDispDecision();
     }).catch((error) => {
         console.error("NC Log fetch error:", error);
     });

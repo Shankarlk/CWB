@@ -1,0 +1,500 @@
+﻿
+<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            <div class="card">
+                <div class="card-body">
+
+                    <!-- WO Status Overview -->
+                    <div class="row">
+                        <h3>Material Issue / Movement for Today</h3>
+                        <div class="col-md-8">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="font-weight: bold;font-size: large;" class="text-center"
+                                            colspan="2"></th>
+                                        <th class="text-center">Plan (1)</th>
+                                        <th width="20%" class="text-center">Ready (2)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="2">From Stores to Shop</td>
+                                        <td class="text-center" id="PlanStore1">xxx</td>
+                                        <td class="text-center" id="ReadStore1">xxx</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">From Shop to Stores</td>
+                                        <td class="text-center" id="PlanStore2">xxx</td>
+                                        <td class="text-center" id="ReadStore2">xxx</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">Between Shops</td>
+                                        <td class="text-center" id="PlanStore3">xxx</td>
+                                        <td class="text-center" id="ReadStore3">xxx</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">To SubCon</td>
+                                        <td class="text-center" id="PlanStore4">xxx</td>
+                                        <td class="text-center" id="ReadStore4">xxx</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">From SubCon</td>
+                                        <td class="text-center" id="PlanStore5">xxx</td>
+                                        <td class="text-center" id="ReadStore5">xxx</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="row mt-1">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary mt-2 w-50" data-bs-target="#Popup1" data-bs-toggle="modal" id="selectwoProdBtn">Issue to Shop</button>
+                                </div>
+                            </div>
+                            <div class="row mt-1">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary mt-2 w-50" data-bs-target="#Popup2" data-btn="btn1" data-bs-toggle="modal">Return to Stores</button>
+                                </div>
+                            </div>
+                            <div class="row mt-1">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary mt-2 w-50" data-bs-target="#Popup2" data-btn="btn2" data-bs-toggle="modal">Initiate Movement</button>
+                                </div>
+                            </div>
+                            <div class="row mt-1">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary mt-2 w-50" data-bs-target="#Popup3" data-bs-toggle="modal">Issue to SubCon</button>
+                                </div>
+                            </div>
+                        </div>
+                        <h6>
+                            (1) Plan : As per Simulation <br>
+                            (2) Ready : Material Booked out ... waiting for Movement <br>
+                        </h6>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="row mt-1">
+                        <div class="col d-flex gap-2">
+                            <button class="btn btn-primary ms-3" data-bs-target="#Popup4"
+                                    data-bs-toggle="modal">
+                                Parts in Shop
+                            </button>
+                            <button class="btn btn-primary ms-2" data-bs-target="#Popup5"
+                                    data-bs-toggle="modal">
+                                Parts in SubCon
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+
+<div class="modal fade" id="Popup1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    WO Issue List to Shop
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Shop </label>
+                        <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                id="P1SearchShop" title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">==========</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12" id="P6partInspectPlanGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P1Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>
+                                                <input class="form-check-input mt-2" id="P1Select"
+                                                       type="checkbox" title="" data-plugin="tippy"
+                                                       data-tippy-placement="top" placeholder="">
+                                            </th>
+                                            <th>Shop</th>
+                                            <th>Work Order # </th>
+                                            <th>Part No / Desc</th>
+                                            <th>Routing </th>
+                                            <th>Opr No </th>
+                                            <th>Bal WO Plan Qnty</th>
+                                            <th>Issue Qnty</th>
+                                            <th>Qnty Avl</th>
+                                            <th>Qnty Recd Confirm.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <button class="btn btn-primary mb-2" id="P1Issue">Issue</button>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+
+<div class="modal fade" id="Popup2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Movement List (Shop to Stores, Between Shops ...)
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">From Location  </label>
+                        <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                id="P2FromLoc" title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">==========</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">To Location  </label>
+                        <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                id="P2ToLoc" title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">==========</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12" id="P6partInspectPlanGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P2Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>
+                                                <input class="form-check-input mt-2" id="P2SelectAll"
+                                                       type="checkbox" title="" data-plugin="tippy"
+                                                       data-tippy-placement="top" placeholder="">
+                                            </th>
+                                            <th>Shop</th>
+                                            <th>Work Order # </th>
+                                            <th>Part No / Desc</th>
+                                            <th>Routing </th>
+                                            <th>Opr No </th>
+                                            <th>Plan Movmt Qnty</th>
+                                            <th>From Location</th>
+                                            <th>To Location</th>
+                                            <th>Qnty Ready for Movmt</th>
+                                            <th>Qnty Moved Confirm</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <button class="btn btn-primary mb-2" id="P2Movt">Movement Started</button>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="Popup3" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Issue List to Subcon
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">SubCon </label>
+                        <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                id="P3Subcon" title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">==========</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12" id="P6partInspectPlanGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P3Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>
+                                                <input class="form-check-input mt-2" id="P3SelectAll"
+                                                       type="checkbox" title="" data-plugin="tippy"
+                                                       data-tippy-placement="top" placeholder="">
+                                            </th>
+                                            <th>Subcon</th>
+                                            <th>Work Order # </th>
+                                            <th>Part No / Desc</th>
+                                            <th>Routing </th>
+                                            <th>Opr No </th>
+                                            <th>Bal WO Plan Qnty</th>
+                                            <th>Issue Qnty</th>
+                                            <th>Qnty Avl</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <button class="btn btn-primary mb-2" id="P3Issue">Issue</button>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="Popup4" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Parts loaded in Shop
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Shop </label>
+                        <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                id="P4Shop" title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">==========</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Machine </label>
+                        <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                id="P4McName" title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">==========</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Part No / Desc </label>
+                        <input type="text" id="P4PartNo" class="form-control form-control-sm" placeholder="Part No / Desc" />
+                    </div>
+                    <div class="col-md-12" id="P6partInspectPlanGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P4Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Shop</th>
+                                            <th>Work Ref </th>
+                                            <th>Machine</th>
+                                            <th>Part No / Desc</th>
+                                            <th>Seq No </th>
+                                            <th>WO Qnty</th>
+                                            <th>Bal To Bookout</th>
+                                            <th>Qnty W/f Processing</th>
+                                            <th>Bal time for Avl Qnty Hrs</th>
+                                            <th>Part in M/c</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="Popup5" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Parts loaded in SubCon
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">SubCon </label>
+                        <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                id="P5Subcon" title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">==========</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Part No / Desc </label>
+                        <input type="text" id="P5PartNo" class="form-control form-control-sm" placeholder="Part No / Desc" />
+                    </div>
+                    <div class="col-md-12" id="P6partInspectPlanGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P5Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>SubCon</th>
+                                            <th>Work Ref </th>
+                                            <th>Part No / Desc</th>
+                                            <th>Starting Opr No</th>
+                                            <th>WO Qnty</th>
+                                            <th>Qnty Sent</th>
+                                            <th>Qnty Recd</th>
+                                            <th>Bal to Receive</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+
+<template id="P1GridRow">
+    <tr>
+        <td>
+            <input class="form-check-input mt-2 P1gridChk"
+                   type="checkbox" title="" data-plugin="tippy"
+                   data-tippy-placement="top" placeholder="">
+        </td>
+        <td>{shop}</td>
+        <td>{woNumber}</td>
+        <td>{partNo}</td>
+        <td>{routingName}</td>
+        <td>{opNo}</td>
+        <td>{balWoQnty}</td>
+        <td>{issue_Qnty}</td>
+        <td>{qntyAvl}</td>
+        <td>{qntyRecdCnf}</td>
+        <td hidden>{matl_Issue_ListId}</td>
+    </tr>
+</template>
+
+<template id="P2GridRow">
+    <tr>
+        <td>
+            <input class="form-check-input mt-2 P2gridChk"
+                   type="checkbox" title="" data-plugin="tippy"
+                   data-tippy-placement="top" placeholder="">
+        </td>
+        <td>{shop}</td>
+        <td>{woNumber}</td>
+        <td>{partNo}</td>
+        <td>{routingName}</td>
+        <td>{opNo}</td>
+        <td>{balWoQnty}</td>
+        <td>{to_LocationStr}</td>
+        <td>{from_LocationStr}</td>
+        <td>{bookOutQnty}</td>
+        <td>{qntyRecdCnf}</td>
+        <td hidden>{matl_Issue_ListId}</td>
+    </tr>
+</template>
+
+
+<template id="P3GridRow">
+    <tr>
+        <td>
+            <input class="form-check-input mt-2 P3gridChk"
+                   type="checkbox" title="" data-plugin="tippy"
+                   data-tippy-placement="top" placeholder="">
+        </td>
+        <td>{supplier}</td>
+        <td>{woNumber}</td>
+        <td>{partNo}</td>
+        <td>{routingName}</td>
+        <td>{oprNoName}</td>
+        <td>{bal_Qnty}</td>
+        <td>0</td>
+        <td>{qntyAvl}</td>
+        <td hidden>{tempSubCon_ListId}</td>
+    </tr>
+</template>
+
+<template id="P4GridRow">
+    <tr>
+        <td>{shopName}</td>
+        <td>{woNumber}</td>
+        <td>{mcName}</td>
+        <td>{partNo}</td>
+        <td>{wait_Seq_No}</td>
+        <td>{woQnty}</td>
+        <td>{bal_Qnty}</td>
+        <td>{qtyWfProcessing}</td>
+        <td>{balTimeForAvlQtyHrs}</td>
+        <td>{partInMc}</td>
+    </tr>
+</template>
+<template id="P5GridRow">
+    <tr>
+        <td>{supplier}</td>
+        <td>{woNumber}</td>
+        <td>{partNo}</td>
+        <td>{oprNoName}</td>
+        <td>{plan_Qnty}</td>
+        <td>{qntySent}</td>
+        <td>{qntyRecd}</td>
+        <td>{balToReceive}</td>
+    </tr>
+</template>
+
+
+@section Scripts {
+    <script src="~/js/IssueMatl.js"></script>
+}

@@ -1,0 +1,279 @@
+﻿
+<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h3>
+                                SubCon List
+                            </h3>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <a asp-action="SimulationPage" asp-controller="WOrkOrder" style="font-size: large; color: #000;">
+                                X
+                            </a>
+                        </div>
+
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">SubCon</label>
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" id="P23SearchSub"
+                                    title="" data-plugin="tippy" data-tippy-placement="top">
+                                <option value="">==========</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 mb-4" id="P6partInspectPlanGridDiv">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="P23Grid"
+                                           class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Sub Con </th>
+                                                <th># Parts Planned</th>
+                                                <th># Parts' Matl Sent</th>
+                                                <th># Parts to be Sent</th>
+                                                <th>Date SubCon not loaded</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- -------------  -->
+                                            <!-- -------------  -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ========================= -->
+                        <div class="col-md-8 mt-4" id="#">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="P23MISGrid"
+                                           class="table table-sm table-bordered w-100 text-center">
+                                        <thead>
+                                            <tr id="P23MISHeaderRow"></tr>
+                                        </thead>
+                                        <tbody id="P23MISBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+
+<div class="modal fade" id="Popup24" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    List of Parts at SubCon : <span id="P24McName">xxxxx</span>
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Part No</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter " id="P24SearchPartNo">
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Part Desc</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter " id="P24SearchPartDesc">
+                    </div>
+                    <div class="col-md-12 mb-4" id="P6partInspectPlanGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P24Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>WO Ref</th>
+                                            <th>Part No / Desc</th>
+                                            <th>Routing / Opr-No</th>
+                                            <th>WO Qnty</th>
+                                            <th>Bal Qnty</th>
+                                            <th>PS Disp Date</th>
+                                            <th>PS Recpt Date </th>
+                                            <th>CS Disp Date </th>
+                                            <th>CS Recpt Date </th>
+                                            <th>Act Disp Date </th>
+                                            <th>Data Changed</th>
+                                            <th>Hold</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="Popup25" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 4px solid #5eafd2;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mySmallModalLabel">
+                    SubCon : <span id="P25SubName">xxxxx</span> <br>
+                    Part No / Desc : <span id="P25PartName">xxxxx / xxxxx</span>  <br>
+                    Routing / Opr No : <span id="P25RoutName">xxxxx / xxxxx</span> <br>
+                    <br>
+                    Total Processing Qnty for Opr No : <span id="P25QntyName">xxxxx</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label class="form-label col-md-4 mb-2"></label>
+                    <label class="form-label col-md-4 mb-2 text-center">Plan / Previous </label>
+                    <label class="form-label col-md-4 mb-2 text-center">New </label>
+                    <label class="form-label col-md-4 mb-2">Dispatch Date (from us) </label>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P25DispPrev" type="text" readonly>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P25DispNew" type="date">
+                    </div>
+                    <label class="form-label col-md-4 mb-2">Receipt Date (from SubCon) </label>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P25RecptPrev" type="text" readonly>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P25RecptNew" type="date">
+                        <input class="form-control" id="P25SubconId" type="text" hidden>
+                    </div>
+                    <div class="col-md-12 text-end mt-2 mb-2">
+                        <button type="button" class="btn btn-primary btn-sm" id="P25Save">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="ErrorMessage1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 4px solid #5eafd2;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Data is not saved</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <label class="form-label col-md-6 mb-2">
+
+                                Save changes & Exit
+                                <br>
+                                <br>
+                                <br>
+                                Return to Popup to Edit
+                                <br>
+                                <br>
+                                <br>
+                                Exit without saving changes
+
+                            </label>
+                            <div class="col-md-6 text-center">
+                                <input id="openfrom" type="text" hidden />
+                                <button class="btn btn-sm btn-primary" id="ErBtn1">Save & Exit</button>
+                                <br>
+                                <button class="btn btn-sm mt-4 btn-primary" id="ErBtn2">Edit Entered Data</button>
+                                <button class="btn btn-sm mt-4 btn-primary" id="ErBtn3">Exit without Saving Entered Data</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<template id="P23GridRow">
+    <tr>
+        <td>{supplier}</td>
+        <td>{partCount}</td>
+        <td>{partMatlSent}</td>
+        <td>{partToSent}</td>
+        <td>{dateNotLoaded}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-bs-target="#Popup24" data-suppid="{supplier_Id}" data-supp="{supplier}">Edit Parts</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-bs-target="#" data-suppid="{supplier_Id}" data-supp="{supplier}">View Parts</a>
+                    <!-- item-->
+                    <!-- item-->
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="P24GridRow">
+    <tr>
+        <td>{woNumber}</td>
+        <td>{partNo}</td>
+        <td>{routingName} / {oprNoName}</td>
+        <td>{plan_Qnty}</td>
+        <td>{plan_Qnty}</td>
+        <td></td>
+        <td></td>
+        <td>{csStartDate}</td>
+        <td>{csEndDate}</td>
+        <td></td>
+        <td>{dataChanged}</td>
+        <td></td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-bs-target="#Popup25" data-id="{tempSubCon_ListId}" data-disp="{plan_Disp_date}"
+                       data-recp="{plan_Recpt_date}" data-part="{partNo}" data-routi="{routingName}"
+                       data-opno="{oprNoName}" data-qnty="{plan_Qnty}"
+                       data-actdisp="{act_Disp_date}" data-actrecp="{act_Recpt_date}">Change Date</a>
+                    <!-- item-->
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+@section Scripts {
+    <script src="~/js/Subconlist.js"></script>
+}

@@ -70,6 +70,18 @@ namespace CWB.App.Services.CompanySettings
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<CityVM>>.GetAsync(uri, headers);
         }
+        public async Task<IEnumerable<TimeSlotDurationVM>> GetTimeSlotDurations()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/gettimeslotduration");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<TimeSlotDurationVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<NoOfDaysTimeSlotVM>> GetNoOfDaysTimeSlots()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/getnoofdaystimeslot");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<NoOfDaysTimeSlotVM>>.GetAsync(uri, headers);
+        }
         public async Task<IEnumerable<CountryVM>> GetCountries()
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/getcountry/{tenantId}");

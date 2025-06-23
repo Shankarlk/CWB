@@ -181,12 +181,13 @@ namespace CWB.App.Controllers
                 }
                 var result = (await _routingService.RoutingSteps(rout.RoutingId)).Take(1).FirstOrDefault();
                 workOrdersVM.RoutingId = rout.RoutingId;
-                workOrdersVM.StartingOpNo = result?.StepOperation != null
-                                            ? int.TryParse(result.StepOperation, out int opNo) ? opNo : 0
-                                            : 0;
-                workOrdersVM.EndingOpNo = result?.StepOperation != null
-                                            ? int.TryParse(result.StepOperation, out int eopNo) ? eopNo : 0
-                                            : 0;
+                workOrdersVM.StartingOpNo = (int)(result?.StepId != null
+                    ? result.StepId
+                    : 0);
+
+                workOrdersVM.EndingOpNo = (int)(result?.StepId != null
+                    ? result.StepId
+                    : 0);
                 if (workOrdersVM.PartType == 1)
                 {
                     workOrdersVM.Parentlevel = 'N';

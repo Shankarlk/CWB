@@ -68,6 +68,28 @@ namespace CWB.App.Models.BusinessProcesses
         public string? SoComplDateStr { get; set; } = string.Empty;
         public string? PlanStartDateStr { get; set; } = string.Empty;
         public string? WoRelease { get; set; } = string.Empty;
+        public string? Customer { get; set; } = string.Empty;
+        public string? PartTypeName { get; set; } = string.Empty;
+        public string? PoQnty { get; set; } = string.Empty;
+        public string? FinQnty { get; set; } = string.Empty;
+        public string? PoNumber { get; set; } = string.Empty;
+        public string? PsStartDate { get; set; } = string.Empty;
+        public string? PsEndDate { get; set; } = string.Empty;
+        public string? CsStartDate { get; set; } = string.Empty;
+        public string? CsEndDate { get; set; } = string.Empty;
+        public string? ActStartDateStr { get; set; } = string.Empty;
+        public string? DataChange { get; set; } = string.Empty;
+        public string? Wipp { get; set; } = string.Empty;
+        public string? CriticalParts { get; set; } = string.Empty;
+        public string? RoutingName { get; set; } = string.Empty;
+        public string? CurOpr { get; set; } = string.Empty;
+        public string? ReworkWo { get; set; } = string.Empty;
+        public string? WoStatus { get; set; } = string.Empty;
+        public string? PoStatus { get; set; } = string.Empty;
+        public string? ReadyForProd { get; set; } = string.Empty;
+        public int NoOfRoutes { get; set; }
+        public int NoOfOpenNc { get; set; }
+        public int NoOfDocWf { get; set; }
         public string Comment { get; set; }
         public long TenantId { get; set; }
     }

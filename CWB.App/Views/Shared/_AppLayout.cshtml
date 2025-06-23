@@ -16,19 +16,57 @@
     <link href="~/css/app.min.css" rel="stylesheet" type="text/css" id="app-default-stylesheet" />
     <link href="~/css/bootstrap-dark.min.css" rel="stylesheet" type="text/css" id="bs-dark-stylesheet" />
     <link href="~/css/app-dark.min.css" rel="stylesheet" type="text/css" id="app-dark-stylesheet" />
-    
+
     <link href="~/css/site.css" type="text/css" rel="stylesheet" />
     <link href="~/css/toastr.css" type="text/css" rel="stylesheet" />
     <link href="~/css/select2.min.css" type="text/css" rel="stylesheet" />
     <link href="~/lib/jquery-ui/dist/jquery-ui.css" rel="stylesheet" />
     <!-- icons -->
     <link href="~/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/timepicker@1.13.18/jquery.timepicker.min.css">
+
+    <style>
+        @@media (min-width: 768px) {
+            .modal-xl-custom {
+                max-width: 78vw; /* Adjust this as needed */
+                width: 78vw;
+            }
+        }
+        #preloadersim {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #statussim {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <!-- Pre-loader -->
     <div id="preloader">
         <div id="status">
             <div class="spinner-border avatar-lg text-primary m-2" role="status"></div>
+        </div>
+    </div>
+    <div id="preloadersim" style="display: none;">
+        <div id="statussim">
+            <div class="spinner-border avatar-lg text-primary" role="status"></div>
+
+            <!-- Side-by-side buttons -->
+            <div class="d-flex justify-content-center mt-3">
+                <button class="btn btn-lg btn-outline-dark me-4" id="SimulationPauseBtn">Pause <i class="fas fa-pause ms-2"></i></button>
+                <button class="btn btn-lg btn-outline-danger" id="SimulationCancelBtn">Cancel <i class="fas fa-times ms-2"></i></button>
+            </div>
         </div>
     </div>
     <!-- End Preloader-->
@@ -80,11 +118,11 @@
             <partial name="_NavPartial" />
             <!-- Sidebar -left -->
         </div>
-        
+
         <!-- Left Sidebar End -->
         <!-- Start Page Content here -->
         <!-- ============================================================== -->
-       
+
         <div class="content-page">
             @RenderBody()
         </div>
@@ -106,12 +144,13 @@
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
     <script src="~/js/select2.min.js"></script>
-    
+
     <script src="~/js/site.js"></script>
     <script src="~/js/globalvas.js"></script>
     <script src="~/lib/toastr.js"></script>
     <script src="~/lib/logger.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/timepicker@1.13.18/jquery.timepicker.min.js"></script>
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>

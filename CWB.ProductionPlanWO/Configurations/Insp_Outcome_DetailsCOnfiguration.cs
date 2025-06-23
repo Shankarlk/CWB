@@ -24,6 +24,9 @@ namespace CWB.ProductionPlanWO.Configurations
                 .Property(b => b.Inw_Recpt_Part_No_Id)
                 .HasColumnName("Inw_Recpt_Part_No_Id");
             builder
+                .Property(b => b.McWaitId)
+                .HasColumnName("McWaitId");
+            builder
                 .Property(b => b.Inw_Insp_Log_Id)
                 .HasColumnName("Inw_Insp_Log_Id");
             builder
@@ -62,6 +65,12 @@ namespace CWB.ProductionPlanWO.Configurations
             builder
                 .Property(b => b.NC_Log_status_Id)
                 .HasColumnName("NC_Log_status_Id");
+            builder
+                .Property(b => b.Routing_Id)
+                .HasColumnName("Routing_Id");
+            builder
+                .Property(b => b.Opr_No_Id)
+                .HasColumnName("Opr_No_Id");
             builder
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")

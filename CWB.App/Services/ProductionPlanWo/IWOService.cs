@@ -11,6 +11,7 @@ namespace CWB.App.Services.ProductionPlanWo
     {
         Task<IEnumerable<WOSOVM>> GetSoWoRel(long workOrderId);
         Task<List<ProductionPlan_WoVM>> ProductionPlanWoPost(IEnumerable<ProductionPlan_WoVM> productions);
+        Task<ProductionPlan_WoVM> UpdateProductionPlan_Wo(ProductionPlan_WoVM productions);
         Task<IEnumerable<ProductionPlan_WoVM>> AllProductionPlan_Wo();
         Task<List<ProcPlanVM>> ProcPlanPost(IEnumerable<ProcPlanVM> procPlans);
         Task<List<WorkOrdersVM>> UpdateMultipleWorkOrder(IEnumerable<WorkOrdersVM> workOrders);
@@ -81,6 +82,64 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<OperationSettingsVM> PostOperationsSettings(OperationSettingsVM RcaCaDocTypeVM);
         Task<bool> DeleteRcaCaDocList(long itemMasterDocListId);
         Task<bool> DeleteNC_Disp_Decs_Appl_List(long itemMasterDocListId);
+
+
+        Task<IEnumerable<WO_Wait_ListVM>> GetAllWO_Wait_List();
+        Task<WO_Wait_ListVM> PostWO_Wait_List(WO_Wait_ListVM FinalDocTypeVM);
+        Task<bool> DeleteWO_Wait_List(long itemMasterDocListId);
+        Task<IEnumerable<TempWO_Wait_ListVM>> GetAllTempWo_Wait_List();
+        Task<TempWO_Wait_ListVM> PostTempWo_Wait_List(TempWO_Wait_ListVM FinalDocTypeVM);
+        Task<bool> DeleteTempWo_Wait_List(long itemMasterDocListId);
+        Task<IEnumerable<Mc_Not_Avl_ReasonVM>> GetAllMc_not_avl_reason();
+        Task<Mc_Not_Avl_ReasonVM> PostMc_not_avl_reason(Mc_Not_Avl_ReasonVM FinalDocTypeVM);
+        Task<IEnumerable<Timeslot_SettingVM>> GetAllTimeslot_Setting();
+        Task<Timeslot_SettingVM> PostTimeslot_Setting(Timeslot_SettingVM FinalDocTypeVM);
+        Task<bool> DeleteTimeslot_Setting(long itemMasterDocListId);
+        Task<IEnumerable<Timeslot_ListVM>> GetAllTimeslot_List();
+        Task<Timeslot_ListVM> PostTimeslot_List(Timeslot_ListVM FinalDocTypeVM);
+        Task<bool> DeleteTimeslot_List(long itemMasterDocListId);
+        Task<IEnumerable<Mc_Timeslot_ListVM>> GetAllMc_Timeslot_List();
+        Task<Mc_Timeslot_ListVM> PostMc_Timeslot_List(Mc_Timeslot_ListVM FinalDocTypeVM);
+        Task<bool> DeleteMc_Timeslot_List(long itemMasterDocListId);
+        Task<IEnumerable<TempMc_Timeslot_ListVM>> GetAllTempMc_Timeslot_List();
+        Task<TempMc_Timeslot_ListVM> PostTempMc_Timeslot_List(TempMc_Timeslot_ListVM FinalDocTypeVM);
+        Task<bool> DeleteTempMc_Timeslot_List(long itemMasterDocListId);
+        Task<IEnumerable<Mc_Wait_ListVM>> GetAllMc_Wait_List();
+        Task<Mc_Wait_ListVM> PostMc_Wait_List(Mc_Wait_ListVM FinalDocTypeVM);
+        Task<bool> DeleteMc_Wait_List(long itemMasterDocListId);
+        Task<IEnumerable<Matl_Issue_SettingsVM>> GetAllMatl_Issue_Settings();
+        Task<Matl_Issue_SettingsVM> PostMatl_Issue_Settings(Matl_Issue_SettingsVM FinalDocTypeVM);
+        Task<bool> DeleteMatl_Issue_Settings(long itemMasterDocListId);
+        Task<IEnumerable<Matl_Issue_ListVM>> GetAllMatl_Issue_List();
+        Task<Matl_Issue_ListVM> PostMatl_Issue_List(Matl_Issue_ListVM FinalDocTypeVM);
+        Task<bool> DeleteMatl_Issue_List(long itemMasterDocListId);
+        Task<IEnumerable<TempMc_Wait_ListVM>> GetAllTempMc_Wait_List();
+        Task<TempMc_Wait_ListVM> PostTempMc_Wait_List(TempMc_Wait_ListVM FinalDocTypeVM);
+        Task<bool> DeleteTempMc_Wait_List(long itemMasterDocListId);
+        Task<IEnumerable<Non_Plan_Wk_ListVM>> GetAllNon_Plan_Wk_List();
+        Task<IEnumerable<Non_Plan_Wk_type_ListVM>> GetAllNon_Plan_Wk_type_List();
+        Task<IEnumerable<Mode_ListVM>> GetAllMode_List();
+        Task<Non_Plan_Wk_ListVM> PostNon_Plan_Wk_List(Non_Plan_Wk_ListVM FinalDocTypeVM);
+        Task<bool> DeleteNon_Plan_Wk_List(long itemMasterDocListId);
+        Task<IEnumerable<Rwk_ListVM>> GetAllRwk_List();
+        Task<Rwk_ListVM> PostRwk_List(Rwk_ListVM FinalDocTypeVM);
+        Task<bool> DeleteRwk_List(long itemMasterDocListId);
+        Task<IEnumerable<Shop_Insp_LogVM>> GetAllShop_Insp_Log();
+        Task<Shop_Insp_LogVM> PostShop_Insp_Log(Shop_Insp_LogVM FinalDocTypeVM);
+        Task<bool> DeleteShop_Insp_Log(long itemMasterDocListId);
+        Task<IEnumerable<SubCon_ListVM>> GetAllSubCon_List();
+        Task<SubCon_ListVM> PostSubCon_List(SubCon_ListVM FinalDocTypeVM);
+        Task<bool> DeleteSubCon_List(long itemMasterDocListId);
+        Task<IEnumerable<TempSubCon_ListVM>> GetAllTempSubCon_List();
+        Task<TempSubCon_ListVM> PostTempSubCon_List(TempSubCon_ListVM FinalDocTypeVM);
+        Task<bool> DeleteTempSubCon_List(long itemMasterDocListId);
+        Task<IEnumerable<Opr_ListVM>> GetAllOpr_List();
+        Task<IEnumerable<Mc_Wait_ListVM>> GetAllMc_Wait_ListByMcWait(long woid);
+        Task<Opr_ListVM> PostOpr_List(Opr_ListVM FinalDocTypeVM);
+        Task<bool> DeleteOpr_List(long itemMasterDocListId);
+        Task<IEnumerable<TempOpr_ListVM>> GetAllTempOpr_List();
+        Task<TempOpr_ListVM> PostTempOpr_List(TempOpr_ListVM FinalDocTypeVM);
+        Task<bool> DeleteTempOpr_List(long itemMasterDocListId);
 
     }
 }

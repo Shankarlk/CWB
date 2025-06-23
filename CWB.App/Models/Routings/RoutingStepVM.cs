@@ -19,7 +19,11 @@
         public string LocationName { get; set; }
         public string CycleTime { get; set; }
         public string SetupTime { get; set; }
+        public string FirstPieceTime { get; set; }
         public string NoOfPartsUsed { get; set; }
         public string MandocAvl { get; set; }
+        public string MachineName { get; set; }
+        public string PreferredStr { get; set; }
+        public string ResidenceTime { get; set; }
     }
 }

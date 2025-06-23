@@ -30,6 +30,8 @@ namespace CWB.CompanySettings.CompanySettingsUtils
             services.AddTransient<IEmployeeSerivce, EmployeeService>();
 			services.AddTransient<IDocumentTypeService, DocumentTypeService>();
 			services.AddTransient<ICityRepository, CityRepository>();
+			services.AddTransient<ITimeSlotDurationRepository, TimeSlotDurationRepository>();
+			services.AddTransient<INoOfDaysTimeSlotRepository, NoOfDaysTimeSlotRepository>();
 			services.AddTransient<ICountryRepository, CountryRepository>();
 			services.AddTransient<IUi_ListRepository, UiListRepository>();
 			services.AddTransient<IOrg_ChartRepository, Org_ChartRepository>();

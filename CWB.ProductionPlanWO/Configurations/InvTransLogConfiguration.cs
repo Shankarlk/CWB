@@ -63,6 +63,12 @@ namespace CWB.ProductionPlanWO.Configurations
                 .Property(b => b.Part_Status)
                 .HasColumnName("Part_Status");
             builder
+                .Property(b => b.Ready_for_issue)
+                .HasColumnName("Ready_for_issue");
+            builder
+                .Property(b => b.Movement_Started)
+                .HasColumnName("Movement_Started");
+            builder
                 .Property(b => b.Movement_Compl)
                 .HasColumnName("Movement_Compl");
             builder

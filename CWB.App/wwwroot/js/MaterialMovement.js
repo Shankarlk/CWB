@@ -225,6 +225,7 @@ $(document).ready(function () {
                 status = 3;
             }
             $("#ErrorMessage9").modal("show");
+            $("#E9Qnty").text(P16MisQnty);
         } else if (parseInt(P16MisQnty) === 0) {
             status = 1;
             move = "N";

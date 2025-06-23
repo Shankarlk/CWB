@@ -9,6 +9,15 @@
     <div class="row" id="myRadioGroup">
         <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
             <!-- ================= -->
+            @{
+                List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM> permissionResult = null;
+                var permissionsJson = HttpContextAccessor.HttpContext.Session.GetString("Permissions");
+                if (permissionsJson != null)
+                {
+                    permissionResult = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM>>(permissionsJson);
+
+                }
+            }
             <div class="card">
                 <div class="card-body">
                     <div class="row">
@@ -19,11 +28,25 @@
                             <div class="card p-1">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
-                                            <a asp-controller="WorkOrder" asp-action="InwardPo">
-                                                <h6>Inward Material against PO</h6>
-                                            </a>
-                                        </div>
+                                        @if (permissionResult != null)
+                                        {
+                                            @if (permissionResult.Any(r => r.Menu4 == "Inward Material against PO"))
+                                            {
+                                                <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                                    <a asp-controller="WorkOrder" asp-action="InwardPo">
+                                                        <h6>Inward Material against PO</h6>
+                                                    </a>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                                <a asp-controller="WorkOrder" asp-action="InwardPo">
+                                                    <h6>Inward Material against PO</h6>
+                                                </a>
+                                            </div>
+                                        }
                                     </div>
                                     <div class="col-md-6">
                                         <div class="table-responsive">
@@ -81,13 +104,29 @@
                         <div class="col-md-3 dott-bord-r">
                             <div class="card p-1">
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
-                                            <a asp-controller="WorkOrder" asp-action="Inspection">
-                                                <h6>Inward Inspection</h6>
-                                            </a>
+                                    @if (permissionResult != null)
+                                    {
+                                        @if (permissionResult.Any(r => r.Menu4 == "Inward Inspection"))
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                                    <a asp-controller="WorkOrder" asp-action="Inspection">
+                                                        <h6>Inward Inspection</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                                <a asp-controller="WorkOrder" asp-action="Inspection">
+                                                    <h6>Inward Inspection</h6>
+                                                </a>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                     <div class="col-md-6">
                                         <div class="table-responsive">
                                             <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
@@ -106,13 +145,29 @@
                                     </a>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
-                                            <a asp-controller="WorkOrder" asp-action="NcAwaitingDecision">
-                                                <h6>NC Awaiting Disposal Decision</h6>
-                                            </a>
+                                    @if (permissionResult != null)
+                                    {
+                                        @if (permissionResult.Any(r => r.Menu4 == "NC Awaiting Disposal Decision"))
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                                    <a asp-controller="WorkOrder" asp-action="NcAwaitingDecision">
+                                                        <h6>NC Awaiting Disposal Decision</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                                <a asp-controller="WorkOrder" asp-action="NcAwaitingDecision">
+                                                    <h6>NC Awaiting Disposal Decision</h6>
+                                                </a>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                     <div class="col-md-6">
                                         <div class="table-responsive">
                                             <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
@@ -150,7 +205,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
-                                            <a asp-controller="WorkOrder" asp-action="#">
+                                            <a >
                                                 <h6>Scrap Note Approval / Closure</h6>
                                             </a>
                                         </div>
@@ -174,13 +229,29 @@
                         <div class="col-md-3 dott-bord-r">
                             <div class="card p-1">
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
-                                            <a asp-controller="WorkOrder" asp-action="#">
-                                                <h6>Issue Material</h6>
-                                            </a>
+                                    @if (permissionResult != null)
+                                    {
+                                        @if (permissionResult.Any(r => r.Menu4 == "Issue Material"))
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                                    <a asp-controller="WorkOrder" asp-action="IssueMatl">
+                                                        <h6>Issue Material</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                                <a asp-controller="WorkOrder" asp-action="IssueMatl">
+                                                    <h6>Issue Material</h6>
+                                                </a>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                     <div class="col-md-6">
                                         <div class="table-responsive">
                                             <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
@@ -195,7 +266,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
-                                            <a asp-controller="WorkOrder" asp-action="#">
+                                            <a >
                                                 <h6>Dispatch Rework Parts thru RGP</h6>
                                             </a>
                                         </div>
@@ -213,13 +284,29 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="text-center btn btn-outline-info w-100 mb-2">
-                                            <a asp-controller="WorkOrder" asp-action="MaterialMovement">
-                                                <h6>Confrim Matl Movement / Receipt</h6>
-                                            </a>
+                                    @if (permissionResult != null)
+                                    {
+                                        @if (permissionResult.Any(r => r.Menu4 == "Confrim Matl Movement / Receipt"))
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="MaterialMovement">
+                                                        <h6>Confrim Matl Movement / Receipt</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                <a asp-controller="WorkOrder" asp-action="MaterialMovement">
+                                                    <h6>Confrim Matl Movement / Receipt</h6>
+                                                </a>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                     <div class="col-md-6">
                                         <div class="table-responsive mt-1">
                                             <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
@@ -234,7 +321,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="text-center btn btn-outline-info w-100 mb-2">
-                                            <a asp-controller="WorkOrder" asp-action="#">
+                                            <a >
                                                 <h6>Return Material to Supplier</h6>
                                             </a>
                                         </div>
@@ -243,7 +330,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="text-center btn btn-outline-info w-100 mb-2">
-                                            <a asp-controller="WorkOrder" asp-action="#">
+                                            <a >
                                                 <h6>Dispatch other Parts thru RGP</h6>
                                             </a>
                                         </div>
@@ -256,33 +343,97 @@
                             <div class="card p-1">
 
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="text-center btn btn-outline-info w-100 mb-2">
-                                            <a asp-controller="WorkOrder" asp-action="#">
-                                                <h6>WIP View / Control</h6>
-                                            </a>
+                                    @if (permissionResult != null)
+                                    {
+                                        @if (permissionResult.Any(r => r.Menu4 == "Shop Bookout"))
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="BookOutPage">
+                                                        <h6>Setup Change</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                <a asp-controller="WorkOrder" asp-action="BookOutPage">
+                                                    <h6>Setup Change</h6>
+                                                </a>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                     <div class="col-md-6">
                                         <div class="table-responsive">
                                             <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
                                                 <tbody>
-                                                    <tr><td style="border: 1px solid black;">Sub Con</td><td style="border: 1px solid black;">0</td></tr>
-                                                    <tr><td style="border: 1px solid black;">Raw Matl</td><td style="border: 1px solid black;">0</td></tr>
-                                                    <tr><td style="border: 1px solid black;">BOF</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">0</td><td style="border: 1px solid black;">0</td></tr>
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="text-center btn btn-outline-info w-100 mb-2">
-                                            <a asp-controller="WorkOrder" asp-action="#">
-                                                <h6>Shop Bookout</h6>
-                                            </a>
+                                    @if (permissionResult != null)
+                                    {
+                                        @if (permissionResult.Any(r => r.Menu4 == "Shop Bookout"))
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="BookOutPage">
+                                                        <h6>Setup Verification Setup Approval</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                <a asp-controller="WorkOrder" asp-action="BookOutPage">
+                                                    <h6>Setup Verification Setup Approval</h6>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="col-md-6 mt-3">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
+                                                <tbody>
+                                                    <tr><td style="border: 1px solid black;">0</td><td style="border: 1px solid black;">0</td></tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="row">
+                                    @if (permissionResult != null)
+                                    {
+                                        @if (permissionResult.Any(r => r.Menu4 == "Shop Bookout"))
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="BookOutPage">
+                                                        <h6>Shop Bookout</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="col-md-6">
+                                            <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                <a asp-controller="WorkOrder" asp-action="BookOutPage">
+                                                    <h6>Shop Bookout</h6>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    }
                                     <div class="col-md-6">
                                         <div class="table-responsive mt-1">
                                             <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
@@ -296,7 +447,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="text-center btn btn-outline-info w-100 mb-2">
-                                            <a asp-controller="WorkOrder" asp-action="#">
+                                            <a >
                                                 <h6>Final Inspection</h6>
                                             </a>
                                         </div>
@@ -314,7 +465,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="text-center btn btn-outline-info w-100 mb-2">
-                                            <a asp-controller="WorkOrder" asp-action="#">
+                                            <a >
                                                 <h6>Dispatch</h6>
                                             </a>
                                         </div>
@@ -332,12 +483,12 @@
                             </div>
                             <div class="card p-1 mt-3">
                                 <div class="text-center btn btn-outline-info w-100 mb-2">
-                                    <a asp-controller="WorkOrder" asp-action="#">
+                                    <a >
                                         <h6>View Inventory Transaction Log</h6>
                                     </a>
                                 </div>
                                 <div class="text-center btn btn-outline-info w-100 mb-2">
-                                    <a asp-controller="WorkOrder" asp-action="#">
+                                    <a >
                                         <h6>View Inventory Master</h6>
                                     </a>
                                 </div>

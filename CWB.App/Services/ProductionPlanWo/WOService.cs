@@ -50,6 +50,13 @@ namespace CWB.App.Services.ProductionPlanWo
             }
             return await RestHelper<List<ProductionPlan_WoVM>>.PostAsync(uri, productions, headers);
         }
+        public async Task<ProductionPlan_WoVM> UpdateProductionPlan_Wo(ProductionPlan_WoVM productions)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/updateproductionplan");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            productions.TenantId = tenantId;
+            return await RestHelper<ProductionPlan_WoVM>.PostAsync(uri, productions, headers);
+        }
 
         public async Task<List<ProcPlanVM>> ProcPlanPost(IEnumerable<ProcPlanVM> procPlans)
         {
@@ -511,6 +518,362 @@ namespace CWB.App.Services.ProductionPlanWo
         public async Task<bool> DeleteNC_Disp_Decs_Appl_List(long itemMasterDocListId)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletencdispappllist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+
+
+        public async Task<IEnumerable<WO_Wait_ListVM>> GetAllWO_Wait_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getwowaitlist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<WO_Wait_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<WO_Wait_ListVM> PostWO_Wait_List(WO_Wait_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postwowaitlist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<WO_Wait_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteWO_Wait_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletewowaitlist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<TempWO_Wait_ListVM>> GetAllTempWo_Wait_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/gettempwowaitlist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<TempWO_Wait_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<TempWO_Wait_ListVM> PostTempWo_Wait_List(TempWO_Wait_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/posttempwowaitlist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<TempWO_Wait_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteTempWo_Wait_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletetempwowaitlist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Mc_Not_Avl_ReasonVM>> GetAllMc_not_avl_reason()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getmcnotavlreason/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Mc_Not_Avl_ReasonVM>>.GetAsync(uri, headers);
+        }
+        public async Task<Mc_Not_Avl_ReasonVM> PostMc_not_avl_reason(Mc_Not_Avl_ReasonVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postmcnotavlreason");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<Mc_Not_Avl_ReasonVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<IEnumerable<Timeslot_SettingVM>> GetAllTimeslot_Setting()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/gettimeslotsetting/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Timeslot_SettingVM>>.GetAsync(uri, headers);
+        }
+        public async Task<Timeslot_SettingVM> PostTimeslot_Setting(Timeslot_SettingVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/posttimeslotsetting");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<Timeslot_SettingVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteTimeslot_Setting(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletetimeslotsetting/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Timeslot_ListVM>> GetAllTimeslot_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/gettimeslotlist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Timeslot_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<Timeslot_ListVM> PostTimeslot_List(Timeslot_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/posttimeslotlist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<Timeslot_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteTimeslot_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletetimeslotlist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Mc_Timeslot_ListVM>> GetAllMc_Timeslot_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getmctimeslotlist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Mc_Timeslot_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<Mc_Timeslot_ListVM> PostMc_Timeslot_List(Mc_Timeslot_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postmctimeslotlist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<Mc_Timeslot_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteMc_Timeslot_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletemctimeslotlist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<TempMc_Timeslot_ListVM>> GetAllTempMc_Timeslot_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/gettempmctimeslotlist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<TempMc_Timeslot_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<TempMc_Timeslot_ListVM> PostTempMc_Timeslot_List(TempMc_Timeslot_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/posttempmctimeslotlist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<TempMc_Timeslot_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteTempMc_Timeslot_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletetempmctimeslotlist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Mc_Wait_ListVM>> GetAllMc_Wait_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getmcwaitlist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Mc_Wait_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<Mc_Wait_ListVM> PostMc_Wait_List(Mc_Wait_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postmcwaitlist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<Mc_Wait_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteMc_Wait_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletemcwaitlist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Matl_Issue_SettingsVM>> GetAllMatl_Issue_Settings()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getmatlissuesetting/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Matl_Issue_SettingsVM>>.GetAsync(uri, headers);
+        }
+        public async Task<Matl_Issue_SettingsVM> PostMatl_Issue_Settings(Matl_Issue_SettingsVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postmatlissuesetting");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<Matl_Issue_SettingsVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteMatl_Issue_Settings(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletematlissuesetting/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Matl_Issue_ListVM>> GetAllMatl_Issue_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getmatlissuelist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Matl_Issue_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<Matl_Issue_ListVM> PostMatl_Issue_List(Matl_Issue_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postmatlissuelist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<Matl_Issue_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteMatl_Issue_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletematlissuelist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<TempMc_Wait_ListVM>> GetAllTempMc_Wait_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/gettempmcwaitlist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<TempMc_Wait_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<TempMc_Wait_ListVM> PostTempMc_Wait_List(TempMc_Wait_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/posttempmcwaitlist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<TempMc_Wait_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteTempMc_Wait_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletetempmcwaitlist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Non_Plan_Wk_type_ListVM>> GetAllNon_Plan_Wk_type_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getnonplanwktypelist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Non_Plan_Wk_type_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Mode_ListVM>> GetAllMode_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getmodelist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Mode_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Non_Plan_Wk_ListVM>> GetAllNon_Plan_Wk_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getnonplanwklist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Non_Plan_Wk_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<Non_Plan_Wk_ListVM> PostNon_Plan_Wk_List(Non_Plan_Wk_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postnonplanwklist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<Non_Plan_Wk_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteNon_Plan_Wk_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletenonplanwklist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Rwk_ListVM>> GetAllRwk_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getrwklist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Rwk_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<Rwk_ListVM> PostRwk_List(Rwk_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postrwklist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<Rwk_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteRwk_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deleterwklist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Shop_Insp_LogVM>> GetAllShop_Insp_Log()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getshopinsplog/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Shop_Insp_LogVM>>.GetAsync(uri, headers);
+        }
+        public async Task<Shop_Insp_LogVM> PostShop_Insp_Log(Shop_Insp_LogVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postshopinsplog");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<Shop_Insp_LogVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteShop_Insp_Log(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deleteshopinsplog/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<SubCon_ListVM>> GetAllSubCon_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getsubconlist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<SubCon_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<SubCon_ListVM> PostSubCon_List(SubCon_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postsubconlist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<SubCon_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteSubCon_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletesubconlist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<TempSubCon_ListVM>> GetAllTempSubCon_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/gettempsubconlist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<TempSubCon_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<TempSubCon_ListVM> PostTempSubCon_List(TempSubCon_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/posttempsubconlist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<TempSubCon_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteTempSubCon_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletetempsubconlist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Opr_ListVM>> GetAllOpr_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getoprwklist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Opr_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Mc_Wait_ListVM>> GetAllMc_Wait_ListByMcWait(long woid)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getmcwaitlistbywoid/{woid}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Mc_Wait_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<Opr_ListVM> PostOpr_List(Opr_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postoprwklist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<Opr_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteOpr_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deleteoprwklist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<TempOpr_ListVM>> GetAllTempOpr_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/gettempoprwklist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<TempOpr_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<TempOpr_ListVM> PostTempOpr_List(TempOpr_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/posttempoprwklist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<TempOpr_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteTempOpr_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletetempoprwklist/{itemMasterDocListId}/{tenantId}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<bool>.GetAsync(uri, headers);
         }

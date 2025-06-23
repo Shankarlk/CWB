@@ -1,0 +1,1187 @@
+﻿
+<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h4>
+                                Simulation Output : Parent, Child WO, Rework WO & Non Plan Work
+                            </h4>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <a asp-action="SimulationPage" asp-controller="WOrkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                                X
+                            </a>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">WO Status</label>
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" id="P2SearchWoStatus"
+                                    title="" data-plugin="tippy" data-tippy-placement="top">
+                                <option value="0">-Select Status-</option>
+                                <option value="1">Ready for Production</option>
+                                <option value="2">W/F Material</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Part No</label>
+                            <input class="form-control form-control-sm" type="text" title=""
+                                   data-plugin="tippy" data-tippy-placement="top"
+                                   placeholder="Enter DC Reference" id="P2SearchPartNo">
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Part Desc</label>
+                            <input class="form-control form-control-sm" type="text" title=""
+                                   data-plugin="tippy" data-tippy-placement="top"
+                                   placeholder="Enter DC Reference" id="P2SearchPartDesc">
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Part Type</label>
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" id="P2SearchPartType"
+                                    title="" data-plugin="tippy" data-tippy-placement="top">
+                                <option value="0">--Select</option>
+                                <option value="1">All</option>
+                                <option value="2">Parent Assembly</option>
+                                <option value="3">Assembly</option>
+                                <option value="4">Parent Manf. Part </option>
+                                <option value="5">Child Manf. Part</option>
+                                <option value="6">Child Manf Part (Comb. WO)</option>
+                                <option value="7">CMP with Common Input Matl</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-label">Work Order #</label>
+                            <input class="form-control form-control-sm" type="text" title=""
+                                   data-plugin="tippy" data-tippy-placement="top"
+                                   placeholder="Enter DC Reference" id="P2SearchWo">
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <label class="form-label me-2 mb-0">Critical Part</label>
+                                <input class="form-check-input align-self-center" type="checkbox"
+                                       title="" data-plugin="tippy" data-tippy-placement="top"
+                                       id="P2SearchCritical">
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-2" id="ShowChildChkDiv">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <label class="form-label me-2 mb-0">Show Child Parts</label>
+                                <input class="form-check-input align-self-center" type="checkbox"
+                                       title="" data-plugin="tippy" data-tippy-placement="top"
+                                       id="P2SearchShowChildPart">
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <label class="form-label me-2 mb-0">WO on Hold</label>
+                                <input class="form-check-input align-self-center" type="checkbox"
+                                       title="" data-plugin="tippy" data-tippy-placement="top"
+                                       id="P2SearchWoOnHold">
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <label class="form-label me-2 mb-0">Rework WO <span id="p2ReworkCount">0</span></label>
+                                <input class="form-check-input align-self-center" type="checkbox"
+                                       title="" data-plugin="tippy" data-tippy-placement="top"
+                                       id="P2SearchRwkChk">
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <div class="d-flex align-items-center justify-content-start">
+                                <label class="form-label me-2 mb-0">Build to Stock WO <span id="p2BuildCount">0</span></label>
+                                <input class="form-check-input align-self-center" type="checkbox"
+                                       title="" data-plugin="tippy" data-tippy-placement="top"
+                                       id="P2SearchBuildStock">
+                            </div>
+                        </div>
+
+                        <div class="col-md-12" id="P6partInspectPlanGridDiv">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="P2Grid"
+                                           class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Work Order # </th>
+                                                <th>Customer</th>
+                                                <th>Rwk WO</th>
+                                                <th>Build to Stock</th>
+                                                <th>Part No / Desc</th>
+                                                <th>Part Type </th>
+                                                <th>Routing </th>
+                                                <th>Cur Opr No </th>
+                                                <th>WIP</th>
+                                                <th>Input Matl Coverage</th>
+                                                <th>Plan WO Qnty</th>
+                                                <th>Reqd Compl Dt</th>
+                                                <th>Cur Plan Qnty</th>
+                                                <th>PS Start Date</th>
+                                                <th>PS Compl Date </th>
+                                                <th>CS Start Date </th>
+                                                <th>CS Compl Date </th>
+                                                <th>Act Start Date </th>
+                                                <th>Data Changed </th>
+                                                <th>Critical Part </th>
+                                                <th>Hold</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- -------------  -->
+                                            <!-- -------------  -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <button class="btn btn-outline-primary ms-3" onclick="window.location.href='/M@H1NE!P'">Machine List</button>
+                            <button class="btn btn-outline-primary ms-3" onclick="window.location.href='/SYBC0!NK'">SubCon List</button>
+                            <!-- <button class="btn btn-outline-primary mb-2" data-bs-toggle="modal" data-bs-target="#Popup23">SubCon List</button> -->
+                        </div>
+                        <div class="col-md-2 text-end  ">
+                            <button class="btn btn-primary mb-2" id="ReSimulate">Re-Simulate</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end col -->
+</div>
+
+<div class="modal fade" id="Popup26" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mySmallModalLabel">
+                    Routings available for : <span id="P26PartNo">xxxxx / xxxxx</span>  <br>
+                    Processing Qnty : <span id="P26proQnty">xxxx</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12 mb-4" id="P6partInspectPlanGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P26Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Select</th>
+                                            <th>Pref.</th>
+                                            <th>Routing Name</th>
+                                            <th>No of Opr</th>
+                                            <th>TPT</th>
+                                            <th>Starting M/c - Shop</th>
+                                            <th>M/c Avl Date / Time </th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 text-end mt-2 mb-2">
+                        <input type="text" id="P26Woid" hidden />
+                        <button type="button" class="btn btn-primary btn-sm" id="P26Save">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="Popup3" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border: 4px solid #5eafd2;">
+            <div class="modal-header position-relative">
+                <h5 class="modal-title" id="mySmallModalLabel">
+                    Routings Detais of  <span id="P3Routing">xxxx</span>  for <span id="P3PartNo">xxxxx / xxxxx</span>  <br>
+                    Processing Qnty : <span id="P3proQnty">xxxx</span>
+                </h5>
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12 mb-4" id="#">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P3Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Opr No </th>
+                                            <th>Inhouse / SubCon</th>
+                                            <th>M/c - Shop / SubCon</th>
+                                            <th>Preferred</th>
+                                            <th>Cycle Time min</th>
+                                            <th>Residence time at M/c</th>
+                                            <th>M/c Avl Date / Time </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="Popup7" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mySmallModalLabel">
+                    Material Availablilty for <span id="P7PartNo">xxxxx / xxxxx</span> <br>
+                    WO : <span id="P7Wo">xxxxx</span> WO Plan Qnty : <span id="P7WoQnty">xxxxx</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <h6>Finished Assembly Qnty : <span id="P7FinQnty">xxx</span></h6>
+                    <div class="col-md-12 mb-4" id="#">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P7Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>WO Ref</th>
+                                            <th>PO Ref</th>
+                                            <th>Child Part No</th>
+                                            <th>Part Type</th>
+                                            <th>Assy Qnty Reqd</th>
+                                            <th>Fin. Qnty in Stores</th>
+                                            <th>WO Qnty</th>
+                                            <th>WO Status</th>
+                                            <th>RM Qnty in Stores</th>
+                                            <th>PO Qnty</th>
+                                            <th>PO Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="Popup10" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mySmallModalLabel">
+                    Rework List
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12 mb-4" id="P6partInspectPlanGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P4Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Work Order #</th>
+                                            <th>Part No / Desc</th>
+                                            <th>Rwk Qnty</th>
+                                            <th>Reqd Compl Dt</th>
+                                            <th>Reqd Duration</th>
+                                            <th>Shop</th>
+                                            <th>Machine</th>
+                                            <th>Planned date</th>
+                                            <th>In Progress</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                        <!-- -------------  -->
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                <div class="dropdown float-center">
+                                                    <a href="#" class="dropdown-toggle arrow-none card-drop"
+                                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="mdi mdi-dots-vertical"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <!-- item-->
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup11">View</a>
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup11">Edit</a>
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup11">Delete</a>
+                                                        <!-- item-->
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                <div class="dropdown float-center">
+                                                    <a href="#" class="dropdown-toggle arrow-none card-drop"
+                                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="mdi mdi-dots-vertical"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <!-- item-->
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup11">View</a>
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup11">Edit</a>
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup11">Delete</a>
+                                                        <!-- item-->
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                <div class="dropdown float-center">
+                                                    <a href="#" class="dropdown-toggle arrow-none card-drop"
+                                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="mdi mdi-dots-vertical"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <!-- item-->
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup11">View</a>
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup11">Edit</a>
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup11">Delete</a>
+                                                        <!-- item-->
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                <div class="dropdown float-center">
+                                                    <a href="#" class="dropdown-toggle arrow-none card-drop"
+                                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="mdi mdi-dots-vertical"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <!-- item-->
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup81">View</a>
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup81">Edit</a>
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup81">Delete</a>
+                                                        <!-- item-->
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="Popup11" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border: 4px solid #5eafd2;">
+            <div class="modal-header">
+                <div class="col-md-4">
+                    <h5 class="modal-title" id="mySmallModalLabel">
+                        Rework Plan <br> <br>
+                        Rework for Part No / Desc : xxxx  / xxx <br>
+                        Routing : xxxx <br>
+                        WO No : xxxx <br>
+                        Rwk Qnty :
+                    </h5>
+                </div>
+                <div class="d-flex flex-column">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn btn-outline-primary btn-sm mt-4" data-bs-toggle="modal" data-bs-target="#PopupNC10" id="PopupNC10Btn">Show NC</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label class="form-label col-md-4 mb-2">Machine Selection * </label>
+                    <div class="col-md-3 mb-2">
+                        <input class="form-control" id="P81MachinceSel1" type="text" readonly>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <input class="form-control" id="P81MachinceSel2" type="text" readonly>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#Popup82" id="P81Select">Select</button>
+                    </div>
+                    <label class="form-label col-md-4 mb-2">Work Description * </label>
+                    <div class="col-md-6 mb-2">
+                        <textarea class="form-control" id="P81MachinceSel1" placeholder="Enter Work Description" style="height: 64px;"></textarea>
+                    </div>
+                    <label class="form-label col-md-4 mb-2">Non Plan Work Type * </label>
+                    <div class="col-md-6 mb-2">
+                        <select class="form-select form-select-sm" aria-label="form-select-sm" id="P2SearchWoStatus"
+                                title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">==========</option>
+                        </select>
+                    </div>
+                    <label class="form-label col-md-4 mb-2">Required Start Date / Time * </label>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P81MachinceSel1" type="date">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P81MachinceSel1" type="time">
+                    </div>
+                    <label class="form-label col-md-4 mb-2">Required Duration * </label>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P81MachinceSel1" type="text" placeholder="00:00">
+                    </div>
+                    <div class="col-md-12 text-end mt-2 mb-2">
+                        <button type="button" class="btn btn-primary btn-sm" id="P8Save">Save</button>
+                    </div>
+                    <hr class="mt-1 mb-2">
+                    <label class="form-label col-md-4 mb-2">Actual Start Date / Time * </label>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P81ActDate1" type="date">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P81ActTime1" type="time">
+                    </div>
+                    <div class="col-md-12 text-end mt-2 mb-2">
+                        <button type="button" class="btn btn-primary btn-sm" id="P8Save">Save</button>
+                    </div>
+                    <hr class="mt-1 mb-2">
+                    <label class="form-label col-md-4 mb-2">Completion Comments *</label>
+                    <div class="col-md-6 mb-2">
+                        <textarea class="form-control" id="P81MachinceSel1" placeholder="Enter Completion Comments" style="height: 64px;"></textarea>
+                    </div>
+                    <label class="form-label col-md-4 mb-2">Actual End Date / Time * </label>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P81ActEndDate1" type="date">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P81ActEndTime1" type="time">
+                    </div>
+                    <label class="form-label col-md-4 mb-2">Actual Duration * </label>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P81MachinceSel1" type="text" placeholder="00:00">
+                    </div>
+                    <div class="col-md-12 text-end mt-2 mb-2">
+                        <button type="button" class="btn btn-primary btn-sm" id="P8Save">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="Popup82" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border: 4px solid #5eafd2;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Machine List
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="d-flex row">
+                        <label class="form-label col-md-6 mb-2">Machine Type </label>
+                        <label class="form-label col-md-6 mb-2">Shop </label>
+                        <div class="col-md-6 mb-2">
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" id="P2SearchWoStatus"
+                                    title="" data-plugin="tippy" data-tippy-placement="top">
+                                <option value="">==========</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" id="P2SearchWoStatus"
+                                    title="" data-plugin="tippy" data-tippy-placement="top">
+                                <option value="">==========</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mb-4" id="P6partInspectPlanGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P24Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Select</th>
+                                            <th>Machine Type</th>
+                                            <th>Shop</th>
+                                            <th>Machine</th>
+                                            <th>Next Set up Date  / Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                        <!-- -------------  -->
+                                        <tr>
+                                            <td>
+                                                <input class="form-check-input mt-2 P1gridChk" type="checkbox" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top" placeholder="">
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 text-end mt-2 mb-2">
+                        <button type="button" class="btn btn-primary btn-sm" id="P26Save">Select</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div id="Popup9" class="modal fade modal-fullscreen-xl-down" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content bxs-modal" style="border: 4px solid #5eafd2;">
+            <div class="modal-header">
+                <div class="col-md-4">
+                    <h5 class="modal-title" id="mySmallModalLabel">
+                        Balance Operations for Part No / Desc : xxxx  / xxx <br>
+                        Routing : xxxx <br>
+                        WO No : xxxx <br>
+                        Plan Qnty : xxxx   <span style="margin-left: 30%;">Plan Completion Date : xxxxx</span>
+                    </h5>
+                </div>
+                <div class="col-md-4">
+                    <h5><span style="margin-left: 50%; border: solid red 0.1pt; background-color: rgb(251, 108, 108); color: black;">Critical</span></h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12 mb-4" id="P6partInspectPlanGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-600">
+                                <table id="P4Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Opr No</th>
+                                            <th>Inhouse / SubCon</th>
+                                            <th>M/c - Shop / SubCon</th>
+                                            <th>Multiple M/cs Avl</th>
+                                            <th>Processing Qnty</th>
+                                            <th>Opr Status</th>
+                                            <th>Cycle Time min</th>
+                                            <th>Residence time at M/c</th>
+                                            <th>PS Start Date / Plan Start - Disp</th>
+                                            <th>PS Compl Date / Plan Compl - Rcpt</th>
+                                            <th>CS Opr Ready to start Date/Time (1)</th>
+                                            <th>CS Start Date / Act Start - Disp (2)</th>
+                                            <th>CS Compl Date / Act Compl - Rcpt</th>
+                                            <th>OK Qnty</th>
+                                            <th>NC Qnty</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                        <!-- -------------  -->
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                <div class="dropdown float-center">
+                                                    <a href="#" class="dropdown-toggle arrow-none card-drop"
+                                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="mdi mdi-dots-vertical"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <!-- item-->
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup21">Show M/c Loading</a>
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup4">Add / Edit Machine</a>
+                                                        <!-- item-->
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8 text-center mt-2 mb-2">
+                        <div class="d-flex justify-content-fornt align-items-center gap-2">
+                            <h5 class="" style="font-weight: bold;">Allow Next Opr No to start after 1st Bookout of Current Opr (Parallel Opr)   </h5>
+                            <input class="form-check-input" id="P6AllChk" type="checkbox">
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <h5>
+                            (1) Date/Time when Previous Inhouse Opr has processed enough parts to next Opr to start <br>
+                            (2) Date/Time when Next Opr M/c is available to start processing ...
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="Popup12" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header position-relative">
+                <h5 class="modal-title" id="mySmallModalLabel">
+                    Allocation of Input Matl for Combined WO
+                    (Input Matl not adequate to cover Plan WO Qnty) <br> <br>
+                    Part No / Desc : <span id="P45PartName">xxxxx / xxxxx</span>  <br>
+                    Routing : <span id="P45Rout">xxxxx </span> <br>
+                    Combined WO No : <span id="P45McName">xxxxx</span>
+                    <br>
+                    Combined WO Plan Qnty :  <span id="P45McName">xxxxx</span>
+                    <br>
+                    Input Matl Coverage : <span id="P45ProcQnty">xxxxx</span>
+                </h5>
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label class="form-label col-md-4 mb-2">
+                        Part No / Desc : <span id="P45Machine1">xxxxx / xxxxx </span>  <br>
+                        WO Plan Qnty : <span id="P45Machine1">xxxxx </span>
+                    </label>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control form-control-sm" id="P45MachinePer1" type="text" placeholder="XX%">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control form-control-sm" id="P45MachineQnty1" type="text" readonly>
+                    </div>
+                    <label class="form-label col-md-4 mb-2">
+                        Part No / Desc : <span id="P45Machine1">xxxxx / xxxxx </span>  <br>
+                        WO Plan Qnty :<span id="P45Machine1">xxxxx  </span>
+                    </label>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control form-control-sm" id="P45MachinePer2" type="text" placeholder="XX%">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control form-control-sm" id="P45MachineQnty2" type="text" readonly>
+                    </div>
+                    <label class="form-label col-md-4 mb-2">
+                        Part No / Desc : <span id="P45Machine1">xxxxx / xxxxx </span>  <br>
+                        WO Plan Qnty : <span id="P45Machine1">xxxxx </span>
+                    </label>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control form-control-sm" id="P45MachinePer3" type="text" placeholder="XX%">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control form-control-sm" id="P45MachineQnty3" type="text" readonly>
+                    </div>
+                    <label class="form-label col-md-4 mb-2 text-end">Total </label>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control form-control-sm" id="P45TotalPer" type="text" placeholder="XX%" readonly>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control form-control-sm" id="P45TotalQnty" type="text" readonly>
+                    </div>
+                    <div class="col-md-12 text-end mt-2 mb-2">
+                        <button type="button" class="btn btn-primary btn-sm" id="P45Save">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="Popup21" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Machine Loading List
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Shop</label>
+                        <select class="form-select form-select-sm" aria-label="form-select-sm" id="P2SearchWoStatus"
+                                title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">==========</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Machine Type</label>
+                        <select class="form-select form-select-sm" aria-label="form-select-sm" id="P2SearchWoStatus"
+                                title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">==========</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6"></div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary btm-sm" data-bs-target="#InfoPopup" data-bs-toggle="modal">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                    <div class="col-md-12 mb-4" id="P6partInspectPlanGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P6partInspectPlanGrid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Shop </th>
+                                            <th>Machine Type</th>
+                                            <th>Machine</th>
+                                            <th>Simulation Duration hrs</th>
+                                            <th># Parts (in Queue)</th>
+                                            <th># Hrs Booked </th>
+                                            <th># Non Plan Work </th>
+                                            <th>Non Plan Wk Hrs </th>
+                                            <th># Rework</th>
+                                            <th>Rwk Hrs</th>
+                                            <th>Mc not Avl Hrs</th>
+                                            <th>Free Hrs</th>
+                                            <th>% Hrs Used</th>
+                                            <th>Date M/c not loaded</th>
+                                            <th>Part / Opr No Currently in M/c </th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                <div class="dropdown float-center">
+                                                    <a href="#" class="dropdown-toggle arrow-none card-drop"
+                                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="mdi mdi-dots-vertical"></i>
+                                                    </a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <!-- item-->
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#Popup22">Show Loading Seqeunce</a>
+                                                        <!-- item-->
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#popupInward1">Edit Non Plan Work</a>
+                                                        <!-- item-->
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#warning">Edit Rework </a>
+                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#NotUploaded">Show M/c Non Avl. Hrs</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-12 mt-4" id="#">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P6partInspectPlanGrid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Shop </th>
+                                            <th>Machine Type</th>
+                                            <th>Machine</th>
+                                            <th># Hrs Booked </th>
+                                            <th>No of M/cs Avl </th>
+                                            <th>No of M/cs Used </th>
+                                            <th>M/c with highest Hrs Booked</th>
+                                            <th>M/c with least Hrs Booked</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>xxxx</td>
+                                            <td>xxxx</td>
+                                        </tr>
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="ErrorMessage1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 4px solid #5eafd2;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Data is not saved</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <label class="form-label col-md-6 mb-2">
+
+                                Save changes & Exit
+                                <br>
+                                <br>
+                                <br>
+                                Return to Popup to Edit
+                                <br>
+                                <br>
+                                <br>
+                                Exit without saving changes
+
+                            </label>
+                            <div class="col-md-6 text-center">
+                                <input id="openfrom" type="text" hidden />
+                                <button class="btn btn-sm btn-primary" id="ErBtn1">Save & Exit</button>
+                                <br>
+                                <button class="btn btn-sm mt-4 btn-primary" id="ErBtn2">Edit Entered Data</button>
+                                <button class="btn btn-sm mt-4 btn-primary" id="ErBtn3">Exit without Saving Entered Data</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<template id="P2GridRow">
+    <tr>
+        <td>{woNumber}</td>
+        <td>{customer}</td>
+        <td>{reworkWo}</td>
+        <td>{buildToStock}</td>
+        <td>{partNo} / {partDesc}</td>
+        <td>{partTypeName}</td>
+        <td>{routingName}</td>
+        <td>{curOpr}</td>
+        <td>{wip}</td>
+        <td>{calcWOQty}</td>
+        <td>{calcWOQty}</td>
+        <td>{planCompletionDateStr}</td>
+        <td>{calcWOQty}</td>
+        <td>{psStartDate}</td>
+        <td>{psEndDate}</td>
+        <td>{csStartDate}</td>
+        <td>{csEndDate}</td>
+        <td>{actStartDateStr}</td>
+        <td>{dataChange}</td>
+        <td>{criticalParts}</td>
+        <td></td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-ppid={productionPlanId}
+                       data-workorderid={woId}
+                       data-parentwoid={parentWoId}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-partdesc={partDesc}
+                       data-partid={partId}
+                       data-parttype={partType}
+                       data-parentlevel={parentlevel}
+                       data-plancompletiondatestr='{planCompletionDateStr}'
+                       data-requiredquantity={requiredQuantity}
+                       data-calwoqty={calcWOQty}
+                       data-routingid={routingId}
+                       data-wostatus={status}
+                       data-bs-target="#Popup26">Change Routing</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-ppid={productionPlanId}
+                       data-workorderid={woId}
+                       data-parentwoid={parentWoId}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-partdesc={partDesc}
+                       data-partid={partId}
+                       data-parttype={partType}
+                       data-parentlevel={parentlevel}
+                       data-plancompletiondatestr='{planCompletionDateStr}'
+                       data-requiredquantity={requiredQuantity}
+                       data-calwoqty={calcWOQty}
+                       data-routingid={routingId}
+                       data-wostatus={status}
+                       data-bs-target="#Popup12">Allocate Common Material</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-ppid={productionPlanId}
+                       data-workorderid={woId}
+                       data-parentwoid={parentWoId}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-partdesc={partDesc}
+                       data-partid={partId}
+                       data-parttype={partType}
+                       data-parentlevel={parentlevel}
+                       data-plancompletiondatestr='{planCompletionDateStr}'
+                       data-requiredquantity={requiredQuantity}
+                       data-calwoqty={calcWOQty}
+                       data-routingid={routingId}
+                       data-wostatus={status}
+                       data-bs-target="#Popup7">View Material Availability </a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-ppid={productionPlanId}
+                       data-workorderid={woId}
+                       data-parentwoid={parentWoId}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-partdesc={partDesc}
+                       data-partid={partId}
+                       data-parttype={partType}
+                       data-parentlevel={parentlevel}
+                       data-plancompletiondatestr='{planCompletionDateStr}'
+                       data-requiredquantity={requiredQuantity}
+                       data-calwoqty={calcWOQty}
+                       data-routingid={routingId}
+                       data-wostatus={status}
+                       data-bs-target="#Popup9">View Balance Oprs </a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-bs-target="#NotUploaded">hold / resume</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-ppid={productionPlanId}
+                       data-workorderid={woId}
+                       data-parentwoid={parentWoId}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-partdesc={partDesc}
+                       data-partid={partId}
+                       data-parttype={partType}
+                       data-parentlevel={parentlevel}
+                       data-plancompletiondatestr='{planCompletionDateStr}'
+                       data-requiredquantity={requiredQuantity}
+                       data-calwoqty={calcWOQty}
+                       data-routingid={routingId}
+                       data-wostatus={status}
+                       data-bs-target="#Popup10">Assign M/c for Rework</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="P7GridRow">
+    <tr>
+        <td>{woNumber}</td>
+        <td>{poNumber}</td>
+        <td>{partNo}</td>
+        <td>{partTypeName}</td>
+        <td>{calcWOQty}</td>
+        <td>{finQnty}</td>
+        <td>{calcWOQty}</td>
+        <td>{woStatus}</td>
+        <td>0</td>
+        <td>{poQnty}</td>
+        <td>{poStatus}</td>
+    </tr>
+</template>
+<template id="P26GridRow">
+    <tr>
+        <td>
+            <input class="form-check-input P26GridChk" type="checkbox" title=""
+                   data-routingid="{routingId}"
+                   data-plugin="tippy" data-tippy-placement="top" placeholder="">
+        </td>
+        <td>{strPreferredRouting}</td>
+        <td>{routingName}</td>
+        <td>{noOprns}</td>
+        <td>{tpt}</td>
+        <td>{startingOpr}</td>
+        <td>-</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-bs-target="#Popup3" data-routingid="{routingId}" data-routingname="{routingName}">Details</a>
+                    <!-- item-->
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="P3GridRow">
+    <tr>
+        <td>{stepNumber}</td>
+        <td>{locationName}</td>
+        <td>{machineName}</td>
+        <td>{preferredStr}</td>
+        <td>{cycleTime}</td>
+        <td>{residenceTime}</td>
+        <td>-</td>
+    </tr>
+</template>
+
+
+
+
+@section Scripts {
+    <script src="~/js/SimulationOutPage.js"></script>
+}

@@ -11,7 +11,7 @@
         <hr class="mt-2">
         <div class="contianer">
             <div class="row ">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card p-1">
                         <div class="row">
                             <h5>Inward</h5>
@@ -38,7 +38,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card p-1">
                         <div class="row">
                             <h5>Inspection</h5>
@@ -88,7 +88,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="card p-1">
                         <div class="row">
                             <h5>Non Conformance</h5>
@@ -104,11 +104,54 @@
                             <div class="col-md-12 text-center">
                                 <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#NcPopup8">Set NC Disposal Decision Malers (Level 1 / 2)</button>
                             </div>
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h6 class="mb-0">Allow Loading to Prodn if NC not Closed</h6>
+                                    <input class="form-check-input ms-auto me-2" type="checkbox"
+                                           id="AllowLoadingtoProdnifNCnotClosed">
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h6 class="mb-0">Allow Loading to Prodn if Docs not approved</h6>
+                                    <input class="form-check-input ms-auto me-2" type="checkbox"
+                                           id="AllowLoadingtoProdnifDocsnotapproved">
+                                </div>
+                            </div>
                         </div>
 
                     </div>
                 </div>
 
+                <div class="col-md-3">
+                    <div class="card p-1">
+                        <div class="row">
+                            <h5>Machine Loading</h5>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal"
+                                        data-bs-target="#McPopup9">
+                                    Set Matl. Coverage in Shop
+                                </button>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" id="TimeSlotSettingsBtn">
+                                    Timeslot Settings
+                                </button>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal"
+                                        data-bs-target="#McPopup12">
+                                    Mc Not Avl Reason List
+                                </button>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal"
+                                        data-bs-target="#McPopup14">
+                                    Simulation Settings
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1288,6 +1331,413 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div>
+
+
+<div class="modal fade" id="woWaitList" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-full-width">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Test Wo wait List</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- ======================== -->
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table class="table table-sm table-bordered w-100 text-center" id="woWaitListGrid">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>WONumber </th>
+                                        <th>Part</th>
+                                        <th>Mode </th>
+                                        <th>TPT</th>
+                                        <th>Wait Seq No.</th>
+                                        <th>Plan Start Date</th>
+                                        <th>Plan End Date</th>
+                                        <th>Plan Qnty</th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- -------------  -->
+                                    <!-- -------------  -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- -----------------  -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="oprList" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-full-width">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Test Opr List</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- ======================== -->
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table class="table table-sm table-bordered w-100 text-center" id="oprListGrid">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Opr Name </th>
+                                        <th>Mode</th>
+                                        <th>Initial Opr TPT</th>
+                                        <th>Rolled Up Opr TPT</th>
+                                        <th>No Of Simu Mcs </th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- -------------  -->
+                                    <!-- -------------  -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- -----------------  -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="mcWaitList" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-full-width">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Test Mc wait List</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- ======================== -->
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table class="table table-sm table-bordered w-100 text-center" id="mcWaitListGrid">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Mc Name  </th>
+                                        <th>Mode</th>
+                                        <th>Allocation</th>
+                                        <th>MC TPT</th>
+                                        <th>Plan Start Time</th>
+                                        <th>Plan End Time</th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- -------------  -->
+                                    <!-- -------------  -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- -----------------  -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="mcTimeSlot" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-full-width">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Test Mc wait List</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- ======================== -->
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table class="table table-sm table-bordered w-100 text-center" id="ProcPlanGrid">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Mc Name  </th>
+                                        <th>Mode</th>
+                                        <th>MC TPT</th>
+                                        <th>Plan Start Time</th>
+                                        <th>Plan End Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- -------------  -->
+                                    <!-- -------------  -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- -----------------  -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+
+<div class="modal fade" id="McPopup9" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Material Coverage for Shop </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <h6>No of Shifts of Material Coverage to be ensured at time of Material Issue</h6>
+                    <div class="row">
+                        <div class="col-md-12 mt-2">
+                            <div class="table-responsive mt-1 table-he-180">
+                                <table class="table table-sm table-bordered w-100 mb-3 tableFixHead"
+                                       id="P9Grid">
+                                    <thead class="  table-info th-sti text-center">
+                                        <tr class="table-border-bottom">
+                                            <th>Shop</th>
+                                            <th># Shifts / day</th>
+                                            <th># Days Coverage </th>
+                                            <th>Issue Day</th>
+                                            <th>Last Issue Time</th>
+                                            <th width="5%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- =========================== -->
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="McPopup10" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 4px solid #5eafd2;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Coverage for Shop : <span id="P9ShopName">xxxxxxxx</span> </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="row">
+                        <label class="form-label col-md-5 mb-2">No of Days of Coverage </label>
+                        <div class="col-md-7 mb-2">
+                            <input class="form-control form-control-sm" id="P10NoDays" type="number" max="10" min="1">
+                            <input class="form-control form-control-sm" id="P10Id" type="text" hidden>
+                            <input class="form-control form-control-sm" id="P10ShopId" type="text" hidden>
+                        </div>
+                        <label class="form-label col-md-5 mb-2">Issue day * </label>
+                        <div class="col-md-7 mb-2">
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" id="P10IssueDay"
+                                    title="" data-plugin="tippy" data-tippy-placement="top">
+                                <option value="0">-Select</option>
+                                <option value="1">Day of Prodn</option>
+                                <option value="2">Prev Day</option>
+                            </select>
+                        </div>
+                        <div class="col text-end">
+                            <button class="btn btn-sm btn-primary" id="SaveMcPopup10">Save</button>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="McPopup11" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Timeslot Settings (Creation & for Machines) </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label class="form-label col-md-5 mb-2">Timeslot Duration (Min)</label>
+                    <div class="col-md-5 mb-2">
+                        <select class="form-select form-select-sm w-80" id="McP11TimeDur" title="" data-plugin="tippy"
+                                data-tippy-placement="top">
+                            <option value="0">--Select--</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                        </select>
+                    </div>
+                    <label class="form-label col-md-5 mb-2">No of Days of Timeslots to be created (on a rolling basis)</label>
+                    <div class="col-md-5 mb-2">
+                        <select class="form-select form-select-sm w-80" id="McP11NoDay" title="" data-plugin="tippy"
+                                data-tippy-placement="top">
+                            <option value="0">--Select--</option>
+                            <option value="30">30</option>
+                            <option value="60">60</option>
+                            <option value="90">90</option>
+                            <option value="120">120</option>
+                            <option value="150">150</option>
+                        </select>
+                    </div>
+                    <label class="form-label col-md-5 mb-2">No of Retention Days for Timeslots (on a rolling basis)</label>
+                    <div class="col-md-5 mb-2">
+                        <input class="form-control w-80" id="McP11NoRetenDay" type="text">
+                    </div>
+                    <label class="form-label col-md-5 mb-2" id="McP11FirstStartTimelbl">1st Shift Break start time</label>
+                    <div class="col-md-5 mb-2">
+                        <input class="form-control w-80" id="McP11FirstStartTime" type="time">
+                    </div>
+                    <label class="form-label col-md-5 mb-2" id="McP11FirstDurlbl">1st Shift Break Duration (min)</label>
+                    <div class="col-md-5 mb-2">
+                        <input class="form-control w-80" id="McP11FirstDur" placeholder="00:00" type="text">
+                    </div>
+                    <label class="form-label col-md-5 mb-2" id="McP11SecStartTimelbl">2nd Shift Break start time</label>
+                    <div class="col-md-5 mb-2">
+                        <input class="form-control w-80" id="McP11SecStart" type="time">
+                    </div>
+                    <label class="form-label col-md-5 mb-2" id="McP11SecDurlbl">2nd Shift Break Duration (min)</label>
+                    <div class="col-md-5 mb-2">
+                        <input class="form-control w-80" id="McP11SecDur" placeholder="00:00" type="text">
+                    </div>
+                    <label class="form-label col-md-5 mb-2" id="McP11ThirdStartTimelbl">3rd Shift Break start time</label>
+                    <div class="col-md-5 mb-2">
+                        <input class="form-control w-80" id="McP11ThirdStart" type="time">
+                    </div>
+                    <label class="form-label col-md-5 mb-2" id="McP11ThirdDurlbl">3rd Shift Break Duration (min)</label>
+                    <div class="col-md-5 mb-2">
+                        <input class="form-control w-80" id="McP11ThirdDur" placeholder="00:00" type="text">
+                    </div>
+                    <!-- ----------- -->
+                    <input type="text" id="McP11TimeSettingId" hidden />
+                    <!-- ----------- -->
+                    <div class="col-md-12 mt-2 text-end">
+                        <button type="button" class="btn btn-primary btn-sm" id="McP11Save">Save</button>
+                    </div>
+                    <div class="col-md-12 mb-3 text-end">
+
+                    </div>
+                    <div class="col-md-12 text-center">
+                        <span id="McP11SuccesMsg1"></span>
+                        <span id="McP11SuccesMsg2"></span>
+                    </div>
+                    <div class="col-md-12 mb-3 text-end">
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="McPopup12" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">List of Reasons for Machine not Available </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <h6>Chosen by User when blocking M/c availablity</h6>
+                    <div class="row">
+                        <div class="col-md-12 mt-2">
+                            <div class="table-responsive mt-1 table-he-250">
+                                <table class="table table-sm table-bordered w-100 mb-3 tableFixHead"
+                                       id="McP12Grid">
+                                    <thead class="  table-info th-sti text-center">
+                                        <tr class="table-border-bottom">
+                                            <th>Mc Non-Availabilty Reason</th>
+                                            <th width="5%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- =========================== -->
+                        </div>
+                        <div class="col-md-12 text-end mt-2">
+                            <button class="btn btn-primary mb-2" data-bs-toggle="modal"
+                                    data-bs-target="#McPopup13" id="P12OpenP13">
+                                Add New Reason
+                            </button>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="McPopup13" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Mc Non Availability Reason Entry </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label class="form-label col-md-5 mb-2">Reason Description </label>
+                    <div class="col-md-7 mb-2">
+                        <input class="form-control" id="Mc13Reason" placeholder="Enter" type="text">
+                        <span id="Text-Error-mcreason"></span>
+                        <input class="form-control" id="Mc13ReasonId" placeholder="Enter" type="text" hidden>
+                    </div>
+                    <div class="col text-end">
+                        <button class="btn btn-sm btn-primary" id="SaveMcPopup13">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="McPopup14" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Simulation Settings </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label class="form-label col-md-5 mb-2">% of Production to be completed before Next Opr Parallel Opr can start </label>
+                    <div class="col-md-7 mb-2">
+                        <input class="form-control" id="Mc14Reason" placeholder="Enter %age" value="10" type="text">
+                    </div>
+                    <div class="col text-end">
+                        <button class="btn btn-sm btn-primary" id="SaveMcPopup14">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
 <template id="inwardDocRow">
 
     <tr>
@@ -1409,7 +1859,7 @@
                        data-respdept="{resp_Dept}" onclick="EditNcPopup3(this)">Edit Steps</a>
                     <!-- item-->
                     <a href="javascript:void(0);" class="dropdown-item"
-                       data-docname="{documentTypeId}" data-mandatory="{mandatory}"  data-headid="{nC_Wk_List_Tmpl_Appl_Id}"
+                       data-docname="{documentTypeId}" data-mandatory="{mandatory}" data-headid="{nC_Wk_List_Tmpl_Appl_Id}"
                        data-masterdocid="{nC_Wk_List_Tmpl_DetId}" onclick="DeleteNcPopup3(this)">Delete from List</a>
                 </div>
             </div>
@@ -1487,6 +1937,132 @@
     <tr>
         <td class="nc-description">{ncDecision}</td>
         <td><a href="javascript:void(0);" id="delete-extn-link" onclick="DeleteP7({cust_NC_Decs_Matrix_OptId})"><i class="fas fa-trash"></i></a></td>
+    </tr>
+</template>
+<template id="McPopup12GridRow">
+    <tr>
+        <td>{reason_Desc}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-reasondesc="{reason_Desc}" data-mandatory="{mandatory}"
+                       data-mcnotid="{mc_Not_Avl_ReasonId}"
+                       data-bs-toggle="modal" data-bs-target="#McPopup13">Edit</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="P9GridRow">
+    <tr>
+        <td>{shop}</td>
+        <td>{noOfShifts}</td>
+        <td>{no_days_coverage}</td>
+        <td>{issueDayStr}</td>
+        <td>{lastIssueTimeStr}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-id="{matl_Issue_SettingsId}"
+                       data-shop="{shop}" data-shopid="{shop_Id}" 
+                       data-nodays="{no_days_coverage}"
+                       data-issueday="{issueDay}"
+                       data-bs-toggle="modal" data-bs-target="#McPopup10">Edit Coverage</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="woWaitListGridRow">
+    <tr>
+        <td>{woNumber}</td>
+        <td>{part}</td>
+        <td>{modeName}</td>
+        <td>{tpt}</td>
+        <td>{wO_Wait_Seq_No}</td>
+        <td>{planStartStr}</td>
+        <td>{planEndStr}</td>
+        <td>{plan_Simul_Qnty}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-reasondesc="{reason_Desc}" data-mandatory="{mandatory}"
+                       data-mcnotid="{wo_Id}"
+                       data-bs-toggle="modal" data-bs-target="#oprList">Edit</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="oprListGridRow">
+    <tr>
+        <td>{oprName}</td>
+        <td>{modeName}</td>
+        <td>{iniTpt}</td>
+        <td>{rolledTpt}</td>
+        <td>{no_of_Simult_Mcs}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-reasondesc="{reason_Desc}" data-mandatory="{mandatory}"
+                       data-mcnotid="{opr_No}"
+                       data-bs-toggle="modal" data-bs-target="#mcWaitList">Edit</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="mcWaitListGridRow">
+    <tr>
+        <td>{mcName}</td>
+        <td>{modeName}</td>
+        <td>{allocation}</td>
+        <td>{mctpt}</td>
+        <td>{planStartStr}</td>
+        <td>{planEndStr}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-reasondesc="{reason_Desc}" data-mandatory="{mandatory}"
+                       data-mcnotid="{mc_Not_Avl_ReasonId}"
+                       data-bs-toggle="modal" data-bs-target="#">Edit</a>
+                </div>
+            </div>
+        </td>
     </tr>
 </template>
 

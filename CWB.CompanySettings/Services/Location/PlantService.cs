@@ -19,13 +19,15 @@ namespace CWB.CompanySettings.Services.Location
         private readonly IPlantWDRepository _plantWDRepository;
         private readonly IHolidayRepository _holidayRepository;
         private readonly ICityRepository _cityRepository;
+        private readonly ITimeSlotDurationRepository _TimeSlotDurationRepository;
+        private readonly INoOfDaysTimeSlotRepository _NoOfDaysTimeSlotRepository;
         private readonly ICountryRepository _countryRepository;
 
         public PlantService(ILoggerManager logger 
             ,IMapper mapper, IUnitOfWork unitOfWork 
             ,IPlantRepository plantRepository
             ,IPlantWDRepository plantWDRepository
-            ,IHolidayRepository holidayRepository, ICityRepository cityRepository,
+            ,IHolidayRepository holidayRepository, ICityRepository cityRepository,INoOfDaysTimeSlotRepository NoOfDaysTimeSlotRepository,ITimeSlotDurationRepository TimeSlotDurationRepository,
             ICountryRepository countryRepository)
         {
             _logger = logger;
@@ -35,6 +37,8 @@ namespace CWB.CompanySettings.Services.Location
             _plantWDRepository = plantWDRepository;
             _holidayRepository = holidayRepository;
             _cityRepository = cityRepository;
+            _NoOfDaysTimeSlotRepository = NoOfDaysTimeSlotRepository;
+            _TimeSlotDurationRepository = TimeSlotDurationRepository;
             _countryRepository = countryRepository;
         }
 
@@ -95,6 +99,7 @@ namespace CWB.CompanySettings.Services.Location
                 {
                     plant.GstNo = string.Empty;
                 }
+                //plant.Change_flag = 'Y';
                 plant = await _plantRepository.UpdateAsync(plant.Id, plant);
             }
             await _unitOfWork.CommitAsync();
@@ -192,6 +197,16 @@ namespace CWB.CompanySettings.Services.Location
             var plants = _cityRepository.GetRangeAsync(p => p.TenantId == TenantId);
             return _mapper.Map<IEnumerable<CityVM>>(plants);
         }
+        public async Task<IEnumerable<NoOfDaysTimeSlotVM>> GetNoOfDaysTimeSlots()
+        {
+            var plants = await _NoOfDaysTimeSlotRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<NoOfDaysTimeSlotVM>>(plants);
+        }
+        public async Task<IEnumerable<TimeSlotDurationVM>> GetTimeSlotDurations()
+        {
+            var plants = await _TimeSlotDurationRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<TimeSlotDurationVM>>(plants);
+        }
         public IEnumerable<CountryVM> GetCountrys(long TenantId)
         {
             var plants = _countryRepository.GetRangeAsync(p => p.TenantId == TenantId);
@@ -266,6 +281,7 @@ namespace CWB.CompanySettings.Services.Location
             }
             else
             {
+                //plantWd.Change_flag = 'Y';
                 plantWd = await _plantWDRepository.UpdateAsync(plantWd.Id, plantWd);
             }
             await _unitOfWork.CommitAsync();

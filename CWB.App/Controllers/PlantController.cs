@@ -46,6 +46,10 @@ namespace CWB.App.Controllers
             {
                 return BadRequest(ModelState);
             }
+            //if (model.PlantId > 0)
+            //{
+            //    model.Change_flag = 'Y';
+            //}
             var result = await _plantService.PostPlant(model);
             return Json(result);
         }
@@ -55,6 +59,10 @@ namespace CWB.App.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            if (model.WDId > 0)
+            {
+                model.Change_flag = 'Y';
             }
             var result = await _plantService.PostPlantWD(model);
             return Json(result);
@@ -75,6 +83,18 @@ namespace CWB.App.Controllers
         public async Task<JsonResult> GetCitys()
         {
             var result = await _plantService.GetCities();
+            return Json(result);
+        }
+        [HttpGet]
+        public async Task<JsonResult> GetTimeSlotDurations()
+        {
+            var result = await _plantService.GetTimeSlotDurations();
+            return Json(result);
+        }
+        [HttpGet]
+        public async Task<JsonResult> GetNoOfDaysTimeSlots()
+        {
+            var result = await _plantService.GetNoOfDaysTimeSlots();
             return Json(result);
         }
         [HttpGet]

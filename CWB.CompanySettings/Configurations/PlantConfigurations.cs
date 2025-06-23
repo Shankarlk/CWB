@@ -70,6 +70,10 @@ namespace CWB.CompanySettings.Configurations
                 .HasColumnName("PanNo")
                 .HasMaxLength(255)
                 .IsRequired();
+            builder
+                .Property(w => w.Change_flag)
+                .HasColumnName("Change_flag")
+                .HasDefaultValue('N');
             builder.HasIndex(m => m.TenantId).HasDatabaseName("Plant_TenantId");
         }
     }
