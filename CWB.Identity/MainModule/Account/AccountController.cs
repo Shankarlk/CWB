@@ -23,8 +23,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -258,6 +260,94 @@ namespace CWB.Identity
         {
             return View();
         }
+        [Authorize(Roles = Roles.SUPERADMIN)]
+        [HttpGet]
+        public async Task<IActionResult> AddAdmin(string returnUrl)
+        {
+            // build a model so we know what to show on the login page
+            RegisterViewModel model = new RegisterViewModel();
+            model.ReturnUrl = returnUrl;
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddAdmin(RegisterViewModel model, string button)
+        {
+            if (button == "cancel")
+                return RedirectToAction("AdminList");
+
+            if (!ModelState.IsValid)
+                return View("Register", model);
+
+            var existingUser = await _userManager.FindByNameAsync(model.Username);
+            var finduser = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                ModelState.AddModelError("", "Username already exists.");
+                return View("Register", model);
+            }
+            if (finduser != null)
+            {
+                ModelState.AddModelError("", "EmailId already exists.");
+                return View("Register", model);
+            }
+
+            var user = new CwbUser
+            {
+                UserName = model.Username,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
+                EmailConfirmed = true,
+                PhoneNumberConfirmed = true,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                TenantId = 1 // Or derive from model.ClientCode if multi-tenant
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
+                return View("Register", model);
+            }
+
+            await _userManager.AddToRoleAsync(user, Roles.ADMIN);
+
+            await _userManager.AddClaimsAsync(user, new[]
+            {
+                new Claim(JwtClaimTypes.Name, $"{model.FirstName} {model.LastName}"),
+                new Claim(JwtClaimTypes.GivenName, model.FirstName),
+                new Claim(JwtClaimTypes.FamilyName, model.LastName),
+                new Claim(JwtClaimTypes.Role, Roles.ADMIN),
+                new Claim("TenantId", model.ClientCode) // Optional: Use ClientCode or map it
+            });
+
+            TempData["SuccessMessage"] = "Admin user created successfully!";
+            return RedirectToAction("AdminList");
+        }
+
+        [Authorize(Roles = Roles.SUPERADMIN)]
+        [HttpGet]
+        public async Task<IActionResult> AdminList()
+        {
+            var users = await _userManager.Users
+                .Where(u => u.TenantId == 1)
+                .ToListAsync();
+
+            var admins = new List<CwbUser>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Contains("Admin"))  // Match your defined `Roles.ADMIN`
+                {
+                    admins.Add(user);
+                }
+            }
+
+            return View(admins); // Send to AdminList.cshtml
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)

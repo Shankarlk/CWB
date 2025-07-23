@@ -1,0 +1,32 @@
+﻿@model List<CWB.Identity.Domain.CwbUser>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Admin List</h2>
+    <a href="@Url.Action("AddAdmin", "Account")" class="btn btn-primary">
+        <i class="fas fa-user-plus"></i> Create Admin
+    </a>
+</div>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Phone</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var admin in Model)
+        {
+            <tr>
+                <td>@admin.FirstName</td>
+                <td>@admin.LastName</td>
+                <td>@admin.UserName</td>
+                <td>@admin.Email</td>
+                <td>@admin.PhoneNumber</td>
+            </tr>
+        }
+    </tbody>
+</table>
