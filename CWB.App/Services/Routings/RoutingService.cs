@@ -30,7 +30,7 @@ namespace CWB.App.Services.Routings
 
         public async Task<List<RoutingListItemVM>> GetRoutingListItems()
         {
-            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/routinglistitems");
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/routinglistitems/{tenantId}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<RoutingListItemVM>>.GetAsync(uri, headers);
         }

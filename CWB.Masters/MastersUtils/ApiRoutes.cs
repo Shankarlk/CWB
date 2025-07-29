@@ -63,7 +63,7 @@
         }
 
         public static class Routings {
-            public const string RoutingListItems = Base + "/routinglistitems";
+            public const string RoutingListItems = Base + "/routinglistitems/{tenantId}";
             //public const string RoutingListItem = Base + "/routinglistitem/{manufPartId}";
             public const string PostNewRouting = Base + "/newrouting";
             public const string AltRouting = Base + "/altrouting";

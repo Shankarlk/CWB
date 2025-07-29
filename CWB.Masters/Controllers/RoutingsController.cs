@@ -83,13 +83,13 @@ namespace CWB.Masters.Controllers
         [HttpGet]
         [Route(ApiRoutes.Routings.RoutingListItems)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<RoutingListItemVM>))]
-        public async Task<List<RoutingListItemVM>> GetRoutingListItmes()
+        public async Task<List<RoutingListItemVM>> GetRoutingListItmes(long tenantId)
         {
-             var manufParts = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant(1).ToList();
+             var manufParts = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant(tenantId).ToList();
              var partIds = from mfs in manufParts select mfs.PartId;
              List<int> partIdLilst = partIds.ToList();
              var mps = _masterPartService.GetAllMasterPartsWithIds(partIdLilst);
-            var cos  = await _companyService.GetCompaniesByTenant(1);
+            var cos  = await _companyService.GetCompaniesByTenant(tenantId);
             
             var query = from manuf in manufParts
                         join co in cos on manuf.CompanyId equals co.CompanyId
