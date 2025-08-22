@@ -111,15 +111,15 @@ function AddWorkingDetails() {
         $("#WDId").val(data.wdId);
         $("#WDPlantId").val(data.plantId);
         alert("Plant Working Details Saved!");
-        //$.ajax({
-        //    type: "POST",
-        //    url: '/WorkOrder/PostTimeslot_List',
-        //    contentType: "application/json; charset=utf-8",
-        //    headers: { 'Content-Type': 'application/json' },
-        //    success: function (result) {
-        //        console.log("Success:", result);
-        //    }
-        //});
+        $.ajax({
+            type: "POST",
+            url: '/WorkOrder/PostTimeslot_List',
+            contentType: "application/json; charset=utf-8",
+            headers: { 'Content-Type': 'application/json' },
+            success: function (result) {
+                console.log("Success:", result);
+            }
+        });
         //$("#NoOfShifts").val(1);
         //for (let i = 1; i <= 3; i++) {
         //    if (i <= 1) {
