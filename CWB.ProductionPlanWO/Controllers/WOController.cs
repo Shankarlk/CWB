@@ -200,6 +200,15 @@ namespace CWB.ProductionPlanWO.Controllers
             var productionPlan = await _woSerivce.UpdateProductionPlan_Wo(productions);
             return Ok(productionPlan);
         }
+        [HttpPost]
+        [Route(ApiRoutes.WO.UpdateHoldProductionPlan_Wo)]
+        [Produces(AppContentTypes.ContentType, Type =typeof(ProductionPlan_WOVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> UpdateHoldProductionPlan_Wo([FromBody] ProductionPlan_WOVM productions)
+        {
+            var productionPlan = await _woSerivce.UpdateHoldProductionPlan_Wo(productions);
+            return Ok(productionPlan);
+        }
 
         [HttpGet]
         [Route(ApiRoutes.WO.AllProductionPlanWo)]
@@ -1514,6 +1523,56 @@ namespace CWB.ProductionPlanWO.Controllers
         public async Task<IActionResult> DeleteMatl_Issue_Settings(long Id, long tenantId)
         {
             var result = await _woSerivce.DeleteMatl_Issue_Settings(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostDispatchDetails)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(DispatchDetailsVM))]
+        public async Task<IActionResult> PostDispatchDetails([FromBody] DispatchDetailsVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostDispatchDetails(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllDispatchDetails)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<DispatchDetailsVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllDispatchDetails(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllDispatchDetails(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteDispatchDetails)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteDispatchDetails(long Id, long tenantId)
+        {
+            var result = await _woSerivce.DeleteDispatchDetails(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostDispatchQnty)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(DispatchQntyVM))]
+        public async Task<IActionResult> PostDispatchQnty([FromBody] DispatchQntyVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostDispatchQnty(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllDispatchQnty)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<DispatchQntyVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllDispatchQnty(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllDispatchQnty(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteDispatchQnty)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteDispatchQnty(long Id, long tenantId)
+        {
+            var result = await _woSerivce.DeleteDispatchQnty(Id, tenantId);
             return Ok(result);
         }
         

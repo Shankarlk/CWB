@@ -15,7 +15,7 @@ const WoOrdStatus = {
 
 function loadSO() {
     api.getbulk("/WorkOrder/AllSalesOrders").then((data) => {
-        data = data.filter(item => item.status !== 6);
+        data = data.filter(item => item.status !== 6 && item.hold != true);
         var tablebody = $("#SalesOrders1 tbody");
         $(tablebody).html("");//empty tbody
         //console.log(data);
@@ -46,7 +46,7 @@ function loadWO() {
         var tablebody = $("#WorkOrder tbody");
         $(tablebody).html("");//empty tbody
                                            
-
+        data = data.filter(item => item.status !== 8);
         //console.log(data);
         for (i = 0; i < data.length; i++) {
             //data[i].strStatus = WoOrdStatus[data[i].status];

@@ -1,4 +1,4 @@
-
+ï»¿
 function LoadHolidays(plantId) {
     var tablebody = $("#HolidaysTable tbody");
     $(tablebody).html("");//empty tbody
@@ -63,6 +63,14 @@ function GetPlantWD(plantId) {
             $("#WeeklyOff2").val("Sunday");
         }
         $("#NoOfShifts").val(data.noOfShifts);
+        $("#NoOfWeeklyOff").val(data.noOfWeeklyOff);
+        if (data.noOfWeeklyOff == 1) {
+            $('#lblWkOf2').hide();
+            $('#WeeklyOff2').hide();
+        } else if(data.noOfWeeklyOff == 2) {
+            $('#lblWkOf2').show();
+            $('#WeeklyOff2').show();
+        }
         for (let i = 1; i <= 3; i++) {
             if (i <= data.noOfShifts) {
                 $('#shift' + i).show();
@@ -79,9 +87,9 @@ function GetPlantWD(plantId) {
         $("#FirstShiftStartTime").val(data.firstShiftStartTime);
         $("#SecondShiftStartTime").val(data.secondShiftStartTime);
         $("#ThirdShiftStartTime").val(data.thirdShiftStartTime);
-        $("#FirstShiftDuration").val(data.firstShiftDuration);
-        $("#SecondShiftDuration").val(data.secondShiftDuration);
-        $("#ThirdShiftDuration").val(data.thirdShiftDuration);
+        $("#FirstShiftDuration").val(data.firstShiftDuration.replace(/:\d{2}$/, ""));
+        $("#SecondShiftDuration").val(data.secondShiftDuration.replace(/:\d{2}$/, ""));
+        $("#ThirdShiftDuration").val(data.thirdShiftDuration.replace(/:\d{2}$/, ""));
         $("#No_of_span_days").val(data.no_of_span_days);
         $("#Timeslot_duration").val(data.timeslot_duration);
         $("#Retention_Days").val(data.retention_Days);
@@ -103,15 +111,15 @@ function AddWorkingDetails() {
         $("#WDId").val(data.wdId);
         $("#WDPlantId").val(data.plantId);
         alert("Plant Working Details Saved!");
-        $.ajax({
-            type: "POST",
-            url: '/WorkOrder/PostTimeslot_List',
-            contentType: "application/json; charset=utf-8",
-            headers: { 'Content-Type': 'application/json' },
-            success: function (result) {
-                console.log("Success:", result);
-            }
-        });
+        //$.ajax({
+        //    type: "POST",
+        //    url: '/WorkOrder/PostTimeslot_List',
+        //    contentType: "application/json; charset=utf-8",
+        //    headers: { 'Content-Type': 'application/json' },
+        //    success: function (result) {
+        //        console.log("Success:", result);
+        //    }
+        //});
         //$("#NoOfShifts").val(1);
         //for (let i = 1; i <= 3; i++) {
         //    if (i <= 1) {
@@ -224,6 +232,9 @@ $(function () {
             $("#PWD a").addClass("disabled");
             $("#HLI a").addClass("disabled");
             $("#NoOfShifts").val(1);
+            $("#NoOfWeeklyOff").val(1);
+            $('#lblWkOf2').hide();
+            $('#WeeklyOff2').hide();
             for (let i = 1; i <= 3; i++) {
                 if (i <= 1) {
                     $('#shift' + i).show();
@@ -346,6 +357,8 @@ $(function () {
         Name.style.border = '';
         var noofshitfs = document.getElementById('NoOfShifts');
         noofshitfs.style.border = '';
+        var NoOfWeeklyOff = document.getElementById('NoOfWeeklyOff');
+        NoOfWeeklyOff.style.border = '';
         var FirstShiftStartTime = document.getElementById('FirstShiftStartTime');
         FirstShiftStartTime.style.border = '';
         var SecondShiftStartTime = document.getElementById('SecondShiftStartTime');
@@ -421,7 +434,8 @@ $(function () {
     $("#SaveWorkDetails").on('click', function (event) {
         var WeeklyOff2 = document.getElementById('WeeklyOff2');
         var WeeklyOff1 = document.getElementById('WeeklyOff1');
-        if (WeeklyOff2.value === WeeklyOff1.value) {
+        var NoOfWeeklyOff = document.getElementById('NoOfWeeklyOff');
+        if (WeeklyOff2.value === WeeklyOff1.value && parseInt(NoOfWeeklyOff.value) == 2 ) {
             WeeklyOff1.style.border = '2px solid red';
             WeeklyOff2.style.border = '2px solid red';
             alert("Weekly Off 1 and Weekly Off 2 should be different.");
@@ -445,6 +459,19 @@ $(function () {
         } else {
             noofshitfs.style.border = '';
         }
+        if (!NoOfWeeklyOff.value || parseInt(NoOfWeeklyOff.value) <= 0) {
+            NoOfWeeklyOff.style.border = '2px solid red';
+            return false;
+        } else {
+            NoOfWeeklyOff.style.border = '';
+        }
+        if (parseInt(NoOfWeeklyOff.value) > 2) {
+            NoOfWeeklyOff.style.border = '2px solid red';
+            alert("No Of Weekly Offs can not be Greater Than 2");
+            return false;
+        } else {
+            NoOfWeeklyOff.style.border = '';
+        }
         var FirstShiftStartTime = document.getElementById('FirstShiftStartTime');
         if (!FirstShiftStartTime.value) {
             FirstShiftStartTime.style.border = '2px solid red';
@@ -467,31 +494,58 @@ $(function () {
             ThirdShiftStartTime.style.border = '';
         }
         var FirstShiftDuration = document.getElementById('FirstShiftDuration');
-        var timePatternShift = /^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$/;
-        if (!FirstShiftDuration.value || !timePatternShift.test(FirstShiftDuration.value)) {
+        var SecondShiftDuration = document.getElementById('SecondShiftDuration');
+        var ThirdShiftDuration = document.getElementById('ThirdShiftDuration');
+
+        var timePatternShift = /^(?:[01]\d|2[0-3]):[0-5]\d$/; // full HH:MM
+        var hourPattern = /^(?:[01]?\d|2[0-3])$/; // only HH
+
+        // ---- First Shift ----
+        if (!FirstShiftDuration.value) {
             FirstShiftDuration.style.border = '2px solid red';
             return false;
-        } else {
+        } else if (hourPattern.test(FirstShiftDuration.value.trim())) {
+            FirstShiftDuration.value = FirstShiftDuration.value.padStart(2, "0") + ":00";
             FirstShiftDuration.style.border = '';
+        } else if (timePatternShift.test(FirstShiftDuration.value.trim())) {
+            FirstShiftDuration.style.border = '';
+        } else {
+            FirstShiftDuration.style.border = '2px solid red';
+            return false;
         }
-        var SecondShiftDuration = document.getElementById('SecondShiftDuration');
+
+        // ---- Second Shift ----
         if (parseInt(noofshitfs.value) >= 2) {
-            if (!SecondShiftDuration.value || !timePatternShift.test(SecondShiftDuration.value)) {
+            if (!SecondShiftDuration.value) {
                 SecondShiftDuration.style.border = '2px solid red';
                 return false;
-            } else {
+            } else if (hourPattern.test(SecondShiftDuration.value.trim())) {
+                SecondShiftDuration.value = SecondShiftDuration.value.padStart(2, "0") + ":00";
                 SecondShiftDuration.style.border = '';
+            } else if (timePatternShift.test(SecondShiftDuration.value.trim())) {
+                SecondShiftDuration.style.border = '';
+            } else {
+                SecondShiftDuration.style.border = '2px solid red';
+                return false;
             }
         }
-        var ThirdShiftDuration = document.getElementById('ThirdShiftDuration');
+
+        // ---- Third Shift ----
         if (parseInt(noofshitfs.value) == 3) {
-            if (!ThirdShiftDuration.value || !timePatternShift.test(ThirdShiftDuration.value)) {
+            if (!ThirdShiftDuration.value) {
                 ThirdShiftDuration.style.border = '2px solid red';
                 return false;
-            } else {
+            } else if (hourPattern.test(ThirdShiftDuration.value.trim())) {
+                ThirdShiftDuration.value = ThirdShiftDuration.value.padStart(2, "0") + ":00";
                 ThirdShiftDuration.style.border = '';
+            } else if (timePatternShift.test(ThirdShiftDuration.value.trim())) {
+                ThirdShiftDuration.style.border = '';
+            } else {
+                ThirdShiftDuration.style.border = '2px solid red';
+                return false;
             }
         }
+
         var Timeslot_duration = document.getElementById('Timeslot_duration');
         if (!Timeslot_duration.value || parseInt(Timeslot_duration.value) <= 0) {
             Timeslot_duration.style.border = '2px solid red';
@@ -535,34 +589,59 @@ $(function () {
             Third_Shift_Break_start_time.style.border = '';
         }
         var First_Shift_Break_duration = document.getElementById('First_Shift_Break_duration');
-        var timePattern = /^([0-5]?[0-9]):[0-5][0-9]$/; // matches 0–59 minutes and 0–59 seconds
+        var Sec_Shift_Break_duration = document.getElementById('Sec_Shift_Break_duration');
+        var Third_Shift_Break_duration = document.getElementById('Third_Shift_Break_duration');
 
+        // Regex for full HH:MM
+        var timePatternHHMM = /^([0-5]?\d):([0-5]\d)$/;
+        // Regex for only HH
+        var hourPatternHH = /^([0-5]?\d)$/;
+
+        // ---- First Shift Break ----
         if (parseInt(noofshitfs.value) >= 1) {
-            if (!First_Shift_Break_duration.value || !timePattern.test(First_Shift_Break_duration.value)) {
+            if (!First_Shift_Break_duration.value) {
                 First_Shift_Break_duration.style.border = '2px solid red';
                 return false;
-            } else {
+            } else if (hourPatternHH.test(First_Shift_Break_duration.value.trim())) {
+                First_Shift_Break_duration.value = First_Shift_Break_duration.value.padStart(2, "0") + ":00";
                 First_Shift_Break_duration.style.border = '';
+            } else if (timePatternHHMM.test(First_Shift_Break_duration.value.trim())) {
+                First_Shift_Break_duration.style.border = '';
+            } else {
+                First_Shift_Break_duration.style.border = '2px solid red';
+                return false;
             }
         }
 
-        var Sec_Shift_Break_duration = document.getElementById('Sec_Shift_Break_duration');
-
+        // ---- Second Shift Break ----
         if (parseInt(noofshitfs.value) >= 2) {
-            if (!Sec_Shift_Break_duration.value || !timePattern.test(Sec_Shift_Break_duration.value)) {
+            if (!Sec_Shift_Break_duration.value) {
                 Sec_Shift_Break_duration.style.border = '2px solid red';
                 return false;
-            } else {
+            } else if (hourPatternHH.test(Sec_Shift_Break_duration.value.trim())) {
+                Sec_Shift_Break_duration.value = Sec_Shift_Break_duration.value.padStart(2, "0") + ":00";
                 Sec_Shift_Break_duration.style.border = '';
+            } else if (timePatternHHMM.test(Sec_Shift_Break_duration.value.trim())) {
+                Sec_Shift_Break_duration.style.border = '';
+            } else {
+                Sec_Shift_Break_duration.style.border = '2px solid red';
+                return false;
             }
         }
-        var Third_Shift_Break_duration = document.getElementById('Third_Shift_Break_duration');
+
+        // ---- Third Shift Break ----
         if (parseInt(noofshitfs.value) == 3) {
-            if (!Third_Shift_Break_duration.value || !timePattern.test(Third_Shift_Break_duration.value)) {
+            if (!Third_Shift_Break_duration.value) {
                 Third_Shift_Break_duration.style.border = '2px solid red';
                 return false;
-            } else {
+            } else if (hourPatternHH.test(Third_Shift_Break_duration.value.trim())) {
+                Third_Shift_Break_duration.value = Third_Shift_Break_duration.value.padStart(2, "0") + ":00";
                 Third_Shift_Break_duration.style.border = '';
+            } else if (timePatternHHMM.test(Third_Shift_Break_duration.value.trim())) {
+                Third_Shift_Break_duration.style.border = '';
+            } else {
+                Third_Shift_Break_duration.style.border = '2px solid red';
+                return false;
             }
         }
         var isvalid = validateShifts();
@@ -714,6 +793,21 @@ $(function () {
                 $('#shiftbreakd' + i).hide();
                 $('#shiftbreakdur' + i).hide();
             }
+        }
+    }).trigger('input');
+    $('#NoOfWeeklyOff').on('input', function () {
+        let val = parseInt($(this).val().trim());
+
+        if (isNaN(val)) val = 1;
+        if (val > 2) {
+            alert("No Of Weekly Offs can not be Greater Than 2");
+        }
+        if (1 === val) {
+            $('#lblWkOf2').hide();
+            $('#WeeklyOff2').hide();
+        } else {
+            $('#lblWkOf2').show();
+            $('#WeeklyOff2').show();
         }
     }).trigger('input');
     $("#SaveCountry").on('click', function () {

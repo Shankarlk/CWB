@@ -7,6 +7,7 @@ using CWB.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BAapi.Controllers
@@ -71,13 +72,25 @@ namespace BAapi.Controllers
         [Authorize(Roles = Roles.ADMIN)]
         public async Task<IActionResult> GetCustomerOrders(long tenantId)
         {
-            var pologs = await _baService.GetCustomerOrders(tenantId);
-            foreach(CustomerOrderVM custO in pologs)
+            var customerOrders = await _baService.GetCustomerOrders(tenantId); // Fetch ALL sales orders for the tenant in one go
+            var allSalesOrders = await _baService.GetAllSalesOrders(tenantId); // Adjust service method to allow null CustomerOrderId = fetch all 
+            // Group sales orders by CustomerOrderId for quick lookup
+            var salesOrdersByCustomer = allSalesOrders
+                .GroupBy(so => so.CustomerOrderId)
+                .ToDictionary(g => g.Key, g => g.ToList()); // Enrich customer orders
+            foreach (var custO in customerOrders)
             {
-                custO.LineNo = GetLineNoForCustomerOrder(tenantId, custO.CustomerOrderId).Result.ToString();
-                custO.HoldStr = GetHoldForCustomerOrder(tenantId, custO.CustomerOrderId).Result.ToString();
+                if (salesOrdersByCustomer.TryGetValue(custO.CustomerOrderId, out var salesOrders))
+                {
+                    custO.LineNo = salesOrders.Select(so => so.PartId).Distinct().Count().ToString();
+                    custO.HoldStr = salesOrders.Count(so => so.Hold).ToString();
+                }
+                else
+                {
+                    custO.LineNo = "0"; custO.HoldStr = "0";
+                }
             }
-            return Ok(pologs);
+            return Ok(customerOrders);
         }
 
         private async Task<int> GetLineNoForCustomerOrder(long tenantId, long customerOrderId)

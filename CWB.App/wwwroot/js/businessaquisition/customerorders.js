@@ -37,7 +37,17 @@ function LoadPOLines(customerOrderId) {
             else
                 data[i].strDone = "N";
             //data[i].customerName = GetNameForCustomer(data[i].customerId);
-            $(tablebody).append(AppUtil.ProcessTemplateData("POLineRow", data[i]));
+            //$(tablebody).append(AppUtil.ProcessTemplateData("POLineRow", data[i]));
+
+            // Render row as jQuery object so we can mutate before appending
+            var $row = $(AppUtil.ProcessTemplateData("POLineRow", data[i]));
+
+            // If more than one sales order, remove the Hold/Resume link
+            if (data[i].numSalesOrder > 1) {
+                $row.find('.hold-resume').remove();
+            }
+
+            $(tablebody).append($row);
         }
         //  console.log($(tablebody).html());
     }).catch((error) => {
@@ -461,6 +471,7 @@ function PostPOHold() {
         document.getElementById("poholdform").reset();
         LoadCustomerOrders();
         document.getElementById("btnholdclose").click();
+        $("po-hold").modal("hide");
     }).catch((error) => {
         AppUtil.HandleError("poholdform", error);
     });
@@ -479,7 +490,8 @@ function PostSOHold() {
         //console.log(customerOrderId);
         LoadSalesOrders(customerOrderId);
         holdsalesorder = false;
-        document.getElementById("btnholdclose").click();
+        document.getElementById("btnholdclosePo").click();
+        //$("po-hold").modal("hide");
     }).catch((error) => {
         AppUtil.HandleError("poholdform", error);
     });
@@ -668,6 +680,11 @@ $(function () {
     });
 
     $('#po-hold').on('hidden.bs.modal', function (event) {
+        $("#POHComment").val('');
+
+        var newNamevalidate = document.getElementById('POHComment');
+        newNamevalidate.style.border = '';
+        LoadPOLines(salesCustOrderId);
         if (holdsalesorder) {
             LoadSalesOrders(salesCustOrderId);
         }
@@ -680,8 +697,16 @@ $(function () {
         var customerorderid = relatedTarget.data("customerorderid");
         var salesorderid = relatedTarget.data("salesorderid");
         var salesorder = relatedTarget.data("salesorder");
+        var statusstr = relatedTarget.data("statusstr");
         holdsalesorder = false;
         salesCustOrderId = 0;
+        if (statusstr == "On Hold") {
+            $("#SpanPoHold").text("Resume");
+        } else if (statusstr == "Hold") {
+            $("#SpanPoHold").text("Resume");
+        } else {
+            $("#SpanPoHold").text("Hold");
+        }
         if (salesorder == "Y") {
             $('#POHSalesOrderId').val(salesorderid);
             holdsalesorder = true;
@@ -905,6 +930,16 @@ $(function () {
 
     $("#BtnPOHold").on("click", function () {
         // alert("Add CustomerOrder clicked");
+
+        var comt = $("#POHComment").val();
+        if (comt.length == 0) {
+            var newNamevalidate = document.getElementById('POHComment');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('POHComment');
+            newNamevalidate.style.border = '';
+        }
         if (holdsalesorder) {
             PostSOHold();
         }

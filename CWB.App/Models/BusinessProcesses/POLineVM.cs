@@ -15,6 +15,8 @@ namespace CWB.App.Models.BusinessProcesses
         */
 
         public int NumSalesOrder { get; set; }
+        public long CustomerOrderId { get; set; }
+        public long SalesOrderId { get; set; }
 
         public string? SONumber { get; set; }
         public string? PoDateReqd { get; set; }

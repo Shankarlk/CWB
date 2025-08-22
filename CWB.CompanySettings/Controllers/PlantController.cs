@@ -187,6 +187,15 @@ namespace CWB.CompanySettings.Controllers
             return Ok(result);
         }
         [HttpPost]
+        [Route(ApiRoutes.Plant.PostSections)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(SectionsVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> PostSections([FromBody] SectionsVM cityVM)
+        {
+            var result = await _plantService.PostSections(cityVM);
+            return Ok(result);
+        }
+        [HttpPost]
         [Route(ApiRoutes.Plant.PostCountry)]
         [Produces(AppContentTypes.ContentType, Type = typeof(PlantWorkingDetailsVM))]
         [Authorize(Roles = Roles.ADMIN)]
@@ -203,6 +212,16 @@ namespace CWB.CompanySettings.Controllers
         {
             // var companyTypes = _plantService.GetPlants(tenantId);
             var plants =  _plantService.GetCitys(tenantId);
+            return Ok(plants);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Plant.GetSections)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<PlantVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetSections(long tenantId)
+        {
+            // var companyTypes = _plantService.GetPlants(tenantId);
+            var plants =  _plantService.GetSections(tenantId);
             return Ok(plants);
         }
         [HttpGet]
@@ -241,6 +260,15 @@ namespace CWB.CompanySettings.Controllers
         {
             bool exists = false;
             exists = await _plantService.CheckCity(city);
+            return Ok(exists);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Plant.CheckSections)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> CheckSections(string city)
+        {
+            bool exists = false;
+            exists = await _plantService.CheckSections(city);
             return Ok(exists);
         }
         [HttpGet]

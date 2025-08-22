@@ -85,63 +85,111 @@ namespace CWB.Masters.Controllers
         [Produces(AppContentTypes.ContentType, Type = typeof(List<RoutingListItemVM>))]
         public async Task<List<RoutingListItemVM>> GetRoutingListItmes(long tenantId)
         {
-             var manufParts = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant(tenantId).ToList();
-             var partIds = from mfs in manufParts select mfs.PartId;
-             List<int> partIdLilst = partIds.ToList();
-             var mps = _masterPartService.GetAllMasterPartsWithIds(partIdLilst);
-            var cos  = await _companyService.GetCompaniesByTenant(tenantId);
-            
-            var query = from manuf in manufParts
-                        join co in cos on manuf.CompanyId equals co.CompanyId
-                        select new RoutingListItemVM
-                        {
-                            ManufacturedPartId = manuf.ManufacturedPartNoDetailId,
-                            CompanyName = co.CompanyName,
-                            MasterPartType = manuf.ManufacturedPartType == 1 ? "ManufacturedPart" : "Assembly"
-                        };
-            List<RoutingListItemVM> list = query.ToList();
-            var query1 = from manuf in manufParts
-                         join mp in mps on manuf.PartId equals mp.MasterPartId
-                         select new RoutingListItemVM
-                         {
-                             ManufacturedPartId = manuf.ManufacturedPartNoDetailId,
-                             PartNo = mp.PartNo,
-                             PartDescription = mp.PartDescription
-                         };
-            List<RoutingListItemVM> list1 = query1.ToList();
-            var query2 = from rli in list
-                         join ril1 in list1 on rli.ManufacturedPartId equals ril1.ManufacturedPartId
-                         select new RoutingListItemVM
-                         {
-                             ManufacturedPartId = rli.ManufacturedPartId,
-                             CompanyName = rli.CompanyName,
-                             PartNo = ril1.PartNo,
-                             PartDescription = ril1.PartDescription,
-                             MasterPartType = rli.MasterPartType,
-                             Status = "---",
-                             HasRouting = false,
-                             NoOfRoutes = 0
-                             
-                         };
-            List<RoutingListItemVM> retList = query2.ToList();
-            try
-            {
-                var routings = await _routingService.GetAllRoutings();
-                foreach (var routing in routings)
-                {
-                    foreach (var item in retList)
+            // Fetch all needed data upfront
+            var manufParts = _manufacturedPartNoDetailService
+                .GetAllManufacturedPartNoDetailsByTypeTenant(tenantId)
+                .ToList();
+
+            var partIds = manufParts.Select(mfs => mfs.PartId).ToList();
+
+            var mps = _masterPartService.GetAllMasterPartsWithIds(partIds).ToList();
+            var cos = (await _companyService.GetCompaniesByTenant(tenantId)).ToList();
+            var routings = (await _routingService.GetAllRoutings()).ToList();
+
+            // Convert routings into lookup for faster O(1) matching
+            var routingLookup = routings
+                .GroupBy(r => r.ManufacturedPartId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => new
                     {
-                        if(routing.ManufacturedPartId == item.ManufacturedPartId)
-                        {
-                            item.NoOfRoutes++;
-                            item.RoutingId = (int)routing.Id;
-                            item.Status = routing.Status;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex) { }
+                        Count = g.Count(),
+                        First = g.FirstOrDefault()
+                    });
+
+            // Single LINQ query combining everything
+            var retList = (from manuf in manufParts
+                           join co in cos on manuf.CompanyId equals co.CompanyId
+                           join mp in mps on manuf.PartId equals mp.MasterPartId
+                           select new RoutingListItemVM
+                           {
+                               ManufacturedPartId = manuf.ManufacturedPartNoDetailId,
+                               CompanyName = co.CompanyName,
+                               PartNo = mp.PartNo,
+                               PartDescription = mp.PartDescription,
+                               MasterPartType = manuf.ManufacturedPartType == 1 ? "ManufacturedPart" : "Assembly",
+                               NoOfRoutes = routingLookup.ContainsKey(manuf.ManufacturedPartNoDetailId)
+                                                ? routingLookup[manuf.ManufacturedPartNoDetailId].Count
+                                                : 0,
+                               RoutingId = routingLookup.ContainsKey(manuf.ManufacturedPartNoDetailId)
+                                                ? (int)routingLookup[manuf.ManufacturedPartNoDetailId].First.Id
+                                                : 0,
+                               Status = routingLookup.ContainsKey(manuf.ManufacturedPartNoDetailId)
+                                                ? routingLookup[manuf.ManufacturedPartNoDetailId].First.Status
+                                                : "---",
+                               HasRouting = routingLookup.ContainsKey(manuf.ManufacturedPartNoDetailId)
+                           }).ToList();
+
             return retList;
+            //var result = await _routingService.GetRoutingListItemsAsync(tenantId);
+            //return result;
+            // var manufParts = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant(tenantId).ToList();
+            // var partIds = from mfs in manufParts select mfs.PartId;
+            // List<int> partIdLilst = partIds.ToList();
+            // var mps = _masterPartService.GetAllMasterPartsWithIds(partIdLilst);
+            //var cos  = await _companyService.GetCompaniesByTenant(tenantId);
+
+            //var query = from manuf in manufParts
+            //            join co in cos on manuf.CompanyId equals co.CompanyId
+            //            select new RoutingListItemVM
+            //            {
+            //                ManufacturedPartId = manuf.ManufacturedPartNoDetailId,
+            //                CompanyName = co.CompanyName,
+            //                MasterPartType = manuf.ManufacturedPartType == 1 ? "ManufacturedPart" : "Assembly"
+            //            };
+            //List<RoutingListItemVM> list = query.ToList();
+            //var query1 = from manuf in manufParts
+            //             join mp in mps on manuf.PartId equals mp.MasterPartId
+            //             select new RoutingListItemVM
+            //             {
+            //                 ManufacturedPartId = manuf.ManufacturedPartNoDetailId,
+            //                 PartNo = mp.PartNo,
+            //                 PartDescription = mp.PartDescription
+            //             };
+            //List<RoutingListItemVM> list1 = query1.ToList();
+            //var query2 = from rli in list
+            //             join ril1 in list1 on rli.ManufacturedPartId equals ril1.ManufacturedPartId
+            //             select new RoutingListItemVM
+            //             {
+            //                 ManufacturedPartId = rli.ManufacturedPartId,
+            //                 CompanyName = rli.CompanyName,
+            //                 PartNo = ril1.PartNo,
+            //                 PartDescription = ril1.PartDescription,
+            //                 MasterPartType = rli.MasterPartType,
+            //                 Status = "---",
+            //                 HasRouting = false,
+            //                 NoOfRoutes = 0
+
+            //             };
+            //List<RoutingListItemVM> retList = query2.ToList();
+            //try
+            //{
+            //    var routings = await _routingService.GetAllRoutings();
+            //    foreach (var routing in routings)
+            //    {
+            //        foreach (var item in retList)
+            //        {
+            //            if(routing.ManufacturedPartId == item.ManufacturedPartId)
+            //            {
+            //                item.NoOfRoutes++;
+            //                item.RoutingId = (int)routing.Id;
+            //                item.Status = routing.Status;
+            //            }
+            //        }
+            //    }
+            //}
+            //catch (Exception ex) { }
+            //return retList;
         }
         
         [HttpGet]

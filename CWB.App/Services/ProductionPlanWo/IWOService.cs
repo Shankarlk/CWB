@@ -12,6 +12,7 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<IEnumerable<WOSOVM>> GetSoWoRel(long workOrderId);
         Task<List<ProductionPlan_WoVM>> ProductionPlanWoPost(IEnumerable<ProductionPlan_WoVM> productions);
         Task<ProductionPlan_WoVM> UpdateProductionPlan_Wo(ProductionPlan_WoVM productions);
+        Task<ProductionPlan_WoVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WoVM productions);
         Task<IEnumerable<ProductionPlan_WoVM>> AllProductionPlan_Wo();
         Task<List<ProcPlanVM>> ProcPlanPost(IEnumerable<ProcPlanVM> procPlans);
         Task<List<WorkOrdersVM>> UpdateMultipleWorkOrder(IEnumerable<WorkOrdersVM> workOrders);
@@ -110,6 +111,12 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<IEnumerable<Matl_Issue_SettingsVM>> GetAllMatl_Issue_Settings();
         Task<Matl_Issue_SettingsVM> PostMatl_Issue_Settings(Matl_Issue_SettingsVM FinalDocTypeVM);
         Task<bool> DeleteMatl_Issue_Settings(long itemMasterDocListId);
+        Task<IEnumerable<DispatchQntyVM>> GetAllDispatchQnty();
+        Task<DispatchQntyVM> PostDispatchQnty(DispatchQntyVM FinalDocTypeVM);
+        Task<bool> DeleteDispatchQnty(long itemMasterDocListId);
+        Task<IEnumerable<DispatchDetailsVM>> GetAllDispatchDetails();
+        Task<DispatchDetailsVM> PostDispatchDetails(DispatchDetailsVM FinalDocTypeVM);
+        Task<bool> DeleteDispatchDetails(long itemMasterDocListId);
         Task<IEnumerable<Matl_Issue_ListVM>> GetAllMatl_Issue_List();
         Task<Matl_Issue_ListVM> PostMatl_Issue_List(Matl_Issue_ListVM FinalDocTypeVM);
         Task<bool> DeleteMatl_Issue_List(long itemMasterDocListId);

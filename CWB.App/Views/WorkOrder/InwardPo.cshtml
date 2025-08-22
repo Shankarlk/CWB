@@ -11,8 +11,13 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-11">
                             <h3 style="padding: 10px;">Material Inwarding</h3>
+                        </div>
+                        <div class="col-md-1 text-end">
+                            <a asp-action="WipControl" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                                X
+                            </a>
                         </div>
                         <!-- =============================  -->
                         <div class="col-md-12">
@@ -370,9 +375,9 @@
                     <!-- ========================= -->
                     <div class="col-md-6 mb-2">
                         @*<button class="btn btn-primary btn-sm" id="popupInward2ShortClose">
-                            Short-Close
-                            PO
-                        </button>*@
+                                Short-Close
+                                PO
+                            </button>*@
                     </div>
                     <div class="col-md-6 mb-2 text-end">
                         <input type="text" id="popupInwardHeaderId2" hidden="">
@@ -1113,7 +1118,7 @@
 <div class="modal fade" id="ErrorMessage1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
      aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
     <div class="modal-dialog ">
-        <div class="modal-content"style="border: 4px solid #32AADD;">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
             <div class="modal-header">
                 <h4 class="modal-title" id="mySmallModalLabel">Count Mismatch Error Message</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

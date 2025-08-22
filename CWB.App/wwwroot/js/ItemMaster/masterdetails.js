@@ -844,6 +844,10 @@ function loadMPDList() {
     else {
         api.getbulk("/masters/masterparts").then((data) => {
             dataMPDList = data;
+            if (typeof fromobselete !== 'undefined' && fromobselete === 'ObsoletePart') {
+                data = data.filter(item => item.status != "Active");
+                dataMPDList = data;
+            }
             for (i = 0; i < data.length; i++) {
                 /*for (var key in data[i]) {
                     console.log(key);
@@ -870,6 +874,13 @@ function loadEditParts() {
     $(tablebody).html("");//empty tbody
     api.getbulk("/masters/masterparts").then((data) => {
         dataMPDList = data;
+        if (typeof fromobselete !== 'undefined' && fromobselete === 'ObsoletePart') {
+            data = data.filter(item => item.status != "Active");
+            dataMPDList = data;
+            partType = " ";
+            $("#Status").val("Inactive");
+            $("#Status").prop("disabled", true);
+        } 
         for (i = 0; i < data.length; i++) {
            
             //if (!(data[i]['status'] == strActive))

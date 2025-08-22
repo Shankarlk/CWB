@@ -9,6 +9,7 @@
         public long TenantId { get; set; }
 -->
 
+<input value="C-OR" type="hidden" id="hdn-nav-menu" />
 <div class="content">
     <div class="card">
         <div class="card-body">
@@ -333,10 +334,10 @@
                             Please enter department name!
                         </div>
                         <!-- ----- -->
-                        <label class="form-label col-md-4 mb-2">Section  Name </label>
+                        @*<label class="form-label col-md-4 mb-2">Section  Name </label>
                         <div class="col-md-8 mb-2">
                             <input class="form-control form-control-sm" type="text" name="Section" id="Section" value="-">
-                        </div>
+                        </div>*@
                         <!-- ----- -->
                         <label class="form-label col-md-4 mb-2">Location</label>
                         <div class="col-md-8 mb-2">
@@ -540,6 +541,51 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+
+<div class="modal fade" id="Addsection" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Add Sections
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class=" col-md-4 form-label mb-2">Section Name</label>
+                        <div class="col-md-8 mb-2" title="Enter the Section Name" data-plugin="tippy" data-tippy-placement="top">
+                            <input class="form-control form-control-sm" type="text" id="SectionName" placeholder="Enter here" />
+                            <input type="text" id="secdeptId" hidden/>
+                            <input type="text" id="secId" hidden/>
+                        </div>
+                        <div class="col-md-10 text-end">
+                            <button class="btn btn-sm btn-primary" title="Save Section" data-plugin="tippy" data-tippy-placement="top" id="btnAddSection">Save</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="table-responsive table-he-180">
+                            <table class="table table-sm table-bordered mb-2 text-center mt-1 tableFixHead" id="tbl-section">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th width="65%">Section Name</th>
+                                        <th width="5%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- --------------  -->
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
 <!--  Modal content for the Large example -->
 <div class="modal fade" id="ui-access" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -825,9 +871,13 @@
                            data-proddept="{prodDept}" data-section="{section}"
                            class="dropdown-item" data-bs-toggle="modal"
                            data-bs-target="#add-dept">Edit</a>
-                        <a href="javascript:void(0);" onclick="DelDept('{name}',{departmentId});" class="dropdown-item">Delete</a>
                         <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item">Add Section</a>
+                        <a href="javascript:void(0);" class="dropdown-item"
+                           data-bs-toggle="modal"
+                           data-deptid="{departmentId}"
+                           data-bs-target="#Addsection"
+                           >Add Section</a>
+                        <a href="javascript:void(0);" onclick="DelDept('{name}',{departmentId});" class="dropdown-item">Delete</a>
                         <!-- item-->
                         <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#">Position / Roles</a>
                         <!-- item-->
@@ -837,6 +887,26 @@
                     }
                     <!-- item-->
                     <!-- item-->
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="tbl-sectionRow">
+    <tr>
+        <td>{name}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" 
+                           data-deptid="{shopDepartmentId}"
+                           data-sectionsid="{sectionsId}"
+                           data-name="{name}"
+                       onclick="EditSection(this)"
+                       class="dropdown-item">Edit</a>
                 </div>
             </div>
         </td>

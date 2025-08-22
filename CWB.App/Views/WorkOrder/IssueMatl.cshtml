@@ -1,4 +1,5 @@
 ﻿
+<input value="B-BP" type="hidden" id="hdn-nav-menu" />
 <div class="content">
     <div class="row" id="myRadioGroup">
         <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
@@ -8,7 +9,15 @@
 
                     <!-- WO Status Overview -->
                     <div class="row">
+                        <div class="col-md-11">
                         <h3>Material Issue / Movement for Today</h3>
+                        </div>
+
+                        <div class="col-md-1 text-end">
+                            <a asp-action="WipControl" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                                X
+                            </a>
+                        </div>
                         <div class="col-md-8">
                             <table class="table table-bordered">
                                 <thead>

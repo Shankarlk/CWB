@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "View Item Master - BOF";
+}
+@model CWB.App.Models.ItemMaster.BoughtOutFinishDetailVM
+<partial name="BOF" model=@Model />
+
+@section scripts {
+    <script>
+        const form = document.getElementById("BOFform");
+
+        // Make all input fields readonly or disabled
+        form.querySelectorAll("input").forEach(el => {
+            el.readOnly = true;
+        });
+
+        form.querySelectorAll("textarea").forEach(el => {
+            el.readOnly = true;
+        });
+
+        form.querySelectorAll("select").forEach(el => {
+            el.disabled = true;
+        });
+
+        // Also disable buttons if needed
+        form.querySelectorAll("button").forEach(el => {
+            el.disabled = true;
+        });
+    </script>
+    <script src="~/js/addfunctions.js"></script>
+    <script src="~/js/ItemMaster/supplier.js"></script>
+    <script src="~/js/ItemMaster/rmselects.js"></script>
+    <script src="~/js/contact-model.js"></script>
+    <script src="~/js/InfoBofpart.js"></script>
+    <script src="~/js/ItemMaster/purchasedetails.js"></script>
+    <script src="~/js/contacts.js"></script>
+    <script>
+        var modelObj = @Html.Raw(Json.Serialize(Model));
+        modelObj["Edit"] = true;
+        //$('#BOFform').validate();
+    </script>
+}
+

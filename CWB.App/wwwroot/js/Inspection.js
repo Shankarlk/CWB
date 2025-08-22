@@ -247,6 +247,8 @@ $(document).ready(function () {
         $("#P6TbInspTotal").val(0);
         $("#P6TotalInsp").val(0);
         $("#P6TbUnpro").val(0);
+        $("#P6TbTotalNc").val(0);
+        $("#P6TotalNc").val(0);
         showPopup();
         var relatedTarget = $(event.relatedTarget);
         var supp = relatedTarget.data("supp");

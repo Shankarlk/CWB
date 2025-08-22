@@ -7,7 +7,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
-    image: shankar84kl/cwbapigateway
+    image: cwbapigateway
     networks:
       cwb-network: null
     ports:
@@ -43,8 +43,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
-      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbapp
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: cwbapp
     networks:
       cwb-network: null
     ports:
@@ -96,8 +96,9 @@ services:
         required: true
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbbusinessprocesses
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: cwbbusinessprocesses
     links:
       - db
     networks:
@@ -114,11 +115,20 @@ services:
       - mode: ingress
         target: 80
         protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
     restart: always
     volumes:
       - type: bind
         source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
         read_only: true
         bind:
           create_host_path: true
@@ -133,8 +143,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
-      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbcompanysettings
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: cwbcompanysettings
     links:
       - db
     networks:
@@ -179,8 +189,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
-      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbidentity
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: cwbidentity
     links:
       - db
     networks:
@@ -224,8 +234,9 @@ services:
         required: true
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbmasters
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: cwbmasters
     links:
       - db
     networks:
@@ -242,11 +253,20 @@ services:
       - mode: ingress
         target: 80
         protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
     restart: always
     volumes:
       - type: bind
         source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
         read_only: true
         bind:
           create_host_path: true
@@ -261,8 +281,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
-      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbmodules
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: cwbmodules
     links:
       - db
     networks:
@@ -306,8 +326,9 @@ services:
         required: true
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbproductionplanwo
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: cwbproductionplanwo
     links:
       - db
     networks:
@@ -324,11 +345,20 @@ services:
       - mode: ingress
         target: 80
         protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
     restart: always
     volumes:
       - type: bind
         source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
         read_only: true
         bind:
           create_host_path: true
@@ -343,8 +373,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
-      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbsimulation
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: cwbsimulation
     links:
       - db
     networks:
@@ -389,8 +419,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
-      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbtenant
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: cwbtenant
     links:
       - db
     networks:

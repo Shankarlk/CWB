@@ -126,6 +126,7 @@ namespace CWB.CompanySettings.CompanySettingsUtils
                .ForMember(m => m.PlantId, m => m.MapFrom(src => src.PlantId))
                .ForMember(m => m.WeeklyOff1, m => m.MapFrom(src => src.WeeklyOff1))
                .ForMember(m => m.WeeklyOff2, m => m.MapFrom(src => src.WeeklyOff2))
+               .ForMember(m => m.NoOfWeeklyOff, m => m.MapFrom(src => src.NoOfWeeklyOff))
                .ForMember(m => m.NoOfShifts, m => m.MapFrom(src => src.NoOfShifts))
                .ForMember(m => m.FirstShiftStartTime, m => m.MapFrom(src => src.FirstShiftStartTime))
                .ForMember(m => m.SecondShiftStartTime, m => m.MapFrom(src => src.SecondShiftStartTime))
@@ -156,6 +157,7 @@ namespace CWB.CompanySettings.CompanySettingsUtils
                .ForMember(m => m.WeeklyOff1, m => m.MapFrom(src => src.WeeklyOff1))
                .ForMember(m => m.WeeklyOff2, m => m.MapFrom(src => src.WeeklyOff2))
                .ForMember(m => m.NoOfShifts, m => m.MapFrom(src => src.NoOfShifts))
+               .ForMember(m => m.NoOfWeeklyOff, m => m.MapFrom(src => src.NoOfWeeklyOff))
                .ForMember(m => m.FirstShiftStartTime, m => m.MapFrom(src => src.FirstShiftStartTime))
                .ForMember(m => m.SecondShiftStartTime, m => m.MapFrom(src => src.SecondShiftStartTime))
                .ForMember(m => m.ThirdShiftStartTime, m => m.MapFrom(src => src.ThirdShiftStartTime))
@@ -251,6 +253,16 @@ namespace CWB.CompanySettings.CompanySettingsUtils
                .ForMember(m => m.Role_ListId, m => m.MapFrom(src => src.Id))
               .ForMember(m => m.Role_Desc, m => m.MapFrom(src => src.Role_Desc))
               .ForMember(m => m.Work_Done, m => m.MapFrom(src => src.Work_Done))
+              .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+            CreateMap<CWB.CompanySettings.ViewModels.Location.SectionsVM, CWB.CompanySettings.Domain.Section>()
+               .ForMember(m => m.Id, m => m.MapFrom(src => src.SectionsId))
+              .ForMember(m => m.Name, m => m.MapFrom(src => src.Name))
+              .ForMember(m => m.ShopDepartmentId, m => m.MapFrom(src => src.ShopDepartmentId))
+              .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+            CreateMap<CWB.CompanySettings.Domain.Section, CWB.CompanySettings.ViewModels.Location.SectionsVM>()
+               .ForMember(m => m.SectionsId, m => m.MapFrom(src => src.Id))
+              .ForMember(m => m.Name, m => m.MapFrom(src => src.Name))
+              .ForMember(m => m.ShopDepartmentId, m => m.MapFrom(src => src.ShopDepartmentId))
               .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
             CreateMap<Role_UI_ListVM, Role_Ui_List>()
                .ForMember(m => m.Id, m => m.MapFrom(src => src.Role_Ui_ListId))

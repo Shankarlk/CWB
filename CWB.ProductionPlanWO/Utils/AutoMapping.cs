@@ -1372,6 +1372,56 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(s => s.Shop_Id, s => s.MapFrom(src => src.Shop_Id))
             .ForMember(s => s.No_days_coverage, s => s.MapFrom(src => src.No_days_coverage))
             .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
+
+
+            CreateMap<DispatchDetailsVM, DispatchDetails>()
+               .ForMember(m => m.Id, m => m.MapFrom(src => src.DispatchDetailsId))
+               .ForMember(m => m.SaleOrderId, m => m.MapFrom(src => src.SaleOrderId))
+               .ForMember(m => m.CustomerId, m => m.MapFrom(src => src.CustomerId))
+                .ForMember(m => m.PoNoId, m => m.MapFrom(src => src.PoNoId))
+                .ForMember(m => m.PartNoId, m => m.MapFrom(src => src.PartNoId))
+                .ForMember(m => m.NoOfParts, m => m.MapFrom(src => src.NoOfParts))
+                .ForMember(m => m.InvoiceNo, m => m.MapFrom(src => src.InvoiceNo))
+                .ForMember(m => m.InvoiceDate, m => m.MapFrom(src => src.InvoiceDate))
+                .ForMember(m => m.DispatchDetail, m => m.MapFrom(src => src.DispatchDetail))
+               .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+
+            CreateMap<DispatchDetails, DispatchDetailsVM>()
+                .ForMember(m => m.DispatchDetailsId, m => m.MapFrom(src => src.Id))
+               .ForMember(m => m.SaleOrderId, m => m.MapFrom(src => src.SaleOrderId))
+               .ForMember(m => m.CustomerId, m => m.MapFrom(src => src.CustomerId))
+                .ForMember(m => m.PoNoId, m => m.MapFrom(src => src.PoNoId))
+                .ForMember(m => m.PartNoId, m => m.MapFrom(src => src.PartNoId))
+                .ForMember(m => m.NoOfParts, m => m.MapFrom(src => src.NoOfParts))
+                .ForMember(m => m.InvoiceNo, m => m.MapFrom(src => src.InvoiceNo))
+                .ForMember(m => m.InvoiceDate, m => m.MapFrom(src => src.InvoiceDate))
+                .ForMember(m => m.DispatchDetail, m => m.MapFrom(src => src.DispatchDetail))
+               .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+
+            CreateMap<DispatchQntyVM, DispatchQnty>()
+               .ForMember(m => m.Id, m => m.MapFrom(src => src.DispatchQntyId))
+               .ForMember(m => m.SaleOrderId, m => m.MapFrom(src => src.SaleOrderId))
+               .ForMember(m => m.CustomerId, m => m.MapFrom(src => src.CustomerId))
+                .ForMember(m => m.PoNoId, m => m.MapFrom(src => src.PoNoId))
+                .ForMember(m => m.PartNoId, m => m.MapFrom(src => src.PartNoId))
+                .ForMember(m => m.PartNoId, m => m.MapFrom(src => src.PartNoId))
+                .ForMember(m => m.InventoryMasterId, m => m.MapFrom(src => src.InventoryMasterId))
+                .ForMember(m => m.TotalSoQnty, m => m.MapFrom(src => src.TotalSoQnty))
+                .ForMember(m => m.SuggestedQnty, m => m.MapFrom(src => src.SuggestedQnty))
+                .ForMember(m => m.FinalDispQnty, m => m.MapFrom(src => src.FinalDispQnty))
+               .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+
+            CreateMap<DispatchQnty, DispatchQntyVM>()
+                .ForMember(m => m.DispatchQntyId, m => m.MapFrom(src => src.Id))
+               .ForMember(m => m.SaleOrderId, m => m.MapFrom(src => src.SaleOrderId))
+               .ForMember(m => m.CustomerId, m => m.MapFrom(src => src.CustomerId))
+                .ForMember(m => m.PoNoId, m => m.MapFrom(src => src.PoNoId))
+                .ForMember(m => m.PartNoId, m => m.MapFrom(src => src.PartNoId))
+                .ForMember(m => m.InventoryMasterId, m => m.MapFrom(src => src.InventoryMasterId))
+                .ForMember(m => m.TotalSoQnty, m => m.MapFrom(src => src.TotalSoQnty))
+                .ForMember(m => m.SuggestedQnty, m => m.MapFrom(src => src.SuggestedQnty))
+                .ForMember(m => m.FinalDispQnty, m => m.MapFrom(src => src.FinalDispQnty))
+               .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
         }
     }
 }

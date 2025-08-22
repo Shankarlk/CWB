@@ -42,6 +42,9 @@ namespace CWB.CompanySettings.Configurations
                 .Property(t => t.WeeklyOff2)
                 .HasColumnName("WeeklyOff2");
             builder
+                .Property(t => t.NoOfWeeklyOff)
+                .HasColumnName("NoOfWeeklyOff");
+            builder
                 .Property(t => t.NoOfShifts)
                 .HasColumnName("NoOfShifts");
             builder

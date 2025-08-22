@@ -1,12 +1,19 @@
-﻿<div class="content">
+﻿
+<input value="B-BP" type="hidden" id="hdn-nav-menu" />
+<div class="content">
     <div class="row" id="myRadioGroup">
         <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
             <!-- ================= -->
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-11">
                             <h3 style="padding: 10px;">NC awaiting Disposal Decision</h3>
+                        </div>
+                        <div class="col-md-1 text-end">
+                            <a asp-action="WipControl" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                                X
+                            </a>
                         </div>
                         <!-- =============================  -->
                         <div class="col-md-12">
@@ -383,8 +390,8 @@
                     <!--<hr class="mt-2">
                     <div class="row">
                         <div class="col-md-12">-->
-                            <!-- <h5>Part Inspection Plan Documents</h5> -->
-                            <!--<button class="btn btn-primary btn-sm w-50" data-bs-toggle="modal"
+                    <!-- <h5>Part Inspection Plan Documents</h5> -->
+                    <!--<button class="btn btn-primary btn-sm w-50" data-bs-toggle="modal"
                                     data-bs-target="#PartInspectionDocPop" id="#">
                                 View Part Inspection Plan
                                 Documents
@@ -394,8 +401,8 @@
                     <!--<hr class="mt-2">
                     <div class="row">
                         <div class="col-md-12">-->
-                            <!-- <h5>Inspection Reports provided by Supplier</h5> -->
-                            <!--<button class="btn btn-primary btn-sm w-50" data-bs-toggle="modal"
+                    <!-- <h5>Inspection Reports provided by Supplier</h5> -->
+                    <!--<button class="btn btn-primary btn-sm w-50" data-bs-toggle="modal"
                                     data-bs-target="#InspectionDocPop" id="#">
                                 View Inspection Reports from
                                 Supplier

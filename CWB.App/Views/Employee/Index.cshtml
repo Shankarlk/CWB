@@ -76,14 +76,14 @@
                                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployee" title="" data-plugin="tippy" data-tippy-placement="top">Add New Employee</button>
                                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#orgChart" title="" data-plugin="tippy" data-tippy-placement="top">Organization Chart</button>
                                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#roleList" title="" data-plugin="tippy" data-tippy-placement="top">Role List</button>
-                                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uiList" title="" data-plugin="tippy" data-tippy-placement="top">UI List</button>
+                                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uiList" title="" data-plugin="tippy" data-tippy-placement="top" hidden>UI List</button>
                                             }
                                             else
                                             {
                                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#" disabled title="" data-plugin="tippy" data-tippy-placement="top">Add New Employee</button>
                                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#" disabled title="" data-plugin="tippy" data-tippy-placement="top">Organization Chart</button>
                                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#"disabled title="" data-plugin="tippy" data-tippy-placement="top">Role List</button>
-                                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#" disabled title="" data-plugin="tippy" data-tippy-placement="top">UI List</button>
+                                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#" disabled title="" data-plugin="tippy" data-tippy-placement="top" hidden>UI List</button>
                                             }
                                         }
 
@@ -94,7 +94,7 @@
                                         <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployee" title="" data-plugin="tippy" data-tippy-placement="top">Add New Employee</button>
                                         <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#orgChart" title="" data-plugin="tippy" data-tippy-placement="top">Organization Chart</button>
                                         <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#roleList" title="" data-plugin="tippy" data-tippy-placement="top">Role List</button>
-                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uiList" title="" data-plugin="tippy" data-tippy-placement="top">UI List</button>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uiList" title="" data-plugin="tippy" data-tippy-placement="top" hidden>UI List</button>
                                     }
                                 </div>
                                 <div class="col-md-2 mt-3 text-end">
@@ -131,8 +131,8 @@
                     <div class="col-md-12 dott-bord-r">
                         <div class="row">
                             <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-3 ms-3">Head Of The Organization</label>
-                                <input class="form-check-input mt-3 ms-3" id="EPHeadOrg" type="checkbox" title="" data-plugin="tippy" data-tippy-placement="top">
+                                <label class="form-check-label">Head Of The Organization</label>
+                                <input class="form-check-input mt-1 ms-2" id="EPHeadOrg" type="checkbox" title="" data-plugin="tippy" data-tippy-placement="top">
                             </div>
                             <div class="col-md-4 mb-2">
                                 <label class="form-label mb-1">Employee No *</label>
@@ -141,40 +141,40 @@
                             </div>
                             <!-- -----------------  -->
                             <div class="col-md-4 mb-2">
-                                <label class="form-label mb-1">Date of Joining</label>
+                                <label class="form-label mb-1">Date of Joining *</label>
                                 <input class="form-control form-control-sm" id="EPDateOfJoin" type="date" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
                             </div>
                             <!-- -----------------  -->
                             <div class="col-md-4 mb-2">
-                                <label class="form-label mb-1">Employee Name</label>
+                                <label class="form-label mb-1">Employee Name *</label>
                                 <input class="form-control form-control-sm" id="EPEmpName" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
                             </div>
                             <div class="col-md-4 mb-2">
-                                <label class="form-label mb-1">Designation</label>
+                                <label class="form-label mb-1">Designation *</label>
                                 <select class="form-select form-select-sm" id="EPDes" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
                                 </select>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <label class="form-label mb-1">Locaiton</label>
+                                <label class="form-label mb-1">Locaiton *</label>
                                 <select class="form-select form-select-sm" id="EPloc" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
                                 </select>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-1">Home Dept</label>
+                                <label class="form-check-label mt-1" id="lblDept">Home Dept</label>
                                 <select class="form-select form-select-sm" id="EPDept" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
                                 </select>
                             </div>
                             <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-1">Roles</label>
+                                <label class="form-check-label mt-1" id="lblRole">Roles *</label>
                                 <input class="form-control form-control-sm" id="EPEmpRoles" disabled type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
                                 <input class="form-control form-control-sm" hidden id="EPEmpRoleid" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
                             </div>
                             <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-1">Cell No</label>
+                                <label class="form-check-label mt-1">Cell No *</label>
                                 <input class="form-control form-control-sm" id="EPCell" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
                             </div>
                             <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-1">Email ID</label>
+                                <label class="form-check-label mt-1">Email ID *</label>
                                 <input class="form-control form-control-sm" id="EPEmail" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
                                 <span id="email-error"></span>
                             </div>
@@ -186,17 +186,17 @@
                                     <span id="error-username"></span>
                                 </div>*@
                             <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-1">Password</label>
+                                <label class="form-check-label mt-1">Password *</label>
                                 <input class="form-control form-control-sm" id="EPPassword" type="password" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
 
                             </div>
                             <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-1">Confirm Password</label>
+                                <label class="form-check-label mt-1">Confirm Password *</label>
                                 <input class="form-control form-control-sm" id="EPCfmPassword" type="password" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
                                 <span id="error-password"></span>
                             </div>
                             <div class="col-md-12 mb-2">
-                                <label class="form-check-label mt-1">Residential Address</label>
+                                <label class="form-check-label mt-1">Residential Address *</label>
                                 <input class="form-control form-control-sm" id="EPAddress" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
                             </div>
                             <div class="col-md-4 mb-2">
@@ -208,8 +208,8 @@
                                 <input class="form-control form-control-sm" id="EPContNo" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
                             </div>
                             <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-3">Resigned</label>
-                                <input class="form-check-input mt-3" id="EPResignChk" type="checkbox" title="" data-plugin="tippy" data-tippy-placement="top">
+                                <label class="form-check-label">Resigned</label>
+                                <input class="form-check-input mt-1 ms-2" id="EPResignChk" type="checkbox" title="" data-plugin="tippy" data-tippy-placement="top">
                             </div>
                             <div class="col-md-4 mb-2" id="DateOfLeaveDIv">
                                 <label class="form-check-label mt-1">Date of Leaving </label>

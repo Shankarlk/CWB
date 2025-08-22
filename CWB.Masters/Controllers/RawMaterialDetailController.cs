@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
 using System.Data;
@@ -563,173 +564,106 @@ namespace CWB.Masters.Controllers
         [HttpGet]
         [Route(ApiRoutes.RawMaterialDetail.GetMasterParts)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<ItemMasterPartVM>))]
-        public async Task<IEnumerable<ItemMasterPartVM>> GetMasterPartView(long TenantId)
+        public async Task<IEnumerable<ItemMasterPartVM>> GetMasterPartView(long tenantId)
         {
-            List<ItemMasterPartVM> list = new List<ItemMasterPartVM>();
-            var vcos = await _companyService.GetCompaniesByTenant(TenantId);
-            List<CompaniesVM> cos = vcos.ToList();
-            List<MasterPartVM> masterParts = _masterPartService.GetAllMasterParts().ToList();
-            List<ManufacturedPartNoDetailVM> manufList = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant(TenantId).ToList();
-            try
-            {
-                List<ItemMasterPartVM> tempList = new List<ItemMasterPartVM>();
-                var query = from manuf in manufList
-                            join mp in masterParts on manuf.PartId equals mp.MasterPartId
-                            select new ItemMasterPartVM
-                            {
-                                PartId = manuf.PartId,
-                                MasterPartType = manuf.ManufacturedPartType == 1 ? "ManufacturedPart" : "Assembly",
-                                CompanyId = manuf.CompanyId,
-                                Company = "",
-                                PartNo = mp.PartNo,
-                                Description = mp?.PartDescription ?? string.Empty,
-                                BoughtOutFinishMadeType = -1,
-                                RawMaterialMadeSubType = -1,
-                                RawMaterialTypeId = -1,
-                                BaseRawMaterialId = -1,
-                                BOFSupplierPartNo = "",
-                                RMSupplier = "",
-                                Supplier = "",
-                                SupplierPartNo = "",
-                                Status=mp.Status,
-                                Notes = mp?.PartDescription ?? string.Empty,
-                                Type = 0,
-                                TenantId = manuf.TenantId
-                            };
-                tempList = query.ToList();
-                var newquery = (from manuf in tempList
-                                join co in cos on manuf.CompanyId equals co.CompanyId
-                                select new ItemMasterPartVM
-                                {
-                                    PartId = manuf.PartId,
-                                    MasterPartType = manuf.MasterPartType,
-                                    CompanyId = manuf.CompanyId,
-                                    Company = co.CompanyName,
-                                    PartNo = manuf.PartNo,
-                                    Description = manuf.Description,
-                                    BoughtOutFinishMadeType = -1,
-                                    RawMaterialMadeSubType = -1,
-                                    RawMaterialTypeId = -1,
-                                    BaseRawMaterialId = -1,
-                                    BOFSupplierPartNo = "",
-                                    RMSupplier = "",
-                                    Supplier = "",
-                                    SupplierPartNo = "",
-                                    Status = manuf.Status,
-                                    Notes = manuf.Description,
-                                    Type = 0,
-                                    TenantId = manuf.TenantId
-                                })
-                .GroupBy(x => x.PartId)
-                .Select(g => g.First()); // Select the first unique entry in each group
-                list = newquery.ToList();
+            // --- Step 1: Fetch all EF data sequentially (avoids DbContext threading issues) ---
+            var companies = (await _companyService.GetCompaniesByTenant(tenantId)).ToList();
+            var masterParts = _masterPartService.GetAllMasterParts().ToList();
+            var manufList = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant(tenantId).ToList();
+            var bofs = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(tenantId).ToList();
+            var rms = _rawMaterialDetailService.GetRawMaterialDetailsByTenant(tenantId).ToList();
+            var partPurchases = _rawMaterialDetailService.GetPartPurchases(tenantId).ToList();
 
-            }
-            catch (Exception ex)
-            {
-                string msg = ex.InnerException.Message;
-                string src = ex.Source;
-            }
-            var bofs = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(TenantId);
-            var partPurchases = _rawMaterialDetailService.GetPartPurchases(TenantId);
+            // --- Step 2: Build fast lookup dictionaries (in memory) ---
+            var companyLookup = companies.ToDictionary(c => c.CompanyId, c => c.CompanyName);
+            var masterPartLookup = masterParts.ToDictionary(m => m.MasterPartId);
 
-            try
-            {
-                var query1 =
-                         from bof in bofs
-                             //join pp in partPurchases on bof.BoughtOutFinishDetailId equals pp.BOFId
-                         join mp in masterParts on bof.PartId equals mp.MasterPartId into tempjoin
-                         from scojoin in tempjoin.DefaultIfEmpty()
-                         select new ItemMasterPartVM
-                         {
-                             PartId = bof.PartId,
-                             MasterPartType = "BOF",
-                             Company = "",
-                             PartNo = scojoin.PartNo,
-                             Description = scojoin?.PartDescription ?? string.Empty,
-                             BoughtOutFinishMadeType = -1,
-                             RawMaterialMadeSubType = -1,
-                             RawMaterialTypeId = -1,
-                             BaseRawMaterialId = -1,
-                             BOFSupplierPartNo = "",
-                             RMSupplier = "",
-                             Supplier = "",
-                             SupplierPartNo = "",
-                             Status = scojoin.Status,
-                             Notes = scojoin?.PartDescription ?? string.Empty,
-                             Type = 0,
-                             BOFId = (int)bof.BoughtOutFinishDetailId,
-                             TenantId = bof.TenantId
-                         };
-                List<ItemMasterPartVM> list1 = query1.ToList();
-                foreach (ItemMasterPartVM imp in list1)
+            var purchaseByBof = partPurchases
+                .Where(p => p.BOFId > 0)
+                .GroupBy(p => p.BOFId)
+                .ToDictionary(g => g.Key, g => g.First().PSupplier);
+
+            var purchaseByRm = partPurchases
+                .Where(p => p.RMId>0)
+                .GroupBy(p => p.RMId)
+                .ToDictionary(g => g.Key, g => g.First().PSupplier);
+
+            var list = new ConcurrentBag<ItemMasterPartVM>();
+
+            // --- Step 3: Process in parallel (pure in-memory, safe) ---
+            Parallel.Invoke(
+                // Manufactured Parts
+                () =>
                 {
-                    foreach (PartPurchaseDetailsVM pp in partPurchases)
+                    foreach (var m in manufList)
                     {
-                        if (imp.BOFId == pp.BOFId)
+                        masterPartLookup.TryGetValue(m.PartId, out var mp);
+                        companyLookup.TryGetValue(m.CompanyId, out var coName);
+
+                        list.Add(new ItemMasterPartVM
                         {
-                            imp.Company = pp.PSupplier;
-                        }
+                            PartId = m.PartId,
+                            MasterPartType = m.ManufacturedPartType == 1 ? "ManufacturedPart" : "Assembly",
+                            CompanyId = m.CompanyId,
+                            Company = coName ?? string.Empty,
+                            PartNo = mp?.PartNo ?? string.Empty,
+                            Description = mp?.PartDescription ?? string.Empty,
+                            Status = mp?.Status ,
+                            Notes = mp?.PartDescription ?? string.Empty,
+                            TenantId = m.TenantId
+                        });
+                    }
+                },
+
+                // BOFs
+                () =>
+                {
+                    foreach (var b in bofs)
+                    {
+                        masterPartLookup.TryGetValue(b.PartId, out var mp);
+                        purchaseByBof.TryGetValue((int)b.BoughtOutFinishDetailId, out var supp);
+
+                        list.Add(new ItemMasterPartVM
+                        {
+                            PartId = b.PartId,
+                            MasterPartType = "BOF",
+                            Company = supp ?? string.Empty,
+                            PartNo = mp?.PartNo ?? string.Empty,
+                            Description = mp?.PartDescription ?? string.Empty,
+                            Status = mp?.Status ,
+                            Notes = mp?.PartDescription ?? string.Empty,
+                            BOFId = (int)b.BoughtOutFinishDetailId,
+                            TenantId = b.TenantId
+                        });
+                    }
+                },
+
+                // Raw Materials
+                () =>
+                {
+                    foreach (var r in rms)
+                    {
+                        masterPartLookup.TryGetValue((int)r.PartId, out var mp);
+                        purchaseByRm.TryGetValue((int)r.RawMaterialDetailId, out var supp);
+
+                        list.Add(new ItemMasterPartVM
+                        {
+                            PartId = r.PartId,
+                            MasterPartType = "RawMaterial",
+                            Company = supp ?? string.Empty,
+                            PartNo = mp?.PartNo ?? string.Empty,
+                            Description = mp?.PartDescription ?? string.Empty,
+                            Status = mp?.Status ,
+                            Notes = mp?.PartDescription ?? string.Empty,
+                            RMId = (int)r.RawMaterialDetailId,
+                            TenantId = r.TenantId
+                        });
                     }
                 }
-                list.AddRange(list1);
-            }
-            catch(Exception ex)
-            {
-                string msg = ex.InnerException.Message;
-                string src = ex.Source;
-            }
-            var rms = _rawMaterialDetailService.GetRawMaterialDetailsByTenant(TenantId);
-            try
-            {
+            );
 
-                // join pp in partPurchases on rm.RawMaterialDetailId equals pp.RMId
-                var query2 =
-                 from rm in rms
-                 join mp in masterParts on rm.PartId equals mp.MasterPartId into tempjoin
-                 from scojoin in tempjoin.DefaultIfEmpty()
-                 select new ItemMasterPartVM
-                 {
-                     PartId = rm.PartId,
-                     MasterPartType = "RawMaterial",
-                     Company = "",
-                     PartNo = scojoin.PartNo,
-                     Description = scojoin?.PartDescription ?? string.Empty,
-                     BoughtOutFinishMadeType = -1,
-                     RawMaterialMadeSubType = -1,
-                     RawMaterialTypeId = -1,
-                     BaseRawMaterialId = -1,
-                     BOFSupplierPartNo = "",
-                     RMSupplier = "",
-                     Supplier = "",
-                     SupplierPartNo = "",
-                     Status=scojoin.Status,
-                     Notes = scojoin?.PartDescription ?? string.Empty,
-                     Type = 0,
-                     RMId = (int)rm.RawMaterialDetailId,
-                     TenantId = rm.TenantId
-                     
-                 };
-                List<ItemMasterPartVM> list2 = query2.ToList();
-                foreach (ItemMasterPartVM imp in list2)
-                {
-                    foreach (PartPurchaseDetailsVM pp in partPurchases)
-                    {
-                        if(imp.RMId == pp.RMId)
-                        {
-                            imp.Company = pp.PSupplier;
-                        }
-                    }
-                }
-                list.AddRange(list2);
-            }
-            catch(Exception ex)
-            {
-                string msg = ex.InnerException.Message;
-                string src = ex.Source;
-            }
-            
-            return list;
+            // --- Step 4: Deduplicate by PartId ---
+            return list.GroupBy(x => x.PartId).Select(g => g.First()).ToList();
         }
 
         [HttpGet]

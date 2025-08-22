@@ -7,6 +7,7 @@
         public string WeeklyOff1 { get; set; }
 
         public int NoOfShifts { get; set; }
+        public int NoOfWeeklyOff { get; set; }
         public string WeeklyOff2 { get; set; }
         public string FirstShiftStartTime { get; set; }
         public string SecondShiftStartTime { get; set; }

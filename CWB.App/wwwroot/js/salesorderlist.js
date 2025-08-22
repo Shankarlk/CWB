@@ -279,6 +279,10 @@ $(document).ready(function () {
     });
 
     $('#po-hold').on('hidden.bs.modal', function (event) {
+
+        var newNamevalidate = document.getElementById('POHComment');
+        newNamevalidate.style.border = '';
+        $("#POHComment").val('');
         //if (holdsalesorder) {
         //    LoadSalesOrders(salesCustOrderId);
         //}
@@ -289,8 +293,14 @@ $(document).ready(function () {
         var customerorderid = relatedTarget.data("customerorderid");
         var salesorderid = relatedTarget.data("salesorderid");
         var salesorder = relatedTarget.data("salesorder");
+        var statusstr = relatedTarget.data("statusstr");
         holdsalesorder = false;
         salesCustOrderId = 0;
+        if (statusstr == "Hold") {
+            $("#SpanPoHold").text("Resume");
+        } else {
+            $("#SpanPoHold").text("Hold");
+        }
         if (salesorder == "Y") {
             $('#POHSalesOrderId').val(salesorderid);
             holdsalesorder = true;
@@ -308,6 +318,15 @@ $(document).ready(function () {
 
     $("#BtnPOHold").on("click", function () {
         // alert("Add CustomerOrder clicked");
+        var comt = $("#POHComment").val();
+        if (comt.length == 0) {
+            var newNamevalidate = document.getElementById('POHComment');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('POHComment');
+            newNamevalidate.style.border = '';
+        }
         if (holdsalesorder) {
             PostSOHold();
         }

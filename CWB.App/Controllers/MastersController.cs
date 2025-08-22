@@ -1920,253 +1920,105 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> MasterParts()
         {
-            var mfpdList = await _mastersService.ItemMasterParts();
+
+            var mfpdListTask = _mastersService.ItemMasterParts();
+            var docmandTask = _mastersService.Getallitemmasterdoclist();
+            var docListVMsTask = _docMangService.GetAllDocList();
+
+            await Task.WhenAll(mfpdListTask, docmandTask, docListVMsTask);
+
+            var mfpdList = mfpdListTask.Result;
+            var docmand = docmandTask.Result;
+            var docListVMs = docListVMsTask.Result;
+
             foreach (var item in mfpdList)
             {
-                if (item.MasterPartType == "ManufacturedPart")
+                switch (item.MasterPartType)
                 {
-                    var manuf = await _mastersService.GetManufPart((int)item.PartId);
-                    var mk = await _mastersService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
-                    if (manuf.FinalPartNosoldtoCustomer == 0)
-                    {
-                        item.FinalPart = "N";
-                    }
-                    else
-                    {
-                        item.FinalPart = "Y";
-                    }
-                    var docmand = await _mastersService.Getallitemmasterdoclist();
-                    if (docmand.Any(d => d.ContentId == 1))
-                    {
-                        var docListVMs = await _docMangService.GetAllDocList();
-                        if (docListVMs.Any(docList => docmand.Any(docMand => docList.DocumentTypeId == docMand.DocumentTypeId)))
-                        {
-                            item.MandocAvl = "Yes";
-                            if (docListVMs.Any(docList => docmand.Any(docMand => docList.DocumentTypeId == docMand.DocumentTypeId && docMand.Mandatory == 'Y')))
-                            {
-                                var firstMatch = docListVMs
-                                                   .FirstOrDefault(docList =>
-                                                       docmand.Any(docMand =>
-                                                           docList.DocumentTypeId == docMand.DocumentTypeId && docMand.Mandatory == 'Y' && docList.PartId == item.PartId
-                                                       )
-                                                   );
-                                if (firstMatch != null)
-                                {
-                                    var getdoc = await _docMangService.GetDoc_Status_List(firstMatch.AppvStatus);
-                                    item.DocStatus = getdoc.Doc_Status_Desc;
-                                }
-                                else
-                                {
-                                    item.DocStatus = "N/A";
-                                }
-                            }
-                        }
-                        else
-                        {
-                            item.MandocAvl = "No";
-                        }
-                    }
-                    else
-                    {
-                        item.MandocAvl = "N/A";
-                        item.DocStatus = "N/A";
-                    }
-                    if (mk.Count() > 0)
-                    {
-                        item.RmAvl = "Yes";
-                    }
-                    else
-                    {
-                        item.RmAvl = "No";
-                    }
-                    item.SupplierAvl = "N/A";
-                    item.BomAvl = "N/A";
-                    item.MasterDisplay = "ManufacturedPart";
-                }
-                else if (item.MasterPartType == "Assembly")
-                {
-                    var manuf = await _mastersService.GetManufPart((int)item.PartId);
-                    var mpmakefromlist = await _mastersService.BOMS(manuf.ManufacturedPartNoDetailId.ToString());
-                    if (manuf.FinalPartNosoldtoCustomer == 0)
-                    {
-                        item.FinalPart = "N";
-                    }
-                    else
-                    {
-                        item.FinalPart = "Y";
-                    }
-                    var docmand = await _mastersService.Getallitemmasterdoclist();
-                    if (docmand.Any(d => d.ContentId == 2))
-                    {
-                        var docListVMs = await _docMangService.GetAllDocList();
-                        if (docListVMs.Any(docList => docmand.Any(docMand => docList.DocumentTypeId == docMand.DocumentTypeId)))
-                        {
-                            item.MandocAvl = "Yes";
-                            if(docListVMs.Any(docList => docmand.Any(docMand => docList.DocumentTypeId == docMand.DocumentTypeId && docMand.Mandatory =='Y')))
-                            {
-                                var firstMatch = docListVMs
-                                                   .FirstOrDefault(docList =>
-                                                       docmand.Any(docMand =>
-                                                           docList.DocumentTypeId == docMand.DocumentTypeId && docMand.Mandatory == 'Y' && docList.PartId == item.PartId
-                                                       )
-                                                   );
-                                if(firstMatch != null)
-                                {
-                                    var getdoc = await _docMangService.GetDoc_Status_List(firstMatch.AppvStatus);
-                                    item.DocStatus = getdoc.Doc_Status_Desc;
-                                }
-                                else
-                                {
-                                    item.DocStatus = "N/A";
-                                }
-                            }
-                        }
-                        else
-                        {
-                            item.MandocAvl = "No";
-                        }
-                    }
-                    else
-                    {
-                        item.MandocAvl = "N/A";
-                        item.DocStatus = "N/A";
-                    }
-                    if (mpmakefromlist.Count() > 0)
-                    {
-                        item.BomAvl = "Yes";
-                    }
-                    else
-                    {
-                        item.BomAvl = "No";
-                    }
-                    item.RmAvl = "N/A";
-                    item.SupplierAvl = "N/A";
-                    item.MasterDisplay = "Assembly";
-                }
-                else if (item.MasterPartType == "BOF")
-                {
-                    var docmand = await _mastersService.Getallitemmasterdoclist();
-                    if (docmand.Any(d => d.ContentId == 6 || d.ContentId == 7 || d.ContentId == 8))
-                    {
-                        var docListVMs = await _docMangService.GetAllDocList();
-                        if (docListVMs.Any(docList => docmand.Any(docMand => docList.DocumentTypeId == docMand.DocumentTypeId)))
-                        {
-                            item.MandocAvl = "Yes";
-                            if (docListVMs.Any(docList => docmand.Any(docMand => docList.DocumentTypeId == docMand.DocumentTypeId && docMand.Mandatory == 'Y')))
-                            {
-                                var firstMatch = docListVMs
-                                                   .FirstOrDefault(docList =>
-                                                       docmand.Any(docMand =>
-                                                           docList.DocumentTypeId == docMand.DocumentTypeId && docMand.Mandatory == 'Y' && docList.PartId == item.PartId
-                                                       )
-                                                   );
-                                if (firstMatch != null)
-                                {
-                                    var getdoc = await _docMangService.GetDoc_Status_List(firstMatch.AppvStatus);
-                                    item.DocStatus = getdoc.Doc_Status_Desc;
-                                }
-                                else
-                                {
-                                    item.DocStatus = "N/A";
-                                }
-                            }
-                        }
-                        else
-                        {
-                            item.MandocAvl = "No";
-                            item.DocStatus = "N/A";
-                        }
-                    }
-                    else
-                    {
-                        item.MandocAvl = "N/A";
-                    }
-                    if (item.BoughtOutFinishMadeType == 1)
-                    {
-                        item.MasterDisplay = "Standard BOF";
-                    }
-                    else if (item.BoughtOutFinishMadeType == 2)
-                    {
-                        item.MasterDisplay = "Catalog BOF";
-                    }
-                    else
-                    {
-                        item.MasterDisplay = "Purchased Made to Print BOF";
-                    }
-                    var mk = await _mastersService.PartPurchasesFor((int)item.PartId);
-                    if (mk.Count() > 0)
-                    {
-                        item.SupplierAvl = "Yes";
-                    }
-                    else
-                    {
-                        item.SupplierAvl = "No";
-                    }
-                    item.BomAvl = "N/A";
-                    item.RmAvl = "N/A";
+                    case "ManufacturedPart":
+                        var manuf = await _mastersService.GetManufPart((int)item.PartId);
+                        var mk = await _mastersService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
 
-                }
-                else if (item.MasterPartType == "RawMaterial")
-                {
-                    var docmand = await _mastersService.Getallitemmasterdoclist();
-                    if (docmand.Any(d => d.ContentId == 3 || d.ContentId == 4 || d.ContentId == 5))
-                    {
-                        var docListVMs = await _docMangService.GetAllDocList();
-                        if (docListVMs.Any(docList => docmand.Any(docMand => docList.DocumentTypeId == docMand.DocumentTypeId)))
+                        item.FinalPart = manuf.FinalPartNosoldtoCustomer == 0 ? "N" : "Y";
+                        (item.MandocAvl, item.DocStatus) = await GetDocStatusAsync(docmand, docListVMs, (int)item.PartId, 1);
+                        item.RmAvl = mk.Any() ? "Yes" : "No";
+                        item.SupplierAvl = "N/A";
+                        item.BomAvl = "N/A";
+                        item.MasterDisplay = "ManufacturedPart";
+                        break;
+
+                    case "Assembly":
+                        var assembly = await _mastersService.GetManufPart((int)item.PartId);
+                        var bom = await _mastersService.BOMS(assembly.ManufacturedPartNoDetailId.ToString());
+
+                        item.FinalPart = assembly.FinalPartNosoldtoCustomer == 0 ? "N" : "Y";
+                        (item.MandocAvl, item.DocStatus) = await GetDocStatusAsync(docmand, docListVMs, (int)item.PartId, 2);
+                        item.BomAvl = bom.Any() ? "Yes" : "No";
+                        item.RmAvl = "N/A";
+                        item.SupplierAvl = "N/A";
+                        item.MasterDisplay = "Assembly";
+                        break;
+
+                    case "BOF":
+                        (item.MandocAvl, item.DocStatus) = await GetDocStatusAsync(docmand, docListVMs, (int)item.PartId, 6, 7, 8);
+                        item.MasterDisplay = item.BoughtOutFinishMadeType switch
                         {
-                            item.MandocAvl = "Yes"; 
-                            if (docListVMs.Any(docList => docmand.Any(docMand => docList.DocumentTypeId == docMand.DocumentTypeId && docMand.Mandatory == 'Y')))
-                            {
-                                var firstMatch = docListVMs
-                                                   .FirstOrDefault(docList =>
-                                                       docmand.Any(docMand =>
-                                                           docList.DocumentTypeId == docMand.DocumentTypeId && docMand.Mandatory == 'Y' && docList.PartId == item.PartId
-                                                       )
-                                                   );
-                                if (firstMatch != null)
-                                {
-                                    var getdoc = await _docMangService.GetDoc_Status_List(firstMatch.AppvStatus);
-                                    item.DocStatus = getdoc.Doc_Status_Desc;
-                                }
-                                else
-                                {
-                                    item.DocStatus = "N/A";
-                                }
-                            }
-                        }
-                        else
-                        {
-                            item.MandocAvl = "No";
-                        }
-                    }
-                    else
-                    {
-                        item.MandocAvl = "N/A";
-                        item.DocStatus = "N/A";
-                    }
-                    var rm = await _mastersService.GetRMPart((int)item.PartId);
-                    if (rm.RawMaterialMadeType == 1)
-                    {
-                        item.MasterDisplay = "Own Purchased RM";
-                    }
-                    else
-                    {
-                        item.MasterDisplay = "Customer Supplied RM";
-                    }
-                    var mk = await _mastersService.PartPurchasesFor((int)item.PartId);
-                    if (mk.Count() > 0)
-                    {
-                        item.SupplierAvl = "Yes";
-                    }
-                    else
-                    {
-                        item.SupplierAvl = "No";
-                    }
-                    item.BomAvl = "N/A";
-                    item.RmAvl = "N/A";
+                            1 => "Standard BOF",
+                            2 => "Catalog BOF",
+                            _ => "Purchased Made to Print BOF"
+                        };
+                        var bofSuppliers = await _mastersService.PartPurchasesFor((int)item.PartId);
+                        item.SupplierAvl = bofSuppliers.Any() ? "Yes" : "No";
+                        item.BomAvl = "N/A";
+                        item.RmAvl = "N/A";
+                        break;
+
+                    case "RawMaterial":
+                        (item.MandocAvl, item.DocStatus) = await GetDocStatusAsync(docmand, docListVMs, (int)item.PartId, 3, 4, 5);
+                        var rm = await _mastersService.GetRMPart((int)item.PartId);
+                        item.MasterDisplay = rm.RawMaterialMadeType == 1 ? "Own Purchased RM" : "Customer Supplied RM";
+                        var rmSuppliers = await _mastersService.PartPurchasesFor((int)item.PartId);
+                        item.SupplierAvl = rmSuppliers.Any() ? "Yes" : "No";
+                        item.BomAvl = "N/A";
+                        item.RmAvl = "N/A";
+                        break;
                 }
             }
+
             return Json(mfpdList);
+        }
+        private async Task<(string MandocAvl, string DocStatus)> GetDocStatusAsync(
+    IEnumerable<ItemMasterDocListVM> docmand,
+    IEnumerable<DocListVM> docListVMs,
+    int partId,
+    params int[] contentIds)
+        {
+            if (!docmand.Any(d => Array.IndexOf(contentIds, d.ContentId) >= 0))
+                return ("N/A", "N/A");
+
+            bool hasDocs = docListVMs.Any(doc => docmand.Any(dm => doc.DocumentTypeId == dm.DocumentTypeId));
+            if (!hasDocs)
+                return ("No", "N/A");
+
+            bool hasMandatoryDocs = docListVMs.Any(doc =>
+                docmand.Any(dm => doc.DocumentTypeId == dm.DocumentTypeId && dm.Mandatory == 'Y'));
+
+            if (!hasMandatoryDocs)
+                return ("Yes", "N/A");
+
+            var firstMatch = docListVMs.FirstOrDefault(doc =>
+                docmand.Any(dm =>
+                    doc.DocumentTypeId == dm.DocumentTypeId &&
+                    dm.Mandatory == 'Y' &&
+                    doc.PartId == partId));
+
+            if (firstMatch != null)
+            {
+                var getdoc = await _docMangService.GetDoc_Status_List(firstMatch.AppvStatus);
+                return ("Yes", getdoc.Doc_Status_Desc);
+            }
+
+            return ("Yes", "N/A");
         }
 
         [HttpGet]

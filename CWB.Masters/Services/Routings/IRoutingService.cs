@@ -26,6 +26,7 @@ namespace CWB.Masters.Services.Routings
         Task<IEnumerable<RoutingStepVM>> ChangeSequence(IEnumerable<RoutingStepVM> routingStepVM);
         Task<RoutingStepPartVM> RoutingStepPart(RoutingStepPartVM routingStepPartVM);
         IEnumerable<RoutingVM> GetRoutingsForManufId(int manufId);
+        Task<List<RoutingListItemVM>> GetRoutingListItemsAsync(long tenantId);
         IEnumerable<RoutingStepVM> GetStepsForRoutingId(int routingId);
         IEnumerable<RoutingStepPartVM> GetPartsForStepId(int stepId);
         Task<bool> DeleteStep(int stepId);

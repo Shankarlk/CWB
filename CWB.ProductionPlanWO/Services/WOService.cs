@@ -22,6 +22,8 @@ namespace CWB.ProductionPlanWO.Services
         private readonly IBOMTempRepository _bOMTempRepository;
         private readonly IProcPlanRepository _procPlanRepository;
         private readonly IBOMListRepository _bOMListRepository;
+        private readonly IDispatchDetailsRepository _DispatchDetailsRepository;
+        private readonly IDispatchQntyRepository _DispatchQntyRepository;
         private readonly IProductionPlan_WORepository _productionPlan_WORepository;
         private readonly IWOStatusRepository _wOStatusrepository;
         private readonly IChildWoRelRepository _childWoRelRepository;
@@ -84,7 +86,7 @@ namespace CWB.ProductionPlanWO.Services
         public WOService(
             ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork
             , IWorkOrderRepository workOrderRepository , IPOLogRepository pOLogRepository
-            , IProcPlanRepository procPlanRepository, IWOSORepository woso, IBOMTempRepository bOMTempRepository, IBOMListRepository bOMListRepository,
+            , IProcPlanRepository procPlanRepository, IWOSORepository woso, IBOMTempRepository bOMTempRepository, IBOMListRepository bOMListRepository,IDispatchQntyRepository DispatchQntyRepository,IDispatchDetailsRepository DispatchDetailsRepository,
             IProductionPlan_WORepository productionPlan_WORepository, IWOStatusRepository wOStatus, IChildWoRelRepository childWoRelRepository
             , IMcTimeListRepository mcTimeListRepository, IPODetailsRepository pODetailsRepository,IPOHeaderRepository pOHeaderRepository,IPOStatusRepository pOStatusRepository,
             IWoSubConSupplierRepository woSubConSupplierRepository, IProcPlanPartPurChaseRelRepository purChaseRelRepository, IInward_Condn_listRepository IInward_Condn_listRepository,
@@ -110,6 +112,8 @@ namespace CWB.ProductionPlanWO.Services
             _bOMTempRepository = bOMTempRepository;
             _procPlanRepository = procPlanRepository;
             _bOMListRepository = bOMListRepository;
+            _DispatchDetailsRepository = DispatchDetailsRepository;
+            _DispatchQntyRepository = DispatchQntyRepository;
             _productionPlan_WORepository = productionPlan_WORepository;
             _wOStatusrepository = wOStatus;
             _childWoRelRepository = childWoRelRepository;
@@ -842,6 +846,28 @@ namespace CWB.ProductionPlanWO.Services
             upp.StartingOpNo = pp.StartingOpNo;
             upp.EndingOpNo = pp.EndingOpNo;
             upp.Changed = 1;
+            pp = await _productionPlan_WORepository.UpdateAsync(pp.Id, upp);
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            return productions;
+        }
+        public async Task<ProductionPlan_WOVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WOVM productions)
+        {
+            var pp = _mapper.Map<ProductionPlan_WO>(productions);
+            var upp = await _productionPlan_WORepository.SingleOrDefaultAsync(x => x.Id == pp.Id);
+            if (upp == null)
+            {
+                return productions;
+            }
+            upp.Comment = pp.Comment;
+            upp.Status = pp.Status;
             pp = await _productionPlan_WORepository.UpdateAsync(pp.Id, upp);
             try
             {
@@ -3625,6 +3651,119 @@ namespace CWB.ProductionPlanWO.Services
                 try
                 {
                     _Matl_Issue_SettingsRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        
+        public async Task<IEnumerable<DispatchDetailsVM>> GetAllDispatchDetails(long tenantId)
+        {
+            var allDocuType = _DispatchDetailsRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<DispatchDetailsVM>>(allDocuType);
+        }
+        public async Task<DispatchDetailsVM> PostDispatchDetails(DispatchDetailsVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<DispatchDetails>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _DispatchDetailsRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _DispatchDetailsRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _DispatchDetailsRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.DispatchDetailsId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteDispatchDetails(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _DispatchDetailsRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _DispatchDetailsRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<IEnumerable<DispatchQntyVM>> GetAllDispatchQnty(long tenantId)
+        {
+            var allDocuType = _DispatchQntyRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<DispatchQntyVM>>(allDocuType);
+        }
+        public async Task<DispatchQntyVM> PostDispatchQnty(DispatchQntyVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<DispatchQnty>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _DispatchQntyRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _DispatchQntyRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _DispatchQntyRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.DispatchQntyId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteDispatchQnty(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _DispatchQntyRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _DispatchQntyRepository.Remove(co);
                     await _unitOfWork.CommitAsync();
                     return true;
                 }

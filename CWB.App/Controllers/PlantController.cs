@@ -64,6 +64,13 @@ namespace CWB.App.Controllers
             {
                 model.Change_flag = 'Y';
             }
+            model.FirstShiftDuration = model.FirstShiftDuration + ":00";
+            model.SecondShiftDuration = string.IsNullOrEmpty(model.SecondShiftDuration)
+                ? model.SecondShiftDuration
+                : model.SecondShiftDuration + ":00";
+            model.ThirdShiftDuration = string.IsNullOrEmpty(model.ThirdShiftDuration)
+                ? model.ThirdShiftDuration
+                : model.ThirdShiftDuration + ":00";
             var result = await _plantService.PostPlantWD(model);
             return Json(result);
         }

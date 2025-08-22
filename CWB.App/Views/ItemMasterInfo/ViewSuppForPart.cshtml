@@ -1,0 +1,142 @@
+﻿
+<input value="I-IM" type="hidden" id="hdn-nav-menu" />
+
+<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-11">
+                            <h3 style="padding: 10px;">View Supplier for BOF / RM  & Parts supplied by Supplier</h3>
+                        </div>
+                        <div class="col-md-1 text-end">
+                            <a asp-action="Index" asp-controller="ItemMasterInfo" id="CloseBtn" style="font-size: large; color: #000;">
+                                <button type="button"
+                                        class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </a>
+                        </div>
+                        <!-- =============================  -->
+                        <div class="col-md-12">
+                            <hr class="mt-2">
+                            <!-- ================================  -->
+                            <div class="row">
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Part Type</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                            title="" data-plugin="tippy" data-tippy-placement="top" id="searchPartType">
+                                        <option value="0">--Select--</option>
+                                        <option value="BOF">BOF</option>
+                                        <option value="Purchased Std RM">Purchased Std RM</option>
+                                        <option value="Purchased Made to Print RM">Purchased Made to Print RM</option>
+                                        <option value="Purchased made to Print BOF">Purchased made to Print BOF</option>
+                                        <option value="Customer Supplied RM">Customer Supplied RM</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Customer</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                            title="" data-plugin="tippy" data-tippy-placement="top" id="searchCustomer">
+                                        <option value="">==========</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Part Number</label>
+                                    <input class="form-control form-control-sm w-100" type="text" title=""
+                                           data-plugin="tippy" data-tippy-placement="top" placeholder="Enter Part Number"
+                                           id="searchPartNo">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Part Desc</label>
+                                    <input class="form-control form-control-sm w-100" type="text" title=""
+                                           data-plugin="tippy" data-tippy-placement="top" placeholder="Enter Part Description"
+                                           id="searchPartDesc">
+                                </div>
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="table-responsive table-he-250">
+                                            <table class="table table-sm table-bordered w-100 text-center" id="grid1">
+                                                <thead class="  table-info th-sti">
+                                                    <tr class="table-border-bottom">
+                                                        <th>Customer</th>
+                                                        <th>Part No </th>
+                                                        <th>Description</th>
+                                                        <th>Supplier</th>
+                                                        <th>Part Type</th>
+                                                        <th width="5%"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- =========== -->
+                            </div>
+                            <!-- =========== -->
+                            <!-- =============================================  -->
+                            <!-- =============  end row  ================  -->
+                            <!-- end accordion -->
+                        </div>
+                        <!-- =============================  -->
+                    </div>
+                </div>
+            </div>
+            <!-- end card body -->
+            <!-- ================= -->
+        </div>
+        <!-- end card -->
+        <!-- ======================================================================== -->
+    </div>
+    <!-- end col -->
+</div>
+
+<partial name="ContactsDialog" model='new CWB.App.Models.Contacts.CompanyVM{CompanyId=0,DivisionId=0,Location=""}' />
+
+<template id="grid1Row">
+    <tr>
+        <td>{pSupplier}</td>
+        <td>{partNo}</td>
+        <td>{description}</td>
+        <td>{pSupplier}</td>
+        <td>{masterDisplay}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-bs-toggle="modal" data-bs-target="#dialog-company"
+                                                   data-id="{companyId}" data-companyname="{companyName}"
+                                                   data-divisionid="{divisionId}" data-companytype="{companyType}"
+                                                   data-divisionname="{divisionName}"
+                                                   data-plantname="{plantName}"
+                                                   data-city="{city}"
+                                                   data-pin="{pincode}"
+                                                   data-country="{country}"
+                                                   data-location="{location}"
+                                                   data-gst="{gstNo}"
+                                                   data-pan="{panNo}"
+                       >Show Supplier Detail</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+
+@section scripts {
+    <script src="~/js/ViewSuppForPart.js"></script>
+    <script src="~/js/contact-model.js"></script>
+}

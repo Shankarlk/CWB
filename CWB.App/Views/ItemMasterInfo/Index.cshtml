@@ -1,0 +1,51 @@
+﻿
+<input value="I-IM" type="hidden" id="hdn-nav-menu" />
+<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3 style="padding: 10px;">Item Master Information / Queries</h3>
+                        </div>
+                        <div class="col-md-12 ms-4 mt-0">
+
+                            <div class="container my-4">
+                                <div class="row">
+                                    <!-- Column 1 -->
+                                    <div class="col-md-4 d-flex flex-column gap-2">
+                                        <a asp-action="ViewEditPart" asp-controller="ItemMasterInfo" asp-route-returnUrl="ViewPart" class="btn btn-outline-primary">View Part Details / Drawing</a>
+                                        <a asp-action="WhereUsed" asp-controller="ItemMasterInfo" class="btn btn-outline-primary">
+                                            Where Used : Find where all a given Part is
+                                            used
+                                        </a>
+                                        <a asp-action="ChildRawMatl" asp-controller="ItemMasterInfo" class="btn btn-outline-primary">Child Manf Part Raw Material</a>
+                                    </div>
+
+                                    <!-- Column 2 -->
+                                    <div class="col-md-4 d-flex flex-column gap-2">
+                                        <a asp-action="ChildBom" asp-controller="ItemMasterInfo" class="btn btn-outline-primary">Bill of Material</a>
+                                        <a asp-action="ViewSuppForPart" asp-controller="ItemMasterInfo" class="btn btn-outline-primary">Find Supplier for BOF / Raw Material</a>
+                                        <a asp-action="ViewSuppForPart" asp-controller="ItemMasterInfo" class="btn btn-outline-primary">Supplier List</a>
+                                    </div>
+
+                                    <!-- Column 3 -->
+                                    <div class="col-md-4 d-flex flex-column gap-2 justify-content-start" style="margin-top: 50px;">
+                                        <a asp-action="ViewEditPart" asp-controller="ItemMasterInfo" asp-route-returnUrl="ObsoletePart" class="btn btn-outline-primary">Obsolete Parts List</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end card body -->
+            <!-- ================= -->
+        </div>
+        <!-- end card -->
+        <!-- ======================================================================== -->
+    </div>
+    <!-- end col -->
+</div>

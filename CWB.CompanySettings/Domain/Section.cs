@@ -6,7 +6,6 @@ namespace CWB.CompanySettings.Domain
     {
         public string Name { get; set; }
         public long TenantId { get; set; }
-        public long ParentSectionId { get; set; }
         public long ShopDepartmentId { get; set; }
         public ShopDepartment ShopDepartment { get; set; }
     }

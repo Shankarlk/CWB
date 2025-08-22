@@ -30,6 +30,7 @@ namespace CWB.ProductionPlanWO.Services
         Task<IEnumerable<BOMListVM>> AllBomList(long tenantId);
         Task<List<ProductionPlan_WOVM>> PostProductionPlan_Wo(List<ProductionPlan_WOVM> productions);
         Task<ProductionPlan_WOVM> UpdateProductionPlan_Wo(ProductionPlan_WOVM productions);
+        Task<ProductionPlan_WOVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WOVM productions);
         Task<IEnumerable<ProductionPlan_WOVM>> AllProductionWo(long tenantId);
         Task<WOStatusVM> GetWOStatus(long Id);
         Task<bool> DeleteSubCon(long Id);
@@ -184,6 +185,12 @@ namespace CWB.ProductionPlanWO.Services
         Task<IEnumerable<Matl_Issue_SettingsVM>> GetAllMatl_Issue_Settings(long tenantId);
         Task<Matl_Issue_SettingsVM> PostMatl_Issue_Settings(Matl_Issue_SettingsVM itemMasterDocList);
         Task<bool> DeleteMatl_Issue_Settings(long itemMasterDocListId, long tenantId);
+        Task<IEnumerable<DispatchDetailsVM>> GetAllDispatchDetails(long tenantId);
+        Task<DispatchDetailsVM> PostDispatchDetails(DispatchDetailsVM itemMasterDocList);
+        Task<bool> DeleteDispatchDetails(long itemMasterDocListId, long tenantId);
+        Task<IEnumerable<DispatchQntyVM>> GetAllDispatchQnty(long tenantId);
+        Task<DispatchQntyVM> PostDispatchQnty(DispatchQntyVM itemMasterDocList);
+        Task<bool> DeleteDispatchQnty(long itemMasterDocListId, long tenantId);
 
         string HelloWorld();
     }

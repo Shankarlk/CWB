@@ -12,13 +12,13 @@
             </li>
             @{
                 //var permissionResult = ViewBag.Permissions as List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM>;
-                List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM> permissionResult =null;
+                List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM> permissionResult = null;
                 var permissionsJson = HttpContextAccessor.HttpContext.Session.GetString("Permissions");
-                if(permissionsJson != null)
+                if (permissionsJson != null)
                 {
                     permissionResult = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM>>(permissionsJson);
 
-                } 
+                }
             }
             @if (User.Identity.IsAuthenticated && User.IsInRole(Roles.ADMIN))
             {
@@ -28,8 +28,9 @@
                     <li>
                         @if (permissionResult.Any(r => r.Menu1 == "Business Process")) // Check for permission based on the RoleName property
                         {
-                            <a href="#sidebarMAST-2" data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebarMAST-2"> <i class="fas fa-cogs"></i> <span> Business Process </span> <span class="menu-arrow"></span> 
-                        </a>
+                            <a href="#sidebarMAST-2" data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebarMAST-2">
+                                <i class="fas fa-cogs"></i> <span> Business Process </span> <span class="menu-arrow"></span>
+                            </a>
                             <div class="collapse" id="sidebarMAST-2">
                                 <ul class="nav-second-level">
                                     @if (permissionResult.Any(r => r.Menu2 == "Business Acquisition"))
@@ -78,10 +79,6 @@
                                     {
                                         <li><a asp-action="Index" asp-controller="Contacts" data-navid="M-C">Contacts</a></li>
                                     }
-                                    @if (permissionResult.Any(r => r.Menu2 == "Employee Master"))
-                                    {
-                                        <li><a asp-action="Index" asp-controller="Employee" data-navid="M-E">Employee</a></li>
-                                    }
                                     @if (permissionResult.Any(r => r.Menu2 == "Doc Mgt"))
                                     {
                                         <li><a asp-action="Index" asp-controller="DocumentManagement" data-navid="M-D">Document Management</a></li>
@@ -111,14 +108,68 @@
                                     {
                                         <li><a asp-action="Index" asp-controller="Designation" data-navid="C-DE">Designation</a></li>
                                     }
-                                    @*@if (permissionResult.Any(r => r.Menu2 == "Employee Master"))
+                                    @if (permissionResult.Any(r => r.Menu2 == "Employee Master"))
                                     {
-                                        <li><a asp-action="Index" asp-controller="EmployeeMaster" data-navid="C-EM">Employee Master</a></li>
-                                    }*@ @* Add more conditions for additional submenus *@
+                                        <li><a asp-action="Index" asp-controller="Employee" data-navid="M-E">Employee</a></li>
+                                    }
+                                    @*@if (permissionResult.Any(r => r.Menu2 == "Employee Master"))
+                                {
+                                    <li><a asp-action="Index" asp-controller="EmployeeMaster" data-navid="C-EM">Employee Master</a></li>
+                                }*@ @* Add more conditions for additional submenus *@
                                 </ul>
-                            </div>}
+                            </div>
+                        }
+                    </li>
 
-
+                    <li>
+                        @if (permissionResult.Any(r => r.Menu1 == "Info-Queries")) // Check for permission based on the RoleName property
+                        {
+                            <a href="#sidebarMAST-5" data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebarMAST-5"> <i class="fa fa-info-circle"></i> <span> Info-Queries</span> <span class="menu-arrow"></span> </a>
+                            <div class="collapse" id="sidebarMAST-5">
+                                <ul class="nav-second-level">
+                                    @if (permissionResult.Any(r => r.Menu2 == "View SO List"))
+                                    {
+                                        <li><a asp-action="Index" asp-controller="ViewSoInfo" data-navid="I-VS">View SO List</a></li>
+                                    }
+                                    @if (permissionResult.Any(r => r.Menu2 == "View WO List"))
+                                    {
+                                        <li><a asp-action="Index" asp-controller="ViewWoInfo" data-navid="I-VW">View WO List</a></li>
+                                    }
+                                    @if (permissionResult.Any(r => r.Menu2 == "View Item Master"))
+                                    {
+                                        <li><a asp-action="Index" asp-controller="ItemMasterInfo" data-navid="I-IM">View Item Master</a></li>
+                                    }
+                                    @if (permissionResult.Any(r => r.Menu2 == "Material Availability"))
+                                    {
+                                        <li><a asp-action="Index" asp-controller="MaterialAvailability" data-navid="I-MA">Material Availability</a></li>
+                                    }
+                                    @if (permissionResult.Any(r => r.Menu2 == "View Routing"))
+                                    {
+                                        <li><a asp-action="Index" asp-controller="ViewRoutingInfo" data-navid="I-VR">View Routing</a></li>
+                                    }
+                                    @if (permissionResult.Any(r => r.Menu2 == "Shop Loading"))
+                                    {
+                                        <li><a asp-action="Index" asp-controller="ViewShopLoadInfo" data-navid="I-VSL">Shop Loading</a></li>
+                                    }
+                                    @if (permissionResult.Any(r => r.Menu2 == "SubCon Loading"))
+                                    {
+                                        <li><a asp-action="Index" asp-controller="ViewSubConInfo" data-navid="I-VSC">SubCon Loading</a></li>
+                                    }
+                                    @if (permissionResult.Any(r => r.Menu2 == "Inward Inspection"))
+                                    {
+                                        <li><a asp-action="Index" asp-controller="ViewInwInspInfo" data-navid="I-VII">Inward Inspection</a></li>
+                                    }
+                                    @if (permissionResult.Any(r => r.Menu2 == "Purchase List"))
+                                    {
+                                        <li><a asp-action="Index" asp-controller="ViewPurchaseInfo" data-navid="I-VPL">Purchase List</a></li>
+                                    }
+                                    @if (permissionResult.Any(r => r.Menu2 == "NC Waiting for Disposal Decision"))
+                                    {
+                                        <li><a asp-action="Index" asp-controller="ViewNcWaitInfo" data-navid="I-VNC">NC Waiting for Disposal Decision</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        }
                     </li>
                 }
                 else
@@ -142,11 +193,10 @@
                                 <li><a asp-action="Index" asp-controller="Masters" data-navid="M-IM">Item Master</a></li>
                                 <li><a asp-action="Index" asp-controller="Routings" data-navid="M-IR">Routing</a></li>
                                 <li><a asp-action="Index" asp-controller="Machine" data-navid="M-ML">Machine List</a></li>
-                                <li><a asp-action="Index" asp-controller="ManuResource" data-navid="M-MR">Manufacturing Resource</a></li>
+                                <li><a href="#" data-navid="M-MR">Manufacturing Resource</a></li>
                                 <!--<li><a href="manufacturing-resource.html"</a></li>-->
                                 <li><a asp-action="Index" asp-controller="OperationList" data-navid="M-OL">Opearation List</a></li>
                                 <li><a asp-action="Index" asp-controller="Contacts" data-navid="M-C">Contacts</a></li>
-                                <li><a asp-action="Index" asp-controller="Employee" data-navid="M-E">Employee Master</a></li>
                                 <li><a asp-action="Index" asp-controller="DocumentManagement" data-navid="M-D">Document Management</a></li>
                             </ul>
                         </div>
@@ -158,9 +208,27 @@
                                 <li><a asp-action="Index" asp-controller="Plant" data-navid="C-LO">Location</a></li>
                                 <li><a asp-action="Index" asp-controller="Organization" data-navid="C-OR">Organization</a></li>
                                 <li><a asp-action="Index" asp-controller="Designation" data-navid="C-DE">Designation</a></li>
+                                <li><a asp-action="Index" asp-controller="Employee" data-navid="M-E">Employee Master</a></li>
                                 @*<li><a asp-action="Index" asp-controller="EmployeeMaster" data-navid="C-EM">Empolyee Master</a></li>*@
                                 <!--<li><a href="manufacturing-resource.html"</a></li>-->
                                 @*<li><a asp-action="Index" asp-controller="DocumentType" data-navid="C-DT">Document Type</a></li>*@
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <a href="#sidebarMAST-5" data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebarMAST-5"> <i class="fa fa-info-circle"></i> <span> Info-Queries</span> <span class="menu-arrow"></span> </a>
+                        <div class="collapse" id="sidebarMAST-5">
+                            <ul class="nav-second-level">
+                                <li><a asp-action="Index" asp-controller="ViewSoInfo" data-navid="I-VS">View SO List</a></li>
+                                <li><a asp-action="Index" asp-controller="ViewWoInfo" data-navid="I-VW">View WO List</a></li>
+                                <li><a asp-action="Index" asp-controller="ItemMasterInfo" data-navid="I-IM">View Item Master</a></li>
+                                <li><a asp-action="Index" asp-controller="MaterialAvailability" data-navid="I-MA">Material Availability</a></li>
+                                <li><a asp-action="Index" asp-controller="ViewRoutingInfo" data-navid="I-VR">View Routing</a></li>
+                                <li><a asp-action="Index" asp-controller="ViewShopLoadInfo" data-navid="I-VSL">Shop Loading</a></li>
+                                <li><a asp-action="Index" asp-controller="ViewSubConInfo" data-navid="I-VSC">SubCon Loading</a></li>
+                                <li><a asp-action="Index" asp-controller="ViewInwInspInfo" data-navid="I-VII">Inward Inspection</a></li>
+                                <li><a asp-action="Index" asp-controller="ViewPurchaseInfo" data-navid="I-VPL">Purchase List</a></li>
+                                <li><a asp-action="Index" asp-controller="ViewNcWaitInfo" data-navid="I-VNC">NC Waiting for Disposal Decision</a></li>
                             </ul>
                         </div>
                     </li>

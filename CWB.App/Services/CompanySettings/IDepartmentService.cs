@@ -9,5 +9,8 @@ namespace CWB.App.Services.CompanySettings
         Task<bool> DelDepartment(int departmentId);
         Task<IEnumerable<ShopDepartmentVM>> GetDepartments(long Id);
         Task<ShopDepartmentVM> PostDepartment(ShopDepartmentVM shop);
+        Task<SectionsVM> PostSections(SectionsVM shop);
+        Task<IEnumerable<SectionsVM>> GetSections();
+        Task<bool> CheckSection(string city);
     }
 }

@@ -1,11 +1,28 @@
 ﻿var AppUtil = {
     NavMenuUpdate: () => {
         //remove active navbar..
+        // Remove existing active navbar classes
         $("#side-menu").find("li.menuitem-active a").removeClass("active");
         $("#side-menu").find("li.menuitem-active").removeClass("menuitem-active");
+
+        // Get the nav menu ID
         var navMenuID = $("#hdn-nav-menu").val();
-        $("a[data-navid='" + navMenuID + "']").addClass("active");
-        $("a[data-navid='" + navMenuID + "']").parents("li").addClass("menuitem-active");
+
+        // Add 'active' class to the correct <a> tag
+        var $activeLink = $("a[data-navid='" + navMenuID + "']");
+        $activeLink.addClass("active");
+
+        // Add 'menuitem-active' to the parent <li>
+        $activeLink.parents("li").addClass("menuitem-active");
+
+        // Expand the parent collapse div (if exists)
+        var $collapseDiv = $activeLink.closest(".collapse");
+        if ($collapseDiv.length) {
+            $collapseDiv.addClass("show"); // Ensures it's expanded
+            $collapseDiv.attr("aria-expanded", "true");
+            $collapseDiv.prev("a[data-bs-toggle='collapse']").attr("aria-expanded", "true");
+        }
+
     },
     TableFilter: (tableId, searchObj) => {
         var tableRows = $("#" + tableId).find("tbody tr");

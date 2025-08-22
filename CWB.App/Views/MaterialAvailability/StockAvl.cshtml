@@ -1,0 +1,236 @@
+﻿
+<input value="I-MA" type="hidden" id="hdn-nav-menu" />
+<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-11">
+                            <h3 style="padding: 10px;">Stock Available Query</h3>
+                        </div>
+                        <div class="col-md-1 text-end">
+                            <a asp-action="Index" asp-controller="MaterialAvailability" id="CloseBtn" style="font-size: large; color: #000;">
+                                <button type="button"
+                                        class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </a>
+                        </div>
+                        <!-- =============================  -->
+                        <div class="col-md-12">
+                            <hr class="mt-2">
+                            <!-- ================================  -->
+                            <div class="row">
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Part Type</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                            title="" data-plugin="tippy" data-tippy-placement="top" id="searchPartType">
+                                        <option value="0">--Select</option>
+                                        <option value="Assembly">Assembly</option>
+                                        <option value="Child Manufactured Part">Child Manufactured Part</option>
+                                        <option value="BOF">BOF</option>
+                                        <option value="Purchased Std RM">Purchased Std RM</option>
+                                        <option value="Purchased Made to Print RM">Purchased Made to Print RM</option>
+                                        <option value="Purchased made to Print BOF">Purchased made to Print BOF</option>
+                                        <option value="Customer Supplied RM">Customer Supplied RM</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Customer</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                            title="" data-plugin="tippy" data-tippy-placement="top" id="searchCustomer">
+                                        <option value="">==========</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Part Number</label>
+                                    <input class="form-control form-control-sm w-100" type="text" title=""
+                                           data-plugin="tippy" data-tippy-placement="top" placeholder="Enter Part Number"
+                                           id="searchPartNo">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Part Desc</label>
+                                    <input class="form-control form-control-sm w-100" type="text" title=""
+                                           data-plugin="tippy" data-tippy-placement="top" placeholder="Enter Part Description"
+                                           id="searchPartDesc">
+                                </div>
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="table-responsive table-he-250">
+                                            <table class="table table-sm table-bordered w-100 text-center" id="grid1">
+                                                <thead class="  table-info th-sti">
+                                                    <tr class="table-border-bottom">
+                                                        <th>Customer</th>
+                                                        <th>Part No </th>
+                                                        <th>Description</th>
+                                                        <th>Part Type</th>
+                                                        <th width="5%"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <hr>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="d-flex align-items-center justify-content-fornt">
+                                        <h5>Stock Availability location wise Part No / Description : <span id="spanPartNo"></span> / <span id="spanPartDesc"></span> </h5>
+                                        <h5 class="me-2 ms-5" id="ShowBomlbl">Show all BOM Parts</h5>
+                                        <input class="form-check-input" type="checkbox" title=""
+                                               data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                               id="ShowBomChk">
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="table-responsive table-he-250">
+                                            <table class="table table-sm table-bordered w-100 text-center" id="grid2">
+                                                <thead class="  table-info th-sti">
+                                                    <tr class="table-border-bottom">
+                                                        <th>Part No </th>
+                                                        <th>Description</th>
+                                                        <th id="G2RoutingTh">Routing</th>
+                                                        <th id="G2OpNoTh">Opr No</th>
+                                                        <th>Location</th>
+                                                        <th>Ok Qnty</th>
+                                                        <th id="G2WfReworkTh">W/f Rework Qnty</th>
+                                                        <th id="G2WfInwdTh">W/f Inwd Insp.</th>
+                                                        <th>NC w/f Decision (Y/N)</th>
+                                                        <th width="5%"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- =========== -->
+                            </div>
+                            <!-- =========== -->
+                            <!-- =============================================  -->
+                            <!-- =============  end row  ================  -->
+                            <!-- end accordion -->
+                        </div>
+                        <!-- =============================  -->
+                    </div>
+                </div>
+            </div>
+            <!-- end card body -->
+            <!-- ================= -->
+        </div>
+        <!-- end card -->
+        <!-- ======================================================================== -->
+    </div>
+    <!-- end col -->
+</div>
+<div class="modal fade" id="NcaawaitPopup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    NC awaiting Disposal Decision
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" id="popupInwardGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-250">
+                                <table class="table table-sm table-bordered w-100 text-center" id="NcGrid">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>NC Ref No </th>
+                                            <th>NC Date</th>
+                                            <th>NC Location</th>
+                                            <th>Part No / Desc</th>
+                                            <th>Feature </th>
+                                            <th>NC Description</th>
+                                            <th>Part Type</th>
+                                            <th>Total NC Qnty</th>
+                                            <th>Units</th>
+                                            <th>RCA / CA Status</th>
+                                            <th>W/f Cust. Feedback </th>
+                                            <th>W/f Level 1 Decision </th>
+                                            <th>W/f Level 2 Appvl </th>
+                                            <th>Ageing (Days) </th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<template id="grid1Row">
+    <tr>
+        <td>{company}</td>
+        <td>{partNo}</td>
+        <td>{description}</td>
+        <td>{masterDisplay}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-partid="{partId}" data-partno="{partNo}" data-partdesc="{description}" data-parttype="{masterDisplay}" onclick="ShowGrid2(this)">Show Availbility</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="grid2Row">
+    <tr>
+        <td>{partNo}</td>
+        <td>{description}</td>
+        <td class="G2RoutingTh">{routingName}</td>
+        <td class="G2OpNoTh">{oprNo}</td>
+        <td>{companyName}</td>
+        <td>{okQnty}</td>
+        <td class="G2WfReworkTh">{rwkQnty}</td>
+        <td class="G2WfInwdTh">{wfInwdInsp}</td>
+        <td>{ncAvl}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-partno="{partNo}" data-partdesc="{description}" 
+                       data-bs-toggle="modal" data-bs-target="#NcaawaitPopup">Show NC Details</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+@section scripts {
+    <script src="~/js/StockAvl.js"></script>
+}

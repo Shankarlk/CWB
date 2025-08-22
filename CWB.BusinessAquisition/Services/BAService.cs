@@ -282,6 +282,11 @@ namespace CWB.BusinessAquisition.Services
             var salesOrders = _salesOrderRepository.GetRangeAsync(d => d.TenantId == tenantId);
             return _mapper.Map<IEnumerable<SalesOrderVM>>(salesOrders);
         }
+        public async Task<List<SalesOrderVM>> GetAllSalesOrders(long tenantId)
+        {
+            var salesOrders = _salesOrderRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<List<SalesOrderVM>>(salesOrders);
+        }
 
         public async Task<IEnumerable<DeliveryScheduleVM>> GetSchedules(long tenantId,long customerOrderId)
         {

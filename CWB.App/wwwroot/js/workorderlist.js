@@ -1632,6 +1632,15 @@ $(document).ready(function () {
         });
     });
 
+    $('#wohold').on('hidden.bs.modal', function (event) {
+
+        var newNamevalidate = document.getElementById('WoComment');
+        newNamevalidate.style.border = '';
+        $("#WoComment").val('');
+        //if (holdsalesorder) {
+        //    LoadSalesOrders(salesCustOrderId);
+        //}
+    });
 
     $('#wohold').on('shown.bs.modal', function (event) {
         var relatedTarget = $(event.relatedTarget);
@@ -1666,6 +1675,13 @@ $(document).ready(function () {
         $("#HoldStartingOpNo").val(startingopno);
         $("#HoldEndingOpNo").val(endingopno);
         $("#HoldBuildToStock").val(buildtostock);
+        var statusstr = relatedTarget.data("statusstr");
+
+        if (statusstr == "Hold") {
+            $("#SpanWoHold").text("Resume");
+        } else {
+            $("#SpanWoHold").text("Hold");
+        }
 
     });
 
@@ -1685,13 +1701,23 @@ $(document).ready(function () {
         var startingOpNo = $("#HoldStartingOpNo").val();
         var endingOpNo = $("#HoldEndingOpNo").val();
         var buildToStock = $("#HoldBuildToStock").val();
+        var WoComment = $("#WoComment").val();
+
+        if (WoComment.length == 0) {
+            var newNamevalidate = document.getElementById('WoComment');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('WoComment');
+            newNamevalidate.style.border = '';
+        }
         if (buildToStock == 'Y') {
 
         } else {
             buildToStock = '';
         }
         if (wostatus === 8) {
-            //wostatus = 1;
+            wostatus = 1;
         } else {
             wostatus = 8;
         }
@@ -1708,10 +1734,11 @@ $(document).ready(function () {
             startingOpNo: parseInt(startingOpNo),
             endingOpNo: parseInt(endingOpNo),
             status: parseInt(wostatus),
-            buildToStock: buildToStock
+            buildToStock: buildToStock,
+            comment: WoComment
         };
 
-        api.post("/businessaquisition/WOpost", rowData).then((data) => {
+        api.post("/workorder/WOpost", rowData).then((data) => {
             //console.log(data);
             $('#wohold').modal('hide');
             loadWO();

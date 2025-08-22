@@ -84,6 +84,7 @@ namespace CWB.App.Models.BusinessProcesses
         public string? RoutingName { get; set; } = string.Empty;
         public string? CurOpr { get; set; } = string.Empty;
         public string? ReworkWo { get; set; } = string.Empty;
+        public string? Holdstr { get; set; } = string.Empty;
         public string? WoStatus { get; set; } = string.Empty;
         public string? PoStatus { get; set; } = string.Empty;
         public string? ReadyForProd { get; set; } = string.Empty;

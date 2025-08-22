@@ -4,6 +4,7 @@
     ViewData["Title"] = "Detailed-Planning";
 }
 
+<input value="B-BP" type="hidden" id="hdn-nav-menu" />
 <div class="content">
     <div class="row" id="myRadioGroup">
         <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
@@ -20,8 +21,13 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-11">
                             <h3 style="padding: 10px;">Detailed Production Planning</h3>
+                        </div>
+                        <div class="col-md-1 text-end">
+                            <a asp-action="Index" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                                X
+                            </a>
                         </div>
                         <!-- =============================  -->
                         <div class="col-md-12">
@@ -68,141 +74,141 @@
                                     </div>
                                     <!-- ========================  -->
                                     <!--<div class="table-responsive table-he-250">
-                                        <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
-                                            <thead class="  table-info th-sti">
-                                            <th colspan="2">
-                                                Plan_compl_dt of xxx Sub Assy completed
-                                            </th>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>Level 1 </td>
-                                                    <td>xxxx</td>
-                                                </tr>-->
+                    <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
+                        <thead class="  table-info th-sti">
+                        <th colspan="2">
+                            Plan_compl_dt of xxx Sub Assy completed
+                        </th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Level 1 </td>
+                                <td>xxxx</td>
+                            </tr>-->
                                     <!-- ===========================  -->
                                     <!--<tr>
-                                        <td>Level 2 </td>
-                                        <td>xxxx</td>
-                                    </tr>-->
+                    <td>Level 2 </td>
+                    <td>xxxx</td>
+                </tr>-->
                                     <!-- ===========================  -->
                                     <!--<tr>
-                                        <td>Level 3 </td>
-                                        <td>xxxx</td>
-                                    </tr>-->
+                    <td>Level 3 </td>
+                    <td>xxxx</td>
+                </tr>-->
                                     <!-- ===========================  -->
                                     <!--<tr>
-                                        <td>Level 4 </td>
-                                        <td>xxxx</td>
-                                    </tr>-->
+                    <td>Level 4 </td>
+                    <td>xxxx</td>
+                </tr>-->
                                     <!-- ===========================  -->
                                     <!--<tr>
-                                        <td colspan="2">
-                                            Plan_compl_dt of xxx Manf Parts completed
-                                        </td>
-                                    </tr>-->
+                    <td colspan="2">
+                        Plan_compl_dt of xxx Manf Parts completed
+                    </td>
+                </tr>-->
                                     <!-- ===========================  -->
                                     <!--<tr>
-                                        <td colspan="2">
-                                            Plan_receipt_dt of xxx BOF Parts completeds
-                                        </td>
-                                    </tr>-->
+                    <td colspan="2">
+                        Plan_receipt_dt of xxx BOF Parts completeds
+                    </td>
+                </tr>-->
                                     <!-- ===========================  -->
                                     <!--</tbody>
-                                        </table>
-                                    </div>-->
+                    </table>
+                </div>-->
                                     <!-- ========================  -->
                                 </div>
                                 <!-- ================================ -->
                                 <div class="col-md-4 dott-bord-r" style="padding: 10px;">
                                     <!--<div class="table-responsive">
-                                        <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
-                                            <thead class="  table-info th-sti">
+                    <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
+                        <thead class="  table-info th-sti">
 
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>No of common Sub Assy in level 1</td>
-                                                    <td>XXXX</td>
-                                                </tr>-->
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>No of common Sub Assy in level 1</td>
+                                <td>XXXX</td>
+                            </tr>-->
                                     <!-- ===========================  -->
                                     <!--<tr>
-                                        <td>No of unique Sub Assy in Level 1</td>
-                                        <td>XXXX</td>
-                                    </tr>-->
+                    <td>No of unique Sub Assy in Level 1</td>
+                    <td>XXXX</td>
+                </tr>-->
                                     <!-- ===========================  -->
                                     <!--<tr>
-                                        <td>No of common Sub Assy in level 2</td>
-                                        <td>XXXX</td>
-                                    </tr>-->
+                    <td>No of common Sub Assy in level 2</td>
+                    <td>XXXX</td>
+                </tr>-->
                                     <!-- ===========================  -->
                                     <!--<tr>
-                                        <td>No of unique Sub Assy in Level 2</td>
-                                        <td>XXXX</td>
-                                    </tr>-->
+                    <td>No of unique Sub Assy in Level 2</td>
+                    <td>XXXX</td>
+                </tr>-->
                                     <!-- ===========================  -->
                                     <!--<tr>
-                                        <td>No of common Sub Assy in level 3</td>
-                                        <td>XXXX</td>
-                                    </tr>-->
+                    <td>No of common Sub Assy in level 3</td>
+                    <td>XXXX</td>
+                </tr>-->
                                     <!-- ===========================  -->
                                     <!--<tr>
-                                        <td>No of unique Sub Assy in Level 3</td>
-                                        <td>XXXX</td>
-                                    </tr>-->
+                    <td>No of unique Sub Assy in Level 3</td>
+                    <td>XXXX</td>
+                </tr>-->
                                     <!-- ===========================  -->
                                     <!--<tr>
-                                        <td>No of common Sub Assy in level 4 </td>
-                                        <td>XXXX</td>
-                                    </tr>-->
+                    <td>No of common Sub Assy in level 4 </td>
+                    <td>XXXX</td>
+                </tr>-->
                                     <!-- ===========================  -->
                                     <!--<tr>
-                                        <td>No of unique Sub Assy in Level 4</td>
-                                        <td>XXXX</td>
-                                    </tr>-->
+                    <td>No of unique Sub Assy in Level 4</td>
+                    <td>XXXX</td>
+                </tr>-->
                                     <!-- ===========================  -->
                                     <!--</tbody>
-                                        </table>
-                                    </div>-->
+                    </table>
+                </div>-->
                                     <!-- ========================  -->
                                     <!--<div class="table-responsive">
-                                        <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
-                                            <thead class="  table-info th-sti">
+                    <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
+                        <thead class="  table-info th-sti">
 
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>No of Common Manf Parts</td>
-                                                    <td><span id="noOfCommonManfParts"></span></td>
-                                                </tr>-->
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>No of Common Manf Parts</td>
+                                <td><span id="noOfCommonManfParts"></span></td>
+                            </tr>-->
                                     <!-- ===========================  -->
                                     <!--<tr>
-                                        <td>Total no unique Manf Parts</td>
-                                        <td><span id="totalNoOfUniqueManfParts"></span></td>
-                                    </tr>-->
+                    <td>Total no unique Manf Parts</td>
+                    <td><span id="totalNoOfUniqueManfParts"></span></td>
+                </tr>-->
                                     <!-- ===========================  -->
                                     <!--</tbody>
-                                        </table>
-                                    </div>-->
+                    </table>
+                </div>-->
                                     <!-- ========================  -->
                                     <!--<div class="table-responsive">
-                                        <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
-                                            <thead class="  table-info th-sti">
+                    <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
+                        <thead class="  table-info th-sti">
 
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>No of Common BOF Parts</td>
-                                                    <td><span id="noOfCommonBOFParts"></span></td>
-                                                </tr>-->
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>No of Common BOF Parts</td>
+                                <td><span id="noOfCommonBOFParts"></span></td>
+                            </tr>-->
                                     <!-- ===========================  -->
                                     <!--<tr>
-                                        <td>Total no unique BOF Parts </td>
-                                        <td><span id="totalNoOfUniqueBOFParts"></span></td>
-                                    </tr>-->
+                    <td>Total no unique BOF Parts </td>
+                    <td><span id="totalNoOfUniqueBOFParts"></span></td>
+                </tr>-->
                                     <!-- ===========================  -->
                                     <!--</tbody>
-                                        </table>
-                                    </div>-->
+                    </table>
+                </div>-->
                                     <!-- ========================  -->
                                 </div>
                                 <!-- ================================ -->
@@ -243,73 +249,73 @@
                                             </div>
                                             <!-- ========================  -->
                                             <!--<div class="table-responsive">
-                                                <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
-                                                    <thead class="  table-info th-sti">
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>No of RM Part No</td>
-                                                        </tr>-->
+                            <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
+                                <thead class="  table-info th-sti">
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>No of RM Part No</td>
+                                    </tr>-->
                                             <!-- ===========================  -->
                                             <!--<tr>
-                                                <td>No of Common RM Parts</td>
-                                                <td><span id="noOfCommonRMPart"></span></td>
-                                            </tr>-->
+                            <td>No of Common RM Parts</td>
+                            <td><span id="noOfCommonRMPart"></span></td>
+                        </tr>-->
                                             <!-- ===========================  -->
                                             <!--<tr>
-                                                <td>Total no unique RM Parts </td>
-                                                <td><span id="totalNoOfUniqueRMPart"></span></td>
-                                            </tr>-->
+                            <td>Total no unique RM Parts </td>
+                            <td><span id="totalNoOfUniqueRMPart"></span></td>
+                        </tr>-->
                                             <!-- ===========================  -->
                                             <!--</tbody>
-                                                </table>
-                                            </div>-->
+                            </table>
+                        </div>-->
                                             <!-- ========================  -->
                                             <!--<div class="table-responsive">
-                                                <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
-                                                    <thead class="  table-info th-sti">
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td>No of RM Part No to procure</td>
-                                                            <td>XXXX</td>
-                                                        </tr>-->
+                            <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
+                                <thead class="  table-info th-sti">
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>No of RM Part No to procure</td>
+                                        <td>XXXX</td>
+                                    </tr>-->
                                             <!-- ===========================  -->
                                             <!--</tbody>
-                                                </table>
-                                            </div>-->
+                            </table>
+                        </div>-->
                                             <!-- ========================  -->
                                             <!--<div class="table-responsive">
-                                                <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
-                                                    <thead class="  table-info th-sti">
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td style="font-weight: bold;">
-                                                                No of Manf Parts
-                                                                critical
-                                                            </td>
-                                                            <td style="font-weight: bold;">XXXX</td>
-                                                        </tr>-->
+                            <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
+                                <thead class="  table-info th-sti">
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="font-weight: bold;">
+                                            No of Manf Parts
+                                            critical
+                                        </td>
+                                        <td style="font-weight: bold;">XXXX</td>
+                                    </tr>-->
                                             <!-- ===========================  -->
                                             <!--<tr>
-                                                <td style="font-weight: bold;">
-                                                    No of Parent WO
-                                                    critical
-                                                </td>
-                                                <td style="font-weight: bold;">XXXX</td>
-                                            </tr>-->
+                            <td style="font-weight: bold;">
+                                No of Parent WO
+                                critical
+                            </td>
+                            <td style="font-weight: bold;">XXXX</td>
+                        </tr>-->
                                             <!-- ===========================  -->
                                             <!--<tr>
-                                                <td style="font-weight: bold;">
-                                                    No of SO critical
-                                                </td>
-                                                <td style="font-weight: bold;">XXXX</td>
-                                            </tr>-->
+                            <td style="font-weight: bold;">
+                                No of SO critical
+                            </td>
+                            <td style="font-weight: bold;">XXXX</td>
+                        </tr>-->
                                             <!-- ===========================  -->
                                             <!--</tbody>
-                                                </table>
-                                            </div>-->
+                            </table>
+                        </div>-->
                                             <!-- ========================  -->
                                         </div>
                                     </div>
@@ -329,11 +335,11 @@
                                                data-plugin="tippy" data-tippy-placement="top"
                                                placeholder="Enter Part No" id="searchWoPartNo">
                                         @*<button type="button" id="#" class="btn btn-sm btn-outline-dark"
-                                                    title="Search Part No" data-plugin="tippy"
-                                                    data-tippy-placement="top" data-bs-toggle="modal"
-                                                    data-bs-target="#">
-                                                <i class="ri-search-2-line serch-part-btn1"></i>
-                                            </button>*@
+                                title="Search Part No" data-plugin="tippy"
+                                data-tippy-placement="top" data-bs-toggle="modal"
+                                data-bs-target="#">
+                            <i class="ri-search-2-line serch-part-btn1"></i>
+                        </button>*@
                                     </div>
                                 </div>
                                 <!-- ======================== -->
@@ -486,73 +492,73 @@
                             <!-- =============================================  -->
                             <!-- =============  end row  ================  -->
                             @*<div class="accordion accordion-flush" id="accordionFlushExample">
-                                   <div class="accordion-item">
-                                        <h2 class="accordion-header" id="flush-headingOne">
-                                            <button class="accordion-button" type="button"
-                                                    data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
-                                                    aria-expanded="false" aria-controls="flush-collapseOne"
-                                                    title="Click" data-plugin="tippy" data-tippy-placement="top">
-                                                Material Procurement Plan
-                                            </button>
-                                        </h2>
-                                        <div id="flush-collapseOne" class="accordion-collapse collapse"
-                                             aria-labelledby="flush-headingOne"
-                                             data-bs-parent="#accordionFlushExample">
-                                        </div>
+               <div class="accordion-item">
+                    <h2 class="accordion-header" id="flush-headingOne">
+                        <button class="accordion-button" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
+                                aria-expanded="false" aria-controls="flush-collapseOne"
+                                title="Click" data-plugin="tippy" data-tippy-placement="top">
+                            Material Procurement Plan
+                        </button>
+                    </h2>
+                    <div id="flush-collapseOne" class="accordion-collapse collapse"
+                         aria-labelledby="flush-headingOne"
+                         data-bs-parent="#accordionFlushExample">
+                    </div>
 
-                                    </div>
-                                </div>*@
+                </div>
+            </div>*@
                             <!-- ==========================  -->
                             @*<div class="accordion-item">
-                                    <h2 class="accordion-header" id="flush-headingTwo">
-                                        <button class="accordion-button collapsed" type="button"
-                                                data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo"
-                                                aria-expanded="false" aria-controls="flush-collapseTwo"
-                                                title="Click" data-plugin="tippy" data-tippy-placement="top">
-                                            BOM List
-                                        </button>
-                                    </h2>
-                                    <div id="flush-collapseTwo" class="accordion-collapse collapse"
-                                         aria-labelledby="flush-headingTwo"
-                                         data-bs-parent="#accordionFlushExample">
-                                        <div class="accordion-body">
-                                        </div>
-                                    </div>
-                                </div>*@
+                <h2 class="accordion-header" id="flush-headingTwo">
+                    <button class="accordion-button collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo"
+                            aria-expanded="false" aria-controls="flush-collapseTwo"
+                            title="Click" data-plugin="tippy" data-tippy-placement="top">
+                        BOM List
+                    </button>
+                </h2>
+                <div id="flush-collapseTwo" class="accordion-collapse collapse"
+                     aria-labelledby="flush-headingTwo"
+                     data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                    </div>
+                </div>
+            </div>*@
                             <!-- ==========================  -->
                             @*<div class="accordion-item">
-                                    <h2 class="accordion-header" id="flush-headingThree">
-                                        <button class="accordion-button collapsed" type="button"
-                                                data-bs-toggle="collapse" data-bs-target="#flush-collapseThree"
-                                                aria-expanded="false" aria-controls="flush-collapseThree"
-                                                title="Click" data-plugin="tippy" data-tippy-placement="top">
-                                            Machine Timing List Summary
-                                        </button>
-                                    </h2>
-                                    <div id="flush-collapseThree" class="accordion-collapse collapse"
-                                         aria-labelledby="flush-headingThree"
-                                         data-bs-parent="#accordionFlushExample">
-                                        <div class="accordion-body">
-                                        </div>
-                                    </div>
-                                </div>*@
+                <h2 class="accordion-header" id="flush-headingThree">
+                    <button class="accordion-button collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#flush-collapseThree"
+                            aria-expanded="false" aria-controls="flush-collapseThree"
+                            title="Click" data-plugin="tippy" data-tippy-placement="top">
+                        Machine Timing List Summary
+                    </button>
+                </h2>
+                <div id="flush-collapseThree" class="accordion-collapse collapse"
+                     aria-labelledby="flush-headingThree"
+                     data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                    </div>
+                </div>
+            </div>*@
                             <!-- ==========================  -->
                             @*<div class="accordion-item">
-                                    <h2 class="accordion-header" id="flush-headingFour">
-                                        <button class="accordion-button collapsed" type="button"
-                                                data-bs-toggle="collapse" data-bs-target="#flush-collapseFour"
-                                                aria-expanded="false" aria-controls="flush-collapseFour"
-                                                title="Click" data-plugin="tippy" data-tippy-placement="top">
-                                            Machine Timing List Detail
-                                        </button>
-                                    </h2>
-                                    <div id="flush-collapseFour" class="accordion-collapse collapse"
-                                         aria-labelledby="flush-headingFour"
-                                         data-bs-parent="#accordionFlushExample">
-                                        <div class="accordion-body">
-                                        </div>
-                                    </div>
-                                </div>*@
+                <h2 class="accordion-header" id="flush-headingFour">
+                    <button class="accordion-button collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#flush-collapseFour"
+                            aria-expanded="false" aria-controls="flush-collapseFour"
+                            title="Click" data-plugin="tippy" data-tippy-placement="top">
+                        Machine Timing List Detail
+                    </button>
+                </h2>
+                <div id="flush-collapseFour" class="accordion-collapse collapse"
+                     aria-labelledby="flush-headingFour"
+                     data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">
+                    </div>
+                </div>
+            </div>*@
                             <!-- end accordion -->
                         </div>
                         <!-- =============================  -->
@@ -2444,6 +2450,47 @@
     </div>
 </div>
 
+
+<div class="modal fade" id="wohold" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content bxs-modal">
+            @*<form id="poholdform" onclick="return false;">*@
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">WO <span id="SpanWoHold">Hold</span> *</h5>
+                <button type="button" id="btnholdclose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                @*<textarea id="POHComment" name="Comment" class="form-control" placeholder="Enter Comments"></textarea>*@
+                <div class="col-md-12 mb-2">
+                    <label class="form-label" hidden>WO Ref</label>
+                    <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                           data-tippy-placement="top" id="HoldWoNumber" readonly hidden>
+                    <textarea id="WoComment" name="Comment" class="form-control" placeholder="Enter Comments"></textarea>
+                </div>
+
+            </div>
+            <input type="text" hidden id="" name="POLogId" value="0" />
+            <input type="text" hidden id="HoldWorkOrderId" />
+            <input type="text" hidden id="HoldSalesOrderId" />
+            <input type="text" id="HoldPlanWoQnty" hidden />
+            <input type="text" id="HoldPartId" hidden />
+            <input type="text" id="HoldPartType" hidden />
+            <input type="text" id="HolWoComlDt" hidden />
+            <input type="text" id="HoldRoutingId" hidden />
+            <input type="text" id="HoldStartingOpNo" hidden />
+            <input type="text" id="HoldEndingOpNo" hidden />
+            <input type="text" id="HoldBuildToStock" hidden />
+            <input type="text" id="HoldWoStatus" hidden />
+            <div class="modal-footer">
+                <button id="BtnWOHold" type="button" class="btn btn-primary btn-sm">Save</button>
+            </div>
+            @*</form>*@
+        </div>
+    </div>
+</div>
+
 <template id="detailedPlanWoRow">
     <tr>
         <td>
@@ -2636,7 +2683,8 @@
                        data-bs-toggle="modal" data-bs-target="#popup8">
                         Where used
                     </a>
-                    <a href="javascript:void(0);"
+                    <a href="javascript:void(0);" data-partid="{child_Part_No_ID}" data-customername="{company}" data-partno="{partNo}"
+                       data-partdesc="{partDesc}" data-wono="{woNumber}" data-parentwoid="{parentWoId}" data-bomid="{bomListId}" data-status="{status}" data-bs-toggle="modal" data-bs-target="#wohold"
                        class="dropdown-item">
                         Hold
                         / Resume

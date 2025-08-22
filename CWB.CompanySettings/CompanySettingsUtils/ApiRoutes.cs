@@ -48,11 +48,13 @@
         {
             public const string GetPlants = Base + "/plants/{tenantId}";
             public const string GetCitys = Base + "/getcitys/{tenantId}";
+            public const string GetSections = Base + "/getsections/{tenantId}";
             public const string GetNoOfDaysTimeSlots = Base + "/getnoofdaystimeslot";
             public const string GetTimeSlotDurations = Base + "/gettimeslotduration";
             public const string GetCountrys = Base + "/getcountry/{tenantId}";
             public const string CheckCountrys = Base + "/checkcountry/{country}";
             public const string CheckCity = Base + "/checkcity/{city}";
+            public const string CheckSections = Base + "/checksection/{city}";
             public const string PostPlant = Base + "/plant";
             public const string CheckPlant = Base + "/plant-exist";
             public const string GetPlant = Base + "/getplant/{plantId}";
@@ -60,6 +62,7 @@
 
             public const string PostPlantWD = Base + "/plantwd";
             public const string PostCity = Base + "/postcity";
+            public const string PostSections = Base + "/postsection";
             public const string PostCountry = Base + "/postcountry";
             public const string GetPlantWD = Base + "/getplantwd/{tenantId}/{plantId}";
             public const string Holidays = Base + "/holidays/{tenantId}/{plantId}";

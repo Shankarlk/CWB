@@ -122,6 +122,10 @@ $(function () {
     $('#addEmployee').on('show.bs.modal', function (event) {
         $("#DateOfLeaveDIv").hide();
         $("#RoleReportDIv").show();
+        $("#EPDept").show();
+        $("#lblDept").show();
+        $("#lblRole").show();
+        $("#EPEmpRoles").show();
         $("#empno-error").text("").css("color", "red");
         $("#email-error").text("").css("color", "red");
         var relatedTarget = $(event.relatedTarget);
@@ -171,9 +175,17 @@ $(function () {
             if (headoforg === "Y") {
                 $("#EPHeadOrg").prop("checked", true);
                 $("#RoleReportDIv").hide();
+                $("#lblDept").hide();
+                $("#EPDept").hide();
+                $("#lblRole").hide();
+                $("#EPEmpRoles").hide();
             } else {
                 $("#EPHeadOrg").prop("checked", false);
                 $("#RoleReportDIv").show();
+                $("#lblDept").show();
+                $("#EPDept").show();
+                $("#lblRole").show();
+                $("#EPEmpRoles").show();
             }
             $("#UiAccessEEmplid").val(employee_ID);
             var UiAccessRMenu1 = $('#EPDept');
@@ -240,8 +252,16 @@ $(function () {
     $('#EPHeadOrg').on('click', function () {
         if ($(this).is(':checked')) {
             $("#RoleReportDIv").hide();
+            $("#lblDept").hide();
+            $("#EPDept").hide();
+            $("#lblRole").hide();
+            $("#EPEmpRoles").hide();
         } else {
             $("#RoleReportDIv").show();
+            $("#lblDept").show();
+            $("#EPDept").show();
+            $("#lblRole").show();
+            $("#EPEmpRoles").show();
         }
     });
     $('#EPEmail').on('keyup', function () {
@@ -315,22 +335,6 @@ $(function () {
             return false;
         } else {
             var newNamevalidate = document.getElementById('EPloc');
-            newNamevalidate.style.border = '';
-        }
-        if (EPDept === 0) {
-            var newNamevalidate = document.getElementById('EPDept');
-            newNamevalidate.style.border = '2px solid red';
-            return false;
-        } else {
-            var newNamevalidate = document.getElementById('EPDept');
-            newNamevalidate.style.border = '';
-        }
-        if (EPEmpRoleid.length <= 0) {
-            var newNamevalidate = document.getElementById('EPEmpRoles');
-            newNamevalidate.style.border = '2px solid red';
-            return false;
-        } else {
-            var newNamevalidate = document.getElementById('EPEmpRoles');
             newNamevalidate.style.border = '';
         }
         if (EPCell.length <= 0) {
@@ -413,6 +417,22 @@ $(function () {
         if (EPHeadOrg.checked) {
             EPHeadOrgChk = 'Y';
         } else {
+            if (EPDept === 0) {
+                var newNamevalidate = document.getElementById('EPDept');
+                newNamevalidate.style.border = '2px solid red';
+                return false;
+            } else {
+                var newNamevalidate = document.getElementById('EPDept');
+                newNamevalidate.style.border = '';
+            }
+            if (EPEmpRoleid.length <= 0) {
+                var newNamevalidate = document.getElementById('EPEmpRoles');
+                newNamevalidate.style.border = '2px solid red';
+                return false;
+            } else {
+                var newNamevalidate = document.getElementById('EPEmpRoles');
+                newNamevalidate.style.border = '';
+            }
             if (EPRoleReportTo == 0) {
                 var newNamevalidate = document.getElementById('EPRoleReportTo');
                 newNamevalidate.style.border = '2px solid red';

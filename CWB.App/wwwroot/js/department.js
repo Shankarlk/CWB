@@ -1,4 +1,5 @@
 let plants = {};
+let sectiondepart = {};
 
 function LoadDepartments() {
     var tablebody = $("#DeptTable tbody");
@@ -31,12 +32,11 @@ function LoadPlants() {
     if (!selElem.length)
         return;
     selElem.empty();
-    var div_data = "<option value=''></option>";
+    var div_data = "<option value=''>Select</option>";
     selElem.append(div_data);
     var data = plants;
     for (i = 0; i < data.length; i++) {
-        div_data = "<option value='" +
-            data[i].plantId + "'>" +
+        div_data = "<option value='" + data[i].plantId + "' data-shifts='" + data[i].noOfShifts + "'>" +
             data[i].name +
             "</option>";
         selElem.append(div_data);
@@ -103,6 +103,18 @@ $(function () {
             document.getElementById("ProdDept").checked = true;
         }
     });
+    $("#PlantId").on("change", function () {
+        var selected = $(this).find("option:selected");
+        var maxShifts = selected.data("shifts"); 
+        var noOfShiftsDropdown = $("#NoOfShifts");
+
+        noOfShiftsDropdown.empty();
+        if (maxShifts) {
+            for (var j = 1; j <= maxShifts; j++) {
+                noOfShiftsDropdown.append("<option value='" + j + "'>" + j + "</option>");
+            }
+        }
+    });
     $("#SaveDept").on("click", function (event) {
         var formData = AppUtil.GetFormData("DepartmentForm");
         //console.log(formData);
@@ -123,7 +135,70 @@ $(function () {
         }
     });
     LoadDepartments();
- });
+    $('#Addsection').on('shown.bs.modal', function (event) {
+        var newNamevalidate = document.getElementById('SectionName');
+        newNamevalidate.style.border = '';
+        var relatedTarget = $(event.relatedTarget);
+        var deptid = relatedTarget.data("deptid");
+        loadSection(deptid);
+        $("#SectionName").val('');
+        $("#secdeptId").val(deptid);
+        $("#secId").val('0');
+    });
+    $("#btnAddSection").on("click", function (event) {
+        var deptId = $("#secdeptId").val();
+        var secId = $("#secId").val();
+        var SectionName = $("#SectionName").val();
+
+        if (SectionName.length <= 0) {
+            var newNamevalidate = document.getElementById('SectionName');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('SectionName');
+            newNamevalidate.style.border = '';
+        }
+        if (isNaN(secId)) {
+            secId = 0;
+        }
+        var rowData = {
+            sectionsId: parseInt(secId),
+            name: SectionName,
+            shopDepartmentId: parseInt(deptId)
+        };
+        api.post("/department/PostSection", rowData).then((data) => {
+            $("#SectionName").val('');
+            $("#secId").val('0');
+            alert("Section Saved Successfully!");
+            loadSection(parseInt(deptId));
+        }).catch((error) => {
+        });
+    });
+});
+function loadSection(deptId) {
+    var tablebody = $("#tbl-section tbody");
+    $(tablebody).html("");//empty tbody
+    api.get("/department/GetSections").then((data) => {
+        //console.log(data);
+        data = data.filter(item => item.shopDepartmentId === deptId)
+        sectiondepart = data;
+        for (i = 0; i < data.length; i++) {
+            $(tablebody).append(AppUtil.ProcessTemplateDataNew("tbl-sectionRow", data[i], i));
+        }
+        //console.log($(tablebody).html());
+    }).catch((error) => {
+        //console.log(error);
+    });
+};
+function EditSection(element) {
+    var relatedTarget = $(element);
+    var deptid = relatedTarget.data("deptid");
+    var sectionsid = relatedTarget.data("sectionsid");
+    var name = relatedTarget.data("name");
+    $("#SectionName").val(name);
+    $("#secdeptId").val(deptid);
+    $("#secId").val(sectionsid);
+}
 
         /**
          * 

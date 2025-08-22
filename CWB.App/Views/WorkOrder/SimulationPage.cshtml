@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
+<input value="B-BP" type="hidden" id="hdn-nav-menu" />
 <div class="content">
     <div class="row" id="myRadioGroup">
         <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
@@ -19,61 +20,63 @@
                     }
                     <!-- WO Status Overview -->
                     <div class="row">
-                        <div class="col-md-8">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th style="font-weight: bold;font-size: large;" class="text-center" colspan="2">WO Status Overview</th>
-                                        <th class="text-center">Assembly</th>
-                                        <th width="20%" class="text-center">Child Manf Part</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td rowspan="4" class="text-center">Waiting for M/c Slot<br>(not in M/c Queue)</td>
-                                        <td rowspan="2" style="font-weight: bold;">Parent WO Released - Ready for Production</td>
-                                        <td>Ready for Production (Material Available) </td>
-                                        <td class="text-center" id="ReadAssy">0</td>
-                                        <td class="text-center" id="ReadCMp">0</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Waiting for Material</td>
-                                        <td class="text-center" id="WAssy">0</td>
-                                        <td class="text-center" id="WCmp">0</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" class="text-end">Rework WO</td>
-                                        <td class="text-center" id="RwkAssy">0</td>
-                                        <td class="text-center" id="RwkCmp">0</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" class="text-end">Non Plan Work</td>
-                                        <td colspan="2" class="text-center" id="NonAssy">0</td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan="4" class="text-center">In M/c Queue</td>
-                                        <td rowspan="2" style="font-weight: bold;">Child / Parent WO </td>
-                                        <td>Ready for Production (Material Available) </td>
-                                        <td class="text-center" id="InMcQueRAssy">0</td>
-                                        <td class="text-center" id="InMcQueRCmp">0</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Waiting for Material</td>
-                                        <td class="text-center" id="InMcQueWAssy">0</td>
-                                        <td class="text-center" id="InMcQueWCmp">0</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" class="text-end">Rework WO</td>
-                                        <td class="text-center" id="InMcQueRwkAssy">0</td>
-                                        <td class="text-center" id="InMcQueRwkCmp">0</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2" class="text-end">Non Plan Work</td>
-                                        <td colspan="2" class="text-center" id="InMcQueNon">0</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="col-md-7">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th style="font-weight: bold;font-size: large;" class="text-center" colspan="2">WO Status Overview</th>
+                                            <th class="text-center">Assembly</th>
+                                            <th width="20%" class="text-center">Child Manf Part</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td rowspan="4" class="text-center">Waiting for M/c Slot<br>(not in M/c Queue)</td>
+                                            <td rowspan="2" style="font-weight: bold;">Parent WO Released - Ready for Production</td>
+                                            <td>Ready for Production (Material Available) </td>
+                                            <td class="text-center" id="ReadAssy">0</td>
+                                            <td class="text-center" id="ReadCMp">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Waiting for Material</td>
+                                            <td class="text-center" id="WAssy">0</td>
+                                            <td class="text-center" id="WCmp">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="text-end">Rework WO</td>
+                                            <td class="text-center" id="RwkAssy">0</td>
+                                            <td class="text-center" id="RwkCmp">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="text-end">Non Plan Work</td>
+                                            <td colspan="2" class="text-center" id="NonAssy">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td rowspan="4" class="text-center">In M/c Queue</td>
+                                            <td rowspan="2" style="font-weight: bold;">Child / Parent WO </td>
+                                            <td>Ready for Production (Material Available) </td>
+                                            <td class="text-center" id="InMcQueRAssy">0</td>
+                                            <td class="text-center" id="InMcQueRCmp">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Waiting for Material</td>
+                                            <td class="text-center" id="InMcQueWAssy">0</td>
+                                            <td class="text-center" id="InMcQueWCmp">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="text-end">Rework WO</td>
+                                            <td class="text-center" id="InMcQueRwkAssy">0</td>
+                                            <td class="text-center" id="InMcQueRwkCmp">0</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" class="text-end">Non Plan Work</td>
+                                            <td colspan="2" class="text-center" id="InMcQueNon">0</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <div class="row m-5">
@@ -99,6 +102,12 @@
                                     <button class="btn btn-outline-primary " data-bs-target="#" data-bs-toggle="modal" id="UpdateSimulaion">Update Production Completion Status</button>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="col-md-1 text-end">
+                            <a asp-action="Index" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                                X
+                            </a>
                         </div>
                     </div>
 
@@ -217,12 +226,12 @@
                             {
                                 @if (permissionResult.Any(r => r.Menu4 == "Freeze"))
                                 {
-                                    <button class="btn btn-primary w-50" id="FreezeBtn">Freeze</button>
+                                    <button class="btn btn-primary w-100" id="FreezeBtn">Freeze</button>
                                 }
                             }
                             else
                             {
-                                <button class="btn btn-primary w-50" id="FreezeBtn">Freeze</button>
+                                <button class="btn btn-primary w-100" id="FreezeBtn">Freeze</button>
                             }
                         </div>
                     </div>
@@ -2733,6 +2742,45 @@
     </div><!-- /.modal-dialog -->
 </div>
 
+<div class="modal fade" id="wohold" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content bxs-modal">
+            @*<form id="poholdform" onclick="return false;">*@
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">WO <span id="SpanWoHold">Hold</span> *</h5>
+                <button type="button" id="btnholdclose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                @*<textarea id="POHComment" name="Comment" class="form-control" placeholder="Enter Comments"></textarea>*@
+                <div class="col-md-12 mb-2">
+                    <label class="form-label" hidden>WO Ref</label>
+                    <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                           data-tippy-placement="top" id="HoldWoNumber" readonly hidden>
+                    <textarea id="WoComment" name="Comment" class="form-control" placeholder="Enter Comments"></textarea>
+                </div>
+
+            </div>
+            <input type="text" hidden id="" name="POLogId" value="0" />
+            <input type="text" hidden id="HoldWorkOrderId" />
+            <input type="text" hidden id="HoldSalesOrderId" />
+            <input type="text" id="HoldPlanWoQnty" hidden />
+            <input type="text" id="HoldPartId" hidden />
+            <input type="text" id="HoldPartType" hidden />
+            <input type="text" id="HolWoComlDt" hidden />
+            <input type="text" id="HoldRoutingId" hidden />
+            <input type="text" id="HoldStartingOpNo" hidden />
+            <input type="text" id="HoldEndingOpNo" hidden />
+            <input type="text" id="HoldBuildToStock" hidden />
+            <input type="text" id="HoldWoStatus" hidden />
+            <div class="modal-footer">
+                <button id="BtnWOHold" type="button" class="btn btn-primary btn-sm">Save</button>
+            </div>
+            @*</form>*@
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="PopupNC10" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
      aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -3301,7 +3349,7 @@
         <td>{planCompletionDateStr}</td>
         <td>{noOfOpenNc}</td>
         <td>{noOfDocWf}</td>
-        <td></td>
+        <td>{holdstr}</td>
         <td>
             <div class="dropdown float-center">
                 <a href="#" class="dropdown-toggle arrow-none card-drop"
@@ -3314,8 +3362,8 @@
                         Edit
                         WO
                     </a>
-                    <!-- item-->
-                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#Popup7"
+                    <!-- item Popup7-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#"
                        data-ppid={productionPlanId}
                        data-workorderid={woId}
                        data-parentwoid={parentWoId}
@@ -3334,8 +3382,9 @@
                         View
                         Material Availability
                     </a>
+                    <!-- item Popup55-->
                     <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                       data-bs-target="#Popup55"
+                       data-bs-target="#"
                        data-ppid={productionPlanId}
                        data-workorderid={woId}
                        data-parentwoid={parentWoId}
@@ -3351,9 +3400,9 @@
                        data-calwoqty={calcWOQty}
                        data-routingid={routingId}
                        data-wostatus={status}>View List of Open NC</a>
-                    <!-- item-->
+                    <!-- item Popup65-->
                     <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                       data-bs-target="#Popup65"
+                       data-bs-target="#"
                        data-ppid={productionPlanId}
                        data-workorderid={woId}
                        data-parentwoid={parentWoId}
@@ -3370,7 +3419,23 @@
                        data-routingid={routingId}
                        data-wostatus={status}>View List of Docs w/f Approval </a>
                     <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                       data-bs-target="#NotUploaded">hold / resume</a>
+                       data-bs-target="#wohold"  
+                       data-ppid={productionPlanId}
+                       data-workorderid={woId}
+                       data-parentwoid={parentWoId}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-partdesc={partDesc}
+                       data-partid={partId}
+                       data-parttype={partType}
+                       data-parentlevel={parentlevel}
+                       data-plancompletiondatestr='{planCompletionDateStr}'
+                       data-requiredquantity={requiredQuantity}
+                       data-calwoqty={calcWOQty}
+                       data-routingid={routingId}
+                       data-statusstr={status} data-holdstr={holdstr}
+                       >hold / resume</a>
                     <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#"
                        data-ppid={productionPlanId}
                        data-workorderid={woId}

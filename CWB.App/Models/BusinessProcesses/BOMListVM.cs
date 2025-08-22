@@ -14,6 +14,9 @@ namespace CWB.App.Models.BusinessProcesses
         public long ParentWoId { get; set; }
         public long Child_Part_No_ID { get; set; }
         public string Child_Part_No_Type { get; set; }
+        public string Comment { get; set; }
+        public string StatusStr { get; set; }
+        public int Status { get; set; }
         public long Manf_RM_Link_ID { get; set; }
         public int Calc_Qnty { get; set; }
         public int QtyOnHand { get; set; }

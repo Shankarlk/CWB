@@ -29,6 +29,7 @@ namespace CWB.CompanySettings.CompanySettingsUtils
             services.AddTransient<IDesignationService, DesignationService>();
             services.AddTransient<IEmployeeSerivce, EmployeeService>();
 			services.AddTransient<IDocumentTypeService, DocumentTypeService>();
+			services.AddTransient<ISectionsRepository, SectionsRepository>();
 			services.AddTransient<ICityRepository, CityRepository>();
 			services.AddTransient<ITimeSlotDurationRepository, TimeSlotDurationRepository>();
 			services.AddTransient<INoOfDaysTimeSlotRepository, NoOfDaysTimeSlotRepository>();

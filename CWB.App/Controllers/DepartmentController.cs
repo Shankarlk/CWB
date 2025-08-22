@@ -4,6 +4,7 @@ using CWB.Constants.UserIdentity;
 using CWB.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CWB.App.Controllers
@@ -28,6 +29,15 @@ namespace CWB.App.Controllers
         public async Task<JsonResult> GetDepartments()
         {
             var result = await _departmentService.GetDepartments(1);
+            var sections = await _departmentService.GetSections();
+            foreach (var item in result)
+            {
+                var sectionNames = sections
+                    .Where(s => s.ShopDepartmentId == item.DepartmentId)
+                    .Select(s => s.Name);
+
+                item.Section = string.Join(", ", sectionNames);
+            }
             return Json(result);
         }
 
@@ -60,6 +70,25 @@ namespace CWB.App.Controllers
         {
             var result = await _departmentService.DelDepartment(departmentId);
             return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostSection(SectionsVM model)
+        {
+            var result = await _departmentService.PostSections(model);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<JsonResult> CheckSection(string city)
+        {
+            var result = await _departmentService.CheckSection(city);
+            return Json(!result);
+        }
+        [HttpGet]
+        public async Task<JsonResult> GetSections()
+        {
+            var result = await _departmentService.GetSections();
+            return Json(result);
         }
     }
 }

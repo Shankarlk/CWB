@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <Folder Include="Logs\" />
+    <Folder Include="Views\InfoQuery\" />
     <Folder Include="wwwroot\js\cosettings\" />
   </ItemGroup>
 

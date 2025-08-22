@@ -4,6 +4,7 @@
     ViewData["Title"] = "Approve Matl / SubCon PO";
 }
 
+<input value="B-BP" type="hidden" id="hdn-nav-menu" />
 <div class="content">
     <div class="row" id="myRadioGroup">
         <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
@@ -20,8 +21,13 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="col-md-11">
                             <h3 style="padding: 10px;">Released Purchase Orders for Approval</h3>
+                        </div>
+                        <div class="col-md-1 text-end">
+                            <a asp-action="Index" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                                X
+                            </a>
                         </div>
                         <!-- =============================  -->
                         <div class="col-md-12">
@@ -353,7 +359,7 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-end">
                     <a href="javascript:void(0);"
-                       class="dropdown-item" 
+                       class="dropdown-item"
                        data-poref="{poReference}"
                        data-podate="{dateStr}"
                        data-supp="{supplier}"
@@ -362,7 +368,7 @@
                        data-partno="{partNo}" data-qnty="{poQnty}" data-supname="{supplier}" data-aggdate="{dateStr}"
                        data-bs-toggle="modal" data-bs-target="#popup10">Edit</a>
                     <a href="javascript:void(0);"
-                       class="dropdown-item" >View</a>
+                       class="dropdown-item">View</a>
                     <a href="javascript:void(0);"
                        class="dropdown-item">View Feedback for Prodn Planning</a>
 

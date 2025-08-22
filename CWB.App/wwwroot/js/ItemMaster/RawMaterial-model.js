@@ -1346,7 +1346,7 @@ function loadDocUploadList() {
                     var tablebody = $("#ManufPartDocgrid tbody");
                     $(tablebody).html("");//empty tbody
                     //console.log(data);
-                    for (i = 0; i < data.length; i++) {
+                    for (var i = 0; i < data.length; i++) {
                         let rowHtml = $(`
         <tr>
             <td>${data[i].documentTypeName || ''}</td>

@@ -20,10 +20,6 @@ namespace CWB.CompanySettings.Configurations
                 .HasMaxLength(255)
                 .IsRequired();
             builder
-               .Property(m => m.ParentSectionId)
-               .HasColumnName("ParentSectionId")
-               .IsRequired();
-            builder
                .HasOne(m => m.ShopDepartment)
                .WithMany(m => m.Sections)
                .HasForeignKey(m => m.ShopDepartmentId)

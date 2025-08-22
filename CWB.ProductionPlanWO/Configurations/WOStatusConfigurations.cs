@@ -32,7 +32,8 @@ namespace CWB.ProductionPlanWO.Configurations
         new WOStatus { Id = 6, Status = "Complete" },
         new WOStatus { Id = 7, Status = "Short Closed" },
         new WOStatus { Id = 8, Status = "Hold" },
-        new WOStatus { Id = 9, Status = "Deleted" }
+        new WOStatus { Id = 9, Status = "Deleted" },
+        new WOStatus { Id = 10, Status = "Ready for Production" }
     );
 
             

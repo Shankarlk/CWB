@@ -57,6 +57,13 @@ namespace CWB.App.Services.ProductionPlanWo
             productions.TenantId = tenantId;
             return await RestHelper<ProductionPlan_WoVM>.PostAsync(uri, productions, headers);
         }
+        public async Task<ProductionPlan_WoVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WoVM productions)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/updateholdproductionplan");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            productions.TenantId = tenantId;
+            return await RestHelper<ProductionPlan_WoVM>.PostAsync(uri, productions, headers);
+        }
 
         public async Task<List<ProcPlanVM>> ProcPlanPost(IEnumerable<ProcPlanVM> procPlans)
         {
@@ -685,6 +692,44 @@ namespace CWB.App.Services.ProductionPlanWo
         public async Task<bool> DeleteMatl_Issue_Settings(long itemMasterDocListId)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletematlissuesetting/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<DispatchDetailsVM>> GetAllDispatchDetails()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getdispatchdetails/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<DispatchDetailsVM>>.GetAsync(uri, headers);
+        }
+        public async Task<DispatchDetailsVM> PostDispatchDetails(DispatchDetailsVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postdispatchdetails");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<DispatchDetailsVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteDispatchDetails(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletedispatchdetails/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<DispatchQntyVM>> GetAllDispatchQnty()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getdispatchqnty/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<DispatchQntyVM>>.GetAsync(uri, headers);
+        }
+        public async Task<DispatchQntyVM> PostDispatchQnty(DispatchQntyVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postdispatchqnty");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<DispatchQntyVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<bool> DeleteDispatchQnty(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletedispatchqnty/{itemMasterDocListId}/{tenantId}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<bool>.GetAsync(uri, headers);
         }

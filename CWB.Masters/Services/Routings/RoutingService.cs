@@ -16,7 +16,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using CWB.Masters.Repositories.ItemMaster;
 
 namespace CWB.Masters.Services.Routings
 {
@@ -34,6 +34,9 @@ namespace CWB.Masters.Services.Routings
         private readonly IRoutingStepSupplierRepository _routingStepSupplierRepository;
         private readonly ISubConDetailsRepository _subConDetailsRepository;
         private readonly ISubConWorkStepDetailsRepository _subConWorkStepDetailsRepository;
+        private readonly IManufacturedPartNoDetailRepository _manufacturedPartNoDetailRepository;
+        private readonly IMasterPartRepository _masterPartRepository;
+        private readonly ICompanyRepository _companyRepository;
 
 
         public RoutingService(ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork
@@ -42,8 +45,11 @@ namespace CWB.Masters.Services.Routings
             ,IRoutingStepMachineRepository routingStepMachineRepository
             , IRoutingStepSupplierRepository routingStepSupplierRepository
             , ISubConDetailsRepository subConDetailsRepository
-            , ISubConWorkStepDetailsRepository subConWorkStepDetailsRepository,
-            IRoutingStatusLogRepository routingStatusLogRepository)
+            , ISubConWorkStepDetailsRepository subConWorkStepDetailsRepository
+            ,IRoutingStatusLogRepository routingStatusLogRepository
+            ,IManufacturedPartNoDetailRepository manufacturedPartNoDetailRepository
+            ,IMasterPartRepository masterPartRepository
+            ,ICompanyRepository companyRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -56,6 +62,9 @@ namespace CWB.Masters.Services.Routings
             _subConDetailsRepository = subConDetailsRepository;
             _subConWorkStepDetailsRepository = subConWorkStepDetailsRepository;
             _routingStatusLogRepository = routingStatusLogRepository;
+            _manufacturedPartNoDetailRepository = manufacturedPartNoDetailRepository;
+            _masterPartRepository = masterPartRepository;
+            _companyRepository = companyRepository;
         }
 
         public IEnumerable<RoutingVM> GetRoutingsForManufId(int manufId)
@@ -68,6 +77,61 @@ namespace CWB.Masters.Services.Routings
             catch (Exception ex) {
                 return new List<RoutingVM>();
             }
+        }
+        public async Task<List<RoutingListItemVM>> GetRoutingListItemsAsync(long tenantId)
+        {
+            // Get manufactured parts
+            var manufParts = (_manufacturedPartNoDetailRepository
+                .GetRangeAsync(m => m.TenantId == tenantId ))
+                .ToList();
+
+            if (!manufParts.Any())
+                return new List<RoutingListItemVM>();
+
+            // Collect keys
+            var partIds = manufParts.Select(m => m.PartId).Distinct().ToList();
+            var companyIds = manufParts.Select(m => m.CompanyId).Distinct().ToList();
+            var manufIds = manufParts.Select(m => m.Id).Distinct().ToList();
+
+            // Related entities
+            var parts = (_masterPartRepository
+                .GetRangeAsync(mp => partIds.Contains((int)mp.Id)))
+                .ToDictionary(mp => mp.Id);
+
+            var companies = (_companyRepository.GetRangeAsync(c => c.TenantId == tenantId))
+                    .Where(c => companyIds.Contains((int)c.Id))
+                    .ToDictionary(c => c.Id);
+
+            var routings = (_routingRepository
+                .GetRangeAsync(r => manufIds.Contains(r.ManufacturedPartId) && r.Deleted == 0))
+                .GroupBy(r => r.ManufacturedPartId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => new { Count = g.Count(), First = g.FirstOrDefault() }
+                );
+
+            // Projection
+            var result = manufParts.Select(m =>
+            {
+                var hasRouting = routings.TryGetValue(m.PartId, out var routingInfo);
+                var part = parts.GetValueOrDefault(m.PartId);
+                var company = companies.GetValueOrDefault(m.CompanyId);
+
+                return new RoutingListItemVM
+                {
+                    ManufacturedPartId = m.PartId,
+                    CompanyName = company?.Name,
+                    PartNo = part?.PartNo,
+                    PartDescription = part?.PartDescription,
+                    MasterPartType = m.ManufacturedPartType == 1 ? "ManufacturedPart" : "Assembly",
+                    NoOfRoutes = hasRouting ? routingInfo.Count : 0,
+                    RoutingId = hasRouting ? (int)routingInfo.First.Id : 0,
+                    Status = hasRouting ? routingInfo.First.Status : "---",
+                    HasRouting = hasRouting
+                };
+            }).ToList();
+
+            return result;
         }
         public IEnumerable<RoutingStepVM> GetStepsForRoutingId(int routingId)
         {

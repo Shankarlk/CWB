@@ -1,0 +1,1070 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "View Inwarding Inspection";
+}
+<input value="I-VII" type="hidden" id="hdn-nav-menu" />
+<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-11">
+                            <h3 style="padding: 10px;">Inward Inspection</h3>
+                        </div>
+                        <div class="col-md-1 text-end">
+                        </div>
+                        <!-- =============================  -->
+                        <div class="col-md-12">
+                            <hr class="mt-2">
+                            <!-- ================================  -->
+                            <div class="row">
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">PO No</label>
+                                    <input class="form-control form-control-sm w-100" type="text" title=""
+                                           data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                           id="searchPoNo">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Supplier</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                            title="" data-plugin="tippy" data-tippy-placement="top" id="searchSupp">
+                                        <option value="">==========</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Part No / Desc</label>
+                                    <input class="form-control form-control-sm w-100" type="text" title=""
+                                           data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                           id="searchPartNo">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Part Type</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                            title="" data-plugin="tippy" data-tippy-placement="top" id="searchPartType">
+                                        <option value="0">--Select</option>
+                                        <option value="1">RawMaterial</option>
+                                        <option value="2">BOF</option>
+                                        <option value="3">Sub Con</option>
+                                    </select>
+                                </div>
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="table-responsive table-he-250">
+                                            <table class="table table-sm table-bordered w-100 text-center" id="inspGrid">
+                                                <thead class="  table-info th-sti">
+                                                    <tr class="table-border-bottom">
+                                                        <th>Inward Date</th>
+                                                        <th>PO No </th>
+                                                        <th>Supplier</th>
+                                                        <th>Part No / Desc</th>
+                                                        <th>Part Type</th>
+                                                        <th>Qnty</th>
+                                                        <th>Units</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 " hidden>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#popupInspect6">
+                                        Popup 6
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#popup7">
+                                        Popup 7
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#popup8">
+                                        Popup 8
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#popup9">
+                                        Popup 9
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#ErrorMessage1">
+                                        Error Message 1
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#ErrorMessage2">
+                                        Error Message 2
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#ErrorMessage3">
+                                        Error Message 3
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#ErrorMessage4">
+                                        Error Message 4
+                                    </button>
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#ErrorMessage5">
+                                        Error Message 5
+                                    </button>
+                                </div>
+                                <!-- =========== -->
+                            </div>
+                            <!-- =========== -->
+                            <!-- =============================================  -->
+                            <!-- =============  end row  ================  -->
+                            <!-- end accordion -->
+                        </div>
+                        <!-- =============================  -->
+                    </div>
+                </div>
+            </div>
+            <!-- end card body -->
+            <!-- ================= -->
+        </div>
+        <!-- end card -->
+        <!-- ======================================================================== -->
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+<!-- Modal -->
+<div class="modal fade" id="popupInspect6" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <div class="col-md-5">
+                    <h5 class="modal-title" id="staticBackdropLabel">
+                        PO Line Item Inward Inspection  <br>
+                        for Part No / Desc :<span id="P6PartNoSpan"></span> from <span id="P6SuppSpan"></span> <br>
+                        <span id="P6RoutingDiv" hidden> Routing : <span id="P6RoutingSpan"></span> Opr No : <span id="P6OprNoSpan"></span></span>
+                    </h5>
+                </div>
+                <button type="button" class="btn-close" id="popupInwardClose"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-md-12 mt-1" id="popupP6InwardGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P6InwardGrid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Inwarding Data</th>
+                                            <th>Comment</th>
+                                            <th>Input Part No</th>
+                                            <th>Qnty</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12 mb-1">
+                            <div class="table-responsive">
+                                <table class="table table-sm table-borderless mb-3 text-center tableFixHead w-100">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-end">
+                                                    <h6 class="me-2 mb-0">Total offered for Inspection*</h6>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm w-100" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                       id="P6TbTotalOff" readonly>
+                                            </td>
+                                            <td id="P6TbTotalOffUnit">Kg</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-fornt">
+                                                    <h6 class="me-2 mb-0">Inspected Quantity Directly Accepted*</h6>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm w-100" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                       id="P6TbInspTotal" readonly>
+                                            </td>
+                                            <td id="P6TbInspTotalUnit">Units</td>
+                                        </tr>
+                                        <tr id="subcontabOkQntylablTd">
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-fornt">
+                                                    <h6 class="me-2 mb-0">Unprocessed Input Material returned by Supplier (OK condition) </h6>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm w-100" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                       id="P6TbUnpro" readonly>
+                                            </td>
+                                            <td id="P6TbUnproUnit">Units</td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center justify-content-fornt">
+                                                    <h6 class="me-2 mb-0">Total Non-Conforming Quantity </h6>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm w-100" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                       id="P6TbTotalNc" readonly>
+                                            </td>
+                                            <td id="P6TbTotalNcUnit">Units</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-end">
+                                                <div class="d-flex align-items-center justify-content-end">
+                                                    <h6 class="me-2 mb-0">Total Inspected</h6>
+
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm w-100" type="text" title=""
+                                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                       id="P6TotalInsp" readonly>
+                                            </td>
+                                            <td id="P6TotalInspUnit">Units</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 text-center mb-1">
+                            @*<button class="btn btn-primary btn-sm w-50" id="P6FinNc">Finished Part Non Conformance Data Entry</button>*@
+                        </div>
+                        <div class="col-md-12 text-center mb-1">
+                            @*<button class="btn btn-primary btn-sm w-50" id="P6InputNc">Input Part Non Conformance Data Entry</button>*@
+                        </div>
+                    </div>
+                    <hr class="mt-1">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P6NcGrid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Balloon No</th>
+                                            <th>Balloon Description</th>
+                                            <th>Non Conformance Description</th>
+                                            <th>Declared by Supplier</th>
+                                            <th>Input / Finish Part</th>
+                                            <th>NC Qnty</th>
+                                            <th class="w-10"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6"><h6>NC Total of table can be greater than NC quantity shown above since a part can have more than 1 NC</h6></div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6"></div>
+                                <div class="col-md-6 d-flex text-end">
+                                    <h6 class="m-2">Total</h6>
+                                    <input type="text" class="form-control form-control-sm w-50 m-1" id="P6TotalNc"
+                                           readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <h6>
+                                <span style="color: black;background-color: rgb(66, 153, 66);width: 100%;" id="P6MessageBox"></span>
+                            </h6>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <input class="form-check-input mt-1" type="text" id="P6Ncparttype" hidden>
+                            <input class="form-check-input mt-1" type="text" id="P6PartId" hidden>
+                            <input class="form-check-input mt-1" type="text" id="P6PoId" hidden>
+                            <input class="form-check-input mt-1" type="text" id="P6WoId" hidden>
+                            @*<button class="btn btn-primary btn-sm" id="P6LineInspupdate">Line Item Inspection Update</button>*@
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <hr class="mt-1">
+                    <div class="row">
+                        <div class="col-md-8">
+                            @*<button  class="btn btn-primary btn-sm w-75" id="P6PrintFin">Print Accepted Label for Finished Parts</button>*@
+                            @*<button class="btn btn-primary btn-sm w-75 mt-1" id="P6PrintInput">Print Accepted Label for Input Parts</button>*@
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex align-items-center justify-content-fornt">
+                                <h6 class="me-2 mb-0">Confirm NC Label(s) fixed to Bin(s) / Part(s)</h6>
+                                <input disabled class="form-check-input mt-1" type="checkbox" title="" data-plugin="tippy" data-tippy-placement="top" placeholder="" id="P6NcCnfChk">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <hr class="mt-2">
+                    <div class="row">
+                        <div class="col-md-12 d-flex">
+                            <button class="btn btn-secondary btn-sm w-50" data-bs-toggle="modal" data-bs-target="#UploadDocumnet" id="#">
+                                Upload Our Inspection Reports
+                            </button>
+                            <button class="btn btn-secondary btn-sm w-50 ms-1" data-bs-toggle="modal" data-bs-target="#PartInspectionDocPop" id="#">
+                                View Part Inspection Plan Documents
+                            </button>
+                            <button class="btn btn-secondary btn-sm w-50 ms-1" data-bs-toggle="modal" data-bs-target="#InspectionDocPop" id="#">
+                                View Inspection Reports provided by Supplier
+                            </button>
+                        </div>
+                    </div>
+                    @*<hr class="mt-2">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary btn-sm w-50" data-bs-toggle="modal" data-bs-target="#PartInspectionDocPop" id="#">
+                                    View Part Inspection Plan Documents
+                                </button>
+                            </div>
+                        </div>*@
+                    <hr class="mt-2">
+                    <div class="row">
+                        @*<div class="col-md-12">
+                                <button class="btn btn-primary btn-sm w-50" data-bs-toggle="modal" data-bs-target="#InspectionDocPop" id="#">
+                                    View Inspection Reports provided by Supplier
+                                </button>
+                            </div>*@
+                        <div class="col-md-12 text-end">
+                            @*<button class="btn btn-primary btn-sm" id="P6Exit" disabled="">Exit</button>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+</div>
+
+<div class="modal fade" id="UploadDocumnet" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Upload Our Inspection Reports
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="col-md-12" id="popupInwardGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P6DocUploadGrid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Document Type</th>
+                                            <th>Mandatory</th>
+                                            <th>Info / Comment</th>
+                                            <th>Uploaded by</th>
+                                            <th>Uploaded on</th>
+                                            <th>View</th>
+                                            @*<th>Download</th>*@
+                                            <th width="5%">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-1">
+                        @*<button class="btn btn-primary btn-sm" id="popupInwardAddOtherSupp">
+                            Upload Other
+                            Related Documents
+                        </button>*@
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="PartInspectionDocPop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" id="P6partInspectPlanGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P6partInspectPlanGrid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Document Type</th>
+                                            <th>Mandatory</th>
+                                            <th>Info / Comment</th>
+                                            <th>Uploaded by</th>
+                                            <th>Uploaded on</th>
+                                            <th>View</th>
+                                            @*<th>Download</th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                <a href="javascript:void(0);">
+                                                    <i class="fas fa-eye btn btn-sm"></i>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a href="javascript:void(0);">
+                                                    <i class="fas fa-download btn btn-sm"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="InspectionDocPop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" id="P6partInspectSuppGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P6partInspectSuppGrid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Document Type</th>
+                                            <th>Mandatory</th>
+                                            <th>Info / Comment</th>
+                                            <th>Uploaded by</th>
+                                            <th>Uploaded on</th>
+                                            <th>View</th>
+                                            @*<th>Download</th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                <a href="javascript:void(0);">
+                                                    <i class="fas fa-eye btn btn-sm"></i>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+
+<div class="modal fade" id="popup7" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Non Conformance Data Entry <br>
+                    Part No / Desc : <span id="P7PartNoSpan"></span> from <span id="P7SuppSpan"></span>  <span id="P7FinOrInSpan"></span> <br>
+                    <span id="P7RoutingDiv" hidden=""> Routing : <span id="P7RoutingSpan"></span> Opr No : <span id="P7OprNoSpan"></span></span>
+                </h4>
+                <button type="button" class="btn-close" id="P7BtnClose"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="#" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <label class="col-md-6 form-label mb-2">
+                                NC Tracking No
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" class="form-control form-control-sm w-50" id="P7NcTrackNo"
+                                       readonly>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Ballon No
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" placeholder="Balloon No" class="form-control form-control-sm w-25" id="P7BallonNo" readonly>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                NC Balloon / Feature Description *
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" placeholder="Balloon Feature Description" class="form-control form-control-sm w-75" id="P7NcBallonDesc" readonly>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Non Conformance (NC) Description *
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" placeholder="NC Description " class="form-control form-control-sm w-75" id="P7NcDesc" readonly>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                NC Quantity *
+                            </label>
+                            <div class="col-md-6 mb-2 d-flex" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" class="form-control form-control-sm w-25" id="P7NcQnty" readonly>
+                                <span id="P7UnitVM" class="m-1">Units</span>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                NC declared by Supplier
+                            </label>
+                            <div class="col-md-6 mb-2 d-flex" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input class="form-check-input mt-1" type="checkbox" title=""
+                                       data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                       id="P7NcDesclaredBySup" disabled>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                NC Present Location
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+
+                                <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                        title="" data-plugin="tippy" data-tippy-placement="top" id="P7NcLocation" disabled>
+                                    <option value="0">Choose Location</option>
+                                    <option value="1">Stores</option>
+                                    <option value="2">Shop</option>
+                                </select>
+                            </div>
+                            <div class="col text-end">
+                                <input type="text" class="form-control form-control-sm w-25" id="P7NcId" hidden>
+                                <input type="text" class="form-control form-control-sm w-25" id="P7PartId" hidden>
+                                <input type="text" class="form-control form-control-sm w-25" id="P7InwHeaderId" hidden>
+                                @*<button class="btn btn-sm btn-primary" id="P7Save">Update</button>*@
+                            </div>
+                            <hr class="mt-1">
+
+                            <div class="col-md-8">
+                                @*<button class="btn btn-primary btn-sm w-50" id="P7PrintLbl">Print :Label</button>*@
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="d-flex align-items-center justify-content-fornt">
+                                    <h6 class="me-2 mb-0">Confirm NC Label(s) fixed to Bin(s) / Part(s)</h6>
+                                    <input class="form-check-input mt-1" type="checkbox" title=""
+                                           data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                           id="P7CnfNcChk" disabled >
+                                </div>
+                            </div>
+                            <div class="col text-end mt-2">
+                                @*<button class="btn btn-sm btn-primary" id="P7Exit" disabled>Exit</button>*@
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div id="doc-item" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Upload Document</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- ------- -->
+                    <div class="col-md-12">
+                        <!-- =========== -->
+                        <div class="row mt-2">
+                            <label class="col-md-4 form-label mb-2">
+                                Document Type <span class="text-danger">
+                                    *
+                                </span>
+                            </label>
+                            <div class="col-md-8 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="Indicate the File Content or any relevant info about the Document">
+                                <input type="text" class="form-control form-control-sm" id="DocTypeName"
+                                       readonly>
+                            </div>
+                            <!-- =========== -->
+                            <label class="col-md-4 form-label mb-2">
+                                Allowed File Extn. <span class="text-danger">
+                                    *
+                                </span>
+                            </label>
+                            <div class="col-md-8 mb-2">
+                                <input type="text" class="form-control form-control-sm" id="FileExtnName"
+                                       readonly>
+                            </div>
+                            <!-- =========== -->
+                            <label class="col-md-4 form-label mb-2">
+                                Info / Comment<span class="text-danger">
+                                    *
+                                </span>
+                            </label>
+                            <div class="col-md-8 mb-2">
+                                <input type="text" class="form-control form-control-sm"
+                                       placeholder="Enter  Info / Comment" id="InfoComments">
+                            </div>
+                            <!-- =========== -->
+                            <div class="col-md-4 mb-2">
+                                <div class="fileupload btn btn-sm btn-info waves-effect w-100" title=""
+                                     data-plugin="tippy" data-tippy-placement="top">
+                                    <span>
+                                        <i class="mdi mdi-cloud-upload me-1"></i>Document
+                                        Upload
+                                    </span>
+                                    <input type="file" class="upload" name="uploadedFile"
+                                           id="fileUploadInput" onchange="displayFileName()">
+                                </div>
+                            </div>
+                            <!-- =========== -->
+                            <div class="col-md-8 mb-2">
+                                <input type="text" class="form-control form-control-sm"
+                                       placeholder="Show uploaded File Name" id="fileNameDisplay" readonly>
+                                <input type="text" id="doclistidFile" hidden />
+                                <input type="text" id="docTypeIdFile" hidden />
+                                <input type="date" id="deletiondate" hidden />
+                            </div>
+                            <!-- =========== -->
+                            <div class="col-md-12 text-end">
+                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#RefDocReason" title="" data-plugin="tippy"
+                                        data-tippy-placement="top" hidden id="Resonbtn">
+                                    Reason
+                                </button>
+                                <button class="btn btn-sm btn-primary" data-plugin="tippy"
+                                        data-tippy-placement="top" data-tippy=""
+                                        data-original-title="Use to Save the entered data"
+                                        id="UploadFileSave">
+                                    Save
+                                </button>
+                            </div>
+                            <!-- =========== -->
+                        </div>
+                        <!-- =========== -->
+                        <!-- =========== -->
+                        <div class="row mt-2 display-none">
+                            <div class="col-md-5">
+                                <button class="btn btn-sm btn-info w-100">Create New Document</button>
+                            </div>
+                            <div class="col-md-5">
+                                <button class="btn btn-sm btn-purple w-100" data-bs-toggle="modal"
+                                        data-bs-target="#task-rou">
+                                    Task Document Creation <span class="badge bg-primary rounded-circle noti-icon-badge m-l-10">5</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- =========== -->
+                    </div>
+                    <!-- ------- -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade modal-fullscreen-xl-down" id="viewDoc" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content bxs-modal" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">View Documents</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- ========================= -->
+                    <div class="col-md-12 dott-bord-r">
+                        <div class="table-responsive table-he-150">
+                            <table class="table table-sm table-bordered w-100 text-center">
+                                <thead class="table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Document Type : <span id="DocTypenameText"></span></td>
+                                        <td>Uploaded by <span id="UploadByText"></span> on <span id="UpdatedDateText"></span></td>
+                                        <td>Part No / Desc : <span id="PartNoText"></span> / <span id="PartDescText"></span></td>
+                                        <td>Customer : <span id="CustomerText"></span> </td>
+                                        <td>PO No / WO No : <span id="PoNoText"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Retention Date : <span id="RetentionDateText"></span></td>
+                                        <td>Routing No : <span id="RoutingNameText"></span></td>
+                                        <td>Opr No : <span id="OprNoText"></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-12">
+                        <iframe id="fileViewer" src="" style="width: 100vw; height: 100vh;"></iframe>
+                        @*<img src="https://skala.or.id/wp-content/uploads/2024/01/dummy-post-square-1-1.jpg" alt="img" style="width: 100%; height: 400px;">*@
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+
+<div class="modal fade" id="warning" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" style="color: red;" id="mySmallModalLabel">Warning !</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <label class="form-label col-md-4 mb-2">
+                                Entered Data will not be Saved
+                            </label>
+                            <div class="col text-end">
+                                <button class="btn btn-sm btn-primary" id="ExitWarningBtn">Exit without Saving Entered Data</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="NotUploaded" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Warning - Inward Files not Uploaded</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <label class="form-label col-md-12 mb-2">
+                                Inward files to be uploaded ... Not Uploaded ....
+                            </label>
+                            <div class="col-md-8 mb-2">
+                            </div>
+                            <div class="col text-center">
+                                <button class="btn btn-sm btn-primary" id="EP7Return">Return to Popup to Upload Files</button>
+                                <button class="btn btn-sm mt-1 btn-primary" id="EP7Exit">Exit without Saving Entered Data</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+
+<div class="modal fade" id="ErrorMessage4" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Offered vs Inspected Count Mismatch Error Message</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <h6>Inspected Qnty is not matching Offered for Inspection Qnty.</h6>
+                            <label class="form-label col-md-6 mb-2">
+
+                                <br>
+                                Recheck Inspected Qnty
+                                <br>
+                                or
+                                <br>
+                                Needs to be clarified with Inward Store /
+                                Supplier. Inspection will have to be redone
+                                for this line item after Quantities
+                                are checked / corrected. if Supplier
+                                Documentation changes it would have to
+                                be uploaded by Seniors
+
+
+
+                            </label>
+                            <div class="col-md-6 text-center">
+                                <button class="btn btn-sm btn-primary mt-3" id="Error4Edit">Edit Entered Data</button>
+                                <br>
+                                <button class="btn btn-sm mt-4 btn-primary" id="Error4Exit">Exit without Saving Entered Data</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="ErrorMessage5" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Count Mismatch of Ok Input Material returned by Supplier</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <h6>
+                                Inspected Returned OK Input Material by Supplier is less than Qnty given by store
+                            </h6>
+                            <label class="form-label col-md-6 mb-2">
+                                <span class="mt-1"> </span> <br>
+                                Recheck Inspected Qnty
+                                <br>
+                                or
+                                <br>
+                                Needs to be clarified with Inward Store /
+                                Supplier. Inspection will have to be redone
+                                after Quantities are checked / corrected
+                                If Supplier documentation changes , it would
+                                have to be uploaded by Seniors
+                                <br>
+                                or
+                                <br>
+                                Accept & contonue (defective input matl found)
+                            </label>
+                            <div class="col-md-6 text-center" hidden>
+                                <button class="btn btn-sm btn-primary mt-3" id="Error5Edit">Edit Entered Data</button>
+                                <br>
+                                <button class="btn btn-sm mt-4 btn-primary" id="Error5ExitWith">Exit without Saving Entered Data</button>
+                                <br>
+                                <button class="btn btn-sm mt-4 btn-primary" id="Error5ExitAccpt">Accept & Continue</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="popup8" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Inspection Label Printing
+                    <br>
+                    Part No / Desc : <span id="P8PartNoSpan"></span> from <span id="P8SuppSpan"></span> <br>
+                    <span id="P8RoutingSpan"> Routing : <span id="P8SpanRouting"></span> Opr No : <span id="P8SpanOprNo"></span></span>
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <label class="form-label col-md-4 mb-2">
+                                Status :
+                            </label>
+                            <div class="col-md-6">
+                                <input type="text" class="form-control form-control-sm " id="P8Status" value="" readonly>
+                            </div>
+                            <div class="d-flex">
+                                <label class="form-label col-md-2 m-2">
+                                    No of Labels to Print
+                                </label>
+                                <div class="col-md-2  m-2">
+                                    <input type="text" class="form-control form-control-sm" id="P8NoLbl" value="" readonly>
+                                </div>
+                                <label class="form-label col-md-2 m-2">
+                                    with
+                                </label>
+                                <div class="col-md-2  m-2">
+                                    <input type="text" class="form-control form-control-sm" id="P8With" value="" readonly>
+                                </div>
+                                <label class="form-label col-md-2  m-2">Qnty / Container</label>
+                            </div>
+                            <div class="col-md-12 text-end">
+                                <button class="btn btn-sm btn-primary" id="P8Print">Print</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<template id="POGrid1Row">
+    <tr>
+        <td>{inwDate}</td>
+        <td>{poReference}</td>
+        <td>{supplier}</td>
+        <td>{partNo}</td>
+        <td>{partType}</td>
+        <td>{poQnty}</td>
+        <td>{unit}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-poref={poReference}
+                       data-podate={dateStr}
+                       data-units={unit}
+                       data-porcptdate={planPoReceiptDate}
+                       data-supp={supplier}
+                       data-noofline={noOfLine}
+                       data-podetails={poDetailsId}
+                       data-poqnty={poQnty}
+                       data-poid={poDetailsId}
+                       data-procid={procPlanId}
+                       data-parttype={partType}
+                       data-unit={unit}
+                       data-woid={woId}
+                       data-partno={partNo}
+                       data-inwheaderid="{inwHeaderId}"
+                       data-partid={partId} data-edit={1}
+                       data-bs-target="#popupInspect6">
+                        View
+                    </a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="P4inwardGridRow">
+    <tr>
+        <td>{inward_ConditionName}</td>
+        <td>{comment}</td>
+        <td>{inw_Recpt_Part_No_Name}</td>
+        <td>{our_count}</td>
+    </tr>
+</template>
+<template id="P6BallonGridRow">
+    <tr>
+        <td>{balloon_No}</td>
+        <td>{balloon_No_Dir}</td>
+        <td>{nC_Descrip}</td>
+        <td>{decl_by_Supplier}</td>
+        <td>{inw_Recpt_Part_No_Name}</td>
+        <td>{nC_Qnty}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-balno="{balloon_No}"
+                       data-baldesc="{balloon_No_Dir}" data-ncdes="{nC_Descrip}" data-declsup="{decl_by_Supplier}"
+                       data-nctrack="{nC_Tracking_No}" data-qnty="{nC_Qnty}"
+                       data-loc="{storage_Location}" data-id="{insp_Outcome_Details_Id}"
+                       data-bs-toggle="modal"
+                       data-bs-target="#popup7">View</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+@section Scripts {
+    <script src="~/js/ViewInwInsp.js"></script>
+}

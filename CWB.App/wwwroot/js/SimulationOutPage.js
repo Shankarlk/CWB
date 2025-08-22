@@ -301,6 +301,123 @@ $(document).ready(function () {
         }
     });
     loadSimulationWos();
+
+
+    $('#wohold').on('hidden.bs.modal', function (event) {
+
+        var newNamevalidate = document.getElementById('WoComment');
+        newNamevalidate.style.border = '';
+        $("#WoComment").val('');
+        //if (holdsalesorder) {
+        //    LoadSalesOrders(salesCustOrderId);
+        //}
+    });
+
+    $('#wohold').on('shown.bs.modal', function (event) {
+        var relatedTarget = $(event.relatedTarget);
+        var workOrderId = relatedTarget.data("workorderid");
+        var salesOrderId = relatedTarget.data("salesorderid");
+        var woNumber = relatedTarget.data("wonumber");
+        var partNo = relatedTarget.data("partno");
+        var partDesc = relatedTarget.data("partdesc");
+        var planCompletionDateStr = relatedTarget.data("plancompletiondatestr");
+        var partId = relatedTarget.data("partid");
+        var partType = relatedTarget.data("parttype");
+        var wostatus = relatedTarget.data("statusstr");
+        var planWOQty = relatedTarget.data("calwoqty");
+        var routingid = relatedTarget.data("routingid");
+        var startingopno = relatedTarget.data("startingopno");
+        var endingopno = relatedTarget.data("endingopno");
+        var buildtostock = relatedTarget.data("buildtostock");
+        var ppid = relatedTarget.data("ppid");
+        var formattedDate = planCompletionDateStr.split("-").reverse().join("-");
+
+        //$("#popup7PartNo").text(partNo);
+        //$("#P7partdesc").text(partDesc);
+        //$("#HoldPartNoField").val(partNo);
+        $("#HolWoComlDt").val(formattedDate);
+        $("#HoldPlanWoQnty").val(planWOQty);
+        $("#HoldWorkOrderId").val(ppid);
+        $("#HoldSalesOrderId").val(salesOrderId);
+        $("#HoldPartId").val(partId);
+        $("#HoldPartType").val(partType);
+        $("#HoldWoNumber").val(woNumber);
+        $("#HoldWoStatus").val(wostatus);
+        $("#HoldRoutingId").val(routingid);
+        $("#HoldStartingOpNo").val(startingopno);
+        $("#HoldEndingOpNo").val(endingopno);
+        $("#HoldBuildToStock").val(buildtostock);
+        var statusstr = relatedTarget.data("holdstr");
+
+        if (wostatus === 8) {
+            $("#SpanWoHold").text("Resume");
+        } else {
+            $("#SpanWoHold").text("Hold");
+        }
+
+    });
+
+
+    $("#BtnWOHold").on("click", function () {
+        var woid = parseInt($("#HoldWorkOrderId").val());
+        var soid = parseInt($("#HoldSalesOrderId").val());
+        var partid = parseInt($("#HoldPartId").val());
+        var parttype = parseInt($("#HoldPartType").val());
+        var wostatus = parseInt($("#HoldWoStatus").val());
+        var planWoQty = parseInt($("#HoldPlanWoQnty").val());
+        //var soqty = parseInt($("#NewTotalSoQty").val());
+        var wonumber = $("#HoldWoNumber").val();
+        var WoComplDate = new Date(Date.parse($('#HolWoComlDt').val()));
+        var formattedDate = WoComplDate.toISOString();
+        var routingid = $("#HoldRoutingId").val();
+        var startingOpNo = $("#HoldStartingOpNo").val();
+        var endingOpNo = $("#HoldEndingOpNo").val();
+        var buildToStock = $("#HoldBuildToStock").val();
+        var WoComment = $("#WoComment").val();
+
+        if (WoComment.length == 0) {
+            var newNamevalidate = document.getElementById('WoComment');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('WoComment');
+            newNamevalidate.style.border = '';
+        }
+        if (buildToStock == 'Y') {
+
+        } else {
+            buildToStock = '';
+        }
+        if (wostatus === 8) {
+            wostatus = 10;
+        } else {
+            wostatus = 8;
+        }
+        var rowData = {
+            productionPlanId: parseInt(woid),
+            woid: parseInt(woid),
+            salesOrderId: parseInt(soid),
+            wonumber: wonumber,
+            partId: parseInt(partid),
+            partType: parseInt(parttype),
+            parentlevel: '',
+            calcWOQty: parseInt(planWoQty),
+            planCompletionDate: formattedDate,
+            routingId: parseInt(routingid),
+            startingOpNo: parseInt(startingOpNo),
+            endingOpNo: parseInt(endingOpNo),
+            status: parseInt(wostatus),
+            buildToStock: buildToStock,
+            comment: WoComment
+        };
+
+        api.post("/workorder/WoWaitlingpost", rowData).then((data) => {
+            //console.log(data);
+            $('#wohold').modal('hide');
+            loadSimulationWos();
+        }).catch((error) => {
+        });
+    });
 });
 function loadRoutingStep(partId, qnty) {
     var tablebody = $("#P3Grid tbody");

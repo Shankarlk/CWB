@@ -46,5 +46,24 @@ namespace CWB.App.Services.CompanySettings
             shop.TenantId = tenantId;
             return await RestHelper<ShopDepartmentVM>.PostAsync(uri,shop, headers);
         }
+        public async Task<SectionsVM> PostSections(SectionsVM shop)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/postsection");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            shop.TenantId = tenantId;
+            return await RestHelper<SectionsVM>.PostAsync(uri,shop, headers);
+        }
+        public async Task<IEnumerable<SectionsVM>> GetSections()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/getsections/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<SectionsVM>>.GetAsync(uri, headers);
+        }
+        public async Task<bool> CheckSection(string city)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/checksection/{city}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
     }
 }

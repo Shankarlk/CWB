@@ -375,7 +375,7 @@
      aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog ">
         <div class="modal-content bxs-modal">
-            <form id="poholdform" onclick="return false;">
+            <form id="poholdformView" onclick="return false;">
                 <div class="modal-header">
                     <h5 class="modal-title" id="staticBackdropLabel">View Comment for SO : <span id="ViewSoCommentSpan"></span></h5>
                     <button type="button" id="btnholdclose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -429,7 +429,7 @@
                     <a href="javascript:void(0);" class="dropdown-item"
                        data-bs-toggle="modal" data-partno='{partNo}' 
                        data-customerorderid={customerOrderId} 
-                       data-salesorder="Y" data-salesorderid={salesOrderId} 
+                       data-salesorder="Y" data-salesorderid={salesOrderId} data-statusstr="{strStatus}"
                        data-bs-target="#po-hold">
                         Hold /
                         Resume
@@ -483,7 +483,8 @@
                     <a href="javascript:void(0);"
                        class="dropdown-item" onclick="showSalesOrdersForPart({partId},'{partNo}');">Edit</a>
                     <a href="javascript:void(0);"
-                       class="dropdown-item" data-bs-toggle="modal"
+                       class="dropdown-item hold-resume" data-bs-toggle="modal" data-customerorderid={customerOrderId} 
+                       data-salesorder="Y" data-salesorderid={salesOrderId} data-partno='{partNo}' data-statusstr="{strStatus}"
                        data-bs-target="#po-hold">
                         Hold /
                         Resume

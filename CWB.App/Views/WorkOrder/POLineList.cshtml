@@ -4,6 +4,7 @@
     ViewData["Title"] = "PO Line List";
 }
 
+<input value="B-BP" type="hidden" id="hdn-nav-menu" />
 <div class="content">
     <div class="row" id="myRadioGroup">
         <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
@@ -24,7 +25,8 @@
                             <h3 style="padding: 10px;">Open Purchase Order Summary</h3>
                         </div>
                         <div class="col-md-6 text-end">
-                            <a asp-controller="WorkOrder" asp-action="Index" class="btn-close">
+                            <a asp-action="Index" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                                X
                             </a>
                         </div>
                         <!-- =============================  -->
@@ -207,8 +209,8 @@
                                         <div class="col-md-12 mb-2 text-end">
                                             <!-- =============================  -->
                                             @*<button class="btn btn-sm btn-purple w-25" data-bs-toggle="modal" data-bs-target="#McDetailedPop" id="McListBtn">
-                                                    Purchase for Stock
-                                                </button>*@
+                                Purchase for Stock
+                            </button>*@
                                             <!-- =============================  -->
                                         </div>
                                     </div>
@@ -1111,9 +1113,9 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item {viewDeliveryClass}
-    {shortCloseClass}
-    {deleteClass}
-    -->
+                    {shortCloseClass}
+                    {deleteClass}
+                    -->
                     <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
                        data-poref="{poReference}"
                        data-podate="{dateStr}"

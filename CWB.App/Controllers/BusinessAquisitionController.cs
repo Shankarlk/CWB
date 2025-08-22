@@ -405,6 +405,8 @@ namespace CWB.App.Controllers
                     polineVM.SONumber = sovm.SONumber;
                     polineVM.PoDateReqd = sovm.RequiredByDateStr;
                     polineVM.Comments = sovm.Comment;
+                    polineVM.CustomerOrderId = sovm.CustomerOrderId;
+                    polineVM.SalesOrderId = sovm.SalesOrderId;
                     //polineVM.WONumber = sovm.WorkOrderNo;
                     pOLines.Add(polineVM);
                 }
@@ -438,6 +440,8 @@ namespace CWB.App.Controllers
                         polineVM.NumSalesOrder = 1;
                         polineVM.SONumber = sovm.SONumber;
                         polineVM.Comments = sovm.Comment;
+                        polineVM.CustomerOrderId = sovm.CustomerOrderId;
+                        polineVM.SalesOrderId = sovm.SalesOrderId;
                         polineVM.PoDateReqd = sovm.RequiredByDateStr;
                         //polineVM.WONumber = sovm.WorkOrderNo;
                         pOLines.Add(polineVM);

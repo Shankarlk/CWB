@@ -1,4 +1,4 @@
-using CWB.App.AppUtils;
+﻿using CWB.App.AppUtils;
 using CWB.App.Models.Contacts;
 using CWB.App.Models.DocumentManagement;
 using CWB.App.Models.ItemMaster;
@@ -50,150 +50,93 @@ namespace CWB.App.Controllers
 
         public async Task<IActionResult> Index()
         {
-            ClaimsPrincipal userClaim = HttpContext.User;
-            string fullName = AppUtil.GetUsername(userClaim);
-            var emp = await _employeeService.GetAllEmployee();
-            var e = emp.Where(e => e.UserName == fullName).FirstOrDefault();
-            if (e != null)
-            {
-                var org = await _employeeService.GetAllOrgChart();
-                var designation = await _employeeService.GetAllUilist();
-                var sorg = org.Where(r => r.Employee_Id == e.Employee_ID).FirstOrDefault();
-                var role = await _employeeService.GetAllRoleList();
-                if (sorg != null)
-                {
-                    var roleui = await _employeeService.GetAllRoleUiList();
-                    var result = roleui.Where(r => r.RoleId == sorg.Role_NameId).ToList();
-                    foreach (var item in result)
-                    {
-                        var d = designation.Where(u => u.UiListId == item.Ui_Id).FirstOrDefault();
-                        var r = role.Where(u => u.Role_ListId == item.RoleId).FirstOrDefault();
-                        item.RoleName = r.Role_Desc;
-                        if (d != null)
-                        {
-                            if (d.UI_Part_linked_to == 0)
-                            {
-                                item.UiLevel = d.UI_Name_Label;
-                                item.Menu1 = d.UI_Name_Label;
-                            }
-                            else
-                            {
-                                var menu2 = designation.Where(m => m.UiListId == d.UI_Part_linked_to).FirstOrDefault();
-                                if (menu2.UI_Part_linked_to == 0)
-                                {
-                                    item.UiLevel = menu2.UI_Name_Label + "+" + d.UI_Name_Label;
-                                    item.Menu2 = d.UI_Name_Label;
-                                    item.Menu1 = menu2.UI_Name_Label;
-                                }
-                                else
-                                {
-                                    var menu3 = designation.Where(m => m.UiListId == menu2.UI_Part_linked_to).FirstOrDefault();
-                                    if (menu3.UI_Part_linked_to == 0)
-                                    {
-                                        item.UiLevel = menu3.UI_Name_Label + "+" + menu2.UI_Name_Label + "+" + d.UI_Name_Label;
-                                        item.Menu1 = menu3.UI_Name_Label;
-                                        item.Menu2 = menu2.UI_Name_Label;
-                                        item.Menu3 = d.UI_Name_Label;
-                                    }
-                                    else
-                                    {
-                                        var menu4 = designation.Where(m => m.UiListId == menu3.UI_Part_linked_to).FirstOrDefault();
-                                        if (menu4.UI_Part_linked_to == 0)
-                                        {
-                                            item.UiLevel = menu4.UI_Name_Label + "+" + menu3.UI_Name_Label + "+" + menu2.UI_Name_Label + "+" + d.UI_Name_Label;
-                                            item.Menu1 = menu4.UI_Name_Label;
-                                            item.Menu2 = menu3.UI_Name_Label;
-                                            item.Menu3 = menu2.UI_Name_Label;
-                                            item.Menu4 = d.UI_Name_Label;
-                                        }
-                                        else
-                                        {
-                                            var menu5 = designation.Where(m => m.UiListId == menu4.UI_Part_linked_to).FirstOrDefault();
-                                            if (menu5.UI_Part_linked_to == 0)
-                                            {
-                                                item.UiLevel = menu5.UI_Name_Label + "+" + menu4.UI_Name_Label + "+" + menu3.UI_Name_Label + "+" + menu2.UI_Name_Label + "+" + d.UI_Name_Label;
-                                                item.Menu1 = menu5.UI_Name_Label;
-                                                item.Menu2 = menu4.UI_Name_Label;
-                                                item.Menu3 = menu3.UI_Name_Label;
-                                                item.Menu4 = menu2.UI_Name_Label;
-                                                item.Menu5 = d.UI_Name_Label;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (item.PermissionId == 1)
-                        {
-                            item.View_Allowed = "N";
-                            item.Add_Edit_Allowed = "N";
-                            item.Delete_Allowed = "N";
-                            item.Approval_Allowed = "N";
-                        }
-                        else if (item.PermissionId == 2)
-                        {
-                            item.View_Allowed = "Y";
-                            item.Add_Edit_Allowed = "N";
-                            item.Delete_Allowed = "N";
-                            item.Approval_Allowed = "N";
-                        }
-                        else if (item.PermissionId == 3)
-                        {
-                            item.View_Allowed = "Y";
-                            item.Add_Edit_Allowed = "Y";
-                            item.Delete_Allowed = "N";
-                            item.Approval_Allowed = "N";
-                        }
-                        else if (item.PermissionId == 4)
-                        {
-                            item.View_Allowed = "Y";
-                            item.Add_Edit_Allowed = "Y";
-                            item.Delete_Allowed = "Y";
-                            item.Approval_Allowed = "N";
-                        }
-                        else if (item.PermissionId == 5)
-                        {
-                            item.View_Allowed = "Y";
-                            item.Add_Edit_Allowed = "Y";
-                            item.Delete_Allowed = "Y";
-                            item.Approval_Allowed = "Y";
-                        }
-                    }
-                    var permissionresult = result;
-                   // ViewBag.Permissions = result;
-                    //ViewData["PermissionResult"] = permissionresult;
-                }
-            }
             return View();
         }
 
         public async Task<IActionResult> RoutingListItems()
         {
-            var result = await _routingService.GetRoutingListItems();
+            var result = (await _routingService.GetRoutingListItems()).ToList();
+            var docListVMs = (await _docMangService.GetAllDocList()).ToList();
+
+            if (!result.Any())
+                return Json(result);
+
+            // Step 2: Fetch all routing steps once
+            var routingStepsMap = new Dictionary<long, List<RoutingStepVM>>();
             foreach (var item in result)
             {
-                var oprnos = await _routingService.RoutingSteps(item.RoutingId);
-                foreach (var op in oprnos)
+                var steps = await _routingService.RoutingSteps(item.RoutingId);
+                routingStepsMap[item.RoutingId] = steps.ToList();
+            }
+
+            // Step 3: Collect all unique StepOperation IDs
+            var allStepOps = routingStepsMap.Values
+                .SelectMany(x => x)
+                .Select(s => Convert.ToInt64(s.StepOperation))
+                .Distinct()
+                .ToList();
+
+            // Step 4: Prefetch all doc types in one go (if bulk API exists, use it!)
+            var opDocsMap = new Dictionary<long, List<OperationalDocumentListVM>>();
+            foreach (var opId in allStepOps)
+            {
+                var opDocs = await _operationService.GetOperationalDocTypesByOptId(opId);
+                if (opDocs != null && opDocs.Any())
+                    opDocsMap[opId] = opDocs.ToList();
+            }
+
+            // Step 5: Convert docListVMs to HashSet for O(1) lookups
+            var docSet = new HashSet<(long DocumentTypeId, long RoutingId)>(
+                docListVMs.Select(d => (d.DocumentTypeId, d.RoutingId))
+            );
+
+            // Step 6: CPU-optimized processing (single pass)
+            foreach (var item in result)
+            {
+                if (!routingStepsMap.TryGetValue(item.RoutingId, out var steps) || steps.Count == 0)
                 {
-                    var docmand = await _operationService.GetOperationalDocTypesByOptId(Convert.ToInt64(op.StepOperation));
-                    if (docmand.Any())
+                    item.MandocAvl = "N/A";
+                    continue;
+                }
+
+                bool anyYes = false, anyNo = false;
+
+                foreach (var op in steps)
+                {
+                    var opId = Convert.ToInt64(op.StepOperation);
+
+                    if (!opDocsMap.TryGetValue(opId, out var docmand))
                     {
-                        var docListVMs = await _docMangService.GetAllDocList();
-                        if (docListVMs.Any(docList => docmand.Any(docMand => docList.DocumentTypeId == docMand.DocumentTypeId && docList.RoutingId==item.RoutingId)))
+                        item.MandocAvl = "N/A";
+                        break; // no docs → no need to check further
+                    }
+
+                    // Check only once per doc type
+                    foreach (var docMand in docmand)
+                    {
+                        if (docSet.Contains((docMand.DocumentTypeId, item.RoutingId)))
                         {
-                            item.MandocAvl = "Yes";
+                            anyYes = true;
                         }
                         else
                         {
-                            item.MandocAvl = "No";
+                            anyNo = true;
                         }
+
+                        if (anyYes && anyNo)
+                            break; // CPU save: stop scanning early
                     }
-                    else
-                    {
-                        item.MandocAvl = "N/A";
-                    }
+
+                    if (item.MandocAvl == "N/A" || (anyYes && anyNo))
+                        break;
+                }
+
+                if (item.MandocAvl != "N/A") // only set if not already "N/A"
+                {
+                    item.MandocAvl = anyYes ? "Yes" : "No";
                 }
             }
+
             return Json(result);
         }
         //GetRoutingListItmes

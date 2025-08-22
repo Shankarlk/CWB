@@ -233,6 +233,35 @@ namespace CWB.App.Controllers
             return Ok(docListVMs);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> HasPartDrawingPDF(int partId)
+        {
+            // Get docs only for this part
+            var docLists = await _docMangService.GetAllDocList();
+            var docList = docLists.Where(d=>d.PartId == partId).ToList();
+
+            // Get document types once
+            var docTypes = await _docMangService.GetAllDocumentType();
+
+            // Join document types to names (quick mapping instead of nested foreach)
+            var docsWithType = from doc in docList
+                               join type in docTypes on doc.DocumentTypeId equals type.DocumentTypeId
+                               select new
+                               {
+                                   doc.FileName,
+                                   DocumentTypeName = type.DocumentName
+                               };
+
+            // Check if any document meets the criteria
+            bool hasPdf = docsWithType.Any(d =>
+                d.DocumentTypeName == "Part Drawing" &&
+                d.FileName != null &&
+                d.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase)
+            );
+
+            return Ok(new { partId, hasPartDrawingPDF = hasPdf });
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostDocList([FromBody] DocListVM docListVM)
         {

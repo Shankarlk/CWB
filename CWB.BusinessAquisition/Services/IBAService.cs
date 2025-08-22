@@ -13,6 +13,7 @@ namespace CWB.BusinessAquisition.Services
         Task<IEnumerable<SalesOrderVM>> GetSalesOrders(long tenantId, long customerOrderId);
         Task<SalesOrderVM> GetSingleSalesOrder(long tenantId, long salesOrderId);
         Task<IEnumerable<SalesOrderVM>> AllSalesOrders(long tenantId);
+        Task<List<SalesOrderVM>> GetAllSalesOrders(long tenantId);
         Task<IEnumerable<DeliveryScheduleVM>> GetSchedules(long tenantId, long customerOrderId);
         string HelloWorld();
         Task<SalesOrderVM> SalesOrder(SalesOrderVM salesOrderVm);

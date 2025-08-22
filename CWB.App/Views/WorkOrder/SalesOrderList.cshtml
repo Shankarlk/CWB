@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Sales Order List";
 }
+<input value="B-BP" type="hidden" id="hdn-nav-menu" />
 <div class="content">
     <div class="row">
         <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
@@ -19,7 +20,15 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <h5 class="mb-4">Top Level Production Planning - SO to WO</h5>
+                        <div class="col-md-11">
+                            <h5 class="mb-4">Top Level Production Planning - SO to WO</h5>
+                        </div>
+                        <div class="col-md-1 text-end">
+                            <a asp-action="Index" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                                X
+                            </a>
+                        </div>
+
                         <!-- -----------------  -->
                         <div class="col-md-2 mb-2">
                             <label class="form-label">Sales Order #</label>
@@ -286,7 +295,7 @@
         <div class="modal-content bxs-modal">
             <form id="poholdform" onclick="return false;">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Reason for SO Hold / Resume *</h5>
+                    <h5 class="modal-title" id="staticBackdropLabel">Reason for SO <span id="SpanPoHold">Hold</span> *</h5>
                     <button type="button" id="btnholdclose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -353,7 +362,7 @@
                                 <a href="javascript:void(0);" class="dropdown-item"
                                    data-bs-toggle="modal" data-partno='{partNo}'
                                    data-customerorderid={customerOrderId}
-                                   data-salesorder="Y" data-salesorderid={salesOrderId}
+                                   data-salesorder="Y" data-salesorderid={salesOrderId} data-statusstr="{strStatus}"
                                    data-bs-target="#po-hold">
                                     Hold /
                                     Resume
@@ -396,7 +405,7 @@
                         <a href="javascript:void(0);" class="dropdown-item"
                            data-bs-toggle="modal" data-partno='{partNo}'
                            data-customerorderid={customerOrderId}
-                           data-salesorder="Y" data-salesorderid={salesOrderId}
+                           data-salesorder="Y" data-salesorderid={salesOrderId} data-statusstr="{strStatus}"
                            data-bs-target="#po-hold">
                             Hold /
                             Resume

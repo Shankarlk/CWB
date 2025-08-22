@@ -222,6 +222,39 @@ namespace CWB.App.Controllers
             return Ok(allparentwos);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> WOpost(WorkOrdersVM workOrdersVM)
+        {
+            var workOrders = await _baService.AllWorkOrders();
+            var findWo = workOrders.Where(w => w.WOID == workOrdersVM.WOID).FirstOrDefault();
+            findWo.Comment = workOrdersVM.Comment;
+            findWo.Status = workOrdersVM.Status;
+            var postWO = await _baService.PostWO(findWo);
+            return Ok(postWO);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> WoWaitlingpost(ProductionPlan_WoVM workOrdersVM)
+        {
+            var workOrders = await _woService.AllProductionPlan_Wo();
+            var findWo = workOrders.Where(w => w.ProductionPlanId == workOrdersVM.ProductionPlanId).FirstOrDefault();
+            findWo.Comment = workOrdersVM.Comment;
+            findWo.Status = workOrdersVM.Status;
+            var postWO = await _woService.UpdateHoldProductionPlan_Wo(findWo);
+            return Ok(postWO);
+        }
+        [HttpPost]
+        public async Task<IActionResult> BomListWait(BOMListVM workOrdersVM)
+        {
+            var workOrders = await _woService.AllProductionPlan_Wo();
+            var findWo = workOrders.Where(w => w.WoId == workOrdersVM.ParentWoId).FirstOrDefault();
+            findWo.Comment = workOrdersVM.Comment;
+            findWo.Status = workOrdersVM.Status;
+            var postWO = await _woService.UpdateHoldProductionPlan_Wo(findWo);
+            return Ok(postWO);
+        }
+
         [HttpGet]
         public async Task<IActionResult> ReloadWo(string reloadoption, long partid)
         {
@@ -2461,7 +2494,17 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetAllProcPlan()
         {
             var resultList = await _woService.GetAllProcPlan();
-            var uoms = await _masterService.GetUOMs(); 
+            var uoms = await _masterService.GetUOMs();
+            var workOrders = await _woService.AllProductionPlan_Wo();
+
+            // Build set of work order IDs to exclude (those with status == 8)
+            var excludedWoIds = workOrders
+                .Where(wo => wo.Status == 8)
+                .Select(wo => wo.WoId) // adjust if the ID property is named differently
+                .ToHashSet();
+            resultList = resultList
+                .Where(item => !excludedWoIds.Contains(item.WorkOrderId))
+                .ToList();
             var partIds = resultList.Select(item => (int)item.PartId).Distinct().ToList();
 
             var masterPartsTasks = partIds.ToDictionary(partId => partId, partId => _masterService.ItemMasterPartById(partId));
@@ -2507,14 +2550,29 @@ namespace CWB.App.Controllers
             // Fetch all BOM list and Work Orders in parallel
             var resultListTask = _woService.GetAllBomlist();
             var workOrdersTask = _baService.AllWorkOrders();
+            var prodnWosTask = _woService.AllProductionPlan_Wo();
 
-            await Task.WhenAll(resultListTask, workOrdersTask);
+            await Task.WhenAll(resultListTask, workOrdersTask, prodnWosTask);
 
+            var prodnWos = prodnWosTask.Result;
             var resultList = resultListTask.Result;
             var workOrders = workOrdersTask.Result;
 
             // Prepare a dictionary for fast lookup of Work Orders by ID
             var workOrdersDict = workOrders.ToDictionary(wo => wo.WOID, wo => wo.WONumber);
+
+            var prodnWosStatusDict = prodnWos
+      .GroupBy(p => p.WoId) // or appropriate key matching ParentWoId
+      .ToDictionary(
+          g => g.Key,
+          g =>
+          {
+              var p = g.First(); // or use a more specific selector, e.g., latest by timestamp
+                return new
+              {
+                  Status = p.Status  
+              };
+          });
 
             // Get all unique Child_Part_No_IDs from the result list
             var partIds = resultList.Select(item => (int)item.Child_Part_No_ID).Distinct().ToList();
@@ -2534,6 +2592,16 @@ namespace CWB.App.Controllers
                 if (workOrdersDict.TryGetValue(item.ParentWoId, out var woNumber))
                 {
                     item.WoNumber = woNumber;
+                }
+
+                if (prodnWosStatusDict.TryGetValue(item.ParentWoId, out var statusInfo))
+                {
+                    item.Status = statusInfo.Status;
+                }
+                else
+                {
+                    // Optional: default/fallback if no matching prodnwos entry
+                    item.StatusStr ??= "Unknown";
                 }
             }
 
@@ -3604,87 +3672,95 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllInw_Recpt_HeaderInsp()
         {
-            var procdutionpost = await _woService.GetAllPodetails();
-            var resultList = await _woService.GetAllProcPlan();
-            var result = await _woService.GetAllInw_Recpt_Header();
+            // Fetch all data in parallel to reduce I/O wait time
+            var podetailsTask = _woService.GetAllPodetails();
+            var procPlanTask = _woService.GetAllProcPlan();
+            var inwHeaderTask = _woService.GetAllInw_Recpt_Header();
+            var companiesTask = _masterService.GetCompanies();
+            var masterPartsTask = _masterService.ItemMasterParts();
+            var uomsTask = _masterService.GetUOMs();
+            var wosTask = _woService.AllProductionPlan_Wo();
+
+            await Task.WhenAll(podetailsTask, procPlanTask, inwHeaderTask,
+                               companiesTask, masterPartsTask, uomsTask, wosTask);
+
+            var podetails = podetailsTask.Result;
+            var procPlans = procPlanTask.Result;
+            var inwHeaders = inwHeaderTask.Result;
+            var companies = companiesTask.Result;
+            var masterParts = masterPartsTask.Result;
+            var uoms = uomsTask.Result;
+            var wos = wosTask.Result;
+
+            // Create dictionaries for O(1) lookups instead of nested loops
+            var companyDict = companies.ToDictionary(c => c.CompanyId, c => c.CompanyName);
+            var partDict = masterParts.ToDictionary(p => p.PartId, p => p);
+            var uomDict = uoms.ToDictionary(u => u.UOMId, u => u.Name);
+            var procPlanDict = procPlans.ToDictionary(p => p.ProcPlanId, p => p);
+            var woDict = wos.ToDictionary(w => w.ProductionPlanId, w => w.WoId);
+            var inwDict = inwHeaders.ToDictionary(i => i.PoHeaderId, i => i);
+
             List<PODetailsVM> woSubs = new List<PODetailsVM>();
-            var companies = await _masterService.GetCompanies();
-            var masterparts = await _masterService.ItemMasterParts();
-            var uoms = await _masterService.GetUOMs();
-            var wos = await _woService.AllProductionPlan_Wo();
-            var uomDict = uoms.ToDictionary(uom => uom.UOMId, uom => uom.Name);
-            foreach (var item in procdutionpost)
+
+            foreach (var item in podetails)
             {
-                foreach (ContactsVM mobj in companies)
-                {
-                    if (item.CompanyId == mobj.CompanyId)
-                    {
-                        item.Supplier = mobj.CompanyName;
-                    }
-                }
+                // Supplier
+                if (companyDict.TryGetValue(item.CompanyId, out var companyName))
+                    item.Supplier = companyName;
+
+                // Date formatting
                 item.DateStr = item.PlanPoReceiptDate.ToString("dd-MM-yyyy");
                 item.NoOfLine = "1";
                 item.NoOfOpenLine = "1";
                 item.NoOfPastLine = "0";
-                if (item.Status == 1)
+
+                // Status
+                item.StatusStr = item.Status switch
                 {
-                    item.StatusStr = "Not Approved";
-                }
-                else if (item.Status == 2)
-                {
-                    item.StatusStr = "PO Approved";
-                }
-                else
-                {
-                    item.StatusStr = "Complete";
-                }
+                    1 => "Not Approved",
+                    2 => "PO Approved",
+                    _ => "Complete"
+                };
+
                 item.PoType = "Prodn";
-                foreach (ItemMasterPartVM imp in masterparts)
+
+                // Part Info
+                if (partDict.TryGetValue(item.PartId, out var part))
                 {
-                    if (item.PartId == imp.PartId)
-                    {
-                        item.PartNo = imp.PartNo + " / " + imp.Description;
-                        if(imp.MasterPartType == "ManufacturedPart")
-                        {
-                            item.PartType = "SubCon";
-                        }
-                        else
-                        {
-                            item.PartType = imp.MasterPartType;
-                        }
-                        var mp = await _masterService.PartPurchasesFor((int)item.PartId);
-                        //item.ProcPrice = mp.FirstOrDefault().Price;
-                    }
+                    item.PartNo = $"{part.PartNo} / {part.Description}";
+                    item.PartType = part.MasterPartType == "ManufacturedPart" ? "SubCon" : part.MasterPartType;
+
+                    // ⚡ Instead of await per item, batch-load part purchases (if possible)
+                    // var mp = await _masterService.PartPurchasesFor((int)item.PartId);
+                    // item.ProcPrice = mp.FirstOrDefault()?.Price;
                 }
+
+                // UOM (hardcoded to 1 in your code)
                 if (uomDict.TryGetValue(1, out var uomName))
-                {
                     item.Unit = uomName;
-                }
-                foreach (var proc in resultList)
+
+                // ProcPlan check
+                if (procPlanDict.TryGetValue(item.ProcPlanId, out var proc))
                 {
-                    if (item.ProcPlanId == proc.ProcPlanId)
-                    {
-                        if (item.PoQnty < proc.Plan_Proc_Qnty)
-                        {
-                            item.QntyRed = "Y";
-                        }
-                        if (item.PlanPoReceiptDate < proc.PlanReceiptDate)
-                        {
-                            item.DateRed = "Y";
-                        }
-                        item.WoId = wos.SingleOrDefault(s => s.ProductionPlanId == proc.WorkOrderId)?.WoId;
-                    }
+                    if (item.PoQnty < proc.Plan_Proc_Qnty)
+                        item.QntyRed = "Y";
+
+                    if (item.PlanPoReceiptDate < proc.PlanReceiptDate)
+                        item.DateRed = "Y";
+
+                    if (woDict.TryGetValue(proc.WorkOrderId, out var woId))
+                        item.WoId = woId;
                 }
-                foreach (var inw in result)
+
+                // Inward Receipt check
+                if (inwDict.TryGetValue(item.PoDetailsId, out var inw))
                 {
-                    if(inw.PoHeaderId == item.PoDetailsId)
-                    {
-                        item.InwHeaderId = inw.Inw_Recpt_HeaderId;
-                        item.InwDate = inw.Inw_Date_time.ToString("dd/MM/yyyy");
-                        woSubs.Add(item);
-                    }
+                    item.InwHeaderId = inw.Inw_Recpt_HeaderId;
+                    item.InwDate = inw.Inw_Date_time.ToString("dd/MM/yyyy");
+                    woSubs.Add(item);
                 }
             }
+
             return Ok(woSubs);
         }
         [HttpGet]
@@ -5331,6 +5407,42 @@ namespace CWB.App.Controllers
             return Ok(result);
         }
         [HttpPost]
+        public async Task<IActionResult> PostDispatchQnty(DispatchQntyVM masterDocListVM)
+        {
+                var result = await _woService.PostDispatchQnty(masterDocListVM);
+                return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllDispatchQnty()
+        {
+            var DispatchQnty = await _woService.GetAllDispatchQnty();
+            return Ok(DispatchQnty);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteDispatchQnty(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteDispatchQnty(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostDispatchDetails(DispatchDetailsVM masterDocListVM)
+        {
+                var result = await _woService.PostDispatchDetails(masterDocListVM);
+                return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllDispatchDetails()
+        {
+            var DispatchDetails = await _woService.GetAllDispatchDetails();
+            return Ok(DispatchDetails);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteDispatchDetails(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteDispatchDetails(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpPost]
         public async Task<IActionResult> PostMatl_Issue_List(Matl_Issue_ListVM masterDocListVM)
         {
                 var result = await _woService.PostMatl_Issue_List(masterDocListVM);
@@ -5355,6 +5467,8 @@ namespace CWB.App.Controllers
                     continue;
                 }
                 var pp= prodns.Where(p => p.ProductionPlanId == tempopr.Wo_Id).FirstOrDefault();
+                if (pp == null || pp.Status == 8)
+                    continue;
                 var todept = depts.FirstOrDefault(d => d.DepartmentId == item.To_Location)?.Name ?? "Stores"; 
                 var fromdept = depts.FirstOrDefault(d => d.DepartmentId == item.From_Location)?.Name ?? "Stores";
                 item.To_LocationStr = todept;
@@ -5379,9 +5493,15 @@ namespace CWB.App.Controllers
                 item.QntyAvl = 0;
                 item.BookOutQnty = 0;
                 item.QntyRecdCnf = "Not Confirmed";
+                item.IssueMovDtStr = item.Issue_Mov_date.ToString("dd-MM-yyyy");
                 finalresult.Add(item);
             }
-            return Ok(finalresult);
+
+            var groupedResult = finalresult
+    .GroupBy(x => new { x.PartNo, x.Issue_Qnty, x.IssueMovDtStr, x.OpNo, x.WoNumber })
+    .Select(g => g.First()) // Take the first full original object
+    .ToList();
+            return Ok(groupedResult);
         }
         [HttpPost]
         public async Task<IActionResult> PostIssueInv_Trans_Log([FromBody] List<int> selectedMatlIds)
@@ -5436,6 +5556,8 @@ namespace CWB.App.Controllers
             foreach (var item in subconOps)
             {
                 var pwo = productions.Where(p => p.ProductionPlanId == item.Wo_Id).FirstOrDefault();
+                if (pwo == null || pwo.Status == 8)
+                    continue;
                 item.WoNumber = pwo.WONumber;
                 item.IssueQnty = pwo.CalcWOQty;
                 item.Bal_Qnty = pwo.CalcWOQty;
@@ -5516,6 +5638,8 @@ namespace CWB.App.Controllers
             foreach (var mcWait in waitList)
             {
                 var wo = allWO.FirstOrDefault(p => p.ProductionPlanId == mcWait.Wo_Id);
+                if (wo == null || wo.Status == 8)
+                    continue;
                 var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
                 var machine = machines.FirstOrDefault(m => m.MachineId == mcWait.Mc_Id);
                 var shop = shops.FirstOrDefault(s => s.DepartmentId == machine.ShopId);
@@ -5571,6 +5695,9 @@ namespace CWB.App.Controllers
             foreach (var item in subconWos)
             {
                 var wo = woList.FirstOrDefault(p => p.ProductionPlanId == item.Wo_Id);
+
+                if (wo == null || wo.Status == 8)
+                    continue;
                 var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
                 var company = companies.FirstOrDefault(c => c.CompanyId == item.Supplier_Id);
 
@@ -8248,6 +8375,7 @@ namespace CWB.App.Controllers
                     item.RoutingName = routingList.First(r=>r.RoutingId == item.RoutingId).RoutingName;
                     item.CurOpr = routingStep.First(r=>r.StepId == item.StartingOpNo).StepNumber;
                     item.ReworkWo = rwkWoIds.Contains((int)item.WoId) ? "Y" : "N";
+                    item.Holdstr = (item.Status == 8) ? "Y" : "N";
                     result.Add(item);
                 }
             }
@@ -9047,7 +9175,12 @@ namespace CWB.App.Controllers
                 item.BookOutQnty = 0;
                 item.IssueMovDtStr = item.Issue_Mov_date.ToString("dd-MM-yyyy");
             }
-            return Ok(result);
+            // Group by PartNo, IssueMovDtStr and Qnty 
+            var groupedResult = result
+                .GroupBy(r => new { r.PartNo, r.IssueMovDtStr, r.Issue_Qnty, r.OpNo })
+                .Select(g => g.First()).ToList();
+
+            return Ok(groupedResult);
         }
         [HttpGet]
         public async Task<IActionResult> GetAllMcWaitSetupList()

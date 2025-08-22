@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -31,13 +33,37 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> Index()
         {
             var token = await HttpContext.GetTokenAsync("access_token");
+            if (string.IsNullOrEmpty(token))
+            {
+                return RedirectToAction("Logout", "Home");
+            }
+            var handler = new JwtSecurityTokenHandler();
+            if (handler.CanReadToken(token))
+            {
+                var jwtToken = handler.ReadJwtToken(token);
+                var expiryUtc = jwtToken.ValidTo; // Always in UTC
+
+                if (expiryUtc <= DateTime.UtcNow)
+                {
+                    // Token expired — redirect to logout
+                    return RedirectToAction("Logout", "Home");
+                }
+            }
             ViewBag.AccessToken = token; // Store the token in ViewBag
             ClaimsPrincipal userClaim = HttpContext.User;
             string fullName = AppUtil.GetUsername(userClaim);
             var emp = await _employeeService.GetAllEmployee();
+            //if(emp == null)
+            //{
+            //    return RedirectToAction("Logout", "Home");
+            //}
             var e = emp.Where(e => e.UserName == fullName).FirstOrDefault();
             if (e != null)
             {
+                if(e.HeadOfDepartment == "Y")
+                {
+                    return View();
+                }
                 var org = await _employeeService.GetAllOrgChart();
                 var designation = await _employeeService.GetAllUilist();
                 var sorgs = org.Where(r => r.Dept_ID == e.Home_Dept_Id).ToList();

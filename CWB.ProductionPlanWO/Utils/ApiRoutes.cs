@@ -53,6 +53,7 @@ namespace CWB.ProductionPlanWO.Utils
             public const string AllBomList = Base + "/allbomlist/{tenantId}";
             public const string PostProductionPlan_Wo = Base + "/productionplan";
             public const string UpdateProductionPlan_Wo = Base + "/updateproductionplan";
+            public const string UpdateHoldProductionPlan_Wo = Base + "/updateholdproductionplan";
             public const string AllProductionPlanWo = Base + "/allproductionplanwo/{tenantId}";
             public const string DeleteSubCon = Base + "/delwosubcon/{Id}";
             public const string DeleteWo = Base + "/deletewo/{Id}";
@@ -183,6 +184,12 @@ namespace CWB.ProductionPlanWO.Utils
             public const string GetAllMatl_Issue_Settings = Base + "/getmatlissuesetting/{tenantId}";
             public const string PostMatl_Issue_Settings = Base + "/postmatlissuesetting";
             public const string DeleteMatl_Issue_Settings = Base + "/deletematlissuesetting/{Id}/{tenantId}";
+            public const string GetAllDispatchQnty = Base + "/getdispatchqnty/{tenantId}";
+            public const string PostDispatchQnty = Base + "/postdispatchqnty";
+            public const string DeleteDispatchQnty = Base + "/deletedispatchqnty/{Id}/{tenantId}";
+            public const string GetAllDispatchDetails = Base + "/getdispatchdetails/{tenantId}";
+            public const string PostDispatchDetails = Base + "/postdispatchdetails";
+            public const string DeleteDispatchDetails = Base + "/deletedispatchdetails/{Id}/{tenantId}";
             public const string GetAllTempMc_Wait_ListByWoId = Base + "/gettempmcwaitlistbywoid/{mcWaitId}/{tenantId}";
             public const string GetAllTempMc_Wait_List = Base + "/gettempmcwaitlist/{tenantId}";
             public const string PostTempMc_Wait_List = Base + "/posttempmcwaitlist";

@@ -19,6 +19,7 @@ namespace CWB.CompanySettings.Services.Location
         private readonly IPlantWDRepository _plantWDRepository;
         private readonly IHolidayRepository _holidayRepository;
         private readonly ICityRepository _cityRepository;
+        private readonly ISectionsRepository _SectionsRepository;
         private readonly ITimeSlotDurationRepository _TimeSlotDurationRepository;
         private readonly INoOfDaysTimeSlotRepository _NoOfDaysTimeSlotRepository;
         private readonly ICountryRepository _countryRepository;
@@ -27,7 +28,7 @@ namespace CWB.CompanySettings.Services.Location
             ,IMapper mapper, IUnitOfWork unitOfWork 
             ,IPlantRepository plantRepository
             ,IPlantWDRepository plantWDRepository
-            ,IHolidayRepository holidayRepository, ICityRepository cityRepository,INoOfDaysTimeSlotRepository NoOfDaysTimeSlotRepository,ITimeSlotDurationRepository TimeSlotDurationRepository,
+            ,IHolidayRepository holidayRepository, ICityRepository cityRepository, ISectionsRepository SectionsRepository, INoOfDaysTimeSlotRepository NoOfDaysTimeSlotRepository,ITimeSlotDurationRepository TimeSlotDurationRepository,
             ICountryRepository countryRepository)
         {
             _logger = logger;
@@ -37,6 +38,7 @@ namespace CWB.CompanySettings.Services.Location
             _plantWDRepository = plantWDRepository;
             _holidayRepository = holidayRepository;
             _cityRepository = cityRepository;
+            _SectionsRepository = SectionsRepository;
             _NoOfDaysTimeSlotRepository = NoOfDaysTimeSlotRepository;
             _TimeSlotDurationRepository = TimeSlotDurationRepository;
             _countryRepository = countryRepository;
@@ -197,6 +199,11 @@ namespace CWB.CompanySettings.Services.Location
             var plants = _cityRepository.GetRangeAsync(p => p.TenantId == TenantId);
             return _mapper.Map<IEnumerable<CityVM>>(plants);
         }
+        public IEnumerable<SectionsVM> GetSections(long TenantId)
+        {
+            var plants = _SectionsRepository.GetRangeAsync(p => p.TenantId == TenantId);
+            return _mapper.Map<IEnumerable<SectionsVM>>(plants);
+        }
         public async Task<IEnumerable<NoOfDaysTimeSlotVM>> GetNoOfDaysTimeSlots()
         {
             var plants = await _NoOfDaysTimeSlotRepository.GetAllAsync();
@@ -227,6 +234,21 @@ namespace CWB.CompanySettings.Services.Location
             plantWdVM.CityId = plantWd.Id;
             return plantWdVM;
         }
+        public async Task<SectionsVM> PostSections(SectionsVM plantWdVM)
+        {
+            var plantWd = _mapper.Map<Domain.Section>(plantWdVM);
+            if (plantWd.Id == 0)
+            {
+                await _SectionsRepository.AddAsync(plantWd);
+            }
+            else
+            {
+                plantWd = await _SectionsRepository.UpdateAsync(plantWd.Id, plantWd);
+            }
+            await _unitOfWork.CommitAsync();
+            plantWdVM.SectionsId = plantWd.Id;
+            return plantWdVM;
+        }
         public async Task<CountryVM> PostCountry(CountryVM plantWdVM)
         {
             var plantWd = _mapper.Map<Domain.Country>(plantWdVM);
@@ -247,6 +269,21 @@ namespace CWB.CompanySettings.Services.Location
             try
             {
                 var documentTypes = await _cityRepository.SingleOrDefaultAsync(c => c.Name == (city));
+                if (documentTypes != null)
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return true;
+        }
+        public async Task<bool> CheckSections(string city)
+        {
+            try
+            {
+                var documentTypes = await _SectionsRepository.SingleOrDefaultAsync(c => c.Name == (city));
                 if (documentTypes != null)
                 {
                     return false;
