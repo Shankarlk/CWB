@@ -66,6 +66,9 @@ namespace CWB.CompanySettings.Configurations
                 .Property(t => t.HeadOfDepartment)
                 .HasColumnName("HeadOfDepartment");
             builder
+                .Property(t => t.ChangedPassword)
+                .HasColumnName("ChangedPassword");
+            builder
                 .Property(t => t.Plant_Id)
                 .HasColumnName("Plant_Id")
                 .IsRequired();

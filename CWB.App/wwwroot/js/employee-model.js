@@ -5,11 +5,53 @@ var Departments = {};
 
 
 
+function saveEmployee(rowData) {
+    api.post("/Employee/PostEmployee", rowData)
+        .then((data) => {
+            $("#EPEmpId").val(data.employee_ID);
+            $("#UiAccessEEmplid").val(data.employee_ID);
+
+            LoadEmployee();
+            LoadEmplUiById();
+
+            // Prepare data for account registration
+            var userrowData = {
+                username: data.email,
+                email: data.email,
+                firstName: data.employee_name,
+                lastName: data.employee_name,
+                password: data.password,
+                phoneNumber: data.phone,
+                tenantId: data.tenantId
+            };
+
+            const ipAddress = window.location.hostname;
+            alert("Employee Saved Successfully!");
+
+            // Register employee
+            api.post(`http://${ipAddress}:9003/account/Register`, userrowData, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
+            })
+                .then((response) => {
+                    console.log("Registration Success:", response);
+                })
+                .catch((error) => {
+                    console.error("Error during account registration:", error);
+                });
+        })
+        .catch((error) => {
+            console.error("Error saving employee:", error);
+        });
+}
 
 
 $(function () {
     //Search Designation --
     LoadEmployee();
+    LoadRoleUiAll();
     $("#SearchEmplno").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#EmployeeGrid tbody tr").filter(function () {
@@ -120,7 +162,12 @@ $(function () {
         EPRoleReportTo.style.border = '';
     });
     $('#addEmployee').on('show.bs.modal', function (event) {
-        $("#DateOfLeaveDIv").hide();
+        LoadDepartments();
+        loadLevels();
+        var tablebody = $("#EmpDeptLinkGrid tbody");
+        $(tablebody).html("");
+        $("#ReportToDept").val('');
+        //$("#DateOfLeaveDIv").hide();
         $("#RoleReportDIv").show();
         $("#EPDept").show();
         $("#lblDept").show();
@@ -149,6 +196,7 @@ $(function () {
         var emerg_Contact_No = relatedTarget.data("emergcontactno");
         var address = relatedTarget.data("address");
         if (employee_ID > 0) {
+            LoadDeptEmp(employee_ID);
             $("#EPEmpId").val(employee_ID);
             $("#EPEmpNo").val(employeeno);
             $("#EPEmpName").val(emplname);
@@ -164,11 +212,13 @@ $(function () {
             $("#EPContNo").val(emerg_Contact_No);
             $("#EPDes").val(desg).change(); // Set designation and trigger change // Set department and trigger change
             $("#EPloc").val(plant_Id).change();
-            if (chkresign === "Y") {
-                $("#EPResignChk").prop("checked", true);
-                $("#DateOfLeaveDIv").show();
+            if (date_Of_Resigning && typeof date_Of_Resigning === "string") {
                 var formattedDateleave = date_Of_Resigning.split("T")[0];
                 $("#EPDateOfLeave").val(formattedDateleave);
+            }
+            if (chkresign === "Y") {
+                $("#EPResignChk").prop("checked", true);
+                //$("#DateOfLeaveDIv").show();
             } else {
                 $("#EPResignChk").prop("checked", false);
             }
@@ -236,18 +286,18 @@ $(function () {
 
     $('#EPResignChk').on('click', function () {
         if ($(this).is(':checked')) {
-            $("#DateOfLeaveDIv").show();
+            //$("#DateOfLeaveDIv").show();
         } else {
-            $("#DateOfLeaveDIv").hide();
+            //$("#DateOfLeaveDIv").hide();
         }
     });
     $('#EPDept').on('change', function () {
         var deptid = $("#EPDept").val();
-        api.get("/Employee/GetAllOrgChart").then((data) => {
-            const filteredData = data.filter(item => item.dept_ID === parseInt(deptid));
-            $("#EPEmpRoleid").val(filteredData[0].roleIds);
-            $("#EPEmpRoles").val(filteredData[0].roleName);
-        });
+        //api.get("/Employee/GetAllOrgChart").then((data) => {
+        //    const filteredData = data.filter(item => item.dept_ID === parseInt(deptid));
+        //    $("#EPEmpRoleid").val(filteredData[0].roleIds);
+        //    $("#EPEmpRoles").val(filteredData[0].roleName);
+        //});
     });
     $('#EPHeadOrg').on('click', function () {
         if ($(this).is(':checked')) {
@@ -329,14 +379,14 @@ $(function () {
             var newNamevalidate = document.getElementById('EPDes');
             newNamevalidate.style.border = '';
         }
-        if (EPloc === 0) {
-            var newNamevalidate = document.getElementById('EPloc');
-            newNamevalidate.style.border = '2px solid red';
-            return false;
-        } else {
-            var newNamevalidate = document.getElementById('EPloc');
-            newNamevalidate.style.border = '';
-        }
+        //if (EPloc === 0) {
+        //    var newNamevalidate = document.getElementById('EPloc');
+        //    newNamevalidate.style.border = '2px solid red';
+        //    return false;
+        //} else {
+        //    var newNamevalidate = document.getElementById('EPloc');
+        //    newNamevalidate.style.border = '';
+        //}
         if (EPCell.length <= 0) {
             var newNamevalidate = document.getElementById('EPCell');
             newNamevalidate.style.border = '2px solid red';
@@ -361,39 +411,40 @@ $(function () {
         //} else {
         //    $("#error-username").text(" ").css("color", "red");
         //}
-        var regexpassUpper = /[A-Z]/;
-        var regexpassLower = /[a-z]/;
-        if (!regexpassUpper.test(EPCfmPassword)) {
-            $("#error-password").text("Password must contain at least one capital letter.").css("color", "red");
-            return false;
-        } else if (!regexpassLower.test(EPCfmPassword)) {
-            $("#error-password").text("Password must contain at least one lowercase letter.").css("color", "red");
-            return false;
-        } else {
-            $("#error-password").text(" ").css("color", "red");
-        }
-        if (EPCfmPassword != EPPassword) {
-            var newNamevalidate = document.getElementById('EPCfmPassword');
-            newNamevalidate.style.border = '2px solid red';
-            return false;
-        } else {
-            var newNamevalidate = document.getElementById('EPCfmPassword');
-            newNamevalidate.style.border = '';
-        }
-        if (EPCfmPassword.length <= 6) {
-            $("#error-password").text("Password must contain at least one capital letter.").css("color", "red");
-            var newNamevalidate = document.getElementById('EPCfmPassword');
-            newNamevalidate.style.border = '2px solid red';
-            return false;
-        } else {
-            $("#error-password").text(" ").css("color", "red");
-            var newNamevalidate = document.getElementById('EPCfmPassword');
-            newNamevalidate.style.border = '';
-        }
+        //var regexpassUpper = /[A-Z]/;
+        //var regexpassLower = /[a-z]/;
+        //if (!regexpassUpper.test(EPCfmPassword)) {
+        //    $("#error-password").text("Password must contain at least one capital letter.").css("color", "red");
+        //    return false;
+        //} else if (!regexpassLower.test(EPCfmPassword)) {
+        //    $("#error-password").text("Password must contain at least one lowercase letter.").css("color", "red");
+        //    return false;
+        //} else {
+        //    $("#error-password").text(" ").css("color", "red");
+        //}
+        //if (EPCfmPassword != EPPassword) {
+        //    var newNamevalidate = document.getElementById('EPCfmPassword');
+        //    newNamevalidate.style.border = '2px solid red';
+        //    return false;
+        //} else {
+        //    var newNamevalidate = document.getElementById('EPCfmPassword');
+        //    newNamevalidate.style.border = '';
+        //}
+        //if (EPCfmPassword.length <= 6) {
+        //    $("#error-password").text("Password must contain at least one capital letter.").css("color", "red");
+        //    var newNamevalidate = document.getElementById('EPCfmPassword');
+        //    newNamevalidate.style.border = '2px solid red';
+        //    return false;
+        //} else {
+        //    $("#error-password").text(" ").css("color", "red");
+        //    var newNamevalidate = document.getElementById('EPCfmPassword');
+        //    newNamevalidate.style.border = '';
+        //}
         if (EPAddress.length <= 0) {
-            var newNamevalidate = document.getElementById('EPAddress');
-            newNamevalidate.style.border = '2px solid red';
-            return false;
+            //var newNamevalidate = document.getElementById('EPAddress');
+            //newNamevalidate.style.border = '2px solid red';
+            //return false;
+            EPAddress = "-";
         } else {
             var newNamevalidate = document.getElementById('EPAddress');
             newNamevalidate.style.border = '';
@@ -417,52 +468,56 @@ $(function () {
         if (EPHeadOrg.checked) {
             EPHeadOrgChk = 'Y';
         } else {
-            if (EPDept === 0) {
-                var newNamevalidate = document.getElementById('EPDept');
-                newNamevalidate.style.border = '2px solid red';
-                return false;
-            } else {
-                var newNamevalidate = document.getElementById('EPDept');
-                newNamevalidate.style.border = '';
-            }
-            if (EPEmpRoleid.length <= 0) {
-                var newNamevalidate = document.getElementById('EPEmpRoles');
-                newNamevalidate.style.border = '2px solid red';
-                return false;
-            } else {
-                var newNamevalidate = document.getElementById('EPEmpRoles');
-                newNamevalidate.style.border = '';
-            }
-            if (EPRoleReportTo == 0) {
-                var newNamevalidate = document.getElementById('EPRoleReportTo');
-                newNamevalidate.style.border = '2px solid red';
-                return false;
-            } else {
-                var newNamevalidate = document.getElementById('EPRoleReportTo');
-                newNamevalidate.style.border = '';
-            }
+            //if (EPDept === 0) {
+            //    var newNamevalidate = document.getElementById('EPDept');
+            //    newNamevalidate.style.border = '2px solid red';
+            //    return false;
+            //} else {
+            //    var newNamevalidate = document.getElementById('EPDept');
+            //    newNamevalidate.style.border = '';
+            //}
+            //if (EPEmpRoleid.length <= 0) {
+            //    var newNamevalidate = document.getElementById('EPEmpRoles');
+            //    newNamevalidate.style.border = '2px solid red';
+            //    return false;
+            //} else {
+            //    var newNamevalidate = document.getElementById('EPEmpRoles');
+            //    newNamevalidate.style.border = '';
+            //}
+            //if (EPRoleReportTo == 0) {
+            //    var newNamevalidate = document.getElementById('EPRoleReportTo');
+            //    newNamevalidate.style.border = '2px solid red';
+            //    return false;
+            //} else {
+            //    var newNamevalidate = document.getElementById('EPRoleReportTo');
+            //    newNamevalidate.style.border = '';
+            //}
         }
         if (checkbox.checked) {
             EPResignChk = 'Y';
-            if (EPDateOfLeave.length <= 0) {
+        }
+        if (EPDateOfLeave.length <= 0) {
+            //var newNamevalidate = document.getElementById('EPDateOfLeave');
+            //newNamevalidate.style.border = '2px solid red';
+            //return false;
+        } else {
+            var inputDate = new Date(document.getElementById('EPDateOfLeave').value);
+            var today = new Date();
+
+            today.setHours(0, 0, 0, 0);
+
+            if (inputDate > today) {
                 var newNamevalidate = document.getElementById('EPDateOfLeave');
                 newNamevalidate.style.border = '2px solid red';
+                alert("Date of Leaving should be less than todays date");
                 return false;
             } else {
-                var inputDate = new Date(document.getElementById('EPDateOfLeave').value);
-                var today = new Date();
-
-                today.setHours(0, 0, 0, 0);
-
-                if (inputDate < today) {
-                    var newNamevalidate = document.getElementById('EPDateOfLeave');
-                    newNamevalidate.style.border = '2px solid red';
-                    return false;
-                } else {
-                    var newNamevalidate = document.getElementById('EPDateOfLeave');
-                    newNamevalidate.style.border = '';
-                }
+                var newNamevalidate = document.getElementById('EPDateOfLeave');
+                newNamevalidate.style.border = '';
             }
+        }
+        if (isNaN(EPEmpId)) {
+            EPEmpId = 0;
         }
         var rowData = {
             employee_ID: EPEmpId,
@@ -486,76 +541,44 @@ $(function () {
             date_Of_Resigning: EPDateOfLeave
         };
 
-        api.getbulk("/Employee/GetUnique?empNo="+EPEmpNo).then((data) => {
-            //console.log(data);\
-            if (data == true || EPEmpId > 0) {
-                $("#empno-error").text("").css("color", "red");
-                api.get("/Employee/GetAllEmployee").then((edata) => {
-                    if (!edata.some(item => item.email === EPEmail)) {
-                        api.post("/Employee/PostEmployee", rowData).then((data) => {
-                            $("#EPEmpId").val(data.employee_ID);
-                            $("#UiAccessEEmplid").val(data.employee_ID);
-                            LoadEmployee();
-                            LoadEmplUiById();
-                            //data.employee_name = data.employee_name.replace(/\s+/g, '');
-                            var userrowData = {
-                                username: data.email,
-                                email: data.email,
-                                firstName: data.employee_name,
-                                lastName: data.employee_name,
-                                password: data.password,
-                                phoneNumber: data.phone,
-                                tenantId: "1"
-                            };
-                            const getIPAddress = () => {
-                                const host = window.location.hostname; 
-                                return host;
-                            };
+        api.getbulk("/Employee/GetUnique?empNo=" + EPEmpNo)
+            .then((data) => {
+                // If employee number already exists
+                if (data !== true && EPEmpId === 0) {
+                    $("#empno-error").text("This Employee No already exists.").css("color", "red");
+                    return;
+                } else {
+                    $("#empno-error").text(""); // Clear previous error
+                }
 
-                            const ipAddress = getIPAddress();
-                            console.log("Detected IP Address:", ipAddress);
+                // 🚀 Step 2: ONLY check email for NEW employee
+                if (EPEmpId === 0) {
+                    api.get("/Employee/GetAllEmployee")
+                        .then((edata) => {
+                            // Check if email already exists
+                            const emailExists = edata.some(
+                                (item) => item.email.toLowerCase() === EPEmail.toLowerCase()
+                            );
 
-                            api.post(`http://${ipAddress}:9003/account/Register`, userrowData, {
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    "Accept": "application/json",
-                                },
-                            })
-                                .then((response) => {
-                                    console.log("Success:", response);
-                                    alert("Employee Saved Successfully!");
-                                })
-                                .catch((error) => {
-                                    console.error("Error:", error);
-                                });
-
-                            //api.post("http://172.23.0.1:9003/account/Register", userrowData, {
-                            //    headers: {
-                            //        "Content-Type": "application/json", // or application/x-www-form-urlencoded
-                            //        "Accept": "application/json",
-                            //    },
-                            //})
-                            //    .then((response) => {
-                            //        console.log("Success:", response);
-                            //    })
-                            //    .catch((error) => {
-                            //        console.error("Error:", error);
-                            //    });
-
-                        }).catch((error) => {
-                            //AppUtil.HandleError("frmDesignation", error);
+                            if (emailExists) {
+                                $("#email-error").text("This Email ID already exists.").css("color", "red");
+                                return; // Stop execution if duplicate email found
+                            } else {
+                                $("#email-error").text(""); // Clear previous error
+                                saveEmployee(rowData); // ✅ Proceed to save employee
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error fetching employees:", error);
                         });
-                    } else {
-                        $("#email-error").text("This Email Id Already Exists.").css("color", "red");
-                    }
-                }).catch((error) => {
-
-                });
-            } else {
-                $("#empno-error").text("This Employee No Already Exists.").css("color", "red");
-            }
-            //console.log(tablebody);
-        }).catch((error) => { });
+                } else {
+                    // Editing an existing employee, skip email validation
+                    saveEmployee(rowData);
+                }
+            })
+            .catch((error) => {
+                console.error("Error validating employee number:", error);
+            });
     });
 
     $('#orgChart').on('show.bs.modal', function (event) {
@@ -722,121 +745,133 @@ $(function () {
         "Stores": 3
     };
     $("#OrgSave").click(function () {
-        //   //debugger;
-        var POrgId = $("#POrgId").val();
-        var OrgLoc = parseInt($("#OrgLoc").val());
-        var OrgDept = parseInt($("#OrgDept").val());
-        var OrgRole =  parseInt($("#OrgRole").val());
-        var OrgEmpl =  parseInt($("#OrgEmpl").val());
-        var OrgRoleReport =  parseInt($("#OrgRoleReport").val());
-        var checkbox = document.getElementById("OrgHead");
-        var EPResignChk = 'N';
-        const selectElement = document.getElementById('OrgRole');
-        const selectedValues = Array.from(selectElement.selectedOptions).map(option => Number(option.value));
-        //var selectedText = $("#OrgRole option:selected").text();
-        var roleidArray =[];
-        if (POrgId.length > 1) {
-            roleidArray = POrgId.split(",").map(value => value.trim());
-        } else {
-            roleidArray = POrgId;
-        }
-        if (checkbox.checked) {
-            EPResignChk = 'Y';
-        }
-        if (OrgLoc=== 0) {
-            var newNamevalidate = document.getElementById('OrgLoc');
-            newNamevalidate.style.border = '2px solid red';
-            return false;
-        } else {
-            var newNamevalidate = document.getElementById('OrgLoc');
-            newNamevalidate.style.border = '';
-        }
-        if (OrgDept=== 0) {
-            var newNamevalidate = document.getElementById('OrgDept');
-            newNamevalidate.style.border = '2px solid red';
-            return false;
-        } else {
-            var newNamevalidate = document.getElementById('OrgDept');
-            newNamevalidate.style.border = '';
-        }
-        if (OrgRole === 0 || isNaN(OrgRole)) {
-            var newNamevalidate = $('#OrgRole').next('.select2-container');
-            newNamevalidate.css('border', '2px solid red');
-            return false;
-        } else {
-            var newNamevalidate = $('#OrgRole').next('.select2-container');
-            newNamevalidate.css('border', '');
-        }
-        //if (OrgEmpl=== 0) {
-        //    var newNamevalidate = document.getElementById('OrgEmpl');
+        api.post("/Employee/SendEmail?to=test@example.com&subject=Hello&body=Hi").then((data) => {
+            //LoadEmployee();
+            //$("#POrgId").val('');
+            //$("#OrgRoleReport").val(0);
+            //$("#OrgLoc").val(0);
+            //$("#OrgDept").val(0);
+            //$("#OrgRole").val(0);
+            //$("#OrgEmpl").val(0);
+            //$("#addOrgChart").modal("hide");
+            alert("Sent Successfully!");
+        }).catch((error) => {
+        });
+        ////   //debugger;
+        //var POrgId = $("#POrgId").val();
+        //var OrgLoc = parseInt($("#OrgLoc").val());
+        //var OrgDept = parseInt($("#OrgDept").val());
+        //var OrgRole =  parseInt($("#OrgRole").val());
+        //var OrgEmpl =  parseInt($("#OrgEmpl").val());
+        //var OrgRoleReport =  parseInt($("#OrgRoleReport").val());
+        //var checkbox = document.getElementById("OrgHead");
+        //var EPResignChk = 'N';
+        //const selectElement = document.getElementById('OrgRole');
+        //const selectedValues = Array.from(selectElement.selectedOptions).map(option => Number(option.value));
+        ////var selectedText = $("#OrgRole option:selected").text();
+        //var roleidArray =[];
+        //if (POrgId.length > 1) {
+        //    roleidArray = POrgId.split(",").map(value => value.trim());
+        //} else {
+        //    roleidArray = POrgId;
+        //}
+        //if (checkbox.checked) {
+        //    EPResignChk = 'Y';
+        //}
+        //if (OrgLoc=== 0) {
+        //    var newNamevalidate = document.getElementById('OrgLoc');
         //    newNamevalidate.style.border = '2px solid red';
         //    return false;
         //} else {
-        //    var newNamevalidate = document.getElementById('OrgEmpl');
+        //    var newNamevalidate = document.getElementById('OrgLoc');
         //    newNamevalidate.style.border = '';
         //}
-        //if (EPResignChk === "N") {
-        //    if (OrgRoleReport === 0) {
-        //        var newNamevalidate = document.getElementById('OrgRoleReport');
-        //        newNamevalidate.style.border = '2px solid red';
-        //        return false;
-        //    } else {
-        //        var newNamevalidate = document.getElementById('OrgRoleReport');
-        //        newNamevalidate.style.border = '';
-        //    }
+        //if (OrgDept=== 0) {
+        //    var newNamevalidate = document.getElementById('OrgDept');
+        //    newNamevalidate.style.border = '2px solid red';
+        //    return false;
         //} else {
+        //    var newNamevalidate = document.getElementById('OrgDept');
+        //    newNamevalidate.style.border = '';
         //}
-        api.get("/Employee/GetOrgChart").then((data) => {
-            const filteredData = data.filter(item => item.first_node === "Y");
-            if (!filteredData.some(item => item.first_node === EPResignChk)) {
-                const selectElementText = document.getElementById('OrgRole');
-                const selectedValuesText = Array.from(selectElementText.selectedOptions);
-                for (var i = 0; i < selectedValues.length; i++) {
-                    var selectedText = selectedValuesText[i].textContent;
-                    var level = getrolesLevel[selectedText];
-                    var orgids = roleidArray[i];
-                    var rowData = {
-                        org_ChartId: orgids,
-                        first_node: EPResignChk,
-                        role_NameId: selectedValues[i],
-                        dept_ID: OrgDept,
-                        location_id: OrgLoc,
-                        reporting_to: OrgRoleReport,
-                        employee_Id: OrgEmpl,
-                        level_No: parseInt(level)
-                    };
-                    api.post("/Employee/PostOrgChart", rowData).then((data) => {
-                        //LoadEmployee();
-                        //$("#POrgId").val('');
-                        //$("#OrgRoleReport").val(0);
-                        //$("#OrgLoc").val(0);
-                        //$("#OrgDept").val(0);
-                        //$("#OrgRole").val(0);
-                        //$("#OrgEmpl").val(0);
-                        //$("#addOrgChart").modal("hide");
-                        if (i === selectedValues.length - 1) {
-                            // loadSelectRole();
-                            $("#addOrgChart").modal("hide");
-                        }
-                        alert("Org Chart Position Details Saved Successfully!");
-                    }).catch((error) => {
-                    });
-                }
-                if (selectedValues.length < roleidArray.length) {
-                    var j = roleidArray.length - 1;
-                    var opid = roleidArray[j];
-                    api.get("/Employee/DelOrgChart?designationId=" + parseInt(opid)).then((data) => {
-                        //LoadOrgChart();
-                    }).catch((error) => {
+        //if (OrgRole === 0 || isNaN(OrgRole)) {
+        //    var newNamevalidate = $('#OrgRole').next('.select2-container');
+        //    newNamevalidate.css('border', '2px solid red');
+        //    return false;
+        //} else {
+        //    var newNamevalidate = $('#OrgRole').next('.select2-container');
+        //    newNamevalidate.css('border', '');
+        //}
+        ////if (OrgEmpl=== 0) {
+        ////    var newNamevalidate = document.getElementById('OrgEmpl');
+        ////    newNamevalidate.style.border = '2px solid red';
+        ////    return false;
+        ////} else {
+        ////    var newNamevalidate = document.getElementById('OrgEmpl');
+        ////    newNamevalidate.style.border = '';
+        ////}
+        ////if (EPResignChk === "N") {
+        ////    if (OrgRoleReport === 0) {
+        ////        var newNamevalidate = document.getElementById('OrgRoleReport');
+        ////        newNamevalidate.style.border = '2px solid red';
+        ////        return false;
+        ////    } else {
+        ////        var newNamevalidate = document.getElementById('OrgRoleReport');
+        ////        newNamevalidate.style.border = '';
+        ////    }
+        ////} else {
+        ////}
+        //api.get("/Employee/GetOrgChart").then((data) => {
+        //    const filteredData = data.filter(item => item.first_node === "Y");
+        //    if (!filteredData.some(item => item.first_node === EPResignChk)) {
+        //        const selectElementText = document.getElementById('OrgRole');
+        //        const selectedValuesText = Array.from(selectElementText.selectedOptions);
+        //        for (var i = 0; i < selectedValues.length; i++) {
+        //            var selectedText = selectedValuesText[i].textContent;
+        //            var level = getrolesLevel[selectedText];
+        //            var orgids = roleidArray[i];
+        //            var rowData = {
+        //                org_ChartId: orgids,
+        //                first_node: EPResignChk,
+        //                role_NameId: selectedValues[i],
+        //                dept_ID: OrgDept,
+        //                location_id: OrgLoc,
+        //                reporting_to: OrgRoleReport,
+        //                employee_Id: OrgEmpl,
+        //                level_No: parseInt(level)
+        //            };
+        //            api.post("/Employee/PostOrgChart", rowData).then((data) => {
+        //                //LoadEmployee();
+        //                //$("#POrgId").val('');
+        //                //$("#OrgRoleReport").val(0);
+        //                //$("#OrgLoc").val(0);
+        //                //$("#OrgDept").val(0);
+        //                //$("#OrgRole").val(0);
+        //                //$("#OrgEmpl").val(0);
+        //                //$("#addOrgChart").modal("hide");
+        //                if (i === selectedValues.length - 1) {
+        //                    // loadSelectRole();
+        //                    $("#addOrgChart").modal("hide");
+        //                }
+        //                alert("Org Chart Position Details Saved Successfully!");
+        //            }).catch((error) => {
+        //            });
+        //        }
+        //        if (selectedValues.length < roleidArray.length) {
+        //            var j = roleidArray.length - 1;
+        //            var opid = roleidArray[j];
+        //            api.get("/Employee/DelOrgChart?designationId=" + parseInt(opid)).then((data) => {
+        //                //LoadOrgChart();
+        //            }).catch((error) => {
 
-                    });
-                }
-            } else {
-                alert("The Head Of Organization Is Already There In The List.");
-            }
-        }).catch((error) => {
+        //            });
+        //        }
+        //    } else {
+        //        alert("The Head Of Organization Is Already There In The List.");
+        //    }
+        //}).catch((error) => {
 
-        });
+        //});
 
     });
 
@@ -1133,14 +1168,14 @@ $(function () {
         });
     });
     $('#addRole').on('hidden.bs.modal', function (event) {
-        document.getElementById('roleList').style.filter = 'none';
+        //document.getElementById('roleList').style.filter = 'none';
         var newNamevalidate = document.getElementById('ARPWork');
         newNamevalidate.style.border = '';
         var ARPName = document.getElementById('ARPName');
         ARPName.style.border = '';
     });
     $('#addRole').on('show.bs.modal', function (event) {
-        document.getElementById('roleList').style.filter = 'blur(5px)';
+        //document.getElementById('roleList').style.filter = 'blur(5px)';
         var relatedTarget = $(event.relatedTarget);
         var roleid = relatedTarget.data("roleid");
         var rolename = relatedTarget.data("rolename");
@@ -1187,6 +1222,8 @@ $(function () {
         var menuf = relatedTarget.data("menuf");
         var menufi = relatedTarget.data("menufi");
         var roleidnew = $("#ARPId").val();
+        var ARPName = $("#ARPName").val();
+        $("#SRoleNameUI").text(ARPName);
         $("#UiAccessRRoleid").val(roleidnew);
         if (uilistid > 0) {
             //const menuSelections = {
@@ -1419,6 +1456,8 @@ $(function () {
         var menuf = relatedTarget.data("menuf");
         var menufi = relatedTarget.data("menufi");
         var empid = $("#EPEmpId").val();
+        var EPEmpName = $("#EPEmpName").val();
+        $("#SEmpNameUI").text(EPEmpName);
         $("#UiAccessEEmplid").val(empid);
         if (uilistid > 0) {
             $('#UiAccessEMenu1 option').each(function () {
@@ -1495,26 +1534,20 @@ $(function () {
             var newvalidate = document.getElementById('UiAccessEPermission');
             newvalidate.style.border = '';
         }
+        var todaydate = new Date().toISOString().slice(0, 19);
         var rowData = {
-            role_Ui_ListId: UiAccessRUiId,
+            employee_UI_ListId: UiAccessRUiId,
             ui_Id: uiId,
-            permissionId: UiAccessRPermission,
-            employeeId: UiAccessRRoleid,
-            departmentId: deptid,
-            roleId: UiAccessERoleId
+            access_Level: UiAccessRPermission,
+            employee_Id: UiAccessRRoleid,
+            active: 'Y',
+            add_date: todaydate
         };
-        api.getbulk("/Employee/GetAllOrgChart").then((data) => {
-            var deptid = $("#EPDept").val();
-            const filteredData = data.filter(item => item.dept_ID === parseInt(deptid));
-            if (filteredData.length > 0) {
-                api.post("/Employee/PostRoleUiList", rowData).then((data) => {
-                    LoadEmplUiById();
-                }).catch((error) => {
-                    //AppUtil.HandleError("frmDesignation", error);
-                });
-            } else {
-                alert("Please Assign The Role For Department.");
-            }
+        api.post("/Department/PostEmployee_UI_List", rowData).then((data) => {
+            LoadEmplUiById();
+            $("#addUiAccessEmpl").modal("hide");
+        }).catch((error) => {
+            //AppUtil.HandleError("frmDesignation", error);
         });
     });
 
@@ -1668,8 +1701,265 @@ $(function () {
                 UiAccessRMenu1.append(div_data);
         }
     });
-});
+    $('#Popup1').on('hidden.bs.modal', function (event) {
+        document.getElementById('addEmployee').style.filter = 'none';
+    });
+    $('#Popup1').on('show.bs.modal', function (event) {
+        document.getElementById('addEmployee').style.filter = 'blur(5px)';
+        $("#Slvl2").val(0);
+        $("#Slvl3").val(0);
+        $("#Slvl4").val(0);
+        $("#Slvl5").val(0);
+        LoadDepartments();
+    });
+    $(document).on("change", ".row-checkbox", function () {
+        $(".row-checkbox").not(this).prop("checked", false); // uncheck others
+    });
+    $("#DeptLinkSave").on("click", function () {
+        var selectedRow = $("#DeptP1Grid tbody tr").has("input.row-checkbox:checked");
 
+        if (selectedRow.length === 0) {
+            alert("Please select one record only.");
+            return;
+        }
+        var empId = $("#EPEmpId").val();
+        if (empId == 0) {
+            alert("Please Save the Employee Details");
+            return false;
+        }
+        if (isNaN(empId)) {
+            alert("Please Save the Employee Details");
+            return false;
+        }
+        // get hidden td value (last column)
+        var hiddenId = selectedRow.find("td:hidden").text().trim();
+        console.log("Selected Id:", hiddenId);
+        var todaydate = new Date().toISOString().slice(0, 19);
+        var rowData = {
+            dept_Posn: hiddenId,
+            employee_Id: parseInt(empId),
+            active: 'Y',
+            add_date: todaydate
+        };
+        api.post("/Department/PostDept_Employee", rowData).then((data) => {
+            $("#Popup1").modal("hide");
+            LoadDeptEmp(parseInt(empId));
+            LoadDepartments();
+            LoadEmplUiById();
+        }).catch((error) => {
+
+        });
+    });
+    $(document).on("change", "#DectUi", function () {
+        var empId = parseInt($("#EPEmpId").val());
+        $("#ReportToDept").val('');
+        if ($(this).is(":checked")) {
+            var tablebody = $("#EmpDeptLinkGrid tbody");
+            $(tablebody).html("");//empty tbody
+            api.get("/department/GetDept_Employee").then((data) => {
+                //console.log(data);
+                data = data.filter(i => i.level2 != "-" && i.employee_Id === empId && i.active == "N");
+                for (i = 0; i < data.length; i++) {
+                    var previousval = $("#ReportToDept").val();
+                    $(tablebody).append(AppUtil.ProcessTemplateDataNew("EmpDeptLinkGridRow", data[i], i));
+                    let lastNode = null;
+                    let parentNode = null;
+                    let deptId = 0;
+
+                    if (data[i].level5 && data[i].level5 !== "-") {
+                        lastNode = "Level5";
+                        parentNode = data[i].level4 !== "-" ? data[i].level4 : null;
+                        deptId = data[i].dept_Posn;
+                    } else if (data[i].level4 && data[i].level4 !== "-") {
+                        lastNode = "Level4";
+                        parentNode = data[i].level3 !== "-" ? data[i].level3 : null;
+                        deptId = data[i].dept_Posn;
+                    } else if (data[i].level3 && data[i].level3 !== "-") {
+                        lastNode = "Level3";
+                        parentNode = data[i].level2 !== "-" ? data[i].level2 : null;
+                        deptId = data[i].dept_Posn;
+                    } else if (data[i].level2 && data[i].level2 !== "-") {
+                        lastNode = "Level2";
+                        parentNode = data[i].level1 !== "-" ? data[i].level1 : null;
+                        deptId = data[i].dept_Posn;
+                    }
+                    $("#EPDept").val(deptId);
+                    $("#ReportToDept").val(`${previousval}, ${parentNode}`);
+                }
+                //console.log($(tablebody).html());
+            }).catch((error) => {
+                //console.log(error);
+            });
+        } else {
+            var tablebody = $("#EmpDeptLinkGrid tbody");
+            $(tablebody).html("");//empty tbody
+            api.get("/department/GetDept_Employee").then((data) => {
+                //console.log(data);
+                data = data.filter(i => i.level2 != "-" && i.employee_Id === empId && i.active == "Y");
+                for (i = 0; i < data.length; i++) {
+                    var previousval = $("#ReportToDept").val();
+                    $(tablebody).append(AppUtil.ProcessTemplateDataNew("EmpDeptLinkGridRow", data[i], i));
+                    let lastNode = null;
+                    let parentNode = null;
+                    let deptId = 0;
+
+                    if (data[i].level5 && data[i].level5 !== "-") {
+                        lastNode = "Level5";
+                        parentNode = data[i].level4 !== "-" ? data[i].level4 : null;
+                        deptId = data[i].dept_Posn;
+                    } else if (data[i].level4 && data[i].level4 !== "-") {
+                        lastNode = "Level4";
+                        parentNode = data[i].level3 !== "-" ? data[i].level3 : null;
+                        deptId = data[i].dept_Posn;
+                    } else if (data[i].level3 && data[i].level3 !== "-") {
+                        lastNode = "Level3";
+                        parentNode = data[i].level2 !== "-" ? data[i].level2 : null;
+                        deptId = data[i].dept_Posn;
+                    } else if (data[i].level2 && data[i].level2 !== "-") {
+                        lastNode = "Level2";
+                        parentNode = data[i].level1 !== "-" ? data[i].level1 : null;
+                        deptId = data[i].dept_Posn;
+                    }
+                    $("#EPDept").val(deptId);
+                    $("#ReportToDept").val(`${previousval}, ${parentNode}`);
+                }
+                //console.log($(tablebody).html());
+            }).catch((error) => {
+                //console.log(error);
+            });
+        }
+    });
+    $(document).on("change", "#UIDectShow", function () {
+        var ARPId = $("#EPEmpId").val();
+        if ($(this).is(":checked")) {
+            var tablebody = $("#EmpUiGrid tbody");
+            $(tablebody).html("");//empty tbody
+            //if (isNaN(ARPId) || ARPId == 0) {
+            //    ARPId = $("#EPEmpId").val();
+            //} 
+            api.getbulk("/Employee/GetEmplRoleUiList?employeeId=" + parseInt(ARPId)).then((data) => {
+                data = data.filter(i => i.active == "N");
+                //console.log(data);
+                for (i = 0; i < data.length; i++) {
+                    data[i].showMenu = data[i].fromDept === "N" ? "block" : "none";
+                    $(tablebody).append(AppUtil.ProcessTemplateDataNew("EmpUiGridRow", data[i], i));
+                }
+                //console.log(tablebody);
+            }).catch((error) => { });
+        } else {
+            var tablebody = $("#EmpUiGrid tbody");
+            $(tablebody).html("");//empty tbody
+            //if (isNaN(ARPId) || ARPId == 0) {
+            //    ARPId = $("#EPEmpId").val();
+            //} 
+            api.getbulk("/Employee/GetEmplRoleUiList?employeeId=" + parseInt(ARPId)).then((data) => {
+                //console.log(data);
+                data = data.filter(i => i.active == "Y");
+                for (i = 0; i < data.length; i++) {
+                    data[i].showMenu = data[i].fromDept === "N" ? "block" : "none";
+                    $(tablebody).append(AppUtil.ProcessTemplateDataNew("EmpUiGridRow", data[i], i));
+                }
+                //console.log(tablebody);
+            }).catch((error) => { });
+        }
+    });
+});
+function loadLevels() {
+    var Slvl2 = $("#Slvl2");
+    var Slvl3 = $("#Slvl3");
+    var Slvl4 = $("#Slvl4");
+    var Slvl5 = $("#Slvl5");
+    Slvl2.html('');
+    Slvl3.html('');
+    Slvl4.html('');
+    Slvl5.html('');
+    var defaultOpt = "<option value='0'>--Select--</option>";
+    Slvl2.append(defaultOpt);
+    Slvl3.append(defaultOpt);
+    Slvl4.append(defaultOpt);
+    Slvl5.append(defaultOpt);
+    api.get("/department/GetDepartmentsLevel").then((data) => {
+        data = data.filter(i => i.level2 != "-");
+        let level2 = [...new Set(data.map(d => d.level2).filter(x => x))];
+        let level3 = [...new Set(data.map(d => d.level3).filter(x => x))];
+        let level4 = [...new Set(data.map(d => d.level4).filter(x => x))];
+        let level5 = [...new Set(data.map(d => d.level5).filter(x => x))];
+
+        // append options
+        level2.forEach(v => Slvl2.append(`<option value="${v}">${v}</option>`));
+        level3.forEach(v => Slvl3.append(`<option value="${v}">${v}</option>`));
+        level4.forEach(v => Slvl4.append(`<option value="${v}">${v}</option>`));
+        level5.forEach(v => Slvl5.append(`<option value="${v}">${v}</option>`));
+    }).catch((error) => {
+        //console.log(error);
+    });
+}
+function LoadDeptEmp(employee_ID) {
+    var tablebody = $("#EmpDeptLinkGrid tbody");
+    $(tablebody).html("");//empty tbody
+    $("#ReportToDept").val('');
+    api.get("/department/GetDept_Employee").then((data) => {
+        //console.log(data);
+        data = data.filter(i => i.level2 != "-" && i.employee_Id === employee_ID && i.active == "Y");
+        for (i = 0; i < data.length; i++) {
+                    var previousval = $("#ReportToDept").val();
+                    $(tablebody).append(AppUtil.ProcessTemplateDataNew("EmpDeptLinkGridRow", data[i], i));
+                    let lastNode = null;
+                    let parentNode = null;
+                    let deptId = 0;
+
+                    if (data[i].level5 && data[i].level5 !== "-") {
+                        lastNode = "Level5";
+                        parentNode = data[i].level4 !== "-" ? data[i].level4 : null;
+                        deptId = data[i].dept_Posn;
+                    } else if (data[i].level4 && data[i].level4 !== "-") {
+                        lastNode = "Level4";
+                        parentNode = data[i].level3 !== "-" ? data[i].level3 : null;
+                        deptId = data[i].dept_Posn;
+                    } else if (data[i].level3 && data[i].level3 !== "-") {
+                        lastNode = "Level3";
+                        parentNode = data[i].level2 !== "-" ? data[i].level2 : null;
+                        deptId = data[i].dept_Posn;
+                    } else if (data[i].level2 && data[i].level2 !== "-") {
+                        lastNode = "Level2";
+                        parentNode = data[i].level1 !== "-" ? data[i].level1 : null;
+                        deptId = data[i].dept_Posn;
+                    }
+                    $("#EPDept").val(deptId);
+                    $("#ReportToDept").val(`${previousval}, ${parentNode}`);
+        }
+        //console.log($(tablebody).html());
+    }).catch((error) => {
+        //console.log(error);
+    });
+}
+function DeleteDeptEmp(element) {
+    //var relatedTarget = $(element.relatedTarget);
+    var employeeid = $(element).data("deptempid");
+    var empid = $(element).data("empid");
+    let confirmval = confirm("Are your sure you want to delete this ?", "Yes", "No");
+    if (confirmval) {
+        api.get("/Department/DelDept_Employee?designationId=" + parseInt(employeeid)).then((data) => {
+            LoadDeptEmp(empid);
+        }).catch((error) => {
+
+        });
+    }
+}
+function LoadDepartments() {
+    var tablebody = $("#DeptP1Grid tbody");
+    $(tablebody).html("");//empty tbody
+    api.get("/department/GetUnassignedDepartments").then((data) => {
+        //console.log(data);
+        data = data.filter(i => i.level2 != "-");
+        for (i = 0; i < data.length; i++) {
+            $(tablebody).append(AppUtil.ProcessTemplateDataNew("DeptP1GridRow", data[i], i));
+        }
+        //console.log($(tablebody).html());
+    }).catch((error) => {
+        //console.log(error);
+    });
+}
 function LoadEmployee() {
     var tablebody = $("#EmployeeGrid tbody");
     $(tablebody).html("");//empty tbody
@@ -1925,6 +2215,38 @@ function DeleteEmployee(element) {
         });
     }
 }
+function ResetPassword(element) {
+    //var relatedTarget = $(element.relatedTarget);
+    var employeeid = $(element).data("employeeid");
+    let confirmval = confirm("Are your sure you want to Reset Password Of the Employee ?", "Yes", "No");
+    if (confirmval) {
+        api.get("/Employee/ResetEmpPassword?EmpId=" + parseInt(employeeid)).then((data) => {
+
+            var userrowData = {
+                email: data.email,
+                newPassword: data.password,
+                confirmPassword: data.password,
+                token: "ersasdsada"
+            };
+
+            const ipAddress = window.location.hostname;
+            alert("Password Reset Successfully!");
+
+            // Register employee
+            api.post(`http://${ipAddress}:9003/account/ResetPassword`, userrowData, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                },
+            }).then((response) => {
+                console.log("ResetPassword Success:", response);
+            });
+            LoadEmployee();
+        }).catch((error) => {
+
+        });
+    }
+}
 function DeleteUiList(element) {
     //var relatedTarget = $(element.relatedTarget);
     var uilistid = $(element).data("uilistid");
@@ -1985,7 +2307,7 @@ function DeleteEmplUiList(element) {
     var uilistid = $(element).data("uilistid");
     let confirmval = confirm("Are your sure you want to delete this ?", "Yes", "No");
     if (confirmval) {
-        api.get("/Employee/DelRoleUiList?designationId=" + parseInt(uilistid)).then((data) => {
+        api.get("/Department/DelEmployee_UI_List?designationId=" + parseInt(uilistid)).then((data) => {
             LoadEmplUiById();
         }).catch((error) => {
 
@@ -1995,13 +2317,15 @@ function DeleteEmplUiList(element) {
 function LoadEmplUiById() {
     var tablebody = $("#EmpUiGrid tbody");
     $(tablebody).html("");//empty tbody
-    var ARPId = $("#EPDept").val();
+    var ARPId = $("#EPEmpId").val();
     //if (isNaN(ARPId) || ARPId == 0) {
     //    ARPId = $("#EPEmpId").val();
     //} 
     api.getbulk("/Employee/GetEmplRoleUiList?employeeId=" + parseInt(ARPId)).then((data) => {
         //console.log(data);
+        data = data.filter(i => i.active == "Y");
         for (i = 0; i < data.length; i++) {
+            data[i].showMenu = data[i].fromDept === "N" ? "block" : "none";
             $(tablebody).append(AppUtil.ProcessTemplateDataNew("EmpUiGridRow", data[i], i));
         }
         //console.log(tablebody);

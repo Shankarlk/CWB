@@ -308,7 +308,14 @@ namespace CWB.CompanySettings.Services.EmployeeMaster
             {
                 designation = await _IEmployeeMasterRepository.UpdateAsync(designation.Id, designation);
             }
-            await _unitOfWork.CommitAsync();
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+
+            }
             uiListVM.Employee_ID = designation.Id;
             return uiListVM;
         }

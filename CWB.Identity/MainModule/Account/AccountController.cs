@@ -496,6 +496,35 @@ namespace CWB.Identity
 
             return View(vm);
         }
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null)
+                {
+                    return NotFound("User not found.");
+                }
+
+                // Generate reset token
+                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                // Reset password using token
+                var result = await _userManager.ResetPasswordAsync(user, resetToken, model.NewPassword);
+
+                if (result.Succeeded)
+                {
+                    return Ok("Password has been reset successfully.");
+                }
+
+                return BadRequest(result.Errors);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
         [HttpPost]
         [Authorize]

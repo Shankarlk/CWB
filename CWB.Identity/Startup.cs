@@ -93,6 +93,11 @@ namespace CWB.Identity
 
             app.UseRouting();
 
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+
             // includes initial db creation
             cwbIdentityDbContext.Database.EnsureCreated();
             app.UseIdentityServer();

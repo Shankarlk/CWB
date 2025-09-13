@@ -2412,10 +2412,25 @@ function loadMcWaitSetup() {
 function loadMoveMatl() {
 
     api.getbulk("/workOrder/GetAllSimulationMove").then((data) => {
+
+        let unique = [];
+        let seen = new Set();
+
+        for (let item of data) {
+            // Build unique key (exclude routingName/opNo condition)
+            let key = `${item.issueMovDtStr}|${item.woNumber}|${item.partNo}|${item.routingName}|${item.opNo}`;
+
+            // If same issueMovDtStr+woNumber+partNo+routingName but different opNo → allow
+            // So we use full key including opNo to distinguish
+            if (!seen.has(key)) {
+                seen.add(key);
+                unique.push(item);
+            }
+        }
         var tablebody = $("#P27Grid tbody");
         $(tablebody).html(""); // empty tbody
-        for (let i = 0; i < data.length; i++) {
-            let row = AppUtil.ProcessTemplateData("P27GridRow", data[i]);
+        for (let i = 0; i < unique.length; i++) {
+            let row = AppUtil.ProcessTemplateData("P27GridRow", unique[i]);
             let $row = $(row);
 
             $(tablebody).append($row);

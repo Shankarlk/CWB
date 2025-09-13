@@ -24,6 +24,10 @@ namespace CWB.CompanySettings.Configurations
                .HasColumnName("TenantId")
                .IsRequired();
 
+            builder.HasData(
+                new Designation { Id = 1, Name = "Management", TenantId = 1 },
+                new Designation { Id = 2, Name = "Operator", TenantId = 1 }
+            );
             builder.HasIndex(m => m.TenantId).HasDatabaseName("Designation_TenantId");
         }
     }

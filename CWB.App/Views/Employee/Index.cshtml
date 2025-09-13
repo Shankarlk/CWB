@@ -36,10 +36,6 @@
                             <input class="form-control form-control-sm" id="SearchDateOfJoin" type="date" title="" data-plugin="tippy" data-tippy-placement="top">
                         </div>
                         <div class="col-md-3 mb-2">
-                            <label class="form-label mb-1">Location</label>
-                            <input class="form-control form-control-sm" type="text" id="SearchLoc" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
-                        </div>
-                        <div class="col-md-3 mb-2">
                             <label class="form-label mb-1">Email Id</label>
                             <input class="form-control form-control-sm" type="text" id="SearchEmailId" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
                         </div>
@@ -56,7 +52,6 @@
                                                 <th>Employee No</th>
                                                 <th>Employee Name</th>
                                                 <th>Date Of Joining</th>
-                                                <th>Location</th>
                                                 <th>Email Id</th>
                                                 <th width="5%"></th>
                                             </tr>
@@ -74,15 +69,15 @@
                                             if (pr.PermissionId >= 3)
                                             {
                                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployee" title="" data-plugin="tippy" data-tippy-placement="top">Add New Employee</button>
-                                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#orgChart" title="" data-plugin="tippy" data-tippy-placement="top">Organization Chart</button>
-                                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#roleList" title="" data-plugin="tippy" data-tippy-placement="top">Role List</button>
+                                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#orgChart" title="" data-plugin="tippy" data-tippy-placement="top" hidden>Organization Chart</button>
+                                                @*<button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#roleList" title="" data-plugin="tippy" data-tippy-placement="top">Role List</button>*@
                                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uiList" title="" data-plugin="tippy" data-tippy-placement="top" hidden>UI List</button>
                                             }
                                             else
                                             {
                                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#" disabled title="" data-plugin="tippy" data-tippy-placement="top">Add New Employee</button>
                                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#" disabled title="" data-plugin="tippy" data-tippy-placement="top">Organization Chart</button>
-                                                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#"disabled title="" data-plugin="tippy" data-tippy-placement="top">Role List</button>
+                                                @*<button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#" disabled title="" data-plugin="tippy" data-tippy-placement="top">Role List</button>*@
                                                 <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#" disabled title="" data-plugin="tippy" data-tippy-placement="top" hidden>UI List</button>
                                             }
                                         }
@@ -92,14 +87,14 @@
                                     else
                                     {
                                         <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployee" title="" data-plugin="tippy" data-tippy-placement="top">Add New Employee</button>
-                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#orgChart" title="" data-plugin="tippy" data-tippy-placement="top">Organization Chart</button>
-                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#roleList" title="" data-plugin="tippy" data-tippy-placement="top">Role List</button>
+                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#orgChart" title="" data-plugin="tippy" data-tippy-placement="top" hidden>Organization Chart</button>
+                                        @*<button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#roleList" title="" data-plugin="tippy" data-tippy-placement="top">Role List</button>*@
                                         <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uiList" title="" data-plugin="tippy" data-tippy-placement="top" hidden>UI List</button>
                                     }
                                 </div>
                                 <div class="col-md-2 mt-3 text-end">
                                     <!-- <a href="viewmanagedoc.html"><button class="btn btn-sm btn-primary">View / Manage
-                                  Documents</button></a> -->
+                                    Documents</button></a> -->
                                 </div>
                             </div>
                         </div>
@@ -130,97 +125,131 @@
                     <!-- ========================= -->
                     <div class="col-md-12 dott-bord-r">
                         <div class="row">
-                            <div class="col-md-4 mb-2">
-                                <label class="form-check-label">Head Of The Organization</label>
-                                <input class="form-check-input mt-1 ms-2" id="EPHeadOrg" type="checkbox" title="" data-plugin="tippy" data-tippy-placement="top">
-                            </div>
-                            <div class="col-md-4 mb-2">
-                                <label class="form-label mb-1">Employee No *</label>
-                                <input class="form-control form-control-sm" id="EPEmpNo" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
-                                <span id="empno-error"></span>
-                            </div>
-                            <!-- -----------------  -->
-                            <div class="col-md-4 mb-2">
-                                <label class="form-label mb-1">Date of Joining *</label>
-                                <input class="form-control form-control-sm" id="EPDateOfJoin" type="date" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
-                            </div>
-                            <!-- -----------------  -->
-                            <div class="col-md-4 mb-2">
-                                <label class="form-label mb-1">Employee Name *</label>
-                                <input class="form-control form-control-sm" id="EPEmpName" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
-                            </div>
-                            <div class="col-md-4 mb-2">
-                                <label class="form-label mb-1">Designation *</label>
-                                <select class="form-select form-select-sm" id="EPDes" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
-                                </select>
-                            </div>
-                            <div class="col-md-4 mb-2">
-                                <label class="form-label mb-1">Locaiton *</label>
-                                <select class="form-select form-select-sm" id="EPloc" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
-                                </select>
-                            </div>
-                            <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-1" id="lblDept">Home Dept</label>
-                                <select class="form-select form-select-sm" id="EPDept" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
-                                </select>
-                            </div>
-                            <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-1" id="lblRole">Roles *</label>
-                                <input class="form-control form-control-sm" id="EPEmpRoles" disabled type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
-                                <input class="form-control form-control-sm" hidden id="EPEmpRoleid" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
-                            </div>
-                            <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-1">Cell No *</label>
-                                <input class="form-control form-control-sm" id="EPCell" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
-                            </div>
-                            <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-1">Email ID *</label>
-                                <input class="form-control form-control-sm" id="EPEmail" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
-                                <span id="email-error"></span>
-                            </div>
-                            @*<div class="col-md-4 mb-2">
-                                </div>*@
-                            @*<div class="col-md-4 mb-2">
-                                    <label class="form-check-label mt-1">User Name</label>
-                                    <input class="form-control form-control-sm" id="EPUserName" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
-                                    <span id="error-username"></span>
-                                </div>*@
-                            <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-1">Password *</label>
-                                <input class="form-control form-control-sm" id="EPPassword" type="password" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-4 border p-3">
+                                <div class="row mb-2 align-items-center">
+                                    <label class="col-md-4 form-label">Head Of The Organization</label>
+                                    <div class="col-md-6">
+                                        <input class="form-check-input" id="EPHeadOrg" type="checkbox">
+                                    </div>
+                                </div>
 
+                                <div class="row mb-2 align-items-center">
+                                    <label class="col-md-4 form-label">Employee Type *</label>
+                                    <div class="col-md-8">
+                                        <select class="form-select form-select-sm" id="EPDes"></select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2 align-items-center">
+                                    <label class="col-md-4 form-label">Employee Name *</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control form-control-sm" id="EPEmpName" type="text" placeholder="xxx / xxx">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2 align-items-center">
+                                    <label class="col-md-4 form-label">Employee No *</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control form-control-sm" id="EPEmpNo" type="text" placeholder="xxx / xxx">
+                                        <span id="empno-error"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2 align-items-center">
+                                    <label class="col-md-4 form-label">Email ID *</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control form-control-sm" id="EPEmail" type="text" placeholder="xxx / xxx">
+                                        <span id="email-error"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2 align-items-center">
+                                    <label class="col-md-4 form-label">Mobile No *</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control form-control-sm" id="EPCell" type="text" placeholder="xxx / xxx">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2 align-items-center" hidden>
+                                    <label class="col-md-4 form-label">Password *</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control form-control-sm" id="EPPassword" type="password" placeholder="xxx / xxx">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2 align-items-center" hidden>
+                                    <label class="col-md-4 form-label">Confirm Password *</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control form-control-sm" id="EPCfmPassword" type="password" placeholder="xxx / xxx">
+                                        <span id="error-password"></span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-1">Confirm Password *</label>
-                                <input class="form-control form-control-sm" id="EPCfmPassword" type="password" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
-                                <span id="error-password"></span>
-                            </div>
-                            <div class="col-md-12 mb-2">
-                                <label class="form-check-label mt-1">Residential Address *</label>
-                                <input class="form-control form-control-sm" id="EPAddress" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
-                            </div>
-                            <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-1">Emergency Contact Person</label>
-                                <input class="form-control form-control-sm" id="EPContPer" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
-                            </div>
-                            <div class="col-md-4 mb-2">
-                                <label class="form-check-label mt-1">Emergency Contac Number</label>
-                                <input class="form-control form-control-sm" id="EPContNo" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
-                            </div>
-                            <div class="col-md-4 mb-2">
-                                <label class="form-check-label">Resigned</label>
-                                <input class="form-check-input mt-1 ms-2" id="EPResignChk" type="checkbox" title="" data-plugin="tippy" data-tippy-placement="top">
-                            </div>
-                            <div class="col-md-4 mb-2" id="DateOfLeaveDIv">
-                                <label class="form-check-label mt-1">Date of Leaving </label>
-                                <input class="form-control form-control-sm" id="EPDateOfLeave" type="date" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
-                            </div>
-                            <div class="col-md-4 mb-2" id="RoleReportDIv">
-                                <label class="form-check-label mt-1">Role Report To </label>
-                                <select class="form-select form-select-sm" id="EPRoleReportTo" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
-                                </select>
-                            </div>
+                            <div class="col-md-1"></div>
                             <!-- -----------------  -->
+                            <div class="col-md-5 border p-3">
+                                <div class="row mb-2 align-items-center">
+                                    <label class="col-md-4 form-label mb-1">Date of Joining</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control form-control-sm" id="EPDateOfJoin" type="date" placeholder="xxx / xxx">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2 align-items-center">
+                                    <label class="col-md-4 form-check-label mt-1">Address</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control form-control-sm" id="EPAddress" type="text" placeholder="xxx / xxx">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2 align-items-center">
+                                    <label class="col-md-4 form-check-label mt-1">Emergency Contact Person</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control form-control-sm" id="EPContPer" type="text" placeholder="xxx / xxx">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2 align-items-center">
+                                    <label class="col-md-4 form-check-label mt-1">Emergency Contact Number</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control form-control-sm" id="EPContNo" type="text" placeholder="xxx / xxx">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2 align-items-center" id="DateOfLeaveDIv">
+                                    <label class="col-md-4 form-check-label mt-1">Date of Leaving</label>
+                                    <div class="col-md-8">
+                                        <input class="form-control form-control-sm" id="EPDateOfLeave" type="date" placeholder="xxx / xxx">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" hidden>
+                                <div class="col-md-4 mb-2">
+                                    <label class="form-label mb-1">Locaiton *</label>
+                                    <select class="form-select form-select-sm" id="EPloc" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <label class="form-check-label mt-1" id="lblDept">Home Dept</label>
+                                    <select class="form-select form-select-sm" id="EPDept" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <label class="form-check-label mt-1" id="lblRole">Roles *</label>
+                                    <input class="form-control form-control-sm" id="EPEmpRoles" disabled type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <input class="form-control form-control-sm" hidden id="EPEmpRoleid" type="text" placeholder="xxx / xxx" title="" data-plugin="tippy" data-tippy-placement="top">
+                                </div>
+                                <div class="col-md-4 mb-2" id="RoleReportDIv">
+                                    <label class="form-check-label mt-1">Role Report To </label>
+                                    <select class="form-select form-select-sm" id="EPRoleReportTo" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-2">
+                                    <label class="form-check-label">Resigned</label>
+                                    <input class="form-check-input mt-1 ms-2" id="EPResignChk" type="checkbox" title="" data-plugin="tippy" data-tippy-placement="top">
+                                </div>
+                            </div>
                             <!-- -----------------  -->
                             <div class="col-md-12 mb-2 text-end">
                                 <input type="text" id="EPEmpId" hidden />
@@ -229,21 +258,90 @@
                             <!-- -----------------  -->
                             <!-- -----------------  -->
                         </div>
+
                         <div class="row">
                             <div class="col-md-12 mb-2 ">
                                 <div class="col-md-12">
-                                    <h5>UI Access List</h5>
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <h5 class="mb-0">Department Linkage</h5>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <label class="form-label mb-0 fs-6">Show deactivated Department Positions</label>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input class="form-check-input" id="DectUi" type="checkbox">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="table-responsive table-he-150 mt-1">
+                                    <table class="table table-sm table-bordered w-100 text-center" id="EmpDeptLinkGrid">
+                                        <thead class="table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Link Date</th>
+                                                <th>Level 2</th>
+                                                <th>Level 3</th>
+                                                <th>Level 4</th>
+                                                <th>Level 5</th>
+                                                <th>Deact. Date</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <label class="form-label mb-0">Reports to</label>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input class="form-control form-control-sm" id="ReportToDept" type="text" value="Show Name of Dept Struct / Name of immediate above level" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 mt-1">
+                                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#Popup1" title="" data-plugin="tippy" data-tippy-placement="top">Update Dept</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mb-2 ">
+                                <div class="col-md-12">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <h5 class="mb-0">UI Access List</h5>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <label class="form-label mb-0 fs-6">Show deactivated UI Access</label>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input class="form-check-input" id="UIDectShow" type="checkbox">
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="table-responsive table-he-150">
                                     <table class="table table-sm table-bordered w-100 text-center" id="EmpUiGrid">
                                         <thead class="table-info th-sti">
                                             <tr class="table-border-bottom">
+                                                <th>Update Dt</th>
                                                 <th>Role</th>
                                                 <th>UI</th>
                                                 <th>View</th>
                                                 <th>Add - Edit</th>
                                                 <th>Delete</th>
                                                 <th>Approve</th>
+                                                <th>Deact Dt</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -264,6 +362,86 @@
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="Popup1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h4 class="modal-title" id="fullWidthModalLabel">Department List</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- ========================= -->
+                    <!-- Level 2 -->
+                    <div class="col-md-3">
+                        <label class="form-label">Level 2</label>
+                        <select class="form-select form-select-sm" id="Slvl2" aria-label="form-select-sm" title=""
+                                data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">xxxxxx</option>
+                        </select>
+                    </div>
+
+                    <!-- Level 3 -->
+                    <div class="col-md-3">
+                        <label class="form-label">Level 3</label>
+                        <select class="form-select form-select-sm" id="Slvl3" aria-label="form-select-sm" title=""
+                                data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">xxxxxx</option>
+                        </select>
+                    </div>
+
+                    <!-- Level 4 -->
+                    <div class="col-md-3">
+                        <label class="form-label">Level 4</label>
+                        <select class="form-select form-select-sm" id="Slvl4" aria-label="form-select-sm" title=""
+                                data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">xxxxxx</option>
+                        </select>
+                    </div>
+
+                    <!-- Level 5 -->
+                    <div class="col-md-3">
+                        <label class="form-label">Level 5</label>
+                        <select class="form-select form-select-sm" id="Slvl5" aria-label="form-select-sm" title=""
+                                data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">xxxxxx</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-12 mt-2">
+                        <div class="table-responsive table-he-150">
+                            <table class="table table-sm table-bordered w-100 text-center" id="DeptP1Grid">
+                                <thead class="table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th></th>
+                                        <th>Level 2</th>
+                                        <th>Level 3</th>
+                                        <th>Level 4</th>
+                                        <th>Level 5</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <!-- ========================= -->
+                    <div class="col-md-12 mt-2 text-end">
+                        <input type="text" id="DeptLinkId" hidden />
+                        <button class="btn btn-sm btn-primary" id="DeptLinkSave">Select</button>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- body end -->
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
 </div>
 
 <div class="modal fade" id="orgChart" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -639,47 +817,56 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content bxs-modal">
             <div class="modal-header">
-                <h4 class="modal-title" id="fullWidthModalLabel">UI Access</h4>
+                <h4 class="modal-title" id="fullWidthModalLabel">UI Access For: <span id="SEmpNameUI"></span></h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <!-- ========================= -->
-                    <label class="form-label col-md-2 mb-2">Menu Level 1</label>
-                    <div class="col-md-2 mb-2">
-                        <select class="form-select form-select-sm" id="UiAccessEMenu1" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
-                            <option value="">xxxxxx</option>
-                        </select>
+                    <div class="col-md-6">
+                        <div class="row">
+
+                            <label class="form-label col-md-6 mb-2">Menu Level 1</label>
+                            <div class="col-md-6 mb-2">
+                                <select class="form-select form-select-sm" id="UiAccessEMenu1" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="">xxxxxx</option>
+                                </select>
+                            </div>
+                            <label class="form-label col-md-6 mb-2">Menu Level 2</label>
+                            <div class="col-md-6 mb-2">
+                                <select class="form-select form-select-sm" id="UiAccessEMenu2" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="">xxxxxx</option>
+                                </select>
+                            </div>
+                            <label class="form-label col-md-6 mb-2">Menu Level 3</label>
+                            <div class="col-md-6 mb-2">
+                                <select class="form-select form-select-sm" id="UiAccessEMenu3" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="">xxxxxx</option>
+                                </select>
+                            </div>
+                            <label class="form-label col-md-6 mb-2">Menu Level 4</label>
+                            <div class="col-md-6 mb-2">
+                                <select class="form-select form-select-sm" id="UiAccessEMenu4" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="">xxxxxx</option>
+                                </select>
+                            </div>
+                            <label class="form-label col-md-6 mb-2">Menu Level 5</label>
+                            <div class="col-md-6 mb-2">
+                                <select class="form-select form-select-sm" id="UiAccessEMenu5" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="">xxxxxx</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <label class="form-label col-md-2 mb-2">Menu Level 2</label>
-                    <div class="col-md-2 mb-2">
-                        <select class="form-select form-select-sm" id="UiAccessEMenu2" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
-                            <option value="">xxxxxx</option>
-                        </select>
-                    </div>
-                    <label class="form-label col-md-2 mb-2">Menu Level 3</label>
-                    <div class="col-md-2 mb-2">
-                        <select class="form-select form-select-sm" id="UiAccessEMenu3" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
-                            <option value="">xxxxxx</option>
-                        </select>
-                    </div>
-                    <label class="form-label col-md-2 mb-2">Menu Level 4</label>
-                    <div class="col-md-2 mb-2">
-                        <select class="form-select form-select-sm" id="UiAccessEMenu4" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
-                            <option value="">xxxxxx</option>
-                        </select>
-                    </div>
-                    <label class="form-label col-md-2 mb-2">Menu Level 5</label>
-                    <div class="col-md-2 mb-2">
-                        <select class="form-select form-select-sm" id="UiAccessEMenu5" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
-                            <option value="">xxxxxx</option>
-                        </select>
-                    </div>
-                    <label class="form-label col-md-2 mb-2">Permission</label>
-                    <div class="col-md-2 mb-2">
-                        <select class="form-select form-select-sm" id="UiAccessEPermission" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
-                            <option value="">xxxxxx</option>
-                        </select>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <label class="form-label col-md-6 mb-2 mt-5 text-center">Permission</label>
+                            <div class="col-md-6 mt-5 mb-2">
+                                <select class="form-select form-select-sm" id="UiAccessEPermission" aria-label="form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="">xxxxxx</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <!-- ========================= -->
                     <div class="col-md-12 text-end">
@@ -861,7 +1048,6 @@
         <td>{employee_No}</td>
         <td>{employee_name}</td>
         <td>{dateOfJoinStr}</td>
-        <td>{location}</td>
         <td>{email}</td>
         <td>
             <div class="dropdown float-center">
@@ -880,6 +1066,7 @@
                                    data-dept="{home_Dept_Id}" data-desg="{designation_Id}" data-cell="{phone}" data-address="{residential_Address}" data-uname="{userName}" data-passwd="{password}"
                                    data-email="{email}" data-dateofjoin="{date_Of_Joining}" data-chkresign="{employee_Resigned}" data-dateofresigning="{date_Of_Resigning}"
                                    data-plantid="{plant_Id}" data-emergcontactno="{emerg_Contact_No}" data-emergcontactname="{emerg_Contact_Name}">Edit</a>
+                                <a href="javascript:void(0);" class="dropdown-item" data-employeeid="{employee_ID}" onclick="ResetPassword(this)">Reset Password</a>
                                 <!-- item-->
                             }
                             if (pr.PermissionId >= 4)
@@ -897,6 +1084,7 @@
                            data-dept="{home_Dept_Id}" data-desg="{designation_Id}" data-cell="{phone}" data-address="{residential_Address}" data-uname="{userName}" data-passwd="{password}"
                            data-email="{email}" data-dateofjoin="{date_Of_Joining}" data-chkresign="{employee_Resigned}" data-dateofresigning="{date_Of_Resigning}"
                            data-plantid="{plant_Id}" data-emergcontactno="{emerg_Contact_No}" data-emergcontactname="{emerg_Contact_Name}">Edit</a>
+                        <a href="javascript:void(0);" class="dropdown-item" data-employeeid="{employee_ID}" onclick="ResetPassword(this)">Reset Password</a>
                         <!-- item-->
                         <a href="javascript:void(0);" class="dropdown-item" data-employeeid="{employee_ID}" onclick="DeleteEmployee(this)">Delete</a>
                     }
@@ -1011,16 +1199,48 @@
     </tr>
 </template>
 
+<template id="DeptP1GridRow">
+    <tr>
+        <td>
+            <input type="checkbox" class="row-checkbox" />
+        </td>
+        <td>{level2}</td>
+        <td>{level3}</td>
+        <td>{level4}</td>
+        <td>{level5}</td>
+        <td hidden>{departmentId}</td>
+    </tr>
+</template>
+<template id="EmpDeptLinkGridRow">
+    <tr>
+        <td>{add_dateStr}</td>
+        <td>{level2}</td>
+        <td>{level3}</td>
+        <td>{level4}</td>
+        <td>{level5}</td>
+        <td>{deact_dateStr}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-deptempid="{dept_EmployeeId}" data-empid="{employee_Id}" onclick="DeleteDeptEmp(this)">Delete</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
 <template id="EmpUiGridRow">
     <tr>
+        <td>{add_dateStr}</td>
         <td>{roleName}</td>
         <td>{uiLevel}</td>
         <td>{view_Allowed}</td>
         <td>{add_Edit_Allowed}</td>
         <td>{delete_Allowed}</td>
         <td>{approval_Allowed}</td>
+        <td>{deact_dateStr}</td>
         <td>
-            <div class="dropdown float-center">
+            <div class="dropdown float-center" style="display:{showMenu}">
                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
@@ -1029,7 +1249,7 @@
                        data-permissionid="{permissionId}"
                        data-uilevel="{uiLevel}">Edit</a>
                     <!-- item-->
-                    <a href="javascript:void(0);" class="dropdown-item" data-uilistid="{empl_Role_ListId}" onclick="DeleteEmplUiList(this)">Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-uilistid="{role_Ui_ListId}" onclick="DeleteEmplUiList(this)">Delete</a>
                 </div>
             </div>
         </td>

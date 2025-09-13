@@ -27,6 +27,15 @@ namespace CWB.CompanySettings.Configurations
                 .Property(t => t.EmployeeId)
                 .HasColumnName("EmployeeId");
             builder
+                .Property(t => t.Active)
+                .HasColumnName("Active");
+            builder
+                .Property(t => t.Add_date)
+                .HasColumnName("Add_date");
+            builder
+                .Property(t => t.Deact_date)
+                .HasColumnName("Deact_date");
+            builder
                 .Property(t => t.PermissionId)
                 .HasColumnName("PermissionId")
                 .IsRequired();

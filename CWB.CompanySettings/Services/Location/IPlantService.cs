@@ -28,6 +28,7 @@ namespace CWB.CompanySettings.Services.Location
         Task<bool> CheckCity(string city);
         Task<bool> CheckSections(string city);
         Task<bool> CheckCountry(string country);
+        Task<bool> DelSections(long designationId);
 
         Task<PlantWorkingDetailsVM> GetPlantWD(long tenantId,long plantId);
     }

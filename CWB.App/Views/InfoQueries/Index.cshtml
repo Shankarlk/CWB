@@ -1,0 +1,82 @@
+﻿
+@{
+    ViewData["Title"] = "Info-Queries";
+}
+
+<input value="IFQ" type="hidden" id="hdn-nav-menu" />
+<div class="content">
+    <div class="card">
+        <div class="card-body">
+            <div class="row g-3">
+                <!-- Production -->
+                <div class="col-md-6">
+                    <div class="card p-1">
+                        <div class="card-body">
+                            <h5 class="card-title">Production</h5>
+                            <a asp-action="Index" asp-controller="ViewSoInfo" data-navid="I-IFQ" class="d-block mt-1 mb-1">SO List</a>
+                            <a asp-action="Index" asp-controller="ViewWoInfo" data-navid="I-IFQ" class="d-block mt-1 mb-1">WO List</a>
+                            <a asp-action="Index" asp-controller="ViewShopLoadInfo" data-navid="I-IFQ" class="d-block mt-1 mb-1">Shop Loading</a>
+                            <a asp-action="Index" asp-controller="ViewSubConInfo" data-navid="I-IFQ" class="d-block mt-1 mb-1">SubCon Loading</a>
+                            <a asp-action="Index" asp-controller="ViewPurchaseInfo" data-navid="I-IFQ" class="d-block mt-1 mb-1">Purchase List</a>
+                            <a asp-action="Index" asp-controller="ViewInwInspInfo" data-navid="I-IFQ" class="d-block mt-1 mb-1">Inward Inspection</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quality -->
+                <div class="col-md-6">
+                    <div class="card p-1">
+                        <div class="card-body">
+                            <h5 class="card-title">Quality</h5>
+                            <a href="#" class="d-block mt-1 mb-1">Customer</a>
+                            <a href="#" class="d-block mt-1 mb-1">Customer</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item Master -->
+                <div class="col-md-6">
+                    <div class="card p-1">
+                        <div class="card-body">
+                            <h5 class="card-title">Item Master</h5>
+                            <a asp-action="ViewEditPart" asp-controller="ItemMasterInfo" asp-route-returnUrl="ViewPart" class="d-block mt-1 mb-1">View Part Details / Drawing</a>
+                            <a asp-action="WhereUsed" asp-controller="ItemMasterInfo" class="d-block mt-1 mb-1">Where Used: Find where all a given Part is used</a>
+                            <a asp-action="ChildRawMatl" asp-controller="ItemMasterInfo" class="d-block mt-1 mb-1">Child M/Part Part Raw Material</a>
+                            <a asp-action="ChildBom" asp-controller="ItemMasterInfo" class="d-block mt-1 mb-1">Bill of Material</a>
+                            <a asp-action="ViewSuppForPart" asp-controller="ItemMasterInfo" class="d-block mt-1 mb-1">Find Supplier for BOF / Raw Material</a>
+                            <a asp-action="ViewSuppForPart" asp-controller="ItemMasterInfo" class="d-block mt-1 mb-1">Supplier List</a>
+                            <a asp-action="ViewEditPart" asp-controller="ItemMasterInfo" asp-route-returnUrl="ObsoletePart" class="d-block mt-1 mb-1">Obsolete Parts List</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Material Availability -->
+                <div class="col-md-6">
+                    <div class="card p-1">
+                        <div class="card-body">
+                            <h5 class="card-title">Material Availability</h5>
+                            <a asp-action="StockAvl" asp-controller="MaterialAvailability"  class="d-block mt-1 mb-1">Stock Available</a>
+                            <a asp-action="MatlAvl" asp-controller="MaterialAvailability" class="d-block mt-1 mb-1">Material Available at chosen Location</a>
+                            <a href="#" class="d-block mt-1 mb-1">Items at Reorder Level</a>
+                            <a href="#" class="d-block mt-1 mb-1">RM / BOF Zero Stock Items</a>
+                            <a href="#" class="d-block mt-1 mb-1">Reorder List</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Process Planning -->
+                <div class="col-md-6">
+                    <div class="card p-1">
+                        <div class="card-body">
+                            <h5 class="card-title">Process Planning</h5>
+                            <a asp-action="Index" asp-controller="ViewRoutingInfo" data-navid="I-IFQ" class="d-block mt-1 mb-1">Routing</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end card -->
+    </div>
+    <!-- end row -->
+    <!-- Modal -->
+</div>

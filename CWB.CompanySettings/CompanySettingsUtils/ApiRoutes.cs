@@ -55,6 +55,7 @@
             public const string CheckCountrys = Base + "/checkcountry/{country}";
             public const string CheckCity = Base + "/checkcity/{city}";
             public const string CheckSections = Base + "/checksection/{city}";
+            public const string DelSections = Base + "/deletesection/{sectionId}";
             public const string PostPlant = Base + "/plant";
             public const string CheckPlant = Base + "/plant-exist";
             public const string GetPlant = Base + "/getplant/{plantId}";
@@ -76,6 +77,20 @@
             public const string PostDepartment = Base + "/department";
             public const string DelDepartment = Base + "/deldepartment/{departmentId}";
             public const string CheckDepartment = Base + "/department-exist";
+            public const string GetDept_Role_List = Base + "/getdeptrolelist/{tenantId}";
+            public const string DelDept_Role_List = Base + "/deletedeptrolelist/{sectionId}";
+            public const string PostDept_Role_List = Base + "/postdeptrolelist";
+            public const string GetEmployee_Pwd = Base + "/getemployepwd/{tenantId}";
+            public const string DelEmployee_Pwd = Base + "/deleteemployepwd/{sectionId}";
+            public const string PostEmployee_Pwd = Base + "/postemployepwd";
+            public const string GetDept_Employee = Base + "/getdeptemp/{tenantId}";
+            public const string DelDept_Employee = Base + "/deletedeptemp/{sectionId}";
+            public const string PostDept_Employee = Base + "/postdeptemp";
+            
+            public const string GetEmployee_UI_List = Base + "/getempuilist/{tenantId}";
+            public const string DelEmployee_UI_List = Base + "/deleteempuilist/{sectionId}";
+            public const string PostEmployee_UI_List = Base + "/postempuilist";
+
         }
 
         public static class Designation

@@ -3,6 +3,7 @@
     public class MachineListVM
     {
         public long MachineId { get; set; }
+        public long SectionId { get; set; }
         public string Name { get; set; }
         public string Manufacturer { get; set; }
         public string SlNo { get; set; }

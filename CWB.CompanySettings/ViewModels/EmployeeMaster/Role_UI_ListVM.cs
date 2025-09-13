@@ -11,6 +11,9 @@ namespace CWB.CompanySettings.ViewModels.EmployeeMaster
         public long Ui_Id { get; set; }
         public long RoleId { get; set; }
         public long PermissionId { get; set; }
+        public char Active { get; set; }
+        public DateTime Add_date { get; set; }
+        public DateTime Deact_date { get; set; }
         public long EmployeeId { get; set; }
         public string Comment { get; set; }
         public long TenantId { get; set; }

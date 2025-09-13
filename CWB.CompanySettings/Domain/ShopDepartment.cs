@@ -9,6 +9,8 @@ namespace CWB.CompanySettings.Domain
         public int NoOfShifts { get; set; }
         public long TenantId { get; set; }
         public long PlantId { get; set; }
+        public long Level_No { get; set; }
+        public long Part_Of { get; set; }
         public string Activity { get; set; }
         public bool ProdDept { get; set; }
         public string Section { get; set; }

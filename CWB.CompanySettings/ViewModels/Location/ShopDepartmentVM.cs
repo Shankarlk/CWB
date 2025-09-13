@@ -5,6 +5,8 @@
         public string Name { get; set; }
         public long DepartmentId { get; set; }
         public long PlantId { get; set; }
+        public long Level_No { get; set; }
+        public long Part_Of { get; set; }
         public int NoOfShifts { get; set; }
         public long TenantId { get; set; }
         public string PlantName { get; set; }

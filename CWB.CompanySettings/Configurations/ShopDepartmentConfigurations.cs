@@ -34,6 +34,14 @@ namespace CWB.CompanySettings.Configurations
                .HasColumnName("TenantId")
                .IsRequired();
             builder
+               .Property(m => m.Part_Of)
+               .HasColumnName("Part_Of")
+               .IsRequired();
+            builder
+               .Property(m => m.Level_No)
+               .HasColumnName("Level_No")
+               .IsRequired();
+            builder
                 .Property(t => t.Activity)
                 .HasColumnName("Activity")
                 .IsUnicode(true)

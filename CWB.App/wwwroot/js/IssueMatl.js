@@ -1,6 +1,18 @@
 ﻿function loadMisCount() {
     api.getbulk("/workOrder/GetAllMatl_Issue_List").then((data) => {
-        var datacount = data.length;
+        let unique = [];
+        let seen = new Set();
+
+        for (let item of data) {
+            // Build unique key including opNo to allow different operations
+            let key = `${item.shop}|${item.woNumber}|${item.partNo}|${item.routingName}|${item.opNo}`;
+
+            if (!seen.has(key)) {
+                seen.add(key);
+                unique.push(item);
+            }
+        }
+        var datacount = unique.length;
         $("#PlanStore1").text('0');
         $("#ReadStore1").text('0');
         $("#PlanStore2").text(datacount);
@@ -298,8 +310,21 @@ function loadIssueShop() {
     $(tablebody).html("");//empty tbody
 
     api.getbulk("/workOrder/GetAllMatl_Issue_List").then((data) => {
-        for (i = 0; i < data.length; i++) {
-            $(tablebody).append(AppUtil.ProcessTemplateData("P1GridRow", data[i]));
+
+        let unique = [];
+        let seen = new Set();
+
+        for (let item of data) {
+            // Build unique key including opNo to allow different operations
+            let key = `${item.shop}|${item.woNumber}|${item.partNo}|${item.routingName}|${item.opNo}`;
+
+            if (!seen.has(key)) {
+                seen.add(key);
+                unique.push(item);
+            }
+        }
+        for (i = 0; i < unique.length; i++) {
+            $(tablebody).append(AppUtil.ProcessTemplateData("P1GridRow", unique[i]));
         }
     }).catch((error) => {
     });

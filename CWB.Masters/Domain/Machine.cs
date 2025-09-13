@@ -13,6 +13,7 @@ namespace CWB.Masters.Domain
         public MachineType MachineType { get; set; }
         public long PlantId { get; set; }
         public long ShopId { get; set; }
+        public long SectionId { get; set; }
         public long TenantId { get; set; }
         public long OperationListId { get; set; }
         public OperationList OperationList { get; set; }

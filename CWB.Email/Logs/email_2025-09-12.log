@@ -1,0 +1,230 @@
+2025-09-12 04:51:55.3086 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 04:51:55.6197 INFO Hosting environment: Production
+2025-09-12 04:51:55.7576 INFO Content root path: /app
+2025-09-12 06:21:14.6650 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 06:21:14.8758 INFO Hosting environment: Production
+2025-09-12 06:21:14.9728 INFO Content root path: /app
+2025-09-12 06:57:30.0041 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 06:57:30.2873 INFO Hosting environment: Production
+2025-09-12 06:57:30.4217 INFO Content root path: /app
+2025-09-12 07:40:11.3812 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 07:40:11.8160 INFO Hosting environment: Production
+2025-09-12 07:40:11.9080 INFO Content root path: /app
+2025-09-12 08:46:24.5561 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-12 08:46:24.9751 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 08:46:25.0214 INFO Hosting environment: Production
+2025-09-12 08:46:25.0755 INFO Content root path: /app
+2025-09-12 08:46:32.5044 ERROR Consume exception
+2025-09-12 08:49:52.5915 INFO Consumed message at email-events [[0]] @0: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Welcome to Our App!","Body":"Thank you for registering!"}
+2025-09-12 08:49:52.8685 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 08:49:53.8257 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 08:49:56.5174 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 08:49:57.2067 INFO Sending email to rajugoudas2003@gmail.com
+2025-09-12 08:49:59.4553 INFO Email successfully sent to rajugoudas2003@gmail.com
+2025-09-12 08:50:40.8381 INFO Consumed message at email-events [[0]] @1: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Welcome to Our App!","Body":"Thank you for registering!"}
+2025-09-12 08:50:40.8493 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 08:50:40.9334 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 08:50:42.7551 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 08:50:43.2360 INFO Sending email to rajugoudas2003@gmail.com
+2025-09-12 08:50:45.3577 INFO Email successfully sent to rajugoudas2003@gmail.com
+2025-09-12 08:52:36.8763 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-12 08:52:37.2026 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 08:52:37.3037 INFO Hosting environment: Production
+2025-09-12 08:52:37.3569 INFO Content root path: /app
+2025-09-12 08:54:41.7211 INFO Consumed message at email-events [[0]] @2: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Welcome to CWB!","Body":"Hi Test em,\n\nYour Account has been registered successfully!\nYou Username: rajugoudas2003@gmail.com\nYou Password: *h3Si5foU%\n\nThanks,\nCWB"}
+2025-09-12 08:54:42.2090 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 08:54:42.7159 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 08:54:45.0339 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 08:54:45.6729 INFO Sending email to rajugoudas2003@gmail.com
+2025-09-12 08:54:47.7804 INFO Email successfully sent to rajugoudas2003@gmail.com
+2025-09-12 09:00:59.1578 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-12 09:00:59.3953 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 09:00:59.4904 INFO Hosting environment: Production
+2025-09-12 09:00:59.5990 INFO Content root path: /app
+2025-09-12 09:03:42.6684 INFO Consumed message at email-events [[0]] @3: {"RecipientEmail":"shankarlkkp@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Shankar,\n\nYour Account has been Created successfully!\nYou Username: shankarlkkp@gmail.com\nYou Password: LbrbU\u0026X4A@\n\nThanks,\nKGK-Engineers"}
+2025-09-12 09:03:42.9854 INFO Attempt 1 to send email to shankarlkkp@gmail.com
+2025-09-12 09:03:43.3781 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 09:03:45.5945 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 09:03:46.2108 INFO Sending email to shankarlkkp@gmail.com
+2025-09-12 09:03:48.2923 INFO Email successfully sent to shankarlkkp@gmail.com
+2025-09-12 09:14:35.2290 INFO Consumed message at email-events [[0]] @4: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Test em,\n\nYour Account has been Created successfully!\nYou Username: rajugoudas2003@gmail.com\nYou Password: \u0026KZ4d3H%78\n\nThanks,\nKGK-Engineers"}
+2025-09-12 09:14:35.2431 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 09:14:35.2530 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 09:14:35.9028 ERROR Send attempt 1 failed for rajugoudas2003@gmail.com
+2025-09-12 09:14:37.9193 INFO Attempt 2 to send email to rajugoudas2003@gmail.com
+2025-09-12 09:14:37.9361 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 09:14:38.1803 ERROR Send attempt 2 failed for rajugoudas2003@gmail.com
+2025-09-12 09:14:42.1922 INFO Attempt 3 to send email to rajugoudas2003@gmail.com
+2025-09-12 09:14:42.2004 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 09:14:42.2874 ERROR Send attempt 3 failed for rajugoudas2003@gmail.com
+2025-09-12 09:14:42.3026 ERROR Failed to send email to rajugoudas2003@gmail.com after 3 attempts
+2025-09-12 10:45:03.0688 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-12 10:45:03.4725 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 10:45:03.5668 INFO Hosting environment: Production
+2025-09-12 10:45:03.6861 INFO Content root path: /app
+2025-09-12 10:45:14.4550 ERROR Consume exception
+2025-09-12 11:36:11.2993 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-12 11:36:11.5587 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 11:36:11.6721 INFO Hosting environment: Production
+2025-09-12 11:36:11.9465 INFO Content root path: /app
+2025-09-12 11:36:12.1288 ERROR Consume exception
+2025-09-12 11:40:08.4177 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-12 11:40:08.6149 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 11:40:08.7743 INFO Hosting environment: Production
+2025-09-12 11:40:08.8451 INFO Content root path: /app
+2025-09-12 11:40:09.0269 ERROR Consume exception
+2025-09-12 11:42:03.5550 INFO Consumed message at email-events [[0]] @0: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Password Reset!","Body":"Hi Emp Name ,\n\nYour Password has been Reset!\nYour Username: rajugoudas2003@gmail.com\nYour New Password: 8ch*sN3d8X\n\nThanks,\nKGK-Engineers"}
+2025-09-12 11:42:03.8886 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 11:42:04.8550 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 11:42:07.9898 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 11:42:08.5009 INFO Sending email to rajugoudas2003@gmail.com
+2025-09-12 11:42:10.5321 INFO Email successfully sent to rajugoudas2003@gmail.com
+2025-09-12 11:52:42.3954 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-12 11:52:42.9889 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 11:52:43.0417 INFO Hosting environment: Production
+2025-09-12 11:52:43.1030 INFO Content root path: /app
+2025-09-12 12:46:25.9113 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-12 12:46:26.2299 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 12:46:26.3812 INFO Hosting environment: Production
+2025-09-12 12:46:26.4651 INFO Content root path: /app
+2025-09-12 12:47:23.5670 INFO Consumed message at email-events [[0]] @1: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Password Reset!","Body":"Hi Emp Name ,\n\nYour Password has been Reset!\nYour Username: rajugoudas2003@gmail.com\nYour New Password: *iKW7!DSmX\n\nThanks,\nKGK-Engineers"}
+2025-09-12 12:47:23.9211 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 12:47:24.3529 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 12:47:27.8497 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 12:47:28.5279 INFO Sending email to rajugoudas2003@gmail.com
+2025-09-12 12:47:30.7156 INFO Email successfully sent to rajugoudas2003@gmail.com
+2025-09-12 12:49:07.5868 INFO Consumed message at email-events [[0]] @2: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Password Reset!","Body":"Hi Emp Name ,\n\nYour Password has been Reset!\nYour Username: rajugoudas2003@gmail.com\nYour New Password: M*1NnJo74t\n\nThanks,\nKGK-Engineers"}
+2025-09-12 12:49:07.6057 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 12:49:07.6936 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 12:49:09.6277 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 12:49:10.2164 INFO Sending email to rajugoudas2003@gmail.com
+2025-09-12 12:49:12.5146 INFO Email successfully sent to rajugoudas2003@gmail.com
+2025-09-12 12:53:56.4467 INFO Consumed message at email-events [[0]] @3: {"RecipientEmail":"rajugoudah2003@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Emp Name ,\n\nYour Account has been Created successfully!\nYou Username: rajugoudah2003@gmail.com\nYou Password: M*1NnJo74t\n\nThanks,\nKGK-Engineers"}
+2025-09-12 12:53:56.4820 INFO Attempt 1 to send email to rajugoudah2003@gmail.com
+2025-09-12 12:53:56.5343 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 12:54:02.6697 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 12:54:03.2825 INFO Sending email to rajugoudah2003@gmail.com
+2025-09-12 12:54:05.5524 INFO Email successfully sent to rajugoudah2003@gmail.com
+2025-09-12 13:24:16.1989 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-12 13:24:16.4764 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 13:24:16.5287 INFO Hosting environment: Production
+2025-09-12 13:24:16.5597 INFO Content root path: /app
+2025-09-12 13:33:46.7699 INFO Consumed message at email-events [[0]] @4: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Emp Name ,\n\nYour Account has been Created successfully!\nYou Username: rajugoudas2003@gmail.com\nYou Password: M*1NnJo74t\n\nThanks,\nKGK-Engineers"}
+2025-09-12 13:33:47.2108 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 13:33:47.7415 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 13:33:51.1890 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 13:33:52.1100 INFO Sending email to rajugoudas2003@gmail.com
+2025-09-12 13:33:56.7332 INFO Email successfully sent to rajugoudas2003@gmail.com
+2025-09-12 13:34:33.7515 INFO Consumed message at email-events [[0]] @5: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Emp Name ,\n\nYour Account has been Created successfully!\nYou Username: rajugoudas2003@gmail.com\nYou Password: M*1NnJo74t\n\nThanks,\nKGK-Engineers"}
+2025-09-12 13:34:33.8374 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 13:34:33.9618 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 13:34:36.9114 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 13:34:37.8360 INFO Sending email to rajugoudas2003@gmail.com
+2025-09-12 13:34:41.9218 INFO Email successfully sent to rajugoudas2003@gmail.com
+2025-09-12 13:36:02.9224 INFO Consumed message at email-events [[0]] @6: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Password Reset!","Body":"Hi Emp Name ,\n\nYour Password has been Reset!\nYour Username: rajugoudas2003@gmail.com\nYour New Password: !UV5DZp*%j\n\nThanks,\nKGK-Engineers"}
+2025-09-12 13:36:02.9591 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 13:36:02.9951 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 13:36:05.6047 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 13:36:06.2968 INFO Sending email to rajugoudas2003@gmail.com
+2025-09-12 13:36:10.0931 INFO Email successfully sent to rajugoudas2003@gmail.com
+2025-09-12 13:52:46.5187 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-12 13:52:46.7566 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 13:52:46.8634 INFO Hosting environment: Production
+2025-09-12 13:52:46.9252 INFO Content root path: /app
+2025-09-12 14:01:32.5098 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-12 14:01:32.7790 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 14:01:32.8363 INFO Hosting environment: Production
+2025-09-12 14:01:32.8644 INFO Content root path: /app
+2025-09-12 14:06:27.1474 INFO Consumed message at email-events [[0]] @7: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Your Password Has Changed!","Body":"Hi Emp Name ,\n\nYour Password has been Changed!\nYour Username: rajugoudas2003@gmail.com\nYour Changed Password: Rj@123456\n\nThanks,\nKGK-Engineers"}
+2025-09-12 14:06:27.3764 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 14:06:28.4242 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:06:28.9110 ERROR Send attempt 1 failed for rajugoudas2003@gmail.com
+2025-09-12 14:06:30.9262 INFO Attempt 2 to send email to rajugoudas2003@gmail.com
+2025-09-12 14:06:30.9394 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:06:31.1083 ERROR Send attempt 2 failed for rajugoudas2003@gmail.com
+2025-09-12 14:06:35.1206 INFO Attempt 3 to send email to rajugoudas2003@gmail.com
+2025-09-12 14:06:35.1706 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:06:35.3614 ERROR Send attempt 3 failed for rajugoudas2003@gmail.com
+2025-09-12 14:06:35.3766 ERROR Failed to send email to rajugoudas2003@gmail.com after 3 attempts
+2025-09-12 14:07:57.8389 INFO Consumed message at email-events [[0]] @8: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Your Password Has Changed!","Body":"Hi Emp Name ,\n\nYour Password has been Changed!\nYour Username: rajugoudas2003@gmail.com\nYour Changed Password: Rj@1234567\n\nThanks,\nKGK-Engineers"}
+2025-09-12 14:07:57.8848 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 14:07:57.9287 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:07:58.1471 ERROR Send attempt 1 failed for rajugoudas2003@gmail.com
+2025-09-12 14:08:00.1590 INFO Attempt 2 to send email to rajugoudas2003@gmail.com
+2025-09-12 14:08:00.1764 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:08:00.3719 ERROR Send attempt 2 failed for rajugoudas2003@gmail.com
+2025-09-12 14:08:04.3958 INFO Attempt 3 to send email to rajugoudas2003@gmail.com
+2025-09-12 14:08:04.4100 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:08:04.5447 ERROR Send attempt 3 failed for rajugoudas2003@gmail.com
+2025-09-12 14:08:04.5594 ERROR Failed to send email to rajugoudas2003@gmail.com after 3 attempts
+2025-09-12 14:11:26.3024 INFO Consumed message at email-events [[0]] @9: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Your Password Has Changed!","Body":"Hi Emp Name ,\n\nYour Password has been Changed!\nYour Username: rajugoudas2003@gmail.com\nYour Changed Password: Rj@123456\n\nThanks,\nKGK-Engineers"}
+2025-09-12 14:11:26.3148 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 14:11:26.3570 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:11:26.5467 ERROR Send attempt 1 failed for rajugoudas2003@gmail.com
+2025-09-12 14:11:28.5662 INFO Attempt 2 to send email to rajugoudas2003@gmail.com
+2025-09-12 14:11:28.5794 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:11:28.7051 ERROR Send attempt 2 failed for rajugoudas2003@gmail.com
+2025-09-12 14:11:32.7191 INFO Attempt 3 to send email to rajugoudas2003@gmail.com
+2025-09-12 14:11:32.7378 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:11:32.9090 ERROR Send attempt 3 failed for rajugoudas2003@gmail.com
+2025-09-12 14:11:32.9279 ERROR Failed to send email to rajugoudas2003@gmail.com after 3 attempts
+2025-09-12 14:13:51.4467 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-12 14:13:51.7821 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 14:13:51.8634 INFO Hosting environment: Production
+2025-09-12 14:13:51.9170 INFO Content root path: /app
+2025-09-12 14:19:18.6597 INFO Consumed message at email-events [[0]] @10: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Your Password Has Changed!","Body":"Hi Emp Name ,\n\nYour Password has been Changed!\nYour Username: rajugoudas2003@gmail.com\nYour Changed Password: Rj@123456\n\nThanks,\nKGK-Engineers"}
+2025-09-12 14:19:19.0814 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 14:19:19.4556 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:19:22.4703 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 14:19:23.2859 INFO Sending email to rajugoudas2003@gmail.com
+2025-09-12 14:19:26.9489 INFO Email successfully sent to rajugoudas2003@gmail.com
+2025-09-12 14:20:23.7164 INFO Consumed message at email-events [[0]] @11: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Your Password Has Changed!","Body":"Hi Emp Name ,\n\nYour Password has been Changed!\nYour Username: rajugoudas2003@gmail.com\nYour Changed Password: Rj@123456\n\nThanks,\nKGK-Engineers"}
+2025-09-12 14:20:23.7298 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 14:20:23.7889 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:20:25.7855 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 14:20:26.2989 INFO Sending email to rajugoudas2003@gmail.com
+2025-09-12 14:20:28.3025 INFO Email successfully sent to rajugoudas2003@gmail.com
+2025-09-12 14:21:48.1514 INFO Consumed message at email-events [[0]] @12: {"RecipientEmail":"rajugh1@gmail.com","Subject":"Password Reset!","Body":"Hi Rajugouda,\n\nYour Password has been Reset!\nYour Username: rajugh1@gmail.com\nYour New Password: hhlX1LJc@v\n\nThanks,\nKGK-Engineers"}
+2025-09-12 14:21:48.1670 INFO Attempt 1 to send email to rajugh1@gmail.com
+2025-09-12 14:21:48.2038 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:21:50.3340 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 14:21:50.9546 INFO Sending email to rajugh1@gmail.com
+2025-09-12 14:21:52.8968 INFO Email successfully sent to rajugh1@gmail.com
+2025-09-12 14:23:54.4026 INFO Consumed message at email-events [[0]] @13: {"RecipientEmail":"rajugh1@gmail.com","Subject":"Your Password Has Changed!","Body":"Hi Rajugouda,\n\nYour Password has been Changed!\nYour Username: rajugh1@gmail.com\nYour Changed Password: Rj@123456\n\nThanks,\nKGK-Engineers"}
+2025-09-12 14:23:54.4484 INFO Attempt 1 to send email to rajugh1@gmail.com
+2025-09-12 14:23:54.4884 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:23:56.3943 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 14:23:57.1359 INFO Sending email to rajugh1@gmail.com
+2025-09-12 14:24:00.1048 INFO Email successfully sent to rajugh1@gmail.com
+2025-09-12 14:29:47.4008 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-12 14:29:47.7952 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 14:29:47.8677 INFO Hosting environment: Production
+2025-09-12 14:29:47.9569 INFO Content root path: /app
+2025-09-12 14:32:16.0435 INFO Consumed message at email-events [[0]] @14: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Your Password Has Changed!","Body":"Hi Emp Name ,\n\nYour Password has been Changed!\nYour Username: rajugoudas2003@gmail.com\nYour Changed Password: Rj@1234567\n\nThanks,\nKGK-Engineers"}
+2025-09-12 14:32:16.4435 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 14:32:17.8214 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:32:20.3882 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 14:32:21.0984 INFO Sending email to rajugoudas2003@gmail.com
+2025-09-12 14:32:23.5903 INFO Email successfully sent to rajugoudas2003@gmail.com
+2025-09-12 14:36:33.6889 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-12 14:36:33.8765 INFO Application started. Press Ctrl+C to shut down.
+2025-09-12 14:36:33.9684 INFO Hosting environment: Production
+2025-09-12 14:36:34.0435 INFO Content root path: /app
+2025-09-12 14:39:35.9944 INFO Consumed message at email-events [[0]] @15: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Your Password Has Changed!","Body":"Hi Emp Name ,\n\nYour Password has been Changed!\nYour Username: rajugoudas2003@gmail.com\nYour Changed Password: Rj@123456\n\nThanks,\nKGK-Engineers"}
+2025-09-12 14:39:36.2531 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-09-12 14:39:36.6016 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:39:40.0467 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 14:39:40.7436 INFO Sending email to rajugoudas2003@gmail.com
+2025-09-12 14:39:42.9044 INFO Email successfully sent to rajugoudas2003@gmail.com
+2025-09-12 14:41:39.5659 INFO Consumed message at email-events [[0]] @16: {"RecipientEmail":"raj@gmail.com","Subject":"Password Reset!","Body":"Hi Test em,\n\nYour Password has been Reset!\nYour Username: raj@gmail.com\nYour New Password: JC2\u0026woqobc\n\nThanks,\nKGK-Engineers"}
+2025-09-12 14:41:39.5802 INFO Attempt 1 to send email to raj@gmail.com
+2025-09-12 14:41:39.5980 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:41:41.9860 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 14:41:42.7007 INFO Sending email to raj@gmail.com
+2025-09-12 14:41:44.6365 INFO Email successfully sent to raj@gmail.com
+2025-09-12 14:47:38.5897 INFO Consumed message at email-events [[0]] @17: {"RecipientEmail":"raj@gmail.com","Subject":"Your Password Has Changed!","Body":"Hi Test em,\n\nYour Password has been Changed!\nYour Username: raj@gmail.com\nYour Changed Password: Rj@123456\n\nThanks,\nKGK-Engineers"}
+2025-09-12 14:47:38.6042 INFO Attempt 1 to send email to raj@gmail.com
+2025-09-12 14:47:38.6576 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-09-12 14:47:41.0137 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-09-12 14:47:41.5281 INFO Sending email to raj@gmail.com
+2025-09-12 14:47:43.5443 INFO Email successfully sent to raj@gmail.com

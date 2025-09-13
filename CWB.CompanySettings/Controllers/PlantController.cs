@@ -290,5 +290,14 @@ namespace CWB.CompanySettings.Controllers
             var result = await _plantService.GetPlantWD(tenantId, plantId);
             return Ok(result);
         }
+        [HttpGet]
+        [Route(ApiRoutes.Plant.DelSections)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public IActionResult DelSections(long sectionId)
+        {
+            var docTypes = _plantService.DelSections(sectionId);
+            return Ok(docTypes);
+        }
     }
 }

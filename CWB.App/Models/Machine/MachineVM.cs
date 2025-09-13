@@ -13,6 +13,10 @@ namespace CWB.App.Models.Machine
         [Required(ErrorMessage = "Select {0}.")]
         public long MachineDepartmentId { get; set; }
 
+        [Display(Name = "Section")]
+        [Required(ErrorMessage = "Select {0}.")]
+        public long SectionId { get; set; }
+
         [Display(Name = "Name")]
         [Required(ErrorMessage = "Please enter  {0}.")]
         [StringLength(25, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]

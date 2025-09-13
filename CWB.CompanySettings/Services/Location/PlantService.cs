@@ -325,5 +325,26 @@ namespace CWB.CompanySettings.Services.Location
             plantWdVM.WDId = plantWd.Id;
             return plantWdVM;
         }
+        public async Task<bool> DelSections(long designationId)
+        {
+            try
+            {
+                var designation = await _SectionsRepository.SingleOrDefaultAsync(d => d.Id == designationId);
+                if (designation != null)
+                {
+                    if (designation.Id > 0)
+                    {
+                        _SectionsRepository.Remove(designation);
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

@@ -118,5 +118,118 @@ namespace CWB.CompanySettings.Controllers
             var docTypes = _departmentService.DelDepartment(departmentId);
             return Ok(docTypes);
         }
+
+        [HttpGet]
+        [Route(ApiRoutes.Department.GetDept_Role_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<PlantVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetDept_Role_List(long tenantId)
+        {
+            // var companyTypes = _plantService.GetPlants(tenantId);
+            var plants = _departmentService.GetDept_Role_List(tenantId);
+            return Ok(plants);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Department.PostDept_Role_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Dept_Role_ListVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> PostDept_Role_List([FromBody] Dept_Role_ListVM cityVM)
+        {
+            var result = await _departmentService.PostDept_Role_List(cityVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Department.DelDept_Role_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public IActionResult DelDept_Role_List(long sectionId)
+        {
+            var docTypes = _departmentService.DelDept_Role_List(sectionId);
+            return Ok(docTypes);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Department.GetEmployee_Pwd)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<PlantVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetEmployee_Pwd(long tenantId)
+        {
+            // var companyTypes = _plantService.GetPlants(tenantId);
+            var plants = _departmentService.GetEmployee_Pwd(tenantId);
+            return Ok(plants);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Department.PostEmployee_Pwd)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Employee_PwdVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> PostEmployee_Pwd([FromBody] Employee_PwdVM cityVM)
+        {
+            var result = await _departmentService.PostEmployee_Pwd(cityVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Department.DelEmployee_Pwd)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public IActionResult DelEmployee_Pwd(long sectionId)
+        {
+            var docTypes = _departmentService.DelEmployee_Pwd(sectionId);
+            return Ok(docTypes);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Department.GetDept_Employee)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<PlantVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetDept_Employee(long tenantId)
+        {
+            // var companyTypes = _plantService.GetPlants(tenantId);
+            var plants = _departmentService.GetDept_Employee(tenantId);
+            return Ok(plants);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Department.PostDept_Employee)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Dept_EmployeeVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> PostDept_Employee([FromBody] Dept_EmployeeVM cityVM)
+        {
+            var result = await _departmentService.PostDept_Employee(cityVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Department.DelDept_Employee)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public IActionResult DelDept_Employee(long sectionId)
+        {
+            var docTypes = _departmentService.DelDept_Employee(sectionId);
+            return Ok(docTypes);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Department.GetEmployee_UI_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<PlantVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetEmployee_UI_List(long tenantId)
+        {
+            // var companyTypes = _plantService.GetPlants(tenantId);
+            var plants = _departmentService.GetEmployee_UI_List(tenantId);
+            return Ok(plants);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Department.PostEmployee_UI_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Employee_UI_ListVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> PostEmployee_UI_List([FromBody] Employee_UI_ListVM cityVM)
+        {
+            var result = await _departmentService.PostEmployee_UI_List(cityVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Department.DelEmployee_UI_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public IActionResult DelEmployee_UI_List(long sectionId)
+        {
+            var docTypes = _departmentService.DelEmployee_UI_List(sectionId);
+            return Ok(docTypes);
+        }
     }
 }

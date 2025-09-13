@@ -47,6 +47,10 @@ namespace CWB.Masters.Configurations
                .HasColumnName("ShopId")
                .IsRequired();
             builder
+               .Property(c => c.SectionId)
+               .HasColumnName("SectionId")
+               .IsRequired();
+            builder
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();

@@ -38,3 +38,13 @@ E:\projects\working_copy\CWB\CWB.Logging\obj\Debug\netcoreapp3.1\CWB.Logging.Ass
 E:\projects\working_copy\CWB\CWB.Logging\obj\Debug\netcoreapp3.1\CWB.Logging.csproj.CoreCompileInputs.cache
 E:\projects\working_copy\CWB\CWB.Logging\obj\Debug\netcoreapp3.1\CWB.Logging.dll
 E:\projects\working_copy\CWB\CWB.Logging\obj\Debug\netcoreapp3.1\CWB.Logging.pdb
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Logging\bin\Debug\netcoreapp3.1\CWB.Logging.deps.json
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Logging\bin\Debug\netcoreapp3.1\CWB.Logging.dll
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Logging\bin\Debug\netcoreapp3.1\CWB.Logging.pdb
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Logging\obj\Debug\netcoreapp3.1\CWB.Logging.csproj.AssemblyReference.cache
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Logging\obj\Debug\netcoreapp3.1\CWB.Logging.GeneratedMSBuildEditorConfig.editorconfig
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Logging\obj\Debug\netcoreapp3.1\CWB.Logging.AssemblyInfoInputs.cache
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Logging\obj\Debug\netcoreapp3.1\CWB.Logging.AssemblyInfo.cs
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Logging\obj\Debug\netcoreapp3.1\CWB.Logging.csproj.CoreCompileInputs.cache
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Logging\obj\Debug\netcoreapp3.1\CWB.Logging.dll
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Logging\obj\Debug\netcoreapp3.1\CWB.Logging.pdb

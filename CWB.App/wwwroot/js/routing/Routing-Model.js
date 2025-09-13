@@ -1274,6 +1274,23 @@ $(function () {
         }
     });
 
+    $("#MAC_Shops").change(function () {
+        var SectionIdSelect = $("#SSectionName");
+        $(SectionIdSelect).html("");
+        $(SectionIdSelect).append('<option value="">--Select Section--</option>');
+        var deptId = $(this).val();
+        api.get("/department/GetSections").then((data) => {
+            //console.log(data);
+            data = data.filter(item => item.deptName === deptId)
+
+            for (i = 0; i < data.length; i++) {
+                $(SectionIdSelect).append('<option value="' + data[i].sectionsId + '">' + data[i].name + '</option>');
+            }
+            //console.log($(tablebody).html());
+        }).catch((error) => {
+            //console.log(error);
+        });
+    });
     $('#StepLocation').change(function () {
         //debugger;
         let selVal = $(this).val();
@@ -2143,8 +2160,23 @@ $(function () {
 
     $("#MAC_Shops").change(function () {
         var value = $(this).find("option:selected").text().toLowerCase();
+        if (value == "--select--") {
+            $("#AddMachineListTable tbody tr").show();
+            return;
+        }
         $("#AddMachineListTable tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+    $("#SSectionName").change(function () {
+        var value = $(this).find("option:selected").text().toLowerCase();
+
+        if (value == "--select section--") {
+            $("#AddMachineListTable tbody tr").show();
+            return;
+        }
+        $("#AddMachineListTable tbody tr").filter(function () {
+            $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
         });
     });
 

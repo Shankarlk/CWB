@@ -38,3 +38,13 @@ E:\projects\working_copy\CWB\CWB.Constants\obj\Debug\netcoreapp3.1\CWB.Constants
 E:\projects\working_copy\CWB\CWB.Constants\obj\Debug\netcoreapp3.1\CWB.Constants.csproj.CoreCompileInputs.cache
 E:\projects\working_copy\CWB\CWB.Constants\obj\Debug\netcoreapp3.1\CWB.Constants.dll
 E:\projects\working_copy\CWB\CWB.Constants\obj\Debug\netcoreapp3.1\CWB.Constants.pdb
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Constants\bin\Debug\netcoreapp3.1\CWB.Constants.deps.json
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Constants\bin\Debug\netcoreapp3.1\CWB.Constants.dll
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Constants\bin\Debug\netcoreapp3.1\CWB.Constants.pdb
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Constants\obj\Debug\netcoreapp3.1\CWB.Constants.csproj.AssemblyReference.cache
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Constants\obj\Debug\netcoreapp3.1\CWB.Constants.GeneratedMSBuildEditorConfig.editorconfig
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Constants\obj\Debug\netcoreapp3.1\CWB.Constants.AssemblyInfoInputs.cache
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Constants\obj\Debug\netcoreapp3.1\CWB.Constants.AssemblyInfo.cs
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Constants\obj\Debug\netcoreapp3.1\CWB.Constants.csproj.CoreCompileInputs.cache
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Constants\obj\Debug\netcoreapp3.1\CWB.Constants.dll
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Constants\obj\Debug\netcoreapp3.1\CWB.Constants.pdb

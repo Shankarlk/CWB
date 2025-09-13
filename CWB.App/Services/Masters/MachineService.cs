@@ -57,6 +57,9 @@ namespace CWB.App.Services.Masters
             var departmentsUri = new Uri(_apiUrls.Gateway + $"/cwbcs/plant-departments");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             var machines = await RestHelper<List<MachineListVM>>.GetAsync(uri, headers);
+            var sectionsUri = new Uri(_apiUrls.Gateway + $"/cwbcs/getsections/{tenantId}");
+            var sections = await RestHelper<List<SectionsVM>>.GetAsync(sectionsUri, headers);
+
 
             // Get distinct department IDs once
             var departmentIds = machines.Select(m => m.ShopId).Distinct().ToList();
@@ -69,6 +72,7 @@ namespace CWB.App.Services.Masters
 
             // Convert departments to dictionary for O(1) lookup
             var deptLookup = departments.ToDictionary(d => d.DepartmentId, d => d);
+            var section = sections.ToDictionary(d => d.SectionsId, d => d);
 
             // Map machines efficiently
             foreach (var machine in machines)
@@ -78,6 +82,15 @@ namespace CWB.App.Services.Masters
                     machine.Shop = dept.Name;
                     machine.Plant = dept.PlantName;
                 }
+                if (section.TryGetValue(machine.SectionId, out var sec))
+                {
+                    machine.SectionName = sec.Name ?? string.Empty;
+                }
+                else
+                {
+                    machine.SectionName = string.Empty;
+                }
+
             }
 
             return machines;

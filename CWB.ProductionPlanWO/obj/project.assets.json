@@ -2327,11 +2327,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.ProductionPlanWO\\CWB.ProductionPlanWO.csproj",
+      "projectUniqueName": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.ProductionPlanWO\\CWB.ProductionPlanWO.csproj",
       "projectName": "CWB.ProductionPlanWO",
-      "projectPath": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.ProductionPlanWO\\CWB.ProductionPlanWO.csproj",
+      "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.ProductionPlanWO\\CWB.ProductionPlanWO.csproj",
       "packagesPath": "C:\\Users\\MicroApt\\.nuget\\packages\\",
-      "outputPath": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.ProductionPlanWO\\obj\\",
+      "outputPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.ProductionPlanWO\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -2352,20 +2352,20 @@
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "projectReferences": {
-            "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
-              "projectPath": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj"
+            "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
+              "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj"
             },
-            "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.Constants\\CWB.Constants.csproj": {
-              "projectPath": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.Constants\\CWB.Constants.csproj"
+            "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Constants\\CWB.Constants.csproj": {
+              "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Constants\\CWB.Constants.csproj"
             },
-            "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
-              "projectPath": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj"
+            "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
+              "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj"
             },
-            "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.Extensions\\CWB.Extensions.csproj": {
-              "projectPath": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.Extensions\\CWB.Extensions.csproj"
+            "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Extensions\\CWB.Extensions.csproj": {
+              "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Extensions\\CWB.Extensions.csproj"
             },
-            "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.Logging\\CWB.Logging.csproj": {
-              "projectPath": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.Logging\\CWB.Logging.csproj"
+            "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Logging\\CWB.Logging.csproj": {
+              "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Logging\\CWB.Logging.csproj"
             }
           }
         }

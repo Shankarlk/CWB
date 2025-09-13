@@ -45,7 +45,7 @@ $(document).ready(function () {
         } else {
             var selvallow = selectedValue.toLowerCase();
             $("#P21Grid tbody tr").filter(function () {
-                $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(selvallow) > -1)
+                $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(selvallow) > -1)
             });
         } 
     });
@@ -60,6 +60,36 @@ $(document).ready(function () {
                 $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(selvallow) > -1)
             });
         } 
+    });
+    $("#P2SearchSec").on("change", function () {
+        var selectedValue = $(this).val();
+        if (selectedValue == "0") {
+            $("#P21Grid tbody tr").show();
+            return;
+        } else {
+            var selvallow = selectedValue.toLowerCase();
+            $("#P21Grid tbody tr").filter(function () {
+                $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(selvallow) > -1)
+            });
+        } 
+    });
+
+    $("#P2SearchShop").change(function () {
+        var SectionIdSelect = $("#P2SearchSec");
+        $(SectionIdSelect).html("");
+        $(SectionIdSelect).append('<option value="">--Select Section--</option>');
+        var deptId = $(this).val();
+        api.get("/department/GetSections").then((data) => {
+            //console.log(data);
+            data = data.filter(item => item.deptName === deptId)
+
+            for (i = 0; i < data.length; i++) {
+                $(SectionIdSelect).append('<option value="' + data[i].name + '">' + data[i].name + '</option>');
+            }
+            //console.log($(tablebody).html());
+        }).catch((error) => {
+            //console.log(error);
+        });
     });
     $("#P22SearchPartNo").on("keyup", function () {
         var value = $(this).val().toLowerCase();
@@ -186,6 +216,7 @@ function loadMcLoads() {
     document.getElementById('status').style.display = 'block';
     api.getbulk("/workOrder/GetAllMc_Wait_List").then((data) => {
         var waitList = data;
+
         for (let i = 0; i < data.length; i++) {
             let row = AppUtil.ProcessTemplateData("P21GridRow", data[i]);
             let $row = $(row);
@@ -207,6 +238,7 @@ function loadMcLoads() {
             let type = item.mcTypeName || "Unknown Type";
             let mcName = item.mcName || "Unknown Machine";
             let mcId = item.mc_Id;
+            let sectionName = item.sectionName;
 
             if (!mcId) return; // skip invalid entry
 
@@ -217,6 +249,7 @@ function loadMcLoads() {
             if (!summaryMap[key]) {
                 summaryMap[key] = {
                     shop: shop,
+                    sectionName: sectionName,
                     machineType: type,
                     totalHrs: 0,
                     usedMachines: {},
@@ -257,6 +290,7 @@ function loadMcLoads() {
             let tr = `
 <tr>
     <td>${group.shop}</td>
+    <td>${group.sectionName}</td>
     <td>${group.machineType}</td>
     <td>${group.totalHrsFormatted}</td>
     <td>${group.mcAvlCount}</td>

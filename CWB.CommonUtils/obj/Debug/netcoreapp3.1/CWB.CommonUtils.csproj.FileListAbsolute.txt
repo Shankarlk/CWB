@@ -38,3 +38,13 @@ E:\projects\working_copy\CWB\CWB.CommonUtils\obj\Debug\netcoreapp3.1\CWB.CommonU
 E:\projects\working_copy\CWB\CWB.CommonUtils\obj\Debug\netcoreapp3.1\CWB.CommonUtils.csproj.CoreCompileInputs.cache
 E:\projects\working_copy\CWB\CWB.CommonUtils\obj\Debug\netcoreapp3.1\CWB.CommonUtils.dll
 E:\projects\working_copy\CWB\CWB.CommonUtils\obj\Debug\netcoreapp3.1\CWB.CommonUtils.pdb
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.CommonUtils\bin\Debug\netcoreapp3.1\CWB.CommonUtils.deps.json
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.CommonUtils\bin\Debug\netcoreapp3.1\CWB.CommonUtils.dll
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.CommonUtils\bin\Debug\netcoreapp3.1\CWB.CommonUtils.pdb
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.CommonUtils\obj\Debug\netcoreapp3.1\CWB.CommonUtils.csproj.AssemblyReference.cache
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.CommonUtils\obj\Debug\netcoreapp3.1\CWB.CommonUtils.GeneratedMSBuildEditorConfig.editorconfig
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.CommonUtils\obj\Debug\netcoreapp3.1\CWB.CommonUtils.AssemblyInfoInputs.cache
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.CommonUtils\obj\Debug\netcoreapp3.1\CWB.CommonUtils.AssemblyInfo.cs
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.CommonUtils\obj\Debug\netcoreapp3.1\CWB.CommonUtils.csproj.CoreCompileInputs.cache
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.CommonUtils\obj\Debug\netcoreapp3.1\CWB.CommonUtils.dll
+D:\EvolutionSoftware\CWB-Latest\CWB\CWB.CommonUtils\obj\Debug\netcoreapp3.1\CWB.CommonUtils.pdb

@@ -59,6 +59,88 @@ namespace CWB.App.Services.CompanySettings
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<SectionsVM>>.GetAsync(uri, headers);
         }
+        public async Task<bool> DelSections(long designationId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/deletesection/{designationId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<Employee_PwdVM> PostEmployee_Pwd(Employee_PwdVM shop)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/postemployepwd");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            shop.TenantId = tenantId;
+            return await RestHelper<Employee_PwdVM>.PostAsync(uri,shop, headers);
+        }
+        public async Task<IEnumerable<Employee_PwdVM>> GetEmployee_Pwd()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/getemployepwd/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Employee_PwdVM>>.GetAsync(uri, headers);
+        }
+        public async Task<bool> DelEmployee_Pwd(long designationId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/deleteemployepwd/{designationId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<Dept_Role_ListVM> PostDept_Role_List(Dept_Role_ListVM shop)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/postdeptrolelist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            shop.TenantId = tenantId;
+            return await RestHelper<Dept_Role_ListVM>.PostAsync(uri,shop, headers);
+        }
+        public async Task<IEnumerable<Dept_Role_ListVM>> GetDept_Role_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/getdeptrolelist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Dept_Role_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<bool> DelDept_Role_List(long designationId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/deletedeptrolelist/{designationId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<Dept_EmployeeVM> PostDept_Employee(Dept_EmployeeVM shop)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/postdeptemp");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            shop.TenantId = tenantId;
+            return await RestHelper<Dept_EmployeeVM>.PostAsync(uri,shop, headers);
+        }
+        public async Task<IEnumerable<Dept_EmployeeVM>> GetDept_Employee()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/getdeptemp/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Dept_EmployeeVM>>.GetAsync(uri, headers);
+        }
+        public async Task<bool> DelDept_Employee(long designationId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/deletedeptemp/{designationId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<Employee_UI_ListVM> PostEmployee_UI_List(Employee_UI_ListVM shop)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/postempuilist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            shop.TenantId = tenantId;
+            return await RestHelper<Employee_UI_ListVM>.PostAsync(uri,shop, headers);
+        }
+        public async Task<IEnumerable<Employee_UI_ListVM>> GetEmployee_UI_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/getempuilist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Employee_UI_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<bool> DelEmployee_UI_List(long designationId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/deleteempuilist/{designationId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
         public async Task<bool> CheckSection(string city)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/checksection/{city}");

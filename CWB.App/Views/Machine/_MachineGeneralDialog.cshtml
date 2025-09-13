@@ -12,6 +12,13 @@
                 <span asp-validation-for="MachinePlantId"></span>
             </div>
             <!-- -----------------  -->
+            <label class="col-md-2 form-label mb-2" asp-for="MachineMachineName"></label>
+            <div class="col-md-4 mb-2">
+                <input class="form-control form-control-sm" type="text" placeholder="Name" title="Enter the Name of the Machine. Typically how the machine is referred to in the shop"
+                       data-plugin="tippy" data-tippy-placement="top" asp-for="MachineMachineName" />
+                <span asp-validation-for="MachineMachineName"></span>
+            </div>
+            <!-- -----------------  -->
             <label class="col-md-2 form-label mb-2" asp-for="MachineDepartmentId"></label>
             <div class="col-md-4 mb-2">
                 <select class="form-select form-select-sm" aria-label="form-select-sm" title="Select the Shop from the Drop Down. Shops from the selected Shop are shown"
@@ -20,18 +27,19 @@
                 <span asp-validation-for="MachineDepartmentId"></span>
             </div>
             <!-- -----------------  -->
-            <label class="col-md-2 form-label mb-2" asp-for="MachineMachineName"></label>
-            <div class="col-md-4 mb-2">
-                <input class="form-control form-control-sm" type="text" placeholder="Name" title="Enter the Name of the Machine. Typically how the machine is referred to in the shop"
-                       data-plugin="tippy" data-tippy-placement="top" asp-for="MachineMachineName" />
-                <span asp-validation-for="MachineMachineName"></span>
-            </div>
-            <!-- -----------------  -->
             <label class="col-md-2 form-label mb-2" asp-for="MachineMachineSlNo"></label>
             <div class="col-md-4 mb-2">
                 <input class="form-control form-control-sm" type="text" placeholder="Sl No" title=" Enter the Unique Serial No. of the Machine. Required to identify similar machines in and across the shop"
                        data-plugin="tippy" data-tippy-placement="top" asp-for="MachineMachineSlNo" />
                 <span asp-validation-for="MachineMachineSlNo"></span>
+            </div>
+            <!-- -----------------  -->
+            <label class="col-md-2 form-label mb-2" asp-for="SectionId"></label>
+            <div class="col-md-4 mb-2">
+                <select class="form-select form-select-sm" aria-label="form-select-sm" title="Select the Shop from the Drop Down. Shops from the selected Shop are shown"
+                        data-plugin="tippy" data-tippy-placement="top" asp-for="SectionId">
+                </select>
+                <span asp-validation-for="SectionId"></span>
             </div>
             <!-- -----------------  -->
             <label class="col-md-2 form-label mb-2" asp-for="MachineMachineManufacturer"></label>

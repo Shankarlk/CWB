@@ -1186,11 +1186,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.Notification\\CWB.Notification.csproj",
+      "projectUniqueName": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Notification\\CWB.Notification.csproj",
       "projectName": "CWB.Notification",
-      "projectPath": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.Notification\\CWB.Notification.csproj",
+      "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Notification\\CWB.Notification.csproj",
       "packagesPath": "C:\\Users\\MicroApt\\.nuget\\packages\\",
-      "outputPath": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.Notification\\obj\\",
+      "outputPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Notification\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -1211,8 +1211,8 @@
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "projectReferences": {
-            "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
-              "projectPath": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj"
+            "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
+              "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj"
             }
           }
         }

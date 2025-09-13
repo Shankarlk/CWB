@@ -81,14 +81,16 @@ namespace CWB.App.Controllers
             return View();
         }
         [Route("~/S@A!E0#% T%1P W ")]
-        public IActionResult SalesOrderList()
+        public IActionResult SalesOrderList(string soNumber)
         {
+            ViewBag.SearchSoNumber = soNumber ?? string.Empty;
             return View();
         }
 
         [Route("~/W@A!E0#% U%1X#Q ")]
-        public IActionResult WorkOrderList()
+        public IActionResult WorkOrderList(string woNumber)
         {
+            ViewBag.SearchWoNumber = woNumber ?? string.Empty;
             return View();
         } 
         //[Route("~/W@A!E0#% U%1X#Q ")]
@@ -185,6 +187,50 @@ namespace CWB.App.Controllers
             }
             return Ok(salesorders);
         }
+        [HttpGet]
+        public async Task<IActionResult> CustomerMis()
+        {
+            var salesorders = await _baService.AllSalesOrders();
+            var masterparts = await _masterService.ItemMasterParts();
+            var customers = await _baService.GetCustomerOrders();
+
+            foreach (SalesOrderVM sovm in salesorders)
+            {
+                foreach (ItemMasterPartVM impvm in masterparts)
+                {
+                    if (sovm.PartId == impvm.PartId)
+                    {
+                        var bastatus = await _baService.GetBAStatus(sovm.Status);
+                        sovm.StrStatus = bastatus.Status;
+                        sovm.PartNo = impvm.PartNo;
+                        sovm.PartDesc = impvm.Description;
+                    }
+                }
+                foreach (CustomerOrderVM cu in customers)
+                {
+                    if (sovm.CustomerOrderId == cu.CustomerOrderId)
+                    {
+                        sovm.Customer = cu.CustomerName;
+                        sovm.PoNumber = cu.PONumber;
+                    }
+                }
+            }
+
+            var summary = salesorders
+                .GroupBy(s => s.Customer)
+                .Select(g => new 
+                {
+                    CustomerName = g.Key,
+                    SoOpenCount = g.Count(x => x.Status != 6),
+                    SoOpenValue = 0,
+                    SoWipCount = 0,
+                    SoWipValue = 0
+                })
+                .ToList();
+
+            return Ok(summary);
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> AllWorkOrders()
@@ -5120,6 +5166,7 @@ namespace CWB.App.Controllers
             var allTimeSlots = await _woService.GetAllTimeslot_List();
             var machineTypes = await _machineService.GetMachineTypes();
             var getshop = await _departmentService.GetDepartments(1);
+            var getsection = await _departmentService.GetSections();
             var masterparts = await _masterService.ItemMasterParts();
             var alProductionWOs = await _woService.AllProductionPlan_Wo();
             var partinQ = 0;
@@ -5127,9 +5174,11 @@ namespace CWB.App.Controllers
             {
                 var mcId = item.Mc_Id;
                 var machine = await _machineService.GetMachine(mcId);
-                var mcName = machine?.MachineMachineName ?? "Unknown";
+                var mcName = machine?.MachineMachineName ?? " ";
                 var mcTypeName = machineTypes.FirstOrDefault(m => m.MachineTypeTypeId == machine.MachineMachineTypeId)?.MachineTypeName ?? "Unknown";
-                var shopName = getshop.First(s => s.DepartmentId == machine.MachineDepartmentId).Name ?? "Unknown";
+                var shopName = getshop.First(s => s.DepartmentId == machine.MachineDepartmentId).Name ?? " ";
+                var section = getsection.FirstOrDefault(s => s.SectionsId == machine.SectionId);
+                var secName = section != null ? section.Name : " ";
 
                 var plantwd = await _plantService.GetPlantWD(machine.MachinePlantId);
                 var duration = plantwd.Timeslot_duration;
@@ -5152,6 +5201,7 @@ namespace CWB.App.Controllers
                 item.McName = mcName;
                 item.McTypeName = mcTypeName;
                 item.ShopName = shopName;
+                item.SectionName = secName;
                 item.PartInQueue = partinQ++;
                 item.HrsBooked = hrsBooked.ToString("0.00");
                 var mcNotAvlSlots = mcactive
@@ -5244,6 +5294,7 @@ namespace CWB.App.Controllers
               McName = first.McName,
               McTypeName = first.McTypeName,
               ShopName = first.ShopName,
+              SectionName = first.SectionName,
               HrsBooked = FormatHours(totalHrsBooked),
               McNotAvlHrs = FormatHours(totalMcNotAvlHrs),
               SimulationDurationHrs = FormatHours(totalSimulationDuration),

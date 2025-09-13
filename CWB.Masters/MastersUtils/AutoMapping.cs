@@ -88,6 +88,7 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(m => m.SlNo, m => m.MapFrom(src => src.MachineMachineSlNo))
                 .ForMember(m => m.Manufacturer, m => m.MapFrom(src => src.MachineMachineManufacturer))
                 .ForMember(m => m.ShopId, m => m.MapFrom(src => src.MachineDepartmentId))
+                .ForMember(m => m.SectionId, m => m.MapFrom(src => src.SectionId))
                 .ForMember(m => m.PlantId, m => m.MapFrom(src => src.MachinePlantId))
                 .ForMember(m => m.OperationListId, m => m.MapFrom(src => src.MachineOperationListId))
                 .ForMember(m => m.MachineTypeId, m => m.MapFrom(src => src.MachineMachineTypeId));
@@ -98,12 +99,14 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(m => m.MachineMachineSlNo, m => m.MapFrom(src => src.SlNo))
                 .ForMember(m => m.MachineMachineManufacturer, m => m.MapFrom(src => src.Manufacturer))
                 .ForMember(m => m.MachineDepartmentId, m => m.MapFrom(src => src.ShopId))
+                .ForMember(m => m.SectionId, m => m.MapFrom(src => src.SectionId))
                 .ForMember(m => m.MachinePlantId, m => m.MapFrom(src => src.PlantId))
                 .ForMember(m => m.MachineOperationListId, m => m.MapFrom(src => src.OperationListId))
                 .ForMember(m => m.MachineMachineTypeId, m => m.MapFrom(src => src.MachineTypeId));
 
             CreateMap<Machine, MachineListVM>()
                 .ForMember(m => m.MachineId, m => m.MapFrom(src => src.Id))
+                .ForMember(m => m.SectionId, m => m.MapFrom(src => src.SectionId))
                 .ForMember(m => m.MachineTypeId, m => m.MapFrom(src => src.MachineTypeId));
 
             CreateMap<MachineProcessDocument, MachineProcDocumentListVM>()

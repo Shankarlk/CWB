@@ -4,6 +4,7 @@
     {
         public long MachinePlantId { get; set; }
         public long MachineDepartmentId { get; set; }
+        public long SectionId { get; set; }
         public string MachineMachineName { get; set; }
         public string MachineMachineManufacturer { get; set; }
         public long MachineOperationListId { get; set; }

@@ -26,6 +26,7 @@ var MachineGeneralFormUtil = {
     },
     LoadMachineForm: (data) => {
         MachineGeneralFormUtil.LoadShop(data.machinePlantId);
+        LoadSection(data.machineDepartmentId, data.sectionId);
         $("#MachinePlantId").val(data.machinePlantId);
         $("#MachineMachineName").val(data.machineMachineName);
         $("#MachineMachineSlNo").val(data.machineMachineSlNo);
@@ -72,11 +73,47 @@ var MachineGeneralFormUtil = {
         $("#MachineProcDocumentMachineId").val(0);
     }
 };
+function LoadSection(deptId,sectionId) {
+    var SectionIdSelect = $("#SectionId");
+    $(SectionIdSelect).html("");
+    $(SectionIdSelect).append('<option value="">--Select Section--</option>');
+    api.get("/department/GetSections").then((data) => {
+        //console.log(data);
+        data = data.filter(item => item.shopDepartmentId === parseInt(deptId))
+
+        for (i = 0; i < data.length; i++) {
+            $(SectionIdSelect).append('<option value="' + data[i].sectionsId + '">' + data[i].name + '</option>');
+        }
+        if (sectionId != 0) {
+            $(SectionIdSelect).val(sectionId);
+        }
+        //console.log($(tablebody).html());
+    }).catch((error) => {
+        //console.log(error);
+    });
+}
 $(function () {
     $("#MachinePlantId").change(function () {
         MachineGeneralFormUtil.LoadShop($(this).val());
     });
 
+    $("#MachineDepartmentId").change(function () {
+        var SectionIdSelect = $("#SectionId");
+        $(SectionIdSelect).html("");
+        $(SectionIdSelect).append('<option value="">--Select Section--</option>');
+        var deptId = $(this).val();
+        api.get("/department/GetSections").then((data) => {
+            //console.log(data);
+            data = data.filter(item => item.shopDepartmentId === parseInt(deptId))
+
+            for (i = 0; i < data.length; i++) {
+                $(SectionIdSelect).append('<option value="' + data[i].sectionsId + '">' + data[i].name + '</option>');
+            }
+            //console.log($(tablebody).html());
+        }).catch((error) => {
+            //console.log(error);
+        });
+    });
     $("#search-machine-plant").change(function () {
         var value = $(this).find("option:selected").text().toLowerCase();
         $("#tbl-machine-list tbody tr").filter(function () {
@@ -109,7 +146,37 @@ $(function () {
         $("#search-machine-shop").val('');
         $("#machineName").val('');
         $("#manufacturer").val('');
+        $("#search-machine-sec").val('');
         $("#tbl-machine-list tbody tr").show();
+    });
+
+    $("#search-machine-sec").change(function () {
+        var value = $(this).val().toLowerCase();
+
+        if (value == "") {
+            $("#tbl-machine-list tbody tr").show();
+            return;
+        }
+        $("#tbl-machine-list tbody tr").filter(function () {
+            $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+    $("#search-machine-shop").change(function () {
+        var SectionIdSelect = $("#search-machine-sec");
+        $(SectionIdSelect).html("");
+        $(SectionIdSelect).append('<option value="">--Select Section--</option>');
+        var deptId = $(this).val();
+        api.get("/department/GetSections").then((data) => {
+            //console.log(data);
+            data = data.filter(item => item.shopDepartmentId === parseInt(deptId))
+
+            for (i = 0; i < data.length; i++) {
+                $(SectionIdSelect).append('<option value="' + data[i].name + '">' + data[i].name + '</option>');
+            }
+            //console.log($(tablebody).html());
+        }).catch((error) => {
+            //console.log(error);
+        });
     });
 
 

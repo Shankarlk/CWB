@@ -22,6 +22,7 @@ namespace CWB.CompanySettings.Domain
         public string HeadOfDepartment { get; set; }
         public string RoleIds { get; set; }
         public long RoleReportTo { get; set; }
+        public long ChangedPassword { get; set; }
         public long Plant_Id { get; set; }
         public long Home_Dept_Id { get; set; }
         public char Employee_Resigned { get; set; }

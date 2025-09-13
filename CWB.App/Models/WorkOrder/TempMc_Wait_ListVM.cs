@@ -56,6 +56,7 @@ namespace CWB.App.Models.WorkOrder
         public string FreeHrs { get; set; }
         public string McNotAvlHrs { get; set; }
         public string ShopName { get; set; }
+        public string SectionName { get; set; }
         public string McName { get; set; }
         public string McTypeName { get; set; }
         public string ModeName { get; set; }

@@ -10427,11 +10427,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj",
+      "projectUniqueName": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj",
       "projectName": "CWB.Identity.Tests",
-      "projectPath": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj",
+      "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj",
       "packagesPath": "C:\\Users\\MicroApt\\.nuget\\packages\\",
-      "outputPath": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.Identity.Tests\\obj\\",
+      "outputPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Identity.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -10452,8 +10452,8 @@
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "projectReferences": {
-            "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.Identity\\CWB.Identity.csproj": {
-              "projectPath": "D:\\EvolutionSoftware\\CWB-Latest\\CWB\\CWB.Identity\\CWB.Identity.csproj"
+            "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Identity\\CWB.Identity.csproj": {
+              "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Identity\\CWB.Identity.csproj"
             }
           }
         }

@@ -36,30 +36,42 @@
                                             {
                                                 <h5 class="mb-3">Production Planning Flow</h5>
                                                 <div class="col-md-12">
-                                                    <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                        <a asp-controller="WorkOrder" asp-action="SoToWo">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <a asp-controller="WorkOrder" asp-action="SoToWo" class="btn btn-outline-info flex-shrink-0"
+                                                           style="min-width: 200px;">
                                                             <h6>Convert SO to WO</h6>
                                                         </a>
+                                                        <h6 class="mb-0 ms-2 text-end">
+                                                            <span id="openSOs">0</span> Open SO
+                                                        </h6>
                                                     </div>
                                                 </div>
                                             }
                                             @if (permissionResult.Any(r => r.Menu3 == "Detailed Production Planning"))
                                             {
                                                 <div class="col-md-12">
-                                                    <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                        <a asp-controller="WorkOrder" asp-action="DetailedProcPlan">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <a asp-controller="WorkOrder" asp-action="DetailedProcPlan" class="btn btn-outline-info flex-shrink-0"
+                                                           style="min-width: 200px;">
                                                             <h6>Detailed Production Planning</h6>
                                                         </a>
+                                                        <h6 class="mb-0 ms-2 text-end">
+                                                            <span id="openWOs">0</span> Open WO
+                                                        </h6>
                                                     </div>
                                                 </div>
                                             }
                                             @if (permissionResult.Any(r => r.Menu3 == "Approve Matl / SubCon PO"))
                                             {
                                                 <div class="col-md-12">
-                                                    <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                        <a asp-controller="WorkOrder" asp-action="ApprovPoDetails">
-                                                            <h6>Approve Matl / SubCon PO </h6>
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <a asp-controller="WorkOrder" asp-action="ApprovPoDetails" class="btn btn-outline-info flex-shrink-0"
+                                                           style="min-width: 200px;">
+                                                            <h6>Approve Matl / SubCon PO</h6>
                                                         </a>
+                                                        <h6 class="mb-0 ms-2 text-end">
+                                                            <span id="openPOs">0</span> Parts w/f PO Release
+                                                        </h6>
                                                     </div>
                                                 </div>
                                             }
@@ -68,35 +80,47 @@
                                         {
                                             <h5 class="mb-3">Production Planning Flow</h5>
                                             <div class="col-md-12">
-                                                <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                    <a asp-controller="WorkOrder" asp-action="SoToWo">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="SoToWo" class="btn btn-outline-info flex-shrink-0"
+                                                       style="min-width: 200px;">
                                                         <h6>Convert SO to WO</h6>
                                                     </a>
+                                                    <h6 class="mb-0 ms-2 text-end">
+                                                        <span id="openSOs">0</span> Open SO
+                                                    </h6>
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
-                                                <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                    <a asp-controller="WorkOrder" asp-action="DetailedProcPlan">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="DetailedProcPlan" class="btn btn-outline-info flex-shrink-0"
+                                                       style="min-width: 200px;">
                                                         <h6>Detailed Production Planning</h6>
                                                     </a>
+                                                    <h6 class="mb-0 ms-2 text-end">
+                                                        <span id="openWOs">0</span> Open WO
+                                                    </h6>
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
-                                                <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                    <a asp-controller="WorkOrder" asp-action="ApprovPoDetails">
-                                                        <h6>Approve Matl / SubCon PO </h6>
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="ApprovPoDetails" class="btn btn-outline-info flex-shrink-0"
+                                                       style="min-width: 200px;">
+                                                        <h6>Approve Matl / SubCon PO</h6>
                                                     </a>
+                                                    <h6 class="mb-0 ms-2 text-end">
+                                                        <span id="openPOs">0</span> Parts w/f PO Release
+                                                    </h6>
                                                 </div>
                                             </div>
                                             <!-- end -->
                                         }
                                         @*<div class="col-md-12">
-            <div class="text-center btn btn-outline-info w-100 mb-2">
-                <a href="#">
-                    <h6>Release Material PO</h6>
-                </a>
-            </div>
-        </div>*@
+                                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                    <a href="#">
+                                                        <h6>Release Material PO</h6>
+                                                    </a>
+                                                </div>
+                                            </div>*@
                                         <!-- end -->
                                         @if (permissionResult != null)
                                         {
@@ -110,30 +134,40 @@
                                                     </div>
                                                 </div>
                                             }
-                                            <div class="col-md-12">
-                                                <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                    <a href="#">
-                                                        <h6>Select WO for Production</h6>
-                                                    </a>
-                                                </div>
-                                            </div>
+                                    <div class="col-md-12">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <a href="#" class="btn btn-outline-info flex-shrink-0" style="min-width: 200px;">
+                                                <h6>Select WO for Production</h6>
+                                            </a>
+                                            <h6 class="mb-0 ms-2 text-end">
+                                                <span id="openWORs">0</span> WO ready for Production
+                                            </h6>
+                                        </div>
+                                    </div>
                                             @if (permissionResult.Any(r => r.Menu3 == "WIP Control"))
                                             {
-                                                <div class="col-md-12">
-                                                    <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                        <a asp-controller="WorkOrder" asp-action="WipControl">
-                                                            <h6>WIP Control</h6>
-                                                        </a>
-                                                    </div>
-                                                </div>
+                                    <div class="col-md-12">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <a asp-controller="WorkOrder" asp-action="WipControl" class="btn btn-outline-info flex-shrink-0"
+                                               style="min-width: 200px;">
+                                                <h6>WIP Control</h6>
+                                            </a>
+                                            <h6 class="mb-0 ms-2 text-end">
+                                                <span id="openWOPs">0</span> WO in Production
+                                            </h6>
+                                        </div>
+                                    </div>
                                             }
-                                            <div class="col-md-12">
-                                                <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                    <a href="#">
-                                                        <h6>SO Ready for Dispatch</h6>
-                                                    </a>
-                                                </div>
-                                            </div>
+                                    <div class="col-md-12">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <a href="#" class="btn btn-outline-info flex-shrink-0" style="min-width: 200px;">
+                                                <h6>SO Ready for Dispatch</h6>
+                                            </a>
+                                            <h6 class="mb-0 ms-2 text-end">
+                                                <span id="openSODs">0</span> SO ready for dispatch
+                                            </h6>
+                                        </div>
+                                    </div>
                                         }
                                         else
                                         {
@@ -145,25 +179,35 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
-                                                <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                    <a href="#">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <a href="#" class="btn btn-outline-info flex-shrink-0" style="min-width: 200px;">
                                                         <h6>Select WO for Production</h6>
                                                     </a>
+                                                    <h6 class="mb-0 ms-2 text-end">
+                                                        <span id="openWORs">0</span> WO ready for Production
+                                                    </h6>
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
-                                                <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                    <a asp-controller="WorkOrder" asp-action="WipControl">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="WipControl" class="btn btn-outline-info flex-shrink-0"
+                                                       style="min-width: 200px;">
                                                         <h6>WIP Control</h6>
                                                     </a>
+                                                    <h6 class="mb-0 ms-2 text-end">
+                                                        <span id="openWOPs">0</span> WO in Production
+                                                    </h6>
                                                 </div>
                                             </div>
                                             <!-- end -->
                                             <div class="col-md-12">
-                                                <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                    <a href="#">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <a href="#" class="btn btn-outline-info flex-shrink-0" style="min-width: 200px;">
                                                         <h6>SO Ready for Dispatch</h6>
                                                     </a>
+                                                    <h6 class="mb-0 ms-2 text-end">
+                                                        <span id="openSODs">0</span> SO ready for dispatch
+                                                    </h6>
                                                 </div>
                                             </div>
                                         }
@@ -186,13 +230,16 @@
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td><a href="#">SO to WO- Pending</a></td>
+                                                            <td><a href="#" data-bs-toggle="modal" data-bs-target="#SoWoPendingPop">SO to WO- Pending</a></td>
                                                             <td><span id="1stSoWoPending"></span> </td>
                                                             <td>XX INR</td>
                                                         </tr>
                                                         <!-- ===========================  -->
                                                         <tr>
-                                                            <td><a href="#">SO on Hold</a></td>
+                                                            <td>
+                                                                <a href="#" data-bs-toggle="modal"
+                                                                   data-bs-target="#SoHoldPop">SO on Hold</a>
+                                                            </td>
                                                             <td><span id="noOfSoHold"></span> </td>
                                                             <td>XX INR</td>
                                                         </tr>
@@ -210,7 +257,10 @@
                                                         </tr>
                                                         <!-- ===========================  -->
                                                         <tr>
-                                                            <td><a href="#" style="font-weight: bold;">SO Total</a></td>
+                                                            <td>
+                                                                <a href="#" style="font-weight: bold;" data-bs-toggle="modal"
+                                                                   data-bs-target="#SoTotalPop">SO Total</a>
+                                                            </td>
                                                             <td><span id="totalSO"></span> </td>
                                                             <td>XX INR</td>
                                                         </tr>
@@ -228,13 +278,16 @@
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td><a href="#">SO to WO- Pending</a></td>
+                                                            <td>
+                                                                <a href="#" data-bs-toggle="modal"
+                                                                   data-bs-target="#SoWoPendingPop">SO to WO- Pending</a>
+                                                            </td>
                                                             <td><span id="SoWoPending"></span></td>
                                                         </tr>
                                                         <!-- ===========================  -->
                                                         <tr>
                                                             <td><a href="#">Incoming Matl Past Due (# Parts)</a></td>
-                                                            <td>XX</td>
+                                                            <td id="IncMatl">0</td>
                                                         </tr>
                                                         <!-- ===========================  -->
                                                     </tbody>
@@ -249,27 +302,42 @@
                                                     </thead>
                                                     <tbody>
                                                         <tr>
-                                                            <td><a href="#">WO Released waiting for (w/f) Matl</a></td>
-                                                            <td>XX</td>
+                                                            <td>
+                                                                <a href="#" data-bs-toggle="modal"
+                                                                   data-bs-target="#WOrelWait">WO Released waiting for (w/f) Matl</a>
+                                                            </td>
+                                                            <td id="woRelWf">0</td>
                                                         </tr>
                                                         <!-- ===========================  -->
                                                         <tr>
-                                                            <td><a href="#">WO Start Date Past Due w/f Mat</a></td>
-                                                            <td>XX</td>
+                                                            <td>
+                                                                <a href="#" data-bs-toggle="modal"
+                                                                   data-bs-target="#WoStart">WO Start Date Past Due w/f Mat</a>
+                                                            </td>
+                                                            <td id="WoSt">0</td>
                                                         </tr>
                                                         <!-- ===========================  -->
                                                         <tr>
-                                                            <td><a href="#">WO with Matl awaiting Start Date</a></td>
-                                                            <td>XX</td>
+                                                            <td>
+                                                                <a href="#" data-bs-toggle="modal"
+                                                                   data-bs-target="#WoMatlStart">WO with Matl awaiting Start Date</a>
+                                                            </td>
+                                                            <td id="WoAwait">0</td>
                                                         </tr>
                                                         <!-- ===========================  -->
                                                         <tr>
-                                                            <td><a href="#">WO with Matl past Start Date</a></td>
-                                                            <td>XX</td>
+                                                            <td>
+                                                                <a href="#" data-bs-toggle="modal"
+                                                                   data-bs-target="#WoPastDate">WO with Matl past Start Date</a>
+                                                            </td>
+                                                            <td id="WoPast">0</td>
                                                         </tr>
                                                         <!-- ===========================  -->
                                                         <tr>
-                                                            <td><a href="#">WO on Hold</a></td>
+                                                            <td>
+                                                                <a href="#" data-bs-toggle="modal"
+                                                                   data-bs-target="#WoHoldPop">WO on Hold</a>
+                                                            </td>
                                                             <td><span id="WoOnHold"></span></td>
                                                         </tr>
                                                         <!-- ===========================  -->
@@ -284,7 +352,10 @@
                                                         </tr>
                                                         <!-- ===========================  -->
                                                         <tr>
-                                                            <td><a href="#" style="font-weight: bold;">WO Total</a></td>
+                                                            <td>
+                                                                <a href="#" style="font-weight: bold;" data-bs-toggle="modal"
+                                                                   data-bs-target="#WOTotalPop">WO Total</a>
+                                                            </td>
                                                             <td><span id="totalWO"></span></td>
                                                         </tr>
                                                         <tr>
@@ -368,7 +439,7 @@
                                         <div class="col-md-12">
                                             <!-- ========================  -->
                                             <div class="table-responsive table-he-250">
-                                                <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
+                                                <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100" id="CustomerMis">
                                                     <thead class="  table-info th-sti">
                                                         <tr class="table-border-bottom">
                                                             <th>Customer</th>
@@ -418,8 +489,8 @@
                                                     <tbody>
                                                         <tr>
                                                             <td width="32%" style="font-weight: bolder;">Total</td>
-                                                            <td># / xxx INR</td>
-                                                            <td># / xxx INR</td>
+                                                            <td>0 / 0 INR</td>
+                                                            <td>0 / 0 INR</td>
                                                         </tr>
                                                         <!-- ===========================  -->
                                                     </tbody>
@@ -488,6 +559,419 @@
     </div>
     <!-- end col -->
 </div>
+
+<div class="modal fade" id="SoWoPendingPop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    SO to WO - Pending
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="table-responsive table-he-250">
+                                <table id="SoPendingGrid" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Sales Order</th>
+                                            <th>Customer</th>
+                                            <th>PO No</th>
+                                            <th>Part No / Desc</th>
+                                            <th>Total SO Qnty</th>
+                                            <th>Balance SO Qnty</th>
+                                            <th>Qnty on Hand</th>
+                                            <th>SO Plan Dt</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Sales Order Body-->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="SoHoldPop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    SO on Hold
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="table-responsive table-he-250">
+                                <table id="SOHoldGrid" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Sales Order</th>
+                                            <th>Customer</th>
+                                            <th>PO No</th>
+                                            <th>Part No / Desc</th>
+                                            <th>Total SO Qnty</th>
+                                            <th>Balance SO Qnty</th>
+                                            <th>Qnty on Hand</th>
+                                            <th>SO Plan Dt</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Sales Order Body-->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+</div>
+<div class="modal fade" id="SoTotalPop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    SO Total
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="table-responsive table-he-250">
+                                <table id="SoTotalGrid" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Sales Order</th>
+                                            <th>Customer</th>
+                                            <th>PO No</th>
+                                            <th>Part No / Desc</th>
+                                            <th>Total SO Qnty</th>
+                                            <th>Balance SO Qnty</th>
+                                            <th>Qnty on Hand</th>
+                                            <th>SO Plan Dt</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Sales Order Body-->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+</div>
+
+<div class="modal fade" id="WoHoldPop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    WO Hold
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table id="WoHoldGrid" class="table table-sm table-bordered w-100 text-center">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Work Order</th>
+                                        <th>WO Source</th>
+                                        <th>Part No / Desc</th>
+                                        <th>W/O Qnty</th>
+                                        <th>W/O Date</th>
+                                        <th>W/O Compl Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Work Order Body-->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- ===========================  -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+</div>
+<div class="modal fade" id="WOTotalPop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    WO Total
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table id="WoTotalGrid" class="table table-sm table-bordered w-100 text-center">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Work Order</th>
+                                        <th>WO Source</th>
+                                        <th>Part No / Desc</th>
+                                        <th>W/O Qnty</th>
+                                        <th>W/O Date</th>
+                                        <th>W/O Compl Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Work Order Body-->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- ===========================  -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+</div>
+
+<div class="modal fade" id="CustomerSoPop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    Customer : <span id="SelCustomer"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="table-responsive table-he-250">
+                                <table id="CusSoGrid" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            @*<th>Customer</th>*@
+                                            <th>Sales Order</th>
+                                            <th>PO No</th>
+                                            <th>Part No / Desc</th>
+                                            <th>Total SO Qnty</th>
+                                            <th>Balance SO Qnty</th>
+                                            <th>Qnty on Hand</th>
+                                            <th>SO Plan Dt</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Sales Order Body-->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+</div>
+<div class="modal fade" id="WOrelWait" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    WO Released waiting for (w/f) Matl
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table id="ReleaseWaitGrid" class="table table-sm table-bordered w-100 text-center">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Work Order</th>
+                                        <th>WO Source</th>
+                                        <th>Part No / Desc</th>
+                                        <th>W/O Qnty</th>
+                                        <th>W/O Date</th>
+                                        <th>W/O Compl Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Work Order Body-->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- ===========================  -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+</div>
+<div class="modal fade" id="WoStart" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    WO Start Date Past Due w/f Mat
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table id="WoStartGrid" class="table table-sm table-bordered w-100 text-center">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Work Order</th>
+                                        <th>WO Source</th>
+                                        <th>Part No / Desc</th>
+                                        <th>W/O Qnty</th>
+                                        <th>W/O Date</th>
+                                        <th>W/O Compl Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Work Order Body-->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- ===========================  -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+</div>
+<div class="modal fade" id="WoMatlStart" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    WO with Matl awaiting Start Date
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table id="WoMatlStartGrid" class="table table-sm table-bordered w-100 text-center">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Work Order # </th>
+                                        <th>Customer</th>
+                                        <th>Build to Stock</th>
+                                        <th>Part No / Desc</th>
+                                        <th>Part Type </th>
+                                        <th>Plan WO Qnty</th>
+                                        <th>Reqd Compl Dt</th>
+                                        <th>CS Compl Date </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Work Order Body-->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- ===========================  -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+</div>
+<div class="modal fade" id="WoPastDate" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl-custom">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    WO with Matl past Start Date
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table id="WoPastDateGrid" class="table table-sm table-bordered w-100 text-center">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Work Order # </th>
+                                        <th>Customer</th>
+                                        <th>Build to Stock</th>
+                                        <th>Part No / Desc</th>
+                                        <th>Part Type </th>
+                                        <th>Plan WO Qnty</th>
+                                        <th>Reqd Compl Dt</th>
+                                        <th>Start Date </th>
+                                        <th>Compl Date </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Work Order Body-->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- ===========================  -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+</div>
 <!-- end row -->
 <!-- end Container -->
 <!----content-page ends----->
@@ -496,6 +980,86 @@
 <!-- ============================================================== -->
 <!-- End Page Content here -->
 
+<template id="SoWoRow">
+    <tr>
+        <td hidden>{salesOrderId}</td>
+        <td hidden>{customerOrderId}</td>
+        <td hidden>{partId}</td>
+        <td class="soHyperLink">
+            <a href="/S@A!E0%23%25%20T%251P%20W%20?soNumber={soNumber}">{soNumber}</a>
+        </td>
+        <td>{customer}</td>
+        <td>{poNumber}</td>
+        <td>{partNo} / {partDesc}</td>
+        <td>{requiredQuantity}</td>
+        <td>{balanceSOQty}</td>
+        <td>0</td>
+        <td>{requiredByDateStr}</td>
+        <td hidden>{requiredByDate}</td>
+    </tr>
+</template>
+<template id="SoHoldRow">
+    <tr>
+        <td hidden>{salesOrderId}</td>
+        <td hidden>{customerOrderId}</td>
+        <td hidden>{partId}</td>
+        <td class="soHyperLink">
+            <a href="/S@A!E0%23%25%20T%251P%20W%20?soNumber={soNumber}">{soNumber}</a>
+        </td>
+        <td>{customer}</td>
+        <td>{poNumber}</td>
+        <td>{partNo} / {partDesc}</td>
+        <td>{requiredQuantity}</td>
+        <td>{balanceSOQty}</td>
+        <td>0</td>
+        <td>{requiredByDateStr}</td>
+        <td hidden>{requiredByDate}</td>
+    </tr>
+</template>
+<template id="CusSoGridRow">
+    <tr>
+        <td hidden>{salesOrderId}</td>
+        <td hidden>{customerOrderId}</td>
+        <td hidden>{partId}</td>
+        <td class="soHyperLink"> <a href="/S@A!E0%23%25%20T%251P%20W%20?soNumber={soNumber}">{soNumber}</a></td>
+        @*<td>{customer}</td>*@
+        <td>{poNumber}</td>
+        <td>{partNo} / {partDesc}</td>
+        <td>{requiredQuantity}</td>
+        <td>{balanceSOQty}</td>
+        <td>0</td>
+        <td>{requiredByDateStr}</td>
+        <td hidden>{requiredByDate}</td>
+    </tr>
+</template>
+<template id="WoHoldRow">
+    <tr>
+        <td hidden>{woid}</td>
+        <td hidden>{salesOrderId}</td>
+        <td hidden>{partId}</td>
+        <td><a href="/W@A!E0%23%25%20U%251X%23Q%20?woNumber={woNumber}">{woNumber}</a></td>
+        <td>{buildToStock}</td>
+        <td>{partNo}/{partDesc}</td>
+        <td>{calcWOQty}</td>
+        <td>{woDateStr}</td>
+        <td>{planCompletionDateStr}</td>
+        <td>{strStatus}</td>
+        <td hidden>{partType}</td>
+    </tr>
+</template>
+<template id="WoSimRow">
+    <tr>
+        <td><a href="/S!M@l@T!L">{woNumber}</a></td>
+        <td>{customer}</td>
+        <td>{buildToStock}</td>
+        <td>{partNo} / {partDesc}</td>
+        <td>{partTypeName}</td>
+        <td>{calcWOQty}</td>
+        <td>{planCompletionDateStr}</td>
+        <td>{csStartDate}</td>
+        <td>{csEndDate}</td>
+    </tr>
+</template>
 
 @section Scripts {
     <script src="~/js/ProcessPlan.js"></script>

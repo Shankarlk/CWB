@@ -6,7 +6,16 @@
 <input value="B-BP" type="hidden" id="hdn-nav-menu" />
 <div class="content">
     <div class="container mt-4">
-        <h4>Operations Settings </h4>
+        <div class="row">
+            <div class="col-md-11">
+                <h4>Operations Settings </h4>
+            </div>
+            <div class="col-md-1 text-end">
+                <a asp-action="Index" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                    X
+                </a>
+            </div>
+        </div>
         <hr class="mt-2">
         <div class="contianer">
             <div class="row ">

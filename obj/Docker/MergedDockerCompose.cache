@@ -1,8 +1,8 @@
-name: dockercompose11864941513767605847
+name: dockercompose12161421433046508295
 services:
   cwb.apigateway:
     build:
-      context: D:\EvolutionSoftware\CWB-Latest\CWB
+      context: D:\DockerTestCWB\CWB-Latest\CWB
       dockerfile: CWB.ApiGateway/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
@@ -38,12 +38,14 @@ services:
           create_host_path: true
   cwb.app:
     build:
-      context: D:\EvolutionSoftware\CWB-Latest\CWB
+      context: D:\DockerTestCWB\CWB-Latest\CWB
       dockerfile: CWB.App/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
+      KAFKA_BOOTSTRAP: kafka:9092
+      KAFKA_TOPIC: email-events
     image: shankar84kl/cwbapp
     networks:
       cwb-network: null
@@ -65,12 +67,12 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: D:\EvolutionSoftware\CWB-Latest\CWB\filestorage\Active
+        source: D:\DockerTestCWB\CWB-Latest\CWB\filestorage\Active
         target: /filestorage/Active
         bind:
           create_host_path: true
       - type: bind
-        source: D:\EvolutionSoftware\CWB-Latest\CWB\filestorage\Archive
+        source: D:\DockerTestCWB\CWB-Latest\CWB\filestorage\Archive
         target: /filestorage/Archive
         bind:
           create_host_path: true
@@ -88,7 +90,7 @@ services:
           create_host_path: true
   cwb.businessaquisition:
     build:
-      context: D:\EvolutionSoftware\CWB-Latest\CWB
+      context: D:\DockerTestCWB\CWB-Latest\CWB
       dockerfile: CWB.BusinessAquisition/Dockerfile
     depends_on:
       db:
@@ -134,7 +136,7 @@ services:
           create_host_path: true
   cwb.companysettings:
     build:
-      context: D:\EvolutionSoftware\CWB-Latest\CWB
+      context: D:\DockerTestCWB\CWB-Latest\CWB
       dockerfile: CWB.CompanySettings/Dockerfile
     depends_on:
       db:
@@ -178,9 +180,31 @@ services:
         read_only: true
         bind:
           create_host_path: true
+  cwb.email:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.Email/Dockerfile
+    depends_on:
+      kafka:
+        condition: service_started
+        required: true
+    environment:
+      KAFKA_BOOTSTRAP: kafka:9092
+      KAFKA_TOPIC: email-events
+      SMTP_FROM: your_email@gmail.com
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PASS: zokg rlco khcm msuu
+      SMTP_PORT: "587"
+      SMTP_USE_TLS: "true"
+      SMTP_USER: rajugoudah2003@gmail.com
+      SmtpSettings__AllowInvalidSsl: "false"
+    image: shankar84kl/cwbemail
+    networks:
+      cwb-network: null
+    restart: always
   cwb.identity:
     build:
-      context: D:\EvolutionSoftware\CWB-Latest\CWB
+      context: D:\DockerTestCWB\CWB-Latest\CWB
       dockerfile: CWB.Identity/Dockerfile
     depends_on:
       db:
@@ -226,7 +250,7 @@ services:
           create_host_path: true
   cwb.masters:
     build:
-      context: D:\EvolutionSoftware\CWB-Latest\CWB
+      context: D:\DockerTestCWB\CWB-Latest\CWB
       dockerfile: CWB.Masters/Dockerfile
     depends_on:
       db:
@@ -272,7 +296,7 @@ services:
           create_host_path: true
   cwb.modules:
     build:
-      context: D:\EvolutionSoftware\CWB-Latest\CWB
+      context: D:\DockerTestCWB\CWB-Latest\CWB
       dockerfile: CWB.Modules/Dockerfile
     depends_on:
       db:
@@ -318,7 +342,7 @@ services:
           create_host_path: true
   cwb.productionplanwo:
     build:
-      context: D:\EvolutionSoftware\CWB-Latest\CWB
+      context: D:\DockerTestCWB\CWB-Latest\CWB
       dockerfile: CWB.ProductionPlanWO/Dockerfile
     depends_on:
       db:
@@ -364,7 +388,7 @@ services:
           create_host_path: true
   cwb.simulation:
     build:
-      context: D:\EvolutionSoftware\CWB-Latest\CWB
+      context: D:\DockerTestCWB\CWB-Latest\CWB
       dockerfile: CWB.Simulation/Dockerfile
     depends_on:
       db:
@@ -410,7 +434,7 @@ services:
           create_host_path: true
   cwb.tenant:
     build:
-      context: D:\EvolutionSoftware\CWB-Latest\CWB
+      context: D:\DockerTestCWB\CWB-Latest\CWB
       dockerfile: CWB.Tenant/Dockerfile
     depends_on:
       db:
@@ -513,7 +537,7 @@ services:
       KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
       KAFKA_CFG_LISTENERS: CLIENT://:9092,EXTERNAL://:9093
       KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_CREATE_TOPICS: Tenant:1:1
+      KAFKA_CREATE_TOPICS: email-events:1:1
       KAFKA_INTER_BROKER_LISTENER_NAME: CLIENT
     image: bitnami/kafka:2.7.0
     networks:
@@ -541,4 +565,4 @@ networks:
     driver: bridge
 volumes:
   my-db:
-    name: dockercompose11864941513767605847_my-db
+    name: dockercompose12161421433046508295_my-db

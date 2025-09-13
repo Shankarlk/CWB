@@ -6,12 +6,16 @@ function loadWO() {
         var tablebody = $("#WorkOrderList tbody");
         $(tablebody).html("");//empty tbody
 
+        var valso = $("#searchWo").val().toLowerCase();
 
         //console.log(data);
         for (i = 0; i < data.length; i++) {
             //data[i].strStatus = WoOrdStatus[data[i].status];
             $(tablebody).append(AppUtil.ProcessTemplateData("WorkOrderListRow", data[i]));
         }
+        $("#WorkOrderList tbody tr").filter(function () {
+            $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(valso) > -1)
+        });
     }).catch((error) => {
     });
 }

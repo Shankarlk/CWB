@@ -5,13 +5,17 @@ var holdsalesorder = false;
 function loadSO() {
     api.getbulk("/WorkOrder/AllSalesOrders").then((data) => {
         const soPendingCount = data.filter((salesOrder) => salesOrder.status === 1).length;
-        $("#noOfUnplannedSO").text(soPendingCount)
+        $("#noOfUnplannedSO").text(soPendingCount);
+        var valso = $("#searchSo").val().toLowerCase();
         var tablebody = $("#SalesOrderList tbody");
         $(tablebody).html("");//empty tbody
         //console.log(data);
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("SalesOrderListRow", data[i]));
         }
+        $("#SalesOrderList tbody tr").filter(function () {
+            $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(valso) > -1)
+        });
     }).catch((error) => {
     });
 }

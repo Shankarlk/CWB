@@ -14,8 +14,8 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.apigateway$
     volumes:
-      - D:\EvolutionSoftware\CWB-Latest\CWB\CWB.ApiGateway:/app
-      - D:\EvolutionSoftware\CWB-Latest\CWB:/src
+      - D:\DockerTestCWB\CWB-Latest\CWB\CWB.ApiGateway:/app
+      - D:\DockerTestCWB\CWB-Latest\CWB:/src
       - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.apigateway$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -41,8 +41,8 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.app$
     volumes:
-      - D:\EvolutionSoftware\CWB-Latest\CWB\CWB.App:/app
-      - D:\EvolutionSoftware\CWB-Latest\CWB:/src
+      - D:\DockerTestCWB\CWB-Latest\CWB\CWB.App:/app
+      - D:\DockerTestCWB\CWB-Latest\CWB:/src
       - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.app$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -69,8 +69,8 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.businessaquisition$
     volumes:
-      - D:\EvolutionSoftware\CWB-Latest\CWB\CWB.BusinessAquisition:/app
-      - D:\EvolutionSoftware\CWB-Latest\CWB:/src
+      - D:\DockerTestCWB\CWB-Latest\CWB\CWB.BusinessAquisition:/app
+      - D:\DockerTestCWB\CWB-Latest\CWB:/src
       - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.businessaquisition$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -97,8 +97,8 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.companysettings$
     volumes:
-      - D:\EvolutionSoftware\CWB-Latest\CWB\CWB.CompanySettings:/app
-      - D:\EvolutionSoftware\CWB-Latest\CWB:/src
+      - D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings:/app
+      - D:\DockerTestCWB\CWB-Latest\CWB:/src
       - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.companysettings$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -108,6 +108,28 @@ services:
     labels:
       com.microsoft.visualstudio.debuggee.program: "dotnet"
       #com.microsoft.visualstudio.debuggee.arguments: " $debuggee_arguments_probing_paths_cwb.companysettings$ \"/app/bin/Debug/netcoreapp3.1/CWB.CompanySettings.dll\""
+      com.microsoft.visualstudio.debuggee.workingdirectory: "/app"
+      com.microsoft.visualstudio.debuggee.killprogram: "/bin/sh -c \"if PID=$$(pidof dotnet); then kill $$PID; fi\""
+    tty: true
+
+  cwb.email:
+    image: shankar84kl/cwbemail:dev
+    container_name: CWB.Email
+    build:
+      target: base
+      labels:
+        com.microsoft.created-by: "visual-studio"
+        com.microsoft.visual-studio.project-name: "CWB.Email"
+    #environment:
+      #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.email$
+    volumes:
+      - D:\DockerTestCWB\CWB-Latest\CWB\CWB.Email:/app
+      - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
+#$nuget_volume_mapping_cwb.email$
+    entrypoint: tail -f /dev/null
+    labels:
+      com.microsoft.visualstudio.debuggee.program: "dotnet"
+      #com.microsoft.visualstudio.debuggee.arguments: " $debuggee_arguments_probing_paths_cwb.email$ \"/app/bin/Debug/netcoreapp3.1/CWB.Email.dll\""
       com.microsoft.visualstudio.debuggee.workingdirectory: "/app"
       com.microsoft.visualstudio.debuggee.killprogram: "/bin/sh -c \"if PID=$$(pidof dotnet); then kill $$PID; fi\""
     tty: true
@@ -125,8 +147,8 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.identity$
     volumes:
-      - D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Identity:/app
-      - D:\EvolutionSoftware\CWB-Latest\CWB:/src
+      - D:\DockerTestCWB\CWB-Latest\CWB\CWB.Identity:/app
+      - D:\DockerTestCWB\CWB-Latest\CWB:/src
       - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.identity$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -153,8 +175,8 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.masters$
     volumes:
-      - D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Masters:/app
-      - D:\EvolutionSoftware\CWB-Latest\CWB:/src
+      - D:\DockerTestCWB\CWB-Latest\CWB\CWB.Masters:/app
+      - D:\DockerTestCWB\CWB-Latest\CWB:/src
       - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.masters$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -181,8 +203,8 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.modules$
     volumes:
-      - D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Modules:/app
-      - D:\EvolutionSoftware\CWB-Latest\CWB:/src
+      - D:\DockerTestCWB\CWB-Latest\CWB\CWB.Modules:/app
+      - D:\DockerTestCWB\CWB-Latest\CWB:/src
       - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.modules$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -209,8 +231,8 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.productionplanwo$
     volumes:
-      - D:\EvolutionSoftware\CWB-Latest\CWB\CWB.ProductionPlanWO:/app
-      - D:\EvolutionSoftware\CWB-Latest\CWB:/src
+      - D:\DockerTestCWB\CWB-Latest\CWB\CWB.ProductionPlanWO:/app
+      - D:\DockerTestCWB\CWB-Latest\CWB:/src
       - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.productionplanwo$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -237,8 +259,8 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.simulation$
     volumes:
-      - D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Simulation:/app
-      - D:\EvolutionSoftware\CWB-Latest\CWB:/src
+      - D:\DockerTestCWB\CWB-Latest\CWB\CWB.Simulation:/app
+      - D:\DockerTestCWB\CWB-Latest\CWB:/src
       - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.simulation$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -265,8 +287,8 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.tenant$
     volumes:
-      - D:\EvolutionSoftware\CWB-Latest\CWB\CWB.Tenant:/app
-      - D:\EvolutionSoftware\CWB-Latest\CWB:/src
+      - D:\DockerTestCWB\CWB-Latest\CWB\CWB.Tenant:/app
+      - D:\DockerTestCWB\CWB-Latest\CWB:/src
       - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.tenant$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

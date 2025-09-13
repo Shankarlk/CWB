@@ -80,6 +80,23 @@ services:
       com.microsoft.visual-studio.project-name: "CWB.CompanySettings"
     tty: true
 
+  cwb.email:
+    container_name: CWB.Email
+    build:
+      labels:
+        com.microsoft.created-by: "visual-studio"
+        com.microsoft.visual-studio.project-name: "CWB.Email"
+    volumes:
+      - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
+    entrypoint: tail -f /dev/null
+    labels:
+      com.microsoft.visualstudio.debuggee.program: "dotnet"
+      #com.microsoft.visualstudio.debuggee.arguments: " $debuggee_arguments_probing_paths_cwb.email$ \"/app/CWB.Email.dll\""
+      com.microsoft.visualstudio.debuggee.workingdirectory: "/app"
+      com.microsoft.visualstudio.debuggee.killprogram: "/bin/sh -c \"if PID=$$(pidof dotnet); then kill $$PID; fi\""
+      com.microsoft.visual-studio.project-name: "CWB.Email"
+    tty: true
+
   cwb.identity:
     container_name: CWB.Identity
     build:

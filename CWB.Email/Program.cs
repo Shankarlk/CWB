@@ -16,10 +16,10 @@ namespace CWB.Email
             var builder = CreateDefaultBuilder();
             var host = builder.Build();
             // Invoke Worker            
-            using IServiceScope serviceScope = host.Services.CreateScope();
-            IServiceProvider provider = serviceScope.ServiceProvider;
-            var workerInstance = provider.GetRequiredService<Worker>();
-            workerInstance.DoWork();
+            //using IServiceScope serviceScope = host.Services.CreateScope();
+            //IServiceProvider provider = serviceScope.ServiceProvider;
+            //var workerInstance = provider.GetRequiredService<Worker>();
+            //workerInstance.DoWork();
             host.Run();
         }
 
@@ -40,7 +40,7 @@ namespace CWB.Email
                         b.AddNLog("nlog.config");
                     });
                     services.AddScoped<EmailNotification>();
-                    services.AddSingleton<Worker>();
+                    services.AddHostedService<Worker>();
                 });
         }
     }

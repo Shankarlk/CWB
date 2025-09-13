@@ -110,7 +110,7 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
       - KAFKA_INTER_BROKER_LISTENER_NAME=CLIENT
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
-      - KAFKA_CREATE_TOPICS=Tenant:1:1
+      - KAFKA_CREATE_TOPICS=email-events:1:1
     depends_on:
       - zookeeper
     networks:
@@ -141,6 +141,27 @@ services:
   #    - kafka
   #  networks:
   #    - cwb-network
+  cwb.email:
+    image: shankar84kl/cwbemail
+    build:
+      context: .
+      dockerfile: CWB.Email/Dockerfile
+    depends_on:
+      - kafka
+    networks:
+      - cwb-network
+    restart: always
+    environment:
+      - KAFKA_BOOTSTRAP=kafka:9092
+      - KAFKA_TOPIC=email-events
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=rajugoudah2003@gmail.com
+      - SMTP_PASS=zokg rlco khcm msuu
+      - SMTP_FROM=your_email@gmail.com
+      - SMTP_USE_TLS=true
+      - SmtpSettings__AllowInvalidSsl=false  
+
 
   cwb.modules:
     image: shankar84kl/cwbmodules
@@ -243,6 +264,32 @@ services:
       - "9018:443"
       - "9019:80"
     restart: always
+  #mailhog:
+  #  image: mailhog/mailhog:latest
+  #  container_name: mailhog
+  #  ports:
+  #    - "1025:1025"   # SMTP
+  #    - "8025:8025"   # Web UI
+  #  networks:
+  #    - cwb-network
+
+  #email-worker:
+  #  build:
+  #    context: ./email-worker
+  #    dockerfile: Dockerfile
+  #  container_name: cwb-email-worker
+  #  environment:
+  #    - RUN_IN_DOCKER=1
+  #    - KAFKA_BROKERS=kafka:9092
+  #    - KAFKA_TOPIC=EmailQueue
+  #    - SMTP_HOST=mailhog
+  #    - SMTP_PORT=1025
+  #  depends_on:
+  #    - kafka
+  #    - mailhog
+  #  networks:
+  #    - cwb-network
+
 
 volumes:
   my-db:
