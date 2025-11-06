@@ -1,0 +1,1057 @@
+name: dockercompose12161421433046508295
+services:
+  cwb.apigateway:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.ApiGateway/Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: CWB.ApiGateway
+      target: base
+    container_name: CWB.ApiGateway
+    entrypoint:
+      - tail
+      - -f
+      - /dev/null
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      ASPNETCORE_URLS: http://+:80
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      NUGET_FALLBACK_PACKAGES: /root/.nuget/fallbackpackages
+    image: shankar84kl/cwbapigateway:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages --additionalProbingPath /root/.nuget/fallbackpackages  "/app/bin/Debug/net5.0/CWB.ApiGateway.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9000"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9001"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+    restart: always
+    tty: true
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\CWB.ApiGateway
+        target: /app
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB
+        target: /src
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\vsdbg\vs2017u5
+        target: /remote_debugger
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\.nuget\packages\
+        target: /root/.nuget/packages
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages
+        target: /root/.nuget/fallbackpackages
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.app:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.App/Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: CWB.App
+      target: base
+    container_name: CWB.App
+    entrypoint:
+      - tail
+      - -f
+      - /dev/null
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
+      KAFKA_BOOTSTRAP: kafka:9092
+      KAFKA_TOPIC: email-events
+      NUGET_FALLBACK_PACKAGES: /root/.nuget/fallbackpackages
+    image: shankar84kl/cwbapp:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages --additionalProbingPath /root/.nuget/fallbackpackages  "/app/bin/Debug/netcoreapp3.1/CWB.App.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9004"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9005"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    tty: true
+    volumes:
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\filestorage\Active
+        target: /filestorage/Active
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\filestorage\Archive
+        target: /filestorage/Archive
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\CWB.App
+        target: /app
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB
+        target: /src
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\vsdbg\vs2017u5
+        target: /remote_debugger
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\.nuget\packages\
+        target: /root/.nuget/packages
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages
+        target: /root/.nuget/fallbackpackages
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.businessaquisition:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.BusinessAquisition/Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: CWB.BusinessAquisition
+      target: base
+    container_name: CWB.BusinessAquisition
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    entrypoint:
+      - tail
+      - -f
+      - /dev/null
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
+      NUGET_FALLBACK_PACKAGES: /root/.nuget/fallbackpackages
+    image: shankar84kl/cwbbusinessprocesses:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages --additionalProbingPath /root/.nuget/fallbackpackages  "/app/bin/Debug/netcoreapp3.1/CWB.BusinessAquisition.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9018"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9019"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    tty: true
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\CWB.BusinessAquisition
+        target: /app
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB
+        target: /src
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\vsdbg\vs2017u5
+        target: /remote_debugger
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\.nuget\packages\
+        target: /root/.nuget/packages
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages
+        target: /root/.nuget/fallbackpackages
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.companysettings:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.CompanySettings/Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: CWB.CompanySettings
+      target: base
+    container_name: CWB.CompanySettings
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    entrypoint:
+      - tail
+      - -f
+      - /dev/null
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
+      NUGET_FALLBACK_PACKAGES: /root/.nuget/fallbackpackages
+    image: shankar84kl/cwbcompanysettings:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages --additionalProbingPath /root/.nuget/fallbackpackages  "/app/bin/Debug/netcoreapp3.1/CWB.CompanySettings.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9014"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9015"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    tty: true
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings
+        target: /app
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB
+        target: /src
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\vsdbg\vs2017u5
+        target: /remote_debugger
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\.nuget\packages\
+        target: /root/.nuget/packages
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages
+        target: /root/.nuget/fallbackpackages
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.email:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.Email/Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: CWB.Email
+      target: base
+    container_name: CWB.Email
+    depends_on:
+      kafka:
+        condition: service_started
+        required: true
+    entrypoint:
+      - tail
+      - -f
+      - /dev/null
+    environment:
+      KAFKA_BOOTSTRAP: kafka:9092
+      KAFKA_TOPIC: email-events
+      NUGET_FALLBACK_PACKAGES: /root/.nuget/fallbackpackages
+      SMTP_FROM: your_email@gmail.com
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PASS: zokg rlco khcm msuu
+      SMTP_PORT: "587"
+      SMTP_USE_TLS: "true"
+      SMTP_USER: rajugoudah2003@gmail.com
+      SmtpSettings__AllowInvalidSsl: "false"
+    image: shankar84kl/cwbemail:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages --additionalProbingPath /root/.nuget/fallbackpackages  "/app/bin/Debug/netcoreapp3.1/CWB.Email.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    networks:
+      cwb-network: null
+    restart: always
+    tty: true
+    volumes:
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\CWB.Email
+        target: /app
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\vsdbg\vs2017u5
+        target: /remote_debugger
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\.nuget\packages\
+        target: /root/.nuget/packages
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages
+        target: /root/.nuget/fallbackpackages
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.identity:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.Identity/Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: CWB.Identity
+      target: base
+    container_name: CWB.Identity
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    entrypoint:
+      - tail
+      - -f
+      - /dev/null
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
+      NUGET_FALLBACK_PACKAGES: /root/.nuget/fallbackpackages
+    image: shankar84kl/cwbidentity:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages --additionalProbingPath /root/.nuget/fallbackpackages  "/app/bin/Debug/netcoreapp3.1/CWB.Identity.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9002"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9003"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    tty: true
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\CWB.Identity
+        target: /app
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB
+        target: /src
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\vsdbg\vs2017u5
+        target: /remote_debugger
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\.nuget\packages\
+        target: /root/.nuget/packages
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages
+        target: /root/.nuget/fallbackpackages
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.masters:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.Masters/Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: CWB.Masters
+      target: base
+    container_name: CWB.Masters
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    entrypoint:
+      - tail
+      - -f
+      - /dev/null
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
+      NUGET_FALLBACK_PACKAGES: /root/.nuget/fallbackpackages
+    image: shankar84kl/cwbmasters:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages --additionalProbingPath /root/.nuget/fallbackpackages  "/app/bin/Debug/netcoreapp3.1/CWB.Masters.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9016"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9017"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    tty: true
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\CWB.Masters
+        target: /app
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB
+        target: /src
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\vsdbg\vs2017u5
+        target: /remote_debugger
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\.nuget\packages\
+        target: /root/.nuget/packages
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages
+        target: /root/.nuget/fallbackpackages
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.modules:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.Modules/Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: CWB.Modules
+      target: base
+    container_name: CWB.Modules
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    entrypoint:
+      - tail
+      - -f
+      - /dev/null
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
+      NUGET_FALLBACK_PACKAGES: /root/.nuget/fallbackpackages
+    image: shankar84kl/cwbmodules:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages --additionalProbingPath /root/.nuget/fallbackpackages  "/app/bin/Debug/netcoreapp3.1/CWB.Modules.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9009"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9011"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    tty: true
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\CWB.Modules
+        target: /app
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB
+        target: /src
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\vsdbg\vs2017u5
+        target: /remote_debugger
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\.nuget\packages\
+        target: /root/.nuget/packages
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages
+        target: /root/.nuget/fallbackpackages
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.productionplanwo:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.ProductionPlanWO/Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: CWB.ProductionPlanWO
+      target: base
+    container_name: CWB.ProductionPlanWO
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    entrypoint:
+      - tail
+      - -f
+      - /dev/null
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
+      NUGET_FALLBACK_PACKAGES: /root/.nuget/fallbackpackages
+    image: shankar84kl/cwbproductionplanwo:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages --additionalProbingPath /root/.nuget/fallbackpackages  "/app/bin/Debug/netcoreapp3.1/CWB.ProductionPlanWO.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9020"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9021"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    tty: true
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\CWB.ProductionPlanWO
+        target: /app
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB
+        target: /src
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\vsdbg\vs2017u5
+        target: /remote_debugger
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\.nuget\packages\
+        target: /root/.nuget/packages
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages
+        target: /root/.nuget/fallbackpackages
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.simulation:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.Simulation/Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: CWB.Simulation
+      target: base
+    container_name: CWB.Simulation
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    entrypoint:
+      - tail
+      - -f
+      - /dev/null
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
+      NUGET_FALLBACK_PACKAGES: /root/.nuget/fallbackpackages
+    image: shankar84kl/cwbsimulation:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages --additionalProbingPath /root/.nuget/fallbackpackages  "/app/bin/Debug/netcoreapp3.1/CWB.Simulation.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9012"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9013"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    tty: true
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\CWB.Simulation
+        target: /app
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB
+        target: /src
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\vsdbg\vs2017u5
+        target: /remote_debugger
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\.nuget\packages\
+        target: /root/.nuget/packages
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages
+        target: /root/.nuget/fallbackpackages
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.tenant:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.Tenant/Dockerfile
+      labels:
+        com.microsoft.created-by: visual-studio
+        com.microsoft.visual-studio.project-name: CWB.Tenant
+      target: base
+    container_name: CWB.Tenant
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    entrypoint:
+      - tail
+      - -f
+      - /dev/null
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS: "true"
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
+      NUGET_FALLBACK_PACKAGES: /root/.nuget/fallbackpackages
+    image: shankar84kl/cwbtenant:dev
+    labels:
+      com.microsoft.visualstudio.debuggee.arguments: ' --additionalProbingPath /root/.nuget/packages --additionalProbingPath /root/.nuget/fallbackpackages  "/app/bin/Debug/netcoreapp3.1/CWB.Tenant.dll"'
+      com.microsoft.visualstudio.debuggee.killprogram: /bin/sh -c "if PID=$$(pidof dotnet); then kill $$PID; fi"
+      com.microsoft.visualstudio.debuggee.program: dotnet
+      com.microsoft.visualstudio.debuggee.workingdirectory: /app
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9006"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9007"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    tty: true
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\CWB.Tenant
+        target: /app
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB
+        target: /src
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\vsdbg\vs2017u5
+        target: /remote_debugger
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\.nuget\packages\
+        target: /root/.nuget/packages
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Program Files (x86)\Microsoft Visual Studio\Shared\NuGetPackages
+        target: /root/.nuget/fallbackpackages
+        read_only: true
+        bind:
+          create_host_path: true
+  db:
+    environment:
+      MYSQL_DATABASE: db
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    expose:
+      - "3306"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mysql db --user=root --password=password --silent --execute "SELECT 1;"
+      timeout: 10s
+      interval: 30s
+      retries: 10
+    image: mysql
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 3306
+        published: "3306"
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: volume
+        source: my-db
+        target: /var/lib/mysql
+        volume: {}
+  kafdrop:
+    container_name: kafdrop
+    depends_on:
+      kafka:
+        condition: service_started
+        required: true
+    environment:
+      KAFKA_BROKERCONNECT: kafka:9092
+    expose:
+      - "9010"
+    image: obsidiandynamics/kafdrop:latest
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 9000
+        published: "9010"
+        protocol: tcp
+  kafka:
+    container_name: kafka
+    depends_on:
+      zookeeper:
+        condition: service_started
+        required: true
+    environment:
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_CFG_ADVERTISED_LISTENERS: CLIENT://kafka:9092,EXTERNAL://localhost:9093
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CFG_LISTENERS: CLIENT://:9092,EXTERNAL://:9093
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: email-events:1:1
+      KAFKA_INTER_BROKER_LISTENER_NAME: CLIENT
+    image: bitnami/kafka:2.7.0
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 9093
+        published: "9093"
+        protocol: tcp
+  zookeeper:
+    container_name: zookeeper
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+    image: zookeeper:3.7.0
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 2181
+        published: "2181"
+        protocol: tcp
+networks:
+  cwb-network:
+    name: cwb-network
+    driver: bridge
+volumes:
+  my-db:
+    name: dockercompose12161421433046508295_my-db

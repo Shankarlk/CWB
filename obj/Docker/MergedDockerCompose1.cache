@@ -1,0 +1,568 @@
+name: dockercompose12161421433046508295
+services:
+  cwb.apigateway:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.ApiGateway/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:80
+    image: shankar84kl/cwbapigateway
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9000"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9001"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.app:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.App/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+      KAFKA_BOOTSTRAP: kafka:9092
+      KAFKA_TOPIC: email-events
+    image: shankar84kl/cwbapp
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9004"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9005"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\filestorage\Active
+        target: /filestorage/Active
+        bind:
+          create_host_path: true
+      - type: bind
+        source: D:\DockerTestCWB\CWB-Latest\CWB\filestorage\Archive
+        target: /filestorage/Archive
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.businessaquisition:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.BusinessAquisition/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: shankar84kl/cwbbusinessprocesses
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9018"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9019"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.companysettings:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.CompanySettings/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: shankar84kl/cwbcompanysettings
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9014"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9015"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.email:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.Email/Dockerfile
+    depends_on:
+      kafka:
+        condition: service_started
+        required: true
+    environment:
+      KAFKA_BOOTSTRAP: kafka:9092
+      KAFKA_TOPIC: email-events
+      SMTP_FROM: your_email@gmail.com
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PASS: zokg rlco khcm msuu
+      SMTP_PORT: "587"
+      SMTP_USE_TLS: "true"
+      SMTP_USER: rajugoudah2003@gmail.com
+      SmtpSettings__AllowInvalidSsl: "false"
+    image: shankar84kl/cwbemail
+    networks:
+      cwb-network: null
+    restart: always
+  cwb.identity:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.Identity/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: shankar84kl/cwbidentity
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9002"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9003"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.masters:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.Masters/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: shankar84kl/cwbmasters
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9016"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9017"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.modules:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.Modules/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: shankar84kl/cwbmodules
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9009"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9011"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.productionplanwo:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.ProductionPlanWO/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: shankar84kl/cwbproductionplanwo
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9020"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9021"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.simulation:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.Simulation/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: shankar84kl/cwbsimulation
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9012"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9013"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+  cwb.tenant:
+    build:
+      context: D:\DockerTestCWB\CWB-Latest\CWB
+      dockerfile: CWB.Tenant/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      HOST_DEFAULT_SWITCH_IP: 172.27.96.1
+    image: shankar84kl/cwbtenant
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9006"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9007"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind:
+          create_host_path: true
+      - type: bind
+        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind:
+          create_host_path: true
+  db:
+    environment:
+      MYSQL_DATABASE: db
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    expose:
+      - "3306"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mysql db --user=root --password=password --silent --execute "SELECT 1;"
+      timeout: 10s
+      interval: 30s
+      retries: 10
+    image: mysql
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 3306
+        published: "3306"
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: volume
+        source: my-db
+        target: /var/lib/mysql
+        volume: {}
+  kafdrop:
+    container_name: kafdrop
+    depends_on:
+      kafka:
+        condition: service_started
+        required: true
+    environment:
+      KAFKA_BROKERCONNECT: kafka:9092
+    expose:
+      - "9010"
+    image: obsidiandynamics/kafdrop:latest
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 9000
+        published: "9010"
+        protocol: tcp
+  kafka:
+    container_name: kafka
+    depends_on:
+      zookeeper:
+        condition: service_started
+        required: true
+    environment:
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      KAFKA_CFG_ADVERTISED_LISTENERS: CLIENT://kafka:9092,EXTERNAL://localhost:9093
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CFG_LISTENERS: CLIENT://:9092,EXTERNAL://:9093
+      KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: email-events:1:1
+      KAFKA_INTER_BROKER_LISTENER_NAME: CLIENT
+    image: bitnami/kafka:2.7.0
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 9093
+        published: "9093"
+        protocol: tcp
+  zookeeper:
+    container_name: zookeeper
+    environment:
+      ALLOW_ANONYMOUS_LOGIN: "yes"
+    image: zookeeper:3.7.0
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 2181
+        published: "2181"
+        protocol: tcp
+networks:
+  cwb-network:
+    name: cwb-network
+    driver: bridge
+volumes:
+  my-db:
+    name: dockercompose12161421433046508295_my-db

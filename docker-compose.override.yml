@@ -14,7 +14,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - HOST_DEFAULT_SWITCH_IP=172.27.96.1
+      - HOST_DEFAULT_SWITCH_IP=10.70.30.75
     ports:
       - "80"
       - "443"
@@ -26,7 +26,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - HOST_DEFAULT_SWITCH_IP=172.27.96.1
+      - HOST_DEFAULT_SWITCH_IP=10.70.30.75
       - KAFKA_BOOTSTRAP=kafka:9092
       - KAFKA_TOPIC=email-events
     ports:
@@ -42,7 +42,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - HOST_DEFAULT_SWITCH_IP=172.27.96.1
+      - HOST_DEFAULT_SWITCH_IP=10.70.30.75
     ports:
       - "80"
       - "443"
@@ -54,7 +54,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - HOST_DEFAULT_SWITCH_IP=172.27.96.1
+      - HOST_DEFAULT_SWITCH_IP=10.70.30.75
     ports:
       - "80"
       - "443"
@@ -66,7 +66,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - HOST_DEFAULT_SWITCH_IP=172.27.96.1
+      - HOST_DEFAULT_SWITCH_IP=10.70.30.75
     ports:
       - "80"
       - "443"
@@ -78,7 +78,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - HOST_DEFAULT_SWITCH_IP=172.27.96.1
+      - HOST_DEFAULT_SWITCH_IP=10.70.30.75
     ports:
       - "80"
       - "443"
@@ -90,7 +90,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - HOST_DEFAULT_SWITCH_IP=172.27.96.1
+      - HOST_DEFAULT_SWITCH_IP=10.70.30.75
     ports:
       - "80"
       - "443"
@@ -102,7 +102,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - HOST_DEFAULT_SWITCH_IP=172.27.96.1
+      - HOST_DEFAULT_SWITCH_IP=10.70.30.75
     ports:
       - "80"
       - "443"
@@ -114,7 +114,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - HOST_DEFAULT_SWITCH_IP=172.27.96.1
+      - HOST_DEFAULT_SWITCH_IP=10.70.30.75
     ports:
       - "80"
       - "443"
