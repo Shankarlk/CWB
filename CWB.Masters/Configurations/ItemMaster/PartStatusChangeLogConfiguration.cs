@@ -26,6 +26,9 @@ namespace CWB.Masters.Configurations.ItemMaster
                 .HasMaxLength(25)
                 .IsRequired();
             builder
+                .Property(b => b.FromChangedStatus)
+                .HasColumnName("FromChangedStatus");
+            builder
                 .Property(b => b.ChangeReason)
                 .HasColumnName("ChangeReason")
                 .IsUnicode(true)

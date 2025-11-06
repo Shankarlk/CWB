@@ -13,6 +13,19 @@
     border-color: #F1556C;
 }
 
+#flowchart {
+    height: 90vh; /* 90% of viewport height */
+    width: 100%;
+    overflow: auto;
+    border: 1px solid lightgray;
+}
+
+    /*#flowchart {
+        width: 100%;
+        height: 90vh;*/ /* take 90% of screen height */
+        /*overflow: auto;*/ /* allow scroll if too large */
+        /*background: #fff;
+    }*/
 /*----Table menu pop up fix----*/
 /*.table-responsive {
     overflow: inherit!important;

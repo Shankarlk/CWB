@@ -152,7 +152,7 @@
     <div class="modal-dialog">
         <div class="modal-content bxs-modal">
             <div class="modal-header">
-                <h4 class="modal-title" id="standard-modalLabel">Input Part Details</h4>
+                <h4 class="modal-title" id="standard-modalLabel">Input Part Details for <span id="lblInpPartNumber"></span> / <span id="lblInpPartDesc"></span></h4>
                 <button type="button" id="AddDeptClose" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -167,6 +167,10 @@
                         <div class="col-md-9 mb-2">
                             <input class="form-control form-control-sm" type="text" id="InputPartNo" name="InputPartNo" value="" hidden>
                             <textarea id="MFDescription" name="MFDescription" class="form-control form-control-sm" readonly></textarea>
+                        </div>
+                        <label class="form-label col-md-3 mb-2"> Input Part Type </label>
+                        <div class="col-md-9 mb-2">
+                            <textarea id="MFPartType" class="form-control form-control-sm" readonly></textarea>
                         </div>
                         <!-- -------------------------------------  -->
                         <label class="form-label col-md-3 mb-2"> Input Wt (Kgs) * </label>
@@ -202,10 +206,11 @@
                             <input type="text" hidden id="ManufPartId" name="ManufPartId" value="0" />
                         </div>
                         <!-- -------------------------------------  -->
-                        <div class="col-md-12 mb-2 text-end" hidden>
+                        <div class="col-md-8 mb-2">
+                            <h6>Finished Weight of <span id="lblFinPartNumber"></span> / <span id="lblFinPartNumber"></span> : <span id="FnshWeightSpan"></span> Kg</h6>
                            @* <button class="btn btn-sm btn-primary" id="btnAddMPMakeFrom" onclick="AddAnotherRM()">Save</button>*@
                         </div>
-                        <div class="col-md-12 mt-2 text-end">
+                        <div class="col-md-4 mt-2 text-end">
                             @*<input type="text" name="DepartmentId" id="DepartmentId" value="0" hidden required />*@
                             <input type="submit" id="btnAddMPMakeFrom" class="btn btn-sm btn-primary" value="Save" />
                         </div>

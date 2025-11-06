@@ -1,0 +1,52 @@
+2025-09-20 04:56:46.6793 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-20 04:56:47.0409 INFO Application started. Press Ctrl+C to shut down.
+2025-09-20 04:56:47.4144 INFO Hosting environment: Production
+2025-09-20 04:56:49.0463 INFO Content root path: /app
+2025-09-20 05:02:32.4046 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-20 05:02:32.7507 INFO Application started. Press Ctrl+C to shut down.
+2025-09-20 05:02:32.8729 INFO Hosting environment: Production
+2025-09-20 05:02:32.9482 INFO Content root path: /app
+2025-09-20 05:11:05.3809 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-20 05:11:05.6552 INFO Application started. Press Ctrl+C to shut down.
+2025-09-20 05:11:05.7073 INFO Hosting environment: Production
+2025-09-20 05:11:05.8465 INFO Content root path: /app
+2025-09-20 05:19:13.6806 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-20 05:19:14.0846 INFO Application started. Press Ctrl+C to shut down.
+2025-09-20 05:19:14.2296 INFO Hosting environment: Production
+2025-09-20 05:19:14.2633 INFO Content root path: /app
+2025-09-20 05:35:04.2328 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-20 05:35:04.4943 INFO Application started. Press Ctrl+C to shut down.
+2025-09-20 05:35:04.6664 INFO Hosting environment: Production
+2025-09-20 05:35:04.7219 INFO Content root path: /app
+2025-09-20 05:47:44.4277 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-20 05:47:44.8533 INFO Application started. Press Ctrl+C to shut down.
+2025-09-20 05:47:44.9507 INFO Hosting environment: Production
+2025-09-20 05:47:45.0214 INFO Content root path: /app
+2025-09-20 06:23:39.7777 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-20 06:23:39.9891 INFO Application started. Press Ctrl+C to shut down.
+2025-09-20 06:23:40.1208 INFO Hosting environment: Production
+2025-09-20 06:23:40.2917 INFO Content root path: /app
+2025-09-20 07:26:35.3116 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-20 07:26:35.5139 INFO Application started. Press Ctrl+C to shut down.
+2025-09-20 07:26:35.5702 INFO Hosting environment: Production
+2025-09-20 07:26:35.5905 INFO Content root path: /app
+2025-09-20 08:35:11.5013 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-20 08:35:11.7568 INFO Application started. Press Ctrl+C to shut down.
+2025-09-20 08:35:11.9724 INFO Hosting environment: Production
+2025-09-20 08:35:12.0304 INFO Content root path: /app
+2025-09-20 10:42:24.5732 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-20 10:42:24.8709 INFO Application started. Press Ctrl+C to shut down.
+2025-09-20 10:42:24.9220 INFO Hosting environment: Production
+2025-09-20 10:42:24.9562 INFO Content root path: /app
+2025-09-20 10:52:46.3409 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-20 10:52:46.6416 INFO Application started. Press Ctrl+C to shut down.
+2025-09-20 10:52:46.6585 INFO Hosting environment: Production
+2025-09-20 10:52:46.6990 INFO Content root path: /app
+2025-09-20 11:22:46.2161 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-20 11:22:46.5124 INFO Application started. Press Ctrl+C to shut down.
+2025-09-20 11:22:46.5594 INFO Hosting environment: Production
+2025-09-20 11:22:46.6398 INFO Content root path: /app
+2025-09-20 11:56:48.2306 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-20 11:56:48.5418 INFO Application started. Press Ctrl+C to shut down.
+2025-09-20 11:56:48.6830 INFO Hosting environment: Production
+2025-09-20 11:56:48.7932 INFO Content root path: /app

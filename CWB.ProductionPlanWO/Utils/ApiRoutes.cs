@@ -25,6 +25,8 @@ namespace CWB.ProductionPlanWO.Utils
             public const string PostInw_Recpt_Header = Base + "/postinwrecptheader";
             public const string PostInw_Recpt_Part_No = Base + "/postinwrecptpartno";
             public const string PostInward_Condn_list = Base + "/postinwcondnlist";
+            public const string PostSetupVariationReason = Base + "/postsetupvariation";
+            public const string PostCust_NC_Decision = Base + "/postcustncdecision";
             public const string PostMultipleWorkOrder = Base + "/multipleworkorder";
             public const string PostUpdateMultipleWorkOrder = Base + "/updatemultipleworkorder";
             public const string HelloWorld = Base + "/helloworld";
@@ -39,6 +41,8 @@ namespace CWB.ProductionPlanWO.Utils
             public const string GetAlInw_Recpt_Header = Base + "/allinwrecptheader/{tenantId}";
             public const string GetAlInw_Recpt_Part_No = Base + "/allinwrecptpartno/{tenantId}";
             public const string GetAllInward_Condn_list = Base + "/allinwardcondlist";
+            public const string GetAllSetupVariationReason = Base + "/allsetupvariation";
+            public const string GetAllCust_NC_Decision = Base + "/allcustncdecision";
             public const string GetAllInsp_Outcome_List = Base + "/allinspoutcomelist";
             public const string AllParentChildWos = Base + "/allparentchildwos/{parentWoId}/{tenantId}";
             public const string GetSingleWorkOrder = Base + "/getsingleworkorder/{Id}/{tenantId}";

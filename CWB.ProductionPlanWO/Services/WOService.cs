@@ -26,6 +26,7 @@ namespace CWB.ProductionPlanWO.Services
         private readonly IDispatchQntyRepository _DispatchQntyRepository;
         private readonly IProductionPlan_WORepository _productionPlan_WORepository;
         private readonly IWOStatusRepository _wOStatusrepository;
+        private readonly ICust_NC_DecisionRepository _Cust_NC_Decisionrepository;
         private readonly IChildWoRelRepository _childWoRelRepository;
         private readonly IMcTimeListRepository _mcTimeListRepository;
         private readonly IPODetailsRepository _poDetailsRepository;
@@ -34,6 +35,7 @@ namespace CWB.ProductionPlanWO.Services
         private readonly IWoSubConSupplierRepository _woSubConSupplierRepository;
         private readonly IPOLogRepository _pOLogRepository;
         private readonly IInward_Condn_listRepository _IInward_Condn_listRepository;
+        private readonly ISetupVariationReasonRepository _ISetupVariationReasonRepository;
         private readonly IInsp_Outcome_DetailsRepository _iInsp_Outcome_DetailsRepository;
         private readonly IInsp_Outcome_ListRepository _IInsp_Outcome_ListRepository;
         private readonly IInventory_MasterRepository _IInventory_MasterRepository;
@@ -87,9 +89,9 @@ namespace CWB.ProductionPlanWO.Services
             ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork
             , IWorkOrderRepository workOrderRepository , IPOLogRepository pOLogRepository
             , IProcPlanRepository procPlanRepository, IWOSORepository woso, IBOMTempRepository bOMTempRepository, IBOMListRepository bOMListRepository,IDispatchQntyRepository DispatchQntyRepository,IDispatchDetailsRepository DispatchDetailsRepository,
-            IProductionPlan_WORepository productionPlan_WORepository, IWOStatusRepository wOStatus, IChildWoRelRepository childWoRelRepository
+            IProductionPlan_WORepository productionPlan_WORepository, IWOStatusRepository wOStatus,ICust_NC_DecisionRepository Cust_NC_Decision, IChildWoRelRepository childWoRelRepository
             , IMcTimeListRepository mcTimeListRepository, IPODetailsRepository pODetailsRepository,IPOHeaderRepository pOHeaderRepository,IPOStatusRepository pOStatusRepository,
-            IWoSubConSupplierRepository woSubConSupplierRepository, IProcPlanPartPurChaseRelRepository purChaseRelRepository, IInward_Condn_listRepository IInward_Condn_listRepository,
+            IWoSubConSupplierRepository woSubConSupplierRepository, IProcPlanPartPurChaseRelRepository purChaseRelRepository, IInward_Condn_listRepository IInward_Condn_listRepository,ISetupVariationReasonRepository ISetupVariationReasonRepository,
             IInsp_Outcome_DetailsRepository iInsp_Outcome_DetailsRepository, 
             IInsp_Outcome_ListRepository insp_Outcome_ListRepository, IInventory_MasterRepository Inventory_Master
             ,IInv_Trans_LogRepository inv_Trans_LogRepository, IInw_Recpt_DetailsRepository inw_Recpt_DetailsRepository
@@ -116,6 +118,7 @@ namespace CWB.ProductionPlanWO.Services
             _DispatchQntyRepository = DispatchQntyRepository;
             _productionPlan_WORepository = productionPlan_WORepository;
             _wOStatusrepository = wOStatus;
+            _Cust_NC_Decisionrepository = Cust_NC_Decision;
             _childWoRelRepository = childWoRelRepository;
             _mcTimeListRepository = mcTimeListRepository;
             _poDetailsRepository = pODetailsRepository;
@@ -125,6 +128,7 @@ namespace CWB.ProductionPlanWO.Services
             _pOLogRepository = pOLogRepository;
             _IProcPlanPartPurChaseRelRepository = purChaseRelRepository;
             _IInward_Condn_listRepository = IInward_Condn_listRepository;
+            _ISetupVariationReasonRepository = ISetupVariationReasonRepository;
             _IInventory_MasterRepository = Inventory_Master;
             _IInsp_Outcome_ListRepository = insp_Outcome_ListRepository;
             _IInv_Trans_LogRepository = inv_Trans_LogRepository;
@@ -1125,6 +1129,16 @@ namespace CWB.ProductionPlanWO.Services
             var allwo = await _IInward_Condn_listRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<Inward_Condn_listVM>>(allwo);
         }
+        public async Task<IEnumerable<SetupVariationReasonVM>> GetAllSetupVariationReason()
+        {
+            var allwo = await _ISetupVariationReasonRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<SetupVariationReasonVM>>(allwo);
+        }
+        public async Task<IEnumerable<Cust_NC_DecisionVM>> GetAllCust_NC_Decision()
+        {
+            var allwo = await _Cust_NC_Decisionrepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<Cust_NC_DecisionVM>>(allwo);
+        }
         public async Task<Insp_Outcome_DetailsVM> PostInsp_Outcome_Details(Insp_Outcome_DetailsVM workOrdersVM)
         {
             var wo = _mapper.Map<Insp_Outcome_Details>(workOrdersVM);
@@ -1418,6 +1432,79 @@ namespace CWB.ProductionPlanWO.Services
                 string msg = ex.Message;
             }
             workOrdersVM.Inward_Condn_listId = wo.Id;
+            return workOrdersVM;
+        }
+       
+        public async Task<SetupVariationReasonVM> PostSetupVariationReason(SetupVariationReasonVM workOrdersVM)
+        {
+            var wo = _mapper.Map<SetupVariationReason>(workOrdersVM);
+            if (wo.Id == 0)
+            {
+                try
+                {
+                    await _ISetupVariationReasonRepository.AddAsync(wo);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var wkord = await _ISetupVariationReasonRepository.SingleOrDefaultAsync(x => x.Id == wo.Id);
+                if (wkord == null)
+                {
+                    return workOrdersVM;
+                }
+                wo = await _ISetupVariationReasonRepository.UpdateAsync(wo.Id, wo);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            workOrdersVM.SetupVariationReasonId = wo.Id;
+            return workOrdersVM;
+        }
+        public async Task<Cust_NC_DecisionVM> PostCust_NC_Decision(Cust_NC_DecisionVM workOrdersVM)
+        {
+            var wo = _mapper.Map<Cust_NC_Decision>(workOrdersVM);
+            if (wo.Id == 0)
+            {
+                try
+                {
+                    await _Cust_NC_Decisionrepository.AddAsync(wo);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var wkord = await _Cust_NC_Decisionrepository.SingleOrDefaultAsync(x => x.Id == wo.Id);
+                if (wkord == null)
+                {
+                    return workOrdersVM;
+                }
+                wo = await _Cust_NC_Decisionrepository.UpdateAsync(wo.Id, wo);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            workOrdersVM.Cust_DecisionId = wo.Id;
             return workOrdersVM;
         }
 
@@ -3722,7 +3809,7 @@ namespace CWB.ProductionPlanWO.Services
         }
         public async Task<DispatchQntyVM> PostDispatchQnty(DispatchQntyVM itemMasterDocList)
         {
-            var itemMaster = _mapper.Map<DispatchQnty>(itemMasterDocList);
+            var itemMaster = _mapper.Map<TempDispatchQnty>(itemMasterDocList);
             if (itemMaster.Id == 0)
             {
                 try

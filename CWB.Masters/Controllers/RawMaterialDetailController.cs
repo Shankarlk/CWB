@@ -607,6 +607,8 @@ namespace CWB.Masters.Controllers
                             CompanyId = m.CompanyId,
                             Company = coName ?? string.Empty,
                             PartNo = mp?.PartNo ?? string.Empty,
+                            Inv_Trans = mp.Inv_Trans ,
+                            Linked_to_BOM = mp.Linked_to_BOM ,
                             Description = mp?.PartDescription ?? string.Empty,
                             Status = mp?.Status ,
                             Notes = mp?.PartDescription ?? string.Empty,
@@ -632,6 +634,8 @@ namespace CWB.Masters.Controllers
                             Description = mp?.PartDescription ?? string.Empty,
                             Status = mp?.Status ,
                             Notes = mp?.PartDescription ?? string.Empty,
+                            Inv_Trans = mp.Inv_Trans,
+                            Linked_to_BOM = mp.Linked_to_BOM,
                             BOFId = (int)b.BoughtOutFinishDetailId,
                             TenantId = b.TenantId
                         });
@@ -653,7 +657,9 @@ namespace CWB.Masters.Controllers
                             Company = supp ?? string.Empty,
                             PartNo = mp?.PartNo ?? string.Empty,
                             Description = mp?.PartDescription ?? string.Empty,
-                            Status = mp?.Status ,
+                            Status = mp?.Status,
+                            Inv_Trans = mp.Inv_Trans,
+                            Linked_to_BOM = mp.Linked_to_BOM,
                             Notes = mp?.PartDescription ?? string.Empty,
                             RMId = (int)r.RawMaterialDetailId,
                             TenantId = r.TenantId

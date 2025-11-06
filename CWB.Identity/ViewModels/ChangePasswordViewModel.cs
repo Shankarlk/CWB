@@ -9,7 +9,7 @@ namespace CWB.Identity.ViewModels
         [Required]
         public string NewPassword { get; set; }
         [Required]
-        [Compare(nameof(NewPassword), ErrorMessage = "Passwords don't match.")]
+        [Compare(nameof(NewPassword), ErrorMessage = "New Password don't match Confirm Password.")]
         public string ConfirmPassword { get; set; }
         public string ReturnUrl { get; set; }
     }

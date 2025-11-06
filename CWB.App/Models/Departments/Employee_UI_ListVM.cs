@@ -8,7 +8,7 @@ namespace CWB.App.Models.Departments
     public class Employee_UI_ListVM
     {
         public long Employee_UI_ListId { get; set; }
-        public long Ui_Id { get; set; }
+        public string Ui_Id { get; set; }
         public long Access_Level { get; set; }
         public long Employee_Id { get; set; }
         public char Active { get; set; }

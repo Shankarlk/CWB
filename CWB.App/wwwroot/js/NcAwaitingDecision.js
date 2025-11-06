@@ -198,18 +198,54 @@ $(document).ready(function () {
         $("#NcGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#NcGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchNcLoc").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#NcGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#NcGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPartNo").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#NcGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#NcGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPartType").on("change", function () {
         var value = $(this).val().toLowerCase();
@@ -218,8 +254,32 @@ $(document).ready(function () {
             $("#NcGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(selectedText) > -1)
             });
+            var $tableBody = $("#NcGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#NcGrid tbody tr").show();
+            var $tableBody = $("#NcGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
     loadNCLog();
@@ -747,6 +807,7 @@ $(document).ready(function () {
         var partno = relatedTarget.data("partno");
         var divhide = relatedTarget.data("divhide");
         var parttype = relatedTarget.data("parttype");
+        var showcnfDiv = relatedTarget.data("showcnfdiv");
         var partid = relatedTarget.data("partid");
         loadPartDocNC(id);
         $("#P14Containt").val('');
@@ -761,12 +822,27 @@ $(document).ready(function () {
         if (divhide === 'Y') {
             $("#P14Containt").prop('readonly', false);
             $("#FeedLvl2Div").hide();
+            $("#CNfCADiv").hide();
             $("#P14Save").prop('disabled', false);
         } else {
             $("#P14Containt").prop('readonly', true);
             $("#P14Save").prop('disabled', true);
             $("#P14Comment").prop('readonly', false);
+            $("#P14Accept").prop('disabled', false);
+            $("#P14CorrectResubmit").prop('disabled', false);
+            $("#P14SaveRca").prop('disabled', false);
             $("#FeedLvl2Div").show();
+            $("#CNfCADiv").hide();
+        }
+        if (showcnfDiv === 'Y') {
+            $("#P14Containt").prop('readonly', true);
+            $("#P14CNfCom").prop('readonly', false);
+            $("#P14Save").prop('disabled', true);
+            $("#P14Accept").prop('disabled', true);
+            $("#P14CorrectResubmit").prop('disabled', true);
+            $("#P14SaveRca").prop('disabled', true);
+            $("#P14Comment").prop('readonly', true);
+            $("#CNfCADiv").show();
         }
         $("#P14NcQnty").val(qnty);
         $("#P14NCLogId").val(id);
@@ -774,6 +850,7 @@ $(document).ready(function () {
         $("#P14NcDesc").val(ncdes);
         $("#P14NcBaldesc").val(baldesc);
         $("#Span14Partno").text(partno);
+        $("#Span14Partnoc").text(partno);
         $("#Span14RoutingDiv").hide();
         if (parttype === "SubCon") {
             $("#Span14RoutingDiv").show();
@@ -787,10 +864,19 @@ $(document).ready(function () {
             });
         }
         GetRcalog(id);
+        if (parseInt(loc) === 3) {
+            $("#SpanHead").hide();
+            $("#SpanCust").show();
+        } else {
+            $("#SpanHead").show();
+            $("#SpanCust").hide();
+        }
         var newNamevalidate = document.getElementById('P14Containt');
         newNamevalidate.style.border = '';
         var P14Comment = document.getElementById('P14Comment');
         P14Comment.style.border = '';
+        var P14CNfCom = document.getElementById('P14CNfCom');
+        P14CNfCom.style.border = '';
     });
     $("#P14Accept").on("click", function () {
         if (accp === 1) {
@@ -895,6 +981,8 @@ $(document).ready(function () {
         api.post("/WorkOrder/PostCont_RCA_CA_log", formdata).then((data) => {
             //loadGetAllNC_Wk_List_Appl();
             $("#P14RCLogId").val(data.cont_RCA_CA_LogId);
+            alert("Containment Action taken & outcome Saved");
+            $("#popup14").modal("hide");
             loadNCLog();
         }).catch((error) => {
             console.log(error);
@@ -933,6 +1021,62 @@ $(document).ready(function () {
         };
         api.post("/WorkOrder/PostCont_RCA_CA_log", formdata).then((data) => {
             alert("Feedback on Root Cause Analysis & Corrective Action Saved");
+            $("#popup14").modal("hide");
+            loadNCLog();
+        }).catch((error) => {
+            console.log(error);
+        });
+    });
+    $("#P14CnfSave").on("click", function () {
+        accp = 1;
+        var P14Containt = $("#P14Containt").val().trim();
+        var P14Comment = $("#P14Comment").val();
+        var P14NCLogId = $("#P14NCLogId").val();
+        var P14CNfCom = $("#P14CNfCom").val();
+        var P14CnfChk = $("#P14CnfChk");
+        var P14RCLogId = parseInt($("#P14RCLogId").val());
+        var cnfchk = "N";
+        if (isNaN(P14RCLogId) || P14RCLogId == 0) {
+            alert("Containment Action has taken");
+            return false;
+        }
+        if (P14CnfChk.is(':checked')) {
+            cnfchk = "Y";
+        } else { cnfchk = "N"; }
+        var status = 0;
+        if (accp == 1) {
+            status = 3;
+        } else if (accp == 2){
+            status = 4;
+            if (P14Comment.length === 0) {
+                var newNamevalidate = document.getElementById('P14Comment');
+                newNamevalidate.style.border = '2px solid red';
+                return false;
+            } else {
+                var newNamevalidate = document.getElementById('P14Comment');
+                newNamevalidate.style.border = '';
+            }
+        }
+        if (P14CNfCom.length === 0) {
+            var newNamevalidate = document.getElementById('P14CNfCom');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('P14CNfCom');
+            newNamevalidate.style.border = '';
+        }
+
+        var formdata = {
+            cont_RCA_CA_LogId: P14RCLogId,
+            ncLogId: parseInt(P14NCLogId),
+            containment_Action: P14Containt,
+            senior_Feedback: P14Comment,
+            cnfAllCompelete: cnfchk,
+            cnfComments: P14CNfCom,
+            cont_RCA_CA_Status_Id: status
+        };
+        api.post("/WorkOrder/PostCont_RCA_CA_log", formdata).then((data) => {
+            alert("Confirmation of completion of Corrective Action Saved");
             $("#popup14").modal("hide");
             loadNCLog();
         }).catch((error) => {
@@ -1125,6 +1269,12 @@ function GetRcalog(nclogId) {
         $("#P14Containt").val(data[0].containment_Action);
         $("#P14Comment").val(data[0].senior_Feedback);
         $("#P14RCLogId").val(data[0].cont_RCA_CA_LogId);
+        $("#P14CNfCom").val(data[0].cnfComments);
+        if (data[0].cnfAllCompelete === "Y") {
+            $("#P14CnfChk").prop("checked", true);
+        } else {
+            $("#P14CnfChk").prop("checked", false);
+        }
         if (data[0].cont_RCA_CA_Status_Id === 4) {
             $("#P10DivDescVm").hide();
             $("#P10NClvl1VM").hide();
@@ -1146,6 +1296,17 @@ function loadPartDocNC(nclogId) {
         var tablebody = $("#P14DocUploadGrid tbody");
         $(tablebody).html("");//empty tbody
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             let rowHtml = $(`
                 <tr>
@@ -1245,6 +1406,17 @@ function loadNCLog() {
     $(tablebody).html("");//empty tbody
     api.getbulk("/workOrder/GetAllNcLog").then((data) => {
         data = data.filter(item => item.nC_Log_status_Id === 1);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
 
         data.forEach((ncItem) => {
             const nclogId = ncItem.insp_Outcome_Details_Id;
@@ -1264,6 +1436,19 @@ function loadNCLog() {
 
                 // Main conditional logic
                 if (containmentActionLength > 0 && statusId === 3) {
+                    dropdownHtml += `
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-bs-toggle="modal"
+                       data-divhide="N"
+                       data-showcnfdiv="Y"
+                       data-balno="${ncItem.balloon_No}"
+                       data-partid="${ncItem.inw_Recpt_Part_No_Id}"
+                       data-parttype="${ncItem.partType}"
+                       data-baldesc="${ncItem.balloon_No_Dir}"
+                       data-ncdes="${ncItem.nC_Descrip}" data-declsup="${ncItem.decl_by_Supplier}"
+                       data-nctrack="${ncItem.nC_Tracking_No}" data-qnty="${ncItem.nC_Qnty}"
+                       data-loc="${ncItem.storage_Location}" data-id="${ncItem.insp_Outcome_Details_Id}"
+                       data-bs-target="#popup14">Confirmation RCA / CA</a>`;
                     dropdownHtml += `
                     <a href="javascript:void(0);" class="dropdown-item descision-level"
                        data-bs-toggle="modal"
@@ -1389,6 +1574,17 @@ function loadDetailsDocUploadList(nclogId) {
             //data = data.filter(item => item.status == 1 || item.status==0);
             var tablebody = $("#P6DocUploadGrid tbody");
             $(tablebody).html("");//empty tbody
+            if (data.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
             //console.log(data);
             for (i = 0; i < data.length; i++) {
                 let rowHtml = $(`
@@ -1440,6 +1636,17 @@ function loadDetailsDocUploadList(nclogId) {
             //data = data.filter(item => item.status == 1 || item.status == 0);
             var tablebody = $("#P6DocUploadGrid tbody");
             $(tablebody).html("");//empty tbody
+            if (data.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
             //console.log(data);
             for (i = 0; i < data.length; i++) {
                 let rowHtml = $(`
@@ -1567,6 +1774,17 @@ function loadPartDocInsp(inw_Recpt_HeaderId) {
         var tablebody = $("#P6partInspectSuppGrid tbody");
         $(tablebody).html("");//empty tbody
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             let rowHtml = $(`
         <tr>
@@ -1613,6 +1831,17 @@ function loadPartDoc(inw_Recpt_HeaderId) {
         var tablebody = $("#P6partInspectPlanGrid tbody");
         $(tablebody).html("");//empty tbody
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             let rowHtml = $(`
         <tr>

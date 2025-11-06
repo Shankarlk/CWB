@@ -120,6 +120,12 @@ namespace CWB.App.Services.Masters
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<ManufacturedPartNoDetailVM>>.GetAsync(uri, headers);
         }
+        public async Task<IEnumerable<ManufacturedPartNoDetailVM>> GetBOfLikeManufPart()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getbofslikemp/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<ManufacturedPartNoDetailVM>>.GetAsync(uri, headers);
+        }
 
       
 
@@ -336,6 +342,12 @@ namespace CWB.App.Services.Masters
         public async Task<bool> DeleteItemMasterDocList(long itemMasterDocListId)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbms/deleteitemmasterdoc/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<bool> DeleteItemMasterPart(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/deleteitemmasterpart/{itemMasterDocListId}/{tenantId}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<bool>.GetAsync(uri, headers);
         }

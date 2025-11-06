@@ -79,7 +79,7 @@
                                     {
                                         <li><a asp-action="Index" asp-controller="Contacts" data-navid="M-C">Contacts</a></li>
                                     }
-                                    @if (permissionResult.Any(r => r.Menu2 == "Doc Mgt"))
+                                    @if (permissionResult.Any(r => r.Menu2 == "Document Management"))
                                     {
                                         <li><a asp-action="Index" asp-controller="DocumentManagement" data-navid="M-D">Document Management</a></li>
                                     } @* Add more conditions for additional submenus *@
@@ -130,12 +130,12 @@
                             </a>
                         </li>
                     }
-                    <li>
+                    @*<li>
                         <a asp-action="Index" asp-controller="ChangePassword" data-navid="I-IFQ">
                             <i class="fa fa-key"></i>
                             <span>Change Password</span>
                         </a>
-                    </li>
+                    </li>*@
                 }
                 else
                 {

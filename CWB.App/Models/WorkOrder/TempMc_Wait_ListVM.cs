@@ -64,6 +64,7 @@ namespace CWB.App.Models.WorkOrder
         public string PlanStartStr { get; set; }
         public string ShiftName { get; set; }
         public string SetUpTimeStr { get; set; }
+        public string PlannedSetupTime { get; set; }
         public string MatlReceptTime { get; set; }
         public string UomName { get; set; }
         public string PlanEndStr { get; set; }

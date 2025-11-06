@@ -8,7 +8,7 @@ namespace CWB.CompanySettings.Domain
 {
     public class Role_Ui_List : BaseEntity
     {
-        public long Ui_Id { get; set; }
+        public string Ui_Id { get; set; }
         public long RoleId { get; set; }
         public long PermissionId { get; set; }
         public long EmployeeId { get; set; }

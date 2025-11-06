@@ -30,5 +30,8 @@ namespace CWB.App.Models.EmployeeMaster
         public long TenantId { get; set; }
         public string DateOfJoinStr { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
+        public string HasDepartment { get; set; }   // "Y" or "N"
+        public string InEmployeeUIList { get; set; } // "Y" or "N"
+
     }
 }

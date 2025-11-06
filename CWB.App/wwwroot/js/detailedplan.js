@@ -33,6 +33,17 @@ function loadWO() {
             $("#DetailedStatusMsg").hide();
         }
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             butcount = 1;
             //data[i].strStatus = WoOrdStatus[data[i].status];
@@ -128,6 +139,7 @@ function getWorkOrderStatus(productionWoData, workOrderId) {
 }
 
 function loadProcPlan() {
+    $("#preloaderblurred").show();
     api.getbulk("/WorkOrder/GetAllProcPlan").then((data) => {
         const transformedData = Object.values(
             data.reduce((acc, row) => {
@@ -201,8 +213,10 @@ function loadProcPlan() {
             //const uniqueRMPartsCount = uniqueRMParts.length;
             $('#noOfCommonRMPart').text(commonRMPartsCount);
             $('#totalNoOfUniqueRMPart').text(uniqueRMPartsCount);
+            $("#preloaderblurred").hide();
         }).catch((error) => { });
     }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
 }
 
@@ -211,6 +225,17 @@ function loadBomList() {
         var tablebody = $("#BomListGrid tbody");
         $(tablebody).html("");//empty tbody
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("BomListRow", data[i]));
         }
@@ -249,6 +274,17 @@ function loadMcTimeListDetail() {
         var tablebody = $("#MachineTimeListDetail tbody");
         $(tablebody).html("");//empty tbody
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("MachineTimeListDetailRow", data[i]));
         }
@@ -279,6 +315,17 @@ function reloadWO(reloadOption, partid) {
         var tablebody = $("#Popup4Grid tbody");
         $(tablebody).html("");//empty tbody
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             //data[i].strStatus = WoOrdStatus[data[i].status];
             $(tablebody).append(AppUtil.ProcessTemplateData("Popup4GridRow", data[i]));
@@ -292,6 +339,17 @@ function p2reloadWO(reloadOption, partid) {
         var tablebody = $("#MulitpleWOs tbody");
         $(tablebody).html("");//empty tbody
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             //data[i].strStatus = WoOrdStatus[data[i].status];
             $(tablebody).append(AppUtil.ProcessTemplateData("MultipleWoRow", data[i]));
@@ -1952,6 +2010,18 @@ $(document).ready(function () {
         $("#detailedPlanWo tbody tr").filter(function () {
             $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#detailedPlanWo tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $('#checkparentlevel').on('click', function () {
@@ -1960,6 +2030,18 @@ $(document).ready(function () {
             $("#detailedPlanWo tbody tr").filter(function () {
                 $(this).toggle($(this.children[17]).text().toLowerCase().indexOf(Y) > -1);
             });
+            var $tableBody = $("#detailedPlanWo tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             // Show all rows when the checkbox is unchecked
             $("#detailedPlanWo tbody tr").show();
@@ -1971,6 +2053,18 @@ $(document).ready(function () {
         $("#detailedPlanWo tbody tr").filter(function () {
             $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#detailedPlanWo tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchWoNumber").on("keyup", function () {
@@ -1978,6 +2072,18 @@ $(document).ready(function () {
         $("#detailedPlanWo tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#detailedPlanWo tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchWoPartType").on("change", function () {
@@ -1989,6 +2095,18 @@ $(document).ready(function () {
         $("#detailedPlanWo tbody tr").filter(function () {
             $(this).toggle($(this.children[14]).text().toLowerCase().indexOf(selectedValue) > -1)
         });// show only the filtered rows
+        var $tableBody = $("#detailedPlanWo tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchMatProcPartNo").on("keyup", function () {
@@ -1996,6 +2114,18 @@ $(document).ready(function () {
         $("#ProcPlanGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#ProcPlanGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchMatProcPartDesc").on("keyup", function () {
@@ -2003,6 +2133,18 @@ $(document).ready(function () {
         $("#ProcPlanGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#ProcPlanGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchMatProcPartType").on("keyup", function () {
@@ -2010,6 +2152,18 @@ $(document).ready(function () {
         $("#ProcPlanGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#ProcPlanGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchBomProcPartNo").on("keyup", function () {
@@ -2017,6 +2171,18 @@ $(document).ready(function () {
         $("#BomListGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#BomListGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchBomProcPartDesc").on("keyup", function () {
@@ -2024,6 +2190,18 @@ $(document).ready(function () {
         $("#BomListGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#BomListGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchBomProcPartType").on("keyup", function () {
@@ -2031,6 +2209,18 @@ $(document).ready(function () {
         $("#BomListGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#detailedPlanWo tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchMCSummaryLocation").on("keyup", function () {
@@ -2038,6 +2228,18 @@ $(document).ready(function () {
         $("#McTimeListSummary tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#McTimeListSummary tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchMCSummarMCType").on("keyup", function () {
@@ -2045,12 +2247,36 @@ $(document).ready(function () {
         $("#McTimeListSummary tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#McTimeListSummary tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchMCSummaryMachine").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#McTimeListSummary tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#McTimeListSummary tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#inhouseChk").on("change", function () {
         if ($(this).is(":checked")) {
@@ -2059,6 +2285,18 @@ $(document).ready(function () {
             $("#McTimeListSummary tbody tr").filter(function () {
                 $(this).toggle($(this.children[7]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#McTimeListSummary tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#McTimeListSummary tbody tr").show();
         }
@@ -2070,6 +2308,18 @@ $(document).ready(function () {
             $("#McTimeListSummary tbody tr").filter(function () {
                 $(this).toggle($(this.children[7]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#McTimeListSummary tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#McTimeListSummary tbody tr").show();
         }
@@ -2080,36 +2330,108 @@ $(document).ready(function () {
         $("#MachineTimeListDetail tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#MachineTimeListDetail tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchMCDetailPartDesc").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#MachineTimeListDetail tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#detailedPlanWo tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchMCDetailWoRef").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#MachineTimeListDetail tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#detailedPlanWo tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchMCDetailLocation").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#MachineTimeListDetail tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#MachineTimeListDetail tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchMCDetailMCType").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#MachineTimeListDetail tbody tr").filter(function () {
             $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#MachineTimeListDetail tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchMCDetailMachine").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#MachineTimeListDetail tbody tr").filter(function () {
             $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#MachineTimeListDetail tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $('#P20Supplier').on('change', (e) => {

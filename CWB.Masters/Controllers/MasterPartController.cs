@@ -67,10 +67,10 @@ namespace CWB.Masters.Controllers
 
         [HttpGet]
         [Route(ApiRoutes.Masters.GetStatuses)]
-        [Produces(AppContentTypes.ContentType, Type = typeof(List<PartStatusVM>))]
-        public IActionResult GetStatuses()
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<PartsStatusVM>))]
+        public async Task<IActionResult> GetStatuses()
         {
-            var companyTypes = _masterPartService.GetStatuses();
+            var companyTypes = await _masterPartService.GetStatuses();
             return Ok(companyTypes);
         }
 
@@ -109,6 +109,14 @@ namespace CWB.Masters.Controllers
         public async Task<IActionResult> DeleteItemMasterDoc(long itemMasterDocListId, long tenantId)
         {
             var result = await _masterPartService.DeleteItemMasterDoc(itemMasterDocListId, tenantId);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Masters.DeleteItemMasterPart)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteItemMasterPart(long itemMasterDocListId, long tenantId)
+        {
+            var result = await _masterPartService.DeleteItemMasterPart(itemMasterDocListId, tenantId);
             return Ok(result);
         }
 

@@ -26,6 +26,17 @@ function loadFileExtnSelect() {
         div_data = "<option value='" + 0 + "'>" + "--Select--" + "</option>";
         FileSelElem.append(div_data);
         SearchFileExtn.append(div_data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             div_data = "<option value='" + data[i].extnId + "'>" + data[i].extnName + "</option>";
             FileSelElem.append(div_data);
@@ -39,15 +50,29 @@ function loadFileExtnSelect() {
 }
 
 function loadDocType() {
+    $("#preloaderblurred").show();
     api.getbulk("/DocumentManagement/GetAllDocumentType").then((data) => {
         //data = data.filter(item => item.status !== 6);
         var tablebody = $("#DocTypeGrid tbody");
         $(tablebody).html("");//empty tbody
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("DocumentTypeRow", data[i]));
         }
+        $("#preloaderblurred").hide();
     }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
 }
 
@@ -59,6 +84,18 @@ function LoadDepartment() {
         var tablebody2 = $("#DepartmentView tbody");
         $(tablebody2).html("");//empty tbody
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+            $(tablebody2).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("DepartmentUploadRow", data[i]));
             $(tablebody2).append(AppUtil.ProcessTemplateData("DepartmentViewRow", data[i]));
@@ -72,6 +109,17 @@ function loadCustRetData() {
         //data = data.filter(item => item.status !== 6);
         var tablebody = $("#rpdcCustomerRetGrid tbody");
         $(tablebody).html("");//empty tbody
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         //console.log(data);
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("CustomerRetentionRow", data[i]));
@@ -147,12 +195,36 @@ $(document).ready(function () {
         $("#DocTypeGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#DocTypeGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SeacrchUploaddept").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#DocTypeGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#DocTypeGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#DTDDocCat").on("change", function () {
@@ -187,6 +259,18 @@ $(document).ready(function () {
             $("#DocTypeGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#DocTypeGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#DocTypeGrid tbody tr").show(); // show all rows when checkbox is unchecked
         }
@@ -198,6 +282,18 @@ $(document).ready(function () {
             $("#DocTypeGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#DocTypeGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#DocTypeGrid tbody tr").show(); // show all rows when checkbox is unchecked
         }
@@ -211,6 +307,18 @@ $(document).ready(function () {
         $("#rpdcCustomerRetGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#rpdcCustomerRetGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#rpdcCustomerSelect").on("change", function () {

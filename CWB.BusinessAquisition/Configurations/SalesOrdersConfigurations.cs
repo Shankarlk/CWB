@@ -91,6 +91,12 @@ namespace CWB.BusinessAquisition.Configurations
               .Property(c => c.Comment)
               .HasColumnName("Comment");
             builder
+              .Property(c => c.FinalDispQnty)
+              .HasColumnName("FinalDispQnty");
+            builder
+              .Property(c => c.SuggestedDispQnty)
+              .HasColumnName("SuggestedDispQnty");
+            builder
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();

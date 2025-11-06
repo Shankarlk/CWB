@@ -23,6 +23,17 @@ function loadEditParts() {
     var tablebody = $("#grid1 tbody");
     $(tablebody).html("");//empty tbody
     api.getbulk("/MaterialAvailability/masterparts").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
 
         for (i = 0; i < data.length; i++) {
 
@@ -48,12 +59,36 @@ $(function () {
         $("#grid1 tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#grid1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPartDesc").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#grid1 tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#grid1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchCustomer").on("change", function () {
         var selectedValue = $(this).val();
@@ -65,6 +100,18 @@ $(function () {
         $("#grid1 tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(selvallowc) > -1)
         });
+        var $tableBody = $("#grid1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPartType").on("change", function () {
         var selectedValue = $(this).val();
@@ -76,6 +123,18 @@ $(function () {
         $("#grid1 tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(selvallowc) > -1)
         });
+        var $tableBody = $("#grid1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $('#NcaawaitPopup').on('show.bs.modal', function (event) {
         var relatedTarget = $(event.relatedTarget);
@@ -103,6 +162,17 @@ function loadPartsGrid2(partid, parttype) {
         let allRoutingEmpty = data.every(p => !p.routingName || p.routingName.trim() === "");
         let allOprNoEmpty = data.every(p => !p.oprNo || p.oprNo.toString().trim() === "");
         let allrwkQntyEmpty = data.every(p => !p.rwkQnty || p.rwkQnty.toString().trim() === "");
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
 
         // Hide columns if needed
         for (let i = 0; i < data.length; i++) {

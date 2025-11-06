@@ -1,0 +1,57 @@
+2025-10-21 08:30:30.3636 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-10-21 08:30:31.3300 INFO Application started. Press Ctrl+C to shut down.
+2025-10-21 08:30:31.5957 INFO Hosting environment: Production
+2025-10-21 08:30:32.6711 INFO Content root path: /app
+2025-10-21 08:30:32.9999 ERROR Consume exception
+2025-10-21 12:04:06.5095 INFO Consumed message at email-events [[0]] @0: {"RecipientEmail":"rajugoudah2003@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Rajugouda H,\n\nYour Account has been Created successfully!\nYou Username: rajugoudah2003@gmail.com\nYou Password: Qp*#01qDEM\n\nThanks,\nKGK-Engineers"}
+2025-10-21 12:04:07.4543 INFO Attempt 1 to send email to rajugoudah2003@gmail.com
+2025-10-21 12:04:09.5053 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-10-21 12:04:12.0990 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-10-21 12:04:12.6196 INFO Sending email to rajugoudah2003@gmail.com
+2025-10-21 12:04:14.9372 INFO Email successfully sent to rajugoudah2003@gmail.com
+2025-10-21 12:09:20.8329 INFO Consumed message at email-events [[0]] @1: {"RecipientEmail":"rajugoudah2003@gmail.com","Subject":"Password Reset!","Body":"Hi Rajugouda H,\n\nYour Password has been Reset!\nYour Username: rajugoudah2003@gmail.com\nYour New Password: 5U$JlwRc8$\n\nThanks,\nKGK-Engineers"}
+2025-10-21 12:09:20.8502 INFO Attempt 1 to send email to rajugoudah2003@gmail.com
+2025-10-21 12:09:20.8743 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-10-21 12:09:23.7430 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-10-21 12:09:24.2309 INFO Sending email to rajugoudah2003@gmail.com
+2025-10-21 12:09:26.2130 INFO Email successfully sent to rajugoudah2003@gmail.com
+2025-10-21 12:21:22.5132 INFO Consumed message at email-events [[0]] @2: {"RecipientEmail":"rajugoudah2003@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Rajugouda H,\n\nYour Account has been Created successfully!\nYou Username: rajugoudah2003@gmail.com\nYou Password: ANkrMx!6VG\n\nThanks,\nKGK-Engineers"}
+2025-10-21 12:21:22.5286 INFO Attempt 1 to send email to rajugoudah2003@gmail.com
+2025-10-21 12:21:22.5499 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-10-21 12:21:24.8423 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-10-21 12:21:25.3537 INFO Sending email to rajugoudah2003@gmail.com
+2025-10-21 12:21:27.2760 INFO Email successfully sent to rajugoudah2003@gmail.com
+2025-10-21 12:23:09.7573 INFO Consumed message at email-events [[0]] @3: {"RecipientEmail":"rajugoudah2003@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Rajugouda B H,\n\nYour Account has been Created successfully!\nYou Username: rajugoudah2003@gmail.com\nYou Password: ko3$lKUoi4\n\nThanks,\nKGK-Engineers"}
+2025-10-21 12:23:09.7698 INFO Attempt 1 to send email to rajugoudah2003@gmail.com
+2025-10-21 12:23:09.8090 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-10-21 12:23:11.9268 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-10-21 12:23:12.4746 INFO Sending email to rajugoudah2003@gmail.com
+2025-10-21 12:23:14.3926 INFO Email successfully sent to rajugoudah2003@gmail.com
+2025-10-21 12:24:19.3573 INFO Consumed message at email-events [[0]] @4: {"RecipientEmail":"rajugoudah2003@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Rajugouda B H,\n\nYour Account has been Created successfully!\nYou Username: rajugoudah2003@gmail.com\nYou Password: 5*P!vWvaWV\n\nThanks,\nKGK-Engineers"}
+2025-10-21 12:24:19.3712 INFO Attempt 1 to send email to rajugoudah2003@gmail.com
+2025-10-21 12:24:19.3987 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-10-21 12:24:21.3174 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-10-21 12:24:21.8306 INFO Sending email to rajugoudah2003@gmail.com
+2025-10-21 12:24:23.9644 INFO Email successfully sent to rajugoudah2003@gmail.com
+2025-10-21 12:32:08.5968 INFO Consumed message at email-events [[0]] @5: {"RecipientEmail":"rajugoudas12003@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Rajugouda h,\n\nYour Account has been Created successfully!\nYou Username: rajugoudas12003@gmail.com\nYou Password: 60I9C@XOAq\n\nThanks,\nKGK-Engineers"}
+2025-10-21 12:32:08.6201 INFO Attempt 1 to send email to rajugoudas12003@gmail.com
+2025-10-21 12:32:08.6582 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-10-21 12:32:10.6663 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-10-21 12:32:11.1727 INFO Sending email to rajugoudas12003@gmail.com
+2025-10-21 12:32:13.1062 INFO Email successfully sent to rajugoudas12003@gmail.com
+2025-10-21 12:44:05.0857 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-10-21 12:44:05.4385 INFO Application started. Press Ctrl+C to shut down.
+2025-10-21 12:44:05.4892 INFO Hosting environment: Production
+2025-10-21 12:44:05.5284 INFO Content root path: /app
+2025-10-21 12:47:34.7424 INFO Consumed message at email-events [[0]] @6: {"RecipientEmail":"rajugoudah2003@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Rajugouda,\n\nYour Account has been Created successfully!\nYou Username: rajugoudah2003@gmail.com\nYou Password: ez9$OOjTA3\n\nThanks,\nKGK-Engineers"}
+2025-10-21 12:47:35.1370 INFO Attempt 1 to send email to rajugoudah2003@gmail.com
+2025-10-21 12:47:35.7215 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-10-21 12:47:38.1529 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-10-21 12:47:38.7100 INFO Sending email to rajugoudah2003@gmail.com
+2025-10-21 12:47:40.9026 INFO Email successfully sent to rajugoudah2003@gmail.com
+2025-10-21 12:51:03.8021 INFO Consumed message at email-events [[0]] @7: {"RecipientEmail":"rajugoudah2003@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Rajugouda,\n\nYour Account has been Created successfully!\nYou Username: rajugoudah2003@gmail.com\nYou Password: ez9$OOjTA3\n\nThanks,\nKGK-Engineers"}
+2025-10-21 12:51:03.8181 INFO Attempt 1 to send email to rajugoudah2003@gmail.com
+2025-10-21 12:51:03.8756 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-10-21 12:51:05.9438 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-10-21 12:51:06.4259 INFO Sending email to rajugoudah2003@gmail.com
+2025-10-21 12:51:09.3364 INFO Email successfully sent to rajugoudah2003@gmail.com

@@ -504,9 +504,10 @@ function DowlonadPartsRoutings() {
     //RoutingListItems
     var tablebody = $("#PartsRoutingsTable tbody");
     $(tablebody).html("");//empty tbody
+    $("#preloaderblurred").show();
     //UpdatePurchaseDetailsTableFromPostData
     let i = 0;
-    if (dataPartsRoutings.length > 2) {
+    if (dataPartsRoutings.length > 0) {
         noOfRoutePart = 0;
         noOfWithoutDoc = 0;
         let data = dataPartsRoutings;
@@ -537,6 +538,7 @@ function DowlonadPartsRoutings() {
             $(tablebody).append(rowHtml);
             $("#prWithOutRoute").val(noOfRoutePart);
             $("#prWithOutDoc").val(noOfWithoutDoc);
+            $("#preloaderblurred").hide();
         }
     }
     else {
@@ -573,7 +575,9 @@ function DowlonadPartsRoutings() {
                 $("#prWithOutDoc").val(noOfWithoutDoc);
 
             }
+            $("#preloaderblurred").hide();
         }).catch((error) => {
+            $("#preloaderblurred").hide();
         });
     }
 }

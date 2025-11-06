@@ -198,18 +198,54 @@ $(document).ready(function () {
         $("#NcGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#NcGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchNcLoc").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#NcGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#NcGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPartNo").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#NcGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#NcGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPartType").on("change", function () {
         var value = $(this).val().toLowerCase();
@@ -218,6 +254,18 @@ $(document).ready(function () {
             $("#NcGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(selectedText) > -1)
             });
+        var $tableBody = $("#NcGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
         } else {
             $("#NcGrid tbody tr").show();
         }

@@ -422,9 +422,14 @@
         <div class="modal-content bxs-modal">
             <div class="modal-header">
                 <h5 class="modal-title" id="staticBackdropLabel">
-                    Containment, Root Cause Analysis & Corretive Action Document Upload <br>
+                    <span id="SpanHead">Containment, Root Cause Analysis & Corretive Action Document Upload <br>
                     for Part No / Desc : <span id="Span14Partno"></span> from Supplier <span id="Span14Supp"></span> <br>
                     <span id="Span14RoutingDiv">Routing : <span id="Span14Routing"></span> Opr No : <span id="Span14OprNo"></span></span>
+                    </span>
+                    <span id="SpanCust">
+                        Containment, Root Cause Analysis & Containment Action Document Upload
+                        for Part No / Desc :  <span id="Span14Partnoc"></span>
+                    </span>
                 </h5>
                 <button type="button" class="btn-close" id="btnP14Close"></button>
             </div>
@@ -581,6 +586,37 @@
                                         id="P14SaveRca">
                                     Save
                                 </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12" id="CNfCADiv">
+                            <hr class="mt-2">
+                            <h6>Confirmation of completion of Corrective Action </h6>
+
+                            <div class="d-flex align-items-start mt-2">
+                                <div class="col-4">
+                                    <label class="form-label mb-0">Confirm all Corrective Actions complete </label>
+                                </div>
+                                <div class="col-6">
+                                    <input class="form-check-input" id="P14CnfChk" type="checkbox">
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-start mt-2">
+                                <div class="col-4">
+                                    <label class="form-label mb-0">Comments </label>
+                                </div>
+                                <div class="col-6">
+                                    <textarea class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                              data-tippy-placement="top" placeholder="" id="P14CNfCom" readonly=""
+                                              style="height: 55px;"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="col-md-11 mt-3 text-end">
+                                <button class="btn btn-primary btn-sm" id="P14CnfSave">Save</button>
                             </div>
                         </div>
                     </div>

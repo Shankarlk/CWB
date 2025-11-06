@@ -130,12 +130,40 @@ function DecodePartId() {
             var closeatag = document.getElementById("closeatag");
             if (decodepartid != 0) {
                 $("#headingN").text("Edit");
+                $("#statusDiv").show();
+                $("#statusLbl").show();
                 closeatag.href = "/Masters/MasterDetails";
             } else {
+                $("#statusDiv").hide();
+                $("#statusLbl").hide();
                 $("#headingN").text("New");
                 closeatag.href = "/Masters/Index";
             }
         }
+    });
+}
+function loadQntyInLoc() {
+    $('#preloaderblurred').show();
+    var manufPartId = $("#PartId").val();
+    api.getbulk("/workOrder/GetAllInv_Trans_Log").then((data) => {
+        data = data.filter((workOrder) => workOrder.output_Part_No === parseInt(manufPartId));
+        var tablebody = $("#StPopupGrid tbody");
+        $(tablebody).html("");//empty tbody
+        if (data.length === 0) {
+            $('#StPopupGrid').hide();
+        }
+        for (i = 0; i < data.length; i++) {
+            if (data[i].partNo && data[i].partNo.includes("/")) {
+                const parts = data[i].partNo.split("/");
+                data[i].partNo = parts[0].trim();       // "RM101"
+                data[i].partDesc = parts[1].trim();     // "RM101 Description"
+            }
+            $(tablebody).append(AppUtil.ProcessTemplateDataNew("StPopupGridRow", data[i], i));
+        }
+        $('#preloaderblurred').hide();
+    }).catch((error) => {
+        $('#preloaderblurred').hide();
+        console.log(error);
     });
 }
 $(function () {
@@ -241,6 +269,90 @@ $(function () {
             $("#StatusChangeReason").removeAttr("data-val-required");
         }
     });
+    var currentStatus = $("#Status").val();
+
+    var $statusPopup = $("#statusPopup");
+    var $statusResasonopup = $("#statusResasonopup");
+    $statusPopup.empty(); // clear old options
+    $('#StPopupGrid').hide();
+    $statusPopup.append('<option value="">Select</option>');
+
+    if (currentStatus === "Not Released") {
+        // only Released should be shown
+        $statusPopup.append('<option value="Released">Released</option>');
+        $statusResasonopup.val("Regular Release");
+    }
+    else if (currentStatus === "Released") {
+        $statusPopup.append('<option value="Hold">Hold</option>');
+        $statusPopup.append('<option value="Obsolete">Obsolete</option>');
+    }
+    else if (currentStatus === "Hold") {
+        $statusPopup.append('<option value="Released">Released</option>');
+    }
+    else if (currentStatus === "Obsolete") {
+        // No further transitions, optionally disable
+        $statusPopup.append('<option disabled>No further status</option>');
+        $statusPopup.prop("disabled", true);
+    } else {
+        // fallback → show all
+        $statusPopup.append('<option>Not Released</option>');
+        $statusPopup.append('<option>Released</option>');
+        $statusPopup.append('<option>Hold</option>');
+        $statusPopup.append('<option>Obsolete</option>');
+    }
+    $("#statusPopup").change(function () {
+        var selval = $(this).val();
+        var manufPartId = $("#PartId").val();
+        var partsold = $("#checkboxFinalPart").prop("checked");
+        if (selval === "Released") {
+            $('#StPopupGrid').hide();
+            $("#statusResasonopup").val("Regular Release");
+            $("#StatusChangeReason").val("Regular Release");
+        } else if (selval === "Hold" && partsold) {
+            $('#StPopupGrid').hide();
+            api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
+                const workOrdersWithStatus1 = data.filter((workOrder) => workOrder.partId === parseInt(manufPartId) && workOrder.active !== 2);
+                if (workOrdersWithStatus1.length > 0) {
+                    $("#stReasonPop").text("WO: " + workOrdersWithStatus1[0].woNumber + " for this Part is in Progress. This will be on Hold");
+                }
+            }).catch((error) => {
+            });
+        } else if (selval === "Hold") {
+            $('#StPopupGrid').hide();
+            $("#stReasonPop").text("Part Number Selection for Production Planning will be disabled");
+        } else if (selval === "Obsolete") {
+            $('#StPopupGrid').show();
+            var parttype = "-";
+            api.getbulk("/Masters/CMPBomParents?partId=" + parseInt(manufPartId) + "&partType=" + parttype).then((data) => {
+                if (data.length > 0) {
+                    var partNos = data.map(x => x.partNo).join(", ");
+                    $("#stReasonPop").text("BOMs to be delinked:" + partNos + "\nPart No has to be delinked from BOM before making Obsolete");
+                    $("#BtnstatusSave").prop("disabled", true);
+                } else {
+                    $("#stReasonPop").text("");
+                    $("#StatusChangeReason").val("");
+                }
+                loadQntyInLoc();
+            }).catch((error) => {
+            });
+        }
+    });
+    $('#ChangeListPopup').on('hidden.bs.modal', function (event) {
+        document.getElementById('status-info').style.filter = 'none';
+    });
+    $('#ChangeListPopup').on('shown.bs.modal', function (event) {
+        var manufPartId = $("#PartId").val();
+        document.getElementById('status-info').style.filter = 'blur(5px)';
+        api.getbulk("/masters/PartStatusLog?partId=" + parseInt(manufPartId)).then((data) => {
+            var tablebody = $("#ChangeGrid tbody");
+            $(tablebody).html("");//empty tbody
+            for (i = 0; i < data.length; i++) {
+                $(tablebody).append(AppUtil.ProcessTemplateDataNew("ChangeGridRow", data[i], i));
+            }
+        }).catch((error) => {
+            console.log(error);
+        })
+    });
 
     $("#btnBOFDetailSubmit").click(function (event) {
         if (!modelObj.Edit) {
@@ -268,16 +380,31 @@ $(function () {
     $('#status-info').on('hidden.bs.modal', function (event) {
         var newNamevalidate = document.getElementById('statusResasonopup');
         newNamevalidate.style.border = '';
+        var statusPopup = document.getElementById('statusPopup');
+        statusPopup.style.border = '';
+        $("#statusPopup").val('');
+        $("#stReasonPop").text('');
+        $("#BtnstatusSave").prop("disabled", false);
+        $('#StPopupGrid').hide();
     });
     $('#status-info').on('show.bs.modal', function (event) {
         var currentStatus = $("#Status").val();
+        var currentrReason = $("#StatusChangeReason").val();
         $("#CurrentStatus").val(currentStatus);
-        $("#statusResasonopup").val("");
+        $("#statusResasonopup").val(currentrReason);
     });
     $("#BtnstatusSave").click(function (event) {
         var streason = $("#statusResasonopup").val();
         var statusPopup = $("#statusPopup").val();
         $("#StatusChangeReason").val(streason);
+        if (statusPopup.length === 0) {
+            var newNamevalidate = document.getElementById('statusPopup');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('statusPopup');
+            newNamevalidate.style.border = '';
+        }
         $("#Status").val(statusPopup);
         if (statusPopup == "Inactive") {
             if (streason.length == 0) {
@@ -292,6 +419,14 @@ $(function () {
         } else {
             $("#status-info").modal("hide");
         }
+        var formData = AppUtil.GetFormData("BOFform");
+        api.post("/masters/boughtoutfinishdetail", formData).then((data) => {
+            alert("Status changed successfully!");
+            window.location.reload();
+            $("#status-info").modal("hide");
+        }).catch((error) => {
+            AppUtil.HandleError("BOFform", error);
+        });
     });
     loadDocUploadList();
     $('#doc-item').on('hidden.bs.modal', function (event) {

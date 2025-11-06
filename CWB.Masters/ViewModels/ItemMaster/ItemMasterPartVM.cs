@@ -25,5 +25,7 @@ namespace CWB.Masters.ViewModels.ItemMaster
         public string Notes { get; set; }
         public int Type { get; set; }
         public long TenantId { get; set; }
+        public char Inv_Trans { get; set; }
+        public char Linked_to_BOM { get; set; }
     }
 }

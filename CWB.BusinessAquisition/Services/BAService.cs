@@ -609,6 +609,8 @@ namespace CWB.BusinessAquisition.Services
                 so.WorkOrderId = salesOrder.WorkOrderId;
                 so.WorkOrderNo = salesOrder.WorkOrderNo;
                 so.BalanceSOQty = salesOrder.BalanceSOQty;
+                so.SuggestedDispQnty = salesOrder.SuggestedDispQnty;
+                so.FinalDispQnty = salesOrder.FinalDispQnty;
                 salesOrder = await _salesOrderRepository.UpdateAsync(salesOrder.Id, so);
             }
             try

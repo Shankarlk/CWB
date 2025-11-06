@@ -214,6 +214,13 @@ namespace CWB.App.Services.ProductionPlanWo
             childWoRels.TenantId = tenantId;
             return await RestHelper<Inw_Recpt_HeaderVM>.PostAsync(uri, childWoRels, headers);
         }
+        public async Task<SetupVariationReasonVM> PostSetupVariationReason(SetupVariationReasonVM childWoRels)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postsetupvariation");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            childWoRels.TenantId = tenantId;
+            return await RestHelper<SetupVariationReasonVM>.PostAsync(uri, childWoRels, headers);
+        }
         public async Task<Inw_Recpt_DetailsVM> PostInw_Recpt_Details(Inw_Recpt_DetailsVM childWoRels)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postinwrecptdetails");
@@ -433,6 +440,18 @@ namespace CWB.App.Services.ProductionPlanWo
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/allinwardcondlist");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<Inward_Condn_listVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<SetupVariationReasonVM>> GetAllSetupVariationReason()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/allsetupvariation");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<SetupVariationReasonVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Cust_NC_DecisionVM>> GetAllCust_NC_Decision()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/allcustncdecision");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Cust_NC_DecisionVM>>.GetAsync(uri, headers);
         }
         public async Task<IEnumerable<Inw_Recpt_HeaderVM>> GetAllInw_Recpt_Header()
         {

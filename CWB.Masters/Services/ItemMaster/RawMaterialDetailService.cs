@@ -114,6 +114,9 @@ namespace CWB.Masters.Services.ItemMaster
                 if (id == 0)
                 {
                     masterPart.Id = 0;
+                    masterPart.Status = "Not Released";
+                    masterPart.Inv_Trans = 'N';
+                    masterPart.Linked_to_BOM = 'N';
                     await _masterPartRepository.AddAsync(masterPart);
                     await _unitOfWork.CommitAsync();
                     rawMaterialDetailVM.PartId = (int)masterPart.Id;
@@ -132,10 +135,12 @@ namespace CWB.Masters.Services.ItemMaster
                     rawmaterialdetail.PartId = masterPart.Id;
                     if (id == rawmaterialdetail.PartId)
                     {
+                        var findmp = await _masterPartRepository.SingleOrDefaultAsync(s => s.Id == masterPart.Id);
                         PartStatusChangeLog partStatus = new PartStatusChangeLog()
                         {
                             MasterPartId = masterPart.Id,
                             Status = masterPart.Status,
+                            FromChangedStatus = findmp.Status.ToString(),
                             ChangeReason = masterPart.StatusChangeReason,
                             TenantId = masterPart.TenantId
                         };

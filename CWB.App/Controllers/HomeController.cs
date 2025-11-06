@@ -67,12 +67,12 @@ namespace CWB.App.Controllers
                 {
                     return View();
                 }
-                if (e.ChangedPassword == 1)
-                {
-                    var res = new List<Role_UI_ListVM>();
-                    HttpContext.Session.SetString("Permissions", JsonConvert.SerializeObject(res));
-                    return View();
-                }
+                //if (e.ChangedPassword == 1)
+                //{
+                //    var res = new List<Role_UI_ListVM>();
+                //    HttpContext.Session.SetString("Permissions", JsonConvert.SerializeObject(res));
+                //    return View();
+                //}
                 var empDeptList = await _deptService.GetDept_Employee();
                 var deptroles = await _deptService.GetDept_Role_List();
                 var designation = await _employeeService.GetAllUilist();
@@ -102,111 +102,112 @@ namespace CWB.App.Controllers
                         foreach (var deptRole in deptRoleList)
                         {
                             var result = roleui.Where(r => r.RoleId == deptRole.Role_Access_Id).ToList();
-
+                            // ---------- Inside rui loop ----------
                             foreach (var rui in result)
                             {
-                                var vm = new Role_UI_ListVM
+                                // Split comma-separated Ui_Ids
+                                var uiIds = rui.Ui_Id.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                                     .Select(x => x.Trim())
+                                                     .ToList();
+
+                                foreach (var uiIdStr in uiIds)
                                 {
-                                    Role_Ui_ListId = rui.Role_Ui_ListId,
-                                    RoleId = rui.RoleId,
-                                    Ui_Id = rui.Ui_Id,
-                                    Active = sorg.Active,
-                                    FromDept = "Y",
-                                    Add_dateStr = sorg.Add_date.ToString("dd-MM-yyyy"),
-                                    Deact_dateStr = sorg.Deact_date != DateTime.MinValue
-                                                     ? sorg.Deact_date.ToString("dd-MM-yyyy")
-                                                     : string.Empty
-                                };
+                                    if (!int.TryParse(uiIdStr, out int uiId))
+                                        continue;
 
-                                // Lookup Role Name
-                                var r = role.FirstOrDefault(u => u.Role_ListId == rui.RoleId);
-                                vm.RoleName = r?.Role_Desc ?? "";
-
-                                // Build Menu Hierarchy
-                                var d = designation.FirstOrDefault(u => u.UiListId == rui.Ui_Id);
-                                if (d != null)
-                                {
-                                    var chain = new List<string>();
-                                    var current = d;
-
-                                    while (current != null)
+                                    var vm = new Role_UI_ListVM
                                     {
-                                        chain.Insert(0, current.UI_Name_Label);
-                                        if (current.UI_Part_linked_to == 0) break;
-                                        current = designation.FirstOrDefault(m => m.UiListId == current.UI_Part_linked_to);
+                                        Role_Ui_ListId = rui.Role_Ui_ListId,
+                                        RoleId = rui.RoleId,
+                                        Ui_Id = uiId.ToString(),
+                                        Active = sorg.Active,
+                                        FromDept = "Y",
+                                        Add_dateStr = sorg.Add_date.ToString("dd-MM-yyyy"),
+                                        Deact_dateStr = sorg.Deact_date != DateTime.MinValue
+                                                         ? sorg.Deact_date.ToString("dd-MM-yyyy")
+                                                         : string.Empty
+                                    };
+
+                                    // Lookup Role Name
+                                    var r = role.FirstOrDefault(u => u.Role_ListId == rui.RoleId);
+                                    vm.RoleName = r?.Role_Desc ?? "";
+
+                                    // Build Menu Hierarchy directly from designation (no UI_Part_linked_to)
+                                    var d = designation.FirstOrDefault(u => u.UiListId == uiId);
+                                    if (d != null)
+                                    {
+                                        // Directly assign menu names
+                                        vm.Menu1 = d.Menu1 ?? "";
+                                        vm.Menu2 = d.Menu2 ?? "";
+                                        vm.Menu3 = d.Menu3 ?? "";
+                                        vm.Menu4 = d.Menu4 ?? "";
+                                        vm.Menu5 = d.Menu5 ?? "";
+                                        vm.UiLevel = string.Join("+", new[] { vm.Menu1, vm.Menu2, vm.Menu3, vm.Menu4, vm.Menu5 }
+                                                                    .Where(x => !string.IsNullOrEmpty(x)));
                                     }
 
-                                    vm.UiLevel = string.Join("+", chain);
-                                    vm.Menu1 = chain.Count > 0 ? chain[0] : "";
-                                    vm.Menu2 = chain.Count > 1 ? chain[1] : "";
-                                    vm.Menu3 = chain.Count > 2 ? chain[2] : "";
-                                    vm.Menu4 = chain.Count > 3 ? chain[3] : "";
-                                    vm.Menu5 = chain.Count > 4 ? chain[4] : "";
+                                    role_UI_ListVMs.Add(vm);
                                 }
-
-                                // Map Permissions
-                                //MapPermissions(vm, rui.PermissionId);
-
-                                role_UI_ListVMs.Add(vm);
                             }
+
                         }
                     }
                 }
 
+                // ---------- Inside emui loop ----------
                 foreach (var emui in empUiList)
                 {
-                    var vm = new Role_UI_ListVM
-                    {
-                        Role_Ui_ListId = emui.Employee_UI_ListId,
-                        Ui_Id = emui.Ui_Id,
-                        RoleId = 0, // directly assigned UI, no dept role
-                        Active = emui.Active,
-                        FromDept = "N",
-                        Add_dateStr = emui.Add_date.ToString("dd-MM-yyyy"),
-                        Deact_dateStr = emui.Deact_date != DateTime.MinValue
-                                         ? emui.Deact_date.ToString("dd-MM-yyyy")
-                                         : string.Empty
-                    };
+                    var uiIds = emui.Ui_Id.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                          .Select(x => x.Trim())
+                                          .ToList();
 
-                    // Try to infer role name from employee's dept mapping
-                    var empDept = sorgs.FirstOrDefault();
-                    if (empDept != null)
+                    foreach (var uiIdStr in uiIds)
                     {
-                        var deptRole = deptroles.FirstOrDefault(d => d.Dept_Struct_Id == empDept.Dept_Posn);
-                        if (deptRole != null)
+                        if (!int.TryParse(uiIdStr, out int uiId))
+                            continue;
+
+                        var vm = new Role_UI_ListVM
                         {
-                            var roleInfo = role.FirstOrDefault(r => r.Role_ListId == deptRole.Role_Access_Id);
-                            vm.RoleName = roleInfo?.Role_Desc ?? "";
-                        }
-                    }
+                            Role_Ui_ListId = emui.Employee_UI_ListId,
+                            Ui_Id = uiId.ToString(),
+                            RoleId = 0,
+                            Active = emui.Active,
+                            FromDept = "N",
+                            Add_dateStr = emui.Add_date.ToString("dd-MM-yyyy"),
+                            Deact_dateStr = emui.Deact_date != DateTime.MinValue
+                                             ? emui.Deact_date.ToString("dd-MM-yyyy")
+                                             : string.Empty
+                        };
 
-                    // Build Menu Hierarchy
-                    var d = designation.FirstOrDefault(u => u.UiListId == emui.Ui_Id);
-                    if (d != null)
-                    {
-                        var chain = new List<string>();
-                        var current = d;
-
-                        while (current != null)
+                        // Get role name from dept role if available
+                        var empDept = sorgs.FirstOrDefault();
+                        if (empDept != null)
                         {
-                            chain.Insert(0, current.UI_Name_Label);
-                            if (current.UI_Part_linked_to == 0) break;
-                            current = designation.FirstOrDefault(m => m.UiListId == current.UI_Part_linked_to);
+                            var deptRole = deptroles.FirstOrDefault(d => d.Dept_Struct_Id == empDept.Dept_Posn);
+                            if (deptRole != null)
+                            {
+                                var roleInfo = role.FirstOrDefault(r => r.Role_ListId == deptRole.Role_Access_Id);
+                                vm.RoleName = roleInfo?.Role_Desc ?? "";
+                            }
                         }
 
-                        vm.UiLevel = string.Join("+", chain);
-                        vm.Menu1 = chain.Count > 0 ? chain[0] : "";
-                        vm.Menu2 = chain.Count > 1 ? chain[1] : "";
-                        vm.Menu3 = chain.Count > 2 ? chain[2] : "";
-                        vm.Menu4 = chain.Count > 3 ? chain[3] : "";
-                        vm.Menu5 = chain.Count > 4 ? chain[4] : "";
+                        // Build Menu Hierarchy (no UI_Part_linked_to)
+                        var d = designation.FirstOrDefault(u => u.UiListId == uiId);
+                        if (d != null)
+                        {
+                            vm.Menu1 = d.Menu1 ?? "";
+                            vm.Menu2 = d.Menu2 ?? "";
+                            vm.Menu3 = d.Menu3 ?? "";
+                            vm.Menu4 = d.Menu4 ?? "";
+                            vm.Menu5 = d.Menu5 ?? "";
+                            vm.UiLevel = string.Join("+", new[] { vm.Menu1, vm.Menu2, vm.Menu3, vm.Menu4, vm.Menu5 }
+                                                        .Where(x => !string.IsNullOrEmpty(x)));
+                        }
+
+                        role_UI_ListVMs.Add(vm);
                     }
-
-                    // Map Access_Level to permissions
-                    //MapPermissions(vm, emui.Access_Level);
-
-                    role_UI_ListVMs.Add(vm);
                 }
+
 
                 HttpContext.Session.SetString("Permissions", JsonConvert.SerializeObject(role_UI_ListVMs));
             }

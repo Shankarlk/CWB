@@ -1,6 +1,7 @@
 ﻿using CWB.App.AppUtils;
 using CWB.App.Models.BusinessProcesses;
 using CWB.App.Models.Contacts;
+using CWB.App.Models.Departments;
 using CWB.App.Models.DocumentManagement;
 using CWB.App.Models.ItemMaster;
 using CWB.App.Models.Machine;
@@ -93,11 +94,12 @@ namespace CWB.App.Controllers
             ViewBag.SearchWoNumber = woNumber ?? string.Empty;
             return View();
         } 
-        //[Route("~/W@A!E0#% U%1X#Q ")]
+        [Route("~/P0!L!@T%2")]
         public IActionResult POLineList()
         {
             return View();
         }
+        [Route("~/@PP0@T%2")]
         public IActionResult ApprovPoDetails()
         {
             return View();
@@ -107,22 +109,27 @@ namespace CWB.App.Controllers
         {
             return View();
         }
+        [Route("~/!NWDP@@T%2")]
         public IActionResult InwardPo()
         {
             return View();
         }
+        [Route("~/!NSDP@T")]
         public IActionResult Inspection()
         {
             return View();
         }
+        [Route("~/0OTSTS@!")]
         public IActionResult OperationsSettings()
         {
             return View();
         }
+        [Route("~/N@C%!@!")]
         public IActionResult NcAwaitingDecision()
         {
             return View();
         }
+        [Route("~/M@TR!C%!@!")]
         public IActionResult MaterialMovement()
         {
             return View();
@@ -157,6 +164,11 @@ namespace CWB.App.Controllers
         {
             return View();
         }
+        [Route("~/S@D!S1O0")]
+        public IActionResult SoDispatch()
+        {
+            return View();
+        }
 
         [HttpGet]
         public async Task<IActionResult> AllSalesOrders()
@@ -187,6 +199,243 @@ namespace CWB.App.Controllers
             }
             return Ok(salesorders);
         }
+        [HttpPost]
+        public async Task<IActionResult> UpdateSOFinDisp(SalesOrderVM masterDocListVM)
+        {
+            var mc_Wait_Lists = await _baService.AllSalesOrders();
+            var mcWait = mc_Wait_Lists.Where(m => m.SalesOrderId == masterDocListVM.SalesOrderId).FirstOrDefault();
+            if (mcWait != null)
+            {
+                mcWait.FinalDispQnty = masterDocListVM.FinalDispQnty;
+                var result = await _baService.PostSalesOrder(mcWait);
+                return Ok(result);
+            }
+            return Ok("Not Found SalesOrder");
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateSOFinDispBulk([FromBody] List<SalesOrderVM> salesOrderUpdates)
+        {
+            // 1. Initialize a list to track successful updates or errors
+            var results = new List<object>();
+
+            if (salesOrderUpdates == null || !salesOrderUpdates.Any())
+            {
+                return BadRequest("No sales order data provided for bulk update.");
+            }
+
+            // 2. Loop through every item in the received list
+            foreach (var updateItem in salesOrderUpdates)
+            {
+                // 3. Find the existing Sales Order (similar to your single-item logic)
+                var mc_Wait_Lists = await _baService.AllSalesOrders();
+                var mcWait = mc_Wait_Lists
+                    .Where(m => m.SalesOrderId == updateItem.SalesOrderId)
+                    .FirstOrDefault();
+
+                if (mcWait != null)
+                {
+                    // 4. Apply the new dispatched quantity
+                    mcWait.FinalDispQnty = updateItem.FinalDispQnty;
+
+                    // 5. Save the change
+                    var result = await _baService.PostSalesOrder(mcWait); // Assuming PostSalesOrder handles the update
+
+                    results.Add(new { SalesOrderId = mcWait.SalesOrderId, Status = "Updated", ServiceResult = result });
+                }
+                else
+                {
+                    results.Add(new { SalesOrderId = updateItem.SalesOrderId, Status = "Not Found" });
+                }
+            }
+
+            // 6. Return a summary of all operations
+            return Ok(results);
+        }
+        [HttpGet]
+        public async Task<IActionResult> AllSODispatch()
+        {
+            var salesorders = await _baService.AllSalesOrders();
+            var masterparts = await _masterService.ItemMasterParts();
+            var customer = await _baService.GetCustomerOrders();
+            var trans = await _woService.GetAllInv_Trans_Log();
+            var DispatchDetails = await _woService.GetAllDispatchDetails();
+            foreach (SalesOrderVM sovm in salesorders)
+            {
+                foreach (ItemMasterPartVM impvm in masterparts)
+                {
+                    if (sovm.PartId == impvm.PartId)
+                    {
+                        ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart((int)sovm.PartId);
+                        var bastatus = await _baService.GetBAStatus(sovm.Status);
+                        sovm.StrStatus = bastatus.Status;
+                        sovm.PartNo = impvm.PartNo;
+                        sovm.PartDesc = impvm.Description;
+                        double maxBuildableQty = double.MaxValue;
+                        if (impvm.MasterPartType == "ManufacturedPart")
+                        {
+                            var mpmakefromlists = await _masterService.GetMPMakeFromListByPartId(mf.ManufacturedPartNoDetailId.ToString());
+
+                            foreach (var component in mpmakefromlists)
+                            {
+                                // 1. Total Weight On Hand for the Component
+                                decimal componentOnHandWeight = CalculateOnHand((int)component.MPPartId, trans);
+
+                                // 2. Required Weight to build ONE unit of the final product
+                                // ASSUMPTION: InputWeight is the property holding the required weight per unit
+                                decimal requiredWeight = Convert.ToDecimal(component.InputWeight);
+
+                                if (requiredWeight > 0)
+                                {
+                                    // 3. Calculate how many final products can be built: Floor(On Hand Weight / Required Weight)
+                                    // Use Math.Floor to ensure we only count complete units
+                                    double availableBasedOnComponent = Math.Floor((double)(componentOnHandWeight / requiredWeight));
+
+                                    // 4. Update the bottleneck component (find the minimum buildable quantity)
+                                    maxBuildableQty = Math.Min(maxBuildableQty, availableBasedOnComponent);
+                                }
+                            }
+                        }
+                        else // Handle the BOM case (assuming this is a purchased part that uses a BOM for assembly)
+                        {
+                            // ASSUMPTION: This returns a list of components and their required quantities
+                            var bomlsts = await _masterService.BOMS(mf.ManufacturedPartNoDetailId.ToString());
+
+                            foreach (var component in bomlsts)
+                            {
+                                decimal componentOnHandUnits = CalculateOnHand((int)component.BOMPartId, trans);
+
+                                // ASSUMPTION: Quantity is the property holding the amount needed
+                                decimal requiredUnits = component.Quantity;
+
+                                if (requiredUnits > 0)
+                                {
+                                    double availableBasedOnComponent = Math.Floor((double)(componentOnHandUnits / requiredUnits));
+                                    maxBuildableQty = Math.Min(maxBuildableQty, availableBasedOnComponent);
+                                }
+                            }
+                        }
+                        if (maxBuildableQty == double.MaxValue)
+                        {
+                            // No components defined
+                            sovm.QntyOnHand = 0;
+                        }
+                        else
+                        {
+                            sovm.QntyOnHand = (long)maxBuildableQty;
+                        }
+                    }
+                }
+                foreach (CustomerOrderVM cu in customer)
+                {
+                    if (sovm.CustomerOrderId == cu.CustomerOrderId)
+                    {
+                        sovm.Customer = cu.CustomerName;
+                        sovm.PoNumber = cu.PONumber;
+                    }
+                }
+            }
+            var partsToAllocate = salesorders
+        .GroupBy(so => so.PartId)
+        .ToList();
+
+            foreach (var partGroup in partsToAllocate)
+            {
+                // 2a. Find the Total Buildable Stock for this PartId
+                // The total resource is the maximum QntyOnHand calculated in Phase 1 (since all SOs for the same part share the same components/bottleneck).
+                long totalBuildableStock = partGroup.Max(so => so.QntyOnHand);
+
+                // 2b. Calculate the total quantity ALREADY RESERVED/DISPATCHED by ALL SOs of this part.
+                long totalReservedQuantity = partGroup.Sum(so => so.FinalDispQnty);
+
+                // 2c. Calculate the FINAL QOH (Available for Dispatch)
+                // Available QOH = Total Buildable Stock - Total Reserved
+                long finalAvailableQOH = totalBuildableStock - totalReservedQuantity;
+
+                // Ensure the QOH doesn't go negative
+                if (finalAvailableQOH < 0) finalAvailableQOH = 0;
+
+                // ---------------------------------------------------------------------
+
+                // --- PHASE 3: Apply FINAL QOH and Perform Suggested Allocation ---
+
+                // 3a. Update the QntyOnHand for ALL SOs in this group to reflect the FINAL available stock.
+                // This addresses your requirement: "if the FinalDispQnty of the so is 50 then the qntyonhand should be 50 [100-50] not 100"
+                foreach (var so in partGroup)
+                {
+                    so.QntyOnHand = finalAvailableQOH;
+                }
+
+                // 3b. Use the FINAL QOH as the running stock for the Suggested Allocation.
+                long runningStockForAllocation = finalAvailableQOH;
+
+                // 3c. Order SOs by earliest RequiredByDate, and filter to only allocate NEW quantities.
+                var sortedSOsForAllocation = partGroup
+                    .Where(so => so.FinalDispQnty == 0) // Only allocate to SOs not yet dispatched
+                    .OrderBy(so => so.RequiredByDate);
+
+                // 3d. Perform the allocation for non-dispatched SOs
+                foreach (var so in sortedSOsForAllocation)
+                {
+                    long soRequired = so.RequiredQuantity;
+
+                    long suggestedQty = Math.Min(runningStockForAllocation, soRequired);
+
+                    so.SuggestedDispQnty = (int)suggestedQty;
+
+                    runningStockForAllocation -= suggestedQty;
+
+                    if (runningStockForAllocation <= 0)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            List<SalesOrderVM> ressultSos = new List<SalesOrderVM>();
+            foreach (var sovm in salesorders)
+            {
+                var dispatchDetail = DispatchDetails.Where(d => d.SaleOrderId == sovm.SalesOrderId).ToList();
+                
+                if (dispatchDetail.Count() > 0 && sovm.QntyOnHand == 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    if (dispatchDetail.Count() > 0)
+                    {
+                        sovm.DispatchId = dispatchDetail.First().DispatchDetailsId;
+                        sovm.InvoiceNo= dispatchDetail.First().InvoiceNo;
+                        sovm.InvoiceDate= dispatchDetail.First().InvoiceDate.ToString("dd-MM-yyyy");
+                        sovm.DispatchDetail= dispatchDetail.First().DispatchDetail;
+                    }
+                    ressultSos.Add(sovm);
+                }
+            }
+            return Ok(ressultSos);
+        }
+        // --- Start of logic inside AllSODispatch method ---
+
+        // Helper function to calculate Qty On Hand for a single part ID
+        decimal CalculateOnHand(int partId, IEnumerable<Inv_Trans_LogVM> trans)
+        {
+            decimal onHandWeight = 0;
+
+            foreach (var tran in trans.Where(t => t.Input_Part_NoId == partId || t.Output_Part_No == partId))
+            {
+                // ASSUMPTION: tran.Quantity is the weight.
+                if (tran.Output_Part_No == partId)
+                {
+                    onHandWeight += tran.Qnty;
+                }
+                else if (tran.Input_Part_NoId == partId)
+                {
+                    onHandWeight += tran.Qnty;
+                }
+            }
+            return onHandWeight;
+        }
+        
         [HttpGet]
         public async Task<IActionResult> CustomerMis()
         {
@@ -514,7 +763,6 @@ namespace CWB.App.Controllers
                         DateTime planstartdt = DateTime.Now;
                         if (mf.ManufacturedPartType == 2)
                         {
-                            var mp = await _masterService.ItemMasterPartById(mf.PartId);
                             var workdetails = await _plantService.GetPlantWD(1);
                             var holidaylist = await _plantService.GetHolidays(1);
                             string weekOff1 = workdetails.WeeklyOff1;
@@ -2201,7 +2449,7 @@ namespace CWB.App.Controllers
         } 
         
         [HttpGet]
-        public async Task<IActionResult> AllProductionWo()
+        public async Task<IActionResult> AllProductionWo()  // AllProductionWoReadForProd
         {
             var productions = await _woService.AllProductionPlan_Wo();
             var masterparts = await _masterService.ItemMasterParts();
@@ -3816,6 +4064,18 @@ namespace CWB.App.Controllers
             return Ok(result);
         }
         [HttpGet]
+        public async Task<IActionResult> GetAllSetupVariationReason()
+        {
+            var result = await _woService.GetAllSetupVariationReason();
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllCust_NC_Decision()
+        {
+            var result = await _woService.GetAllCust_NC_Decision();
+            return Ok(result);
+        }
+        [HttpGet]
         public async Task<IActionResult> GetAllInw_Recpt_Header()
         {
             var result = await _woService.GetAllInw_Recpt_Header();
@@ -3825,6 +4085,12 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> PostInw_Recpt_Header([FromBody] Inw_Recpt_HeaderVM procPlanVMs)
         {
             var result = await _woService.PostInw_Recpt_Header(procPlanVMs);
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> PostSetupVariationReason(SetupVariationReasonVM procPlanVMs)
+        {
+            var result = await _woService.PostSetupVariationReason(procPlanVMs);
             return Ok(result);
         }
         [HttpGet]
@@ -3859,7 +4125,6 @@ namespace CWB.App.Controllers
             var result = await _woService.GetAllNcLog();
             List<Insp_Outcome_DetailsVM> listnc = new List<Insp_Outcome_DetailsVM>();
             var masterparts = await _masterService.ItemMasterParts();
-            var loc = await _departmentService.GetDepartments(1);
             var rcclog = await _woService.GetAllCont_RCA_CA_log();
             var ncdisplog = await _woService.GetAllNC_Decision_Log();
             var inw = await _woService.GetAllInw_Recpt_Details();
@@ -3966,6 +4231,10 @@ namespace CWB.App.Controllers
                 {
                     item.LocationName = "Shop";
                 }
+                else if (Convert.ToInt32(item.Storage_Location) == 3)
+                {
+                    item.LocationName = "Customers";
+                }
                 else
                 {
                     item.LocationName = "Stores";
@@ -4018,7 +4287,7 @@ namespace CWB.App.Controllers
             return Ok(result);
         }  
         [HttpPost]
-        public async Task<IActionResult> PostNcLog([FromBody] Insp_Outcome_DetailsVM procPlanVMs)
+        public async Task<IActionResult> PostNcLog(Insp_Outcome_DetailsVM procPlanVMs)
         {
             var result = await _woService.PostNcLog(procPlanVMs);
             return Ok(result);
@@ -5407,6 +5676,11 @@ namespace CWB.App.Controllers
                 mcWait.Setup_Apprvl_time = DateTime.Now;
                 mcWait.Setup_FTR = masterDocListVM.Setup_FTR;
                 mcWait.Setup_comments = masterDocListVM.Setup_comments;
+                mcWait.OperatorId = masterDocListVM.OperatorId;
+                mcWait.ReasonfornotachievingFTRId = masterDocListVM.ReasonfornotachievingFTRId;
+                mcWait.ReasonforAddnSetupTimeId = masterDocListVM.ReasonforAddnSetupTimeId;
+                mcWait.SetupTimeTaken = masterDocListVM.SetupTimeTaken;
+                mcWait.AddntimeforSetup = masterDocListVM.AddntimeforSetup;
                 var result = await _woService.PostMc_Wait_List(mcWait);
                 return Ok(result);
             }
@@ -5860,10 +6134,10 @@ namespace CWB.App.Controllers
 
             foreach (var mcWait in waitList)
             {
-                if (mcWait.Wait_Seq_No != 1)
-                {
-                    continue;
-                }
+                //if (mcWait.Wait_Seq_No != 1)
+                //{
+                //    continue;
+                //}
                 if (mcWait.Setup_Start_time == null || mcWait.Setup_Apprvl_time != null)
                 {
                     continue;
@@ -5901,6 +6175,7 @@ namespace CWB.App.Controllers
                     PlanStartStr = currentStart.Value.ToString("hh:mm tt"),
                     SetUpTimeStr = mcWait.Setup_Start_time.Value.ToString("hh:mm tt"),
                     MatlReceptTime = matltime,
+                    PlannedSetupTime = stepMachines.First().SetupTime ?? "",
                     Rework_Wo = 'N'
                 });
             }
@@ -5926,7 +6201,7 @@ namespace CWB.App.Controllers
 
             foreach (var mcWait in waitList)
             {
-                if (mcWait.Wait_Seq_No != 1)
+                if (mcWait.Wait_Seq_No != 0)
                 {
                     continue;
                 }
@@ -6004,23 +6279,30 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetSetupSummaryByShop()
         {
-            // Fetch all 3 lists
-            var waitingList = await GetAllSetUpCnfList() as OkObjectResult;
-            var approvalList = await GetAllSetUpApprolList() as OkObjectResult;
-            var bookoutList = await GetAllBookOutList() as OkObjectResult;
+            // Fetch and process ALL data in a single, optimized method
+            var fullDataSet = await GetFullWaitListDataSet();
 
-            var waitingData = waitingList?.Value as List<TempMc_Wait_ListVM> ?? new List<TempMc_Wait_ListVM>();
-            var approvalData = approvalList?.Value as List<TempMc_Wait_ListVM> ?? new List<TempMc_Wait_ListVM>();
-            var bookoutData = bookoutList?.Value as List<TempMc_Wait_ListVM> ?? new List<TempMc_Wait_ListVM>();
+            // The data is already in a structure ready for filtering
+            var waitingData = fullDataSet
+                .Where(x => x.Wait_Seq_No == 0) // Equivalent logic from GetAllSetUpCnfList
+                .ToList();
+
+            var approvalData = fullDataSet
+                .Where(x => x.Setup_Start_time.HasValue && !x.Setup_Apprvl_time.HasValue) // Equivalent logic from GetAllSetUpApprolList
+                .ToList();
+
+            var bookoutData = fullDataSet
+                .Where(x => x.Wait_Seq_No == 0 && x.Setup_Apprvl_time.HasValue) // Equivalent logic from GetAllBookOutList
+                .ToList();
 
             // Combine all shop names
             var allShops = waitingData.Select(x => x.ShopName)
-                            .Union(approvalData.Select(x => x.ShopName))
-                            .Union(bookoutData.Select(x => x.ShopName))
-                            .Distinct()
-                            .ToList();
+                                       .Union(approvalData.Select(x => x.ShopName))
+                                       .Union(bookoutData.Select(x => x.ShopName))
+                                       .Distinct()
+                                       .ToList();
 
-            // Prepare final summary result
+            // Prepare final summary result (This remains efficient)
             var summaryList = allShops.Select(shop => new
             {
                 Shop = shop,
@@ -6031,7 +6313,132 @@ namespace CWB.App.Controllers
 
             return Ok(summaryList);
         }
+        private async Task<List<TempMc_Wait_ListVM>> GetFullWaitListDataSet()
+        {
+            // 1. Concurrent Fetching: Use Task.WhenAll to execute all service calls in parallel.
+            var tasks = new List<Task>
+    {
+        _woService.GetAllMc_Wait_List(),
+        _masterService.ItemMasterParts(),
+        _machineService.GetMachinesList(),
+        _departmentService.GetDepartments(1),
+        _woService.AllProductionPlan_Wo(),
+        _woService.GetAllInv_Trans_Log(),
+        _woService.GetAllTimeslot_List(),
+        _masterService.GetUOMs() // Assuming GetAllBookOutList needs this
+        // Note: GetAllTempMc_Timeslot_List is unused in the final loop logic
+    };
 
+            await Task.WhenAll(tasks);
+
+            // 2. Extract Results
+            var waitList = (await (Task<IEnumerable<Mc_Wait_ListVM>>)tasks[0]).ToList();
+            var parts = (await (Task<IEnumerable<ItemMasterPartVM>>)tasks[1]).ToList();
+            var machines = (await (Task<IEnumerable<MachineListVM>>)tasks[2]).ToList();
+            var shops = (await (Task<IEnumerable<ShopDepartmentVM>>)tasks[3]).ToList();
+            var allWO = (await (Task<IEnumerable<ProductionPlan_WoVM>>)tasks[4]).ToList();
+            var translogs = (await (Task<IEnumerable<Inv_Trans_LogVM>>)tasks[5]).ToList();
+            var allTimeSlots = (await (Task<IEnumerable<Timeslot_ListVM>>)tasks[6]).ToList();
+            var uoms = (await (Task<IEnumerable<UOMVM>>)tasks[7]).ToList();
+
+            // 3. Pre-Caching for Fast Lookups (O(1) access inside the loop)
+            // Key-value lookups are much faster than FirstOrDefault on a list
+            var partCache = parts.ToDictionary(p => p.PartId, p => p);
+            var machineCache = machines.ToDictionary(m => m.MachineId, m => m);
+            var shopCache = shops.ToDictionary(s => s.DepartmentId, s => s);
+            var woCache = allWO.ToDictionary(w => w.ProductionPlanId, w => w);
+            var timeslotCache = allTimeSlots.ToDictionary(t => t.Timeslot_ListId, t => t);
+            var uomCache = uoms.ToDictionary(u => u.UOMId, u => u.Name);
+
+            // Grouping translogs by PartId for faster lookup (since a part may have multiple translogs)
+            // We only need the first one found for the material receipt time/quantity.
+            var translogCache = translogs
+                //.Where(t => t.Input_Part_NoId || t.Output_Part_No)
+                .GroupBy(t => t.Input_Part_NoId > 0 ? t.Input_Part_NoId : t.Output_Part_No)
+                .ToDictionary(g => g.Key, g => g.FirstOrDefault());
+
+            var result = new List<TempMc_Wait_ListVM>();
+
+            // 4. Single Pass Processing
+            foreach (var mcWait in waitList)
+            {
+                // Avoid slow, repeated async calls inside the loop.
+                // Lookups replaced with dictionary access.
+
+                if (!woCache.TryGetValue(mcWait.Wo_Id, out var wo) || wo == null) continue;
+
+                // Use the PartId from WO for translog lookup
+                if (!translogCache.TryGetValue(wo.PartId, out var translog) || translog == null) continue;
+
+                // Simplified, safe lookups
+                partCache.TryGetValue(wo.PartId, out var part);
+                machineCache.TryGetValue(mcWait.Mc_Id, out var machine);
+
+                // Nested lookups
+                shopCache.TryGetValue(machine?.ShopId ?? 0, out var shop);
+                timeslotCache.TryGetValue(mcWait.Plan_start_time_Id, out var currentTimeslot);
+
+                var matltime = translog.Dt_time.ToString("hh:mm tt");
+                var planStartStr =currentTimeslot.Start_time.ToString("hh:mm tt")
+                    ?? "";
+
+                // *** AWAITABLE CALLS IN LOOP ***
+                // These are the last remaining blocking calls that need to be addressed.
+                // It's likely better to fetch ALL routing data outside the loop if possible.
+                // For now, they remain as they depend on wo.PartId and wo.RoutingId, 
+                // which would require a major refactor (e.g., getting ALL routing steps/lists).
+
+                // If you can't pre-fetch all routing data:
+                var mf = await _masterService.GetManufPart((int)wo.PartId);
+                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                var routing = await _routingService.RoutingSteps((int)wo.RoutingId);
+                var routingstep = routing.FirstOrDefault(r => r.StepId == mcWait.Opr_No_Id);
+                var stepMachines = routingstep != null ? await _routingService.StepMachines((int)routingstep.StepId) : new List<RoutingStepMachineVM>();
+                // *******************************
+
+                var routingName = routingList.FirstOrDefault(r => r.RoutingId == wo.RoutingId)?.RoutingName ?? "";
+                var plannedSetupTime = stepMachines.FirstOrDefault()?.SetupTime ?? "";
+                var uomName = mf != null && uomCache.TryGetValue(mf.UOMId, out var name) ? name : "";
+
+
+                // Build the result object (includes all fields used across the 3 original methods)
+                result.Add(new TempMc_Wait_ListVM
+                {
+                    ShopName = shop?.Name ?? "",
+                    McName = machine?.Name ?? "",
+                    WoNumber = wo?.WONumber ?? "",
+                    Wo_Id = wo?.WoId ?? 0,
+                    PartId = (long)(wo?.PartId),
+                    PartNo = part?.PartNo + (part != null ? " / " + part.Description : ""),
+                    RoutingName = routingName,
+                    OprNoName = routingstep?.StepNumber ?? "",
+                    WoQnty = wo?.CalcWOQty.ToString() ?? "0",
+                    Opr_No_Id = mcWait.Opr_No_Id,
+                    Plan_Qnty = mcWait.Plan_Qnty,
+                    ActiveId = mcWait.Mc_Wait_ListId,
+                    QntyOffered = mcWait.QntyOffered,
+                    Accepted = mcWait.Accepted,
+                    NonConQnty = mcWait.NonConQnty,
+                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString() ?? "0",
+                    PlanStartStr = planStartStr,
+                    MatlReceptTime = matltime,
+                    UomName = uomName,
+                    PlannedSetupTime = plannedSetupTime,
+                    Rework_Wo = 'N',
+                    // Crucially, include the fields needed for final filtering in GetSetupSummaryByShop
+                    Wait_Seq_No = mcWait.Wait_Seq_No,
+                    Setup_Start_time = mcWait.Setup_Start_time,
+                    Setup_Apprvl_time = mcWait.Setup_Apprvl_time,
+                    // Add SetUpTimeStr for approval/bookout lists
+                    SetUpTimeStr = mcWait.Setup_Apprvl_time.HasValue
+                        ? TimeZoneInfo.ConvertTimeFromUtc(mcWait.Setup_Apprvl_time.Value, TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata"))
+                              .ToString("hh:mm tt")
+                        : (mcWait.Setup_Start_time.HasValue ? mcWait.Setup_Start_time.Value.ToString("hh:mm tt") : "")
+                });
+            }
+
+            return result;
+        }
         [HttpGet]
         public async Task<IActionResult> DeleteMatl_Issue_List(long itemMasterDocListId)
         {

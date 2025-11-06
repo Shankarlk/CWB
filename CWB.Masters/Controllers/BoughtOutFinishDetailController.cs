@@ -9,7 +9,9 @@ using CWB.Masters.ViewModels.ItemMaster;
 using CWB.Masters.ViewModelValidators.ItemMaster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CWB.Masters.Controllers
@@ -55,7 +57,38 @@ namespace CWB.Masters.Controllers
             return Ok(boughtoutfinishdetails);
         }
 
-        
+
+
+        [HttpGet]
+        [Route(ApiRoutes.BoughtOutFinishDetail.GetBOfLikeManufPart)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<ManufacturedPartNoDetailVM>))]
+        public IActionResult GetBOfLikeManufPart(long tenantID)
+        {
+            List<MasterPartVM> masterParts = _masterPartService.GetAllMasterParts().ToList();
+            List<BoughtOutFinishDetailVM> manufList = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(tenantID).ToList();
+
+            var query = from manuf in manufList
+                        join mp in masterParts on manuf.PartId equals mp.MasterPartId into mpjoin
+                        from scojoin in mpjoin.DefaultIfEmpty()
+                        select new ManufacturedPartNoDetailVM
+                        {
+                            ManufacturedPartType = manuf.BoughtOutFinishMadeType,
+                            PartId = scojoin.MasterPartId,
+                            UOMId = manuf.UOMId,
+                            ManufacturedPartNoDetailId = (long)manuf.BoughtOutFinishDetailId,
+                            PartNo = scojoin.PartNo,
+                            PartDescription = scojoin.PartDescription,
+                            RevNo = scojoin.RevNo,
+                            RevDate = scojoin.RevDate,
+                            Status = Convert.ToString(scojoin.Status),
+                            StatusChangeReason = scojoin.StatusChangeReason,
+                            MasterPartType = Convert.ToString(scojoin.MasterPartType)
+                        };
+            var querylist = query.ToList();
+            return Ok(querylist);
+        }
+
+
 
         /// <summary>
         /// Add/Edit BoughtOutFinishDetail

@@ -23,5 +23,6 @@ namespace CWB.App.Models.EmployeeMaster
         public string Menu3 { get; set; } = string.Empty;
         public string Menu4 { get; set; } = string.Empty;
         public string Menu5 { get; set; } = string.Empty;
+        public List<UiListVM> Children { get; set; } = new List<UiListVM>();
     }
 }

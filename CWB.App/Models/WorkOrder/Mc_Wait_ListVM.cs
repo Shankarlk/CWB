@@ -40,6 +40,11 @@ namespace CWB.App.Models.WorkOrder
         public char Setup_FTR { get; set; }
         public string Setup_comments { get; set; }
         public string Setup_Appvl_Doc_Ref { get; set; }
+        public long OperatorId { get; set; }
+        public long ReasonfornotachievingFTRId { get; set; }
+        public long ReasonforAddnSetupTimeId { get; set; }
+        public string SetupTimeTaken { get; set; }
+        public string AddntimeforSetup { get; set; }
         public string PlanEndStr { get; set; }
     }
 }

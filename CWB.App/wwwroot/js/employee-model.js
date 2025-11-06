@@ -1,9 +1,1055 @@
 ﻿var menusdata = {};
 var menusdataEmpl = {};
 var Departments = {};
+let isFormDirty = false;
+let isInitializing = false;
+
+//async function loadFlowchart() {
+//    const response = await fetch('/Employee/GetFlowchartList');
+//    const data = await response.json();
+//    const mermaidSyntax = "graph TD\n" + buildMermaidGraph(data, "CWB");
+
+//    const flowchartContainer = document.getElementById('flowchart');
+//    flowchartContainer.innerHTML = `<div class="mermaid">${mermaidSyntax}</div>`;
+
+//    // Initialize Mermaid and wait for it to render
+//    await mermaid.init(undefined, flowchartContainer.querySelector('.mermaid'));
+
+//    // Find the rendered SVG element
+//    const svgElement = flowchartContainer.querySelector('svg');
+
+//    if (svgElement) {
+//        const panZoomInstance = svgPanZoom(svgElement, {
+//            zoomEnabled: true,
+//            panEnabled: true,
+//            dblClickZoomEnabled: false,
+//            controlIconsEnabled: true,
+//            fit: false,  // Set to false to manually control the zoom
+//            center: false, // Set to false to manually control the center
+//            minZoom: 0.1,
+//            maxZoom: 10
+//        });
+
+//        // Set the initial zoom level to fit the entire graph within the view.
+//        // This is often more reliable than the 'fit: true' option.
+//        panZoomInstance.fit();
+//        panZoomInstance.zoomAtPoint(1, { x: 0, y: 0 }); // Zoom level 1
+//        panZoomInstance.center();
+//    } else {
+//        console.error("Mermaid SVG not found.");
+//    }
+//}
+
+//function buildMermaidGraph(tree, parent) {
+//    let result = '';
+
+//    tree.forEach(node => {
+//        // Sanitize ID (remove spaces and special characters)
+//        const nodeId = node.uI_Name_Label.replace(/[^a-zA-Z0-9]/g, "_");
+//        const parentId = parent.replace(/[^a-zA-Z0-9]/g, "_");
+
+//        // Create connection: ID["Label"]
+//        result += `${parentId}["${parent}"] --> ${nodeId}["${node.uI_Name_Label}"]\n`;
+
+//        // Recursively process children
+//        if (node.children && node.children.length > 0) {
+//            result += buildMermaidGraph(node.children, node.uI_Name_Label);
+//        }
+//    });
+
+//    return result;
+//}
 
 
+//// Call on page load
+//window.onload = loadFlowchart;
+//document.addEventListener("DOMContentLoaded", function () {
+//    fetch('/Employee/GetAllUIlist')
+//        .then(res => res.json())
+//        .then(data => {
+//            const nodes = [];
+//            const edges = [];
 
+//            // Root node
+//            nodes.push({
+//                id: 0,
+//                label: "CWB",
+//                shape: "box",
+//                color: "#3f51b5",
+//                font: { color: "#fff", size: 20 }
+//            });
+
+//            data.forEach(item => {
+//                nodes.push({
+//                    id: item.uiListId,
+//                    label: item.uI_Name_Label,
+//                    shape: "box",   // ✅ Rectangular
+//                    font: { size: 16 }
+//                });
+
+//                if (item.uI_Part_linked_to && item.uI_Part_linked_to !== 0) {
+//                    edges.push({ from: item.uI_Part_linked_to, to: item.uiListId });
+//                }
+
+//                if (item.topLevelId === "Y") {
+//                    edges.push({ from: 0, to: item.uiListId });
+//                }
+//            });
+
+//            const container = document.getElementById('flowchart');
+//            const networkData = {
+//                nodes: new vis.DataSet(nodes),
+//                edges: new vis.DataSet(edges)
+//            };
+
+//            const options = {
+//                layout: {
+//                    hierarchical: {
+//                        direction: "UD",
+//                        sortMethod: "directed",
+//                        nodeSpacing: 200,
+//                        levelSeparation: 200,
+//                        treeSpacing: 250
+//                    }
+//                },
+//                physics: false,
+//                interaction: {
+//                    dragNodes: true,
+//                    dragView: true,  // ✅ allow scroll/drag
+//                    zoomView: true   // ✅ allow zoom
+//                },
+//                nodes: {
+//                    shape: "box",
+//                    margin: 10,
+//                    font: {
+//                        size: 18,
+//                        face: "arial",
+//                        color: "#111"
+//                    },
+//                    borderWidth: 2,
+//                    color: {
+//                        background: "#e3f2fd",
+//                        border: "#1565c0",
+//                        highlight: { background: "#bbdefb", border: "#0d47a1" }
+//                    }
+//                },
+//                edges: {
+//                    arrows: "to",
+//                    smooth: false,
+//                    color: { color: "#666", highlight: "#000" }
+//                }
+//            };
+
+//            const network = new vis.Network(container, networkData, options);
+
+//            // ✅ Fit but not too small: set min zoom
+//            network.once("stabilizationIterationsDone", function () {
+//                network.fit({
+//                    animation: { duration: 1000, easingFunction: "easeInOutQuad" },
+//                    minZoomLevel: 0.8, // prevent zooming out too far
+//                    maxZoomLevel: 2.5  // prevent too close
+//                });
+//            });
+//        });
+//});
+
+/// -- original 
+//document.addEventListener("DOMContentLoaded", function () {
+//    fetch('/Employee/GetAllUIlist')
+//        .then(res => res.json())
+//        .then(data => {
+//            const nodes = [];
+//            const edges = [];
+
+//            // Root node
+//            nodes.push({
+//                id: 0,
+//                label: "CWB",
+//                shape: "box",
+//                color: "#3f51b5",
+//                font: { color: "#fff", size: 20 }
+//            });
+
+//            data.forEach(item => {
+//                nodes.push({
+//                    id: item.uiListId,
+//                    label: item.uI_Name_Label,
+//                    shape: "box",   // ✅ rectangle
+//                    font: { size: 16 }
+//                });
+
+//                if (item.uI_Part_linked_to && item.uI_Part_linked_to !== 0) {
+//                    edges.push({ from: item.uI_Part_linked_to, to: item.uiListId });
+//                }
+
+//                if (item.topLevelId === "Y") {
+//                    edges.push({ from: 0, to: item.uiListId });
+//                }
+//            });
+
+//            const container = document.getElementById('flowchart');
+//            const networkData = {
+//                nodes: new vis.DataSet(nodes),
+//                edges: new vis.DataSet(edges)
+//            };
+
+//            const options = {
+//                layout: {
+//                    hierarchical: {
+//                        direction: "UD",
+//                        sortMethod: "directed",
+//                        levelSeparation: 250, // vertical distance
+//                        nodeSpacing: 200,     // horizontal distance
+//                        treeSpacing: 300
+//                    }
+//                },
+//                physics: {
+//                    enabled: true,
+//                    barnesHut: {
+//                        gravitationalConstant: -5000, // push nodes apart
+//                        springLength: 300,            // edge length
+//                        springConstant: 0.02
+//                    }
+//                },
+//                interaction: {
+//                    dragNodes: true,
+//                    dragView: true,   // ✅ allow scrolling
+//                    zoomView: true    // ✅ allow zooming
+//                },
+//                nodes: {
+//                    shape: "box",
+//                    margin: 10,
+//                    font: {
+//                        size: 18,
+//                        face: "arial",
+//                        color: "#111"
+//                    },
+//                    borderWidth: 2,
+//                    color: {
+//                        background: "#e3f2fd",
+//                        border: "#1565c0",
+//                        highlight: { background: "#bbdefb", border: "#0d47a1" }
+//                    }
+//                },
+//                edges: {
+//                    arrows: "to",
+//                    smooth: false,
+//                    color: { color: "#666", highlight: "#000" }
+//                }
+//            };
+
+//            const network = new vis.Network(container, networkData, options);
+
+//            // ✅ Instead of fitting entire graph → focus on root node (CWB)
+//            network.once("stabilizationIterationsDone", function () {
+//                network.focus(0, {   // Focus on node ID = 0 (CWB)
+//                    scale: 1.2,      // Zoom level (adjust as needed)
+//                    animation: { duration: 1000, easingFunction: "easeOutCubic" }
+//                });
+//            });
+//            window.addEventListener("resize", function () {
+//                network.fit();
+//            });
+//        });
+//});
+
+//document.addEventListener("DOMContentLoaded", function () {
+//    fetch('/Employee/GetAllUIlist')
+//        .then(res => res.json())
+//        .then(data => {
+//            const nodes = [];
+//            const edges = [];
+
+//            // Root node
+//            nodes.push({
+//                id: 0,
+//                label: "CWB",
+//                shape: "box",
+//                color: "#3f51b5",
+//                font: { color: "#fff", size: 20 }
+//            });
+
+//            data.forEach(item => {
+//                nodes.push({
+//                    id: item.uiListId,
+//                    label: item.uI_Name_Label,
+//                    shape: "box",
+//                    font: { size: 16 }
+//                });
+
+//                if (item.uI_Part_linked_to && item.uI_Part_linked_to !== 0) {
+//                    edges.push({ from: item.uI_Part_linked_to, to: item.uiListId });
+//                }
+
+//                if (item.topLevelId === "Y") {
+//                    edges.push({ from: 0, to: item.uiListId });
+//                }
+//            });
+
+//            const container = document.getElementById('flowchart');
+//            const networkData = {
+//                nodes: new vis.DataSet(nodes),
+//                edges: new vis.DataSet(edges)
+//            };
+
+//            const options = {
+//                layout: {
+//                    hierarchical: {
+//                        direction: "UD",
+//                        sortMethod: "directed",
+//                        levelSeparation: 250,
+//                        nodeSpacing: 200,
+//                        treeSpacing: 300
+//                    }
+//                },
+//                physics: {
+//                    enabled: true,
+//                    barnesHut: {
+//                        gravitationalConstant: -5000,
+//                        springLength: 300,
+//                        springConstant: 0.02
+//                    }
+//                },
+//                interaction: {
+//                    dragNodes: true,
+//                    dragView: true,
+//                    zoomView: true
+//                },
+//                nodes: {
+//                    shape: "box",
+//                    margin: 10,
+//                    font: {
+//                        size: 18,
+//                        face: "arial",
+//                        color: "#111"
+//                    },
+//                    borderWidth: 2,
+//                    color: {
+//                        background: "#e3f2fd",
+//                        border: "#1565c0",
+//                        highlight: { background: "#bbdefb", border: "#0d47a1" }
+//                    }
+//                },
+//                edges: {
+//                    arrows: "to",
+//                    smooth: false,
+//                    color: { color: "#666", highlight: "#000" }
+//                }
+//            };
+
+//            const network = new vis.Network(container, networkData, options);
+
+//            // This is the correct logic for your goal
+//            network.once("stabilizationIterationsDone", function () {
+//                network.fit();
+//            });
+//        });
+//});
+
+//Cytoscape
+//document.addEventListener("DOMContentLoaded", function () {
+//    fetch('/Employee/GetAllUIlist')
+//        .then(res => res.json())
+//        .then(data => {
+//            const elements = [];
+
+//            // Root node (CWB)
+//            elements.push({
+//                data: { id: "0", label: "CWB" },
+//                classes: "root"
+//            });
+
+//            data.forEach(item => {
+//                // Add node
+//                elements.push({
+//                    data: { id: String(item.uiListId), label: item.uI_Name_Label }
+//                });
+
+//                // Add edge if linked
+//                if (item.uI_Part_linked_to && item.uI_Part_linked_to !== 0) {
+//                    elements.push({
+//                        data: { source: String(item.uI_Part_linked_to), target: String(item.uiListId) }
+//                    });
+//                }
+
+//                // Ensure "Info-Queries" is a child of "CWB"
+//                if (item.uI_Name_Label === "Info-Queries") {
+//                    elements.push({
+//                        data: { source: "0", target: String(item.uiListId) }
+//                    });
+//                }
+
+//                // Link top level items to root
+//                if (item.topLevelId === "Y") {
+//                    elements.push({
+//                        data: { source: "0", target: String(item.uiListId) }
+//                    });
+//                }
+//            });
+
+//            // Initialize Cytoscape
+//            const cy = cytoscape({
+//                container: document.getElementById('flowchart'),
+//                elements: elements,
+//                style: [
+//                    {
+//                        selector: 'node',
+//                        style: {
+//                            'background-color': '#e3f2fd',
+//                            'label': 'data(label)',
+//                            'color': '#111',
+//                            'text-valign': 'center',
+//                            'text-halign': 'center',
+//                            'font-size': 14,
+//                            'border-width': 2,
+//                            'border-color': '#1565c0',
+//                            'shape': 'round-rectangle',
+//                            'padding': '10px',
+//                            'text-wrap': 'wrap',
+//                            'text-max-width': '100px',
+//                            'width': 'label',
+//                            'height': 'label',
+//                        }
+//                    },
+//                    {
+//                        selector: 'node.root',
+//                        style: {
+//                            'background-color': '#3f51b5',
+//                            'color': '#fff',
+//                            'font-size': 18,
+//                            'border-color': '#0d47a1',
+//                            'width': '100px',
+//                            'height': '40px'
+//                        }
+//                    },
+//                    {
+//                        selector: 'edge',
+//                        style: {
+//                            'width': 2,
+//                            'line-color': '#666',
+//                            'target-arrow-color': '#666',
+//                            'target-arrow-shape': 'triangle',
+//                            'curve-style': 'bezier'
+//                        }
+//                    }
+//                ],
+//                layout: {
+//                    name: 'breadthfirst',
+//                    directed: true,
+//                    // 💡 Key Change: Increase layout padding to make the graph larger initially.
+//                    padding: 100,
+//                    spacingFactor: 1.5
+//                }
+//                // 💡 Removed the cy.ready() and cy.fit() block.
+//                // The layout's padding will handle the initial size.
+//            });
+//        });
+//});
+
+//document.addEventListener("DOMContentLoaded", function () {
+//    const mainContainer = document.getElementById('flowchart');
+//    mainContainer.innerHTML = ""; // Clear existing content
+
+//    fetch('/Employee/GetAllUIlist')
+//        .then(res => res.json())
+//        .then(data => {
+//            // Step 1: Get all root nodes where uI_Part_linked_to = 0
+//            const rootNodes = data.filter(item => item.uI_Part_linked_to === 0);
+
+//            // Step 2: Create a separate flowchart container for each root
+//            rootNodes.forEach(root => {
+//                const wrapper = document.createElement('div');
+//                wrapper.className = 'flowchart-wrapper';
+//                wrapper.style.border = "1px solid #ccc";
+//                wrapper.style.margin = "20px 0";
+//                wrapper.style.padding = "10px";
+//                wrapper.style.background = "#f9f9f9";
+
+//                const title = document.createElement('h4');
+//                title.textContent = root.uI_Name_Label;
+//                title.style.marginBottom = "10px";
+//                wrapper.appendChild(title);
+
+//                const cyContainer = document.createElement('div');
+//                cyContainer.className = 'cy-container';
+//                cyContainer.style.width = "100%";
+//                // Dynamically adjust height for longer flowcharts
+//                if (root.uI_Name_Label === 'Masters' || root.uI_Name_Label === 'Company Settings') {
+//                    cyContainer.style.height = "700px"; // Increased height
+//                } else {
+//                    cyContainer.style.height = "500px"; // Default height
+//                }
+//                wrapper.appendChild(cyContainer);
+//                mainContainer.appendChild(wrapper);
+
+//                const elements = [];
+//                elements.push({ data: { id: String(root.uiListId), label: root.uI_Name_Label } });
+
+//                function addChildren(parentId) {
+//                    const children = data.filter(item => item.uI_Part_linked_to === parentId);
+//                    children.forEach(child => {
+//                        elements.push({ data: { id: String(child.uiListId), label: child.uI_Name_Label } });
+//                        elements.push({ data: { source: String(parentId), target: String(child.uiListId) } });
+//                        addChildren(child.uiListId);
+//                    });
+//                }
+//                addChildren(root.uiListId);
+
+//                const cy = cytoscape({
+//                    container: cyContainer,
+//                    elements: elements,
+//                    style: [
+//                        {
+//                            selector: 'node',
+//                            style: {
+//                                'background-color': '#e3f2fd',
+//                                'label': 'data(label)',
+//                                'color': '#111',
+//                                'text-valign': 'center',
+//                                'text-halign': 'center',
+//                                'font-size': 12, // Reduced font size to fit more text
+//                                'border-width': 2,
+//                                'border-color': '#1565c0',
+//                                'shape': 'round-rectangle',
+//                                'padding': '5px', // Reduced padding
+//                                'text-wrap': 'wrap',
+//                                'text-max-width': '80px', // Reduced width for each node
+//                                'width': 'label',
+//                                'height': 'label',
+//                            }
+//                        },
+//                        {
+//                            selector: 'edge',
+//                            style: {
+//                                'width': 2,
+//                                'line-color': '#666',
+//                                'target-arrow-color': '#666',
+//                                'target-arrow-shape': 'triangle',
+//                                'curve-style': 'bezier'
+//                            }
+//                        }
+//                    ],
+//                    layout: {
+//                        name: 'dagre',
+//                        rankDir: 'LR',
+//                        rankSep: 500, // Restored to a more balanced value
+//                        nodeSep: 20, // Increased vertical space to fix overcrowding
+//                        padding: 30
+//                    }
+//                });
+
+//                cy.ready(() => {
+//                    cy.fit(cy.nodes(), 50);
+//                    cy.center();
+//                });
+//            });
+//        });
+//});
+// 2nd level chunks 
+//document.addEventListener("DOMContentLoaded", function () {
+//    const mainContainer = document.getElementById('flowchart');
+//    mainContainer.innerHTML = ""; // Clear existing content
+
+//    fetch('/Employee/GetAllUIlist')
+//        .then(res => res.json())
+//        .then(data => {
+//            // Find all root nodes (uI_Part_linked_to = 0)
+//            const rootNodes = data.filter(item => item.uI_Part_linked_to === 0);
+
+//            rootNodes.forEach(root => {
+//                if (root.uI_Name_Label === 'Masters') {
+//                    // If the root is 'Masters', iterate through its children and create separate flowcharts
+//                    const mastersChildren = data.filter(item => item.uI_Part_linked_to === root.uiListId);
+//                    mastersChildren.forEach(childNode => {
+//                        createFlowchartDiv(childNode, data, mainContainer, childNode.uI_Name_Label);
+//                    });
+//                } else {
+//                    // For all other root nodes (like 'Company Settings'), create one full flowchart
+//                    createFlowchartDiv(root, data, mainContainer, root.uI_Name_Label);
+//                }
+//            });
+//        });
+
+//    // Helper function to create and render a single flowchart
+//    function createFlowchartDiv(rootNode, allData, containerElement, titleText) {
+//        const wrapper = document.createElement('div');
+//        wrapper.className = 'flowchart-wrapper';
+//        wrapper.style.border = "1px solid #ccc";
+//        wrapper.style.margin = "20px 0";
+//        wrapper.style.padding = "10px";
+//        wrapper.style.background = "#f9f9f9";
+
+//        const title = document.createElement('h4');
+//        title.textContent = titleText;
+//        title.style.marginBottom = "10px";
+//        wrapper.appendChild(title);
+
+//        const cyContainer = document.createElement('div');
+//        cyContainer.className = 'cy-container';
+//        cyContainer.style.width = "100%";
+//        cyContainer.style.height = "500px";
+//        wrapper.appendChild(cyContainer);
+//        containerElement.appendChild(wrapper);
+
+//        const elements = [];
+//        elements.push({ data: { id: String(rootNode.uiListId), label: rootNode.uI_Name_Label } });
+
+//        // Recursively add all children and their sub-children for this rootNode
+//        function addChildren(parentId) {
+//            const children = allData.filter(item => item.uI_Part_linked_to === parentId);
+//            children.forEach(child => {
+//                elements.push({ data: { id: String(child.uiListId), label: child.uI_Name_Label } });
+//                elements.push({ data: { source: String(parentId), target: String(child.uiListId) } });
+//                addChildren(child.uiListId);
+//            });
+//        }
+//        addChildren(rootNode.uiListId);
+
+//        const cy = cytoscape({
+//            container: cyContainer,
+//            elements: elements,
+//            style: [
+//                {
+//                    selector: 'node',
+//                    style: {
+//                        'background-color': '#e3f2fd',
+//                        'label': 'data(label)',
+//                        'color': '#111',
+//                        'text-valign': 'center',
+//                        'text-halign': 'center',
+//                        'font-size': 12,
+//                        'border-width': 2,
+//                        'border-color': '#1565c0',
+//                        'shape': 'round-rectangle',
+//                        'padding': '5px',
+//                        'text-wrap': 'wrap',
+//                        'text-max-width': '80px',
+//                        'width': 'label',
+//                        'height': 'label',
+//                    }
+//                },
+//                {
+//                    selector: 'edge',
+//                    style: {
+//                        'width': 2,
+//                        'line-color': '#666',
+//                        'target-arrow-color': '#666',
+//                        'target-arrow-shape': 'triangle',
+//                        'curve-style': 'bezier'
+//                    }
+//                }
+//            ],
+//            layout: {
+//                name: 'dagre',
+//                rankDir: 'LR',
+//                rankSep: 80,
+//                nodeSep: 20,
+//                padding: 30
+//            }
+//        });
+
+//        cy.ready(() => {
+//            cy.fit(cy.nodes(), 50);
+//            cy.center();
+//        });
+//    }
+//});
+/*
+document.addEventListener("DOMContentLoaded", function () {
+    const mainContainer = document.getElementById('flowchart');
+    mainContainer.innerHTML = ""; // Clear existing content
+
+    fetch('/Employee/GetAllUIlist')
+        .then(res => res.json())
+        .then(data => {
+            const rootNodes = data.filter(item => item.uI_Part_linked_to === 0);
+
+            rootNodes.forEach(root => {
+                if (root.uI_Name_Label === 'Masters' || root.uI_Name_Label === 'Business Process') {
+                    const children = data.filter(item => item.uI_Part_linked_to === root.uiListId);
+                    children.forEach(childNode => {
+                        // Pass the parent's name to construct the heading
+                        createFlowchartDiv(childNode, data, mainContainer, root.uI_Name_Label, childNode.uI_Name_Label, root);
+                    });
+                } else {
+                    // For other root nodes, there is no parent in the heading
+                    createFlowchartDiv(root, data, mainContainer, null, root.uI_Name_Label, null);
+                }
+            });
+        });
+
+    // Helper function to create and render a single flowchart
+    function createFlowchartDiv(rootNode, allData, containerElement, parentTitle, childTitle, parentNode) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'flowchart-wrapper';
+        wrapper.style.border = "1px solid #ccc";
+        wrapper.style.margin = "20px 0";
+        wrapper.style.padding = "10px";
+        wrapper.style.background = "#f9f9f9";
+
+        const title = document.createElement('h4');
+        if (parentTitle) {
+            title.textContent = `${parentTitle} -> ${childTitle}`;
+        } else {
+            title.textContent = childTitle;
+        }
+        title.style.marginBottom = "10px";
+        wrapper.appendChild(title);
+
+        const cyContainer = document.createElement('div');
+        cyContainer.className = 'cy-container';
+        cyContainer.style.width = "100%";
+        cyContainer.style.height = "500px";
+        wrapper.appendChild(cyContainer);
+        containerElement.appendChild(wrapper);
+
+        const elements = [];
+
+        if (parentNode) {
+            elements.push({ data: { id: String(parentNode.uiListId), label: parentNode.uI_Name_Label } });
+            elements.push({ data: { id: String(rootNode.uiListId), label: rootNode.uI_Name_Label } });
+            elements.push({ data: { source: String(parentNode.uiListId), target: String(rootNode.uiListId) } });
+        } else {
+            elements.push({ data: { id: String(rootNode.uiListId), label: rootNode.uI_Name_Label } });
+        }
+
+        function addChildren(parentId) {
+            const children = allData.filter(item => item.uI_Part_linked_to === parentId);
+            children.forEach(child => {
+                elements.push({ data: { id: String(child.uiListId), label: child.uI_Name_Label } });
+                elements.push({ data: { source: String(parentId), target: String(child.uiListId) } });
+                addChildren(child.uiListId);
+            });
+        }
+
+        addChildren(rootNode.uiListId);
+
+        const cy = cytoscape({
+            container: cyContainer,
+            elements: elements,
+            style: [
+                {
+                    selector: 'node',
+                    style: {
+                        'background-color': '#e3f2fd',
+                        'label': 'data(label)',
+                        'color': '#111',
+                        'text-valign': 'center',
+                        'text-halign': 'center',
+                        'font-size': 12,
+                        'border-width': 2,
+                        'border-color': '#1565c0',
+                        'shape': 'round-rectangle',
+                        'padding': '5px',
+                        'text-wrap': 'wrap',
+                        'text-max-width': '80px',
+                        'width': 'label',
+                        'height': 'label',
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 2,
+                        'line-color': '#666',
+                        'target-arrow-color': '#666',
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier'
+                    }
+                }
+            ],
+            layout: {
+                name: 'dagre',
+                rankDir: 'LR',
+                rankSep: 80,
+                nodeSep: 20,
+                padding: 30
+            }
+        });
+
+        cy.ready(() => {
+            cy.fit(cy.nodes(), 50);
+            cy.center();
+        });
+    }
+});
+*/
+//document.addEventListener("DOMContentLoaded", function () {
+//    const mainContainer = document.getElementById('flowchart');
+//    mainContainer.innerHTML = ""; // Clear existing content
+
+//    fetch('/Employee/GetAllUIlist')
+//        .then(res => res.json())
+//        .then(data => {
+//            const rootNodes = data.filter(item => item.uI_Part_linked_to === 0);
+
+//            rootNodes.forEach(root => {
+//                const isSpecialRoot = (root.uI_Name_Label === 'Masters' || root.uI_Name_Label === 'Business Process');
+
+//                if (isSpecialRoot) {
+//                    const children = data.filter(item => item.uI_Part_linked_to === root.uiListId);
+
+//                    children.forEach(childNode => {
+//                        createFlowchartDiv(childNode, data, mainContainer, root, childNode);
+//                    });
+//                } else {
+//                    // For all other root nodes, create a single full flowchart
+//                    createFlowchartDiv(root, data, mainContainer, null, root);
+//                }
+//            });
+//        });
+
+//    // Helper function to create and render a single flowchart
+//    function createFlowchartDiv(startNode, allData, containerElement, parentNode, titleNode) {
+//        const wrapper = document.createElement('div');
+//        wrapper.className = 'flowchart-wrapper';
+//        wrapper.style.border = "1px solid #ccc";
+//        wrapper.style.margin = "20px 0";
+//        wrapper.style.padding = "10px";
+//        wrapper.style.background = "#f9f9f9";
+
+//        const title = document.createElement('h4');
+//        if (parentNode) {
+//            title.textContent = `${parentNode.uI_Name_Label} -> ${titleNode.uI_Name_Label}`;
+//        } else {
+//            title.textContent = titleNode.uI_Name_Label;
+//        }
+//        title.style.marginBottom = "10px";
+//        wrapper.appendChild(title);
+
+//        const cyContainer = document.createElement('div');
+//        cyContainer.className = 'cy-container';
+//        cyContainer.style.width = "100%";
+//        cyContainer.style.height = "500px";
+//        wrapper.appendChild(cyContainer);
+//        containerElement.appendChild(wrapper);
+
+//        const elements = [];
+
+//        if (parentNode) {
+//            // Add and connect the parent node (e.g., "Masters" or "Business Process")
+//            elements.push({ data: { id: String(parentNode.uiListId), label: parentNode.uI_Name_Label } });
+//            elements.push({ data: { id: String(startNode.uiListId), label: startNode.uI_Name_Label } });
+//            elements.push({ data: { source: String(parentNode.uiListId), target: String(startNode.uiListId) } });
+//        } else {
+//            // If no parent node, just add the start node
+//            elements.push({ data: { id: String(startNode.uiListId), label: startNode.uI_Name_Label } });
+//        }
+
+//        function addChildren(parentId) {
+//            const children = allData.filter(item => item.uI_Part_linked_to === parentId);
+//            children.forEach(child => {
+//                elements.push({ data: { id: String(child.uiListId), label: child.uI_Name_Label } });
+//                elements.push({ data: { source: String(parentId), target: String(child.uiListId) } });
+//                addChildren(child.uiListId);
+//            });
+//        }
+
+//        addChildren(startNode.uiListId);
+
+//        const cy = cytoscape({
+//            container: cyContainer,
+//            elements: elements,
+//            style: [
+//                {
+//                    selector: 'node',
+//                    style: {
+//                        'background-color': '#e3f2fd',
+//                        'label': 'data(label)',
+//                        'color': '#111',
+//                        'text-valign': 'center',
+//                        'text-halign': 'center',
+//                        'font-size': 12,
+//                        'border-width': 2,
+//                        'border-color': '#1565c0',
+//                        'shape': 'round-rectangle',
+//                        'padding': '5px',
+//                        'text-wrap': 'wrap',
+//                        'text-max-width': '80px',
+//                        'width': 'label',
+//                        'height': 'label',
+//                    }
+//                },
+//                {
+//                    selector: 'edge',
+//                    style: {
+//                        'width': 2,
+//                        'line-color': '#666',
+//                        'target-arrow-color': '#666',
+//                        'target-arrow-shape': 'triangle',
+//                        'curve-style': 'bezier'
+//                    }
+//                }
+//            ],
+//            layout: {
+//                name: 'dagre',
+//                rankDir: 'LR',
+//                rankSep: 80,
+//                nodeSep: 20,
+//                padding: 30
+//            }
+//        });
+
+//        cy.ready(() => {
+//            cy.fit(cy.nodes(), 50);
+//            cy.center();
+//        });
+//    }
+//});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const mainContainer = document.getElementById('flowchart');
+    mainContainer.innerHTML = ""; // Clear existing content
+
+    fetch('/Employee/GetAllUIlist')
+        .then(res => res.json())
+        .then(data => {
+            const rootNodes = data.filter(item => item.uI_Part_linked_to === 0);
+
+            rootNodes.forEach(root => {
+                const isSpecialRoot = (root.uI_Name_Label === 'Masters' || root.uI_Name_Label === 'Business Process');
+
+                if (isSpecialRoot) {
+                    const children = data.filter(item => item.uI_Part_linked_to === root.uiListId);
+
+                    children.forEach(childNode => {
+                        // Check if the child is 'Process Planning'
+                        if (childNode.uI_Name_Label === 'Process Planning') {
+                            const processPlanningChildren = data.filter(item => item.uI_Part_linked_to === childNode.uiListId);
+
+                            // Get the specific children that need separate chunks
+                            const specialChildren = processPlanningChildren.filter(ppChild => ppChild.uI_Name_Label === 'WIP Control' || ppChild.uI_Name_Label === 'Simulate');
+
+                            // Create a single flowchart for the main 'Process Planning' section, excluding the special children
+                            createFlowchartDiv(childNode, data, mainContainer, root, childNode, specialChildren.map(c => c.uI_Name_Label));
+
+                            // Create a separate div chunk for 'WIP Control' and 'Simulate'
+                            specialChildren.forEach(ppChild => {
+                                createFlowchartDiv(ppChild, data, mainContainer, childNode, ppChild);
+                            });
+                        } else {
+                            // Default case for other children of Masters and Business Process
+                            createFlowchartDiv(childNode, data, mainContainer, root, childNode);
+                        }
+                    });
+                } else {
+                    // For all other root nodes, create a single full flowchart
+                    createFlowchartDiv(root, data, mainContainer, null, root);
+                }
+            });
+        });
+
+    // Helper function to create and render a single flowchart
+    function createFlowchartDiv(startNode, allData, containerElement, parentNode, titleNode, nodesToExclude = []) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'flowchart-wrapper';
+        wrapper.style.border = "1px solid #ccc";
+        wrapper.style.margin = "20px 0";
+        wrapper.style.padding = "10px";
+        wrapper.style.background = "#f9f9f9";
+
+        const title = document.createElement('h4');
+        if (parentNode && parentNode.uI_Name_Label !== 'Business Process' && parentNode.uI_Name_Label !== 'Masters') {
+            // For grandchildren, include the full path
+            const grandparentNode = allData.find(item => item.uiListId === parentNode.uI_Part_linked_to);
+            if (grandparentNode) {
+                title.textContent = `${grandparentNode.uI_Name_Label} -> ${parentNode.uI_Name_Label} -> ${titleNode.uI_Name_Label}`;
+            } else {
+                title.textContent = `${parentNode.uI_Name_Label} -> ${titleNode.uI_Name_Label}`;
+            }
+        } else if (parentNode) {
+            title.textContent = `${parentNode.uI_Name_Label} -> ${titleNode.uI_Name_Label}`;
+        } else {
+            title.textContent = titleNode.uI_Name_Label;
+        }
+        title.style.marginBottom = "10px";
+        wrapper.appendChild(title);
+
+        const cyContainer = document.createElement('div');
+        cyContainer.className = 'cy-container';
+        cyContainer.style.width = "100%";
+        cyContainer.style.height = "500px";
+        wrapper.appendChild(cyContainer);
+        containerElement.appendChild(wrapper);
+
+        const elements = [];
+
+        if (parentNode) {
+            elements.push({ data: { id: String(parentNode.uiListId), label: parentNode.uI_Name_Label } });
+            elements.push({ data: { id: String(startNode.uiListId), label: startNode.uI_Name_Label } });
+            elements.push({ data: { source: String(parentNode.uiListId), target: String(startNode.uiListId) } });
+        } else {
+            elements.push({ data: { id: String(startNode.uiListId), label: startNode.uI_Name_Label } });
+        }
+
+        function addChildren(parentId) {
+            let children = allData.filter(item => item.uI_Part_linked_to === parentId);
+
+            // Filter out the nodes that should be excluded from this specific chart
+            if (nodesToExclude.length > 0) {
+                children = children.filter(c => !nodesToExclude.includes(c.uI_Name_Label));
+            }
+
+            children.forEach(child => {
+                elements.push({ data: { id: String(child.uiListId), label: child.uI_Name_Label } });
+                elements.push({ data: { source: String(parentId), target: String(child.uiListId) } });
+                addChildren(child.uiListId);
+            });
+        }
+
+        addChildren(startNode.uiListId);
+
+        const cy = cytoscape({
+            container: cyContainer,
+            elements: elements,
+            style: [
+                {
+                    selector: 'node',
+                    style: {
+                        'background-color': '#e3f2fd',
+                        'label': 'data(label)',
+                        'color': '#111',
+                        'text-valign': 'center',
+                        'text-halign': 'center',
+                        'font-size': 12,
+                        'border-width': 2,
+                        'border-color': '#1565c0',
+                        'shape': 'round-rectangle',
+                        'padding': '5px',
+                        'text-wrap': 'wrap',
+                        'text-max-width': '80px',
+                        'width': 'label',
+                        'height': 'label',
+                    }
+                },
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 2,
+                        'line-color': '#666',
+                        'target-arrow-color': '#666',
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier'
+                    }
+                }
+            ],
+            layout: {
+                name: 'dagre',
+                rankDir: 'LR',
+                rankSep: 80,
+                nodeSep: 20,
+                padding: 30
+            },
+            panningEnabled: true, // You may want to keep panning enabled
+            userPanningEnabled: true
+        });
+
+        cy.ready(() => {
+            cy.fit(cy.nodes(), 50);
+            cy.center();
+        });
+    }
+});
 
 function saveEmployee(rowData) {
     api.post("/Employee/PostEmployee", rowData)
@@ -27,6 +1073,7 @@ function saveEmployee(rowData) {
 
             const ipAddress = window.location.hostname;
             alert("Employee Saved Successfully!");
+            isFormDirty = false;
 
             // Register employee
             api.post(`http://${ipAddress}:9003/account/Register`, userrowData, {
@@ -57,24 +1104,72 @@ $(function () {
         $("#EmployeeGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#EmployeeGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchEmplName").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#EmployeeGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#EmployeeGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchLoc").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#EmployeeGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#EmployeeGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchEmailId").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#EmployeeGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#EmployeeGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchDateOfJoin").on("change", function () {
         var selectedDate = $(this).val(); 
@@ -100,7 +1195,25 @@ $(function () {
     loadDesignation();
     loadDepartment();
     loadLoaction();
-    $('#addEmployee').on('hidden.bs.modal', function (event) {
+
+
+    $('#addEmployee input, #addEmployee select, #addEmployee textarea').on('change keyup', function () {
+        if (!isInitializing) {
+            isFormDirty = true;
+        }
+    });
+
+    $('#addEmployee').on('hide.bs.modal', function (event) {
+
+        if (isFormDirty) {
+            const confirmClose = confirm("Data not saved… Exit?");
+            if (!confirmClose) {
+                event.preventDefault(); // Stop closing
+                return false;
+            } else {
+                isFormDirty = false; // Reset if confirmed
+            }
+        }
         $("#error-password").text(" ").css("color", "red");
         $("#error-username").text(" ").css("color", "red");
         $("#EPEmpId").val(''); $("#UiAccessEEmplid").val('');
@@ -162,6 +1275,8 @@ $(function () {
         EPRoleReportTo.style.border = '';
     });
     $('#addEmployee').on('show.bs.modal', function (event) {
+        isInitializing = true;  // prevent dirty flag during prepopulation
+        isFormDirty = false;
         LoadDepartments();
         loadLevels();
         var tablebody = $("#EmpDeptLinkGrid tbody");
@@ -261,6 +1376,9 @@ $(function () {
                     OrgRoleReport.append(div_data);
                 }
                 $("#EPRoleReportTo").val(rolereport).change();
+                setTimeout(function () {
+                    isInitializing = false;  // re-enable dirty tracking
+                }, 600);
             }).catch((error) => {
             });
         } else {
@@ -271,6 +1389,9 @@ $(function () {
                 div_data = "<option value='" + 0 + "'>" + "--Select--" + "</option>";
                 OrgEmpl.append(div_data);
                 OrgRoleReport.append(div_data);
+                setTimeout(function () {
+                    isInitializing = false;  // re-enable dirty tracking
+                }, 200);
                 for (i = 0; i < data.length; i++) {
                     div_data = "<option value='" + filteredData[i].employee_ID + "'>" + filteredData[i].employee_name + "</option>";
                     OrgEmpl.append(div_data);
@@ -595,36 +1716,108 @@ $(function () {
         $("#OrgChartGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#OrgChartGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchOrgDept").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#OrgChartGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#OrgChartGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchOrgRole").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#OrgChartGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#OrgChartGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchOrgEmp").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#OrgChartGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#OrgChartGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchOrgRRole").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#OrgChartGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#OrgChartGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchOrgLevel").on("change", function () {
         var value = $(this).val().toLowerCase();
         $("#OrgChartGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#OrgChartGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
         var vvalue = $(this).val().toLowerCase();
         if (vvalue == 0) {
             $("#OrgChartGrid tbody tr").show();
@@ -635,6 +1828,62 @@ $(function () {
         $("#OrgChartGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#OrgChartGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
+    });
+    $("#NotAssDept").change(function () {
+        if ($(this).is(":checked")) {
+            var value = ("N").toLowerCase();
+            $("#EmployeeGrid tbody tr").filter(function () {
+                $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
+            });
+            var $tableBody = $("#EmployeeGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
+        } else {
+            $("#EmployeeGrid tbody tr").show();
+        }
+    });
+    $("#RoleUnassigned").change(function () {
+        if ($(this).is(":checked")) {
+            var value = ("Y").toLowerCase();
+            $("#EmployeeGrid tbody tr").filter(function () {
+                $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
+            });
+            var $tableBody = $("#EmployeeGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
+        } else {
+            $("#EmployeeGrid tbody tr").show();
+        }
     });
 
     $('#addOrgChart').on('hidden.bs.modal', function (event) {
@@ -1031,18 +2280,54 @@ $(function () {
         $("#RoleGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#RoleGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchRlUiAccess").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#RoleGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#RoleGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchUim1").on("change", function () {
         var value = $(this).find("option:selected").text().toLowerCase();
         $("#UiGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#UiGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
         var UiAccessRMenu1 = $('#SearchUim2');
         UiAccessRMenu1.html('');
         div_data = "<option value='" + 0 + "'>" + "--Select--" + "</option>";
@@ -1075,6 +2360,18 @@ $(function () {
         $("#UiGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#UiGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
         var UiAccessRMenu1 = $('#SearchUim3');
         UiAccessRMenu1.html('');
         div_data = "<option value='" + 0 + "'>" + "--Select--" + "</option>";
@@ -1104,6 +2401,18 @@ $(function () {
         $("#UiGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#UiGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
         var UiAccessRMenu1 = $('#SearchUim4');
         UiAccessRMenu1.html('');
         div_data = "<option value='" + 0 + "'>" + "--Select--" + "</option>";
@@ -1131,6 +2440,18 @@ $(function () {
         $("#UiGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#UiGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
         var UiAccessRMenu1 = $('#SearchUim5');
         UiAccessRMenu1.html('');
         div_data = "<option value='" + 0 + "'>" + "--Select--" + "</option>";
@@ -1156,6 +2477,18 @@ $(function () {
         $("#UiGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#UiGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
         var vvalue = $(this).val().toLowerCase();
         if (vvalue == 0) {
             $("#UiGrid tbody tr").show();
@@ -1166,9 +2499,21 @@ $(function () {
         $("#UiGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#UiGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $('#addRole').on('hidden.bs.modal', function (event) {
-        //document.getElementById('roleList').style.filter = 'none';
+        ////document.getElementById('roleList').style.filter = 'none';
         var newNamevalidate = document.getElementById('ARPWork');
         newNamevalidate.style.border = '';
         var ARPName = document.getElementById('ARPName');
@@ -1343,9 +2688,18 @@ $(function () {
             var newvalidate = document.getElementById('UiAccessRPermission');
             newvalidate.style.border = '';
         }
+        const menuIds = [
+            UiAccessRMenu1,
+            UiAccessRMenu2,
+            UiAccessRMenu3,
+            UiAccessRMenu4,
+            UiAccessRMenu5
+        ].filter(id => id && id !== 0);
+        const uiIdString = menuIds.join(",");
+
         var rowData = {
             role_Ui_ListId: UiAccessRUiId,
-            ui_Id: uiId,
+            ui_Id: uiIdString,
             permissionId: UiAccessRPermission,
             roleId: UiAccessRRoleid
         };
@@ -1506,18 +2860,6 @@ $(function () {
             alert("Please Save the Employee Details");
             return false;
         }
-        let uiId = 0;
-        if (UiAccessRMenu5 != 0) {
-            uiId = UiAccessRMenu5;
-        } else if (UiAccessRMenu4 != 0) {
-            uiId = UiAccessRMenu4;
-        } else if (UiAccessRMenu3 != 0) {
-            uiId = UiAccessRMenu3;
-        } else if (UiAccessRMenu2 != 0) {
-            uiId = UiAccessRMenu2;
-        } else {
-            uiId = UiAccessRMenu1; 
-        }
         if (UiAccessRMenu1 == 0) {
             var newvalidate = document.getElementById('UiAccessEMenu1');
             newvalidate.style.border = '2px solid red';
@@ -1535,9 +2877,19 @@ $(function () {
             newvalidate.style.border = '';
         }
         var todaydate = new Date().toISOString().slice(0, 19);
+
+        const menuIds = [
+            UiAccessRMenu1,
+            UiAccessRMenu2,
+            UiAccessRMenu3,
+            UiAccessRMenu4,
+            UiAccessRMenu5
+        ].filter(id => id && id !== 0);
+        const uiIdString = menuIds.join(",");
+
         var rowData = {
             employee_UI_ListId: UiAccessRUiId,
-            ui_Id: uiId,
+            ui_Id: uiIdString,
             access_Level: UiAccessRPermission,
             employee_Id: UiAccessRRoleid,
             active: 'Y',
@@ -1759,8 +3111,20 @@ $(function () {
             api.get("/department/GetDept_Employee").then((data) => {
                 //console.log(data);
                 data = data.filter(i => i.level2 != "-" && i.employee_Id === empId && i.active == "N");
+                if (data.length === 0) {
+                    // 2. Insert the "No Records Found" row
+                    // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                    const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                    $(tablebody).append(noRecordsRow);
+                }
                 for (i = 0; i < data.length; i++) {
                     var previousval = $("#ReportToDept").val();
+                    data[i].showMenu ="none";
                     $(tablebody).append(AppUtil.ProcessTemplateDataNew("EmpDeptLinkGridRow", data[i], i));
                     let lastNode = null;
                     let parentNode = null;
@@ -1796,8 +3160,20 @@ $(function () {
             api.get("/department/GetDept_Employee").then((data) => {
                 //console.log(data);
                 data = data.filter(i => i.level2 != "-" && i.employee_Id === empId && i.active == "Y");
+                if (data.length === 0) {
+                    // 2. Insert the "No Records Found" row
+                    // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                    const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                    $(tablebody).append(noRecordsRow);
+                }
                 for (i = 0; i < data.length; i++) {
                     var previousval = $("#ReportToDept").val();
+                    data[i].showMenu = "block" ;
                     $(tablebody).append(AppUtil.ProcessTemplateDataNew("EmpDeptLinkGridRow", data[i], i));
                     let lastNode = null;
                     let parentNode = null;
@@ -1840,8 +3216,20 @@ $(function () {
             api.getbulk("/Employee/GetEmplRoleUiList?employeeId=" + parseInt(ARPId)).then((data) => {
                 data = data.filter(i => i.active == "N");
                 //console.log(data);
+                if (data.length === 0) {
+                    // 2. Insert the "No Records Found" row
+                    // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                    const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                    $(tablebody).append(noRecordsRow);
+                }
                 for (i = 0; i < data.length; i++) {
                     data[i].showMenu = data[i].fromDept === "N" ? "block" : "none";
+                    data[i].showMenu = "none";
                     $(tablebody).append(AppUtil.ProcessTemplateDataNew("EmpUiGridRow", data[i], i));
                 }
                 //console.log(tablebody);
@@ -1854,6 +3242,17 @@ $(function () {
             //} 
             api.getbulk("/Employee/GetEmplRoleUiList?employeeId=" + parseInt(ARPId)).then((data) => {
                 //console.log(data);
+                if (data.length === 0) {
+                    // 2. Insert the "No Records Found" row
+                    // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                    const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                    $(tablebody).append(noRecordsRow);
+                }
                 data = data.filter(i => i.active == "Y");
                 for (i = 0; i < data.length; i++) {
                     data[i].showMenu = data[i].fromDept === "N" ? "block" : "none";
@@ -1862,6 +3261,30 @@ $(function () {
                 //console.log(tablebody);
             }).catch((error) => { });
         }
+    });
+    $('#deptEmpList').on('show.bs.modal', function (event) {
+        var tablebody = $("#EmpDeptLink tbody");
+        $(tablebody).html("");//empty tbody
+        api.get("/Employee/GetDepartmentsLevel").then((data) => {
+            //console.log(data);
+            if (data.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
+            for (i = 0; i < data.length; i++) {
+                $(tablebody).append(AppUtil.ProcessTemplateDataNew("EmpDeptLinkRow", data[i], i));
+            }
+            //console.log($(tablebody).html());
+        }).catch((error) => {
+            //console.log(error);
+        });
     });
 });
 function loadLevels() {
@@ -1901,6 +3324,17 @@ function LoadDeptEmp(employee_ID) {
     api.get("/department/GetDept_Employee").then((data) => {
         //console.log(data);
         data = data.filter(i => i.level2 != "-" && i.employee_Id === employee_ID && i.active == "Y");
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
                     var previousval = $("#ReportToDept").val();
                     $(tablebody).append(AppUtil.ProcessTemplateDataNew("EmpDeptLinkGridRow", data[i], i));
@@ -1951,6 +3385,17 @@ function LoadDepartments() {
     $(tablebody).html("");//empty tbody
     api.get("/department/GetUnassignedDepartments").then((data) => {
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         data = data.filter(i => i.level2 != "-");
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateDataNew("DeptP1GridRow", data[i], i));
@@ -1963,13 +3408,28 @@ function LoadDepartments() {
 function LoadEmployee() {
     var tablebody = $("#EmployeeGrid tbody");
     $(tablebody).html("");//empty tbody
+    $("#preloaderblurred").show();
     api.getbulk("/Employee/GetAllEmployee").then((data) => {
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateDataNew("EmployeeGridRow", data[i], i));
         }
         //console.log(tablebody);
-    }).catch((error) => { });
+        $("#preloaderblurred").hide();
+    }).catch((error) => {
+        $("#preloaderblurred").hide();
+    });
     loadSelectEmployee();
 }
 function LoadOrgChart() {
@@ -1977,6 +3437,17 @@ function LoadOrgChart() {
     $(tablebody).html("");//empty tbody
     api.getbulk("/Employee/GetAllOrgChart").then((data) => {
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateDataNew("OrgChartGridRow", data[i], i));
         }
@@ -1995,6 +3466,17 @@ function LoadRoleUiById(roleid) {
     }
     api.getbulk("/Employee/GetRoleUiList?roleId=" + parseInt(ARPId)).then((data) => {
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateDataNew("RPGridRow", data[i], i));
         }
@@ -2004,16 +3486,76 @@ function LoadRoleUiById(roleid) {
 }
 function LoadRoleUiAll() {
     var tablebody = $("#RoleGrid tbody");
-    $(tablebody).html("");//empty tbody
+    $(tablebody).html("");
+    $("#preloaderblurred").show();
+
     api.getbulk("/Employee/GetAllRoleUiList").then((data) => {
-        //console.log(data);
-        for (i = 0; i < data.length; i++) {
-            $(tablebody).append(AppUtil.ProcessTemplateDataNew("RoleGridRow", data[i], i));
+        $("#preloaderblurred").hide();
+
+        if (!data || data.length === 0) {
+            $(tablebody).append(`<tr><td colspan="20" class="text-center text-muted"><strong>No Records Found</strong></td></tr>`);
+            return;
         }
-        //console.log(tablebody);
-    }).catch((error) => { });
-    //loadSelectEmployee();
+
+        // ✅ Group entries by RoleName
+        const grouped = {};
+        data.forEach(item => {
+            if (!grouped[item.roleName]) grouped[item.roleName] = [];
+            grouped[item.roleName].push(item);
+        });
+
+        // ✅ Render rows
+        for (const [roleName, list] of Object.entries(grouped)) {
+            const hasMultiple = list.length > 1;
+            const first = list[0];
+
+            first.expandBtn = hasMultiple
+                ? `<button class="btn btn-sm btn-link text-primary expand-btn" data-role="${roleName}" title="Expand">></button>`
+                : "";
+
+            // main row using your template
+            $(tablebody).append(AppUtil.ProcessTemplateDataNew("RoleGridRow", first));
+
+            // Add hidden sub-rows if multiple UI accesses
+            if (hasMultiple) {
+                for (let j = 1; j < list.length; j++) {
+                    const sub = list[j];
+                    const subRow = `
+                        <tr class="sub-row d-none" data-parent="${roleName}">
+                            <td>${sub.roleName}</td>
+                            <td>${sub.uiLevel}</td>
+                            <td>${sub.view_Allowed}</td>
+                            <td>${sub.add_Edit_Allowed}</td>
+                            <td>${sub.delete_Allowed}</td>
+                            <td>${sub.approval_Allowed}</td>
+                            <td></td>
+                        </tr>`;
+                    $(tablebody).append(subRow);
+                }
+            }
+        }
+
+        // ✅ Expand/Collapse toggle
+        $("#RoleGrid").off("click", ".expand-btn").on("click", ".expand-btn", function () {
+            const role = $(this).data("role");
+            const subRows = $(`tr[data-parent='${role}']`);
+            const isOpen = $(this).text() === "v";
+
+            if (isOpen) {
+                subRows.addClass("d-none");
+                $(this).text(">");
+            } else {
+                subRows.removeClass("d-none");
+                $(this).text("v");
+            }
+        });
+
+    }).catch((err) => {
+        $("#preloaderblurred").hide();
+        console.error(err);
+    });
 }
+
 function loadUiList() {
     var tablebody = $("#UiGrid tbody");
     $(tablebody).html("");//empty tbody
@@ -2023,6 +3565,17 @@ function loadUiList() {
     selElem.append(div_data);
     api.getbulk("/Employee/GetAllUilist").then((data) => {
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateDataNew("UiGridRow", data[i], i));
             div_data = "<option value='" + data[i].uiListId + "'>" + data[i].uI_Name_Label + "</option>";
@@ -2322,14 +3875,80 @@ function LoadEmplUiById() {
     //    ARPId = $("#EPEmpId").val();
     //} 
     api.getbulk("/Employee/GetEmplRoleUiList?employeeId=" + parseInt(ARPId)).then((data) => {
-        //console.log(data);
-        data = data.filter(i => i.active == "Y");
-        for (i = 0; i < data.length; i++) {
-            data[i].showMenu = data[i].fromDept === "N" ? "block" : "none";
-            $(tablebody).append(AppUtil.ProcessTemplateDataNew("EmpUiGridRow", data[i], i));
+        const tablebody = "#EmpUiGrid tbody";
+        $(tablebody).empty();
+
+        if (!data || data.length === 0) {
+            $(tablebody).append(`
+            <tr>
+                <td colspan="20" class="text-center text-muted"><strong>No Records Found</strong></td>
+            </tr>
+        `);
+            return;
         }
-        //console.log(tablebody);
-    }).catch((error) => { });
+
+        // ✅ Filter only active items
+        data = data.filter(i => i.active === "Y");
+
+        // ✅ Group by RoleName (handle empty ones)
+        const grouped = {};
+        data.forEach(item => {
+            const roleKey = item.roleName && item.roleName.trim() !== "" ? item.roleName.trim() : "No Role (Direct UI Access)";
+            if (!grouped[roleKey]) grouped[roleKey] = [];
+            grouped[roleKey].push(item);
+        });
+
+        // ✅ Render grouped rows
+        for (const [roleName, list] of Object.entries(grouped)) {
+            const hasMultiple = list.length > 1;
+            const first = list[0];
+            first.showMenu = first.fromDept === "N" ? "block" : "none";
+            first.expandBtn = hasMultiple
+                ? `<button class="btn btn-sm btn-link text-primary expand-btn" data-role="${roleName}" title="Expand">></button>`
+                : "";
+
+            // main row using your template (EmpUiGridRow)
+            $(tablebody).append(AppUtil.ProcessTemplateDataNew("EmpUiGridRow", first));
+
+            // ✅ Add hidden sub-rows for other UI records
+            if (hasMultiple) {
+                for (let j = 1; j < list.length; j++) {
+                    const sub = list[j];
+                    const subRow = `
+                    <tr class="sub-row d-none" data-parent="${roleName}">
+                        <td></td>
+                        <td></td>
+                        <td>${sub.uiLevel ?? ""}</td>
+                        <td>${sub.view_Allowed ?? ""}</td>
+                        <td>${sub.add_Edit_Allowed ?? ""}</td>
+                        <td>${sub.delete_Allowed ?? ""}</td>
+                        <td>${sub.approval_Allowed ?? ""}</td>
+                        <td>${sub.deact_dateStr ?? ""}</td>
+                        <td>${sub.fromDept ?? ""}</td>
+                    </tr>`;
+                    $(tablebody).append(subRow);
+                }
+            }
+        }
+
+        // ✅ Expand/Collapse toggle
+        $("#EmpUiGrid").off("click", ".expand-btn").on("click", ".expand-btn", function () {
+            const role = $(this).data("role");
+            const subRows = $(`tr[data-parent='${role}']`);
+            const isOpen = $(this).text() === "v";
+
+            if (isOpen) {
+                subRows.addClass("d-none");
+                $(this).text(">");
+            } else {
+                subRows.removeClass("d-none");
+                $(this).text("v");
+            }
+        });
+
+    }).catch((error) => {
+        console.error(error);
+    });
     //loadSelectEmployee();
 }
 function loadSelectMenusForEmpl() {

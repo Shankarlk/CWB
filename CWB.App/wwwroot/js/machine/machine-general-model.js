@@ -79,7 +79,7 @@ function LoadSection(deptId,sectionId) {
     $(SectionIdSelect).append('<option value="">--Select Section--</option>');
     api.get("/department/GetSections").then((data) => {
         //console.log(data);
-        data = data.filter(item => item.shopDepartmentId === parseInt(deptId))
+        //data = data.filter(item => item.shopDepartmentId === parseInt(deptId))
 
         for (i = 0; i < data.length; i++) {
             $(SectionIdSelect).append('<option value="' + data[i].sectionsId + '">' + data[i].name + '</option>');
@@ -104,7 +104,7 @@ $(function () {
         var deptId = $(this).val();
         api.get("/department/GetSections").then((data) => {
             //console.log(data);
-            data = data.filter(item => item.shopDepartmentId === parseInt(deptId))
+            //data = data.filter(item => item.shopDepartmentId === parseInt(deptId))
 
             for (i = 0; i < data.length; i++) {
                 $(SectionIdSelect).append('<option value="' + data[i].sectionsId + '">' + data[i].name + '</option>');
@@ -119,6 +119,18 @@ $(function () {
         $("#tbl-machine-list tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#tbl-machine-list tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#search-machine-shop").change(function () {
@@ -126,6 +138,18 @@ $(function () {
         $("#tbl-machine-list tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#tbl-machine-list tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#machineName").on("keyup", function () {
@@ -133,6 +157,18 @@ $(function () {
         $("#tbl-machine-list tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#tbl-machine-list tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#manufacturer").on("keyup", function () {
@@ -140,6 +176,18 @@ $(function () {
         $("#tbl-machine-list tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#tbl-machine-list tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#clearMachineBtn").click(function () {
         $("#search-machine-plant").val('');
@@ -160,6 +208,18 @@ $(function () {
         $("#tbl-machine-list tbody tr").filter(function () {
             $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#tbl-machine-list tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#search-machine-shop").change(function () {
         var SectionIdSelect = $("#search-machine-sec");

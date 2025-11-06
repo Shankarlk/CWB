@@ -50,6 +50,12 @@ namespace CWB.Masters.Configurations.ItemMaster
                .HasColumnName("RevNo")
                .HasMaxLength(255);
             builder
+               .Property(b => b.Inv_Trans)
+               .HasColumnName("Inv_Trans");
+            builder
+               .Property(b => b.Linked_to_BOM)
+               .HasColumnName("Linked_to_BOM");
+            builder
                 .Property(b => b.RevDate)
                 .HasColumnName("RevDate")
                 .HasColumnType("datetime");

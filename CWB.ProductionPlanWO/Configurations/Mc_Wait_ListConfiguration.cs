@@ -87,6 +87,21 @@ namespace CWB.ProductionPlanWO.Configurations
                 .Property(b => b.Setup_Appvl_Doc_Ref)
                 .HasColumnName("Setup_Appvl_Doc_Ref");
             builder
+                .Property(b => b.OperatorId)
+                .HasColumnName("OperatorId");
+            builder
+                .Property(b => b.ReasonfornotachievingFTRId)
+                .HasColumnName("ReasonfornotachievingFTRId");
+            builder
+                .Property(b => b.ReasonforAddnSetupTimeId)
+                .HasColumnName("ReasonforAddnSetupTimeId");
+            builder
+                .Property(b => b.SetupTimeTaken)
+                .HasColumnName("SetupTimeTaken");
+            builder
+                .Property(b => b.AddntimeforSetup)
+                .HasColumnName("AddntimeforSetup");
+            builder
                 .Property(b => b.QntyOffered)
                 .HasColumnName("QntyOffered");
             builder

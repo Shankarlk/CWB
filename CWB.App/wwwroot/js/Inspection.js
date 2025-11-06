@@ -136,12 +136,36 @@ $(document).ready(function () {
         $("#inspGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#inspGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPartNo").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#inspGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#inspGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchSupp").on("change", function () {
         var value = $(this).val().toLowerCase();
@@ -150,8 +174,32 @@ $(document).ready(function () {
             $("#inspGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(selectedText) > -1)
             });
+            var $tableBody = $("#inspGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#inspGrid tbody tr").show();
+            var $tableBody = $("#inspGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
     $("#searchPartType").on("change", function () {
@@ -161,8 +209,32 @@ $(document).ready(function () {
             $("#inspGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(selectedText) > -1)
             });
+            var $tableBody = $("#inspGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#inspGrid tbody tr").show();
+            var $tableBody = $("#inspGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
     $('#InspectionDocPop').on('show.bs.modal', function (event) {

@@ -3,6 +3,8 @@ $(document).ready(function () {
     loadPartinSubcon();
     loadSels();
     $("#P5Subcon").on("change", function () {
+        var $tableBody = $("#P5Grid tbody");
+        $tableBody.find(".norecordsfound").remove();
         var selectedValue = $(this).val();
         if (selectedValue == "0") {
             $("#P5Grid tbody tr").show();
@@ -12,13 +14,39 @@ $(document).ready(function () {
             $("#P5Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(selvallow) > -1)
             });
+            var $tableBody = $("#P5Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
     $("#P5PartNo").on("keyup", function () {
+        var $tableBody = $("#P5Grid tbody");
+        $tableBody.find(".norecordsfound").remove();
         var value = $(this).val().toLowerCase();
         $("#P5Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P5Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 });
 function loadPartinSubcon() {
@@ -26,6 +54,17 @@ function loadPartinSubcon() {
     $(tablebody).html("");//empty tbody
 
     api.getbulk("/workOrder/GetPartsLoadedInSubCon").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("P5GridRow", data[i]));
         }

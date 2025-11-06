@@ -207,6 +207,17 @@ function LoadSubCons() {
     let stepId = RoutingDetails["stepId"];
     //console.log("=====stepId" + stepId);
     api.get("/routings/subcons?stepId=" + stepId).then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
 
         for (i = 0; i < data.length; i++) {
             if (data[i].deleted == 1)
@@ -236,7 +247,18 @@ function LoadSubConWSS() {
     let stepId = RoutingDetails["stepId"];
   //  alert(subConDetailsId + "/" + stepId);
     //masters/subconwss
-    api.get("/routings/subconwss?stepId=" + stepId +"&subConDetailsId="+subConDetailsId).then((data) => {
+    api.get("/routings/subconwss?stepId=" + stepId + "&subConDetailsId=" + subConDetailsId).then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         //console.log(data);
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateDataNew("WSRow", data[i], i));
@@ -258,7 +280,18 @@ function McTypeUploadDocList(content) {
     api.getbulk("/Routings/GetMcTypeDocList?mcTypeId=" + content + "&routingId=" + StepRoutingId + "&stepId=" + partid).then((data) => {
             //data = data.filter(item => item.status == 1 || item.status == 0);
         var tablebody = $("#SubConDocGrid tbody");
-            $(tablebody).html("");//empty tbody
+        $(tablebody).html("");//empty tbody
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
             //console.log(data);
             for (i = 0; i < data.length; i++) {
                 var rowHtml = AppUtil.ProcessTemplateData("maufDocUploadRow", data[i]);
@@ -296,6 +329,17 @@ function McIdUploadDocList(content) {
         //data = data.filter(item => item.status == 1 || item.status == 0);
         var tablebody = $("#MachineDocGrid tbody");
         $(tablebody).html("");//empty tbody
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         //console.log(data);
         for (i = 0; i < data.length; i++) {
             var rowHtml = AppUtil.ProcessTemplateData("machineDocGridRow", data[i]);
@@ -502,11 +546,12 @@ function ProcessTemplateDataNew(templateId, dataObj) {
 // JavaScript source code
 function DowlonadPartsRoutings() {
     //RoutingListItems
+    $("#preloaderblurred").show();
     var tablebody = $("#PartsRoutingsTable tbody");
     $(tablebody).html("");//empty tbody
     //UpdatePurchaseDetailsTableFromPostData
     let i = 0;
-    if (dataPartsRoutings.length > 2) {
+    if (dataPartsRoutings.length > 0) {
         noOfRoutePart = 0;
         noOfWithoutDoc = 0;
         let data = dataPartsRoutings;
@@ -537,6 +582,19 @@ function DowlonadPartsRoutings() {
             $(tablebody).append(rowHtml);
             $("#prWithOutRoute").val(noOfRoutePart);
             $("#prWithOutDoc").val(noOfWithoutDoc);
+            $("#preloaderblurred").hide();
+
+            if (data.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
         }
     }
     else {
@@ -545,6 +603,17 @@ function DowlonadPartsRoutings() {
             noOfRoutePart = 0;
             noOfWithoutDoc = 0;
             dataPartsRoutings = data;
+            if (data.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
             for (i = 0; i < data.length; i++) {
                 if (!(data[i]['masterPartType'] == partType))
                     continue;
@@ -573,7 +642,9 @@ function DowlonadPartsRoutings() {
                 $("#prWithOutDoc").val(noOfWithoutDoc);
 
             }
+            $("#preloaderblurred").hide();
         }).catch((error) => {
+            $("#preloaderblurred").hide();
         });
     }
 }
@@ -627,6 +698,17 @@ function loadSetSuppliers() {
     //console.log("=====stepId" + stepId);
     api.get("/routings/stepsuppliers?stepId=" + stepId).then((data) => {
 
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("RouteSupplierTemplate", data[i]));
         }
@@ -1005,6 +1087,17 @@ function loadStepMachines() {
     let stepId = RoutingDetails["stepId"];
     //console.log("****stepId" + stepId);
     api.get("/routings/stepmachines?stepId=" + stepId).then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             data[i].bgColor = "white"
             data[i].strPreferedMachine = ""
@@ -1113,6 +1206,17 @@ function RouteloadMachinesToTable(tableName, rowTemplate, addEdit,machineid) {
     api.get("/machine/getmachines").then((data) => {
         //console.log(data);
         machinelist = data;
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateDataNew(rowTemplate, data[i], i));
         }
@@ -1452,6 +1556,18 @@ $(function () {
         $("#SubConNamesTable tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#SubConNamesTable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#master_partno").on("keyup", function () {
@@ -1459,6 +1575,18 @@ $(function () {
         $("#PartsRoutingsTable tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#PartsRoutingsTable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#master_description").on("keyup", function () {
@@ -1466,6 +1594,18 @@ $(function () {
         $("#PartsRoutingsTable tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#PartsRoutingsTable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     }); 
     
     $("#master_co").on("keyup", function () {
@@ -1473,6 +1613,18 @@ $(function () {
         $("#PartsRoutingsTable tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#PartsRoutingsTable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $('#ChkprWithOutDoc').on('click', function () {
         if ($(this).is(':checked')) {
@@ -1482,6 +1634,18 @@ $(function () {
                 var temp = $(this.children[4]).text().toLowerCase();
                 $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#PartsRoutingsTable tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#PartsRoutingsTable tbody tr").show(); // show all rows when checkbox is unchecked
         }
@@ -1494,6 +1658,18 @@ $(function () {
                 var temp = $(this.children[3]).text().toLowerCase();
                 $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#PartsRoutingsTable tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#PartsRoutingsTable tbody tr").show(); // show all rows when checkbox is unchecked
         }
@@ -2156,6 +2332,18 @@ $(function () {
         $("#AddMachineListTable tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#AddMachineListTable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#MAC_Shops").change(function () {
@@ -2167,6 +2355,18 @@ $(function () {
         $("#AddMachineListTable tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#AddMachineListTable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SSectionName").change(function () {
         var value = $(this).find("option:selected").text().toLowerCase();
@@ -2178,6 +2378,18 @@ $(function () {
         $("#AddMachineListTable tbody tr").filter(function () {
             $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#AddMachineListTable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#MAC_Name").on("keyup", function () {
@@ -2185,6 +2397,18 @@ $(function () {
         $("#AddMachineListTable tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#AddMachineListTable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     //$("#MAC_Type").change(function () {

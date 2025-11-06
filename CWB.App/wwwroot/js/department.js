@@ -4,6 +4,7 @@ let sectiondepart = {};
 function LoadDepartments() {
     var tablebody = $("#DeptTable tbody");
     $(tablebody).html("");//empty tbody
+    $("#preloaderblurred").show();
     api.get("/department/GetDepartmentsLevel").then((data) => {
         //console.log(data);
         for (i = 0; i < data.length; i++) {
@@ -15,7 +16,9 @@ function LoadDepartments() {
             $(tablebody).append(AppUtil.ProcessTemplateDataNew("DeptRow", data[i], i));
         }
         //console.log($(tablebody).html());
+        $("#preloaderblurred").hide();
     }).catch((error) => {
+        $("#preloaderblurred").hide();
         //console.log(error);
     });
 };
@@ -247,6 +250,36 @@ $(function () {
         else {
             //alert("Invalid form");
         //    form.classList.add("was-validated");
+        }
+    });
+    $("#RoleUnassigned").change(function () {
+        if ($(this).is(":checked")) {
+            $("#DeptTable tbody tr").filter(function () {
+                // check first column text
+                let firstCol = $(this).children("td").eq(5).text().trim();
+                return firstCol !== ""; // hide rows where column is NOT empty
+            }).hide();
+
+            $("#DeptTable tbody tr").filter(function () {
+                // show rows where first column is empty
+                let firstCol = $(this).children("td").eq(5).text().trim();
+                return firstCol === "";
+            }).show();
+        } else {
+            $("#DeptTable tbody tr").show();
+        }
+
+        var $tableBody = $("#DeptTable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
         }
     });
     $("#ProdDept").change(function () {

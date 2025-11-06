@@ -24,15 +24,23 @@ namespace CWB.Masters.Services.ItemMaster
         private readonly IRawMaterialDetailService _rawMaterialDetailService;
         private readonly IBoughtOutFinishDetailService _boughtOutFinishDetailService;
         private readonly IManufacturedPartNoDetailService _manufacturedPartNoDetailService;
+        private readonly IManufacturedPartNoDetailRepository _manufacturedPartNoDetailRepository;
+        private readonly IRawMaterialDetailRepository _IRawMaterialDetailRepository;
+        private readonly IBoughtOutFinishDetailRepository _BoughtOutFinishDetails;
         private readonly IMasterPartRepository _masterPartRepository;
         private readonly IItemMasterDocListRepository _itemMasterDocListRepository;
         private readonly IItemMasterContentRepository _itemMasterContentRepository;
+        private readonly IPartsStatusRepository _PartsStatusRepository;
 
         public MasterPartService(ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork
             , IRawMaterialDetailService rawMaterialDetailService
+            , IManufacturedPartNoDetailRepository manufacturedPartNoDetailRepository
+            , IRawMaterialDetailRepository IRawMaterialDetailRepository
+            , IBoughtOutFinishDetailRepository BoughtOutFinishDetails
             , IManufacturedPartNoDetailService manufacturedPartNoDetailService
             , IBoughtOutFinishDetailService boughtOutFinishDetailService,IMasterPartRepository masterPartRepository
-            , IItemMasterDocListRepository itemMasterDocListRepository, IItemMasterContentRepository itemMasterContentRepository)
+            , IItemMasterDocListRepository itemMasterDocListRepository, IItemMasterContentRepository itemMasterContentRepository
+            , IPartsStatusRepository PartsStatusRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -43,6 +51,10 @@ namespace CWB.Masters.Services.ItemMaster
             _masterPartRepository = masterPartRepository;
             _itemMasterDocListRepository = itemMasterDocListRepository;
             _itemMasterContentRepository = itemMasterContentRepository;
+            _PartsStatusRepository = PartsStatusRepository;
+            _manufacturedPartNoDetailRepository = manufacturedPartNoDetailRepository;
+            _IRawMaterialDetailRepository = IRawMaterialDetailRepository;
+            _BoughtOutFinishDetails = BoughtOutFinishDetails;
         }
 
         public IEnumerable<ItemMasterPartVM> GetMasterPartView()
@@ -103,12 +115,10 @@ namespace CWB.Masters.Services.ItemMaster
             return (int)part.Id;
         }
 
-        public IEnumerable<PartStatusVM> GetStatuses()
+        public async Task<IEnumerable<PartsStatusVM>> GetStatuses()
         {
-            var partStatuses = Enum.GetValues(typeof(PartStatus))
-                         .Cast<PartStatus>()
-                         .Select(t => new PartStatusVM { Status = t.GetEnumDescription(), StatusValue = t.ToString() });
-            return partStatuses;
+            var itemMasterDoc = await _PartsStatusRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<PartsStatusVM>>(itemMasterDoc); 
         }
 
         public async Task<MasterPartVM> GetMasterPart(int partId)
@@ -247,6 +257,65 @@ namespace CWB.Masters.Services.ItemMaster
                     return true;
                 }
                 catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<bool> DeleteItemMasterPart(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _masterPartRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            var mf = await _manufacturedPartNoDetailRepository.SingleOrDefaultAsync(m => m.PartId == itemMasterDocListId && m.TenantId == tenantId);
+            var rm = await _IRawMaterialDetailRepository.SingleOrDefaultAsync(m => m.PartId == itemMasterDocListId && m.TenantId == tenantId);
+            var bof = await _BoughtOutFinishDetails.SingleOrDefaultAsync(m => m.PartId == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _masterPartRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    if (mf != null)
+                    {
+                        try
+                        {
+                            _manufacturedPartNoDetailRepository.Remove(mf);
+                            await _unitOfWork.CommitAsync();
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
+                    if (rm != null)
+                    {
+                        try
+                        {
+                            _IRawMaterialDetailRepository.Remove(rm);
+                            await _unitOfWork.CommitAsync();
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
+                    if (bof != null)
+                    {
+                        try
+                        {
+                            _BoughtOutFinishDetails.Remove(bof);
+                            await _unitOfWork.CommitAsync();
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
+                    return true;
+                }
+                catch (Exception ex) {
+
+                }
             }
             return false;
         }

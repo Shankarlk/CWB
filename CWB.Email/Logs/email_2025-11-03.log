@@ -1,0 +1,28 @@
+2025-11-03 04:30:28.5701 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-11-03 04:30:28.6503 INFO Application started. Press Ctrl+C to shut down.
+2025-11-03 04:30:28.7058 INFO Hosting environment: Production
+2025-11-03 04:30:28.7188 INFO Content root path: /app
+2025-11-03 05:22:25.3941 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-11-03 05:22:25.7117 INFO Application started. Press Ctrl+C to shut down.
+2025-11-03 05:22:25.8840 INFO Hosting environment: Production
+2025-11-03 05:22:25.9778 INFO Content root path: /app
+2025-11-03 09:41:48.1141 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-11-03 09:41:48.3474 INFO Application started. Press Ctrl+C to shut down.
+2025-11-03 09:41:48.4182 INFO Hosting environment: Production
+2025-11-03 09:41:48.4549 INFO Content root path: /app
+2025-11-03 10:29:40.2950 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-11-03 10:29:40.6404 INFO Application started. Press Ctrl+C to shut down.
+2025-11-03 10:29:40.7059 INFO Hosting environment: Production
+2025-11-03 10:29:40.7648 INFO Content root path: /app
+2025-11-03 11:47:01.3089 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-11-03 11:47:01.5715 INFO Application started. Press Ctrl+C to shut down.
+2025-11-03 11:47:01.5929 INFO Hosting environment: Production
+2025-11-03 11:47:01.6517 INFO Content root path: /app
+2025-11-03 12:28:18.4991 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-11-03 12:28:18.7370 INFO Application started. Press Ctrl+C to shut down.
+2025-11-03 12:28:18.7696 INFO Hosting environment: Production
+2025-11-03 12:28:18.8005 INFO Content root path: /app
+2025-11-03 12:38:13.3852 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-11-03 12:38:13.7459 INFO Application started. Press Ctrl+C to shut down.
+2025-11-03 12:38:13.8042 INFO Hosting environment: Production
+2025-11-03 12:38:13.9985 INFO Content root path: /app

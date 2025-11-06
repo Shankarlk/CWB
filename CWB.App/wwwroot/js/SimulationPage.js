@@ -11,6 +11,7 @@ var stoppingData = {
 };
 function landingPage() {
     const today = new Date();
+    $("#preloaderblurred").show();
     api.getbulk("/WorkOrder/GetAllReadyforProductionWo").then((data) => {
         const count = data.length;
         const AssyCount = data.filter((salesOrder) => salesOrder.partType === 2 && salesOrder.parentWoId === 0 ).length;
@@ -21,7 +22,9 @@ function landingPage() {
         $('#ReadCMp').text(CmpCount);
         $('#InMcQueRAssy').text('0');
         $('#InMcQueRCmp').text('0');
+        $("#preloaderblurred").hide();
     }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
     api.getbulk("/WorkOrder/GetAllRwk_List").then((data) => {
         const AssyCount = data.filter((workOrder) => workOrder.partType === 1).length;
@@ -1517,6 +1520,18 @@ $(document).ready(function () {
         $("#P13Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(selvallowc) > -1)
         });
+        var $tableBody = $("#P13Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#P13SearchMc").on("change", function () {
         var selectedValue = $(this).val();
@@ -1528,6 +1543,18 @@ $(document).ready(function () {
         $("#P13Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(selvallowc) > -1)
         });
+        var $tableBody = $("#P13Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#P1SearchCustomer").on("change", function () {
         var selectedValue = $(this).val();
@@ -1539,14 +1566,50 @@ $(document).ready(function () {
         $("#P1Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(selvallowc) > -1)
         });
+        var $tableBody = $("#P1Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#P1SearchPartType").on("change", function () {
         var selectedValue = $(this).val();
         if (selectedValue == "0") {
             $("#P1Grid tbody tr").show();
+            var $tableBody = $("#P1Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
             return;
         } else if (selectedValue == "1") {
             $("#P1Grid tbody tr").show();
+            var $tableBody = $("#P1Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
             return;
         } else if (selectedValue == "2") {
             var selval = "Assembly";
@@ -1554,12 +1617,36 @@ $(document).ready(function () {
             $("#P1Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(selvallow) > -1)
             });
+            var $tableBody = $("#P1Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else if (selectedValue == "3") {
             var selvalc = "Child Part";
             var selvallowc = selvalc.toLowerCase();
             $("#P1Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(selvallowc) > -1)
             });
+            var $tableBody = $("#P1Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
     $("#P1SearchPartDesc").on("keyup", function () {
@@ -1567,12 +1654,36 @@ $(document).ready(function () {
         $("#P1Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P1Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#P1SearchPartNo").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#P1Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P1Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#P14ShopId").on('change', function (event) {
         var selval = $("#P14ShopId").val();
@@ -2399,6 +2510,17 @@ function loadMcWaitSetup() {
     api.getbulk("/workOrder/GetAllMcWaitSetupList").then((data) => {
         var tablebody = $("#P28Grid tbody");
         $(tablebody).html(""); // empty tbody
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (let i = 0; i < data.length; i++) {
             let row = AppUtil.ProcessTemplateData("P28GridRow", data[i]);
             let $row = $(row);
@@ -2429,6 +2551,17 @@ function loadMoveMatl() {
         }
         var tablebody = $("#P27Grid tbody");
         $(tablebody).html(""); // empty tbody
+        if (unique.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (let i = 0; i < unique.length; i++) {
             let row = AppUtil.ProcessTemplateData("P27GridRow", unique[i]);
             let $row = $(row);
@@ -2445,6 +2578,17 @@ function loadWoWaitlist() {
         var tablebody = $("#P1Grid tbody");
         $(tablebody).html(""); // empty tbody
         data = data.filter(item => item.readyForProd === "Y" && item.woRelease === "Y");  //
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (let i = 0; i < data.length; i++) {
             if (data[i].status === 8) {
                 data[i].holdstr = "Y";
@@ -2482,6 +2626,17 @@ function loadReworkList() {
     $(tablebody).html("");//empty tbody
 
     api.getbulk("/workOrder/GetAllRwk_List").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             let row = AppUtil.ProcessTemplateData("P10GridRow", data[i]);
 
@@ -2504,6 +2659,17 @@ function loadNonWrkList() {
     $(tablebody).html("");//empty tbody
 
     api.getbulk("/workOrder/GetAllNon_Plan_Wk_ListData").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             let row = AppUtil.ProcessTemplateData("P8GridRow", data[i]);
 
@@ -2524,8 +2690,7 @@ function loadNonWrkList() {
 function loadSimulationWos() {
     var tablebody = $("#SimWoGrid tbody");
     $(tablebody).html(""); // empty tbody
-    document.getElementById('preloader').style.display = 'block';
-    document.getElementById('status').style.display = 'block';
+    $("#preloaderblurred").show();
     api.getbulk("/workOrder/GetAllReadyforProductionWo").then((data) => {
         data.sort((a, b) => {
             const dateA = new Date(a.csStartDate.split("-").reverse().join("-")); // Convert to yyyy-MM-dd
@@ -2533,6 +2698,17 @@ function loadSimulationWos() {
             return dateA - dateB;
         });
         let showResimulate = data.some(d => d.dataChange === "Y");
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (let i = 0; i < data.length; i++) {
             let row = AppUtil.ProcessTemplateData("SimWoGridRow", data[i]);
             let $row = $(row);
@@ -2578,10 +2754,10 @@ function loadSimulationWos() {
         } else {
             $("#ReSimulateBtn").hide();
         }
-        document.getElementById('preloader').style.display = 'none';
-        document.getElementById('status').style.display = 'none';
+        $("#preloaderblurred").hide();
     }).catch((error) => {
         console.error("Failed to load WOs", error);
+        $("#preloaderblurred").hide();
     });
 }
 let isDataSaved = true; // Set to true only after data is saved
@@ -2616,6 +2792,17 @@ function loadRoutingStep(partId, qnty) {
     var tablebody = $("#P3Grid tbody");
     $(tablebody).html("");//empty tbody
     api.getbulk("/WorkOrder/RoutingStepsMcSub?routingId=" + partId + "&Qnty=" + qnty).then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             let row = AppUtil.ProcessTemplateData("P3GridRow", data[i]);
 
@@ -2632,6 +2819,17 @@ function loadRouting(partId, qnty, routingid) {
     var tablebody = $("#P26Grid tbody");
     $(tablebody).html("");//empty tbody
     api.getbulk("/WorkOrder/GetSimRoutings?manufPartId=" + partId + "&Qnty=" + qnty).then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             let row = AppUtil.ProcessTemplateData("P26GridRow", data[i]);
             let $row = $(row);
@@ -2649,6 +2847,17 @@ function loadMachinceList() {
     $(tablebody).html("");//empty tbody
 
     api.getbulk("/workOrder/GetMachines").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("P82GridRow", data[i]));
         }
@@ -2661,6 +2870,17 @@ function loadNotAvlMcTimeslot() {
     $(tablebody).html("");//empty tbody
 
     api.getbulk("/workOrder/GetNotAvlMcTimeslot").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("P13GridRow", data[i]));
         }
@@ -2692,7 +2912,7 @@ function loadMachinceType() {
     }).catch((error) => {
 
     });
-    api.get("/WorkOrder/GetAllNon_Plan_Wk_type_List/" + 1).then((data) => {
+    api.get("/WorkOrder/GetAllNon_Plan_Wk_type_List/").then((data) => {
         var departmentSelect = $("#P81NonPlanType");
         $(departmentSelect).html("");
         $(departmentSelect).append('<option value="0">--Select Non Plan Type--</option>');

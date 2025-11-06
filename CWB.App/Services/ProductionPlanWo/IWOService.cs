@@ -34,6 +34,7 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<List<PODetailsVM>> PODetails(IEnumerable<PODetailsVM> pODetails);
         Task<List<POHeaderVM>> POHeader(IEnumerable<POHeaderVM> pOHeaderVMs);
         Task<Inw_Recpt_HeaderVM> PostInw_Recpt_Header(Inw_Recpt_HeaderVM childWoRels);
+        Task<SetupVariationReasonVM> PostSetupVariationReason(SetupVariationReasonVM childWoRels);
         Task<Inw_Recpt_DetailsVM> PostInw_Recpt_Details(Inw_Recpt_DetailsVM childWoRels);
         Task<Insp_Outcome_DetailsVM> PostNcLog(Insp_Outcome_DetailsVM childWoRels);
 
@@ -70,6 +71,8 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<IEnumerable<NC_Disp_Decs_Appl_ListVM>> GetAllNC_Disp_Decs_Appl_List();
         Task<IEnumerable<Inw_Recpt_HeaderVM>> GetAllInw_Recpt_Header();
         Task<IEnumerable<Inward_Condn_listVM>> GetAllInward_Condn_list();
+        Task<IEnumerable<SetupVariationReasonVM>> GetAllSetupVariationReason();
+        Task<IEnumerable<Cust_NC_DecisionVM>> GetAllCust_NC_Decision();
         Task<IEnumerable<Inw_Recpt_DetailsVM>> GetAllInw_Recpt_Details();
         Task<IEnumerable<Insp_Outcome_DetailsVM>> GetAllNcLog();
         Task<RcCaDocTypeVM> PostRcaCaDocList(RcCaDocTypeVM RcaCaDocTypeVM);

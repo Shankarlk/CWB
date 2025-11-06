@@ -308,9 +308,16 @@ function DecodeManufPartId() {
             var closeatag = document.getElementById("closeatag");
             if (decodepartid != 0) {
                 $("#headingN").text("Edit");
+                $("#createfep").hide();
+                $("#statusDiv").show();
+                $("#statusLbl").show();
                 closeatag.href = "/Masters/MasterDetails";
             } else {
                 $("#headingN").text("New");
+                $("#createfep").show();
+                $("#Status").val("Active");
+                $("#statusDiv").hide();
+                $("#statusLbl").hide();
                 closeatag.href = "/Masters/Index";
             }
         }
@@ -369,6 +376,32 @@ function displayFileName() {
     }
 }
 
+function loadQntyInLoc() {
+    var manufPartId = $("#PartId").val();
+    var ManufacturedPartType = $("#ManufacturedPartType").val();
+    api.getbulk("/workOrder/GetAllInv_Trans_Log").then((data) => {
+        if (ManufacturedPartType == "2") {
+            data = data.filter((workOrder) => workOrder.pO_No_Id === parseInt(24) || workOrder.pO_No_Id === parseInt(25));
+        } else {
+            data = data.filter((workOrder) => workOrder.output_Part_No === parseInt(manufPartId));
+        }
+        var tablebody = $("#StPopupGrid tbody");
+        $(tablebody).html("");//empty tbody
+        if (data.length === 0) {
+            $('#StPopupGrid').hide();
+        }
+        for (i = 0; i < data.length; i++) {
+            if (data[i].partNo && data[i].partNo.includes("/")) {
+                const parts = data[i].partNo.split("/");
+                data[i].partNo = parts[0].trim();       // "RM101"
+                data[i].partDesc = parts[1].trim();     // "RM101 Description"
+            }
+            $(tablebody).append(AppUtil.ProcessTemplateDataNew("StPopupGridRow", data[i], i));
+        }
+    }).catch((error) => {
+        console.log(error);
+    });
+}
 $(document).ready(function () {
     loadDocUploadList();
     $("#ManufacturedPartType").change(function () {
@@ -401,6 +434,120 @@ $(document).ready(function () {
             }
         }).catch((error) => {
         });
+    });
+    var currentStatus = $("#Status").val();
+
+    var $statusPopup = $("#statusPopup");
+    var $statusResasonopup = $("#statusResasonopup");
+    $statusPopup.empty(); // clear old options
+    $('#StPopupGrid').hide();
+    $statusPopup.append('<option value="">Select</option>');
+
+    if (currentStatus === "Not Released") {
+        // only Released should be shown
+        $statusPopup.append('<option value="Released">Released</option>');
+        $statusResasonopup.val("Regular Release");
+    }
+    else if (currentStatus === "Released") {
+        $statusPopup.append('<option value="Hold">Hold</option>');
+        $statusPopup.append('<option value="Obsolete">Obsolete</option>');
+    }
+    else if (currentStatus === "Hold") {
+        $statusPopup.append('<option value="Released">Released</option>');
+    }
+    else if (currentStatus === "Obsolete") {
+        // No further transitions, optionally disable
+        $statusPopup.append('<option disabled>No further status</option>');
+        $statusPopup.prop("disabled", true);
+    } else {
+        // fallback → show all
+        $statusPopup.append('<option>Not Released</option>');
+        $statusPopup.append('<option>Released</option>');
+        $statusPopup.append('<option>Hold</option>');
+        $statusPopup.append('<option>Obsolete</option>');
+    }
+    $("#statusPopup").change(function () {
+        var selval = $(this).val();
+        var manufPartId = $("#PartId").val();
+        var partsold = $("#checkboxFinalPart").prop("checked");
+        if (selval === "Released") {
+            $('#StPopupGrid').hide();
+            $("#BtnstatusSave").prop("disabled", false);
+            $("#statusResasonopup").val("Regular Release");
+        } else if (selval === "Hold" && partsold) {
+            $("#BtnstatusSave").prop("disabled", false);
+            $('#preloaderblurred').show();
+            $('#StPopupGrid').hide();
+            api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
+                const workOrdersWithStatus1 = data.filter((workOrder) => workOrder.partId === parseInt(manufPartId) && workOrder.active !== 2);
+                $('#preloaderblurred').hide();
+                if (workOrdersWithStatus1.length > 0) {
+                    $("#stReasonPop").text(workOrdersWithStatus1[0].woNumber + " for this Part is in Progress. This will be on Hold");
+                } else {
+                    $("#stReasonPop").text("Part Number Selection for Production Planning will be disabled");
+                }
+            }).catch((error) => {
+                $('#preloaderblurred').hide();
+            });
+        } else if (selval === "Hold") {
+            $('#StPopupGrid').hide();
+            $("#BtnstatusSave").prop("disabled", false);
+            $("#stReasonPop").text("Part Number Selection for Production Planning will be disabled");
+        } else if (selval === "Obsolete" && partsold) {
+            $('#StPopupGrid').show();
+            $('#preloaderblurred').show();
+            api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
+                const workOrdersWithStatus1 = data.filter((workOrder) => workOrder.partId === parseInt(manufPartId) && workOrder.active !== 2);
+                $('#preloaderblurred').hide();
+                if (workOrdersWithStatus1.length > 0) {
+                    $("#stReasonPop").text( workOrdersWithStatus1[0].woNumber + " for this Part is in Progress. Shortclose WO before making Obsolete");
+                    $("#BtnstatusSave").prop("disabled", true);
+                } else {
+                    $("#stReasonPop").text("");
+                    $("#BtnstatusSave").prop("disabled", false);
+                }
+                loadQntyInLoc();
+            }).catch((error) => {
+                $('#preloaderblurred').hide();
+            });
+        } else if (selval === "Obsolete" && !partsold) {
+            var parttype = "-";
+            $('#preloaderblurred').show();
+            $('#StPopupGrid').show();
+            api.getbulk("/Masters/CMPBomParents?partId=" + parseInt(manufPartId) + "&partType=" + parttype).then((data) => {
+                $('#preloadersim').hide();
+                if (data.length > 0) {
+                    var partNos = data.map(x => x.partNo).join(", ");
+                    var partNo = $("#PartNo").val();
+                    $("#stReasonPop").text(partNo + " has to be Deleted from BOM : " + partNos + ". before making Obsolete");
+                    //$("#stReasonPop").text("BOMs to be Deleted From: " + partNos + ". " + partNo+" has to be Deleted from BOM before making Obsolete");
+                    $("#BtnstatusSave").prop("disabled", true);
+                } else {
+                    $("#stReasonPop").text("");
+                    $("#BtnstatusSave").prop("disabled", false);
+                }
+                loadQntyInLoc();
+                $('#preloaderblurred').hide();
+            }).catch((error) => {
+                $('#preloaderblurred').hide();
+            });
+        }
+    });
+    $('#ChangeListPopup').on('hidden.bs.modal', function (event) {
+        document.getElementById('status-info').style.filter = 'none';
+    });
+    $('#ChangeListPopup').on('shown.bs.modal', function (event) {
+        var manufPartId = $("#PartId").val();
+        document.getElementById('status-info').style.filter = 'blur(5px)';
+        api.getbulk("/masters/PartStatusLog?partId=" + parseInt(manufPartId)).then((data) => {
+            var tablebody = $("#ChangeGrid tbody");
+            $(tablebody).html("");//empty tbody
+            for (i = 0; i < data.length; i++) {
+                $(tablebody).append(AppUtil.ProcessTemplateDataNew("ChangeGridRow", data[i], i));
+            }
+        }).catch((error) => {
+            console.log(error);
+        })
     });
     $('#RefDocReason').on('shown.bs.modal', function (event) {
         loadReasonDropDown();
@@ -563,6 +710,7 @@ $(document).ready(function () {
             var coName = $("#CompanyName").val();
             var partDesc = $("#PartDescription").val();
             var partNo = $("#PartNo").val();
+            var FinishedWeight = $("#FinishedWeight").val();
             
             $('#lblCompanyName').text(coName);
           //  $("#InputPartNo").val(partNo);
@@ -571,8 +719,13 @@ $(document).ready(function () {
             var manufPartId = $("#ManufacturedPartNoDetailId").val();
             $("#ManufPartId").val($("#ManufacturedPartNoDetailId").val());
             $("#lblPartNumber").text(partNo);
+            $("#lblInpPartNumber").text(partNo);
+            $("#lblFinPartNumber").text(partNo);
+            $("#FnshWeightSpan").text(FinishedWeight);
         //    $("#MFDescription").val(partDesc);
             $("#lblPartDescription").text(partDesc);
+            $("#lblInpPartDesc").text(partDesc);
+            $("#lblFinPartNumber").text(partDesc);
             var tablebody = $("#tbl-MakeFromRM tbody");
             tablebody.html("");
             makeFroms = new Array();
@@ -1031,6 +1184,16 @@ $(document).ready(function () {
         }
     });
 
+    $('#status-info').on('hidden.bs.modal', function (event) {
+        var newNamevalidate = document.getElementById('statusResasonopup');
+        newNamevalidate.style.border = '';
+        var statusPopup = document.getElementById('statusPopup');
+        statusPopup.style.border = '';
+        $("#statusPopup").val('');
+        $("#stReasonPop").text('');
+        $("#BtnstatusSave").prop("disabled", false);
+        $('#StPopupGrid').hide();
+    });
     $('#status-info').on('show.bs.modal', function (event) {
         var currentStatus = $("#Status").val();
         var currentrReason = $("#StatusChangeReason").val();
@@ -1040,6 +1203,14 @@ $(document).ready(function () {
     $("#BtnstatusSave").click(function (event) {
         var streason = $("#statusResasonopup").val();
         var statusPopup = $("#statusPopup").val();
+        if (statusPopup.length === 0) {
+            var newNamevalidate = document.getElementById('statusPopup');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('statusPopup');
+            newNamevalidate.style.border = '';
+        }
         $("#StatusChangeReason").val(streason);
         $("#Status").val(statusPopup);
         if (statusPopup == "Inactive") {
@@ -1053,8 +1224,83 @@ $(document).ready(function () {
                 $("#status-info").modal("hide");
             }
         } else {
-            $("#status-info").modal("hide");
+            var ManufacturedPartType = $("#ManufacturedPartType").val();
+            if (statusPopup == "Hold" && ManufacturedPartType == "2") {
+                var manufPartId = $("#PartId").val();
+
+                $('#preloaderblurred').show();
+                api.getbulk("/WorkOrder/AllWorkOrders").then((data) => {
+                    const woos = data.filter(
+                        (workOrder) => workOrder.partId === parseInt(manufPartId) && workOrder.active !== 2
+                    );
+                    woos.forEach((wo) => {
+                        wo.status = 8;
+                        wo.comment = streason;
+                        wo.buildToStock = 'N';
+                        wo.for_Ref = 'N';
+                        api.post("/workorder/WOpost", wo)
+                            .then((res) => console.log("✅ Posted parent WO:", wo.woId))
+                            .catch((error) => console.error("❌ Error posting parent WO:", wo.woId, error));
+                        $('#preloaderblurred').hide();
+                    });
+                });
+                $('#preloaderblurred').show();
+                api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
+                    const workOrdersWithStatus1 = data.filter(
+                        (workOrder) => workOrder.partId === parseInt(manufPartId) && workOrder.active !== 2
+                    );
+
+                    if (workOrdersWithStatus1.length > 0) {
+                        // 🔹 Post parent WOs one by one
+                        workOrdersWithStatus1.forEach((wo) => {
+                            wo.status = 8;
+                            wo.comment = streason;
+                            wo.buildToStock = 'N';
+                            wo.for_Ref = 'N';
+                            api.post("/workorder/WoWaitlingpost", wo)
+                                .then((res) => console.log("✅ Posted parent WO:", wo.woId))
+                                .catch((error) => console.error("❌ Error posting parent WO:", wo.woId, error));
+                        });
+
+                        // 🔹 Now handle child WOs
+                        var partId = $("#ManufacturedPartNoDetailId").val();
+                        api.get("/masters/boms?partId=" + partId)
+                            .then((rData) => {
+                                var rdataids = rData.map((item) => item.bomPartId);
+                                var childwo = data.filter(
+                                    (workOrder) =>
+                                        rdataids.includes(workOrder.partId) && workOrder.active !== 2
+                                );
+
+                                childwo.forEach((wo) => {
+                                    wo.status = 8;
+                                    wo.comment = streason;
+                                    wo.buildToStock = 'N';
+                                    wo.for_Ref = 'Y';
+                                    api.post("/workorder/WoWaitlingpost", wo)
+                                        .then((res) => console.log("✅ Posted child WO:", wo.woId))
+                                        .catch((error) => console.error("❌ Error posting child WO:", wo.woId, error));
+                                });
+                            })
+                            .catch((error) => {
+                                console.error("Error fetching BOMs:", error);
+                            });
+                        $('#preloaderblurred').hide();
+                    }
+                }).catch((error) => {
+                    console.error("Error fetching AllProductionWo:", error);
+                });
+
+            }
         }
+        var formData = AppUtil.GetFormData("ManufPartForm");
+        api.post("/Masters/ManufacturedPartNoDetail", formData).then((data) => {
+            alert("Status changed successfully!");
+            window.location.reload();
+            $("#status-info").modal("hide");
+        }).catch((error) => {
+            AppUtil.HandleError("ManufPartForm", error);
+        });
     });
     $('#ApprovPopup').on('show.bs.modal', function (event) {
         var relatedTarget = $(event.relatedTarget);
@@ -1317,6 +1563,8 @@ $(document).ready(function () {
 
     $("#AddDeptClose").click(function (event) {
         //window.location.reload();
+        $("#MFDescription").val('');
+        $("#MFPartType").val('');
         $("#inputpart").modal("hide");
     });
     $("#btnAddMPMakeFrom").click(function (event) {
@@ -1326,20 +1574,23 @@ $(document).ready(function () {
                 var keyval = AppUtil.GetFormDataNew("MPRawMaterial");
                 var formData = AppUtil.GetFormData("MPRawMaterial");
                 var tablebody = $("#tbl-MakeFromRM tbody");
-                var inputwieght = parseInt($("#InputWeight").val());
+                var inputwieght = parseFloat($("#InputWeight").val());
                 var FinishedWeight = $("#FinishedWeight").val();
                 var QuantityPerInput = $("#QuantityPerInput").val();
                 totalinputweight = FinishedWeight * QuantityPerInput;
-                if (totalinputweight <= inputwieght) {
-                    $("#Scrap-Error").text("Check Scrap Weight ...");
+                if (inputwieght <= totalinputweight) {
+                    $("#Scrap-Error").text("Check Scrap Weight");
                     return false;
                 }
                 api.post("/masters/mpmakefrom", formData).then((data) => {
                     //   //debugger;
                     data['deleted'] = false;
-                    makeFroms.push(data);
-                    MPRawMaterialUtil.UpdateFormIDs(data);
-                    $(tablebody).append(AppUtil.ProcessTemplateData("MakeFrom-template", data));
+                    var manufPartId = $("#ManufacturedPartNoDetailId").val();
+                    makeFroms = new Array();
+                    reloadMakeFroms(manufPartId);
+                    //makeFroms.push(data);
+                    //MPRawMaterialUtil.UpdateFormIDs(data);
+                    //$(tablebody).append(AppUtil.ProcessTemplateData("MakeFrom-template", data));
                     //MPRawMaterialUtil.UpdateMakeFromTableNew(keyval);
                     var coName = $("#CompanyName").val();
                     var partDesc = $("#MFDescription").val();
@@ -1739,7 +1990,7 @@ function downloadNLoadExistingParts() {
     eppd = "";
     existingpartdata = "";
 
-    api.get("/masters/ManufacturedPartNoDetailList?ManufPartType=" + ManufPartType + "&CompanyName=" + coId).then((data) => {
+    api.get("/masters/GetCombinedManufacturedParts?ManufPartType=" + ManufPartType + "&CompanyName=" + coId).then((data) => {
         existingpartdata = data;
         loadExistingParts(existingpartdata)//,"child");
         //console.log(existingpartdata);
@@ -1763,6 +2014,8 @@ function loadExistingParts(data) {
         var chld = "Child";
         if (data[i].manufacturedPartType == "2") //{ 
             chld = "Assembly";
+        if (data[i].masterPartType == "BOF") //{
+            chld = "BOF";
         //    if(soption == "child")
         //      continue;
         //}
@@ -1814,6 +2067,7 @@ function copyCustData() {
     $('#InputPartNo').val(data[selval].partNo);
     $('#MFDescription').val(data[selval].partNo+" / "+data[selval].partDescription);
     $('#MPPartId').val(data[selval].partId);
+    $('#MFPartType').val("Raw Material");
     if (data[selval].multiplePartsMadeFrom1InputRM == 'N') {
         $("#InputWeight").val(data[selval].rawMaterialWeight);
         $("#InputWeight").prop('readonly', true);
@@ -1831,6 +2085,7 @@ function copyOwnData() {
     $('#InputPartNo').val(data[selval].partNo);
     $('#MFDescription').val(data[selval].partDescription);
     $('#MPPartId').val(data[selval].partId);
+    $('#MFPartType').val("Raw Material");
     if (data[selval].multiplePartsMadeFrom1InputRM == 'N') {
         $("#InputWeight").val(data[selval].rawMaterialWeight);
         $("#InputWeight").prop('readonly', true);
@@ -1869,6 +2124,8 @@ function copyData() {
         $('#InputPartNo').val(data[selval].partNo);
         $('#MPPartId').val(data[selval].partId);
         $('#MFDescription').val(data[selval].partDescription);
+        $('#MFPartType').val(data[selval].masterPartType);
+       // $('#FnshWeightSpan').text(data[selval].finishedWeight ?? 0);
     }
     else {
         $('#BOMPartNo').val(data[selval].partNo);

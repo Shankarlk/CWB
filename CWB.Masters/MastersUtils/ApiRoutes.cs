@@ -59,6 +59,7 @@
             public const string PostItemMasterDocList = Base + "/postitemmasterdoclist";
             public const string GetAllItemMasterContent = Base + "/getallitemmastercontent";
             public const string DeleteItemMasterDoc = Base + "/deleteitemmasterdoc/{itemMasterDocListId}/{tenantId}";
+            public const string DeleteItemMasterPart = Base + "/deleteitemmasterpart/{itemMasterDocListId}/{tenantId}";
             public const string CheckPartNoInDocList = Base + "/checkdoctypeinitemdoc/{documentTypeId}/{contentId}/{tenantId}";
         }
 
@@ -184,6 +185,7 @@
             public const string PostBoughtOutFinishDetail = Base + "/boughtoutfinishdetail";
             // Added for Listing BoughtOutFinishDetails
             public const string GetBoughtOutFinishDetailList = Base + "/bofs/{tenantId}";
+            public const string GetBOfLikeManufPart = Base + "/getbofslikemp/{tenantId}";
         }
 
         public static class DocumentManagement

@@ -50,5 +50,8 @@ namespace CWB.App.Models.ItemMaster
         public string NoOfActive { get; set; } = string.Empty;
         public string NoOfInActive { get; set; } = string.Empty;
         public string DocStatus { get; set; } = string.Empty;
+        public string ListAssembly { get; set; } = string.Empty;
+        public char Inv_Trans { get; set; }
+        public char Linked_to_BOM { get; set; }
     }
 }

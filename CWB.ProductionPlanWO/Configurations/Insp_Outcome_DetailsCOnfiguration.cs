@@ -72,6 +72,48 @@ namespace CWB.ProductionPlanWO.Configurations
                 .Property(b => b.Opr_No_Id)
                 .HasColumnName("Opr_No_Id");
             builder
+                .Property(b => b.Cust_PO)
+                .HasColumnName("Cust_PO");
+            builder
+                .Property(b => b.So_Id)
+                .HasColumnName("So_Id");
+            builder
+                .Property(b => b.Wo_Id)
+                .HasColumnName("Wo_Id");
+            builder
+                .Property(b => b.NC_Entry_date)
+                .HasColumnName("NC_Entry_date");
+            builder
+                .Property(b => b.NC_Entry_User)
+                .HasColumnName("NC_Entry_User");
+            builder
+                .Property(b => b.Cust_NC_date)
+                .HasColumnName("Cust_NC_date");
+            builder
+                .Property(b => b.Customer_NC_Ref)
+                .HasColumnName("Customer_NC_Ref");
+            builder
+                .Property(b => b.NC_Cust_ID)
+                .HasColumnName("NC_Cust_ID");
+            builder
+                .Property(b => b.Other_Detail)
+                .HasColumnName("Other_Detail");
+            builder
+                .Property(b => b.Verified_Cutoff_Dt)
+                .HasColumnName("Verified_Cutoff_Dt");
+            builder
+                .Property(b => b.Verification_done_by)
+                .HasColumnName("Verification_done_by");
+            builder
+                .Property(b => b.Verified_Cutoff_Comment)
+                .HasColumnName("Verified_Cutoff_Comment");
+            builder
+                .Property(b => b.Cust_comment)
+                .HasColumnName("Cust_comment");
+            builder
+                .Property(b => b.Verified_by)
+                .HasColumnName("Verified_by");
+            builder
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();

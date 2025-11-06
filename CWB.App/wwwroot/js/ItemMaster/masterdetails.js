@@ -9,6 +9,18 @@ $(function () {
         $("#mptable tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#mptable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#master_partno").on("keyup", function () {
@@ -16,6 +28,18 @@ $(function () {
         $("#mptable tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#mptable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#master_description").on("keyup", function () {
@@ -23,6 +47,18 @@ $(function () {
         $("#mptable tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#mptable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#manfWithOutRM").click(function (event) {
         var data = "No";
@@ -30,6 +66,18 @@ $(function () {
         $("#mptable tbody tr").filter(function () {
             $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#mptable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#AssWithOuutBOM").click(function (event) {
         var data = "No";
@@ -37,6 +85,18 @@ $(function () {
         $("#mptable tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#mptable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#PurcSupplier").click(function (event) {
         var data = "No";
@@ -44,6 +104,18 @@ $(function () {
         $("#mptable tbody tr").filter(function () {
             $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#mptable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#MandatoryNotUp").click(function (event) {
         var data = "No";
@@ -51,6 +123,18 @@ $(function () {
         $("#mptable tbody tr").filter(function () {
             $(this).toggle($(this.children[7]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#mptable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#finalepartSold").click(function (event) {
         var data = "Y";
@@ -58,6 +142,18 @@ $(function () {
         $("#mptable tbody tr").filter(function () {
             $(this).toggle($(this.children[9]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#mptable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#Status").change(function () {
@@ -71,6 +167,18 @@ $(function () {
             $("#mptable tbody tr").filter(function () {
                 $(this).toggle($(this.children[10]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#mptable tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
 
         } else {
             $("#mptable tbody tr").show();
@@ -104,12 +212,36 @@ $(function () {
             $("#VMOneGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#VMOneGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else if (selectedValue == "2") {
             var data = "Inactive";
             var value = data.toLowerCase();
             $("#VMOneGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#VMOneGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#VMOneGrid tbody tr").show();
         }
@@ -122,12 +254,36 @@ $(function () {
             $("#P5Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P5Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else if (selectedValue == "2") {
             var data = "Inactive";
             var value = data.toLowerCase();
             $("#P5Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P5Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#P5Grid tbody tr").show();
         }
@@ -137,60 +293,180 @@ $(function () {
         $("#P5Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P5Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#P5Source").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#P5Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P5Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#P5MatlSpec").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#P5Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P5Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#P5BaseRm").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#P5Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P5Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#P5RmType").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#P5Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P5Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#P5PartNo").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#P5Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P5Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#P3RmType").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#P3Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P3Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#P3BaseRm").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#P3Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P3Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#P9PartSearch").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#P9Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P9Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#P9CompSearch").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#P9Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P9Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $('#P3StatusSr').change(function () {
         var selectedValue = $(this).val();
@@ -200,12 +476,36 @@ $(function () {
             $("#P3Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P3Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else if (selectedValue == "2") {
             var data = "Inactive";
             var value = data.toLowerCase();
             $("#P3Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P3Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#P3Grid tbody tr").show();
         }
@@ -218,12 +518,36 @@ $(function () {
             $("#P7Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P7Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else if (selectedValue == "2") {
             var data = "Inactive";
             var value = data.toLowerCase();
             $("#P7Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P7Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#P7Grid tbody tr").show();
         }
@@ -236,12 +560,36 @@ $(function () {
             $("#P9Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P9Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else if (selectedValue == "2") {
             var data = "Inactive";
             var value = data.toLowerCase();
             $("#P9Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P9Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#P9Grid tbody tr").show();
         }
@@ -254,18 +602,54 @@ $(function () {
             $("#P7Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P7Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else if (selectedValue == "2") {
             var data = "Catalog";
             var value = data.toLowerCase();
             $("#P7Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P7Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else if (selectedValue == "3") {
             var data = "Made to Print";
             var value = data.toLowerCase();
             $("#P7Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P7Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#P7Grid tbody tr").show();
         }
@@ -278,18 +662,54 @@ $(function () {
             $("#P9Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P9Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else if (selectedValue == "2") {
             var data = "Catalog";
             var value = data.toLowerCase();
             $("#P9Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P9Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else if (selectedValue == "3") {
             var data = "Made to Print";
             var value = data.toLowerCase();
             $("#P9Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P9Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#P9Grid tbody tr").show();
         }
@@ -302,6 +722,18 @@ $(function () {
             $("#P9Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P9Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#P9Grid tbody tr").show();
         }
@@ -315,6 +747,18 @@ $(function () {
             $("#P9Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P9Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#P9Grid tbody tr").show();
         }
@@ -361,6 +805,18 @@ $(function () {
             $("#P5Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[7]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#P5Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#P5Grid tbody tr").show();
         }
@@ -374,12 +830,36 @@ $(function () {
             $("#VMOneGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#VMOneGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else if (selectedValue == "2") {
             var data = "Assembly";
             var value = data.toLowerCase();
             $("#VMOneGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#VMOneGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#VMOneGrid tbody tr").show();    
         }
@@ -395,6 +875,18 @@ $(function () {
             $("#VMOneGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[8]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#VMOneGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#VMOneGrid tbody tr").show();
         }
@@ -407,6 +899,18 @@ $(function () {
             $("#VMOneGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[7]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#VMOneGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#VMOneGrid tbody tr").show();
         }
@@ -419,6 +923,18 @@ $(function () {
             $("#VMOneGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[9]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#VMOneGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#VMOneGrid tbody tr").show();
         }
@@ -431,6 +947,18 @@ $(function () {
             $("#VMOneGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#VMOneGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#VMOneGrid tbody tr").show();
         }
@@ -444,6 +972,18 @@ $(function () {
             $("#VMOneGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#VMOneGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#VMOneGrid tbody tr").show();
         }
@@ -456,6 +996,18 @@ $(function () {
             $("#VMOneGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#VMOneGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#VMOneGrid tbody tr").show();
         }
@@ -463,20 +1015,82 @@ $(function () {
     $('select[name="MasterPart"]').change(function () {
         var selectedValue = $(this).val();
         if (selectedValue == "1") {
-            partType = "ManufacturedPart";
-            loadMPDList();
+            var data = "ManufacturedPart";
+            var value = data.toLowerCase();
+            $("#mptable tbody tr").filter(function () {
+                $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
+            });
+            var $tableBody = $("#mptable tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else if (selectedValue == "2") {
             partType = "Assembly";
-            loadMPDList();
+            var data = "Assembly";
+            var value = data.toLowerCase();
+            $("#mptable tbody tr").filter(function () {
+                $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
+            });
+            var $tableBody = $("#mptable tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else if (selectedValue == "3") {
             partType = "BOF";
-            loadMPDList();
+            var data = "BOF";
+            var value = data.toLowerCase();
+            $("#mptable tbody tr").filter(function () {
+                $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
+            });
+            var $tableBody = $("#mptable tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else if (selectedValue == "4") {
             partType = "RawMaterial";
-            dataMPDList = "";
-            loadMPDList();
+            var data = "RM";
+            var value = data.toLowerCase();
+            $("#mptable tbody tr").filter(function () {
+                $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
+            });
+            var $tableBody = $("#mptable tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
-            loadEditParts();
+            $("#mptable tbody tr").show();
         }
     });
     $("#ClearSearchFields").on("click", function () {
@@ -658,13 +1272,124 @@ $(function () {
         $("#P4Comp").text(customername);
         LoadPartByRM(partid);
     });
+    $('#status-info').on('show.bs.modal', function (event) {
+        var newNamevalidate = document.getElementById('statusResasonopup');
+        newNamevalidate.style.border = '';
+        var statusPopup = document.getElementById('statusPopup');
+        statusPopup.style.border = '';
+        var relatedTarget = $(event.relatedTarget);
+        var partid = relatedTarget.data("partid");
+        var parttype = relatedTarget.data("parttype");
+        var status = relatedTarget.data("status");
+        var partno = relatedTarget.data("partno");
+        $("#CurrentStatus").val(status);
+        $("#PartIdSt").val(partid);
+        $("#PartTypeSt").val(parttype);
+    });
+    $("#BtnstatusSave").click(function (event) {
+        var streason = $("#statusResasonopup").val();
+        var statusPopup = $("#statusPopup").val();
+        var status = $("#CurrentStatus").val();
+        var partid=  $("#PartIdSt").val();
+        var parttype = $("#PartTypeSt").val();
+        if (statusPopup == status) {
+            var newNamevalidate = document.getElementById('statusPopup');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('statusPopup');
+            newNamevalidate.style.border = '';
+            //$("#status-info").modal("hide");
+        }
+        if (statusPopup == "Inactive") {
+            if (streason.length == 0) {
+                var newNamevalidate = document.getElementById('statusResasonopup');
+                newNamevalidate.style.border = '2px solid red';
+                return false;
+            } else {
+                var newNamevalidate = document.getElementById('statusResasonopup');
+                newNamevalidate.style.border = '';
+                //$("#status-info").modal("hide");
+            }
+            if (parttype === "ManufacturedPart") {
+
+                api.get("/Masters/CMPBomParents?partId=" + partid + "&partType=" + parttype)
+                    .then((data) => {
+                        if (data.length > 0) {
+                            var partNos = data.map(x => x.partNo).join(", ");
+                            var msg = "Part is linked to following BOM : " + partNos + "\nClick OK to proceed or Cancel to stop.";
+                            let confirmval = confirm(msg, "Yes", "No");
+                            if (confirmval) {
+                                api.get("/Masters/ChangeStatusOfPart?partId=" + partid + "&partType=" + parttype + "&status=" + statusPopup + "&statusReason=" + streason)
+                                    .then((response) => {
+                                        $("#status-info").modal("hide");
+                                        $("#statusResasonopup").val('');
+                                        location.reload();
+                                    })
+                                    .catch((error) => {
+
+                                    });
+                            }
+                        } else {
+                            api.get("/Masters/ChangeStatusOfPart?partId=" + partid + "&partType=" + parttype + "&status=" + statusPopup + "&statusReason=" + streason)
+                                .then((response) => {
+                                    $("#status-info").modal("hide");
+                                    $("#statusResasonopup").val('');
+                                    location.reload();
+                                })
+                                .catch((error) => {
+
+                                });
+                        }
+                    })
+                    .catch((error) => {
+
+                    });
+            } else {
+                api.get("/Masters/ChangeStatusOfPart?partId=" + partid + "&partType=" + parttype + "&status=" + statusPopup + "&statusReason=" + streason)
+                    .then((response) => {
+                        $("#status-info").modal("hide");
+                        $("#statusResasonopup").val('');
+                        location.reload();
+                    })
+                    .catch((error) => {
+
+                    });
+            }
+        } else {
+            api.get("/Masters/ChangeStatusOfPart?partId=" + partid + "&partType=" + parttype + "&status=" + statusPopup + "&statusReason=" + streason)
+                .then((response) => {
+                    $("#status-info").modal("hide");
+                    $("#statusResasonopup").val('');
+                    location.reload();
+                })
+                .catch((error) => {
+
+                });
+        }
+
+    });
 });
 function BofSupplier() {
     var tablebody = $("#P6Grid tbody");
     $(tablebody).html("");//empty tbody
 
     api.getbulk("/masters/BofByComp").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
+            if (data[i].company === "") {
+                continue;
+            }
             var tBody = ProcessTemplateDataNew("P6GridRow", data[i]);
             $(tablebody).append(tBody);
         }
@@ -676,6 +1401,17 @@ function RmSupplier() {
     $(tablebody).html("");//empty tbody
 
     api.getbulk("/masters/RmByComp").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             var tBody = ProcessTemplateDataNew("P2GridRow", data[i]);
             $(tablebody).append(tBody);
@@ -687,7 +1423,18 @@ function LoadPartByBof(partid) {
     var tablebody = $("#P8Grid tbody");
     $(tablebody).html("");//empty tbody
 
-    api.getbulk("/masters/GetAllAssemByBof?partid="+partid).then((data) => {
+    api.getbulk("/masters/GetAllAssemByBof?partid=" + partid).then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             var tBody = ProcessTemplateDataNew("P8GridRow", data[i]);
             $(tablebody).append(tBody);
@@ -699,7 +1446,18 @@ function LoadPartByRM(partid) {
     var tablebody = $("#Popup4Grid tbody");
     $(tablebody).html("");//empty tbody
 
-    api.getbulk("/masters/GetAllManufByRM?partid="+partid).then((data) => {
+    api.getbulk("/masters/GetAllManufByRM?partid=" + partid).then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             var tBody = ProcessTemplateDataNew("P4GridRow", data[i]);
             $(tablebody).append(tBody);
@@ -735,6 +1493,17 @@ function loadItemMasterDocList() {
     $(tablebody).html("");//empty tbody
 
     api.getbulk("/masters/GetAllItemMasterDocLists").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             var tBody = ProcessTemplateDataNew("MasterDocRow", data[i]);
             $(tablebody).append(tBody);
@@ -831,11 +1600,23 @@ function loadMPDList() {
         //console.log(partType);
         //console.log("================");
         let data = dataMPDList;
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
-            if (!(data[i]['masterPartType'] == partType))
-                continue;
+            //if (!(data[i]['masterPartType'] == partType))
+            //    continue;
             if (!(data[i]['status'] == strActive))
                 continue;
+            data[i].activeName = data[i]['status'] == "Active" ? "Make Inactive" : "Make Active";
             var tBody = ProcessTemplateDataNew("MasterDetaiTemplate", data[i]);
             $(tablebody).append(tBody);
             //console.log(tBody);
@@ -848,6 +1629,17 @@ function loadMPDList() {
                 data = data.filter(item => item.status != "Active");
                 dataMPDList = data;
             }
+            if (data.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
             for (i = 0; i < data.length; i++) {
                 /*for (var key in data[i]) {
                     console.log(key);
@@ -856,10 +1648,11 @@ function loadMPDList() {
                 }*/
                 //console.log(partType);
                 //console.log("================");
-                if (!(data[i]['masterPartType'] == partType))
-                    continue;
+                //if (!(data[i]['masterPartType'] == partType))
+                //    continue;
                 if (!(data[i]['status'] == strActive))
                     continue;
+                data[i].activeName = data[i]['status'] == "Active" ? "Make Inactive" : "Make Active";
                 var tBody = ProcessTemplateDataNew("MasterDetaiTemplate", data[i]);
                 $(tablebody).append(tBody);
                 //console.log(tBody);
@@ -872,25 +1665,69 @@ function loadMPDList() {
 function loadEditParts() {
     var tablebody = $("#mptable tbody");
     $(tablebody).html("");//empty tbody
+    $('#preloaderblurred').show();
     api.getbulk("/masters/masterparts").then((data) => {
         dataMPDList = data;
         if (typeof fromobselete !== 'undefined' && fromobselete === 'ObsoletePart') {
-            data = data.filter(item => item.status != "Active");
+            data = data.filter(item => item.status === "Obsolete");
             dataMPDList = data;
             partType = " ";
             $("#Status").val("Inactive");
             $("#Status").prop("disabled", true);
-        } 
+        }
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
            
             //if (!(data[i]['status'] == strActive))
             //    continue;
+            data[i].activeName = data[i]['status'] == "Active" ? "Make Inactive" : "Make Active";
+            let canDelete = (data[i].inv_Trans === "N" && data[i].linked_to_BOM ==="N");
+            let canalsoDelete = (data[i].inv_Trans === "N" && data[i].linked_to_BOM === "Y");
+            data[i].showMenu = (canDelete || canalsoDelete) ? "block" : "none";
             var tBody = ProcessTemplateDataNew("MasterDetaiTemplate", data[i]);
             $(tablebody).append(tBody);
             //console.log(tBody);
         }
+        $('#preloaderblurred').hide();
     }).catch((error) => {
+        $('#preloaderblurred').hide();
     });
+}
+function DeletePart(element) {
+    var relatedTarget = $(element);
+    var doclistid = relatedTarget.data("partid");
+    var listassem = relatedTarget.data("listassem");
+    if (doclistid != 0 && listassem != "-") {
+        var confrimval = confirm("This Part No is linked to following BOM: " + listassem + "  If deleted, the BOM will also get updated without the deleted Part Do you want to Delete.");
+        if (confrimval) {
+            api.get("/masters/DeleteItemMasterPart?itemMasterDocListId=" + doclistid).then((data) => {
+                //console.log(data);
+                loadEditParts();
+            }).catch((error) => {
+                //console.log(error);
+            });
+        }
+    } else if (doclistid != 0 && listassem === "-") {
+        var confrimval = confirm("Do you want to Delete This Part.");
+        if (confrimval) {
+            api.get("/masters/DeleteItemMasterPart?itemMasterDocListId=" + doclistid).then((data) => {
+                //console.log(data);
+                loadEditParts();
+            }).catch((error) => {
+                //console.log(error);
+            });
+        }
+    } else { }
 }
 
 function loadManufAssem() {
@@ -952,6 +1789,17 @@ function loadManufAssemComp(company) {
     var tablebody = $("#VMOneGrid tbody");
     $(tablebody).html("");//empty tbody
     api.getbulk("/masters/ManufAssemlist?company=" + company).then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("VMGridRow", data[i]));
         }
@@ -962,7 +1810,20 @@ function BofList() {
     var tablebody = $("#P9Grid tbody");
     $(tablebody).html("");//empty tbody
     api.getbulk("/masters/AllBofList").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
+            data[i].reorderLevel = data[i].reorderLevel === null ? " " : data[i].reorderLevel;
+            data[i].reorderQnty = data[i].reorderQnty === null ? " " : data[i].reorderQnty;
             $(tablebody).append(AppUtil.ProcessTemplateData("P9GridRow", data[i]));
         }
     }).catch((error) => {
@@ -972,6 +1833,17 @@ function P7BofList(company) {
     var tablebody = $("#P7Grid tbody");
     $(tablebody).html("");//empty tbody
     api.getbulk("/masters/BofSumByComp?company=" + company).then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         data = data.filter(item => item.company === company);
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("P7GridRow", data[i]));
@@ -983,6 +1855,17 @@ function P2RMList(company) {
     var tablebody = $("#P3Grid tbody");
     $(tablebody).html("");//empty tbody
     api.getbulk("/masters/RmSupplierList?company=" + company).then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         data = data.filter(item => item.company === company);
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("P3GridRow", data[i]));
@@ -994,6 +1877,17 @@ function RMList() {
     var tablebody = $("#P5Grid tbody");
     $(tablebody).html("");//empty tbody
     api.getbulk("/masters/RMList").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("P5GridRow", data[i]));
         }

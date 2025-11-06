@@ -13,7 +13,7 @@ namespace CWB.ProductionPlanWO.ViewModels
         public long PoNoId { get; set; }
         public long PartNoId { get; set; }
         public long InventoryMasterId { get; set; }
-        public long TotalSoQnty { get; set; }
+        public long QntyToDispatch { get; set; }
         public long SuggestedQnty { get; set; }
         public long FinalDispQnty { get; set; }
         public long TenantId { get; set; }

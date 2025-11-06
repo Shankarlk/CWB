@@ -5,6 +5,17 @@ function loadPO() {
         data = data.filter(item => item.status >= 3);
         var tablebody = $("#inspGrid tbody");
         $(tablebody).html("");
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("POGrid1Row", data[i]));
         }
@@ -87,6 +98,17 @@ function loadInwardDetails(inwheaderid) {
         data = data.filter(item => item.inw_Recpt_Header_Id === parseInt(inwheaderid));
         var tablebody = $("#P6InwardGrid tbody");
         $(tablebody).html("");
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("P4inwardGridRow", data[i]));
             calculateTotals();
@@ -101,6 +123,17 @@ function loadNclog(inwheaderid) {
         data = data.filter(item => item.inw_Recpt_Header_Id === parseInt(inwheaderid));
         var tablebody = $("#P6NcGrid tbody");
         $(tablebody).html("");
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         let totalQuantity = 0;
         for (i = 0; i < data.length; i++) {
             totalQuantity += data[i].nC_Qnty;
@@ -136,12 +169,36 @@ $(document).ready(function () {
         $("#inspGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#inspGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPartNo").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#inspGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#inspGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchSupp").on("change", function () {
         var value = $(this).val().toLowerCase();
@@ -150,8 +207,22 @@ $(document).ready(function () {
             $("#inspGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(selectedText) > -1)
             });
+            var $tableBody = $("#inspGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                    <tr class="norecordsfound">
+                        <td colspan="20" style="text-align: center; color: #888;">
+                            <strong>No Records Found</strong>
+                        </td>
+                    </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#inspGrid tbody tr").show();
+            var $tableBody = $("#inspGrid tbody");
+            $tableBody.find(".norecordsfound").remove();
         }
     });
     $("#searchPartType").on("change", function () {
@@ -161,7 +232,21 @@ $(document).ready(function () {
             $("#inspGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(selectedText) > -1)
             });
+        var $tableBody = $("#inspGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
         } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
+        } else {
+            var $tableBody = $("#inspGrid tbody");
+            $tableBody.find(".norecordsfound").remove();
             $("#inspGrid tbody tr").show();
         }
     });

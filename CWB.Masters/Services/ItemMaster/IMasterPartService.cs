@@ -11,7 +11,7 @@ namespace CWB.Masters.Services.ItemMaster
     {
         IEnumerable<ItemMasterPartVM> GetMasterPartView();
         int CheckPartNo(string partNo);
-        IEnumerable<PartStatusVM> GetStatuses();
+        Task<IEnumerable<PartsStatusVM>> GetStatuses();
         
         IEnumerable<MasterPartVM> GetAllMasterParts();
         IEnumerable<MasterPartVM> GetAllMasterPartsWithIds(List<int> ids);
@@ -29,6 +29,7 @@ namespace CWB.Masters.Services.ItemMaster
 
         Task<IEnumerable<ItemMasterContentVM>> GetAllItemMasterContent();
         Task<bool> DeleteItemMasterDoc(long itemMasterDocListId, long tenantId);
+        Task<bool> DeleteItemMasterPart(long itemMasterDocListId, long tenantId);
         Task<bool> CheckDocumentTypeInItemMaster(long documentTypeId,long contentId, long tenantId);
 
     }

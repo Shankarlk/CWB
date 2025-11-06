@@ -416,6 +416,22 @@ namespace CWB.ProductionPlanWO.Controllers
             var result = await _woSerivce.PostInward_Condn_list(workOrdersVM);
             return Ok(result);
         }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostSetupVariationReason)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(WoSubConSupplierVM))]
+        public async Task<IActionResult> PostSetupVariationReason([FromBody] SetupVariationReasonVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostSetupVariationReason(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostCust_NC_Decision)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(WoSubConSupplierVM))]
+        public async Task<IActionResult> PostCust_NC_Decision([FromBody] Cust_NC_DecisionVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostCust_NC_Decision(workOrdersVM);
+            return Ok(result);
+        }
 
         [HttpGet]
         [Route(ApiRoutes.WO.GetAllInward_Condn_list)]
@@ -424,6 +440,24 @@ namespace CWB.ProductionPlanWO.Controllers
         public async Task<IActionResult> GetAllInward_Condn_list()
         {
             var allwo = await _woSerivce.GetAllInward_Condn_list();
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllSetupVariationReason)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<SetupVariationReasonVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllSetupVariationReason()
+        {
+            var allwo = await _woSerivce.GetAllSetupVariationReason();
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllCust_NC_Decision)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Cust_NC_DecisionVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllCust_NC_Decision()
+        {
+            var allwo = await _woSerivce.GetAllCust_NC_Decision();
             return Ok(allwo);
         }
         [HttpGet]

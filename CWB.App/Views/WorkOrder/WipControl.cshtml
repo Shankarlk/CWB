@@ -108,6 +108,14 @@
                         <div class="col-md-3 dott-bord-r">
                             <div class="card p-1">
                                 <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="text-center btn btn-outline-info w-100 mb-2 mt-2">
+                                            <a data-bs-toggle="modal"
+                                               data-bs-target="#popup14">
+                                                <h6>Customer Non Conformance Data Entry</h6>
+                                            </a>
+                                        </div>
+                                    </div>
                                     @if (permissionResult != null)
                                     {
                                         @if (permissionResult.Any(r => r.Menu4 == "Inward Inspection"))
@@ -197,6 +205,7 @@
                                         <div class="table-responsive">
                                             <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
                                                 <tbody>
+                                                    <tr><td style="border: 1px solid black;">Customer</td><td style="border: 1px solid black;">0</td></tr>
                                                     <tr><td style="border: 1px solid black;">Inhouse</td><td style="border: 1px solid black;">0</td></tr>
                                                     <tr><td style="border: 1px solid black;">Sub Con</td><td style="border: 1px solid black;">0</td></tr>
                                                     <tr><td style="border: 1px solid black;">Raw Matl</td><td style="border: 1px solid black;">0</td></tr>
@@ -505,6 +514,170 @@
     </div>
     <!-- end col -->
 </div>
+
+<div class="modal fade" id="popup14" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Customer Non Conformance Data Entry
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="#" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            @*<label class="col-md-6 form-label mb-2">
+                                NC Tracking No
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" class="form-control form-control-sm w-50" id="NcTrackNo"
+                                       readonly>
+                            </div>*@
+                            <label class="col-md-6 form-label mb-2">
+                                NC Data Entry Date
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" class="form-control form-control-sm w-50" id="NcDateEntry"
+                                       readonly>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                NC Data Entred by
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" class="form-control form-control-sm w-50" id="NcDataEntredBy"
+                                       readonly>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Customer *
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+
+                                <select class="form-select form-select-sm" aria-label="form-select-sm" id="CustomerSel"
+                                        title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="">----</option>
+                                </select>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Purchase Order Ref
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+
+                                <select class="form-select form-select-sm" aria-label="form-select-sm" id="NcPo"
+                                        title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="">--Select--</option>
+                                </select>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Part No / Desc *
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <div class="input-group">
+                                    <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                           data-tippy-placement="top" placeholder="Enter Part No" id="popup7PartNoField" readonly>
+                                    <input type="text" id="Popup7partId" hidden="">
+                                    <button type="button" id="btnExistBtn" class="btn btn-sm btn-outline-dark">
+                                        <i class="ri-search-2-line serch-part-btn1"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Customer NC Ref
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" placeholder="Customer NC Ref" class="form-control form-control-sm " id="CustNcRef">
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Decision taken by Customer about NC *
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+
+                                <select class="form-select form-select-sm" aria-label="form-select-sm" id="DecisionTaken"
+                                        title="" data-plugin="tippy" data-tippy-placement="top">
+                                    <option value="">--Select--</option>
+                                </select>
+                            </div>
+                            <label class="col-md-6 form-label mb-2" id="OthersLbl">
+                                "Other" Details *
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="" id="OtherDetailsDiv">
+                                <input type="text" placeholder="Other Details" class="form-control form-control-sm" id="OtherDetails">
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Ballon No
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" placeholder="Balloon No" class="form-control form-control-sm w-25" id="BallonNo">
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                NC Balloon / Feature Description *
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" placeholder="Balloon Feature Description" class="form-control form-control-sm" id="NcBallonFeature">
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Non Conformance (NC) Description *
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" placeholder="NC Description " class="form-control form-control-sm" id="NcDEscription">
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                NC Quantity *
+                            </label>
+                            <div class="col-md-6 mb-2 d-flex" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <input type="text" class="form-control form-control-sm w-25" id="NcQunatity">
+                                <span id="CustNcUnit" class="m-1"></span>
+                            </div>
+                            <label class="col-md-6 form-label mb-2">
+                                Any other Details from Customer
+                            </label>
+                            <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                                 data-tippy=""
+                                 data-original-title="">
+                                <textarea class="form-control form-control-sm" type="text" title=""
+                                          data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                          id="AnyOtherDetails" style="height: 55px;"> </textarea>
+                            </div>
+                            <div class="col text-end">
+                                <button class="btn btn-sm btn-primary" id="SaveCustNc">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<partial name="_BA_ExistingPart" />
 @section Scripts {
     <script src="~/js/WipControl.js"></script>
 }

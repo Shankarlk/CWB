@@ -42,6 +42,9 @@ namespace CWB.App.Models.BusinessProcesses
         public string? PartDesc { get; set; } = string.Empty;
         public string? StrStatus { get; set; } = string.Empty;
         public int RequiredQuantity { get; set; }
+        public int SuggestedDispQnty { get; set; }
+        public int FinalDispQnty { get; set; }
+        public long QntyOnHand { get; set; }
 
         public DateTime? RequiredByDate
         {
@@ -70,6 +73,10 @@ namespace CWB.App.Models.BusinessProcesses
         public bool Done { get; set; }
 
         public long TenantId { get; set; }
+        public long DispatchId { get; set; }
+        public string InvoiceNo { get; set; } = string.Empty;
+        public string InvoiceDate { get; set; }= string.Empty;
+        public string DispatchDetail { get; set; }= string.Empty;
 
     }
 }

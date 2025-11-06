@@ -1,12 +1,25 @@
 ﻿var suppilerselecet = {};
 var subcontotal = 0;
 function loadPO() {
+    $("#preloaderblurred").show();
     api.getbulk("/WorkOrder/GetAllPodetails").then((data) => {
         //data = data.filter(item => item.active !== 2);
         var tablebody = $("#PoGrid1 tbody");
         var tablebody2 = $("#PoGrid2 tbody");
         $(tablebody).html("");//empty tbody
         $(tablebody2).html("");//empty tbody
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+            $(tablebody2).append(noRecordsRow);
+        }
 
 
         //console.log(data);
@@ -32,7 +45,9 @@ function loadPO() {
         const workOrdersWithStatus10 = data.filter((workOrder) => workOrder.partType === "BOF" && workOrder.status == 2);
         const totalcounto = workOrdersWithStatus10.length;
         $('#noOfOpenBof').text(totalcounto);
+        $("#preloaderblurred").hide();
     }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
 }
 
@@ -46,30 +61,90 @@ $(document).ready(function () {
         $("#PoGrid1 tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#PoGrid1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPoSupplier2").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#PoGrid2 tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#PoGrid2 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPoStatus2").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#PoGrid2 tbody tr").filter(function () {
             $(this).toggle($(this.children[7]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#PoGrid2 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPoPartNo2").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#PoGrid2 tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#PoGrid2 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPoPartDesc2").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#PoGrid2 tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#PoGrid2 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPoSuppType").on("change", function () {
         var value = $(this).val().toLowerCase();
@@ -78,14 +153,50 @@ $(document).ready(function () {
             $("#PoGrid1 tbody tr").filter(function () {
                 $(this).toggle($(this.children[8]).text().toLowerCase().indexOf(d) > -1)
             });
+            var $tableBody = $("#PoGrid1 tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
         else if (value == "2") {
             var d = "stock";
             $("#PoGrid1 tbody tr").filter(function () {
                 $(this).toggle($(this.children[8]).text().toLowerCase().indexOf(d) > -1)
             });
+            var $tableBody = $("#PoGrid1 tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#PoGrid1 tbody tr").show();
+            var $tableBody = $("#PoGrid1 tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
     $("#searchPoType").on("change", function () {
@@ -95,14 +206,50 @@ $(document).ready(function () {
             $("#PoGrid1 tbody tr").filter(function () {
                 $(this).toggle($(this.children[8]).text().toLowerCase().indexOf(d) > -1)
             });
+            var $tableBody = $("#PoGrid1 tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
         else if (value == "2") {
             var d = "stock";
             $("#PoGrid1 tbody tr").filter(function () {
                 $(this).toggle($(this.children[8]).text().toLowerCase().indexOf(d) > -1)
             });
+            var $tableBody = $("#PoGrid1 tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#PoGrid1 tbody tr").show();
+            var $tableBody = $("#PoGrid1 tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
 
@@ -119,7 +266,18 @@ $(document).ready(function () {
         api.getbulk("/WorkOrder/GetAllPodetails").then((data) => {
             data = data.filter(item => item.poDetailsId === podetails);
             var tablebody = $("#PoGridP13 tbody");
-            $(tablebody).html(""); 
+            $(tablebody).html("");
+            if (data.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
             for (let i = 0; i < data.length; i++) {
                 data[i].poDateStr = data[i].dateStr;
                 data[i].viewDeliveryClass = data[i].poQntyRecd > 0 ? "" : "disabled-link";
@@ -480,18 +638,54 @@ $(document).ready(function () {
         $("#WoLogGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#WoLogGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchEventLog").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#WoLogGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#WoLogGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchLogComment").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#WoLogGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[7]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#WoLogGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $('#view-socomment').on('shown.bs.modal', function (event) {

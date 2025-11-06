@@ -8,7 +8,7 @@ using CWB.ProductionPlanWO.Infrastructure;
 
 namespace CWB.ProductionPlanWO.Repositories
 {
-    public class DispatchQntyRepository : Repository<DispatchQnty>, IDispatchQntyRepository
+    public class DispatchQntyRepository : Repository<TempDispatchQnty>, IDispatchQntyRepository
     {
         public DispatchQntyRepository(WODbContext context)
        : base(context)

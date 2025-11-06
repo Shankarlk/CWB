@@ -18,6 +18,8 @@ namespace CWB.Masters.ViewModels.ItemMaster
         public long MaterialSpecId { get; set; }
         public string ReorderLevel { get; set; }
         public string ReorderQnty { get; set; }
+        public char Inv_Trans { get; set; }
+        public char Linked_to_BOM { get; set; }
         public int TimetoDeliverReorderQnty { get; set; }
         //DbPart - End
 

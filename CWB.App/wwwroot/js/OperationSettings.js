@@ -919,6 +919,64 @@ $(document).ready(function () {
     $('#McPopup12').on('show.bs.modal', function (event) {
         loadMcNotAvlReasonList();
     });
+    $('#SetApp15').on('show.bs.modal', function (event) {
+        loadSetApp();
+    });
+    $('#SetApp16').on('hidden.bs.modal', function (event) {
+        document.getElementById('SetApp15').style.filter = 'none';
+        var newNamevalidate = document.getElementById('St16Reason');
+        newNamevalidate.style.border = '';
+        $("#Text-Error-streason").text("");
+    });
+    $('#SetApp16').on('show.bs.modal', function (event) {
+        document.getElementById('SetApp15').style.filter = 'blur(5px)';
+        var relatedTarget = $(event.relatedTarget);
+        var id = relatedTarget.data("setupid");
+        var reason = relatedTarget.data("reason");
+        var setuptype = relatedTarget.data("setuptype");
+        $("#SpanSetApp16").text(setuptype);
+        $("#St16Reason").val(reason);
+        $("#St16Type").val(setuptype);
+        $("#St16ReasonId").val(id);
+
+    });
+    $("#SaveStPopup16").click(function (event) {
+        var St16Reason = $("#St16Reason").val();
+        var setupType = $("#St16Type").val();
+        var St16ReasonId = parseInt($("#St16ReasonId").val());
+        if (isNaN(St16ReasonId)) {
+            St16ReasonId = 0;
+        }
+        if (St16Reason.length == 0) {
+            var newNamevalidate = document.getElementById('St16Reason');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('St16Reason');
+            newNamevalidate.style.border = '';
+        }
+        var rowData = {
+            setupVariationReasonId: St16ReasonId,
+            setupType: setupType,
+            reason: St16Reason
+        };
+        api.getbulk("/workOrder/GetAllSetupVariationReason").then((getdata) => {
+            getdata = getdata.filter(item => item.reason === St16Reason && item.setupType === setupType);
+            if (getdata.length === 0) {
+                api.post("/WorkOrder/PostSetupVariationReason", rowData).then((data) => {
+                    $("#Text-Error-streason").text("");
+                    loadSetApp();
+                    $("#SetApp16").modal("hide");
+                }).catch((error) => {
+
+                });
+
+            } else {
+                $("#Text-Error-streason").text("This Reason is already there for the " + setupType +".").css('color', 'red');
+            }
+        }).catch((error) => {
+        });
+    });
     $('#McPopup13').on('show.bs.modal', function (event) {
         document.getElementById('McPopup12').style.filter = 'blur(5px)';
         var relatedTarget = $(event.relatedTarget);
@@ -1499,6 +1557,20 @@ function loadMcNotAvlReasonList() {
         for (i = 0; i < data.length; i++) {
             //var tBody = ProcessTemplateData("rcacaDocRow", data[i]);
             $(tablebody).append(AppUtil.ProcessTemplateData("McPopup12GridRow", data[i]));
+            //$(tablebody).append(tBody);
+            //console.log(tBody);
+        }
+    }).catch((error) => {
+    });
+}
+function loadSetApp() {
+    var tablebody = $("#SetApp15Grid tbody");
+    $(tablebody).html("");//empty tbody
+
+    api.getbulk("/workOrder/GetAllSetupVariationReason").then((data) => {
+        for (i = 0; i < data.length; i++) {
+            //var tBody = ProcessTemplateData("rcacaDocRow", data[i]);
+            $(tablebody).append(AppUtil.ProcessTemplateData("SetpApp15GridRow", data[i]));
             //$(tablebody).append(tBody);
             //console.log(tBody);
         }

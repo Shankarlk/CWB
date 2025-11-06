@@ -26,6 +26,7 @@ namespace CWB.App.Services.Masters
 
 
         Task<IEnumerable<ManufacturedPartNoDetailVM>> GetManufacturedPartNoDetailList(long ManufPartType, string companyName);
+        Task<IEnumerable<ManufacturedPartNoDetailVM>> GetBOfLikeManufPart();
         Task<IEnumerable<ManufacturedPartNoDetailVM>> GetAllManufacturedPartNoDetailList();
         Task<IEnumerable<ItemMasterDocListVM>> Getallitemmasterdoclist();
         //Task<String> HelloWorld();
@@ -72,6 +73,7 @@ namespace CWB.App.Services.Masters
         Task<IEnumerable<ItemMasterContentVM>> ItemMasterContents();
         Task<ItemMasterDocListVM> PostItemMasteDocList(ItemMasterDocListVM masterDocListVM);
         Task<bool> DeleteItemMasterDocList(long itemMasterDocListId);
+        Task<bool> DeleteItemMasterPart(long itemMasterDocListId);
         Task<MasterPartVM> ItemMasterPartById(int partid);
 
         Task<IEnumerable<SelectPartVM>> SelectParts();

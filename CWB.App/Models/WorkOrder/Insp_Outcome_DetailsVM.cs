@@ -36,6 +36,20 @@ namespace CWB.App.Models.WorkOrder
         public long Routing_Id { get; set; }
         public long Opr_No_Id { get; set; }
         public DateTime NcDate { get; set; }
+        public long Cust_PO { get; set; }
+        public long Wo_Id { get; set; }
+        public long So_Id { get; set; }
+        public DateTime NC_Entry_date { get; set; }
+        public long NC_Entry_User { get; set; }
+        public long Cust_NC_date { get; set; }
+        public string Customer_NC_Ref { get; set; }
+        public long NC_Cust_ID { get; set; }
+        public long Other_Detail { get; set; }
+        public long Verified_Cutoff_Dt { get; set; }
+        public long Verification_done_by { get; set; }
+        public long Verified_Cutoff_Comment { get; set; }
+        public long Cust_comment { get; set; }
+        public long Verified_by { get; set; }
         public long TenantId { get; set; }
         public long NoOfDays { get; set; }
     }

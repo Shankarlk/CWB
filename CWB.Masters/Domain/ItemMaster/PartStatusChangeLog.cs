@@ -5,7 +5,8 @@ namespace CWB.Masters.Domain.ItemMaster
 {
     public class PartStatusChangeLog : BaseEntity
     {
-        public PartStatus Status { get; set; }
+        public string Status { get; set; }
+        public string FromChangedStatus { get; set; }
         public string ChangeReason { get; set; }
         public long MasterPartId { get; set; }
         public MasterPart MasterPart { get; set; }

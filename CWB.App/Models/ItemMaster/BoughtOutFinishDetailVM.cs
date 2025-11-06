@@ -23,12 +23,12 @@ namespace CWB.App.Models.ItemMaster
         [Display(Name = "Part No")]
         [Required(ErrorMessage = "Please enter {0}.")]
         [StringLength(255, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
-        [Remote(
-           "CheckPartNo",
-           "Masters",
-           ErrorMessage = "{0} already exists. Please enter a different {0}.",
-           HttpMethod = "GET"
-       )]
+       // [Remote(
+       //    "CheckPartNo",
+       //    "Masters",
+       //    ErrorMessage = "{0} already exists. Please enter a different {0}.",
+       //    HttpMethod = "GET"
+       //)]
         public string PartNo { get; set; }
         public string? PartDescription { get; set; }
         public long UOMId { get; set; }
@@ -42,6 +42,8 @@ namespace CWB.App.Models.ItemMaster
 
         public long? TenantId { get; set; }
 
+        public char Inv_Trans { get; set; }
+        public char Linked_to_BOM { get; set; }
 
     }
 }

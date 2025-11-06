@@ -219,6 +219,81 @@ namespace CWB.App.Controllers
             await RawMaterialViewBags(manuf);
             return View(manuf);
         }
+        [HttpGet]
+        public async Task<IActionResult> ChangeStatusOfPart(long partId, string partType, string status, string statusReason)
+        {
+            if (partType.Equals("BOF"))
+            {
+                BoughtOutFinishDetailVM manuf = await _mastersService.GetBOFPart((int)partId);
+                manuf.Status = status;
+                manuf.StatusChangeReason = statusReason;
+                var result = await _mastersService.BoughtOutFinishDetail(manuf);
+                return Ok(result);
+            }
+            else if (partType.Equals("RawMaterial"))
+            {
+                RawMaterialDetailVM manuf = await _mastersService.GetRMPart((int)partId);
+                manuf.Status = status;
+                manuf.StatusChangeReason = statusReason;
+                var result = await _mastersService.RawMaterialDetail(manuf);
+                return Ok(result);
+            }
+            else
+            {
+                ManufacturedPartNoDetailVM manuf = await _mastersService.GetManufPart((int)partId);
+                manuf.Status = status;
+                manuf.StatusChangeReason = statusReason;
+                var result = await _mastersService.ManufacturedPartNoDetail(manuf);
+                return Ok(result);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> CMPBomParents(int partid, string parttype)
+        {
+            var mfpdList = await _mastersService.ItemMasterParts();
+            var result = new List<ItemMasterPartVM>();
+
+            // First, get all manufactured parts
+            var manufacturedParts = mfpdList
+                .Where(item => item.MasterPartType == "ManufacturedPart" || item.MasterPartType == "Assembly")
+                .ToList();
+
+            var manufTasks = manufacturedParts.Select(async item =>
+            {
+                var manuf = await _mastersService.GetManufPart((int)item.PartId);
+
+                // Get both MPMakeFromList and BOM list
+                //var mkList = await _mastersService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
+                var bomList = await _mastersService.BOMS(manuf.ManufacturedPartNoDetailId.ToString());
+
+                // Check if our given partid exists in either list
+                //var matchFromMK = mkList.FirstOrDefault(m => m.MPPartId == partid);
+                var matchFromBOM = bomList.FirstOrDefault(b => b.BOMPartId == partid);
+
+                if (  matchFromBOM != null) //matchFromMK != null||
+                {
+                    // Prefered logic:
+                    //if (matchFromMK != null)
+                    //{
+                    //    item.Preferred = matchFromMK.PreferedRawMaterial ? "Yes" : "No";
+                    //}
+                    //else
+                    //{
+                    //    // For BOM, preferred = "Yes" if it's the only BOM item
+                    item.Preferred = bomList.Count() == 1 ? "Yes" : "No";
+                    //}
+
+                    return item;
+                }
+
+                return null; // no match found
+            });
+
+            var processedItems = await Task.WhenAll(manufTasks);
+            result.AddRange(processedItems.Where(item => item != null));
+
+            return Ok(result);
+        }
 
 
 
@@ -308,6 +383,16 @@ namespace CWB.App.Controllers
             var mfpdList = await _mastersService.GetManufacturedPartNoDetailList(ManufPartType, companyName);
             return Json(mfpdList);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetCombinedManufacturedParts(long ManufPartType, string companyName)
+        {
+            var list1 = await _mastersService.GetManufacturedPartNoDetailList(ManufPartType, companyName);
+            var list2 = await _mastersService.GetBOfLikeManufPart();
+
+            var combined = list1.Concat(list2).ToList();  // merge both lists
+
+            return Json(combined);
+        }
 
         /*[HttpGet]
         public async Task<IActionResult> HelloWorld(long Id)
@@ -370,6 +455,12 @@ namespace CWB.App.Controllers
         {
             if (!ModelState.IsValid)
             {
+                return BadRequest(ModelState);
+            }
+            var chckpart = await _mastersService.CheckPartNo(model.PartNo);
+            if (chckpart && model.PartId == 0)
+            {
+                ModelState.AddModelError("PartNo", "Part No already exists. Please enter a different Part No.");
                 return BadRequest(ModelState);
             }
             var result = await _mastersService.ManufacturedPartNoDetail(model);
@@ -461,6 +552,12 @@ namespace CWB.App.Controllers
             {
                 return BadRequest(ModelState);
             }
+            var chckpart = await _mastersService.CheckPartNo(model.PartNo);
+            if (chckpart && model.PartId == 0)
+            {
+                ModelState.AddModelError("PartNo", "Part No already exists. Please enter a different Part No.");
+                return BadRequest(ModelState);
+            }
             var result = await _mastersService.RawMaterialDetail(model);
             return Ok(result);
         }
@@ -503,6 +600,23 @@ namespace CWB.App.Controllers
         {
             var mfpdList = await _mastersService.PartPurchasesFor(partId);
             return Json(mfpdList);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> PartStatusLog(int partId)
+        {
+            ClaimsPrincipal userClaim = HttpContext.User;
+            string fullName = AppUtil.GetFullName(userClaim);
+            var mfpdList = await _mastersService.GetPartStatus();
+            var findpart = mfpdList.Where(e=>e.MasterPartId == partId).ToList();
+            foreach (var item in findpart)
+            {
+                item.UserName = fullName;
+                item.StatusChangeDate = item.UpdateDate.ToString("dd-MM-yyyy") ?? string.Empty;
+                item.FromChangedStatus = (item.FromChangedStatus == null) ? string.Empty : item.FromChangedStatus;
+                item.ChangeReason = (item.ChangeReason == null) ? string.Empty : item.ChangeReason;
+            }
+            return Json(findpart);
         }
 
         //partpurchasesbypartNo
@@ -554,6 +668,12 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> DeleteItemMasterDocList(long itemMasterDocListId)
         {
             var result = await _mastersService.DeleteItemMasterDocList(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteItemMasterPart(long itemMasterDocListId)
+        {
+            var result = await _mastersService.DeleteItemMasterPart(itemMasterDocListId);
             return Ok(result);
         }
 
@@ -1920,7 +2040,7 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> MasterParts()
         {
-
+            // Start initial calls in parallel
             var mfpdListTask = _mastersService.ItemMasterParts();
             var docmandTask = _mastersService.Getallitemmasterdoclist();
             var docListVMsTask = _docMangService.GetAllDocList();
@@ -1931,12 +2051,45 @@ namespace CWB.App.Controllers
             var docmand = docmandTask.Result;
             var docListVMs = docListVMsTask.Result;
 
-            foreach (var item in mfpdList)
+            // Cache manufactured parts for later use
+            var manufacturedParts = mfpdList
+                .Where(item => item.MasterPartType == "ManufacturedPart" || item.MasterPartType == "Assembly")
+                .ToList();
+
+            // --- STEP 1: Pre-fetch Manufactured Part Details and BOMs in parallel ---
+            var manufPartTasks = manufacturedParts
+                .Select(async mp =>
+                {
+                    var manufPart = await _mastersService.GetManufPart((int)mp.PartId);
+                    var bomList = await _mastersService.BOMS(manufPart.ManufacturedPartNoDetailId.ToString());
+                    return new { mp.PartId, ManufPart = manufPart, BOM = bomList };
+                })
+                .ToList();
+
+            var manufPartResults = await Task.WhenAll(manufPartTasks);
+
+            // Create dictionaries for fast lookup
+            var manufPartDict = manufPartResults.ToDictionary(x => x.PartId, x => x.ManufPart);
+            var bomDict = manufPartResults.ToDictionary(x => x.PartId, x => x.BOM);
+
+            // --- STEP 2: Process each part in parallel ---
+            var tasks = mfpdList.Select(async item =>
             {
+                var linkedBOMs = manufacturedParts
+                    .Where(mp => bomDict.ContainsKey(mp.PartId))
+                    .SelectMany(mp => bomDict[mp.PartId]
+                        .Where(b => b.BOMPartId == item.PartId)
+                        .Select(_ => mp))
+                    .Distinct()
+                    .ToList();
+
+                var linkedToBOM = linkedBOMs.Any() ? 'Y' : 'N';
+                var listAssembly = linkedBOMs.Any() ? string.Join(", ", linkedBOMs.Select(c => c.PartNo)) : "-";
+
                 switch (item.MasterPartType)
                 {
                     case "ManufacturedPart":
-                        var manuf = await _mastersService.GetManufPart((int)item.PartId);
+                        var manuf = manufPartDict[(int)item.PartId];
                         var mk = await _mastersService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
 
                         item.FinalPart = manuf.FinalPartNosoldtoCustomer == 0 ? "N" : "Y";
@@ -1945,18 +2098,22 @@ namespace CWB.App.Controllers
                         item.SupplierAvl = "N/A";
                         item.BomAvl = "N/A";
                         item.MasterDisplay = "ManufacturedPart";
+                        item.Linked_to_BOM = linkedToBOM;
+                        item.ListAssembly = listAssembly;
                         break;
 
                     case "Assembly":
-                        var assembly = await _mastersService.GetManufPart((int)item.PartId);
-                        var bom = await _mastersService.BOMS(assembly.ManufacturedPartNoDetailId.ToString());
+                        var assembly = manufPartDict[(int)item.PartId];
+                        var assemblyBOM = bomDict[(int)item.PartId];
 
                         item.FinalPart = assembly.FinalPartNosoldtoCustomer == 0 ? "N" : "Y";
                         (item.MandocAvl, item.DocStatus) = await GetDocStatusAsync(docmand, docListVMs, (int)item.PartId, 2);
-                        item.BomAvl = bom.Any() ? "Yes" : "No";
+                        item.BomAvl = assemblyBOM.Any() ? "Yes" : "No";
                         item.RmAvl = "N/A";
                         item.SupplierAvl = "N/A";
                         item.MasterDisplay = "Assembly";
+                        item.Linked_to_BOM = linkedToBOM;
+                        item.ListAssembly = listAssembly;
                         break;
 
                     case "BOF":
@@ -1971,6 +2128,8 @@ namespace CWB.App.Controllers
                         item.SupplierAvl = bofSuppliers.Any() ? "Yes" : "No";
                         item.BomAvl = "N/A";
                         item.RmAvl = "N/A";
+                        item.Linked_to_BOM = linkedToBOM;
+                        item.ListAssembly = listAssembly;
                         break;
 
                     case "RawMaterial":
@@ -1981,12 +2140,17 @@ namespace CWB.App.Controllers
                         item.SupplierAvl = rmSuppliers.Any() ? "Yes" : "No";
                         item.BomAvl = "N/A";
                         item.RmAvl = "N/A";
+                        item.Linked_to_BOM = linkedToBOM;
+                        item.ListAssembly = listAssembly;
                         break;
                 }
-            }
+            });
+
+            await Task.WhenAll(tasks);
 
             return Json(mfpdList);
         }
+
         private async Task<(string MandocAvl, string DocStatus)> GetDocStatusAsync(
     IEnumerable<ItemMasterDocListVM> docmand,
     IEnumerable<DocListVM> docListVMs,
@@ -2596,6 +2760,12 @@ namespace CWB.App.Controllers
         {
             if (!ModelState.IsValid)
             {
+                return BadRequest(ModelState);
+            }
+            var chckpart = await _mastersService.CheckPartNo(model.PartNo);
+            if (chckpart && model.PartId == 0)
+            {
+                ModelState.AddModelError("PartNo", "Part No already exists. Please enter a different Part No.");
                 return BadRequest(ModelState);
             }
             var result = await _mastersService.BoughtOutFinishDetail(model);

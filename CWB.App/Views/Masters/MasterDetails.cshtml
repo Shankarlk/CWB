@@ -301,7 +301,7 @@
                                 if (pr.PermissionId >= 3)
                                 {
                                     <div class="col-md-12 mt-2">
-                                        <button class="btn btn-purple btn-sm" data-bs-toggle="modal" data-bs-target="#adtimc">
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#adtimc">
                                             Associated Document Type with Item Master
                                             Content
                                         </button>
@@ -310,7 +310,7 @@
                                 else
                                 {
                                     <div class="col-md-12 mt-2">
-                                        <button class="btn btn-purple btn-sm" data-bs-toggle="modal" data-bs-target="#" disabled>
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#" disabled>
                                             Associated Document Type with Item Master
                                             Content
                                         </button>
@@ -323,7 +323,7 @@
                         else
                         {
                             <div class="col-md-12 mt-2">
-                                <button class="btn btn-purple btn-sm" data-bs-toggle="modal" data-bs-target="#adtimc">
+                                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#adtimc">
                                     Associated Document Type with Item Master
                                     Content
                                 </button>
@@ -343,24 +343,24 @@
                                 <h5>MIS</h5>
                             </button>
                             <!-- ---------------  -->
-                            <button class="btn btn-purple btn-sm" data-bs-toggle="modal" data-bs-target="#popup1">Manufactured Parts Assemblies</button>
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#popup1">Manufactured Parts Assemblies</button>
                             <!-- ---------------  -->
-                            <button class="btn btn-purple btn-sm" data-bs-toggle="modal" data-bs-target="#popup5">
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#popup5">
                                 Raw
                                 Material
                             </button>
                             <!-- ---------------  -->
-                            <button class="btn btn-purple btn-sm" data-bs-toggle="modal" data-bs-target="#popup9">
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#popup9">
                                 BOF
                                 List
                             </button>
                             <!-- ---------------  -->
-                            <button class="btn btn-purple btn-sm" data-bs-toggle="modal" data-bs-target="#popup2">
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#popup2">
                                 Raw
                                 Material Suppliers
                             </button>
                             <!-- ---------------  -->
-                            <button class="btn btn-purple btn-sm" data-bs-toggle="modal" data-bs-target="#popup6">
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#popup6">
                                 BOF
                                 Suppliers
                             </button>
@@ -413,18 +413,41 @@
                             var pr = permissionResult.Where(r => r.Menu3 == "View / Edit Part No").FirstOrDefault();
                             if (pr.PermissionId >= 3)
                             {
-                                <a href="/masters/editpart?partId={partId}&partType={masterPartType}">Edit Part Details</a>
+                                <a href="/masters/editpart?partId={partId}&partType={masterPartType}" class="dropdown-item">Edit Part Details</a>
+                                @*<a href="javascript:void(0);" class="dropdown-item activeAtag"
+                    data-partId="{partId}" data-parttype="{masterPartType}" data-status="{status}"
+                    data-partNo="{partNo}" data-bs-toggle="modal" data-bs-target="#status-info">{activeName}</a>*@
                             }
-                            else
+                            else if (pr.PermissionId >= 4)
                             {
+
+
+                                <a href="/masters/editpart?partId={partId}&partType={masterPartType}" class="dropdown-item">Edit Part Details</a>
+
+
+                                @*<a href="javascript:void(0);" class="dropdown-item activeAtag"
+                    data-partId="{partId}" data-parttype="{masterPartType}" data-status="{status}"
+                    data-partNo="{partNo}" data-bs-toggle="modal" data-bs-target="#status-info">{activeName}</a>*@
+
+
+                <a href="javascript:void(0);" class="dropdown-item activeAtag" onclick="DeletePart(this)"
+                   data-partId="{partId}" data-listassem="{listAssembly}"
+                   style="display:{showMenu}">Delete</a>
                             }
+                            else { }
                         }
 
 
                     }
                     else
                     {
-                        <a href="/masters/editpart?partId={partId}&partType={masterPartType}">Edit Part Details</a>
+                        <a href="/masters/editpart?partId={partId}&partType={masterPartType}" class="dropdown-item">Edit Part Details</a>
+                        @*<a href="javascript:void(0);" class="dropdown-item activeAtag"
+            data-partId="{partId}" data-parttype="{masterPartType}" data-status="{status}"
+            data-partNo="{partNo}" data-bs-toggle="modal" data-bs-target="#status-info">{activeName}</a>*@
+                <a href="javascript:void(0);" class="dropdown-item activeAtag" onclick="DeletePart(this)"
+                   data-partId="{partId}" data-listassem="{listAssembly}"
+                   style="display:{showMenu}">Delete</a>
                     }
                 </div>
             </div>
@@ -1229,6 +1252,44 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div>
+
+<div class="modal fade" id="status-info" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Status Change Reason</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label class="form-label col-md-5 mb-2"> Current Status</label>
+                    <div class="col-md-7 mb-2">
+                        <input class="form-control form-control-sm" id="CurrentStatus" type="text" placeholder="enter here" readonly>
+                    </div>
+                    <!-- =============== -->
+                    <label class="form-label col-md-5 mb-2"> New Status *</label>
+                    <div class="col-md-7 mb-2">
+                        <select class="form-select form-select-sm" id="statusPopup" asp-items="ViewBag.Statuses" required>
+                        </select>
+                    </div>
+                    <!-- =============== -->
+                    <label class="form-label col-md-5 mb-2"> Reason *</label>
+                    <div class="col-md-7 mb-2">
+                        <textarea class="form-control form-control-sm" id="statusResasonopup" placeholder="Enter here"></textarea>
+                    </div>
+                    <!-- =============== -->
+                    <div class="col text-end">
+                        <input class="form-control form-control-sm" id="PartIdSt" type="text" placeholder="enter here" hidden>
+                        <input class="form-control form-control-sm" id="PartTypeSt" type="text" placeholder="enter here" hidden>
+                        <button class="btn btn-sm btn-primary" id="BtnstatusSave">Save</button>
+                    </div>
+                    <!-- =============== -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
 <template id="P9GridRow">
     <tr>
         <td>{partNo} / {description}</td>

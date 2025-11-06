@@ -3,6 +3,17 @@
         var tablebody = $("#tbl-division tbody");
         $(tablebody).html("");//empty tbody
         for (i = 0; i < data.length; i++) {
+            if (data.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
             $(tablebody).append(AppUtil.ProcessTemplateData("division-template", data[i]));
             if (ContactsConstants.DivisionId == data[i].divisionId) {
                 ContactsFormUtil.PopulateForm(data[i]);
@@ -17,6 +28,17 @@ function LoadCompanies() {
         var tablebody = $("#tbl-contacts tbody");
         if (tablebody.length) { //if there is a tablebody in the parent populate it
             $(tablebody).html("");//empty tbody
+            if (data.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
             for (i = 0; i < data.length; i++) {
                 $(tablebody).append(AppUtil.ProcessTemplateData("company-template", data[i]));
             }

@@ -3,12 +3,24 @@ var editSalesOrder = false;
 var holdsalesorder = false;
 
 function loadSO() {
+    $("#preloaderblurred").show();
     api.getbulk("/WorkOrder/AllSalesOrders").then((data) => {
         const soPendingCount = data.filter((salesOrder) => salesOrder.status === 1).length;
         $("#noOfUnplannedSO").text(soPendingCount);
         var valso = $("#searchSo").val().toLowerCase();
         var tablebody = $("#SalesOrderList tbody");
         $(tablebody).html("");//empty tbody
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         //console.log(data);
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("SalesOrderListRow", data[i]));
@@ -16,7 +28,9 @@ function loadSO() {
         $("#SalesOrderList tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(valso) > -1)
         });
+        $("#preloaderblurred").hide();
     }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
 }
 
@@ -81,6 +95,17 @@ function LoadPOLogs(customerOderId, salesOrderId) {
         //console.log(data);
         var tablebody = $("#SoLogGrid tbody");
         $(tablebody).html("");//empty tbody
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             //data[i].partNo = GetPartNo(data[i].partId);
             let fullDateTime = data[i].poDateStr;
@@ -128,6 +153,18 @@ $(document).ready(function () {
         $("#SalesOrderList tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#SalesOrderList tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchCustomer").on("keyup", function () {
@@ -135,6 +172,18 @@ $(document).ready(function () {
         $("#SalesOrderList tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#SalesOrderList tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchPartNo").on("keyup", function () {
@@ -142,6 +191,18 @@ $(document).ready(function () {
         $("#SalesOrderList tbody tr").filter(function () {
             $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#SalesOrderList tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchPartDesc").on("keyup", function () {
@@ -149,6 +210,18 @@ $(document).ready(function () {
         $("#SalesOrderList tbody tr").filter(function () {
             $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#SalesOrderList tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchStatus").on("keyup", function () {
@@ -156,6 +229,18 @@ $(document).ready(function () {
         $("#SalesOrderList tbody tr").filter(function () {
             $(this).toggle($(this.children[7]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#SalesOrderList tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchPoNo").on("keyup", function () {
@@ -163,6 +248,18 @@ $(document).ready(function () {
         $("#SalesOrderList tbody tr").filter(function () {
             $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#SalesOrderList tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#SocomplDtTo").on("change", function () {
@@ -213,6 +310,18 @@ $(document).ready(function () {
         $("#SalesOrderList tbody tr").filter(function () {
             $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#SalesOrderList tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $("#searchPartDesc").on("keyup", function () {
@@ -220,6 +329,18 @@ $(document).ready(function () {
         $("#SalesOrderList tbody tr").filter(function () {
             $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#SalesOrderList tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $('#Edit-SalesOrder').on('hidden.bs.modal', function (event) {
         editSalesOrder = false;

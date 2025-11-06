@@ -39,44 +39,108 @@ function openPopup(popupId, shopName) {
     $("#P10Shop").val(shopName);
     $(`#${popupId}`).modal('show'); // If using Bootstrap
 }
-$(document).ready(function () {
-
-    $.get('/WorkOrder/GetSetupSummaryByShop', function (data) {
+function loadMis() {
+    $("#preloaderblurred").show();
+    api.getbulk('/WorkOrder/GetSetupSummaryByShop').then((data) => {
         $("#MisTBody").html('');
         let html = '';
-        data.forEach(item => {
-            html += `<tr>
+        if (data.length === 0) {
+            // Data is empty, create a row with '0' in the metric columns
+            html += `<tr class="text-center">
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                     </tr>`;
+        } else {
+            data.forEach(item => {
+                html += `<tr class="text-center">
                         <td>${item.shop}</td>
                         <td>${getLinkOrText(item.waitingForSetupStart, 'Popup6', item.shop)}</td>
                         <td>${getLinkOrText(item.readyForSetupApproval, 'Popup8', item.shop)}</td>
                         <td>${getLinkOrText(item.bookout, 'Popup10', item.shop)}</td>
                      </tr>`;
-        });
+            });
+        }
         $("#MisTBody").html(html);
+        $("#preloaderblurred").hide();
+    }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
+}
+$(document).ready(function () {
+    loadMis();
     loadSels();
     $("#P6Shop").on("change", function () {
         var selectedValue = $(this).val();
         if (selectedValue == "0") {
             $("#P6Grid tbody tr").show();
+            var $tableBody = $("#P6Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
             return;
         } else {
             var selvallow = selectedValue.toLowerCase();
             $("#P6Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(selvallow) > -1)
             });
+            var $tableBody = $("#P6Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
     $("#P6McName").on("change", function () {
         var selectedValue = $(this).val();
         if (selectedValue == "0") {
             $("#P6Grid tbody tr").show();
+            var $tableBody = $("#P6Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
             return;
         } else {
             var selvallow = selectedValue.toLowerCase();
             $("#P6Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(selvallow) > -1)
             });
+            var $tableBody = $("#P6Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
     $("#P6PartNo").on("keyup", function () {
@@ -84,6 +148,18 @@ $(document).ready(function () {
         $("#P6Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P6Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $('#Popup6').on('show.bs.modal', function (event) {
         loadSetUpConfList();
@@ -159,24 +235,72 @@ $(document).ready(function () {
         var selectedValue = $(this).val();
         if (selectedValue == "0") {
             $("#P6Grid tbody tr").show();
+            var $tableBody = $("#P6Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
             return;
         } else {
             var selvallow = selectedValue.toLowerCase();
             $("#P6Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(selvallow) > -1)
             });
+            var $tableBody = $("#P6Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
     $("#P6McName").on("change", function () {
         var selectedValue = $(this).val();
         if (selectedValue == "0") {
             $("#P6Grid tbody tr").show();
+            var $tableBody = $("#P6Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
             return;
         } else {
             var selvallow = selectedValue.toLowerCase();
             $("#P6Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(selvallow) > -1)
             });
+            var $tableBody = $("#P6Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
     $("#P6PartNo").on("keyup", function () {
@@ -184,16 +308,32 @@ $(document).ready(function () {
         $("#P6Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#P6Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $('#Popup8').on('show.bs.modal', function (event) {
         loadSetUpAplList();
     });
     $('#Popup9').on('hidden.bs.modal', function (event) {
-        $("#P9SetDoc").val('');
+        $("#P9SetDoc").val('-');
         $("#P9Com").val('');
         $("#P9SetChk").prop('checked',false);
         var P9SetDoc = document.getElementById('P9SetDoc');
         P9SetDoc.style.border = '';
+        var P9AdSetTime = document.getElementById('P9AdSetTime');
+        P9AdSetTime.style.border = '';
+        var P9AchFtr = document.getElementById('P9AchFtr');
+        P9AchFtr.style.border = '';
         document.getElementById('Popup8').style.filter = 'none';
     });
     $('#Popup9').on('show.bs.modal', function (event) {
@@ -207,7 +347,12 @@ $(document).ready(function () {
         var matlrcpt = relatedTarget.data("matlrcpt");
         var plantime = relatedTarget.data("plantime");
         var setuptime = relatedTarget.data("setuptime");
+        var plannedsetuptime = relatedTarget.data("plannedsetuptime");
+        var newPlannedTime = plannedsetuptime.slice(0, -3);
         var id = relatedTarget.data("id");
+        loadEmployeeSel();
+        loadReasonFtr("P9AchFtr");
+        loadReasonSetup("P9AdSetTime");
         $("#P9McWaitId").val(id);
         $("#P9PartName").text(partno);
         $("#P9Rout").text(route);
@@ -217,12 +362,102 @@ $(document).ready(function () {
         $("#P9RcptTime").text(matlrcpt);
         $("#P9PlanTime").text(plantime);
         $("#P9ActulTime").text(setuptime);
+        $("#P9PlanSetupTime").text(newPlannedTime);// 2. Get the current date and time
+        const now = new Date();
+
+        // 3. Create the Start Time Date Object (using today's date)
+
+        // A standard way to parse time in a format like "HH:MM AM/PM" is to use
+        // a temporary string that combines today's date with the time.
+        const startDateTimeStr = now.toDateString() + " " + setuptime;
+        const startTime = new Date(startDateTimeStr);
+
+        // --- Calculation ---
+
+        // Check if the start time is in the future. If so, it uses yesterday's date.
+        // This handles cases where the start time is after midnight (e.g., 2 AM) 
+        // but is still considered "today's" work start.
+        if (startTime > now) {
+            startTime.setDate(startTime.getDate() - 1);
+        }
+
+        // Get the difference in milliseconds
+        const differenceMs = now.getTime() - startTime.getTime();
+
+        // 4. Convert milliseconds to H:M:S format
+        const totalSeconds = Math.floor(differenceMs / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        // Format the time with leading zeros (e.g., 5 -> 05)
+        const timeTaken =
+            String(hours).padStart(2, '0') + ":" +
+            String(minutes).padStart(2, '0');
+        $("#P9SetTimeTaken").val(timeTaken);
+        const timeTakenTotalMinutes = (hours * 60) + minutes;
+
+        // 2. Convert Planned Time (string) to Total Minutes
+        const [plannedHours, plannedMinutes] = newPlannedTime.split(':').map(Number);
+        const plannedTimeTotalMinutes = (plannedHours * 60) + plannedMinutes;
+
+        // 3. Perform the comparison
+        if (timeTakenTotalMinutes > plannedTimeTotalMinutes) {
+
+            // Time Taken is greater. Calculate the difference.
+            const excessMinutes = timeTakenTotalMinutes - plannedTimeTotalMinutes;
+
+            // Convert the difference (total minutes) back into HH:MM format
+            const diffHours = Math.floor(excessMinutes / 60);
+            const diffMinutes = excessMinutes % 60;
+
+            const excessTimeFormatted =
+                String(diffHours).padStart(2, '0') + ":" +
+                String(diffMinutes).padStart(2, '0');
+
+            // Console the comparison result
+            console.log("Greater setup time taken");
+
+            // Console the difference (Time Taken - Planned Time)
+            console.log(`Excess Time (HH:MM): ${excessTimeFormatted}`);
+            $("#P9Adntime").show();
+            $("#lblAdnTime").show();
+            $("#P9AdSetTime").show();
+            $("#lblAdSetTime").show();
+            $("#P9Adntime").val(excessTimeFormatted);
+        } else {
+            $("#P9Adntime").hide();
+            $("#lblAdnTime").hide();
+            $("#P9AdSetTime").hide();
+            $("#lblAdSetTime").hide();
+        }
+
+    });
+    $('#P7SetChk').on('change', function () {
+
+        const isChecked = $(this).is(':checked');
+        const selectElement = $('#P9AdSetTime');
+
+        if (isChecked) {
+            $("#P9AchFtr").hide(); // Hides the select element (sets display: none)
+            $("#lblReasFtr").hide(); // Hides the select element (sets display: none)
+            $("#P9AchFtrDiv").hide(); // Hides the select element (sets display: none)
+        } else {
+            $("#P9AchFtr").show(); // Shows the select element (reverts display to its default, usually block/inline-block)
+            $("#lblReasFtr").show(); // Shows the select element (reverts display to its default, usually block/inline-block)
+            $("#P9AchFtrDiv").show(); // Shows the select element (reverts display to its default, usually block/inline-block)
+        }
     });
     $("#P9Save").on('click', function (event) {
         var P9SetDoc = $("#P9SetDoc").val();
         var P9Com = $("#P9Com").val();
-        var P9SetChk = $("#P9SetChk").val();
-        var schk = $("#P9SetChk").is(":checked") ? 'Y' : 'N';
+        var P9SetChk = $("#P7SetChk").val();
+        var P9Adntime = $("#P9Adntime").val();
+        var P9SetTimeTaken = $("#P9SetTimeTaken").val();
+        var P9AdSetTime = parseInt($("#P9AdSetTime").val());
+        var P9AchFtr = parseInt($("#P9AchFtr").val());
+        var P9Operator = parseInt($("#P9Operator").val());
+        var schk = $("#P7SetChk").is(":checked") ? 'Y' : 'N';
         var P9McWaitId = parseInt($("#P9McWaitId").val());
         if (P9SetDoc.length === 0) {
             var newNamevalidate = document.getElementById('P9SetDoc');
@@ -236,11 +471,46 @@ $(document).ready(function () {
             P9McWaitId = 0
             return false;
         }
+        if (P9Operator === 0) {
+            var newNamevalidate = document.getElementById('P9Operator');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('P9Operator');
+            newNamevalidate.style.border = '';
+        }
+        if ($('#P9AdSetTime').is(':visible')) {
+            if (P9AdSetTime === 0) {
+                var newNamevalidate = document.getElementById('P9AdSetTime');
+                newNamevalidate.style.border = '2px solid red';
+                return false;
+            } else {
+                var newNamevalidate = document.getElementById('P9AdSetTime');
+                newNamevalidate.style.border = '';
+            }
+        }
+        if ($('#P9AchFtr').is(':visible')) {
+            if (P9AchFtr === 0 || isNaN()) {
+                var newNamevalidate = document.getElementById('P9AchFtr');
+                newNamevalidate.style.border = '2px solid red';
+                return false;
+            } else {
+                var newNamevalidate = document.getElementById('P9AchFtr');
+                newNamevalidate.style.border = '';
+            }
+        }
         var formdata = {
             mc_Wait_ListId: P9McWaitId,
             setup_Appvl_Doc_Ref: P9SetDoc,
             setup_FTR: schk,
             setup_comments: P9Com,
+            operatorId: P9Operator,
+            reasonforAddnSetupTimeId: P9AdSetTime,
+            reasonfornotachievingFTRId: P9AchFtr,
+            reasonfornotachievingFTRId: P9AchFtr,
+            setupTimeTaken: P9SetTimeTaken,
+            addntimeforSetup: P9Adntime,
+
         };
         api.post("/WorkOrder/UpdateSetupAplMc_Wait_List", formdata).then((data) => {
             alert("Setup Approval Saved");
@@ -341,6 +611,7 @@ $(document).ready(function () {
     });
     $("#EP7Exit").on("click", function () {
         $("#popup5").modal("hide");
+        $("#Popup11").modal("hide");
         $("#NotUploaded").modal("hide");
         $("#popupInward").modal("hide");
     });
@@ -573,13 +844,81 @@ $(document).ready(function () {
             });
         }
     });
+    loadEmployeeSel();
 });
+function loadEmployeeSel() {
+    var OrgEmpl = $('#P9Operator');
+    OrgEmpl.html('');
+    api.get("/Employee/GetAllEmployee").then((data) => {
+        const filteredData = data.filter(item => item.designation_Id === 2);
+        div_data = "<option value='" + 0 + "'>" + "--Select--" + "</option>";
+        OrgEmpl.append(div_data);
+        for (i = 0; i < filteredData.length; i++) {
+            div_data = "<option value='" + filteredData[i].employee_ID + "'>" + filteredData[i].employee_name + "</option>";
+            OrgEmpl.append(div_data);
+        }
+    }).catch((error) => {
+    });
+}
+function loadReasonFtr(CompanyOrSupplier) {//pass the element name
+    var compSelect = $('#' + CompanyOrSupplier);//should be a select2 dropdown
+    if (!compSelect.length)
+        return;
+    compSelect.empty();
+    ////debugger;
+    var div_data = "<option value=''>--Select--</option>";
+    compSelect.append(div_data);
+    api.get("/workorder/GetAllSetupVariationReason").then((data) => {
+        data = data.filter(item => item.setupType === "FTR not achieved");
+        for (i = 0; i < data.length; i++) {
+            div_data = "<option value='" +
+                data[i].setupVariationReasonId + "'>" +
+                data[i].reason +
+                "</option>";
+            compSelect.append(div_data);
+        }
+    }).catch((error) => {
+        //console.log(error);
+    });
+}
+function loadReasonSetup(CompanyOrSupplier) {//pass the element name
+    var compSelect = $('#' + CompanyOrSupplier);//should be a select2 dropdown
+    if (!compSelect.length)
+        return;
+    compSelect.empty();
+    ////debugger;
+    var div_data = "<option value=''>--Select--</option>";
+    compSelect.append(div_data);
+    api.get("/workorder/GetAllSetupVariationReason").then((data) => {
+        data = data.filter(item => item.setupType === "Setup Time Variation");
+        for (i = 0; i < data.length; i++) {
+            div_data = "<option value='" +
+                data[i].setupVariationReasonId + "'>" +
+                data[i].reason +
+                "</option>";
+            compSelect.append(div_data);
+        }
+    }).catch((error) => {
+        //console.log(error);
+    });
+}
 function loadNclog(mcWaitId) {
     api.getbulk("/WorkOrder/GetAllNcLogInsp").then((data) => {
         data = data.filter(item => item.mcWaitId === parseInt(mcWaitId));
         var tablebody = $("#P11NcGrid tbody");
         $(tablebody).html("");
         let totalQuantity = 0;
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             totalQuantity += data[i].nC_Qnty;
             $(tablebody).append(AppUtil.ProcessTemplateData("P11GridRow", data[i]));
@@ -628,34 +967,78 @@ function convertTo24Hour(time12h) {
 function loadSetUpConfList() {
     var tablebody = $("#P6Grid tbody");
     $(tablebody).html("");//empty tbody
+    $("#preloaderblurred").show();
 
     api.getbulk("/workOrder/GetAllSetUpCnfList").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("P6GridRow", data[i]));
         }
+        $("#preloaderblurred").hide();
     }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
 }
 function loadSetUpAplList() {
     var tablebody = $("#P8Grid tbody");
     $(tablebody).html("");//empty tbody
+    $("#preloaderblurred").show();
 
     api.getbulk("/workOrder/GetAllSetUpApprolList").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("P8GridRow", data[i]));
         }
+        $("#preloaderblurred").hide();
     }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
 }
 function loadBookoutList() {
     var tablebody = $("#P10Grid tbody");
     $(tablebody).html("");//empty tbody
+    $("#preloaderblurred").show();
+
 
     api.getbulk("/workOrder/GetAllBookOutList").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("P10GridRow", data[i]));
         }
+        $("#preloaderblurred").hide();
+
     }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
 }
 function loadSels() {

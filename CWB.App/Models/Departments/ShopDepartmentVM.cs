@@ -19,6 +19,7 @@
         public string Level4 { get; set; } = "-";
         public string Level5 { get; set; } = "-";
         public string RoleName { get; set; } = " ";
+        public string EmpName { get; set; } = " ";
 
 
     }

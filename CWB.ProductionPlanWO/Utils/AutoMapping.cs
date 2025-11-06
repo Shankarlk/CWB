@@ -273,6 +273,13 @@ namespace CWB.ProductionPlanWO.Utils
             CreateMap<WOStatus, WOStatusVM>()
                .ForMember(m => m.StatusId, m => m.MapFrom(src => src.Id))
                .ForMember(m => m.Status, m => m.MapFrom(src => src.Status));
+            CreateMap<Cust_NC_DecisionVM, Cust_NC_Decision>()
+               .ForMember(m => m.Id, m => m.MapFrom(src => src.Cust_DecisionId))
+               .ForMember(m => m.Cust_Decision, m => m.MapFrom(src => src.Cust_Decision));
+
+            CreateMap<Cust_NC_Decision, Cust_NC_DecisionVM>()
+               .ForMember(m => m.Cust_DecisionId, m => m.MapFrom(src => src.Id))
+               .ForMember(m => m.Cust_Decision, m => m.MapFrom(src => src.Cust_Decision));
 
             CreateMap<ChildWoRelVM, ChildWoRel>()
                .ForMember(m => m.Id, m => m.MapFrom(src => src.ChildWoRelId))
@@ -644,6 +651,8 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Containment_Action, m => m.MapFrom(src => src.Containment_Action))
           .ForMember(m => m.Senior_Feedback, m => m.MapFrom(src => src.Senior_Feedback))
           .ForMember(m => m.Cont_RCA_CA_Status_Id, m => m.MapFrom(src => src.Cont_RCA_CA_Status_Id))
+          .ForMember(m => m.CnfComments, m => m.MapFrom(src => src.CnfComments))
+          .ForMember(m => m.CnfAllCompelete, m => m.MapFrom(src => src.CnfAllCompelete))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
             CreateMap<Cont_RCA_CA_Log, Cont_RCA_CA_LogVM>()
           .ForMember(m => m.Cont_RCA_CA_LogId, m => m.MapFrom(src => src.Id))
@@ -651,6 +660,8 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Containment_Action, m => m.MapFrom(src => src.Containment_Action))
           .ForMember(m => m.Senior_Feedback, m => m.MapFrom(src => src.Senior_Feedback))
           .ForMember(m => m.Cont_RCA_CA_Status_Id, m => m.MapFrom(src => src.Cont_RCA_CA_Status_Id))
+          .ForMember(m => m.CnfComments, m => m.MapFrom(src => src.CnfComments))
+          .ForMember(m => m.CnfAllCompelete, m => m.MapFrom(src => src.CnfAllCompelete))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
             CreateMap<NC_Decision_LogVM, NC_Decision_Log>()
           .ForMember(m => m.Id, m => m.MapFrom(src => src.NC_Decision_LogId))
@@ -706,6 +717,20 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.NC_Log_status_Id, m => m.MapFrom(src => src.NC_Log_status_Id))
           .ForMember(m => m.Routing_Id, m => m.MapFrom(src => src.Routing_Id))
           .ForMember(m => m.Opr_No_Id, m => m.MapFrom(src => src.Opr_No_Id))
+          .ForMember(m => m.Cust_PO, m => m.MapFrom(src => src.Cust_PO))
+          .ForMember(m => m.Wo_Id, m => m.MapFrom(src => src.Wo_Id))
+          .ForMember(m => m.So_Id, m => m.MapFrom(src => src.So_Id))
+          .ForMember(m => m.NC_Entry_date, m => m.MapFrom(src => src.NC_Entry_date))
+          .ForMember(m => m.NC_Entry_User, m => m.MapFrom(src => src.NC_Entry_User))
+          .ForMember(m => m.Cust_NC_date, m => m.MapFrom(src => src.Cust_NC_date))
+          .ForMember(m => m.Customer_NC_Ref, m => m.MapFrom(src => src.Customer_NC_Ref))
+          .ForMember(m => m.NC_Cust_ID, m => m.MapFrom(src => src.NC_Cust_ID))
+          .ForMember(m => m.Other_Detail, m => m.MapFrom(src => src.Other_Detail))
+          .ForMember(m => m.Verified_Cutoff_Dt, m => m.MapFrom(src => src.Verified_Cutoff_Dt))
+          .ForMember(m => m.Verification_done_by, m => m.MapFrom(src => src.Verification_done_by))
+          .ForMember(m => m.Verified_Cutoff_Comment, m => m.MapFrom(src => src.Verified_Cutoff_Comment))
+          .ForMember(m => m.Cust_comment, m => m.MapFrom(src => src.Cust_comment))
+          .ForMember(m => m.Verified_by, m => m.MapFrom(src => src.Verified_by))
           .ForMember(m => m.CreationDate, m => m.MapFrom(src => src.NcDate))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
             CreateMap<Insp_Outcome_Details, Insp_Outcome_DetailsVM>()
@@ -729,6 +754,19 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Routing_Id, m => m.MapFrom(src => src.Routing_Id))
           .ForMember(m => m.Opr_No_Id, m => m.MapFrom(src => src.Opr_No_Id))
           .ForMember(m => m.NcDate, m => m.MapFrom(src => src.CreationDate))
+          .ForMember(m => m.Cust_PO, m => m.MapFrom(src => src.Cust_PO))
+          .ForMember(m => m.Wo_Id, m => m.MapFrom(src => src.Wo_Id))
+          .ForMember(m => m.So_Id, m => m.MapFrom(src => src.So_Id))
+          .ForMember(m => m.NC_Entry_date, m => m.MapFrom(src => src.NC_Entry_date))
+          .ForMember(m => m.NC_Entry_User, m => m.MapFrom(src => src.NC_Entry_User))
+          .ForMember(m => m.Cust_NC_date, m => m.MapFrom(src => src.Cust_NC_date))
+          .ForMember(m => m.Customer_NC_Ref, m => m.MapFrom(src => src.Customer_NC_Ref))
+          .ForMember(m => m.NC_Cust_ID, m => m.MapFrom(src => src.NC_Cust_ID))
+          .ForMember(m => m.Other_Detail, m => m.MapFrom(src => src.Other_Detail))
+          .ForMember(m => m.Verified_Cutoff_Dt, m => m.MapFrom(src => src.Verified_Cutoff_Dt))
+          .ForMember(m => m.Verification_done_by, m => m.MapFrom(src => src.Verification_done_by))
+          .ForMember(m => m.Verified_Cutoff_Comment, m => m.MapFrom(src => src.Verified_Cutoff_Comment))
+          .ForMember(m => m.Cust_comment, m => m.MapFrom(src => src.Cust_comment))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
             CreateMap<Inward_Condn_listVM, Inward_Condn_list>()
           .ForMember(m => m.Id, m => m.MapFrom(src => src.Inward_Condn_listId))
@@ -739,6 +777,16 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Inward_Condn_listId, m => m.MapFrom(src => src.Id))
           .ForMember(m => m.Inward_Condn_desc, m => m.MapFrom(src => src.Inward_Condn_desc))
           .ForMember(m => m.Applicability, m => m.MapFrom(src => src.Applicability))
+          .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+            CreateMap<SetupVariationReasonVM, SetupVariationReason>()
+          .ForMember(m => m.Id, m => m.MapFrom(src => src.SetupVariationReasonId))
+          .ForMember(m => m.SetupType, m => m.MapFrom(src => src.SetupType))
+          .ForMember(m => m.Reason, m => m.MapFrom(src => src.Reason))
+          .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+            CreateMap<SetupVariationReason, SetupVariationReasonVM>()
+          .ForMember(m => m.SetupVariationReasonId, m => m.MapFrom(src => src.Id))
+          .ForMember(m => m.SetupType, m => m.MapFrom(src => src.SetupType))
+          .ForMember(m => m.Reason, m => m.MapFrom(src => src.Reason))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
             CreateMap<InwardDocType, InwardDocTypeVM>()
@@ -902,6 +950,11 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(s => s.Setup_FTR, s => s.MapFrom(src => src.Setup_FTR))
             .ForMember(s => s.Setup_comments, s => s.MapFrom(src => src.Setup_comments))
             .ForMember(s => s.Setup_Appvl_Doc_Ref, s => s.MapFrom(src => src.Setup_Appvl_Doc_Ref))
+            .ForMember(s => s.AddntimeforSetup, s => s.MapFrom(src => src.AddntimeforSetup))
+            .ForMember(s => s.SetupTimeTaken, s => s.MapFrom(src => src.SetupTimeTaken))
+            .ForMember(s => s.ReasonforAddnSetupTimeId, s => s.MapFrom(src => src.ReasonforAddnSetupTimeId))
+            .ForMember(s => s.ReasonfornotachievingFTRId, s => s.MapFrom(src => src.ReasonfornotachievingFTRId))
+            .ForMember(s => s.OperatorId, s => s.MapFrom(src => src.OperatorId))
             .ForMember(s => s.Mc_TPT, s => s.MapFrom(src => src.Mc_TPT));
 
             CreateMap<Mc_Wait_ListVM, Mc_Wait_List>()
@@ -931,6 +984,11 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(s => s.Setup_FTR, s => s.MapFrom(src => src.Setup_FTR))
             .ForMember(s => s.Setup_comments, s => s.MapFrom(src => src.Setup_comments))
             .ForMember(s => s.Setup_Appvl_Doc_Ref, s => s.MapFrom(src => src.Setup_Appvl_Doc_Ref))
+            .ForMember(s => s.AddntimeforSetup, s => s.MapFrom(src => src.AddntimeforSetup))
+            .ForMember(s => s.SetupTimeTaken, s => s.MapFrom(src => src.SetupTimeTaken))
+            .ForMember(s => s.ReasonforAddnSetupTimeId, s => s.MapFrom(src => src.ReasonforAddnSetupTimeId))
+            .ForMember(s => s.ReasonfornotachievingFTRId, s => s.MapFrom(src => src.ReasonfornotachievingFTRId))
+            .ForMember(s => s.OperatorId, s => s.MapFrom(src => src.OperatorId))
             .ForMember(s => s.Mc_TPT, s => s.MapFrom(src => src.Mc_TPT));
             CreateMap<TempMc_Wait_List, TempMc_Wait_ListVM>()
             .ForMember(s => s.TempMc_Wait_ListId, s => s.MapFrom(src => src.Id))
@@ -1398,27 +1456,26 @@ namespace CWB.ProductionPlanWO.Utils
                 .ForMember(m => m.DispatchDetail, m => m.MapFrom(src => src.DispatchDetail))
                .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
-            CreateMap<DispatchQntyVM, DispatchQnty>()
+            CreateMap<DispatchQntyVM, TempDispatchQnty>()
                .ForMember(m => m.Id, m => m.MapFrom(src => src.DispatchQntyId))
                .ForMember(m => m.SaleOrderId, m => m.MapFrom(src => src.SaleOrderId))
                .ForMember(m => m.CustomerId, m => m.MapFrom(src => src.CustomerId))
                 .ForMember(m => m.PoNoId, m => m.MapFrom(src => src.PoNoId))
                 .ForMember(m => m.PartNoId, m => m.MapFrom(src => src.PartNoId))
-                .ForMember(m => m.PartNoId, m => m.MapFrom(src => src.PartNoId))
                 .ForMember(m => m.InventoryMasterId, m => m.MapFrom(src => src.InventoryMasterId))
-                .ForMember(m => m.TotalSoQnty, m => m.MapFrom(src => src.TotalSoQnty))
+                .ForMember(m => m.QntyToDispatch, m => m.MapFrom(src => src.QntyToDispatch))
                 .ForMember(m => m.SuggestedQnty, m => m.MapFrom(src => src.SuggestedQnty))
                 .ForMember(m => m.FinalDispQnty, m => m.MapFrom(src => src.FinalDispQnty))
                .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
-            CreateMap<DispatchQnty, DispatchQntyVM>()
+            CreateMap<TempDispatchQnty, DispatchQntyVM>()
                 .ForMember(m => m.DispatchQntyId, m => m.MapFrom(src => src.Id))
                .ForMember(m => m.SaleOrderId, m => m.MapFrom(src => src.SaleOrderId))
                .ForMember(m => m.CustomerId, m => m.MapFrom(src => src.CustomerId))
                 .ForMember(m => m.PoNoId, m => m.MapFrom(src => src.PoNoId))
                 .ForMember(m => m.PartNoId, m => m.MapFrom(src => src.PartNoId))
                 .ForMember(m => m.InventoryMasterId, m => m.MapFrom(src => src.InventoryMasterId))
-                .ForMember(m => m.TotalSoQnty, m => m.MapFrom(src => src.TotalSoQnty))
+                .ForMember(m => m.QntyToDispatch, m => m.MapFrom(src => src.QntyToDispatch))
                 .ForMember(m => m.SuggestedQnty, m => m.MapFrom(src => src.SuggestedQnty))
                 .ForMember(m => m.FinalDispQnty, m => m.MapFrom(src => src.FinalDispQnty))
                .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));

@@ -32,6 +32,7 @@ namespace CWB.App.Models.BusinessProcesses
         public long SalesOrderId { get; set; }
         public long PartId { get; set; }
         public string? User { get; set; }
+        public string? PartNo { get; set; } = string.Empty;
         public string? Event { get; set; } = string.Empty;
         public string? Field { get; set; } = string.Empty;
         public string? OldValue { get; set; } = string.Empty;

@@ -1,15 +1,29 @@
 ﻿
 var subcontotal = 0;
 function loadPO() {
+    $("#preloaderblurred").show();
     api.getbulk("/WorkOrder/GetAllPodetails").then((data) => {
         data = data.filter(item => item.status === 1);
         var tablebody = $("#PoGrid1 tbody");
         $(tablebody).html("");
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("POGrid2Row", data[i]));
             $('#TotalPoValue').val(0);
         }
+        $("#preloaderblurred").hide();
     }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
 }
 
@@ -31,18 +45,54 @@ $(document).ready(function () {
         $("#PoGrid1 tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#PoGrid1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPoPartNo").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#PoGrid1 tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#PoGrid1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPoPartDesc").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#PoGrid1 tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#PoGrid1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPoFor3").on("change", function () {
         var value = $(this).val().toLowerCase();
@@ -51,14 +101,50 @@ $(document).ready(function () {
             $("#PoGrid1 tbody tr").filter(function () {
                 $(this).toggle($(this.children[8]).text().toLowerCase().indexOf(d) > -1)
             });
+            var $tableBody = $("#PoGrid1 tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
         else if (value == "2") {
             var d = "stock";
             $("#PoGrid1 tbody tr").filter(function () {
                 $(this).toggle($(this.children[10]).text().toLowerCase().indexOf(d) > -1)
             });
+            var $tableBody = $("#PoGrid1 tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#PoGrid1 tbody tr").show();
+            var $tableBody = $("#PoGrid1 tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
     $("#searchPoType").on("change", function () {
@@ -68,14 +154,50 @@ $(document).ready(function () {
             $("#PoGrid1 tbody tr").filter(function () {
                 $(this).toggle($(this.children[10]).text().toLowerCase().indexOf(d) > -1)
             });
+            var $tableBody = $("#PoGrid1 tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
         else if (value == "2") {
             var d = "stock";
             $("#PoGrid1 tbody tr").filter(function () {
                 $(this).toggle($(this.children[10]).text().toLowerCase().indexOf(d) > -1)
             });
+            var $tableBody = $("#PoGrid1 tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#PoGrid1 tbody tr").show();
+            var $tableBody = $("#PoGrid1 tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
 
@@ -296,6 +418,17 @@ function GetAllSubConsP10(woid) {
         let totalQuantity = 0;
         let totalprice = 0;
         subcontotal = 0;
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             totalQuantity += Number(data[i].qnty);
             totalprice += Number(data[i].procPrice);

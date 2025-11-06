@@ -43,6 +43,8 @@ namespace CWB.ProductionPlanWO.Services
         Task<List<PODetailsVM>> MultiplePODetails(List<PODetailsVM> pODetailsVM);
         Task<List<POHeaderVM>> MultiplePOHeaders(List<POHeaderVM> pOHeaderVMs);
         Task<IEnumerable<Inward_Condn_listVM>> GetAllInward_Condn_list();
+        Task<IEnumerable<SetupVariationReasonVM>> GetAllSetupVariationReason();
+        Task<IEnumerable<Cust_NC_DecisionVM>> GetAllCust_NC_Decision();
         Task<IEnumerable<Insp_Outcome_DetailsVM>> GetAllInsp_Outcome_Details(long tenantId);
         Task<IEnumerable<Insp_Outcome_ListVM>> GetAllInsp_Outcome_List();
         Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_Master(long tenantId);
@@ -58,6 +60,8 @@ namespace CWB.ProductionPlanWO.Services
         Task<Inw_Recpt_HeaderVM> PostInw_Recpt_Header(Inw_Recpt_HeaderVM workOrdersVM);
         Task<Inw_Recpt_Part_NoVM> PostInw_Recpt_Part_No(Inw_Recpt_Part_NoVM workOrdersVM);
         Task<Inward_Condn_listVM> PostInward_Condn_list(Inward_Condn_listVM workOrdersVM);
+        Task<SetupVariationReasonVM> PostSetupVariationReason(SetupVariationReasonVM workOrdersVM);
+        Task<Cust_NC_DecisionVM> PostCust_NC_Decision(Cust_NC_DecisionVM workOrdersVM);
         Task<bool> DeleteInsp_OutcomeDetails(long Id);
         Task<bool> DeleteInventory_Master(long Id);
         Task<bool> DeleteInv_Trans_Log(long Id);

@@ -9,7 +9,7 @@ namespace CWB.App.Models.EmployeeMaster
     {
         public long Role_Ui_ListId { get; set; }
         public long RoleId { get; set; }
-        public long Ui_Id { get; set; }
+        public string Ui_Id { get; set; }
         public long PermissionId { get; set; }
         public char Active { get; set; }
         public DateTime Add_date { get; set; }

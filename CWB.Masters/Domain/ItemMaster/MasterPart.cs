@@ -10,9 +10,11 @@ namespace CWB.Masters.Domain.ItemMaster
         public string PartNo { get; set; }
         public string PartDescription { get; set; }
         public MasterPartType MasterPartType { get; set; }
-        public PartStatus Status { get; set; }
+        public string Status { get; set; }
         public string StatusChangeReason { get; set; }
         public string RevNo { get; set; }
+        public char Inv_Trans { get; set; }
+        public char Linked_to_BOM { get; set; }
         public DateTime RevDate { get; set; }
 
         public long TenantId { get; set; }

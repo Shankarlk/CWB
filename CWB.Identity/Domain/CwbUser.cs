@@ -6,6 +6,7 @@ namespace CWB.Identity.Domain
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public long ChangedPassword { get; set; }
         public int TenantId { get; set; }
 
     }

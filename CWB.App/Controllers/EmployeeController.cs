@@ -1,4 +1,5 @@
 ﻿using CWB.App.AppUtils;
+using CWB.App.Models.Departments;
 using CWB.App.Models.EmployeeMaster;
 using CWB.App.Services.CompanySettings;
 using CWB.App.Services.EmailServices;
@@ -56,7 +57,7 @@ namespace CWB.App.Controllers
                     var result = roleui.Where(r => r.RoleId == sorg.Role_NameId).ToList();
                     foreach (var item in result)
                     {
-                        var d = designation.Where(u => u.UiListId == item.Ui_Id).FirstOrDefault();
+                        var d = designation.Where(u => u.UiListId == Convert.ToInt32(item.Ui_Id)).FirstOrDefault();
                         var r = role.Where(u => u.Role_ListId == item.RoleId).FirstOrDefault();
                         item.RoleName = r.Role_Desc;
                         if (d != null)
@@ -156,19 +157,108 @@ namespace CWB.App.Controllers
             }
             return View();
         }
+        public async Task<IActionResult> FlowChartPage()
+        {
+            return View();
+        }
 
-        [HttpGet]
+
+            [HttpGet]
         public async Task<IActionResult> GetAllEmployee()
         {
             var designation = await _employeeService.GetAllEmployee();
+            var employeeUiLists = await _deptService.GetEmployee_UI_List();
+            var empDeptList = await _deptService.GetDept_Employee();
+            var deptEmployeeIds = empDeptList.Where(e=> e.Active == 'Y').Select(e => e.Employee_Id).ToHashSet();
+            var uiEmployeeIds = employeeUiLists.Where(e => e.Active == 'Y').Select(e => e.Employee_Id).ToHashSet();
+
             //var loc = await _plantService.GetPlants();
             foreach (var item in designation)
             {
                 item.DateOfJoinStr = item.Date_Of_Joining.ToString("d");
+                // ✅ "Y" if employee has a department, otherwise "N"
+                item.HasDepartment = deptEmployeeIds.Contains(item.Employee_ID) ? "Y" : "N";
+
+                // ✅ "Y" if employee exists in UI list, otherwise "N"
+                item.InEmployeeUIList = uiEmployeeIds.Contains(item.Employee_ID) ? "Y" : "N";
                 //var l = loc.Where(l => l.PlantId == item.Plant_Id).FirstOrDefault();
                 //item.Location = l.Name;
             }
             return Ok(designation);
+        }
+        [HttpGet]
+        public async Task<JsonResult> GetDepartmentsLevel()
+        {
+            var result = await _deptService.GetDepartments(1);
+            var deptRole = await _deptService.GetDept_Role_List();
+            var roles = await _employeeService.GetAllRoleList();
+            var allEmployees = await _employeeService.GetAllEmployee();
+            var empDeptList = await _deptService.GetDept_Employee();
+
+            var deptDict = result.ToDictionary(d => d.DepartmentId);
+
+            var finalList = new List<ShopDepartmentVM>();
+
+            foreach (var dept in result)
+            {
+                var deptRol = deptRole.Where(r => r.Dept_Struct_Id == dept.DepartmentId).ToList();
+                var roleNames = (from dr in deptRol
+                                 join r in roles on dr.Role_Access_Id equals r.Role_ListId
+                                 select r.Role_Desc).ToList();
+                var vm = new ShopDepartmentVM
+                {
+                    DepartmentId = dept.DepartmentId,
+                    Name = dept.Name,
+                    NoOfShifts = dept.NoOfShifts,
+                    PlantId = dept.PlantId,
+                    Level_No = dept.Level_No,
+                    Part_Of = dept.Part_Of,
+                    Activity = dept.Activity,
+                    ProdDept = dept.ProdDept,
+                    TenantId = dept.TenantId,
+                    PlantName = dept.PlantName,
+                    Section = dept.Section,
+                    RoleName = string.Join(", ", roleNames)
+                };
+
+                // Walk up the parent chain and fill levels
+                var chain = new List<string>();
+                var current = dept;
+                while (current != null)
+                {
+                    chain.Insert(0, current.Name); // prepend
+                    if (current.Part_Of == 0 || !deptDict.ContainsKey(current.Part_Of))
+                        break;
+
+                    current = deptDict[current.Part_Of];
+                }
+
+                // Assign to Level1..Level5
+                if (chain.Count > 0) vm.Level1 = chain[0];
+                if (chain.Count > 1) vm.Level2 = chain[1];
+                if (chain.Count > 2) vm.Level3 = chain[2];
+                if (chain.Count > 3) vm.Level4 = chain[3];
+                if (chain.Count > 4) vm.Level5 = chain[4];
+
+
+                var empIdsInDept = empDeptList
+                    .Where(e => e.Dept_Posn == dept.DepartmentId && e.Active == 'Y')
+                    .Select(e => e.Employee_Id)
+                    .ToList();
+
+                if (empIdsInDept.Count == 1) // Only one employee
+                {
+                    var emp = allEmployees.FirstOrDefault(e => e.Employee_ID == empIdsInDept[0]);
+                    if (emp != null)
+                    {
+                        vm.EmpName = emp.Employee_name; // 👈 add property in VM
+                    }
+                }
+
+                finalList.Add(vm);
+            }
+
+            return Json(finalList);
         }
         [HttpGet]
         public async Task<IActionResult> GetUnique(string empNo)
@@ -342,6 +432,30 @@ namespace CWB.App.Controllers
             return Ok(designation);
         }
 
+        private List<UiListVM> BuildTree(List<UiListVM> items, int parentId = 0)
+        {
+            return items
+                .Where(x => x.UI_Part_linked_to == parentId)
+                .Select(x => new UiListVM
+                {
+                    UiListId = x.UiListId,
+                    UI_Part_linked_to = x.UI_Part_linked_to,
+                    UI_Name_Label = x.UI_Name_Label,
+                    Children = BuildTree(items, (int)x.UiListId) // Recursion here
+        })
+                .ToList();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetFlowchartList()
+        {
+            var flatList = await _employeeService.GetAllUilist(); // Flat list from DB
+            //var sortedFl = flatList.Where(u => u.MenuLevelId < 5);
+            var tree = BuildTree((List<UiListVM>)flatList); // Convert flat list to hierarchical tree
+
+            return Ok(tree); // Return JSON for frontend to render dynamically
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> GetUniqueUiName(string uiName)
         {
@@ -422,7 +536,7 @@ namespace CWB.App.Controllers
                 var roleui = await _employeeService.GetAllRoleUiList();
                 foreach (var item in roleui)
                 {
-                    if (item.Ui_Id == designationId)
+                    if (Convert.ToInt32(item.Ui_Id) == designationId)
                     {
                         r = false;
                         return Json(r);
@@ -604,174 +718,107 @@ namespace CWB.App.Controllers
             var designation = await _employeeService.GetAllUilist();
             var role = await _employeeService.GetAllRoleList();
             var resultRole = result.Where(r => r.EmployeeId == 0).ToList();
+
             foreach (var item in resultRole)
             {
-                var d = designation.Where(u => u.UiListId == item.Ui_Id).FirstOrDefault();
-                var r = role.Where(u => u.Role_ListId == item.RoleId).FirstOrDefault();
-                if (r != null)
-                {
-                    item.RoleName = r.Role_Desc;
-                    item.WorkDone = r.Work_Done;
-                    if (d != null)
-                    {
-                        if (d.UI_Part_linked_to == 0)
-                        {
-                            item.UiLevel = d.UI_Name_Label;
-                        }
-                        else
-                        {
-                            var menu2 = designation.Where(m => m.UiListId == d.UI_Part_linked_to).FirstOrDefault();
-                            if (menu2.UI_Part_linked_to == 0)
-                            {
-                                item.UiLevel = menu2.UI_Name_Label + "+" + d.UI_Name_Label;
-                            }
-                            else
-                            {
-                                var menu3 = designation.Where(m => m.UiListId == menu2.UI_Part_linked_to).FirstOrDefault();
-                                if (menu3.UI_Part_linked_to == 0)
-                                {
-                                    item.UiLevel = menu3.UI_Name_Label + "+" + menu2.UI_Name_Label + "+" + d.UI_Name_Label;
-                                }
-                                else
-                                {
-                                    var menu4 = designation.Where(m => m.UiListId == menu3.UI_Part_linked_to).FirstOrDefault();
-                                    if (menu4.UI_Part_linked_to == 0)
-                                    {
-                                        item.UiLevel = menu4.UI_Name_Label + "+" + menu3.UI_Name_Label + "+" + menu2.UI_Name_Label + "+" + d.UI_Name_Label;
-                                    }
-                                    else
-                                    {
-                                        var menu5 = designation.Where(m => m.UiListId == menu4.UI_Part_linked_to).FirstOrDefault();
-                                        if (menu5.UI_Part_linked_to == 0)
-                                        {
-                                            item.UiLevel = menu5.UI_Name_Label + "+" + menu4.UI_Name_Label + "+" + menu3.UI_Name_Label + "+" + menu2.UI_Name_Label + "+" + d.UI_Name_Label;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (item.PermissionId == 1)
-                    {
-                        item.View_Allowed = "N";
-                        item.Add_Edit_Allowed = "N";
-                        item.Delete_Allowed = "N";
-                        item.Approval_Allowed = "N";
-                    }
-                    else if (item.PermissionId == 2)
-                    {
-                        item.View_Allowed = "Y";
-                        item.Add_Edit_Allowed = "N";
-                        item.Delete_Allowed = "N";
-                        item.Approval_Allowed = "N";
-                    }
-                    else if (item.PermissionId == 3)
-                    {
-                        item.View_Allowed = "Y";
-                        item.Add_Edit_Allowed = "Y";
-                        item.Delete_Allowed = "N";
-                        item.Approval_Allowed = "N";
-                    }
-                    else if (item.PermissionId == 4)
-                    {
-                        item.View_Allowed = "Y";
-                        item.Add_Edit_Allowed = "Y";
-                        item.Delete_Allowed = "Y";
-                        item.Approval_Allowed = "N";
-                    }
-                    else if (item.PermissionId == 5)
-                    {
-                        item.View_Allowed = "Y";
-                        item.Add_Edit_Allowed = "Y";
-                        item.Delete_Allowed = "Y";
-                        item.Approval_Allowed = "Y";
-                    }
-                }
-            }
-            foreach (var item in role)
-            {
-                Role_UI_ListVM role_UI_s = new Role_UI_ListVM
-                {
-                    RoleId = item.Role_ListId,
-                    RoleName = item.Role_Desc,
-                    WorkDone =item.Work_Done
-                };
-                if (!resultRole.Any(r => r.RoleId == item.Role_ListId))
-                {
-                    resultRole.Add(role_UI_s);
-                }
+                // Get role info
+                var r = role.FirstOrDefault(u => u.Role_ListId == item.RoleId);
+                if (r == null) continue;
 
+                item.RoleName = r.Role_Desc;
+                item.WorkDone = r.Work_Done;
+
+                // ✅ Split Ui_Id and fetch UI names
+                var uiIds = item.Ui_Id?.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                             .Select(id => Convert.ToInt32(id.Trim()))
+                             .ToList() ?? new List<int>();
+
+                // ✅ Map each Ui_Id to its name (in the given order)
+                var uiNames = uiIds
+                    .Select(id => designation.FirstOrDefault(d => d.UiListId == id)?.UI_Name_Label)
+                    .Where(name => !string.IsNullOrWhiteSpace(name))
+                    .ToList();
+
+                // ✅ Join UI names with "+" to form full UiLevel path
+                item.UiLevel = string.Join("+", uiNames);
+
+                // ✅ Permission mapping simplified
+                item.View_Allowed = (item.PermissionId >= 2) ? "Y" : "N";
+                item.Add_Edit_Allowed = (item.PermissionId >= 3) ? "Y" : "N";
+                item.Delete_Allowed = (item.PermissionId >= 4) ? "Y" : "N";
+                item.Approval_Allowed = (item.PermissionId == 5) ? "Y" : "N";
             }
+
+            // ✅ Add roles that have no UI access yet
+            foreach (var r in role)
+            {
+                if (!resultRole.Any(x => x.RoleId == r.Role_ListId))
+                {
+                    resultRole.Add(new Role_UI_ListVM
+                    {
+                        RoleId = r.Role_ListId,
+                        RoleName = r.Role_Desc,
+                        WorkDone = r.Work_Done
+                    });
+                }
+            }
+
             return Ok(resultRole);
         }
         [HttpGet]
         public async Task<IActionResult> GetRoleUiList(long roleId)
         {
             var result = await _employeeService.GetAllRoleUiList();
-            result= result.Where(r => r.RoleId == roleId).ToList();
+            result = result.Where(r => r.RoleId == roleId).ToList();
+
             var designation = await _employeeService.GetAllUilist();
             var role = await _employeeService.GetAllRoleList();
             var permission = await _employeeService.GetAllPermission();
+
             foreach (var item in result)
             {
-                var d = designation.Where(u => u.UiListId == item.Ui_Id).FirstOrDefault();
-                var r = role.Where(u => u.Role_ListId == item.RoleId).FirstOrDefault();
-                item.RoleName = r.Role_Desc;
-                if (d != null)
+                // Get Role Name
+                var r = role.FirstOrDefault(u => u.Role_ListId == item.RoleId);
+                if (r != null)
+                    item.RoleName = r.Role_Desc;
+
+                // ✅ Handle multiple UI IDs directly from Ui_Id (e.g., "1,2,3,4")
+                if (!string.IsNullOrWhiteSpace(item.Ui_Id))
                 {
-                    if (d.UI_Part_linked_to == 0)
+                    var uiIds = item.Ui_Id.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                          .Select(id => Convert.ToInt32(id.Trim()))
+                                          .ToList();
+
+                    // Fetch all UI names in order
+                    var uiNames = designation
+                        .Where(u => uiIds.Contains((int)u.UiListId))
+                        .OrderBy(u => uiIds.IndexOf((int)u.UiListId)) // maintain order as in Ui_Id
+                        .Select(u => u.UI_Name_Label)
+                        .ToList();
+
+                    // Assign to Menu1...Menu5 dynamically
+                    for (int i = 0; i < uiNames.Count() && i < 5; i++)
                     {
-                        item.Menu1 = d.UI_Name_Label;
-                    }
-                    else
-                    {
-                        var menu2 = designation.Where(m => m.UiListId == d.UI_Part_linked_to).FirstOrDefault();
-                        if (menu2.UI_Part_linked_to == 0)
+                        switch (i)
                         {
-                            item.Menu2 = d.UI_Name_Label;
-                            item.Menu1 = menu2.UI_Name_Label;
-                        }
-                        else
-                        {
-                            var menu3 = designation.Where(m => m.UiListId == menu2.UI_Part_linked_to).FirstOrDefault();
-                            if (menu3.UI_Part_linked_to == 0)
-                            {
-                                item.Menu1 = menu3.UI_Name_Label;
-                                item.Menu2 = menu2.UI_Name_Label;
-                                item.Menu3 = d.UI_Name_Label;
-                            }
-                            else
-                            {
-                                var menu4 = designation.Where(m => m.UiListId == menu3.UI_Part_linked_to).FirstOrDefault();
-                                if (menu4.UI_Part_linked_to == 0)
-                                {
-                                    item.Menu1 = menu4.UI_Name_Label;
-                                    item.Menu2 = menu3.UI_Name_Label;
-                                    item.Menu3 = menu2.UI_Name_Label;
-                                    item.Menu4 = d.UI_Name_Label;
-                                }
-                                else
-                                {
-                                    var menu5 = designation.Where(m => m.UiListId == menu4.UI_Part_linked_to).FirstOrDefault();
-                                    if (menu5.UI_Part_linked_to == 0)
-                                    {
-                                        item.Menu1 = menu5.UI_Name_Label;
-                                        item.Menu2 = menu4.UI_Name_Label;
-                                        item.Menu3 = menu3.UI_Name_Label;
-                                        item.Menu4 = menu2.UI_Name_Label;
-                                        item.Menu5 = d.UI_Name_Label;
-                                    }
-                                }
-                            }
+                            case 0: item.Menu1 = uiNames[i]; break;
+                            case 1: item.Menu2 = uiNames[i]; break;
+                            case 2: item.Menu3 = uiNames[i]; break;
+                            case 3: item.Menu4 = uiNames[i]; break;
+                            case 4: item.Menu5 = uiNames[i]; break;
                         }
                     }
-                    var p = permission.Where(p => p.PermissionId == item.PermissionId).FirstOrDefault();
-                    item.Permission = p.Permission;
                 }
-                
+
+                // ✅ Permission mapping
+                var p = permission.FirstOrDefault(p => p.PermissionId == item.PermissionId);
+                if (p != null)
+                    item.Permission = p.Permission;
             }
+
             return Ok(result);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> GetEmplRoleUiList(long employeeId)
@@ -838,7 +885,7 @@ namespace CWB.App.Controllers
 
                 // Copy base details
                 vm.Role_Ui_ListId = emui.Employee_UI_ListId;
-                vm.Ui_Id = emui.Ui_Id;
+                vm.Ui_Id = emui.Ui_Id.ToString();
                 vm.RoleId = 0; // Since this is directly assigned to Employee
                 var empDept = sorgs.FirstOrDefault();
 
@@ -850,8 +897,8 @@ namespace CWB.App.Controllers
                     if (deptRole != null)
                     {
                         // 3. Lookup the RoleName from role master
-                        var roleInfo = role.FirstOrDefault(r => r.Role_ListId == deptRole.Role_Access_Id);
-                        vm.RoleName = roleInfo != null ? roleInfo.Role_Desc : string.Empty;
+                        //var roleInfo = role.FirstOrDefault(r => r.Role_ListId == deptRole.Role_Access_Id);
+                        vm.RoleName = string.Empty;
                     }
                     else
                     {
@@ -879,25 +926,34 @@ namespace CWB.App.Controllers
 
             return Ok(role_UI_ListVMs);
         }
-        private void BuildUiHierarchy(Role_UI_ListVM vm, IEnumerable<UiListVM> designation, long uiId)
+        private void BuildUiHierarchy(Role_UI_ListVM vm, IEnumerable<UiListVM> designation, string uiIdString)
         {
-            var current = designation.FirstOrDefault(u => u.UiListId == uiId);
-            var hierarchy = new List<string>();
-
-            while (current != null)
+            if (string.IsNullOrWhiteSpace(uiIdString))
             {
-                hierarchy.Insert(0, current.UI_Name_Label);
-                current = designation.FirstOrDefault(u => u.UiListId == current.UI_Part_linked_to && current.UI_Part_linked_to != 0);
+                vm.UiLevel = "";
+                return;
             }
 
-            // Assign to Menu1..Menu5
-            if (hierarchy.Count > 0) vm.Menu1 = hierarchy[0];
-            if (hierarchy.Count > 1) vm.Menu2 = hierarchy[1];
-            if (hierarchy.Count > 2) vm.Menu3 = hierarchy[2];
-            if (hierarchy.Count > 3) vm.Menu4 = hierarchy[3];
-            if (hierarchy.Count > 4) vm.Menu5 = hierarchy[4];
+            // ✅ Split by commas, trim, convert to int
+            var uiIds = uiIdString.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                  .Select(id => Convert.ToInt32(id.Trim()))
+                                  .ToList();
 
-            vm.UiLevel = string.Join("+", hierarchy);
+            // ✅ Map to UI name labels
+            var uiNames = uiIds
+                .Select(id => designation.FirstOrDefault(d => d.UiListId == id)?.UI_Name_Label)
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .ToList();
+
+            // ✅ Assign Menu1..Menu5 if needed
+            if (uiNames.Count > 0) vm.Menu1 = uiNames.ElementAtOrDefault(0);
+            if (uiNames.Count > 1) vm.Menu2 = uiNames.ElementAtOrDefault(1);
+            if (uiNames.Count > 2) vm.Menu3 = uiNames.ElementAtOrDefault(2);
+            if (uiNames.Count > 3) vm.Menu4 = uiNames.ElementAtOrDefault(3);
+            if (uiNames.Count > 4) vm.Menu5 = uiNames.ElementAtOrDefault(4);
+
+            // ✅ Build UiLevel like "Masters+Item Masters+View/Edit Part No+Edit Part"
+            vm.UiLevel = string.Join("+", uiNames);
         }
         private void MapPermissions(Role_UI_ListVM vm, long permissionId)
         {
@@ -905,6 +961,7 @@ namespace CWB.App.Controllers
             vm.Add_Edit_Allowed = "N";
             vm.Delete_Allowed = "N";
             vm.Approval_Allowed = "N";
+            vm.PermissionId = permissionId;
 
             switch (permissionId)
             {

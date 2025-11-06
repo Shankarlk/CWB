@@ -117,6 +117,24 @@ $(function () {
         OperationListFormUtil.ProcessOperationList(operationId, true);
 
     });
+    $(".operation-list-search").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#tbl-operation-list tbody tr").filter(function () {
+            $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
+        });
+        var $tableBody = $("#tbl-operation-list tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
+    });
     $('#dialog-operation').on('hide.bs.modal', function (event) {
         var newNamevalidate = document.getElementById('OperationDocumentTypeId');
         newNamevalidate.style.border = '';
@@ -127,6 +145,17 @@ $(function () {
         api.get("/operationlist/Operations").then((data) => {
             var tablebody = $("#tbl-operation-list tbody");
             $(tablebody).html("");//empty tbody
+            if (data.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
             for (i = 0; i < data.length; i++) {
                 $(tablebody).append(AppUtil.ProcessTemplateData("operationlist-template", data[i]));
             }

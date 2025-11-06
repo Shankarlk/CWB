@@ -12,6 +12,18 @@ $(document).ready(function () {
             $("#P4Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(selvallow) > -1)
             });
+            var $tableBody = $("#P4Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
     $("#P4McName").on("change", function () {
@@ -24,6 +36,18 @@ $(document).ready(function () {
             $("#P4Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(selvallow) > -1)
             });
+            var $tableBody = $("#P4Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         }
     });
     $("#P4PartNo").on("keyup", function () {
@@ -31,23 +55,43 @@ $(document).ready(function () {
         $("#P4Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+            var $tableBody = $("#P4Grid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
     });
 });
 function loadPartinShop() {
     var tablebody = $("#P4Grid tbody");
     $(tablebody).html("");//empty tbody
-    document.getElementById('preloader').style.display = 'block';
-    document.getElementById('status').style.display = 'block';
+    $("#preloaderblurred").show();
 
     api.getbulk("/workOrder/GetPartsLoadedInShop").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("P4GridRow", data[i]));
         }
-        document.getElementById('preloader').style.display = 'none';
-        document.getElementById('status').style.display = 'none';
+        $("#preloaderblurred").hide();
     }).catch((error) => {
-        document.getElementById('preloader').style.display = 'none';
-        document.getElementById('status').style.display = 'none';
+        $("#preloaderblurred").hide();
     });
 }
 function loadSels() {

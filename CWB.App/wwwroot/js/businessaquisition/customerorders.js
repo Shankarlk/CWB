@@ -20,6 +20,17 @@ function LoadPOLines(customerOrderId) {
         var tablebody = $("#POLinesTable tbody");
         $(tablebody).html("");//empty tbody
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             if (data[i].numSalesOrder > 1) {
                 data[i].strStatus = " Multiple";
@@ -55,11 +66,23 @@ function LoadPOLines(customerOrderId) {
 }
 
 function LoadCustomerOrders() {
+    $("#preloaderblurred").show();
     
     api.get("/businessaquisition/getcustorders").then((data) => {
         var tablebody = $("#CustomerOrders tbody");
         $(tablebody).html("");//empty tbody
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             data[i].strStatus = OrdStatus[data[i].status];
             //if (data[i].hold) {
@@ -75,8 +98,10 @@ function LoadCustomerOrders() {
             //data[i].customerName = GetNameForCustomer(data[i].customerId);
             $(tablebody).append(AppUtil.ProcessTemplateData("CustomerOrdersRow", data[i]));
         }
-      //  console.log($(tablebody).html());
+        //  console.log($(tablebody).html());
+        $("#preloaderblurred").hide();
     }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
 }
 
@@ -195,6 +220,17 @@ function LoadSalesOrders(customerOrderId) {
         var tablebody = $("#SalesOrders tbody");
         $(tablebody).html("");//empty tbody
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             if (data[i].partId == partId) { }
             else { continue; }
@@ -244,6 +280,17 @@ function LoadPOLogs(customerOderId, salesOrderId) {
         //console.log(data);
         var tablebody = $("#POLogTable tbody");
         $(tablebody).html("");//empty tbody
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             //data[i].partNo = GetPartNo(data[i].partId);
             if (data[i].newValue == "NOTPlanned") {
@@ -287,6 +334,17 @@ function LoadDeliverySchedules(customerOrderId) {
         schedules = new Array();
         var tablebody = $("#DeliverySchedules tbody");
         $(tablebody).html("");//empty tbody
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         //console.log(data);
         var partId = $('#DSPartId').val();
         for (i = 0; i < data.length; i++) {
@@ -1096,6 +1154,18 @@ $(function () {
 
             $(this).toggle(showRow);
         });
+        var $tableBody = $("#POLogTable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $("#POLogTable tbody").append(noRecordsRow);
+        } else {
+            $("#POLogTable tbody").find(".norecordsfound").remove();
+        }
     });
 
     function convertToISODate(dateString) {
@@ -1114,24 +1184,72 @@ $(function () {
         $("#POLogTable tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#POLogTable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $("#POLogTable tbody").append(noRecordsRow);
+        } else {
+            $("#POLogTable tbody").find(".norecordsfound").remove();
+        }
     });
     $("#PoLogEventSr").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#POLogTable tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#POLogTable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $("#POLogTable tbody").append(noRecordsRow);
+        } else {
+            $("#POLogTable tbody").find(".norecordsfound").remove();
+        }
     });
     $("#PoLogComSr").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#POLogTable tbody tr").filter(function () {
             $(this).toggle($(this.children[8]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#POLogTable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $("#POLogTable tbody").append(noRecordsRow);
+        } else {
+            $("#POLogTable tbody").find(".norecordsfound").remove();
+        }
     });
     $("#baeppn").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#tbl-ba-existingparts tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#tbl-ba-existingparts tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $("#tbl-ba-existingparts tbody").append(noRecordsRow);
+        } else {
+            $("#tbl-ba-existingparts tbody").find(".norecordsfound").remove();
+        }
     });
 
     $("#baeppd").on("keyup", function () {
@@ -1139,18 +1257,54 @@ $(function () {
         $("#tbl-ba-existingparts tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#tbl-ba-existingparts tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     }); 
     $("#Search-BA-Status").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#CustomerOrders tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#CustomerOrders tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#Search-BA-PONumber").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#CustomerOrders tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#CustomerOrders tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $("#CustomerOrders tbody").append(noRecordsRow);
+        } else {
+            $("#CustomerOrders tbody").find(".norecordsfound").remove();
+        }
     });
 
     $("#Search-BA-Customer").on("keyup", function () {
@@ -1158,7 +1312,51 @@ $(function () {
         $("#CustomerOrders tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
-    }); 
+        var $tableBody = $("#CustomerOrders tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $("#CustomerOrders tbody").append(noRecordsRow);
+        } else {
+            $("#CustomerOrders tbody").find(".norecordsfound").remove();
+        }
+    });
+
+    $("#SearchPOdateTO").on("change", function () {
+        var fromDate = $("#SearchPOdateFrom").val().split("/").reverse().join("-");
+        var toDate = $("#SearchPOdateTO").val().split("/").reverse().join("-");
+        var fromDateTimestamp = new Date(fromDate).getTime();
+        var toDateTimestamp = new Date(toDate).getTime();
+
+        if (fromDateTimestamp > toDateTimestamp) {
+            alert("PO Date From Is Greater Than PO Date To");
+            $("#SearchPOdateFrom").val('');
+            $("#SearchPOdateTO").val('');
+            return false;
+        }
+        $("#CustomerOrders tbody tr").filter(function () {
+            var dateText = $(this.children[2]).text(); // assuming the date is in the 3rd column
+            var tableDate = dateText.split("-").reverse().join("-");
+
+            $(this).toggle(tableDate >= fromDate && tableDate <= toDate);
+        });
+        var $tableBody = $("#CustomerOrders tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $("#CustomerOrders tbody").append(noRecordsRow);
+        } else {
+            $("#CustomerOrders tbody").find(".norecordsfound").remove();
+        }
+    });
     
     //Search-BA-PONumber
     //Search-BA-Customer

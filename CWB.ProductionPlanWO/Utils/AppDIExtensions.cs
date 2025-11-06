@@ -18,6 +18,7 @@ namespace CWB.ProductionPlanWO.Utils
             services.AddTransient<IProcPlanRepository, ProcPlanRepository>();
             services.AddTransient<IWOSORepository, WOSORepository>();
             services.AddTransient<IWOStatusRepository, WOStatusRepository>();
+            services.AddTransient<ICust_NC_DecisionRepository, Cust_NC_DecisionRepository>();
             services.AddTransient<IBOMListRepository, BOMListRepository>();
             services.AddTransient<IDispatchDetailsRepository, DispatchDetailsRepository>();
             services.AddTransient<IDispatchQntyRepository, DispatchQntyRepository>();
@@ -32,6 +33,7 @@ namespace CWB.ProductionPlanWO.Utils
             services.AddTransient<IWoSubConSupplierRepository, WoSubConRepository>();
             services.AddTransient<IProcPlanPartPurChaseRelRepository, ProcPlanPartPurChaseRelRepository>();
             services.AddTransient<IInward_Condn_listRepository, Inward_Condn_listRepository>();
+            services.AddTransient<ISetupVariationReasonRepository, SetupVariationReasonRepository>();
             services.AddTransient<IInsp_Outcome_DetailsRepository, Insp_Outcome_DetailsRepository>();
             services.AddTransient<IInsp_Outcome_ListRepository, Insp_Outcome_ListRepository>();
             services.AddTransient<IInv_Trans_LogRepository, Inv_Trans_LogRepository>();

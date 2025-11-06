@@ -11,6 +11,8 @@ namespace CWB.ProductionPlanWO.Domain
         public long NcLogId { get; set; }
         public string Containment_Action { get; set; }
         public string Senior_Feedback { get; set; }
+        public string CnfAllCompelete { get; set; }
+        public string CnfComments { get; set; }
         public long Cont_RCA_CA_Status_Id { get; set; }
         public long TenantId { get; set; }
     }

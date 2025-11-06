@@ -2,3 +2,70 @@
 2025-09-13 04:33:07.4709 INFO Application started. Press Ctrl+C to shut down.
 2025-09-13 04:33:07.5004 INFO Hosting environment: Production
 2025-09-13 04:33:07.5206 INFO Content root path: /app
+2025-09-13 12:05:00.8339 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-13 12:05:01.1605 INFO Application started. Press Ctrl+C to shut down.
+2025-09-13 12:05:01.2481 INFO Hosting environment: Production
+2025-09-13 12:05:01.3554 INFO Content root path: /app
+2025-09-13 12:05:15.2715 ERROR Consume exception
+2025-09-13 14:10:00.6715 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-09-13 14:10:00.9648 INFO Application started. Press Ctrl+C to shut down.
+2025-09-13 14:10:00.9972 INFO Hosting environment: Production
+2025-09-13 14:10:01.0176 INFO Content root path: /app
+2025-09-13 14:10:03.9489 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3376ms in state CONNECT)
+2025-09-13 14:10:03.9872 ERROR Kafka error: 1/1 brokers are down
+2025-09-13 14:10:08.9141 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3365ms in state CONNECT, 1 identical error(s) suppressed)
+2025-09-13 14:10:38.9149 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3387ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:11:13.8546 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3331ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:11:43.9019 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3383ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:12:18.9316 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3405ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:12:53.9188 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3393ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:13:23.9210 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3399ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:13:58.8842 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3377ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:14:28.8915 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3385ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:15:03.8955 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3392ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:15:38.8872 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3382ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:16:13.8504 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3352ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:16:43.8751 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3378ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:17:18.8639 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3372ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:17:48.8618 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3379ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:18:23.8560 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3375ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:18:53.8612 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3389ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:19:23.8667 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3395ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:19:58.8611 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3395ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:20:33.8185 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3355ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:21:03.8688 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3412ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:21:38.8127 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3359ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:22:13.8550 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3396ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:22:48.7841 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3329ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:23:18.8442 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3394ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:23:53.8235 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3378ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:24:23.8510 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3402ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:24:58.8114 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3370ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:25:28.8309 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3393ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:26:03.8007 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3379ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:26:33.8278 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3410ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:27:08.7710 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3348ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:27:38.7710 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3352ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:28:08.7895 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3378ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:28:43.8058 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3403ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:29:18.7950 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3395ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:29:53.7766 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3377ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:30:23.7647 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3377ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:30:53.7807 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3388ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:31:28.7802 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3399ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:32:03.7664 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3384ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:32:38.6906 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3319ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:33:08.7511 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3379ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:33:38.7739 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3407ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:34:13.7475 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3388ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:34:48.7017 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3350ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:35:18.7604 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3406ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:35:48.7799 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3437ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:36:23.6908 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3353ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:36:53.6969 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3361ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:37:23.7483 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3419ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:37:58.7132 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3382ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:38:33.6604 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3327ms in state CONNECT, 7 identical error(s) suppressed)
+2025-09-13 14:39:03.6894 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3368ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:39:33.6983 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3385ms in state CONNECT, 6 identical error(s) suppressed)
+2025-09-13 14:40:08.7157 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3402ms in state CONNECT, 7 identical error(s) suppressed)

@@ -19,7 +19,7 @@
         <hr class="mt-2">
         <div class="contianer">
             <div class="row ">
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="card p-1">
                         <div class="row">
                             <h5>Inward</h5>
@@ -46,7 +46,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="card p-1">
                         <div class="row">
                             <h5>Inspection</h5>
@@ -96,7 +96,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="card p-1">
                         <div class="row">
                             <h5>Non Conformance</h5>
@@ -129,7 +129,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <div class="card p-1">
                         <div class="row">
                             <h5>Machine Loading</h5>
@@ -139,8 +139,8 @@
                                     Set Matl. Coverage in Shop
                                 </button>
                             </div>
-                            <div class="col-md-12 text-center">
-                                <button class="btn btn-primary w-100 mb-2" id="TimeSlotSettingsBtn">
+                            <div class="col-md-12 text-center" hidden>
+                                <button class="btn btn-primary w-100 mb-2" id="TimeSlotSettingsBtns">
                                     Timeslot Settings
                                 </button>
                             </div>
@@ -160,6 +160,35 @@
 
                     </div>
                 </div>
+
+
+                <div class="col-md-4">
+                    <div class="card p-1">
+                        <div class="row">
+                            <h5>Setup Approval</h5>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal"
+                                        data-bs-target="#SetApp15">
+                                    Setup Variation Reasons
+                                </button>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal"
+                                        data-bs-target="#">
+                                    &nbsp;
+                                </button>
+                            </div>
+                            <div class="col-md-12 text-center">
+                                <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal"
+                                        data-bs-target="#">
+                                    &nbsp;
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -1745,6 +1774,103 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div>
+
+
+<div class="modal fade" id="SetApp15" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Setup Variation Reason List </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <h6>Chosen by User for Setup Time Variation and / or when FTR is not achieved</h6>
+                    <div class="row">
+                        <div class="col-md-12 mt-2">
+                            <div class="table-responsive mt-1 table-he-250">
+                                <table class="table table-sm table-bordered w-100 mb-3 tableFixHead"
+                                       id="SetApp15Grid">
+                                    <thead class="  table-info th-sti text-center">
+                                        <tr class="table-border-bottom">
+                                            <th>Setup Variation Type</th>
+                                            <th>Reason</th>
+                                            <th width="5%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- =========================== -->
+                        </div>
+                        <div class="col-md-6 mt-2">
+                            <button class="btn btn-primary mb-2" data-bs-toggle="modal"
+                                    data-bs-target="#SetApp16" data-setuptype="FTR not achieved">
+                                Add New Reason <br>(FTR not achieved)
+                            </button>
+                        </div>
+                        <div class="col-md-6 text-end mt-2">
+                            <button class="btn btn-primary mb-2" data-bs-toggle="modal"
+                                    data-bs-target="#SetApp16" data-setuptype="Setup Time Variation">
+                                Add New Reason <br>(Setup Time Variation)
+                            </button>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="SetApp16" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 4px solid #32AADD;">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Reason for <span id="SpanSetApp16">xxxxxx</span> </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label class="form-label col-md-5 mb-2">Reason Description </label>
+                    <div class="col-md-7 mb-2">
+                        <input class="form-control" id="St16Reason" placeholder="Enter" type="text">
+                        <input class="form-control" id="St16Type" placeholder="Enter" type="text" hidden>
+                        <span id="Text-Error-streason"></span>
+                        <input class="form-control" id="St16ReasonId" placeholder="Enter" type="text" hidden>
+                    </div>
+                    <div class="col text-end">
+                        <button class="btn btn-sm btn-primary" id="SaveStPopup16">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<template id="SetpApp15GridRow">
+    <tr>
+        <td>{setupType}</td>
+        <td>{reason}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item"
+                       data-setupid="{setupVariationReasonId}" data-setuptype="{setupType}"
+                       data-reason="{reason}"
+                       data-bs-toggle="modal" data-bs-target="#SetApp16">Edit</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
 
 <template id="inwardDocRow">
 

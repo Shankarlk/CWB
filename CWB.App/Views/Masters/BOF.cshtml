@@ -45,14 +45,28 @@
                                     <!-- ============= -->
                                     <!-- ========================= -->
                                     <div class="col-md-7 mb-1"><h5> <span id="headingN">New</span> Bought Out Finish (BOF)</h5></div>
-                                    <label class="form-label col-md-1 mb-1 text-end">Status</label>
-                                    <div class="col-md-4 mb-1">
-                                        <div class="input-group">
-                                            <input type="text" id="Status" asp-for="Status" name="Status" class="form-control form-control-sm" value="Active" readonly>
-                                            <button type="button" id="#" class="btn btn-sm waves-effect waves-light" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#status-info" data-tippy="" data-original-title="Click to see the Status change details">
-                                                <i class="fas fa-pencil-alt font-16"></i>
-                                            </button>
+                                    <label class="form-label col-md-1 mb-1 p-2 text-end" id="statusLbl">Status</label>
+                                    <div class="col-md-3 mb-1" id="statusDiv">
+                                        <div class="d-flex align-items-center">
+                                            <input type="text" id="Status" asp-for="Status" name="Status" class="form-control form-control-sm" readonly>
+
+                                            <div class="ms-1 d-flex flex-column">
+                                                <button type="button" class="btn btn-sm btn-outline-secondary mb-1"
+                                                        data-plugin="tippy" data-tippy-placement="top"
+                                                        data-bs-toggle="modal" data-bs-target="#status-info"
+                                                        data-original-title="Edit Status">
+                                                    <i class="fas fa-pencil-alt font-10"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                        data-plugin="tippy" data-tippy-placement="top"
+                                                        data-bs-toggle="modal" data-bs-target="#ChangeListPopup"
+                                                        data-original-title="View Status History">
+                                                    <i class="fa fa-history font-10"></i>
+                                                </button>
+                                            </div>
                                             <input asp-for="StatusChangeReason" name="StatusChangeReason" id="StatusChangeReason" class="form-control form-control-sm" type="text" placeholder="enter here" hidden>
+                                            <input asp-for="Inv_Trans" name="Inv_Trans" id="Inv_Trans" class="form-control form-control-sm" type="text" placeholder="enter here" hidden>
+                                            <input asp-for="Linked_to_BOM" name="Linked_to_BOM" id="Linked_to_BOM" class="form-control form-control-sm" type="text" placeholder="enter here" hidden>
                                         </div>
                                     </div>
                                     <!-- ========================= -->
@@ -279,7 +293,7 @@
                 <div class="row">
                     <h5>
                         Document Details : <span id="SpanAppDt"></span> uploaded by <span id="SpanAppUpby"></span> on <span id="SpanAppUpOn"></span> for
-                        Part No : <span id="SpanAppPart"></span> / <span id="SpanAppDesc"></span> 
+                        Part No : <span id="SpanAppPart"></span> / <span id="SpanAppDesc"></span>
                     </h5>
                 </div>
                 <div class="row">
@@ -316,7 +330,7 @@
 </div><!-- /.modal -->
 
 <div class="modal fade" id="status-info" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="mySmallModalLabel">Status Change Reason</h4>
@@ -334,13 +348,43 @@
                         <select class="form-select form-select-sm" id="statusPopup" asp-items="ViewBag.Statuses" required>
                         </select>
                     </div>
+                    <label class="form-label col-md-5 mb-2"></label>
+                    <div class="col-md-7 mb-2">
+                        <span id="stReasonPop" style="color:red"></span>
+                    </div>
                     <!-- =============== -->
                     <label class="form-label col-md-5 mb-2"> Reason *</label>
                     <div class="col-md-7 mb-2">
                         <textarea class="form-control form-control-sm" id="statusResasonopup" placeholder="Enter here"></textarea>
                     </div>
                     <!-- =============== -->
-                    <div class="col text-end">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="table-responsive mb-2 table-he-250">
+                                <table class="table table-sm table-bordered w-100 text-center" id="StPopupGrid">
+                                    <thead class="table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Part No</th>
+                                            <th>Part Desc </th>
+                                            <th>Qnty</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- =============== -->
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-sm waves-effect waves-light"
+                                data-plugin="tippy" data-tippy-placement="top"
+                                data-bs-toggle="modal" data-bs-target="#ChangeListPopup"
+                                data-original-title="View Status History">
+                            <i class="fa fa-history font-20"></i>
+                        </button>
+                    </div>
+                    <div class="col-md-6 text-end">
                         <button class="btn btn-sm btn-primary" id="BtnstatusSave">Save</button>
                     </div>
                     <!-- =============== -->
@@ -348,6 +392,47 @@
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
+</div>
+<div id="ChangeListPopup" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Item Master Status Change Log Part No / Desc</h4>
+                <button type="button" id="AddDeptClose" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <div class="table-responsive mb-2 table-he-250">
+                        <table class="table table-sm table-bordered w-100 text-center" id="ChangeGrid">
+                            <thead class="table-info th-sti">
+                                <tr class="table-border-bottom">
+                                    <th>Date</th>
+                                    <th>User</th>
+                                    <th>From Status</th>
+                                    <th>To Status </th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
 </div>
 
 <div id="doc-item" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
@@ -626,6 +711,24 @@
         <td>{comments}</td>
     </tr>
 </template>
+
+<template id="StPopupGridRow">
+    <tr style="text-align: center;">
+        <td>{partNo}</td>
+        <td>{partDesc}</td>
+        <td>{qnty}</td>
+    </tr>
+</template>
+<template id="ChangeGridRow">
+    <tr>
+        <td>{statusChangeDate}</td>
+        <td>{userName}</td>
+        <td>{fromChangedStatus}</td>
+        <td>{status}</td>
+        <td>{changeReason}</td>
+    </tr>
+</template>
+
 
 @section scripts {
     <script src="~/js/addfunctions.js"></script>

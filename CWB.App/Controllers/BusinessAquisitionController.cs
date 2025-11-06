@@ -1,4 +1,5 @@
-﻿using CWB.App.Models.BusinessProcesses;
+﻿using CWB.App.AppUtils;
+using CWB.App.Models.BusinessProcesses;
 using CWB.App.Models.ItemMaster;
 using CWB.App.Models.Routing;
 using CWB.App.Services.BusinessProcesses;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CWB.App.Controllers
@@ -297,6 +299,20 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetPOLogs(long customerOrderId)
         {
             var pologs = await _baService.GetPOLogs(customerOrderId);
+            var masterparts = await _masterService.ItemMasterParts();
+            ClaimsPrincipal userClaim = HttpContext.User;
+            string fullName = AppUtil.GetFullName(userClaim);
+            foreach (var item in pologs)
+            {
+                foreach (ItemMasterPartVM imp in masterparts)
+                {
+                    if (item.PartId == imp.PartId)
+                    {
+                        item.PartNo = imp.PartNo;
+                    }
+                }
+                item.User = fullName;
+            }
             return Ok(pologs);
 
         }

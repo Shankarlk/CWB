@@ -30,6 +30,12 @@ namespace CWB.ProductionPlanWO.Configurations
                 .Property(b => b.Senior_Feedback)
                 .HasColumnName("Senior_Feedback");
             builder
+                .Property(b => b.CnfAllCompelete)
+                .HasColumnName("CnfAllCompelete");
+            builder
+                .Property(b => b.CnfComments)
+                .HasColumnName("CnfComments");
+            builder
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();

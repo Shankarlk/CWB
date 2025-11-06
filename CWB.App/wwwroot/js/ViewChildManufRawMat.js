@@ -20,9 +20,21 @@ function loadCustomers(CompanyOrSupplier) {//pass the element name
     });
 }
 function loadEditParts() {
+    $("#preloaderblurred").show();
     var tablebody = $("#grid1 tbody");
     $(tablebody).html("");//empty tbody
     api.getbulk("/ItemMasterInfo/masterparts").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         data = data.filter(item => item.masterDisplay === "Child Manufactured Part");
         for (i = 0; i < data.length; i++) {
 
@@ -30,7 +42,9 @@ function loadEditParts() {
             $(tablebody).append(tBody);
 
         }
+        $("#preloaderblurred").hide();
     }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
 }
 
@@ -43,12 +57,36 @@ $(function () {
         $("#grid1 tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#grid1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPartDesc").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#grid1 tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#grid1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchCustomer").on("change", function () {
         var selectedValue = $(this).val();
@@ -60,6 +98,18 @@ $(function () {
         $("#grid1 tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(selvallowc) > -1)
         });
+        var $tableBody = $("#grid1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#searchPartType").on("change", function () {
         var selectedValue = $(this).val();
@@ -71,6 +121,18 @@ $(function () {
         $("#grid1 tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(selvallowc) > -1)
         });
+        var $tableBody = $("#grid1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $('#viewDoc').on('show.bs.modal', function (event) {
         $('#fileViewer').attr('src', '');
@@ -152,6 +214,17 @@ function loadPartsGrid2(partid, parttype) {
 
         // First, get all document info so we can check for Part Drawing PDFs
         api.getbulk("/DocumentManagement/GetAllDocList").then((docs) => {
+            if (data.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
 
             for (let i = 0; i < data.length; i++) {
                 let part = data[i];

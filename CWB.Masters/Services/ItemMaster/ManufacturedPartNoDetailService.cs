@@ -103,6 +103,9 @@ namespace CWB.Masters.Services.ItemMaster
                 if (id == 0)
                 {
                     masterPart.Id = 0;
+                    masterPart.Status = "Not Released";
+                    masterPart.Inv_Trans = 'N';
+                    masterPart.Linked_to_BOM = 'N';
                     await _masterPartRepository.AddAsync(masterPart);
                     await _unitOfWork.CommitAsync();
                     manufacturedpartnodetail.PartId = (int)masterPart.Id;
@@ -130,10 +133,13 @@ namespace CWB.Masters.Services.ItemMaster
                         //    findpartStatus.LastModifiedDate = DateTime.Now;
                         //    await _partStatusChangeLogRepository.UpdateAsync(findpartStatus.Id, findpartStatus);
                         //}
+
+                        var findmp = await _masterPartRepository.SingleOrDefaultAsync(s => s.Id == masterPart.Id);
                         PartStatusChangeLog partStatus = new PartStatusChangeLog()
                         {
                             MasterPartId = masterPart.Id,
                             Status = masterPart.Status,
+                            FromChangedStatus = findmp.Status.ToString(),
                             ChangeReason = masterPart.StatusChangeReason,
                             TenantId = masterPart.TenantId
                         };

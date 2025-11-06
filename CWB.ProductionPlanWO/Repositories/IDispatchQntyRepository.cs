@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CWB.ProductionPlanWO.Repositories
 {
-    public interface IDispatchQntyRepository : IRepository<DispatchQnty>
+    public interface IDispatchQntyRepository : IRepository<TempDispatchQnty>
     {
     }
 }

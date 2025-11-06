@@ -18,7 +18,7 @@ namespace CWB.Identity.IdentityExtensions
                 o.Password.RequireNonAlphanumeric = true;
                 o.Password.RequiredLength = 6;
                 o.User.RequireUniqueEmail = true;
-                o.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.@+";
+                o.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.@#$%*!";
                 o.SignIn.RequireConfirmedPhoneNumber = true;
                 o.SignIn.RequireConfirmedEmail = true;
                 o.Lockout.AllowedForNewUsers = true;

@@ -19,6 +19,8 @@ namespace CWB.Masters.ViewModels.ItemMaster
         public string? StatusChangeReason { get; set; }
         public string MasterPartType { get; set; }
         public string ReorderLevel { get; set; }
+        public char Inv_Trans { get; set; }
+        public char Linked_to_BOM { get; set; }
         public string ReorderQnty { get; set; }
         public int FinalPartNosoldtoCustomer { get; set; }
         public int PriceSettledwithCustomer_INR { get; set; }

@@ -125,6 +125,8 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(s => s.PartNo, s => s.MapFrom(src => src.PartNo))
                 .ForMember(s => s.PartDescription, s => s.MapFrom(src => src.PartDescription))
                 .ForMember(s => s.RevNo, s => s.MapFrom(src => src.RevNo))
+                .ForMember(s => s.Inv_Trans, s => s.MapFrom(src => src.Inv_Trans))
+                .ForMember(s => s.Linked_to_BOM, s => s.MapFrom(src => src.Linked_to_BOM))
                 .ForMember(s => s.RevDate, s => s.MapFrom(src => src.RevDate))
                 .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
                 .ForMember(s => s.StatusChangeReason, s => s.MapFrom(src => src.StatusChangeReason));
@@ -135,6 +137,8 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(s => s.PartDescription, s => s.MapFrom(src => src.PartDescription))
                 .ForMember(s => s.RevNo, s => s.MapFrom(src => src.RevNo))
                 .ForMember(s => s.RevDate, s => s.MapFrom(src => src.RevDate))
+                .ForMember(s => s.Inv_Trans, s => s.MapFrom(src => src.Inv_Trans))
+                .ForMember(s => s.Linked_to_BOM, s => s.MapFrom(src => src.Linked_to_BOM))
                 .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
                 .ForMember(s => s.StatusChangeReason, s => s.MapFrom(src => src.StatusChangeReason));
 
@@ -144,6 +148,8 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(s => s.PartDescription, s => s.MapFrom(src => src.PartDescription))
                 .ForMember(s => s.RevNo, s => s.MapFrom(src => src.RevNo))
                 .ForMember(s => s.RevDate, s => s.MapFrom(src => src.RevDate))
+                .ForMember(s => s.Inv_Trans, s => s.MapFrom(src => src.Inv_Trans))
+                .ForMember(s => s.Linked_to_BOM, s => s.MapFrom(src => src.Linked_to_BOM))
                 .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
                 .ForMember(s => s.StatusChangeReason, s => s.MapFrom(src => src.StatusChangeReason));
 
@@ -153,6 +159,8 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(s => s.PartDescription, s => s.MapFrom(src => src.PartDescription))
                 .ForMember(s => s.RevNo, s => s.MapFrom(src => src.RevNo))
                 .ForMember(s => s.RevDate, s => s.MapFrom(src => src.RevDate))
+                .ForMember(s => s.Inv_Trans, s => s.MapFrom(src => src.Inv_Trans))
+                .ForMember(s => s.Linked_to_BOM, s => s.MapFrom(src => src.Linked_to_BOM))
                 .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
                 .ForMember(s => s.StatusChangeReason, s => s.MapFrom(src => src.StatusChangeReason));
 
@@ -162,19 +170,30 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(s => s.PartDescription, s => s.MapFrom(src => src.PartDescription))
                 .ForMember(s => s.RevNo, s => s.MapFrom(src => src.RevNo))
                 .ForMember(s => s.RevDate, s => s.MapFrom(src => src.RevDate))
+                .ForMember(s => s.Inv_Trans, s => s.MapFrom(src => src.Inv_Trans))
+                .ForMember(s => s.Linked_to_BOM, s => s.MapFrom(src => src.Linked_to_BOM))
                 .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
                 .ForMember(s => s.StatusChangeReason, s => s.MapFrom(src => src.StatusChangeReason));
 
             CreateMap<Domain.ItemMaster.PartStatusChangeLog, PartStatusChangeLogVM>()
                 .ForMember(s => s.PartStatusChangeLogId, s => s.MapFrom(src => src.Id))
                 .ForMember(s => s.Status, s => s.MapFrom(src => src.Status.ToString()))
+                .ForMember(s => s.FromChangedStatus, s => s.MapFrom(src => src.FromChangedStatus))
                 .ForMember(s => s.ChangeReason, s => s.MapFrom(src => src.ChangeReason))
                 .ForMember(s => s.MasterPartId, s => s.MapFrom(src => src.MasterPartId))
                 .ForMember(s => s.UpdateDate, s => s.MapFrom(src => src.LastModifiedDate));
 
+            CreateMap<Domain.ItemMaster.PartsStatus, PartsStatusVM>()
+                .ForMember(s => s.PartsStatusId, s => s.MapFrom(src => src.Id))
+                .ForMember(s => s.Status, s => s.MapFrom(src => src.Status));
+            CreateMap<PartsStatusVM, PartsStatus>()
+                .ForMember(s => s.Id, s => s.MapFrom(src => src.PartsStatusId))
+                .ForMember(s => s.Status, s => s.MapFrom(src => src.Status));
+
             CreateMap<PartStatusChangeLogVM, PartStatusChangeLog>()
                 .ForMember(s => s.Id, s => s.MapFrom(src => src.MasterPartId))
                 .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
+                .ForMember(s => s.FromChangedStatus, s => s.MapFrom(src => src.FromChangedStatus))
                 .ForMember(s => s.ChangeReason, s => s.MapFrom(src => src.ChangeReason))
                 .ForMember(s => s.MasterPartId, s => s.MapFrom(src => src.MasterPartId))
                 .ForMember(s => s.LastModifiedDate, s => s.MapFrom(src => src.UpdateDate));
@@ -185,6 +204,8 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(s => s.PartDescription, s => s.MapFrom(src => src.PartDescription))
                 .ForMember(s => s.RevNo, s => s.MapFrom(src => src.RevNo))
                 .ForMember(s => s.RevDate, s => s.MapFrom(src => src.RevDate))
+                .ForMember(s => s.Inv_Trans, s => s.MapFrom(src => src.Inv_Trans))
+                .ForMember(s => s.Linked_to_BOM, s => s.MapFrom(src => src.Linked_to_BOM))
                 .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
                 .ForMember(s => s.StatusChangeReason, s => s.MapFrom(src => src.StatusChangeReason));
 
@@ -418,6 +439,8 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(s => s.StatusChangeReason, s => s.MapFrom(src => src.StatusChangeReason))
                 .ForMember(s => s.RevNo, s => s.MapFrom(src => src.RevNo))
                 .ForMember(s => s.RevDate, s => s.MapFrom(src => src.RevDate))
+                .ForMember(s => s.Inv_Trans, s => s.MapFrom(src => src.Inv_Trans))
+                .ForMember(s => s.Linked_to_BOM, s => s.MapFrom(src => src.Linked_to_BOM))
                 .ForMember(s => s.CreationDate, s => s.MapFrom(src => src.CreationDt));
 
             CreateMap<Domain.ItemMaster.MasterPart, MasterPartVM>()
@@ -429,6 +452,8 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(s => s.StatusChangeReason, s => s.MapFrom(src => src.StatusChangeReason))
                 .ForMember(s => s.RevNo, s => s.MapFrom(src => src.RevNo))
                 .ForMember(s => s.RevDate, s => s.MapFrom(src => src.RevDate))
+                .ForMember(s => s.Inv_Trans, s => s.MapFrom(src => src.Inv_Trans))
+                .ForMember(s => s.Linked_to_BOM, s => s.MapFrom(src => src.Linked_to_BOM))
                 .ForMember(s => s.CreationDt, s => s.MapFrom(src => src.CreationDate));
 
             CreateMap<CWB.Masters.Domain.Routings.Routing, RoutingVM>()

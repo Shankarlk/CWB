@@ -11,6 +11,7 @@ namespace CWB.Masters.ViewModels.ItemMaster
     {
         public long PartStatusChangeLogId { get; set; }
         public string Status { get; set; }
+        public string FromChangedStatus { get; set; }
         public string ChangeReason { get; set; }
         public long MasterPartId { get; set; }
         public DateTime UpdateDate { get; set; }

@@ -1,0 +1,28 @@
+2025-11-04 04:36:15.5982 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-11-04 04:36:15.9474 INFO Application started. Press Ctrl+C to shut down.
+2025-11-04 04:36:16.0424 INFO Hosting environment: Production
+2025-11-04 04:36:16.0917 INFO Content root path: /app
+2025-11-04 08:42:27.0957 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-11-04 08:42:27.4249 INFO Application started. Press Ctrl+C to shut down.
+2025-11-04 08:42:27.5215 INFO Hosting environment: Production
+2025-11-04 08:42:27.6067 INFO Content root path: /app
+2025-11-04 09:10:53.8482 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-11-04 09:10:54.0687 INFO Application started. Press Ctrl+C to shut down.
+2025-11-04 09:10:54.1628 INFO Hosting environment: Production
+2025-11-04 09:10:54.2316 INFO Content root path: /app
+2025-11-04 11:59:12.8210 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2025-11-04 11:59:13.0618 INFO Application started. Press Ctrl+C to shut down.
+2025-11-04 11:59:13.1397 INFO Hosting environment: Production
+2025-11-04 11:59:13.2228 INFO Content root path: /app
+2025-11-04 12:43:39.2043 INFO Consumed message at email-events [[0]] @1: {"RecipientEmail":"rajugoudas2003@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Rajugouda,\n\nYour Account has been Created successfully!\nYou Username: rajugoudas2003@gmail.com\nYou Password: Qwj*kO8024\n\nThanks,\nKGK-Engineers"}
+2025-11-04 12:43:41.8082 INFO Attempt 1 to send email to rajugoudas2003@gmail.com
+2025-11-04 12:43:46.7498 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-11-04 12:43:52.0317 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-11-04 12:43:52.8551 INFO Sending email to rajugoudas2003@gmail.com
+2025-11-04 12:43:55.3081 INFO Email successfully sent to rajugoudas2003@gmail.com
+2025-11-04 12:47:56.4263 INFO Consumed message at email-events [[0]] @2: {"RecipientEmail":"emp56@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Test em,\n\nYour Account has been Created successfully!\nYou Username: emp56@gmail.com\nYou Password: Pi$#B@EU8O\n\nThanks,\nKGK-Engineers"}
+2025-11-04 12:47:56.4731 INFO Attempt 1 to send email to emp56@gmail.com
+2025-11-04 12:47:56.5434 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2025-11-04 12:47:59.7602 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2025-11-04 12:48:00.2628 INFO Sending email to emp56@gmail.com
+2025-11-04 12:48:02.1491 INFO Email successfully sent to emp56@gmail.com

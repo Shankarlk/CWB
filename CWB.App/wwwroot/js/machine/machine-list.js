@@ -35,6 +35,17 @@
         api.get("/Machine/GetMachines").then((data) => {
             var tablebody = $("#tbl-machine-list tbody");
             $(tablebody).html("");//empty tbody
+            if (data.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
             for (i = 0; i < data.length; i++) {
                 $(tablebody).append(AppUtil.ProcessTemplateData("machinelist-template", data[i]));
             }

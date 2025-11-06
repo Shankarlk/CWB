@@ -151,6 +151,11 @@ namespace CWB.Identity
                     var user = await _userManager.FindByNameAsync(model.Username);
                     await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id, user.FirstName + " " + user.LastName, clientId: context?.Client.ClientId));
 
+                    if (user.ChangedPassword == 1) // <-- your user table property
+                    {
+                        // redirect to ChangePassword screen
+                        return RedirectToAction("ChangePassword", "Account", new { returnUrl = model.ReturnUrl });
+                    }
                     // only set explicit expiration here if user chooses "remember me". 
                     // otherwise we rely upon expiration configured in cookie middleware.
                     AuthenticationProperties props = null;
@@ -390,7 +395,7 @@ namespace CWB.Identity
                 }
                 else
                 {
-
+                    user.ChangedPassword = 1;
                     var result = await _userManager.CreateAsync(user, model.Password);
 
                     if (result.Succeeded)
@@ -511,6 +516,7 @@ namespace CWB.Identity
                 var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
 
                 // Reset password using token
+                user.ChangedPassword = 1;
                 var result = await _userManager.ResetPasswordAsync(user, resetToken, model.NewPassword);
 
                 if (result.Succeeded)
@@ -531,12 +537,17 @@ namespace CWB.Identity
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             var user = (HttpContext.User.Identity as ClaimsIdentity);
 
             var email = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
 
             var appUser = await _userManager.FindByEmailAsync(email);
-
+            appUser.ChangedPassword = 0;
             var result = await _userManager.ChangePasswordAsync(appUser, model.CurrentPassword, model.NewPassword);
             if (!result.Succeeded)
             {

@@ -31,6 +31,11 @@ namespace CWB.ProductionPlanWO.Domain
         public char Setup_FTR { get; set; }
         public string Setup_comments { get; set; }
         public string Setup_Appvl_Doc_Ref { get; set; }
+        public long OperatorId { get; set; }
+        public long ReasonfornotachievingFTRId { get; set; }
+        public long ReasonforAddnSetupTimeId { get; set; }
+        public string SetupTimeTaken { get; set; }
+        public string AddntimeforSetup { get; set; }
         public long QntyOffered { get; set; }
         public long Accepted { get; set; }
         public long NonConQnty { get; set; }

@@ -1,15 +1,30 @@
 ﻿
 function loadDocList() {
+    $("#preloaderblurred").show();
     api.getbulk("/DocumentManagement/GetAllDocList").then((data) => {
         //data = data.filter(item => item.status !== 6);
         var tablebody = $("#DocViewListGrid tbody");
         $(tablebody).html("");//empty tbody
         console.log(data);
+        var $tableBody = $("#PartsRoutingsTable tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
         for (i = 0; i < data.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("DocListGridRow", data[i]));
             //console.log($(tablebody).append(AppUtil.ProcessTemplateData("DocListGridRow", data[i])));
         }
+        $("#preloaderblurred").hide();
     }).catch((error) => {
+        $("#preloaderblurred").hide();
         console.log(error);
     });
 }
@@ -77,6 +92,18 @@ $(document).ready(function () {
             $("#DocViewListGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#DocViewListGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
 
         } else {
             $("#mptable tbody tr").show();
@@ -120,6 +147,18 @@ $(document).ready(function () {
             $("#DocViewListGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#DocViewListGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#DocViewListGrid tbody tr").show(); // show all rows when checkbox is unchecked
         }
@@ -131,6 +170,18 @@ $(document).ready(function () {
             $("#DocViewListGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
             });
+            var $tableBody = $("#DocViewListGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
         } else {
             $("#DocViewListGrid tbody tr").show(); // show all rows when checkbox is unchecked
         }
@@ -161,60 +212,180 @@ $(document).ready(function () {
         $("#DocViewListGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[11]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#DocViewListGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchRoutingName").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#DocViewListGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[10]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#DocViewListGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchWo").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#DocViewListGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[8]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#DocViewListGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchApprovBy").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#DocViewListGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#DocViewListGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchUploadedBy").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#DocViewListGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#DocViewListGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchDocTypeName").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#DocViewListGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[0]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#DocViewListGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchPartNo").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#DocViewListGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#DocViewListGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchRoutingName").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#DocViewListGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#DocViewListGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchOrpNo").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#DocViewListGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[7]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#DocViewListGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
     $("#SearchCustomer").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#DocViewListGrid tbody tr").filter(function () {
             $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#DocViewListGrid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
     $('#RetentionDate').on('shown.bs.modal', function (event) {

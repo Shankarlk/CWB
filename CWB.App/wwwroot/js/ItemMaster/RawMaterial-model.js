@@ -278,10 +278,38 @@ function DecodeRawPartId() {
             var closeatag = document.getElementById("closeatag");
             if (decodepartid != 0) {
                 closeatag.href = "/Masters/MasterDetails";
+                $("#statusDiv").show();
+                $("#statusLbl").show();
             } else {
+                $("#statusDiv").hide();
+                $("#statusLbl").hide();
                 closeatag.href = "/Masters/Index";
             }
         }
+    });
+}
+function loadQntyInLoc() {
+    var manufPartId = $("#PartId").val();
+    $('#preloaderblurred').show();
+    api.getbulk("/workOrder/GetAllInv_Trans_Log").then((data) => {
+        data = data.filter((workOrder) => workOrder.output_Part_No === parseInt(manufPartId));
+        var tablebody = $("#StPopupGrid tbody");
+        $(tablebody).html("");//empty tbody
+        if (data.length === 0) {
+            $('#StPopupGrid').hide();
+        }
+        for (i = 0; i < data.length; i++) {
+            if (data[i].partNo && data[i].partNo.includes("/")) {
+                const parts = data[i].partNo.split("/");
+                data[i].partNo = parts[0].trim();       // "RM101"
+                data[i].partDesc = parts[1].trim();     // "RM101 Description"
+            }
+            $(tablebody).append(AppUtil.ProcessTemplateDataNew("StPopupGridRow", data[i], i));
+        }
+        $('#preloaderblurred').hide();
+    }).catch((error) => {
+        $('#preloaderblurred').hide();
+        console.log(error);
     });
 }
 $(function () {
@@ -402,15 +430,31 @@ $(function () {
     $('#status-info').on('hidden.bs.modal', function (event) {
         var newNamevalidate = document.getElementById('statusResasonopup');
         newNamevalidate.style.border = '';
+        var statusPopup = document.getElementById('statusPopup');
+        statusPopup.style.border = '';
+        $("#statusPopup").val('');
+        $("#stReasonPop").text('');
+        $("#BtnstatusSave").prop("disabled", false);
+        $('#StPopupGrid').hide();
+        $("#statusResasonopup").val("");
     });
     $('#status-info').on('show.bs.modal', function (event) {
         var currentStatus = $("#Status").val();
         $("#CurrentStatus").val(currentStatus);
-        $("#statusResasonopup").val("");
+        var currentrReason = $("#StatusChangeReason").val();
+        $("#statusResasonopup").val(currentrReason);
     });
     $("#BtnstatusSave").click(function (event) {
         var streason = $("#statusResasonopup").val();
         var statusPopup = $("#statusPopup").val();
+        if (statusPopup.length === 0) {
+            var newNamevalidate = document.getElementById('statusPopup');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('statusPopup');
+            newNamevalidate.style.border = '';
+        }
         if (statusPopup == "Inactive") {
             if (streason.length == 0) {
                 var newNamevalidate = document.getElementById('statusResasonopup');
@@ -425,7 +469,94 @@ $(function () {
             $("#Status").val(statusPopup);
         } else {
             $("#status-info").modal("hide");
+            $("#StatusChangeReason").val(streason);
+            $("#Status").val(statusPopup);
         }
+        var formData = AppUtil.GetFormData("RawMetform");
+        api.post("/masters/rawmaterialdetail", formData).then((data) => {
+            alert("Status changed successfully!");
+            window.location.reload();
+            $("#status-info").modal("hide");
+        }).catch((error) => {
+            AppUtil.HandleError("RawMetform", error);
+        });
+    });
+    var currentStatus = $("#Status").val();
+
+    var $statusPopup = $("#statusPopup");
+    var $statusResasonopup = $("#statusResasonopup");
+    $statusPopup.empty(); // clear old options
+    $('#StPopupGrid').hide();
+    $statusPopup.append('<option value="">Select</option>');
+
+    if (currentStatus === "Not Released") {
+        // only Released should be shown
+        $statusPopup.append('<option value="Released">Released</option>');
+        $statusResasonopup.val("Regular Release");
+    }
+    else if (currentStatus === "Released") {
+        $statusPopup.append('<option value="Hold">Hold</option>');
+        $statusPopup.append('<option value="Obsolete">Obsolete</option>');
+    }
+    else if (currentStatus === "Hold") {
+        $statusPopup.append('<option value="Released">Released</option>');
+    }
+    else if (currentStatus === "Obsolete") {
+        // No further transitions, optionally disable
+        $statusPopup.append('<option disabled>No further status</option>');
+        $statusPopup.prop("disabled", true);
+    } else {
+        // fallback → show all
+        $statusPopup.append('<option>Not Released</option>');
+        $statusPopup.append('<option>Released</option>');
+        $statusPopup.append('<option>Hold</option>');
+        $statusPopup.append('<option>Obsolete</option>');
+    }
+    $("#statusPopup").change(function () {
+        var selval = $(this).val();
+        var manufPartId = $("#PartId").val();
+        var partsold = $("#checkboxFinalPart").prop("checked");
+        if (selval === "Released") {
+            $('#StPopupGrid').hide();
+            $("#statusResasonopup").val("Regular Release");
+            $("#StatusChangeReason").val("Regular Release");
+        } else if (selval === "Hold" && partsold) {
+            $('#StPopupGrid').hide();
+            api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
+                const workOrdersWithStatus1 = data.filter((workOrder) => workOrder.partId === parseInt(manufPartId) && workOrder.active !== 2);
+                if (workOrdersWithStatus1.length > 0) {
+                    $("#stReasonPop").text("WO: " + workOrdersWithStatus1[0].woNumber+" for this Part is in Progress. This will be on Hold");
+                }
+            }).catch((error) => {
+            });
+        } else if (selval === "Hold") {
+            $('#StPopupGrid').hide();
+            $("#stReasonPop").text("Part Number Selection for Production Planning will be disabled");
+        } else if (selval === "Obsolete") {
+            $('#StPopupGrid').show();
+            api.getbulk("/masters/GetAllManufByRM?partid=" + parseInt(manufPartId)).then((data) => {
+                var partNos = data.map(x => x.partNo).join(", ");
+                $("#stReasonPop").text("Finished Parts that will not use this RM:" + partNos);
+                loadQntyInLoc();
+            }).catch((error) => {
+            });
+        }
+    });
+    $('#ChangeListPopup').on('hidden.bs.modal', function (event) {
+        document.getElementById('status-info').style.filter = 'none';
+    });
+    $('#ChangeListPopup').on('shown.bs.modal', function (event) {
+        var manufPartId = $("#PartId").val();
+        document.getElementById('status-info').style.filter = 'blur(5px)';
+        api.getbulk("/masters/PartStatusLog?partId=" + parseInt(manufPartId)).then((data) => {
+            var tablebody = $("#ChangeGrid tbody");
+            $(tablebody).html("");//empty tbody
+            for (i = 0; i < data.length; i++) {
+                $(tablebody).append(AppUtil.ProcessTemplateDataNew("ChangeGridRow", data[i], i));
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
     });
 
 
@@ -1026,7 +1157,7 @@ function AddRMType() {
         formData.MultiplePartsMadeFrom1InputRM = $('#TypeMulitpleInputRM').prop('checked') ? 'Y' : 'N';
         
         api.getbulk("/masters/CheckRmType?uomName=" + name).then((data) => {
-            if (!data) {
+            if (!data || formData.RawMaterialTypeId != "0") {
                 api.post("/masters/rmtype", formData).then((data) => {
                     // RawMaterialDetailFormUtil.UpdateFormIDs(data);
                     //  document.getElementById("RawMetform").reset();
@@ -1044,6 +1175,7 @@ function AddRMType() {
                     AppUtil.HandleError("RawMetform", error);
                 });
             } else {
+                alert("Raw Material Type Already Exists");
                 var newNamevalidate = document.getElementById('TypeName');
                 newNamevalidate.style.border = '2px solid red';
             }

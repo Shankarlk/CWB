@@ -14,18 +14,32 @@ const WoOrdStatus = {
 };
 
 function loadSO() {
+    $("#preloaderblurred").show();
     api.getbulk("/WorkOrder/AllSalesOrders").then((data) => {
         data = data.filter(item => item.status !== 6 && item.hold != true);
         var tablebody = $("#SalesOrders1 tbody");
         $(tablebody).html("");//empty tbody
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             if (data[i].poNumber == null) {
                 continue;
             }
             $(tablebody).append(AppUtil.ProcessTemplateData("SalesOrderRow1", data[i]));
         }
+        $("#preloaderblurred").hide();
     }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
 }
 //function GetAllSubCons() {
@@ -41,6 +55,7 @@ function loadSO() {
 //}
 
 function loadWO() {
+    $("#preloaderblurred").show();
     api.getbulk("/WorkOrder/AllWorkOrders").then((data) => {
         //data = data.filter(item => item.active !== 2);
         var tablebody = $("#WorkOrder tbody");
@@ -48,13 +63,26 @@ function loadWO() {
                                            
         data = data.filter(item => item.status !== 8);
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             //data[i].strStatus = WoOrdStatus[data[i].status];
             $(tablebody).append(AppUtil.ProcessTemplateData("WorkOrderRow", data[i]));
             $("#initiateDetaileBtn").prop('disabled', false);
             $("#ConcludeProdn").prop('disabled', false);
         }
+        $("#preloaderblurred").hide();
     }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
 }
 
@@ -62,7 +90,29 @@ function reloadWO(reloadOption, partid) {
     api.getbulk("/WorkOrder/ReloadWo?reloadoption=" + reloadOption + "&partid=" + partid).then((data) => {
         var tablebody = $("#MulitpleWOs tbody");
         $(tablebody).html("");//empty tbody
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         //console.log(data);
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             //data[i].strStatus = WoOrdStatus[data[i].status];
             $(tablebody).append(AppUtil.ProcessTemplateData("MultipleWoRow", data[i]));
@@ -387,6 +437,18 @@ $(document).ready(function () {
         $("#SalesOrders1 tbody tr").filter(function () {
             $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#SalesOrders1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $("#SalesOrders1 tbody").append(noRecordsRow);
+        } else {
+            $("#SalesOrders1 tbody").find(".norecordsfound").remove();
+        }
     });
 
     $("#SearchCustomer").on("keyup", function () {
@@ -394,6 +456,18 @@ $(document).ready(function () {
         $("#SalesOrders1 tbody tr").filter(function () {
             $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#SalesOrders1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $("#SalesOrders1 tbody").append(noRecordsRow);
+        } else {
+            $("#SalesOrders1 tbody").find(".norecordsfound").remove();
+        }
     });
 
     $("#SearchPO").on("keyup", function () {
@@ -401,6 +475,18 @@ $(document).ready(function () {
         $("#SalesOrders1 tbody tr").filter(function () {
             $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#SalesOrders1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $("#SalesOrders1 tbody").append(noRecordsRow);
+        } else {
+            $("#SalesOrders1 tbody").find(".norecordsfound").remove();
+        }
     });
 
     $("#SearchSoDateTo").on("change", function () {
@@ -421,6 +507,18 @@ $(document).ready(function () {
 
             $(this).toggle(tableDate >= fromDate && tableDate <= toDate);
         });
+        var $tableBody = $("#SalesOrders1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $("#SalesOrders1 tbody").append(noRecordsRow);
+        } else {
+            $("#SalesOrders1 tbody").find(".norecordsfound").remove();
+        }
     });
 
     $("#SearchPartNo").on("keyup", function () {
@@ -428,6 +526,18 @@ $(document).ready(function () {
         $("#SalesOrders1 tbody tr").filter(function () {
             $(this).toggle($(this.children[7]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#SalesOrders1 tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $("#SalesOrders1 tbody").append(noRecordsRow);
+        } else {
+            $("#SalesOrders1 tbody").find(".norecordsfound").remove();
+        }
     });
     
     $("#updateWO").on("click", function () {
@@ -724,6 +834,17 @@ $(document).ready(function () {
                 $('#popup2Sum').val(totalQuantity);
                 var tablebody = $("#MulitpleWOs tbody");
                 $(tablebody).html("");//empty tbody
+                if (parentchildwo.length === 0) {
+                    // 2. Insert the "No Records Found" row
+                    // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                    const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                    $(tablebody).append(noRecordsRow);
+                }
 
                 for (i = 0; i < parentchildwo.length; i++) {
                     $(tablebody).append(AppUtil.ProcessTemplateData("MultipleWoRow", parentchildwo[i]));
@@ -828,6 +949,17 @@ $(document).ready(function () {
                         noofWOCreation.push(...data);
                         var tablebody = $("#MulitpleWOs tbody");
                         $(tablebody).html("");//empty tbody
+                        if (noofWOCreation.length === 0) {
+                            // 2. Insert the "No Records Found" row
+                            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                            $(tablebody).append(noRecordsRow);
+                        }
 
                         for (i = 0; i < noofWOCreation.length; i++) {
                             $(tablebody).append(AppUtil.ProcessTemplateData("MultipleWoRow", noofWOCreation[i]));
@@ -911,6 +1043,17 @@ $(document).ready(function () {
                         tdata.push(...result);
                         var tablebody = $("#MulitpleWOs tbody");
                         $(tablebody).html("");//empty tbody
+                        if (tdata.length === 0) {
+                            // 2. Insert the "No Records Found" row
+                            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                            $(tablebody).append(noRecordsRow);
+                        }
 
                         for (i = 0; i < tdata.length; i++) {
                             $(tablebody).append(AppUtil.ProcessTemplateData("MultipleWoRow", tdata[i]));
@@ -1503,6 +1646,17 @@ $(document).ready(function () {
             //$('#popup2Sum').val(planwoqty);
             var tablebody = $("#MulitpleWOs tbody");
             $(tablebody).html("");//empty tbody
+            if (resultData.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
 
             for (i = 0; i < resultData.length; i++) {
                 $(tablebody).append(AppUtil.ProcessTemplateData("MultipleWoRow", resultData[i]));
@@ -1665,6 +1819,17 @@ $(document).ready(function () {
             //$('#popup3NewWo').modal('hide');
             var tablebody = $("#MulitpleWOs tbody");
             $(tablebody).html("");//empty tbody
+            if (resultData.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
 
             for (i = 0; i < resultData.length; i++) {
                 $(tablebody).append(AppUtil.ProcessTemplateData("MultipleWoRow", resultData[i]));
@@ -2300,6 +2465,19 @@ $(document).ready(function () {
         $("#tbl-ba-existingparts tbody tr").filter(function () {
             $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#tbl-ba-existingparts tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
+
     });
 
     $("#btnExistBtn").on("click", function () {
@@ -2310,6 +2488,18 @@ $(document).ready(function () {
         $("#tbl-ba-existingparts tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
         });
+        var $tableBody = $("#tbl-ba-existingparts tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
     });
 
 });
@@ -2328,6 +2518,17 @@ function LoadPartsExist() {
         let i = 0;
         if (ba_masterparts.length > 0) {
             ba_masterparts = ba_masterparts.filter(item => item.finalPart === "Y");
+            if (ba_masterparts.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
             for (i = 0; i < ba_masterparts.length; i++) {
                 $(tablebody).append(AppUtil.ProcessTemplateDataNew("BAParts", ba_masterparts[i], i));
             }
@@ -2339,6 +2540,18 @@ function LoadPartsExist() {
             var tablebody = $("#tbl-ba-existingparts tbody");
             $(tablebody).html("");//empty tbody
             let i = 0;
+
+            if (ba_masterparts.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
             if (ba_masterparts.length > 0) {
                 ba_masterparts = ba_masterparts.filter(item => item.finalPart === "Y");
                 for (i = 0; i < ba_masterparts.length; i++) {
@@ -2545,6 +2758,17 @@ function EditWo(element) {
                                                
                         var tablebody = $("#multipleSO tbody");
                         $(tablebody).html("");//empty tbody
+                        if (WOSoTable.length === 0) {
+                            // 2. Insert the "No Records Found" row
+                            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                            $(tablebody).append(noRecordsRow);
+                        }
 
                         for (i = 0; i < WOSoTable.length; i++) {
                             $(tablebody).append(AppUtil.ProcessTemplateData("MultipleSoRow", WOSoTable[i]));
@@ -2727,6 +2951,17 @@ function MulitpleSoTo1Wo(rowData) {
     $("#multiplesaleO").click();
     var tablebody = $("#multipleSO tbody");
     $(tablebody).html("");//empty tbody
+    if (rowData.length === 0) {
+        // 2. Insert the "No Records Found" row
+        // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+        const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+        $(tablebody).append(noRecordsRow);
+    }
     
     for (i = 0; i < rowData.length; i++) {
         $(tablebody).append(AppUtil.ProcessTemplateData("MultipleSoRow", rowData[i]));
@@ -3000,10 +3235,32 @@ function GetAllSubCons(woid) {
         //data = data.filter(item => item.woId === woid);
         var tablebody = $("#P20SupplierGrid tbody");
         $(tablebody).html("");//empty tbody
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         //console.log(data);
         let totalQuantity = 0;
         let totalprice = 0;
         subcontotal = 0;
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
         for (i = 0; i < data.length; i++) {
             totalQuantity += Number(data[i].qnty);
             totalprice += Number(data[i].procPrice);

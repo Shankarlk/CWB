@@ -1,0 +1,392 @@
+﻿
+<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-11">
+                            <h4 >Pick for Dispatch</h4>
+                        </div>
+                        <div class="col-md-1 text-end">
+                            <a asp-action="Index" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                                X
+                            </a>
+                        </div>
+                        <!-- =============================  -->
+                        <div class="col-md-12">
+                            <!-- ================================  -->
+                            <div class="row">
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Salesorder</label>
+                                    <input type="text" class="form-control form-control-sm" id="SearchSo">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Customer</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm" id="SearchCustomer"
+                                            title="" data-plugin="tippy" data-tippy-placement="top">
+                                        <option value="">==========</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Customer PO No</label>
+                                    <input type="text" class="form-control form-control-sm" id="SearchPO">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Part No</label>
+                                    <input type="text" class="form-control form-control-sm" id="SearchPartNo">
+
+                                </div>
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="table-responsive table-he-250">
+                                            <table class="table table-sm table-bordered w-100 text-center" id="SOGrid">
+                                                <thead class="  table-info th-sti">
+                                                    <tr class="table-border-bottom">
+                                                        <th>
+                                                            <input class="form-check-input " type="checkbox" title=""
+                                                                   data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                                   id="SelectAllMGrid">
+                                                        </th>
+                                                        <th>Sales Order # </th>
+                                                        <th>Customer</th>
+                                                        <th>PO No</th>
+                                                        <th>Part No / Desc</th>
+                                                        <th>Total SO Qnty </th>
+                                                        <th>Bal SO Disp Qnty </th>
+                                                        <th>Qnty on Hand</th>
+                                                        <th>Suggested Disp Qnty</th>
+                                                        <th>Final Disp Qnty</th>
+                                                        <th>SO Plan Dt</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- -------------  -->
+                                                    <!-- -------------  -->
+                                                    <!-- -------------  -->
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <button class="btn btn-sm btn-primary"  id="DispatchSelectedParts"
+                                            >
+                                        Dispatch Selected Part Nos
+                                    </button>
+
+                                    <button class="btn btn-sm btn-primary" id="AcptSuggested">Accept Suggested Dispatch Qnty</button>
+                                </div>
+                                <!-- =========== -->
+                            </div>
+                            <!-- =========== -->
+                            <!-- =============================================  -->
+                            <!-- =============  end row  ================  -->
+                            <!-- end accordion -->
+                        </div>
+                        <!-- =============================  -->
+                    </div>
+                </div>
+            </div>
+            <!-- end card body -->
+            <!-- ================= -->
+        </div>
+        <!-- end card -->
+        <!-- ======================================================================== -->
+    </div>
+    <!-- end col -->
+</div>
+<!-- end row -->
+<!-- Modal -->
+<div class="modal fade" id="popup12" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header position-relative">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    Dispatch Quantity Update
+                    <br>
+                    Part No / Desc : <span id="P12PartNo"></span> /  <span id="P12PartDesc"></span>  <br>
+                    Customer :  <span id="P12Cust"></span> <br>
+                    PO No :  <span id="P12Po"></span> <br>
+                    Bal Disp.Qnty :  <span id="P12BalQnty"></span> <br>
+                    Qnty on Hand :  <span id="P12QoH"></span>
+                </h5>
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <label class="col-md-4 form-label mb-2">
+                        Qnty to Dispatch *
+                    </label>
+                    <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top"
+                         data-tippy=""
+                         data-original-title="">
+                        <input type="text" class="form-control form-control-sm w-25" id="P12FinQnty">
+                        <input type="text" class="form-control form-control-sm w-50" id="P12SoId" hidden>
+                    </div>
+                    <div class="col-md-10 text-end">
+                        <button class="btn btn-primary btn-sm" id="P12Save">Save</button>
+                    </div>
+                    <div class="col-md-12 mt-2" id="P12GridDiv" style="display: none;">
+                        <div class="table-responsive table-he-330">
+                            <table id="P12Grid"
+                                   class="table table-sm table-bordered w-100 text-center">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Customer</th>
+                                        <th>PO No</th>
+                                        <th>Bal Disp Qnty</th>
+                                        <th>Disp Qnty</th>
+                                        <th width="5%">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- -------------  -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+</div>
+
+<div class="modal fade" id="popup13" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Customerwise Dispatch Details
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Salesorder</label>
+                        <input type="text" class="form-control form-control-sm" id="P13SearchSo">
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Customer</label>
+                        <select class="form-select form-select-sm" aria-label="form-select-sm" id="P13SearchCustomer"
+                                title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">==========</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Customer PO No</label>
+                        <input type="text" class="form-control form-control-sm" id="P13SearchPO">
+                    </div>
+                    <div class="col-md-12" id="popupInwardGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P13Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Sales Order #</th>
+                                            <th>Customer</th>
+                                            <th>PO No</th>
+                                            <th>No of Part Nos selected</th>
+                                            <th>Inv No</th>
+                                            <th>Inv Date</th>
+                                            <th>Dispatch Details</th>
+                                            <th width="5%">
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="popup14" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header position-relative">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    Customer Dispatch Details
+                    <br>
+                    Customer : <span id="P14Cust"></span> <br>
+                    PO No : <span id="P14Po"></span> <br>
+                    No of Part Nos.	 : <span id="P14NoOfParts"></span>
+                </h5>
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+
+                    <label class="col-md-4 form-label mb-2">
+                        Invoice No. *
+                    </label>
+                    <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top" data-tippy="" data-original-title="">
+                        <input type="text" class="form-control form-control-sm w-50" id="P14InvNo">
+                        <input type="text" class="form-control form-control-sm w-50" id="P14DetailsId" hidden>
+                        <input type="text" class="form-control form-control-sm w-50" id="P14CustId" hidden>
+                        <input type="text" class="form-control form-control-sm w-50" id="P14SoidId" hidden>
+                        <input type="text" class="form-control form-control-sm w-50" id="P14partId" hidden>
+                    </div>
+                    <label class="col-md-4 form-label mb-2">
+                        Invoice Date *
+                    </label>
+                    <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top" data-tippy="" data-original-title="">
+                        <input type="date" class="form-control form-control-sm w-50" id="P14InvDate">
+                    </div>
+                    <label class="col-md-4 form-label mb-2">
+                        Dispatch Details
+                    </label>
+                    <div class="col-md-6 mb-2" data-plugin="tippy" data-tippy-placement="top" data-tippy="" data-original-title="">
+                        <input type="text" class="form-control form-control-sm w-50" id="P14DisDetails">
+                    </div>
+                    <div class="col-md-12 text-end">
+                        <button class="btn btn-primary btn-sm" id="P14Save">Save</button>
+                    </div>
+                    <div class="col-md-12 mt-2">
+                        <div class="table-responsive table-he-330">
+                            <table id="P14Grid" class="table table-sm table-bordered w-100 text-center">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Part No / Desc</th>
+                                        <th>Dispatch Qnty</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- -------------  -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+    </div>
+</div>
+
+<template id="P14GridRow">
+    <tr>
+        <td>{partNo}</td>
+        <td>{qnty}</td>
+    </tr>
+</template>
+<template id="P12GridRow">
+    <tr>
+        <th>{customer}</th>
+        <th>{poNumber}</th>
+        <th>{qntyOnHand}</th>
+        <th>{finalDispQnty}</th>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);"  data-partn="{partNo}" data-partdesc="{partDesc}" data-pono="{poNumber}"
+                       data-customer="{customer}"  data-baldispqnty="{qntyOnHand}" data-soid="{salesOrderId}" data-findisqnty="{finalDispQnty}"
+                       class="dropdown-item" onclick="EditP12(this)">Edit</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="P13GridRow">
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-bs-toggle="modal"
+                       data-bs-target="#popup14">Edit</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="SOGridRow">
+    <tr data-so-id="{salesOrderId}">
+        <th>
+            <input class="form-check-input SOgridChks" type="checkbox" title=""
+                   data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                   >
+        </th>
+        <th>{soNumber}</th>
+        <th>{customer}</th>
+        <th>{poNumber}</th>
+        <th>{partNo} / {partDesc}</th>
+        <th>{requiredQuantity}</th>
+        <th>{qntyOnHand}</th>
+        <th>{qntyOnHand}</th>
+        <th class="suggested-qnty-value">{suggestedDispQnty}</th>
+        <th>{finalDispQnty}</th>
+        <th>{requiredByDateStr}</th>
+        <th hidden>{dispatchId}</th>
+        <th hidden>{invoiceNo}</th>
+        <th hidden>{invoiceDate}</th>
+        <th hidden>{dispatchDetail}</th>
+        <th hidden>{partId}</th>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);"
+                       class="dropdown-item"
+                       data-bs-toggle="modal" data-partn="{partNo}" data-partdesc="{partDesc}" data-pono="{poNumber}"
+                       data-customer="{customer}"  data-baldispqnty="{qntyOnHand}" data-soid="{salesOrderId}" data-findisqnty="{finalDispQnty}"
+                       data-bs-target="#popup12">Set Dispatch Qnty</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+
+@section Scripts {
+    <script src="~/js/SoDispatch.js"></script>
+}

@@ -35,15 +35,15 @@
                 </div>
                 <!-- -------- -->
                 <div class="col-md-3" title="Enter the Company Name Partially or Fully to shortlist " data-plugin="tippy" data-tippy-placement="top">
-                    <input class="form-control form-control-sm contact-search" type="text" data-key="CompanyName" placeholder="Company Name">
+                    <input class="form-control form-control-sm contact-Name-search" type="text" data-key="CompanyName" placeholder="Company Name">
                 </div>
                 <!-- -------- -->
                 <div class="col-md-2" title="Enter the Company Location if you wish to search by Location" data-plugin="tippy" data-tippy-placement="top">
-                    <input class="form-control form-control-sm contact-search" type="text" data-key="Location" placeholder="Location">
+                    <input class="form-control form-control-sm contact-Location-search" type="text" data-key="Location" placeholder="Location">
                 </div>
                 <!-- -------- -->
                 <div class="col-md-3" title="Enter any keyword that will enable shortlisting the Companies" data-plugin="tippy" data-tippy-placement="top">
-                    <input class="form-control form-control-sm contact-search" type="text" data-key="DivisionName" placeholder="DivisionName">
+                    <input class="form-control form-control-sm contact-divi-search" type="text" data-key="DivisionName" placeholder="DivisionName">
                 </div>
                 <!-- -------- -->
                 <!-- -------- -->
@@ -62,6 +62,14 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @if (Model.Count() == 0)
+                        {
+                            <tr>
+                                <td colspan="20" style="text-align: center; color: #888;">
+                                    <strong>No Records Found</strong>
+                                </td>
+                            </tr>
+                        }
                         @foreach (var contact in Model)
                         {
                             <tr>

@@ -14,6 +14,8 @@ namespace CWB.App.Models.ItemMaster
         public string Status { get; set; }
         public string StatusChangeReason { get; set; }
         public string RevNo { get; set; }
+        public char Inv_Trans { get; set; }
+        public char Linked_to_BOM { get; set; }
         public DateTime RevDate { get; set; }
         public DateTime CreationDt { get; set; }
 

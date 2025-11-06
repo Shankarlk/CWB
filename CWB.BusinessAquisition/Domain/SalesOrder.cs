@@ -37,6 +37,8 @@ namespace CWB.BusinessAquisition.Domain
         public DateTime? SODate { get; set; }
         public long PartId { get; set; }
         public int RequiredQuantity { get; set; }
+        public int SuggestedDispQnty { get; set; }
+        public int FinalDispQnty { get; set; }
         public DateTime? RequiredByDate { get; set; }
         public int ActQuantity { get; set; }
         public DateTime? ActCompletedDate { get; set; }
