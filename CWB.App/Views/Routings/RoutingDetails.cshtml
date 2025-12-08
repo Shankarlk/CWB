@@ -84,6 +84,60 @@
 <partial name="../Shared/_ChangeMakeFrom" />
 <partial name="../Shared/_ChangeStatus" />
 <partial name="../Shared/_ChangeStatusLog" />
+<div class="modal fade" id="Popup4" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content" style="border: 4px solid #5eafd2;">
+            <div class="modal-header position-relative">
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    <span style="font-weight: bold; color: red;">Warning </span>: Editing Routing while there
+                    are  <br> Parts from the Routing in Inventory
+                    is not Allowed
+                </h4>
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>
+                    Part No : <span id="P45PartName">xxxxx</span>  <br>
+                    Part Desc : <span id="P45PartDesc">xxxxx</span>  <br>
+                    Company : <span id="P45Comp">xxxxx</span> <br>
+                    Routing No : <span id="P45Rout">xxxxx</span>
+                </h5>
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-330">
+                            <table id="P24Grid"
+                                   class="table table-sm table-bordered w-100 text-center">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Opr No</th>
+                                        <th>Location</th>
+                                        <th>Qnty</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- -------------  -->
+                                    <!-- -------------  -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <h6>
+                    Bookout all parts before Editing Routing
+                    Editing Routing while parts are in Inventory linked to the routing could likely cause errors in Inv. Master ... hence Editing not allowed
+                </h6>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<template id="P24GridRow">
+    <tr>
+        <td>{opName}</td>
+        <td>{locationStr}</td>
+        <td>{qnty}</td>
+    </tr>
+</template>
 
 @section scripts {
     <script src="~/js/ItemMaster/supplier.js"></script>

@@ -52,11 +52,26 @@ namespace CWB.Masters.Controllers
         }
 
         [HttpGet]
+        [Route(ApiRoutes.Routings.RoutingAllList)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(IEnumerable<RoutingVM>))]
+        public IEnumerable<RoutingVM> RoutingAllList(long tenantId)
+        {
+            return _routingService.GetAllRoutingsForManufId(tenantId);
+        }
+
+        [HttpGet]
         [Route(ApiRoutes.Routings.RoutingSteps)]
         [Produces(AppContentTypes.ContentType, Type = typeof(IEnumerable<RoutingStepVM>))]
         public IEnumerable<RoutingStepVM> RoutingSteps(int routingId)
         {
             return _routingService.GetStepsForRoutingId(routingId);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Routings.AllRoutingSteps)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(IEnumerable<RoutingStepVM>))]
+        public IEnumerable<RoutingStepVM> GetAllStepsForRouting(long tenantId)
+        {
+            return _routingService.GetAllStepsForRouting(tenantId);
         }
 
         [HttpGet]
@@ -458,6 +473,18 @@ namespace CWB.Masters.Controllers
               if (!validationResult.IsValid)
                   return BadRequest(validationResult.Errors);*/
             var result = await _routingService.StepMachines(stepId);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Routings.AllStepMachines)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(IEnumerable<RoutingStepMachineVM>))]
+        public async Task<IActionResult> AllStepMachines(long tenantId)
+        {
+            /*  var validator = new RawMaterialDetailVMValidator();
+              var validationResult = await validator.ValidateAsync(rawMaterialDetailVM);
+              if (!validationResult.IsValid)
+                  return BadRequest(validationResult.Errors);*/
+            var result = await _routingService.AllStepMachines(tenantId);
             return Ok(result);
         }
 

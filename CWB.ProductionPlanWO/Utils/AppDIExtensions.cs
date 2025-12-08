@@ -58,6 +58,8 @@ namespace CWB.ProductionPlanWO.Utils
             services.AddTransient<INC_Wk_List_HeaderRepository, NC_Wk_List_HeaderRepository>();
             services.AddTransient<ICont_RCA_CA_Status_ListRepository, Cont_RCA_CA_Status_ListReposiotry>();
             services.AddTransient<ICont_RCA_CA_LogRepository, Cont_RCA_CA_LogRepository>();
+            services.AddTransient<IInv_Mismatch_ListRepository, Inv_Mismatch_ListRepository>();
+            services.AddTransient<IInv_Master_LogRepository, Inv_Master_LogRepository>();
             services.AddTransient<ICust_NC_Decs_MatrixRepository, Cust_NC_Decs_MatrixRepository>();
             services.AddTransient<ICust_NC_Decs_Matrix_OptRepositoy, Cust_NC_Decs_Matrix_OptRepository>();
             services.AddTransient<IMc_Not_Avl_ReasonRepository, Mc_Not_Avl_ReasonRepository>();

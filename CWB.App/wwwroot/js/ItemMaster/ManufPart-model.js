@@ -1539,11 +1539,20 @@ $(document).ready(function () {
    
 
     $("#btnManufPartDetailSubmit").click(function (event) {
+        event.preventDefault();
+        let $btn = $(this);
+
+        // ⛔ Prevent double click
+        if ($btn.prop("disabled")) return;
+
+        // Disable button immediately
+        $btn.prop("disabled", true);
         if (!modelObj.Edit) {
             //alert($("#ManufacturedPartNoDetailId").val());
             if ($("#ManufacturedPartNoDetailId").val() != "0") {
+                $btn.prop("disabled", false);
                 event.preventDefault();
-                alert("Älready saved...");
+                alert("Already saved...");
                 return;
             }
         }
@@ -1555,10 +1564,16 @@ $(document).ready(function () {
                     ManufPartFormUtil.UpdateFormIDs(data);
                 }).catch((error) => {
                     AppUtil.HandleError("ManufPartForm", error);
+                }).finally(() => {
+                    // Re-enable button after API completes
+                    $btn.prop("disabled", false);
                 });
+            } else {
+                $btn.prop("disabled", false);
             }
+        } else {
+            $btn.prop("disabled", false);
         }
-        event.preventDefault();
     });
 
     $("#AddDeptClose").click(function (event) {

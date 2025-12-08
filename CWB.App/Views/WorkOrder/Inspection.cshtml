@@ -220,6 +220,44 @@
                                             </td>
                                             <td id="P6TbUnproUnit">Units</td>
                                         </tr>
+                                        <tr id="P6FinNcTr">
+                                            <td id="P6FinNcTd">
+                                                <div class="d-flex flex-column align-items-start">
+                                                    <h6 class="mb-1">Non-Conforming Quantity after Operation /  Inspection *</h6> <br>
+                                                    <button class="btn btn-primary w-50 btn-sm" id="P6FinNc" data-bs-toggle="tooltip"
+                                                            data-bs-placement="top"
+                                                            title="Enter Operation Completed NC Details by clicking on the button. Each NC to be entered separately">
+                                                        Finished Part Non Conformance Data Entry
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <input class="form-control form-control-sm w-100 mt-4" type="text" title="Enter Number of NC Parts (Finish - After Opr Completion). Note - 1 Part can have more than 1 NC. The Number of NC Parts (Finish) should be equal or less than Total No of NC"
+                                                       data-bs-toggle="tooltip"
+                                                       data-bs-placement="top" placeholder=""
+                                                       id="P6FinNcCount">
+                                            </td>
+                                            <td><h6 id="P6FinNcUnit" style="color: rgba(69, 69, 68, 0.84);" class="mt-4">Units</h6></td>
+                                        </tr>
+                                        <tr id="P6InputNcTr">
+                                            <td id="P6InputNcTd">
+                                                <div class="d-flex flex-column align-items-start">
+                                                    <h6 class="mb-1">Non-Conforming Quantity before Operation *</h6> <br>
+                                                    <button class="btn btn-primary w-50 btn-sm" id="P6InputNc" data-bs-toggle="tooltip"
+                                                            data-bs-placement="top"
+                                                            title="Enter NC Details of Input Parts by clicking on the button. Each NC to be entered separately">
+                                                        Input Part Non Conformance Data Entry
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td id="P6InputNcD">
+                                                <input class="form-control form-control-sm w-100 mt-4" type="text" title="Enter Number of NC Parts (Input - Before Opr Completion). Note - 1 Part can have more than 1 NC. The Number of NC Parts (Input) should be equal or less than Total No of NC"
+                                                       data-bs-toggle="tooltip"
+                                                       data-bs-placement="top" placeholder=""
+                                                       id="P6InputNcCount">
+                                            </td>
+                                            <td><h6 id="P6InputNcUnit" style="color: rgba(69, 69, 68, 0.84);" class="mt-4">Units</h6></td>
+                                        </tr>
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center justify-content-fornt">
@@ -252,12 +290,12 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12 text-center mb-1">
-                            <button class="btn btn-primary btn-sm w-50" id="P6FinNc">Finished Part Non Conformance Data Entry</button>
-                        </div>
-                        <div class="col-md-12 text-center mb-1">
-                            <button class="btn btn-primary btn-sm w-50" id="P6InputNc">Input Part Non Conformance Data Entry</button>
-                        </div>
+                        @*<div class="col-md-12 text-center mb-1">
+                                <button class="btn btn-primary btn-sm w-50" id="P6FinNc">Finished Part Non Conformance Data Entry</button>
+                            </div>
+                            <div class="col-md-12 text-center mb-1">
+                                <button class="btn btn-primary btn-sm w-50" id="P6InputNc">Input Part Non Conformance Data Entry</button>
+                            </div>*@
                     </div>
                     <hr class="mt-1">
                     <div class="row">
@@ -406,6 +444,31 @@
                             Related Documents
                         </button>
                     </div>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="ErrorMessage12" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content" style="border: 4px solid #5eafd2;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mySmallModalLabel">NC Qnty entered is greater than NCs listed</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <h6 class="form-label col-md-12 mb-2">
+                                1 Part can have more than 1 NC. Hence No of NCs can be > No of NC parts
+                                Recheck Counts & Update
+                            </h6>
+                        </div>
+                    </form>
                     <!-- ========================= -->
                 </div>
             </div>

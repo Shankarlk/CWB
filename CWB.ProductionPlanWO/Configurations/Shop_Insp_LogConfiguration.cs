@@ -18,6 +18,9 @@ namespace CWB.ProductionPlanWO.Configurations
             builder
                 .HasKey(b => b.Id);
             builder
+                .Property(b => b.Operator_Id)
+                .HasColumnName("Operator_Id");
+            builder
                 .Property(b => b.Mc_Reference)
                 .HasColumnName("Mc_Reference");
             builder

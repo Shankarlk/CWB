@@ -169,6 +169,11 @@ namespace CWB.App.Controllers
         {
             return View();
         }
+        [Route("~/!N2@O023A")]
+        public IActionResult InvenControl()
+        {
+            return View();
+        }
 
         [HttpGet]
         public async Task<IActionResult> AllSalesOrders()
@@ -252,13 +257,15 @@ namespace CWB.App.Controllers
             return Ok(results);
         }
         [HttpGet]
-        public async Task<IActionResult> AllSODispatch()
+        public async Task<IActionResult> AllSODispatch(int? take = null)
         {
             var salesorders = await _baService.AllSalesOrders();
             var masterparts = await _masterService.ItemMasterParts();
             var customer = await _baService.GetCustomerOrders();
             var trans = await _woService.GetAllInv_Trans_Log();
-            var DispatchDetails = await _woService.GetAllDispatchDetails();
+            var DispatchDetails = await _woService.GetAllDispatchDetails(); 
+            if (take.HasValue)
+                salesorders = salesorders.Take(take.Value).ToList();
             foreach (SalesOrderVM sovm in salesorders)
             {
                 foreach (ItemMasterPartVM impvm in masterparts)
@@ -3024,10 +3031,56 @@ namespace CWB.App.Controllers
             return Ok(postPODetails);
         }
         [HttpGet]
+        public async Task<IActionResult> GetAllInv_Mismatch_List()
+        {
+            var inv_Mismatch_ListVMs = await _woService.GetAllInv_Mismatch_List();
+            var masterparts = await _masterService.ItemMasterParts();
+            var companies = await _masterService.GetCompanies();
+            foreach (var item in inv_Mismatch_ListVMs)
+            {
+                foreach (ItemMasterPartVM imp in masterparts)
+                {
+                    if (item.Part_No == imp.PartId)
+                    {
+                        item.PartNoStr = imp.PartNo + " / " + imp.Description;
+                    }
+                }
+                ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart(Convert.ToInt32(item.Part_No));
+                var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                var sortedList = resultList.OrderByDescending(x => x.PreferredRouting == 1).ThenBy(x => x.PreferredRouting).ToList();
+                var result = await _routingService.RoutingSteps(sortedList[0].RoutingId);
+                var routname = sortedList[sortedList.Count() - 1].RoutingName;
+                var steps = result.ToList();
+                var opname = steps[steps.Count() - 1].StepNumber;
+                if (routname != null)
+                {
+                    item.RoutName = routname;
+                }
+                if (opname != null)
+                {
+                    item.OpNoName = opname;
+                }
+                var subc = await _routingService.SubCons((int)steps[steps.Count() - 1].StepId);
+                var subcs = subc.ToList();
+                var companie = companies.Where(c => c.CompanyId == subcs[0].SupplierId).FirstOrDefault();
+                if(companie != null)
+                {
+                    item.LocationStr = companie.CompanyName;
+                }
+                ClaimsPrincipal userClaim = HttpContext.User;
+                string fullName = AppUtil.GetFullName(userClaim);
+                item.TransactionDone = "N";
+                item.Reported_ByName = fullName;
+                item.Report_dateStr = item.Report_date.ToString("dd-MM-yyyy hh:mm:ss tt");
+            }
+            return Ok(inv_Mismatch_ListVMs);
+        }
+        [HttpGet]
         public async Task<IActionResult> GetAllPodetails()
         {
             var procdutionpost = await _woService.GetAllPodetails();
             var resultList = await _woService.GetAllProcPlan();
+            var inv_Mismatch_Lists = await _woService.GetAllInv_Mismatch_List();
             var doclist = await _woService.GetAllInWardDocList();
             List<PODetailsVM> woSubs = new List<PODetailsVM>();
             var companies = await _masterService.GetCompanies();
@@ -3103,10 +3156,1487 @@ namespace CWB.App.Controllers
                         }
                     }
                 }
+                var invmistach = inv_Mismatch_Lists.Where(i => i.PO_Ref == item.PoDetailsId).FirstOrDefault();
+                if(invmistach != null)
+                {
+                    item.Mismatch_Resolved = invmistach.Resolved;
+                }
+                else
+                {
+                    item.Mismatch_Resolved = '-';
+                }
             }
             return Ok(procdutionpost);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllInvMaster()
+        {
+            var result = await _woService.GetAllInventory_Master();
+            var masterparts = await _masterService.ItemMasterParts();
+            var companies = await _masterService.GetCompanies();
+            var inv_Trans = await _woService.GetAllInv_Trans_Log();
+            foreach (var item in result)
+            {
+                foreach (ItemMasterPartVM imp in masterparts)
+                {
+                    if (item.Part_NoId == imp.PartId)
+                    {
+                        item.PartNoStr = imp.PartNo;
+                        item.PartDescStr = imp.Description;
+                        item.PartTypeStr = imp.MasterPartType;
+                        item.CompanyStr = imp.Company;
+                    }
+                }
+                ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart(Convert.ToInt32(item.Part_NoId));
+                var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                var sortedList = resultList.Where(x => x.RoutingId == item.Routing_Id).FirstOrDefault();
+                item.LocationStr = "Inhouse";
+                if (sortedList != null)
+                {
+                    item.RoutName = sortedList.RoutingName + " / ";
+                    var routingSteps = await _routingService.RoutingSteps(sortedList.RoutingId);
+                    var steps = routingSteps.Where(s=>s.StepId== item.Opr_No_Id).FirstOrDefault();
+                    if(steps != null)
+                    {
+                        item.OpName = steps.StepNumber;
+                        if (steps.StepLocation == 1.ToString())
+                        {
+                            item.LocationStr = "Inhouse";
+                        }
+                        else if (steps.StepLocation == 2.ToString())
+                        {
+                            item.LocationStr = "SubCon";
+                        }
+                        else
+                        {
+                            item.LocationStr = "Company";
+                        }
+                    }
+                }
+                var inv_Tran = inv_Trans.Where(i => i.Input_Part_NoId == item.Part_NoId || i.Output_Part_No == item.Part_NoId).FirstOrDefault();
+                if(inv_Tran != null)
+                {
+                    if (inv_Tran.Part_Status == 1)
+                    {
+                        item.PartStatus = "Accepted";
+                    }
+                    else if (inv_Tran.Part_Status == 2)
+                    {
+                        item.PartStatus = "Rework";
+                    }
+                    else
+                    {
+                        item.PartStatus = "Rejected";
+                    }
+                }
+                item.DateStr = item.Dt_time.ToString("dd-MM-yyyy");
+                item.Qnty = Convert.ToInt64(item.Current_QntOnHand);
+            }
+            return Ok(result);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateInvMasterFirst(Inventory_MasterVM masterDocListVM)
+        {
+            var findInv = await _woService.GetAllInventory_Master();
+            var update = findInv.Where(i => i.Inventory_MasterId == masterDocListVM.Inventory_MasterId).FirstOrDefault();
+            if (update != null)
+            {
+                update.Current_QntOnHand = masterDocListVM.Current_QntOnHand;
+                update.ReasonDesc = masterDocListVM.ReasonDesc;
+                update.Location_Id = masterDocListVM.Location_Id;
+                var result = await _woService.PostInventory_Master(update);
+                return Ok(result);
+            }
+            return Ok(masterDocListVM);
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateInvMasterCon(Inventory_MasterVM masterDocListVM)
+        {
+            var findInv = await _woService.GetAllInventory_Master();
+            var update = findInv.Where(i => i.Inventory_MasterId == masterDocListVM.Inventory_MasterId).FirstOrDefault();
+            if (update != null)
+            {
+                update.Current_QntOnHand = masterDocListVM.Current_QntOnHand;
+                update.ReasonDesc = masterDocListVM.ReasonDesc;
+                var result = await _woService.PostInventory_Master(update);
+                return Ok(result);
+            }
+            return Ok(masterDocListVM);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllInv_Master_Log(long invmasterid)
+        {
+            var results = await _woService.GetAllInv_Master_Log();
+            var result = results.Where(i => i.Inv_mast_ID == invmasterid).ToList();
+            foreach (var item in result)
+            {
+                item.DateStr = item.Dt_time.ToString("dd-MM-yyyy");
+                ClaimsPrincipal userClaim = HttpContext.User;
+                string fullName = AppUtil.GetFullName(userClaim);
+                item.UserName = fullName;
+            }
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllInvTranLog()
+        {
+            var result = await _woService.GetAllInv_Trans_Log();
+            var masterparts = await _masterService.ItemMasterParts();
+            var prodwos = await _woService.AllProductionPlan_Wo();
+            foreach (var item in result)
+            {
+                foreach (var m in masterparts)
+                {
+                    if (item.Output_Part_No == m.PartId)
+                    {
+                        item.OutPutPartNo = m.PartNo + " / " + m.Description;
+                    }
+                    if (item.Input_Part_NoId == m.PartId)
+                    {
+                        item.InputPartNo = m.PartNo + " / " + m.Description;
+                    }
+                }
+                ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart(Convert.ToInt32(item.Output_Part_No));
+                var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                if (resultList.Count() > 0)
+                {
+
+                    if (item.Output_Routing_Id != 0)
+                    {
+                        item.OutPutRoutingName = resultList.Where(r => r.RoutingId == item.Output_Routing_Id).FirstOrDefault().RoutingName;
+                        var step = await _routingService.RoutingSteps((int)item.Output_Routing_Id);
+                        item.OutputOprNo = step.FirstOrDefault().StepNumber;
+                        if (step.FirstOrDefault().StepLocation == 1.ToString())
+                        {
+                            item.FromSender = "Inhouse";
+                        }
+                        else if (step.FirstOrDefault().StepLocation == 2.ToString())
+                        {
+                            item.FromSender = "SubCon";
+                        }
+                        else
+                        {
+                            item.FromSender = "Company";
+                        }
+                    }
+                    if (item.Input_Routing_Id != 0)
+                    {
+                        item.InPutRoutingName = resultList.Where(r => r.RoutingId == item.Input_Routing_Id).FirstOrDefault().RoutingName;
+                        var step = await _routingService.RoutingSteps((int)item.Input_Routing_Id);
+                        item.InputOprNo = step.FirstOrDefault().StepNumber;
+                        if (step.FirstOrDefault().StepLocation == 1.ToString())
+                        {
+                            item.FromSender = "Inhouse";
+                        }
+                        else if (step.FirstOrDefault().StepLocation == 2.ToString())
+                        {
+                            item.FromSender = "SubCon";
+                        }
+                        else
+                        {
+                            item.FromSender = "Company";
+                        }
+                    }
+                }
+                if (item.Part_Status == 1)
+                {
+                    item.PartStatus = "Accepted";
+                }
+                else if (item.Part_Status == 2)
+                {
+                    item.PartStatus = "Rework";
+                }
+                else
+                {
+                    item.PartStatus = "Rejected";
+                }
+                if (item.Qnty_Mismatch > 0)
+                {
+                    item.MisMatchStatus = "Less";
+                }
+                else if (item.Qnty_Mismatch < 0)
+                {
+                    item.MisMatchStatus = "Extra";
+                }
+                else
+                {
+                    item.MisMatchStatus = "-";
+                }
+                ClaimsPrincipal userClaim = HttpContext.User;
+                string fullName = AppUtil.GetFullName(userClaim);
+                item.UserName = fullName;
+                item.ToSender = "Stores";
+                item.Dt_timeStr = item.Dt_time.ToString("dd-MM-yyyy");
+                item.QntyStr = Convert.ToInt64(item.Qnty);
+                var prodwo = prodwos.Where(wo => wo.WoId == item.Wo_Id).FirstOrDefault();
+                if(prodwo != null)
+                {
+                    item.WoNumber = prodwo.WONumber;
+                }
+                switch (item.Transaction_Id)
+                {
+                    case 1:
+                        item.TransactionName = "Inward RM / BOF";
+                        break;
+                    case 2:
+                        item.TransactionName = "Inward SubCon (Fin Part)";
+                        break;
+                    case 3:
+                        item.TransactionName = "Return Unprocessed Parts to Stores from Subcon";
+                        break;
+                    case 4:
+                        item.TransactionName = "Return Unprocessed Parts to Stores from Shop";
+                        break;
+                    case 5:
+                        item.TransactionName = "Issue Shop";
+                        break;
+                    case 6:
+                        item.TransactionName = "Issue SubCon";
+                        break;
+                    case 7:
+                        item.TransactionName = "Within Shop Bookout";
+                        break;
+                    case 8:
+                        item.TransactionName = "Bookout from Shop";
+                        break;
+                    case 9:
+                        item.TransactionName = "Dispatch";
+                        break;
+                    case 10:
+                        item.TransactionName = "Move to Scrap";
+                        break;
+                    default:
+                        item.TransactionName = "-";
+                        break;
+                }
+            }
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetChildManfWIP()
+        {
+            try
+            {
+                // --- 1. Fast Concurrent Data Fetching ---
+                var productionsTask = _woService.AllProductionPlan_Wo();
+                var allTransLogsTask = _woService.GetAllInv_Trans_Log();
+                var allShopInspLogsTask = _woService.GetAllShop_Insp_Log();
+                var allMcWaitListsTask = _woService.GetAllMc_Wait_List();
+                var masterpartsTask = _masterService.ItemMasterParts();
+                var allTimeslotsTask = _woService.GetAllTimeslot_List();
+                var allRwkListTask = _woService.GetAllRwk_List();
+                var allNcLogsTask = _woService.GetAllNcLog();
+                var allSalesOrdersTask = _baService.AllSalesOrders(); // Fetch SOs for fast lookup
+                var procplanTask = _woService.GetAllProcPlan();
+                var shopInspLogsTask = _woService.GetAllShop_Insp_Log();
+
+                await Task.WhenAll(productionsTask, allTransLogsTask, allShopInspLogsTask, allMcWaitListsTask,
+                                   masterpartsTask, allTimeslotsTask, allRwkListTask, allNcLogsTask, allSalesOrdersTask, procplanTask, shopInspLogsTask);
+
+                var productions = productionsTask.Result;
+                var allTransLogs = allTransLogsTask.Result;
+                var allShopInspLogs = allShopInspLogsTask.Result;
+                var allMcWaitLists = allMcWaitListsTask.Result;
+                var masterparts = masterpartsTask.Result;
+                var allTimeslots = allTimeslotsTask.Result;
+                var allRwkList = allRwkListTask.Result;
+                var allNcLogs = allNcLogsTask.Result;
+                var procplan = procplanTask.Result;
+                var shopInspLogs = shopInspLogsTask.Result;
+
+                var cmpsInProgress = productions
+                    .Where(p => p.PartType == 1 && p.Status != 8)
+                    .ToList();
+
+                // Create Dictionaries for O(1) access
+                var partDict = masterparts.ToDictionary(p => p.PartId, p => p);// Fast SO Number lookup
+                var allTimeslotDict = allTimeslots.ToDictionary(t => t.Timeslot_ListId, t => t);
+
+                // Identify NC Logs that are already moved to Rework (to avoid double counting in Scrap)
+                var rwkNcLogIds = allRwkList.Select(r => r.NC_Log_Id).ToHashSet();
+
+                var gridData = new List<dynamic>();
+
+                // --- 3. Process Data per Work Order ---
+                foreach (var wo in cmpsInProgress)
+                {
+                    partDict.TryGetValue(wo.PartId, out var part);
+                    string partNo = part?.PartNo ?? "N/A";
+                    string partDesc = part?.Description ?? "N/A";
+
+                    var procplanwo = procplan.Where(p => p.WorkOrderId == wo.ProductionPlanId).FirstOrDefault();
+                    var woTransactions = allTransLogs.Where(t => t.Wo_Id == wo.ProductionPlanId || (t.Input_Part_NoId == procplanwo?.PartId || t.Output_Part_No == procplanwo?.PartId)).ToList();
+
+                    string inputPartNo = "";
+                    string inputPartDesc = "";
+                    var firstIssue = woTransactions.FirstOrDefault(t => t.Transaction_Id == 1|| t.Transaction_Id == 2);
+                    //if (firstIssue != null)
+                    //{
+                    //    partDict.TryGetValue(firstIssue.Input_Part_NoId, out var inPart);
+                    //    inputPartNo = inPart?.PartNo ?? "N/A";
+                    //    inputPartDesc = inPart?.Description ?? "";
+                    //}
+                    string routingName = " ";
+                    string inputOprNo = " ";
+                    string outputOprNo = " ";
+                    var mf = await _masterService.GetManufPart((int)wo.PartId);
+                    var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                    var route = routingList.FirstOrDefault(r => r.RoutingId == wo.RoutingId);
+                    if (route != null)
+                    {
+                        routingName = route.RoutingName;
+                        var routingSteps = await _routingService.RoutingSteps(route.RoutingId);
+
+                        partDict.TryGetValue(route.MKPartId, out var inpart);
+                        inputPartNo = inpart?.PartNo ?? "N/A";
+                        inputPartDesc = inpart?.Description ?? "N/A";
+                    }
+
+                    var inputIssue = woTransactions
+                        .Where(t => t.Transaction_Id == 1 || t.Transaction_Id == 2)
+                        .Sum(t => t.Qnty);
+
+                    // 2. Output (A): Sum of Bookout Transactions (Id 7=Within Shop, 8=Bookout, or Status=1 Accepted)
+                    var outputBooked = woTransactions
+                        .Where(t => (t.Transaction_Id == 7 || t.Transaction_Id == 8) && t.Part_Status == 1)
+                        .Sum(t => t.Qnty);
+                    if(outputBooked == 0)
+                    {
+                        outputBooked = shopInspLogs
+                             .Where(s => s.Input_Part_No == wo.PartId)
+                             .Sum(s => s.Qnty_OK_finished);
+                    }
+
+                    var woNcLogs = allNcLogs.Where(n => n.Inw_Recpt_Part_No_Id == wo.PartId).ToList(); // Filter NCs for this Part
+                    var woNcLogIds = woNcLogs.Select(n => n.Insp_Outcome_Details_Id).ToHashSet();
+
+                    var reworkQty = allRwkList
+                        .Where(r => woNcLogIds.Contains(r.NC_Log_Id)) // Reworks linked to this WO's NCs
+                        .Join(allNcLogs, r => r.NC_Log_Id, n => n.Insp_Outcome_Details_Id, (r, n) => n.NC_Qnty)
+                        .Sum();
+
+                    var scrapFromNc = woNcLogs
+                        .Where(n => !rwkNcLogIds.Contains(n.Insp_Outcome_Details_Id)) // Only NCs NOT in rework
+                        .Sum(n => n.NC_Qnty);
+
+                    var manualScrap = woTransactions
+                        .Where(t => (t.Transaction_Id == 10 || t.Part_Status == 3) && t.NC_Log_Id == 0) // Manual moves to scrap
+                        .Sum(t => t.Qnty);
+
+                    var totalScrap = scrapFromNc + manualScrap;
+
+                    var wipQnty = inputIssue - (outputBooked + totalScrap + reworkQty);
+                    if (wipQnty < 0) wipQnty = 0; // Safety check
+
+                    decimal inputCoverage = wo.CalcWOQty > 0 ? (inputIssue / (decimal)wo.CalcWOQty) * 100 : 0;
+                    string inputCoverageStr = $"{inputCoverage:0.00}%";
+
+                    decimal woCompletion = wo.CalcWOQty > 0 ? (outputBooked / (decimal)wo.CalcWOQty) * 100 : 0;
+                    string woCompletionStr = $"{woCompletion:0.00}%";
+
+                    int daysElapsed = 0;
+                    if (wo.WODate.HasValue)
+                    {
+                        daysElapsed = (DateTime.Now - wo.WODate.Value).Days;
+                    }
+                    string outputBookoutDate = (wo.ActCompletionDate != DateTime.MinValue)
+                        ? wo.ActCompletionDate.ToString("dd-MM-yyyy")
+                        : " ";
+
+                    string inputIssueDate = wo.WODate.HasValue
+                        ? wo.WODate.Value.ToString("dd-MM-yyyy")
+                        : " ";
+
+                    gridData.Add(new
+                    {
+                        WoId = (wo.ProductionPlanId),
+                        WoNumber = wo.WONumber,
+                        WoQnty = wo.CalcWOQty,
+                        PlanStDate = wo.PlanStartDate.ToString("dd-MM-yyyy"),
+                        PlanEndDate = wo.PlanCompletionDate?.ToString("dd-MM-yyyy"),
+                        PartNo = partNo,
+                        PartDesc = partDesc,
+                        RoutingName = routingName,
+                        InputPartNo = inputPartNo,
+                        InputPartDesc = inputPartDesc,
+
+                        // Column E (Input)
+                        Input_Issue_Date = inputIssueDate,
+                        Input_Qnty = inputIssue,
+
+                        // Column A (Output)
+                        Output_Bookout_Date = outputBookoutDate,
+                        Output_Qnty = outputBooked,
+
+                        // Column B (WIP)
+                        WIP_Qnty = wipQnty,
+
+                        // Column C (Scrap)
+                        Scrap_Qnty = totalScrap,
+
+                        // Column D (Rework)
+                        Rework_Qnty = reworkQty,
+
+                        // Percentages & Days
+                        Input_Coverage_Pct = inputCoverageStr,
+                        WO_Completion_Pct = woCompletionStr,
+                        Elapsed_Days = daysElapsed
+                    });
+                }
+
+                return Ok(gridData);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetChildManfWIP: {ex.Message}");
+                return BadRequest("An error occurred while fetching WIP data.");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetWIPFlowReport(long woId)
+        {
+            try
+            {
+                // 1. Fetch Work Order Details
+                var allWos = await _woService.AllProductionPlan_Wo();
+                var shopInspLogs = (await _woService.GetAllShop_Insp_Log()).ToList();
+                var wo = allWos.FirstOrDefault(w => w.ProductionPlanId == woId);
+                if (wo == null) return NotFound("Work Order not found");
+
+                // 2. Fetch Routing Steps (to build the 10 -> 20 -> 30 structure)
+                var routingSteps = (await _routingService.RoutingSteps((int)wo.RoutingId))
+                                   .OrderBy(r => r.StepSequence)
+                                   .ToList();
+
+                if (!routingSteps.Any()) return Ok(new List<dynamic>());
+
+                // 3. Fetch all Logs and Data needed for calculation
+                var allTransLogs = await _woService.GetAllInv_Trans_Log();
+                var woLogs = allTransLogs.Where(t => t.Wo_Id == woId).ToList();
+
+                var allNcLogs = await _woService.GetAllNcLog();
+                var woNcLogs = allNcLogs.Where(n => n.Inw_Recpt_Part_No_Id == wo.PartId).ToList(); // Assuming NC links via Part/WO context logic
+
+                var allRwkList = await _woService.GetAllRwk_List();
+                var departments = await _departmentService.GetDepartments(1);
+                var companies = await _masterService.GetCompanies();
+
+                var resultList = new List<dynamic>();
+
+                // 4. Iterate through steps to calculate flow
+                for (int i = 0; i < routingSteps.Count; i++)
+                {
+                    var currentStep = routingSteps[i];
+                    var nextStep = (i + 1 < routingSteps.Count) ? routingSteps[i + 1] : null;
+
+                    // --- A. Identify Operations ---
+                    string startOp = currentStep.StepNumber ?? "0";
+                    string endOp = nextStep != null ? nextStep.StepNumber : "Stores"; // Last op goes to Stores
+
+                    // --- B. Identify Locations ---
+                    string fromLocation = "-";
+                    if (currentStep.StepLocation == "1") // Inhouse
+                    {
+                        // Assuming you have logic to find which shop matches the Machine/Step
+                        // For now, defaulting to "Shop" based on your existing controllers
+                        fromLocation = "Shop";
+                    }
+                    else if (currentStep.StepLocation == "2") // SubCon
+                    {
+                        fromLocation = "SubCon";
+                    }
+
+                    string toLocation = "-";
+                    if (nextStep != null)
+                    {
+                        toLocation = nextStep.StepLocation == "1" ? "Shop" : "SubCon";
+                    }
+                    else
+                    {
+                        toLocation = "Stores"; // Final destination
+                    }
+
+                    // --- C. Calculate Quantities ---
+
+                    // 1. INPUT (E): 
+                    // If First Step: Input is Material Issue (Trans Id 5 or 6)
+                    // If Middle Step: Input is the Bookout of the PREVIOUS step
+                    long inputQty = 0;
+                    if (i == 0)
+                    {
+                        inputQty = (long)woLogs
+                            .Where(t => t.Transaction_Id == 1 || t.Transaction_Id == 2) // Issue to Shop/Subcon
+                            .Sum(t => t.Qnty);
+                    }
+                    else
+                    {
+                        var prevStep = routingSteps[i - 1];
+                        inputQty = (long)woLogs
+                            .Where(t => t.Output_Opr_No == prevStep.StepId && (t.Transaction_Id == 8 || t.Transaction_Id == 3 || t.Part_Status == 1))
+                            .Sum(t => t.Qnty);
+                    }
+
+                    // 2. BOOKOUT (A): Successfully completed items from CURRENT step
+                    // Looking for transactions where Output_Opr_No is current step
+                    //long bookoutQty = (long)woLogs
+                    //    .Where(t => t.Output_Opr_No == currentStep.StepId && (t.Transaction_Id == 7 || t.Transaction_Id == 8 || t.Part_Status == 1))
+                    //    .Sum(t => t.Qnty); 
+                    long bookoutQty = (long)shopInspLogs
+                         .Where(s => s.Input_Opr_NoId == currentStep.StepId)
+                         .Sum(s => s.Qnty_OK_finished);
+
+                    // 3. REWORK (D) & SCRAP (C) specific to this Operation
+                    // Need to filter NC/Rework logs by the Operation ID (StepId)
+
+                    // Filter NCs for this specific step
+                    var stepNcLogs = woNcLogs.Where(n => n.Opr_No_Id == currentStep.StepId).ToList();
+                    var stepNcIds = stepNcLogs.Select(n => n.Insp_Outcome_Details_Id).ToList();
+
+                    // Rework = NCs that exist in Rwk_List
+                    long reworkQty = (long)allRwkList
+                        .Where(r => stepNcIds.Contains(r.NC_Log_Id))
+                        .Join(stepNcLogs, r => r.NC_Log_Id, n => n.Insp_Outcome_Details_Id, (r, n) => n.NC_Qnty)
+                        .Sum();
+
+                    // Scrap = NCs NOT in Rwk_List + Manual Scrap (Trans Id 10) for this step
+                    long ncScrapQty = (long)stepNcLogs
+                        .Where(n => !allRwkList.Any(r => r.NC_Log_Id == n.Insp_Outcome_Details_Id))
+                        .Sum(n => n.NC_Qnty);
+
+                    long manualScrapQty = (long)woLogs
+                        .Where(t => t.Input_Opr_No == currentStep.StepId && t.Transaction_Id == 10)
+                        .Sum(t => t.Qnty);
+
+                    long scrapQty = ncScrapQty + manualScrapQty;
+
+                    // 4. WIP (B): Balance sitting in this operation
+                    // Formula: Input - (Good Output + Scrap + Rework)
+                    long wipQty = inputQty - (bookoutQty + scrapQty + reworkQty);
+                    if (wipQty < 0) wipQty = 0; // Prevent negatives due to data sync issues
+
+                    // --- D. Build Object ---
+                    resultList.Add(new
+                    {
+                        WoId = (wo.ProductionPlanId),
+                        StartingOprNoId = currentStep.StepId,
+                        StartingOprNo = startOp,
+                        EndingOprNo = endOp,
+                        FromLocation = fromLocation,
+                        ToLocation = toLocation,
+                        InputQnty = inputQty,      // E10, E20
+                        BookoutQnty = bookoutQty,  // A10, A20
+                        WIPQnty = wipQty,          // B10
+                        Scrap = scrapQty,          // C10
+                        WfRework = reworkQty       // D10
+                    });
+                }
+
+                return Ok(resultList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetWIPFlowReport: {ex.Message}");
+                return BadRequest("Error generating report");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetInventoryTransactionLog(long woId, long stepId)
+        {
+            try
+            {
+                // 1. Fetch WO and Basic Details
+                var allWos = await _woService.AllProductionPlan_Wo();
+                var wo = allWos.FirstOrDefault(w => w.ProductionPlanId == woId);
+                if (wo == null) return NotFound("Work Order not found");
+
+                var masterParts = await _masterService.ItemMasterParts();
+                var part = masterParts.FirstOrDefault(p => p.PartId == wo.PartId);
+
+                // 2. Fetch Routing & Operations to Determine Context (Previous/Current)
+                var routingSteps = (await _routingService.RoutingSteps((int)wo.RoutingId))
+                                   .OrderBy(r => r.StepSequence)
+                                   .ToList();
+
+                var currentStep = routingSteps.FirstOrDefault(r => r.StepId == stepId);
+                if (currentStep == null) return BadRequest("Invalid Operation Step ID");
+
+                // Find Previous Step (to calculate Input from Previous Bookout)
+                var currentIndex = routingSteps.IndexOf(currentStep);
+                var prevStep = currentIndex > 0 ? routingSteps[currentIndex - 1] : null;
+
+                // 3. Fetch Logs & Employees
+                var allTransLogs = await _woService.GetAllInv_Trans_Log();
+                var employees = await _employeeService.GetAllEmployee();
+
+                // Filter logs relevant to this WO context
+                // We need: 
+                // A. Input Logs (Issue to this Op OR Bookout from Prev Op)
+                // B. Output Logs (Bookout/Scrap/Rework from this Op)
+
+                var woLogs = allTransLogs.Where(t => t.Input_Opr_No == stepId).ToList();
+                var gridRows = new List<dynamic>();
+
+                long totalInput = 0;
+                long totalBookout = 0;
+                long totalScrap = 0;
+                long totalRework = 0;
+
+                // --- 4. Logic to Identify "Input" Transactions ---
+                List<Inv_Trans_LogVM> inputTransactions;
+                if (prevStep == null)
+                {
+                    // First Operation: Input comes from Stores Issue (Trans Id 5 or 6)
+                    inputTransactions = woLogs.Where(t => (t.Transaction_Id == 1 || t.Transaction_Id == 2) && t.Input_Opr_No == stepId).ToList();
+                }
+                else
+                {
+                    // Subsequent Operation: Input comes from Previous Op's Bookout (Trans Id 7, 8)
+                    // Note: When Op 10 Books out (Output_Opr_No = 10), it effectively becomes input for Op 20.
+                    inputTransactions = woLogs.Where(t => (t.Transaction_Id == 7 || t.Transaction_Id == 8) && t.Output_Opr_No == prevStep.StepId && t.Part_Status == 1).ToList();
+                }
+
+                // --- 5. Logic to Identify "Output" Transactions (Current Step) ---
+                var outputTransactions = woLogs.Where(t =>
+                    (t.Input_Opr_No == stepId || t.Output_Opr_No == stepId) && // Involves current step
+                    (t.Transaction_Id == 7 || t.Transaction_Id == 8 || t.Transaction_Id == 10 || t.Part_Status == 2 || t.Part_Status == 3) // Bookout, Scrap, Rework
+                ).ToList();
+
+                // Merge and Sort by Date for the Grid
+                var allRelevantLogs = inputTransactions.Concat(outputTransactions)
+                                                       .OrderBy(t => t.Dt_time)
+                                                       .ToList();
+
+                // --- 6. Process Grid Rows ---
+                foreach (var log in allRelevantLogs)
+                {
+                    string transType = "";
+                    string inputVal = "0";
+                    string bookoutVal = "0";
+                    string scrapVal = "0";
+                    string reworkVal = "0";
+
+                    // Detect Type
+                    bool isInput = inputTransactions.Any(x => x.Inv_Trans_LogId == log.Inv_Trans_LogId);
+
+                    if (isInput)
+                    {
+                        transType = prevStep == null ? "Material Issue" : "Input from Prev Opr";
+                        inputVal = log.Qnty.ToString();
+                        totalInput += (long)log.Qnty;
+                    }
+                    else if ((log.Transaction_Id == 7 || log.Transaction_Id == 8) && log.Part_Status == 1)
+                    {
+                        transType = "Bookout from Shop";
+                        bookoutVal = log.Qnty.ToString();
+                        totalBookout += (long)log.Qnty;
+                    }
+                    else if (log.Part_Status == 3 || log.Transaction_Id == 10) // Scrap
+                    {
+                        transType = "Scrap";
+                        scrapVal = log.Qnty.ToString();
+                        totalScrap += (long)log.Qnty;
+                    }
+                    else if (log.Part_Status == 2) // Rework
+                    {
+                        transType = "Move to Rework";
+                        reworkVal = log.Qnty.ToString();
+                        totalRework += (long)log.Qnty;
+                    }
+                    else
+                    {
+                        continue; 
+                    }
+
+                    //var user = employees.FirstOrDefault(e => e.Employee_ID == log.PersonId)?.Employee_name ?? "System";
+                    ClaimsPrincipal userClaim = HttpContext.User;
+                    string fullName = AppUtil.GetFullName(userClaim);
+                    var user = fullName;
+
+                    gridRows.Add(new
+                    {
+                        TransactionDate = log.Dt_time.ToString("dd-MM-yyyy"),
+                        TransactionType = transType,
+                        User = user,
+                        InputQnty = inputVal,
+                        BookoutQnty = bookoutVal,
+                        WipQnty = "-", // Per image: "We show WIP Only in the Total Row only"
+                        Scrap = scrapVal,
+                        WfRework = reworkVal
+                    });
+                }
+
+                // --- 7. Calculate WIP (C = A - (B + D + E)) ---
+                long totalWip = totalInput - (totalBookout + totalScrap + totalRework);
+                if (totalWip < 0) totalWip = 0;
+
+                // --- 8. Build Header Data ---
+                // Locations
+                string fromLoc = currentStep.StepLocation == "1" ? "Shop" : "SubCon"; // Simplified logic
+                string toLoc = "Next Opr / Stores"; // Simplified
+
+                // Percentages
+                double planQty = wo.CalcWOQty > 0 ? wo.CalcWOQty : 1;
+                string inputCoverage = ((totalInput / planQty) * 100).ToString("0.##") + "%";
+                string bookoutCompl = ((totalBookout / planQty) * 100).ToString("0.##") + "%";
+
+                // Input Part Info
+                string inputPartStr = "";
+                if (prevStep == null)
+                {
+                    // If Step 1, find MakeFrom Part
+                    var mf = await _masterService.GetManufPart((int)wo.PartId);
+                    if (mf.ManufacturedPartType == 1) // Child Part
+                    {
+                        var mkList = await _masterService.GetMPMakeFromListByPartId(mf.ManufacturedPartNoDetailId.ToString());
+                        var mk = mkList.FirstOrDefault(); // Taking first RM/Input
+                        if (mk != null)
+                        {
+                            var mkPart = masterParts.FirstOrDefault(p => p.PartId == mk.MPPartId);
+                            inputPartStr = mkPart != null ? $"{mkPart.PartNo} / {mkPart.Description}" : "";
+                        }
+                    }
+                }
+                else
+                {
+                    // If Step > 1, Input is WIP of current part
+                    inputPartStr = $"{part.PartNo} (WIP) / {part.Description}";
+                }
+
+                var headerData = new
+                {
+                    WoNo = wo.WONumber,
+                    ChildManfPart = $"{part.PartNo} / {part.Description}",
+                    RoutingNo = wo.RoutingId.ToString(), // Or RoutingName if available
+                    InputPart = inputPartStr,
+                    StartingOprNo = currentStep.StepNumber,
+                    EndingOprNo = currentStep.StepNumber,
+                    FromLocation = fromLoc,
+                    ToLocation = toLoc,
+                    InputCoverage = inputCoverage,
+                    BookoutCompl = bookoutCompl,
+                    // Totals for Footer
+                    TotalInput = totalInput,
+                    TotalBookout = totalBookout,
+                    TotalWIP = totalWip,
+                    TotalScrap = totalScrap,
+                    TotalRework = totalRework
+                };
+
+                return Ok(new { Header = headerData, GridData = gridRows });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetInventoryTransactionLog: {ex.Message}");
+                return BadRequest("Error generating transaction log");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAssemblyWOInProgress()
+        {
+            try
+            {
+                // 1. Fetch all necessary data in parallel
+                var productionsTask = _woService.AllProductionPlan_Wo();
+                var allTransLogsTask = _woService.GetAllInv_Trans_Log();
+                var masterpartsTask = _masterService.ItemMasterParts();
+                var allNcLogsTask = _woService.GetAllNcLog();
+                var allRwkListTask = _woService.GetAllRwk_List();
+                var procplanTask = _woService.GetAllProcPlan();
+
+                await Task.WhenAll(productionsTask, allTransLogsTask, masterpartsTask, allNcLogsTask, allRwkListTask, procplanTask);
+
+                var productions = productionsTask.Result;
+                var allTransLogs = allTransLogsTask.Result;
+                var masterparts = masterpartsTask.Result;
+                var allNcLogs = allNcLogsTask.Result;
+                var allRwkList = allRwkListTask.Result;
+                var procplan = procplanTask.Result;
+
+                // 2. Filter for Active Assembly Work Orders (Status != 8 i.e., not closed)
+                // Assuming PartType == 2 indicates Assembly based on your existing ProcPlan logic
+                var assemblyWOs = productions
+                    .Where(p => p.PartType == 2 && p.Status != 8)
+                    .ToList();
+
+                // 3. Create Lookups for performance
+                var partDict = masterparts.ToDictionary(p => p.PartId, p => p);
+
+                // Identify NC Logs already moved to Rework to avoid double counting in Scrap
+                var rwkNcLogIds = allRwkList.Select(r => r.NC_Log_Id).ToHashSet();
+
+                var gridData = new List<dynamic>();
+
+                foreach (var wo in assemblyWOs)
+                {
+                    // --- Part Details ---
+                    partDict.TryGetValue(wo.PartId, out var part);
+                    string partNoStr = part != null ? $"{part.PartNo} / {part.Description}" : "Unknown";
+
+                    // --- Transactions for this WO ---
+                    //var woTransactions = allTransLogs.Where(t => t.Wo_Id == wo.ProductionPlanId).ToList();
+                    var procplanwo = procplan.Where(p => p.WorkOrderId == wo.ProductionPlanId).FirstOrDefault();
+                    var woTransactions = allTransLogs.Where(n => (n.Input_Part_NoId == procplanwo.PartId || n.Output_Part_No == procplanwo.PartId)).ToList();
+
+                    // --- Calculate Data Points based on Image Logic ---
+
+                    // E: Assy Kits Issue Qnty (Sum of Issue Transactions: ID 5 or 6)
+                    var inputTrans = woTransactions.Where(t => t.Transaction_Id == 1 || t.Transaction_Id == 2).ToList();
+                    long inputIssueQty = (long)inputTrans.Sum(t => t.Qnty);
+
+                    // 1st Assy Kit Issue Date
+                    var firstIssue = inputTrans.OrderBy(t => t.Dt_time).FirstOrDefault();
+                    string firstIssueDateStr = firstIssue != null ? firstIssue.Dt_time.ToString("dd-MM-yyyy") : "-";
+
+                    // A: Assy Bookout Qnty (Sum of Bookout Trans: ID 7, 8 or Status=1 Accepted)
+                    var outputTrans = woTransactions.Where(t => t.Transaction_Id == 7 || t.Transaction_Id == 8 || t.Part_Status == 1).ToList();
+                    long bookoutQty = (long)outputTrans.Sum(t => t.Qnty);
+
+                    // 1st Assy B/O Date
+                    var firstBookout = outputTrans.OrderBy(t => t.Dt_time).FirstOrDefault();
+                    string firstBookoutDateStr = firstBookout != null ? firstBookout.Dt_time.ToString("dd-MM-yyyy") : "-";
+
+                    // D: Waiting for Rework
+                    // Logic: Find NCs for this Part, match with Rework List
+                    var woNcLogs = allNcLogs.Where(n => n.Inw_Recpt_Part_No_Id == wo.PartId).ToList();
+                    var woNcLogIds = woNcLogs.Select(n => n.Insp_Outcome_Details_Id).ToHashSet();
+
+                    long reworkQty = (long)allRwkList
+                        .Where(r => woNcLogIds.Contains(r.NC_Log_Id))
+                        .Join(allNcLogs, r => r.NC_Log_Id, n => n.Insp_Outcome_Details_Id, (r, n) => n.NC_Qnty)
+                        .Sum();
+
+                    // C: Scrap
+                    // Logic: NCs not in Rework + Manual Scrap Transactions (ID 10)
+                    long ncScrapQty = (long)woNcLogs
+                        .Where(n => !rwkNcLogIds.Contains(n.Insp_Outcome_Details_Id))
+                        .Sum(n => n.NC_Qnty);
+
+                    long manualScrapQty = (long)woTransactions
+                        .Where(t => (t.Transaction_Id == 10 || t.Part_Status == 3) && t.NC_Log_Id == 0)
+                        .Sum(t => t.Qnty);
+
+                    long totalScrap = ncScrapQty + manualScrapQty;
+
+                    // B: WIP Kit Qnty = E - (A + C + D)
+                    long wipQty = inputIssueQty - (bookoutQty + totalScrap + reworkQty);
+                    if (wipQty < 0) wipQty = 0;
+
+                    // --- Calculations ---
+
+                    // % Input Coverage (E / Plan Qty)
+                    double inputCovPct = wo.CalcWOQty > 0 ? ((double)inputIssueQty / wo.CalcWOQty) * 100 : 0;
+
+                    // % BO Completion (A / Plan Qty)
+                    double boCompPct = wo.CalcWOQty > 0 ? ((double)bookoutQty / wo.CalcWOQty) * 100 : 0;
+
+                    // Elapsed Days (Today - 1st Input Date)
+                    int elapsedDays = 0;
+                    if (firstIssue != null)
+                    {
+                        elapsedDays = (DateTime.Now - firstIssue.Dt_time).Days;
+                    }
+
+                    // --- Construct "WO Details" String ---
+                    // Format: WO ID: xxxx, Pln Qnty: xxx, Pln St Dt: ..., Pln End Dt: ...
+                    string woDetails = $"WO ID: {wo.WONumber}, Pln Qnty: {wo.CalcWOQty}\n" +
+                                       $"Pln St Dt: {wo.PlanStartDate:dd-MM-yyyy}, Pln End Dt: {wo.PlanCompletionDate:dd-MM-yyyy}";
+
+                    // Add to List
+                    gridData.Add(new 
+                    {
+                        WoId = wo.ProductionPlanId,
+                        WoDetails = woDetails,
+                        AssyPartNoDesc = partNoStr,
+                        FirstKitIssueDate = firstIssueDateStr,
+                        KitIssueQnty = inputIssueQty, // E
+                        FirstBookoutDate = firstBookoutDateStr,
+                        BookoutQnty = bookoutQty, // A
+                        WipKitQnty = wipQty,      // B
+                        ScrapQnty = totalScrap,   // C
+                        ReworkQnty = reworkQty,   // D
+                        InputCoverage = $"{inputCovPct:0.00}%",
+                        BoCompletion = $"{boCompPct:0.00}%",
+                        ElapsedDays = elapsedDays
+                    });
+                }
+
+                return Ok(gridData);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetAssemblyWOInProgress: {ex.Message}");
+                return BadRequest("Error retrieving Assembly WO Progress data.");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAssemblyBOMCoverage(long woId)
+        {
+            try
+            {
+                // 1. Fetch all necessary data in parallel
+                var productionsTask = _woService.AllProductionPlan_Wo();
+                var allTransLogsTask = _woService.GetAllInv_Trans_Log();
+                var masterpartsTask = _masterService.ItemMasterParts();
+                var routingsTask = _routingService.GetRoutingListItems(); // Assuming this gets routing list headers
+                var procplanTask = _woService.GetAllProcPlan();
+
+                await Task.WhenAll(productionsTask, allTransLogsTask, masterpartsTask, routingsTask, procplanTask);
+
+                var productions = productionsTask.Result;
+                var allTransLogs = allTransLogsTask.Result;
+                var masterparts = masterpartsTask.Result;
+                var routings = routingsTask.Result;
+                var procplan = procplanTask.Result;
+
+                // 2. Get Specific Work Order
+                var wo = productions.FirstOrDefault(w => w.ProductionPlanId == woId);
+                if (wo == null) return NotFound("Work Order not found");
+
+                // 3. Get Master Part Details
+                var mainPart = masterparts.FirstOrDefault(m => m.PartId == wo.PartId);
+                var manufPart = await _masterService.GetManufPart((int)wo.PartId);
+
+                // 4. Determine Type (Assembly vs Sub-Assembly logic)
+                // Logic: If PartType is 2 (Assembly) and it has a ParentWoId, it's likely a Sub-Assembly in this context
+                string assemblyType = (wo.PartType == 2) ? "Assembly" : "Sub-Assembly";
+                if (wo.ParentWoId > 0 && wo.PartType == 2) assemblyType = "Sub-Assembly";
+
+                // 5. Get Routing Info
+                //var routing = ;
+                var routingList = await _routingService.Routings(manufPart.ManufacturedPartNoDetailId);
+                var route = routingList.FirstOrDefault(r => r.RoutingId == wo.RoutingId);
+                string routingName = "";
+                if (route != null)
+                {
+                    routingName = route.RoutingName;
+                }
+
+                // 6. Get BOM List
+                var bomList = await _masterService.BOMS(manufPart.ManufacturedPartNoDetailId.ToString());
+
+                var gridData = new List<dynamic>();
+                double minAssemblyCoverage = double.MaxValue; // Used to calculate the header bottleneck count
+
+                // 7. Process BOM Items
+                foreach (var bomItem in bomList)
+                {
+                    var childPart = masterparts.FirstOrDefault(m => m.PartId == bomItem.BOMPartId);
+
+                    // A. BOM Qnty (Per Unit)
+                    decimal bomQtyPerUnit = bomItem.Quantity;
+
+                    // B. Transaction Qnty (Total Issued to this WO)
+                    // Filtering for Transaction_Id 5 (Issue Shop) or 6 (Issue SubCon)
+                    var procplanwo = procplan.Where(p => p.WorkOrderId == wo.ProductionPlanId).FirstOrDefault();
+                    var issuedQty = allTransLogs
+                        .Where(t =>  (t.Transaction_Id == 1 || t.Transaction_Id == 2)
+                                    && (t.Input_Part_NoId == procplanwo.PartId || t.Output_Part_No == procplanwo.PartId))
+                        .Sum(t => t.Qnty);
+
+                    // C. # Assy Coverage (Floor calculation)
+                    // How many assemblies can we make with this specific child part?
+                    double assyCoverage = 0;
+                    if (bomQtyPerUnit > 0)
+                    {
+                        assyCoverage = Math.Floor((double)(issuedQty / bomQtyPerUnit));
+                    }
+
+                    // Update the global minimum (Bottleneck calculation)
+                    if (assyCoverage < minAssemblyCoverage)
+                    {
+                        minAssemblyCoverage = assyCoverage;
+                    }
+
+                    // D. % Coverage
+                    double percentCoverage = 0;
+                    if (wo.CalcWOQty > 0)
+                    {
+                        percentCoverage = (assyCoverage / wo.CalcWOQty) * 100;
+                    }
+
+                    // Locations (Simplified logic based on typical flow)
+                    string fromLocation = "Stores";
+                    string toLocation = "Shop"; // Defaulting to Shop, could be derived from Routing Step
+
+                    gridData.Add(new
+                    {
+                        PartId = bomItem.BOMPartId,
+                        PartNo = childPart?.PartNo ?? "Unknown",
+                        PartDesc = childPart?.Description ?? "Unknown",
+                        PartType = childPart?.MasterPartType ?? "", // CMF, BOF, etc.
+                        FromLocation = fromLocation,
+                        ToLocation = toLocation,
+                        BomQnty = bomQtyPerUnit,
+                        TransactionQnty = issuedQty,
+                        AssyCoverage = assyCoverage,
+                        PercentCoverage = Math.Round(percentCoverage, 2)
+                    });
+                }
+
+                // Handle case where BOM is empty
+                if (!bomList.Any()) minAssemblyCoverage = 0;
+
+                // 8. Construct Final Response Object
+                var response = new
+                {
+                    Header = new
+                    {
+                        WoId = wo.ProductionPlanId,
+                        WoNumber = wo.WONumber,
+                        AssyPartNo = mainPart?.PartNo,
+                        AssyDesc = mainPart?.Description,
+                        Type = assemblyType, // "Sub-Assembly / Assembly"
+                        PlannedWOQnty = wo.CalcWOQty,
+                        RoutingNo = routingName,
+                        PlanStartDate = wo.PlanStartDate.ToString("dd-MM-yyyy"),
+                        PlanEndDate = wo.PlanCompletionDate?.ToString("dd-MM-yyyy"),
+                        // The calculated bottleneck value
+                        BuildableAssemblies = minAssemblyCoverage
+                    },
+                    GridData = gridData
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetAssemblyBOMCoverage: {ex.Message}");
+                return BadRequest("Error fetching BOM Coverage data.");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAssemblyPartInventoryLog(long woId, long bomPartId)
+        {
+            try
+            {
+                // 1. Fetch Work Order Details
+                var allWos = await _woService.AllProductionPlan_Wo();
+                var wo = allWos.FirstOrDefault(w => w.ProductionPlanId == woId);
+                if (wo == null) return NotFound("Work Order not found");
+
+                // 2. Fetch Part Details (The Child Part from BOM)
+                var masterParts = await _masterService.ItemMasterParts();
+                var childPart = masterParts.FirstOrDefault(p => p.PartId == bomPartId);
+                var assyPart = masterParts.FirstOrDefault(p => p.PartId == wo.PartId); // The parent Assembly
+
+                // 3. Fetch BOM Details to calculate "Total Qnty Reqd"
+                // We need to know how many of this child part are needed per 1 Assembly
+                var manufPart = await _masterService.GetManufPart((int)wo.PartId);
+                var bomList = await _masterService.BOMS(manufPart.ManufacturedPartNoDetailId.ToString());
+                var bomItem = bomList.FirstOrDefault(b => b.BOMPartId == bomPartId);
+
+                decimal qtyPerUnit = bomItem?.Quantity ?? 0;
+                long totalQtyReqd = (long)(qtyPerUnit * wo.CalcWOQty);
+
+                // 4. Fetch Transactions
+                var allTransLogs = await _woService.GetAllInv_Trans_Log();
+
+                // Filter Logic:
+                // We want transactions where:
+                // a. The WO matches
+                // b. The Input Part ID matches the BOM Part ID
+                // c. It is an Issue transaction (Transaction_Id 1 or 2 usually for Issue, or specific Issue Shop types)
+                var procplan = await _woService.GetAllProcPlan();
+                var procplanwo = procplan.Where(p => p.WorkOrderId == wo.ProductionPlanId).FirstOrDefault();
+                var partLogs = allTransLogs.Where(t =>
+                    (t.Wo_Id == woId ||
+                    (t.Input_Part_NoId == procplanwo?.PartId || t.Output_Part_No == procplanwo?.PartId) )&&
+                    (t.Transaction_Id == 1 || t.Transaction_Id == 2 || t.Transaction_Id == 5 || t.Transaction_Id == 6) // Include 5/6 for specific Issue types
+                ).OrderBy(t => t.Dt_time).ToList();
+
+                var gridRows = new List<dynamic>();
+                long totalIssued = 0;
+
+                // 5. Build Grid Rows
+                foreach (var log in partLogs)
+                {
+                    totalIssued += (long)log.Qnty;
+
+                    // Determine Transaction Type Name
+                    string transType = log.Transaction_Id switch
+                    {
+                        1 => "Inward RM / Bof",
+                        2 => "Inward SubCon",
+                        7 => "Within Shop Bookout",
+                        8 => "Shop Bookout",
+                        _ => "Material Issue"
+                    };
+
+                    // Get User Name (Assuming current context or fetch from EmployeeService based on PersonId)
+                    // For now, using the logged-in user logic found in your other methods or "System"
+                    ClaimsPrincipal userClaim = HttpContext.User;
+                    string fullName = AppUtil.GetFullName(userClaim); // Or fetch via log.PersonId if specific user tracking is needed
+
+                    gridRows.Add(new
+                    {
+                        TransactionDate = log.Dt_time.ToString("dd-MM-yyyy"),
+                        TransactionType = transType,
+                        User = fullName, // Or resolve log.PersonId using _employeeService
+                        TransactionQnty = log.Qnty
+                    });
+                }
+
+                // 6. Calculate Header Metrics
+                string percentCoverage = totalQtyReqd > 0
+                    ? $"{((double)totalIssued / totalQtyReqd * 100):0.00}%"
+                    : "0.00%";
+
+                // Determine Locations (Logic based on your existing controllers)
+                // Usually from Stores to Shop
+                string fromLoc = "Stores";
+                string toLoc = "Shop";
+
+                // 7. Construct Final Response
+                var response = new
+                {
+                    Header = new
+                    {
+                        WoNo = wo.WONumber,
+                        PartNo = childPart?.PartNo ?? "Unknown",
+                        PartDesc = childPart?.Description ?? "Unknown",
+                        FromLocation = fromLoc,
+                        ToLocation = toLoc,
+                        TotalQntyReqd = totalQtyReqd,
+                        PercentCoverage = percentCoverage,
+                        TotalTransactionQnty = totalIssued // The "A xxx" from the footer
+                    },
+                    GridData = gridRows
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetAssemblyPartInventoryLog: {ex.Message}");
+                return BadRequest("Error retrieving inventory log");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSubAssemblyBOMCoverage(long woId,long BomPartId)
+        {
+            try
+            {
+                // 1. Fetch all necessary data in parallel
+                var productionsTask = _woService.AllProductionPlan_Wo();
+                var allTransLogsTask = _woService.GetAllInv_Trans_Log();
+                var masterpartsTask = _masterService.ItemMasterParts();
+                var routingsTask = _routingService.GetRoutingListItems(); // Assuming this gets routing list headers
+                var procplanTask = _woService.GetAllProcPlan();
+
+                await Task.WhenAll(productionsTask, allTransLogsTask, masterpartsTask, routingsTask, procplanTask);
+
+                var productions = productionsTask.Result;
+                var allTransLogs = allTransLogsTask.Result;
+                var masterparts = masterpartsTask.Result;
+                var routings = routingsTask.Result;
+                var procplan = procplanTask.Result;
+
+                // 2. Get Specific Work Order
+                var wo = productions.FirstOrDefault(w => w.ProductionPlanId == woId);
+                if (wo == null) return NotFound("Work Order not found");
+
+                // 3. Get Master Part Details
+                var mainPart = masterparts.FirstOrDefault(m => m.PartId == wo.PartId);
+                var manufPart = await _masterService.GetManufPart((int)BomPartId);
+
+                // 4. Determine Type (Assembly vs Sub-Assembly logic)
+                // Logic: If PartType is 2 (Assembly) and it has a ParentWoId, it's likely a Sub-Assembly in this context
+                string assemblyType = (wo.PartType == 2) ? "Assembly" : "Sub-Assembly";
+                if (wo.ParentWoId > 0 && wo.PartType == 2) assemblyType = "Sub-Assembly";
+
+                // 5. Get Routing Info
+                //var routing = ;
+                var routingList = await _routingService.Routings(manufPart.ManufacturedPartNoDetailId);
+                var route = routingList.FirstOrDefault();
+                string routingName = "";
+                if (route != null)
+                {
+                    routingName = route.RoutingName;
+                }
+
+                // 6. Get BOM List
+                var bomList = await _masterService.BOMS(manufPart.ManufacturedPartNoDetailId.ToString());
+
+                var gridData = new List<dynamic>();
+                double minAssemblyCoverage = double.MaxValue; // Used to calculate the header bottleneck count
+
+                // 7. Process BOM Items
+                foreach (var bomItem in bomList)
+                {
+                    var childPart = masterparts.FirstOrDefault(m => m.PartId == bomItem.BOMPartId);
+
+                    // A. BOM Qnty (Per Unit)
+                    decimal bomQtyPerUnit = bomItem.Quantity;
+
+                    // B. Transaction Qnty (Total Issued to this WO)
+                    // Filtering for Transaction_Id 5 (Issue Shop) or 6 (Issue SubCon)
+                    var procplanwo = procplan.Where(p => p.WorkOrderId == wo.ProductionPlanId).FirstOrDefault();
+                    var issuedQty = allTransLogs
+                        .Where(t => (t.Transaction_Id == 1 || t.Transaction_Id == 2)
+                                    && (t.Input_Part_NoId == procplanwo.PartId || t.Output_Part_No == procplanwo.PartId))
+                        .Sum(t => t.Qnty);
+
+                    // C. # Assy Coverage (Floor calculation)
+                    // How many assemblies can we make with this specific child part?
+                    double assyCoverage = 0;
+                    if (bomQtyPerUnit > 0)
+                    {
+                        assyCoverage = Math.Floor((double)(issuedQty / bomQtyPerUnit));
+                    }
+
+                    // Update the global minimum (Bottleneck calculation)
+                    if (assyCoverage < minAssemblyCoverage)
+                    {
+                        minAssemblyCoverage = assyCoverage;
+                    }
+
+                    // D. % Coverage
+                    double percentCoverage = 0;
+                    if (wo.CalcWOQty > 0)
+                    {
+                        percentCoverage = (assyCoverage / wo.CalcWOQty) * 100;
+                    }
+
+                    // Locations (Simplified logic based on typical flow)
+                    string fromLocation = "Stores";
+                    string toLocation = "Shop"; // Defaulting to Shop, could be derived from Routing Step
+
+                    gridData.Add(new
+                    {
+                        PartId = bomItem.BOMPartId,
+                        PartNo = childPart?.PartNo ?? "Unknown",
+                        PartDesc = childPart?.Description ?? "Unknown",
+                        PartType = childPart?.MasterPartType ?? "", // CMF, BOF, etc.
+                        FromLocation = fromLocation,
+                        ToLocation = toLocation,
+                        BomQnty = bomQtyPerUnit,
+                        TransactionQnty = issuedQty,
+                        AssyCoverage = assyCoverage,
+                        PercentCoverage = Math.Round(percentCoverage, 2)
+                    });
+                }
+
+                // Handle case where BOM is empty
+                if (!bomList.Any()) minAssemblyCoverage = 0;
+
+                // 8. Construct Final Response Object
+                var response = new
+                {
+                    Header = new
+                    {
+                        WoId = wo.ProductionPlanId,
+                        WoNumber = wo.WONumber,
+                        AssyPartNo = mainPart?.PartNo,
+                        AssyDesc = mainPart?.Description,
+                        Type = assemblyType,
+                        PlannedWOQnty = wo.CalcWOQty,
+                        RoutingNo = routingName,
+                        PlanStartDate = wo.PlanStartDate.ToString("dd-MM-yyyy"),
+                        PlanEndDate = wo.PlanCompletionDate?.ToString("dd-MM-yyyy"),
+                        // The calculated bottleneck value
+                        BuildableAssemblies = minAssemblyCoverage
+                    },
+                    GridData = gridData
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetAssemblyBOMCoverage: {ex.Message}");
+                return BadRequest("Error fetching BOM Coverage data.");
+            }
+        }
+        //[HttpGet]
+        //public async Task<IActionResult> GetInvTranLogForWO(long woId)
+        //{
+        //    try
+        //    {
+        //        // --- 1. Fetch Core Data ---
+        //        // Fetch specific WO transactions directly if possible, otherwise fetch all and filter (optimized for in-memory)
+        //        var allTransLogsTask = _woService.GetAllInv_Trans_Log();
+        //        var masterpartsTask = _masterService.ItemMasterParts();
+        //        var employeesTask = _employeeService.GetAllEmployee(); // For "Transacted By"
+        //        var departmentsTask = _departmentService.GetDepartments(1); // For Shop Names
+        //        var companiesTask = _masterService.GetCompanies(); // For Supplier Names
+
+        //        await Task.WhenAll(allTransLogsTask, masterpartsTask, employeesTask, departmentsTask, companiesTask);
+
+        //        var allTransLogs = allTransLogsTask.Result;
+        //        var masterparts = masterpartsTask.Result;
+        //        var employees = employeesTask.Result;
+        //        var departments = departmentsTask.Result;
+        //        var companies = companiesTask.Result;
+
+        //        // --- 2. Filter & Prepare Lookups ---
+
+        //        // Filter logs for the specific Work Order
+        //        var woLogs = allTransLogs.Where(t => t.Wo_Id == woId).ToList();
+
+        //        if (!woLogs.Any())
+        //        {
+        //            return Ok(new List<dynamic>()); // Return empty list if no logs found
+        //        }
+
+        //        // Dictionaries for O(1) Fast Lookups
+        //        var partDict = masterparts.ToDictionary(p => p.PartId, p => p);
+        //        var empDict = employees.ToDictionary(e => e.Employee_ID, e => e.Employee_name);
+        //        var deptDict = departments.ToDictionary(d => d.DepartmentId, d => d.Name);
+        //        var compDict = companies.ToDictionary(c => c.CompanyId, c => c.CompanyName);
+
+        //        // Identify unique Routing IDs involved to fetch Step details efficiently
+        //        var routingIds = woLogs.Select(l => l.Input_Routing_Id)
+        //                               .Union(woLogs.Select(l => l.Output_Routing_Id))
+        //                               .Where(id => id > 0)
+        //                               .Distinct()
+        //                               .ToList();
+
+        //        // Fetch Routing Steps for all involved routings (Optimization: Batch fetch if possible, else loop)
+        //        // Since we don't have a "GetStepsByRoutingIds" method, we fetch individually but cache them.
+        //        var routingStepsCache = new Dictionary<long, IEnumerable<RoutingStepVM>>();
+        //        foreach (var rid in routingIds)
+        //        {
+        //            if (!routingStepsCache.ContainsKey(rid))
+        //            {
+        //                var steps = await _routingService.RoutingSteps((int)rid);
+        //                routingStepsCache[rid] = steps;
+        //            }
+        //        }
+
+        //        var gridData = new List<dynamic>();
+
+        //        // --- 3. Process Logs ---
+        //        foreach (var item in woLogs)
+        //        {
+        //            // A. Transaction Type & Name
+        //            string transName = item.Transaction_Id switch
+        //            {
+        //                1 => "Inward RM / BOF",
+        //                2 => "Inward SubCon",
+        //                3 => "Return to Stores (Subcon)",
+        //                4 => "Return to Stores (Shop)",
+        //                5 => "Issue to Shop",
+        //                6 => "Issue to SubCon",
+        //                7 => "Within Shop Movement",
+        //                8 => "Bookout from Shop",
+        //                9 => "Dispatch",
+        //                10 => "Scrap",
+        //                _ => "-"
+        //            };
+
+        //            // B. Part Information
+        //            // Logic: If it's an Issue (Input), show Input Part. If Bookout (Output), show Output Part.
+        //            long relevantPartId = (item.Transaction_Id == 5 || item.Transaction_Id == 6)
+        //                                  ? item.Input_Part_NoId
+        //                                  : (item.Output_Part_No > 0 ? item.Output_Part_No : item.Input_Part_NoId);
+
+        //            partDict.TryGetValue(relevantPartId, out var part);
+        //            string partNo = part?.PartNo ?? "N/A";
+        //            string partDesc = part?.Description ?? "N/A";
+
+        //            // C. Operation / Location Resolving
+        //            string fromLoc = "-";
+        //            string toLoc = "-";
+
+        //            // Helper to get Op Number from Routing Cache
+        //            string GetOpNum(long routingId, long opId)
+        //            {
+        //                if (routingId > 0 && routingStepsCache.TryGetValue(routingId, out var steps))
+        //                {
+        //                    return steps.FirstOrDefault(s => s.StepId == opId)?.StepNumber ?? "N/A";
+        //                }
+        //                return "N/A";
+        //            }
+        //            if (item.Transaction_Id == 1) 
+        //            {
+        //                fromLoc = "-";
+        //                toLoc = "Stores";
+        //            }
+        //            if (item.Transaction_Id == 2) 
+        //            {
+        //                fromLoc = "Subcon";
+        //                toLoc = "Stores";
+        //            }
+
+        //            // Logic for "From" and "To" based on Transaction Type
+        //            if (item.Transaction_Id == 5) // Issue Shop
+        //            {
+        //                fromLoc = "Inhouse";
+        //                toLoc = "Shop";
+        //            }
+        //            else if (item.Transaction_Id == 6) // Issue SubCon
+        //            {
+        //                fromLoc = "Stores";
+        //                string supplier = compDict.ContainsKey(item.To_Location_Id) ? compDict[item.To_Location_Id] : "SubCon";
+        //                toLoc = "SubCon";
+        //            }
+        //            else if (item.Transaction_Id == 7) // Within Shop
+        //            {
+        //                // From Input Op -> To Output Op (or Next Op logic if different)
+        //                fromLoc = "Shop";
+        //                // Assuming Output_Opr_No is the destination for within-shop movement logic, 
+        //                // or if it's booking out of an op, 'To' is the next logical step. 
+        //                // For simplicity in logs:
+        //                toLoc = "Stores";
+        //            }
+        //            else if (item.Transaction_Id == 8) // Bookout Shop
+        //            {
+        //                fromLoc = $"Op: {GetOpNum(item.Output_Routing_Id, item.Output_Opr_No)}";
+        //                toLoc = "Stores";
+        //            }
+        //            else if (item.Transaction_Id == 10 || item.Part_Status == 3) // Scrap
+        //            {
+        //                fromLoc = $"Op: {GetOpNum(item.Input_Routing_Id, item.Input_Opr_No)}";
+        //                toLoc = "Scrap Yard";
+        //            }
+
+        //            // D. Status
+        //            string status = item.Part_Status switch
+        //            {
+        //                1 => "Accepted",
+        //                2 => "Rework",
+        //                3 => "Rejected",
+        //                _ => "Pending"
+        //            };
+
+        //            // E. User
+        //            string transBy = empDict.ContainsKey(item.PersonId) ? empDict[item.PersonId] : "System";
+        //            ClaimsPrincipal userClaim = HttpContext.User;
+        //            string fullName = AppUtil.GetFullName(userClaim);
+        //            transBy = fullName;
+        //            // F. Date Formatting
+        //            string dateStr = item.Dt_time.ToString("dd-MM-yyyy");
+        //            string timeStr = item.Dt_time.ToString("hh:mm tt");
+
+        //            // --- G. Build Grid Object ---
+        //            gridData.Add(new
+        //            {
+        //                TransId = item.Inv_Trans_LogId,
+        //                TransDate = dateStr,
+        //                TransTime = timeStr,
+        //                TransactionType = transName,
+        //                PartNo = partNo,
+        //                PartDesc = partDesc,
+        //                Quantity = item.Qnty,
+        //                FromLocation = fromLoc,
+        //                ToLocation = toLoc,
+        //                Status = status,
+        //                TransactedBy = transBy,
+        //                Remarks = item.Qnty_Mismatch_Comment ?? ""
+        //            });
+        //        }
+
+        //        // Return ordered by latest first
+        //        return Ok(gridData.OrderByDescending(x => x.TransDate).ThenByDescending(x => x.TransTime));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Error in GetInvTranLogForWO: {ex.Message}");
+        //        return BadRequest("An error occurred while fetching the transaction log.");
+        //    }
+        //}
         [HttpPost]
         public async Task<IActionResult> MultipleProductionWOPost([FromBody] IEnumerable<ProductionPlan_WoVM> ppwos)
         {
@@ -3876,6 +5406,12 @@ namespace CWB.App.Controllers
             return Ok(result);
         }
         [HttpGet]
+        public async Task<IActionResult> DeleteInvMismatch(long itemMasterDocListId)
+        {
+            var result = await _woService.DeleteInvMismatch(itemMasterDocListId);
+            return Ok(result);
+        }
+        [HttpGet]
         public async Task<IActionResult> DeleteNC_Disp_Decs_Appl_List(long itemMasterDocListId)
         {
             var result = await _woService.DeleteNC_Disp_Decs_Appl_List(itemMasterDocListId);
@@ -4088,6 +5624,12 @@ namespace CWB.App.Controllers
             return Ok(result);
         }
         [HttpPost]
+        public async Task<IActionResult> PostInv_Mismatch_List([FromBody] Inv_Mismatch_ListVM procPlanVMs)
+        {
+            var result = await _woService.PostInv_Mismatch_List(procPlanVMs);
+            return Ok(result);
+        }
+        [HttpPost]
         public async Task<IActionResult> PostSetupVariationReason(SetupVariationReasonVM procPlanVMs)
         {
             var result = await _woService.PostSetupVariationReason(procPlanVMs);
@@ -4286,6 +5828,12 @@ namespace CWB.App.Controllers
             var result = await _woService.PostInw_Recpt_Details(procPlanVMs);
             return Ok(result);
         }  
+        [HttpPost]
+        public async Task<IActionResult> PostInspNcLog([FromBody]Insp_Outcome_DetailsVM procPlanVMs)
+        {
+            var result = await _woService.PostNcLog(procPlanVMs);
+            return Ok(result);
+        }
         [HttpPost]
         public async Task<IActionResult> PostNcLog(Insp_Outcome_DetailsVM procPlanVMs)
         {
@@ -5854,6 +7402,7 @@ namespace CWB.App.Controllers
                     invdata.Input_Opr_No = tempopr.Opr_No;
                     invdata.Movement_Started = 'Y';
                     invdata.Movement_Compl = 'Y';
+                    invdata.Transaction_Id = 5;
                     var result = await _woService.PostInv_Trans_Log(invdata);
                     var invMaster = new Inventory_MasterVM();
                     invMaster.Part_NoId = result.Input_Part_NoId;
@@ -6063,54 +7612,89 @@ namespace CWB.App.Controllers
         {
             var result = new List<TempMc_Wait_ListVM>();
 
-            var waitList = await _woService.GetAllMc_Wait_List();
-            var timeslots = await _woService.GetAllTempMc_Timeslot_List();
-            var allTimeslots = await _woService.GetAllTimeslot_List();
-            var parts = await _masterService.ItemMasterParts();
-            var machines = await _machineService.GetMachinesList();
-            var shops = await _departmentService.GetDepartments(1);
-            var allWO = await _woService.AllProductionPlan_Wo();
-            var translogs = await _woService.GetAllInv_Trans_Log();
-            var allTimeSlots = await _woService.GetAllTimeslot_List();
+            // ---- PARALLEL LOAD ALL REQUIRED MASTER DATA ----
+            var waitListTask = _woService.GetAllMc_Wait_List();
+            var timeslotTask = _woService.GetAllTimeslot_List();
+            var itemPartsTask = _masterService.ItemMasterParts();
+            var machinesTask = _machineService.GetMachinesList();
+            var shopsTask = _departmentService.GetDepartments(1);
+            var allWoTask = _woService.AllProductionPlan_Wo();
+            var translogTask = _woService.GetAllInv_Trans_Log();
+            var allMfTask = _masterService.GetAllManufacturedPartNoDetailList();
+            var allRoutingTask = _routingService.AllRoutings();
+            var allRoutingStepsTask = _routingService.AllRoutingSteps();
+
+            await Task.WhenAll(waitListTask, timeslotTask, itemPartsTask, machinesTask, shopsTask, allWoTask, translogTask,
+                allMfTask, allRoutingTask, allRoutingStepsTask
+                );
+
+            var waitList = waitListTask.Result; // .Where(x=>x.Wait_Seq_No == 0).ToList()
+            var timeSlots = timeslotTask.Result;
+            var parts = itemPartsTask.Result.ToDictionary(x => x.PartId);
+            var machines = machinesTask.Result.ToDictionary(x => x.MachineId);
+            var shops = shopsTask.Result.ToDictionary(x => x.DepartmentId);
+            var allWO = allWoTask.Result.ToDictionary(x => x.ProductionPlanId);
+            var translogs = translogTask.Result;
+            var mfDict = allMfTask.Result.ToDictionary(x => x.PartId);
+            var routingDict = allRoutingTask.Result.GroupBy(x => x.ManufacturedPartId)
+                                      .ToDictionary(g => g.Key, g => g.ToList());
+            var routingStepDict = allRoutingStepsTask.Result.GroupBy(x => x.RoutingId)
+                                                           .ToDictionary(g => g.Key, g => g.ToList());
+
+            // Pre-group translogs to avoid repeated Where()
+            var translogLookup = translogs
+                .GroupBy(x => x.Input_Part_NoId)
+                .ToDictionary(g => g.Key, g => g.First());
 
             foreach (var mcWait in waitList)
             {
-                if(mcWait.Wait_Seq_No != 0)
-                {
-                    continue;
-                }
-                var wo = allWO.FirstOrDefault(p => p.ProductionPlanId == mcWait.Wo_Id);
-                var translog = translogs.Where(t => t.Input_Part_NoId == wo.PartId || t.Output_Part_No == wo.PartId).FirstOrDefault();
-                if (translog == null)
-                {
-                    continue;
-                }
-                var matltime = translog.Dt_time.ToString("hh:mm tt") ?? "";
-                var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
-                var machine = machines.FirstOrDefault(m => m.MachineId == mcWait.Mc_Id);
-                var shop = shops.FirstOrDefault(s => s.DepartmentId == machine.ShopId);
-                var mf = await _masterService.GetManufPart((int)wo.PartId);
-                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                //if (mcWait.Wait_Seq_No != 0)
+                //    continue;
 
-                var routing = await _routingService.RoutingSteps((int)wo.RoutingId);
-                var routingstep = routing.FirstOrDefault(r => r.StepId == mcWait.Opr_No_Id);
-                var stepMachines = await _routingService.StepMachines((int)routingstep.StepId);
-                var currentStart = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == mcWait.Plan_start_time_Id)?.Start_time;
+                if (!allWO.TryGetValue(mcWait.Wo_Id, out var wo))
+                    continue;
+
+                Inv_Trans_LogVM translog = null;
+
+                // Try Input Part first
+                if (translogLookup.TryGetValue(wo.PartId, out translog) == false)
+                {
+                    // fallback Output_Part search (rare case)
+                    translog = translogs.FirstOrDefault(t => t.Output_Part_No == wo.PartId);
+                    if (translog == null)
+                        continue;
+                }
+
+                var part = parts.GetValueOrDefault(wo.PartId);
+                if (!machines.TryGetValue(mcWait.Mc_Id, out var machine))
+                    continue;
+
+                var shop = shops.GetValueOrDefault(machine.ShopId);
+
+                // Preload routing cache (avoid repeated DB hits)
+                // (CACHE KEY: PartId or RoutingId)
+                var mf = mfDict[(int)wo.PartId];
+                var routingList = routingDict[mf.ManufacturedPartNoDetailId];
+                var routingSteps = routingStepDict[wo.RoutingId];
+
+                var routingstep = routingSteps.FirstOrDefault(r => r.StepId == mcWait.Opr_No_Id);
+                var currentStart = timeSlots.FirstOrDefault(t => t.Timeslot_ListId == mcWait.Plan_start_time_Id)?.Start_time;
+
                 result.Add(new TempMc_Wait_ListVM
                 {
                     ShopName = shop?.Name ?? "",
                     McName = machine?.Name ?? "",
                     WoNumber = wo?.WONumber ?? "",
-                    PartNo = part?.PartNo + " / " + part?.Description,
+                    PartNo = $"{part?.PartNo} / {part?.Description}",
                     RoutingName = routingList.First(r => r.RoutingId == wo.RoutingId).RoutingName ?? "",
                     OprNoName = routingstep?.StepNumber ?? "",
                     WoQnty = wo?.CalcWOQty.ToString() ?? "0",
                     Plan_Qnty = mcWait.Plan_Qnty,
                     ActiveId = mcWait.Mc_Wait_ListId,
-                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString() ?? "0",
-                    PlanStartStr = currentStart.Value.ToString("hh:mm tt"),
-                    MatlReceptTime = matltime,
-                    Rework_Wo ='N'
+                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString(),
+                    PlanStartStr = currentStart?.ToString("hh:mm tt") ?? "",
+                    MatlReceptTime = translog.Dt_time.ToString("hh:mm tt"),
+                    Rework_Wo = 'N'
                 });
             }
 
@@ -6122,137 +7706,270 @@ namespace CWB.App.Controllers
         {
             var result = new List<TempMc_Wait_ListVM>();
 
-            var waitList = await _woService.GetAllMc_Wait_List();
-            var timeslots = await _woService.GetAllTempMc_Timeslot_List();
-            var allTimeslots = await _woService.GetAllTimeslot_List();
-            var parts = await _masterService.ItemMasterParts();
-            var machines = await _machineService.GetMachinesList();
-            var shops = await _departmentService.GetDepartments(1);
-            var allWO = await _woService.AllProductionPlan_Wo();
-            var translogs = await _woService.GetAllInv_Trans_Log();
-            var allTimeSlots = await _woService.GetAllTimeslot_List();
+            // 1. Load all master data in parallel (Network I/O - Unchanged)
+            var waitListTask = _woService.GetAllMc_Wait_List();
+            var timeslotsTask = _woService.GetAllTimeslot_List();
+            var partsTask = _masterService.ItemMasterParts();
+            var machinesTask = _machineService.GetMachinesList();
+            var shopsTask = _departmentService.GetDepartments(1);
+            var allWOTask = _woService.AllProductionPlan_Wo();
+            var translogsTask = _woService.GetAllInv_Trans_Log();
+            var allMfTask = _masterService.GetAllManufacturedPartNoDetailList();
+            var allRoutingTask = _routingService.AllRoutings();
+            var allRoutingStepsTask = _routingService.AllRoutingSteps();
+            var allStepMachinesTask = _routingService.AllStepMachines();
 
+            await Task.WhenAll(waitListTask, timeslotsTask, partsTask, machinesTask, shopsTask,
+                               allWOTask, translogsTask, allMfTask, allRoutingTask,
+                               allRoutingStepsTask, allStepMachinesTask);
+
+            // 2. Filter the Main List immediately to reduce loop count
+            var rawWaitList = waitListTask.Result;
+            var waitList = rawWaitList
+                .Where(x => x.Setup_Start_time != null && x.Setup_Apprvl_time == null)
+                .ToList();
+
+            if (waitList.Count == 0) return Ok(result);
+
+            // 3. Convert Lists to Dictionaries (O(1) Lookup)
+            // We assume IDs are unique. If duplicates exist in DB, GroupBy().First() is safer.
+
+            var allWO = allWOTask.Result
+                .GroupBy(x => x.ProductionPlanId).ToDictionary(g => g.Key, g => g.First());
+
+            var parts = partsTask.Result
+                .GroupBy(x => x.PartId).ToDictionary(g => g.Key, g => g.First());
+
+            var machines = machinesTask.Result
+                .GroupBy(x => x.MachineId).ToDictionary(g => g.Key, g => g.First());
+
+            var shops = shopsTask.Result
+                .GroupBy(x => x.DepartmentId).ToDictionary(g => g.Key, g => g.First());
+
+            // Convert TimeSlots to Dictionary for instant access by ID
+            var timeSlots = timeslotsTask.Result
+                .GroupBy(x => x.Timeslot_ListId).ToDictionary(g => g.Key, g => g.First());
+
+            var mfDict = allMfTask.Result
+                .GroupBy(x => x.PartId).ToDictionary(g => g.Key, g => g.First());
+
+            // 4. Handle One-To-Many Relationships (Routings) using Lookups
+            // GroupBy is expensive inside a loop, so we do it ONCE here.
+            var routingDict = allRoutingTask.Result
+                .ToLookup(x => x.ManufacturedPartId);
+
+            var routingStepDict = allRoutingStepsTask.Result
+                .ToLookup(x => x.RoutingId);
+
+            var stepMachinesDict = allStepMachinesTask.Result
+                .ToLookup(x => x.RoutingStepId);
+
+            // 5. OPTIMIZE TRANSLOGS (The CPU Killer)
+            // We create TWO indexes: One for Input_Part, one for Output_Part
+            var translogs = translogsTask.Result;
+
+            // Index A: Lookup by Input_Part_NoId
+            var translogInputIndex = translogs
+                .GroupBy(t => t.Input_Part_NoId)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            // Index B: Lookup by Output_Part_No (Filter nulls first)
+            var translogOutputIndex = translogs
+                .Where(t => t.Output_Part_No != null)
+                .GroupBy(t => t.Output_Part_No)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            // 6. The Loop (Now highly efficient)
             foreach (var mcWait in waitList)
             {
-                //if (mcWait.Wait_Seq_No != 1)
-                //{
-                //    continue;
-                //}
-                if (mcWait.Setup_Start_time == null || mcWait.Setup_Apprvl_time != null)
+                // A. Fast Fail lookups
+                if (!allWO.TryGetValue(mcWait.Wo_Id, out var wo)) continue;
+                if (!machines.TryGetValue(mcWait.Mc_Id, out var machine)) continue;
+
+                // B. Translog Logic (Replaces the slow FirstOrDefault)
+                Inv_Trans_LogVM translog = null;
+
+                // Try Input Part ID
+                if (!translogInputIndex.TryGetValue(wo.PartId, out translog))
                 {
-                    continue;
+                    // Fallback: Try Output Part ID
+                    translogOutputIndex.TryGetValue(wo.PartId, out translog);
                 }
 
-                var wo = allWO.FirstOrDefault(p => p.ProductionPlanId == mcWait.Wo_Id);
-                var translog = translogs.Where(t => t.Input_Part_NoId == wo.PartId || t.Output_Part_No == wo.PartId).FirstOrDefault();
-                if (translog == null)
-                {
-                    continue;
-                }
-                var matltime = translog.Dt_time.ToString("hh:mm tt") ?? "";
-                var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
-                var machine = machines.FirstOrDefault(m => m.MachineId == mcWait.Mc_Id);
-                var shop = shops.FirstOrDefault(s => s.DepartmentId == machine.ShopId);
-                var mf = await _masterService.GetManufPart((int)wo.PartId);
-                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                // If still null, skip
+                if (translog == null) continue;
 
-                var routing = await _routingService.RoutingSteps((int)wo.RoutingId);
-                var routingstep = routing.FirstOrDefault(r => r.StepId == mcWait.Opr_No_Id);
-                var stepMachines = await _routingService.StepMachines((int)routingstep.StepId);
-                var currentStart = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == mcWait.Plan_start_time_Id)?.Start_time;
+                // C. Standard Data Mapping
+                var part = parts.GetValueOrDefault(wo.PartId);
+                var shop = shops.GetValueOrDefault(machine.ShopId);
+                var currentStart = timeSlots.GetValueOrDefault(mcWait.Plan_start_time_Id)?.Start_time;
+
+                // D. Routing Logic (Using Lookups)
+                if (!mfDict.TryGetValue((int)wo.PartId, out var mf)) continue;
+
+                // Find Routing Name
+                var routingName = "";
+                var routingList = routingDict[mf.ManufacturedPartNoDetailId]; // Returns IEnumerable (Instant)
+                var matchedRouting = routingList.FirstOrDefault(r => r.RoutingId == wo.RoutingId);
+                if (matchedRouting != null) routingName = matchedRouting.RoutingName;
+
+                // Find Routing Step
+                var routingSteps = routingStepDict[wo.RoutingId];
+                var routingStep = routingSteps.FirstOrDefault(r => r.StepId == mcWait.Opr_No_Id);
+                if (routingStep == null) continue;
+
+                // Find Machine Step
+                var stepMachines = stepMachinesDict[routingStep.StepId];
+                var plannedSetupTime = stepMachines.FirstOrDefault()?.SetupTime ?? "";
+
+                // E. Add to Result
                 result.Add(new TempMc_Wait_ListVM
                 {
                     ShopName = shop?.Name ?? "",
                     McName = machine?.Name ?? "",
                     WoNumber = wo?.WONumber ?? "",
-                    PartNo = part?.PartNo + " / " + part?.Description,
-                    RoutingName = routingList.First(r => r.RoutingId == wo.RoutingId).RoutingName ?? "",
-                    OprNoName = routingstep?.StepNumber ?? "",
+                    PartNo = $"{part?.PartNo} / {part?.Description}",
+                    RoutingName = routingName,
+                    OprNoName = routingStep?.StepNumber ?? "",
                     WoQnty = wo?.CalcWOQty.ToString() ?? "0",
                     Plan_Qnty = mcWait.Plan_Qnty,
                     ActiveId = mcWait.Mc_Wait_ListId,
-                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString() ?? "0",
-                    PlanStartStr = currentStart.Value.ToString("hh:mm tt"),
-                    SetUpTimeStr = mcWait.Setup_Start_time.Value.ToString("hh:mm tt"),
-                    MatlReceptTime = matltime,
-                    PlannedSetupTime = stepMachines.First().SetupTime ?? "",
+                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString(),
+                    PlanStartStr = currentStart?.ToString("hh:mm tt") ?? "",
+                    SetUpTimeStr = mcWait.Setup_Start_time?.ToString("hh:mm tt") ?? "",
+                    MatlReceptTime = translog.Dt_time.ToString("hh:mm tt"),
+                    PlannedSetupTime = plannedSetupTime,
                     Rework_Wo = 'N'
                 });
             }
 
             return Ok(result);
         }
-
         [HttpGet]
         public async Task<IActionResult> GetAllBookOutList()
         {
             var result = new List<TempMc_Wait_ListVM>();
 
-            var waitList = await _woService.GetAllMc_Wait_List();
-            var timeslots = await _woService.GetAllTempMc_Timeslot_List();
-            var allTimeslots = await _woService.GetAllTimeslot_List();
-            var parts = await _masterService.ItemMasterParts();
-            var machines = await _machineService.GetMachinesList();
-            var shops = await _departmentService.GetDepartments(1);
-            var allWO = await _woService.AllProductionPlan_Wo();
-            var translogs = await _woService.GetAllInv_Trans_Log();
-            var allTimeSlots = await _woService.GetAllTimeslot_List();
-            var uoms = await _masterService.GetUOMs();
+            // ---- Load everything in parallel ----
+            var waitListTask = _woService.GetAllMc_Wait_List();
+            var timeslotsTask = _woService.GetAllTimeslot_List();
+            var partsTask = _masterService.ItemMasterParts();
+            var machinesTask = _machineService.GetMachinesList();
+            var shopsTask = _departmentService.GetDepartments(1);
+            var allWOTask = _woService.AllProductionPlan_Wo();
+            var translogsTask = _woService.GetAllInv_Trans_Log();
+            var uomTask = _masterService.GetUOMs();
+            var allMfTask = _masterService.GetAllManufacturedPartNoDetailList();
+            var allRoutingTask = _routingService.AllRoutings();
+            var allRoutingStepsTask = _routingService.AllRoutingSteps();
+            //var allStepMachinesTask = _routingService.AllStepMachines();
+
+            await Task.WhenAll(
+                waitListTask, timeslotsTask, partsTask, machinesTask,
+                shopsTask, allWOTask, translogsTask, uomTask, allMfTask,
+                allRoutingTask, allRoutingStepsTask
+            );
+
+            // ---- Convert lists to Dictionary for fast lookup ----
+            var waitList = waitListTask.Result.Where(x=>x.Setup_Apprvl_time != null).ToList();
+            var timeslots = timeslotsTask.Result
+                .ToDictionary(t => t.Timeslot_ListId, t => t);
+
+            var parts = partsTask.Result
+                .ToDictionary(p => p.PartId, p => p);
+
+            var machines = machinesTask.Result
+                .ToDictionary(m => m.MachineId, m => m);
+
+            var shops = shopsTask.Result
+                .ToDictionary(s => s.DepartmentId, s => s);
+
+            var allWO = allWOTask.Result
+                .ToDictionary(w => w.ProductionPlanId, w => w);
+
+            var translogs = translogsTask.Result;
+            var uoms = uomTask.Result.ToDictionary(u => u.UOMId, u => u);
+            var mfDict = allMfTask.Result.ToDictionary(x => x.PartId);
+            var routingDict = allRoutingTask.Result.GroupBy(x => x.ManufacturedPartId)
+                                      .ToDictionary(g => g.Key, g => g.ToList());
+            var routingStepDict = allRoutingStepsTask.Result.GroupBy(x => x.RoutingId)
+                                                           .ToDictionary(g => g.Key, g => g.ToList());
+    //        var stepMachinesDict = allStepMachinesTask.Result
+    //.GroupBy(x => x.RoutingStepId)
+    //.ToDictionary(g => g.Key, g => g.ToList());
+
+
+
+            // ---- Pre-group translogs for fast part lookup ----
+            var translogLookup = translogs
+                .GroupBy(t => t.Input_Part_NoId)
+                .ToDictionary(g => g.Key, g => g.First());
 
             foreach (var mcWait in waitList)
             {
-                if (mcWait.Wait_Seq_No != 0)
-                {
+                // Only items where:
+                // Wait_Seq_No == 0 AND setup approval exists
+                //if (mcWait.Wait_Seq_No != 0 || mcWait.Setup_Apprvl_time == null)
+                //    continue;
+
+                // WO lookup
+                if (!allWO.TryGetValue(mcWait.Wo_Id, out var wo))
                     continue;
-                }
-                if (mcWait.Setup_Apprvl_time == null)
+
+                // Translog lookup
+                Inv_Trans_LogVM translog = null;
+
+                if (!translogLookup.TryGetValue(wo.PartId, out translog))
                 {
-                    continue;
+                    translog = translogs.FirstOrDefault(t => t.Output_Part_No == wo.PartId);
+                    if (translog == null)
+                        continue;
                 }
 
-                var wo = allWO.FirstOrDefault(p => p.ProductionPlanId == mcWait.Wo_Id);
-                var translog = translogs.Where(t => t.Input_Part_NoId == wo.PartId || t.Output_Part_No == wo.PartId).FirstOrDefault();
-                if (translog == null)
-                {
+                var part = parts.GetValueOrDefault(wo.PartId);
+                if (!machines.TryGetValue(mcWait.Mc_Id, out var machine))
                     continue;
-                }
-                var matltime = translog.Dt_time.ToString("hh:mm tt") ?? "";
-                var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
-                var machine = machines.FirstOrDefault(m => m.MachineId == mcWait.Mc_Id);
-                var shop = shops.FirstOrDefault(s => s.DepartmentId == machine.ShopId);
-                var mf = await _masterService.GetManufPart((int)wo.PartId);
-                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
 
-                var routing = await _routingService.RoutingSteps((int)wo.RoutingId);
-                var routingstep = routing.FirstOrDefault(r => r.StepId == mcWait.Opr_No_Id);
-                var stepMachines = await _routingService.StepMachines((int)routingstep.StepId);
-                var currentStart = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == mcWait.Plan_start_time_Id)?.Start_time;
-                var uomName = uoms.FirstOrDefault(u => u.UOMId == mf.UOMId).Name ?? "";
+                var shop = shops.GetValueOrDefault(machine.ShopId);
+
+                // ---- Routing-related calls (still needed per WO) ----
+                var mf = mfDict[(int)wo.PartId];
+                var routingList = routingDict[mf.ManufacturedPartNoDetailId];
+                var routingSteps = routingStepDict[wo.RoutingId];
+
+                var routingStep = routingSteps.FirstOrDefault(r => r.StepId == mcWait.Opr_No_Id);
+                if (routingStep == null)
+                    continue;
+
+                timeslots.TryGetValue(mcWait.Plan_start_time_Id, out var startTS);
+
+                string uomName = uoms.TryGetValue(mf.UOMId, out var u)
+                    ? u.Name
+                    : "";
 
                 result.Add(new TempMc_Wait_ListVM
                 {
                     ShopName = shop?.Name ?? "",
                     McName = machine?.Name ?? "",
                     WoNumber = wo?.WONumber ?? "",
-                    Wo_Id = wo?.WoId ?? 0,
-                    PartId = (long)(wo?.PartId),
-                    PartNo = part?.PartNo + " / " + part?.Description,
-                    RoutingName = routingList.First(r => r.RoutingId == wo.RoutingId).RoutingName ?? "",
-                    OprNoName = routingstep?.StepNumber ?? "",
-                    WoQnty = wo?.CalcWOQty.ToString() ?? "0",
+                    Wo_Id = wo?.ProductionPlanId ?? 0,
+                    PartId = wo?.PartId ?? 0,
+                    PartNo = $"{part?.PartNo} / {part?.Description}",
+                    RoutingName = routingList.First(r => r.RoutingId == wo.RoutingId).RoutingName,
+                    OprNoName = routingStep?.StepNumber,
+                    WoQnty = wo?.CalcWOQty.ToString(),
                     Opr_No_Id = mcWait.Opr_No_Id,
                     Plan_Qnty = mcWait.Plan_Qnty,
                     ActiveId = mcWait.Mc_Wait_ListId,
                     QntyOffered = mcWait.QntyOffered,
                     Accepted = mcWait.Accepted,
                     NonConQnty = mcWait.NonConQnty,
-                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString() ?? "0",
-                    PlanStartStr = currentStart.Value.ToString("hh:mm tt"),
-                    SetUpTimeStr = mcWait.Setup_Apprvl_time.HasValue
-    ? TimeZoneInfo.ConvertTimeFromUtc(mcWait.Setup_Apprvl_time.Value, TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata"))
-        .ToString("hh:mm tt")
-    : "",
-                    MatlReceptTime = matltime,
+                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString(),
+                    PlanStartStr = startTS?.Start_time.ToString("hh:mm tt") ?? "",
+                    SetUpTimeStr = mcWait.Setup_Apprvl_time.Value
+                        .ToLocalTime()
+                        .ToString("hh:mm tt"),
+                    MatlReceptTime = translog.Dt_time.ToString("hh:mm tt"),
                     UomName = uomName,
                     Rework_Wo = 'N'
                 });
@@ -6284,7 +8001,7 @@ namespace CWB.App.Controllers
 
             // The data is already in a structure ready for filtering
             var waitingData = fullDataSet
-                .Where(x => x.Wait_Seq_No == 0) // Equivalent logic from GetAllSetUpCnfList
+                //.Where(x => x.Wait_Seq_No == 0) // Equivalent logic from GetAllSetUpCnfList
                 .ToList();
 
             var approvalData = fullDataSet
@@ -7067,7 +8784,7 @@ namespace CWB.App.Controllers
                                 startFromTimeslotId = existingMcSlots.First().EndTimeslot_List_Id;
                             }
                             var availableTimeslots = plantSlots
-                                .Where(t => t.Timeslot_ListId > startFromTimeslotId && t.Start_time > DateTime.Now)
+                                .Where(t => t.Timeslot_ListId > startFromTimeslotId || t.Start_time > DateTime.Now)
                                 .Take(slotsRequired)
                                 .ToList();
 
@@ -8943,6 +10660,8 @@ namespace CWB.App.Controllers
             if (!isFinalOpr && balBookoutQty == 0)
             {
                 wo.Status = 5;
+                wo.ActWOQty = (int)totalBookoutQty;
+                wo.ActCompletionDate = bookoutTime;
                 await _woService.UpdateProductionPlan_Wo(wo);
                 return Ok("WO WIP - current operation completed");
             }

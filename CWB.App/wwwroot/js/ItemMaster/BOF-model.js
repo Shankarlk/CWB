@@ -355,9 +355,19 @@ $(function () {
     });
 
     $("#btnBOFDetailSubmit").click(function (event) {
+        event.preventDefault();
+
+        let $btn = $(this);
+
+        // ⛔ Prevent double click
+        if ($btn.prop("disabled")) return;
+
+        // Disable button immediately
+        $btn.prop("disabled", true);
         if (!modelObj.Edit) {
             if ($("#BoughtOutFinishDetailId").val() != "0") {
-                alert("Älready saved... BOF");
+                $btn.prop("disabled", false);
+                alert("Already saved... BOF");
                 event.preventDefault();
                 return;
             }
@@ -372,10 +382,16 @@ $(function () {
 
                 }).catch((error) => {
                     AppUtil.HandleError("BOFform", error);
+                }).finally(() => {
+                    // Re-enable button after API completes
+                    $btn.prop("disabled", false);
                 });
+            } else {
+                $btn.prop("disabled", false);
             }
+        } else {
+            $btn.prop("disabled", false);
         }
-        event.preventDefault();
     });
     $('#status-info').on('hidden.bs.modal', function (event) {
         var newNamevalidate = document.getElementById('statusResasonopup');

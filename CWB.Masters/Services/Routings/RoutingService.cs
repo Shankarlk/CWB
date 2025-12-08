@@ -78,6 +78,17 @@ namespace CWB.Masters.Services.Routings
                 return new List<RoutingVM>();
             }
         }
+        public IEnumerable<RoutingVM> GetAllRoutingsForManufId(long tenantId)
+        {
+            var routings = _routingRepository.GetRangeAsync(m => m.Deleted == 0 && m.TenantId == tenantId).OrderBy(m=>m.Id);
+            try
+            {
+                return _mapper.Map<IEnumerable<RoutingVM>>(routings);
+            }
+            catch (Exception ex) {
+                return new List<RoutingVM>();
+            }
+        }
         public async Task<List<RoutingListItemVM>> GetRoutingListItemsAsync(long tenantId)
         {
             // Get manufactured parts
@@ -138,6 +149,19 @@ namespace CWB.Masters.Services.Routings
             try
             {
                 var routingsteps = _routingStepRepository.GetRangeAsync(m => m.RoutingId == routingId).OrderBy(m => m.Id);
+                return _mapper.Map<IEnumerable<RoutingStepVM>>(routingsteps);
+            } catch(Exception ex)
+            {
+                string msg = ex.InnerException.Message;
+                string src = ex.InnerException.Source;
+                return new List<RoutingStepVM>();
+            }
+        }
+        public IEnumerable<RoutingStepVM> GetAllStepsForRouting(long tenantId)
+        {
+            try
+            {
+                var routingsteps = _routingStepRepository.GetRangeAsync(m => m.TenantId == tenantId).OrderBy(m => m.Id);
                 return _mapper.Map<IEnumerable<RoutingStepVM>>(routingsteps);
             } catch(Exception ex)
             {
@@ -575,6 +599,20 @@ namespace CWB.Masters.Services.Routings
             try
             {
                 var stepMachines = _routingStepMachineRepository.GetRangeAsync(m => m.RoutingStepId == stepId).OrderBy(m => m.Id);
+                return _mapper.Map<IEnumerable<RoutingStepMachineVM>>(stepMachines);
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.InnerException.Message;
+                string src = ex.InnerException.Source;
+                return new List<RoutingStepMachineVM>();
+            }
+        }
+        public async Task<IEnumerable<RoutingStepMachineVM>> AllStepMachines(long tenantId)
+        {
+            try
+            {
+                var stepMachines = _routingStepMachineRepository.GetRangeAsync(m => m.TenantId == tenantId).OrderBy(m => m.Id);
                 return _mapper.Map<IEnumerable<RoutingStepMachineVM>>(stepMachines);
             }
             catch (Exception ex)

@@ -198,6 +198,12 @@ namespace CWB.ProductionPlanWO.Utils
             public const string GetAllTempMc_Wait_List = Base + "/gettempmcwaitlist/{tenantId}";
             public const string PostTempMc_Wait_List = Base + "/posttempmcwaitlist";
             public const string DeleteTempMc_Wait_List = Base + "/deletetempmcwaitlist/{Id}/{tenantId}";
+            public const string GetAllInv_Master_Log = Base + "/getinvmasterlog/{tenantId}";
+            public const string PostInv_Master_Log = Base + "/postinvmasterlog";
+            public const string DeleteInv_Master_Log = Base + "/deleteinvmasterlog/{Id}/{tenantId}";
+            public const string GetAllInv_Mismatch_List = Base + "/getinvmismatchlist/{tenantId}";
+            public const string PostInv_Mismatch_List = Base + "/postinvmismatchlist";
+            public const string DeleteInv_Mismatch_List = Base + "/deleteinvmismatchlist/{Id}/{tenantId}";
         }
     }
 }

@@ -32,13 +32,17 @@ namespace CWB.App.Services.Routings
         
 
         Task<IEnumerable<RoutingStepVM>> RoutingSteps(int routingId);
+        Task<IEnumerable<RoutingStepVM>> AllRoutingSteps();
         Task<IEnumerable<RoutingVM>> Routings(int manufPartId);
-        
+        Task<IEnumerable<RoutingVM>> AllRoutings();
+
+
         Task<IEnumerable<RoutingStepPartVM>> StepParts(int stepId);
         Task<IEnumerable<RoutingStatusLogVM>> GetRoutingStatusLog(long routingId);
         Task<IEnumerable<RoutingStepPartVM>> StepPartsByManufId(int manufId);
         Task<IEnumerable<RoutingStepSupplierVM>> StepSuppliers(int stepId);
         Task<IEnumerable<RoutingStepMachineVM>> StepMachines(int stepId);
+        Task<IEnumerable<RoutingStepMachineVM>> AllStepMachines();
 
         Task<IEnumerable<SubConDetailsVM>> SubCons(int stepId);
         Task<IEnumerable<SubConWorkStepDetailsVM>> SubConWSS(int stepId,int subConDetailsId);

@@ -9,6 +9,7 @@ namespace CWB.ProductionPlanWO.Domain
     public class Shop_Insp_Log:BaseEntity
     {
         public long Mc_Reference { get; set; }
+        public long Operator_Id { get; set; }
         public long Inspected_by { get; set; }
         public DateTime Inspected_on { get; set; }
         public int Qnty_OK_finished { get; set; }

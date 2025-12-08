@@ -417,6 +417,24 @@ namespace CWB.App.Services.ProductionPlanWo
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<Cont_RCA_CA_LogVM>>.GetAsync(uri, headers);
         }
+        public async Task<IEnumerable<Inv_Master_LogVM>> GetAllInv_Master_Log()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getinvmasterlog/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Inv_Master_LogVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Inv_Mismatch_ListVM>> GetAllInv_Mismatch_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getinvmismatchlist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Inv_Mismatch_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<bool> DeleteInvMismatch(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deleteinvmismatchlist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
         public async Task<IEnumerable<NC_Decision_LogVM>> GetAllNC_Decision_Log()
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getncdeclog/{tenantId}");
@@ -521,6 +539,21 @@ namespace CWB.App.Services.ProductionPlanWo
             purchaseDetailVM.TenantId = tenantId;
             return await RestHelper<Cont_RCA_CA_LogVM>.PostAsync(uri, purchaseDetailVM, headers);
         }
+        public async Task<Inv_Mismatch_ListVM> PostInv_Mismatch_List(Inv_Mismatch_ListVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postinvmismatchlist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.Reported_By = tenantId;
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<Inv_Mismatch_ListVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
+        public async Task<Inv_Master_LogVM> PostInv_Master_Log(Inv_Master_LogVM purchaseDetailVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postinvmasterlog");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            purchaseDetailVM.TenantId = tenantId;
+            return await RestHelper<Inv_Master_LogVM>.PostAsync(uri, purchaseDetailVM, headers);
+        }
         public async Task<NC_Wk_List_Tmpl_HeadVM> PostNC_Wk_List_Tmpl_Head(NC_Wk_List_Tmpl_HeadVM purchaseDetailVM)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postncwklsthead");
@@ -565,6 +598,18 @@ namespace CWB.App.Services.ProductionPlanWo
         public async Task<bool> DeleteWO_Wait_List(long itemMasterDocListId)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deletewowaitlist/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<bool> DeleteInv_Master_Log(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deleteinvmasterlog/{itemMasterDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<bool> DeleteInv_Mismatch_List(long itemMasterDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deleteinvmismatchlist/{itemMasterDocListId}/{tenantId}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<bool>.GetAsync(uri, headers);
         }
@@ -851,6 +896,7 @@ namespace CWB.App.Services.ProductionPlanWo
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postshopinsplog");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             purchaseDetailVM.TenantId = tenantId;
+            purchaseDetailVM.Inspected_by = tenantId;
             return await RestHelper<Shop_Insp_LogVM>.PostAsync(uri, purchaseDetailVM, headers);
         }
         public async Task<bool> DeleteShop_Insp_Log(long itemMasterDocListId)

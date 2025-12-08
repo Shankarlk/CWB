@@ -195,6 +195,12 @@ namespace CWB.ProductionPlanWO.Services
         Task<IEnumerable<DispatchQntyVM>> GetAllDispatchQnty(long tenantId);
         Task<DispatchQntyVM> PostDispatchQnty(DispatchQntyVM itemMasterDocList);
         Task<bool> DeleteDispatchQnty(long itemMasterDocListId, long tenantId);
+        Task<IEnumerable<Inv_Master_LogVM>> GetAllInv_Master_Log(long tenantId);
+        Task<Inv_Master_LogVM> PostInv_Master_Log(Inv_Master_LogVM itemMasterDocList);
+        Task<bool> DeleteInv_Master_Log(long itemMasterDocListId, long tenantId);
+        Task<IEnumerable<Inv_Mismatch_ListVM>> GetAllInv_Mismatch_List(long tenantId);
+        Task<Inv_Mismatch_ListVM> PostInv_Mismatch_List(Inv_Mismatch_ListVM itemMasterDocList);
+        Task<bool> DeleteInv_Mismatch_List(long itemMasterDocListId, long tenantId);
 
         string HelloWorld();
     }

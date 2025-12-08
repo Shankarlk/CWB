@@ -1609,8 +1609,59 @@ namespace CWB.ProductionPlanWO.Controllers
             var result = await _woSerivce.DeleteDispatchQnty(Id, tenantId);
             return Ok(result);
         }
-        
 
-    
+
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostInv_Master_Log)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(WoSubConSupplierVM))]
+        public async Task<IActionResult> PostInv_Master_Log([FromBody] Inv_Master_LogVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostInv_Master_Log(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllInv_Master_Log)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Inv_Master_LogVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllInv_Master_Log(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllInv_Master_Log(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteInv_Master_Log)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteInv_Master_Log(long Id, long tenantId)
+        {
+            var result = await _woSerivce.DeleteInv_Master_Log(Id, tenantId);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostInv_Mismatch_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(WoSubConSupplierVM))]
+        public async Task<IActionResult> PostInv_Mismatch_List([FromBody] Inv_Mismatch_ListVM workOrdersVM)
+        {
+            var result = await _woSerivce.PostInv_Mismatch_List(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllInv_Mismatch_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Inv_Mismatch_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllInv_Mismatch_List(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllInv_Mismatch_List(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteInv_Mismatch_List)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteInv_Mismatch_List(long Id, long tenantId)
+        {
+            var result = await _woSerivce.DeleteInv_Mismatch_List(Id, tenantId);
+            return Ok(result);
+        }
+
+
     }
 }

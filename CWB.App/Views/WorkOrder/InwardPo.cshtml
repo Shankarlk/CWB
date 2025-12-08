@@ -494,6 +494,7 @@
                                                 <th>Units</th>
                                                 <th>Insp Docs Avl</th>
                                                 <th>Status</th>
+                                                <th>Mismatch Resolved</th>
                                                 <th width="5%">
                                                 </th>
                                             </tr>
@@ -1137,7 +1138,8 @@
                                 <br>
                                 Supplier DC Count has an error and requires
                                 clarification with Supplier. Inward Data has to be
-                                reentered for this line item.
+                                reentered for this line item. Supplier DC Count &
+                                our count should match for updating transaction.
                                 <br>
                                 (This line item will not show in the Inward
                                 Inspection List. If Supplier documentation
@@ -1177,15 +1179,30 @@
                                 <br>
                                 Supplier DC Count has an error and requires
                                 clarification with Supplier. Inward Data has to be
-                                reentered for this line item.
+                                reentered for this line item. Supplier DC Count &
+                                our count should match for updating transaction.
+                                <br>
                                 <br>
                                 (This line item will not show in the Inward
                                 Inspection List. If Supplier documentation
                                 changes, it would have to be uploaded again)
+                                <br>
+                                <br>
+                                or
+                                <br>
+                                <br>
+                                Escalate to Senior to take decision / Reconcile
                             </label>
                             <div class="col-md-6 text-center">
                                 <button class="btn btn-sm btn-primary" id="Error2Edit">Edit Entered Data</button>
                                 <button class="btn btn-sm mt-5 btn-primary" id="Error2WithOutExit">Exit without Saving Entered Data</button>
+                                <label class="form-label col-md-12 mt-5 text-start ms-3">
+                                    Enter Comment *
+                                </label>
+                                <div class="col-md-8  ms-3">
+                                    <textarea type="text" class="form-control form-control-sm" id="E2Com" style="height: 43px;"> </textarea>
+                                </div>
+                                <button class="btn btn-sm mt-2 btn-primary" id="SaveNEsca">Save & Escalate Mismatch</button>
                             </div>
                         </div>
                     </form>
@@ -1278,6 +1295,7 @@
                        data-partno={partNo}
                        data-poqnty={poQnty}
                        data-poqntyrecd={poQntyRecd}
+                       data-mismatchresolved={mismatch_Resolved}
                        data-partid={partId} data-edit={0}
                        data-bs-target="#popupInward">
                         Inward
@@ -1291,6 +1309,7 @@
                        data-porcptdate={planPoReceiptDate}
                        data-supp="{supplier}"
                        data-podetails="{poDetailsId}"
+                       data-mismatchresolved={mismatch_Resolved}
                        data-procid="{procPlanId}" data-partid="{partId}"
                        data-partno="{partNo}" data-qnty="{poQnty}" data-supname="{supplier}" data-aggdate="{dateStr}"
                        data-bs-target="#">
@@ -1311,6 +1330,7 @@
                        data-podetails={poDetailsId}
                        data-procid={procPlanId}
                        data-partno={partNo}
+                       data-mismatchresolved={mismatch_Resolved}
                        data-partid={partId} data-edit={1}
                        data-bs-target="#popupInward">
                         Edit

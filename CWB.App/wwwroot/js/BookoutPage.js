@@ -531,6 +531,10 @@ $(document).ready(function () {
     });
     $('#Popup11').on('hidden.bs.modal', function (event) {
         document.getElementById('Popup10').style.filter = 'none';
+        var newNamevalidate = document.getElementById('P11Opertor');
+        newNamevalidate.style.border = '';
+        var P11TbTotalOff = document.getElementById('P11TbTotalOff');
+        P11TbTotalOff.style.border = '';
     });
     $('#PartInspectionDocPop').on('hidden.bs.modal', function (event) {
         document.getElementById('Popup11').style.filter = 'none';
@@ -556,6 +560,7 @@ $(document).ready(function () {
         var id = relatedTarget.data("id");
         var partid = relatedTarget.data("partid");
         var woid = relatedTarget.data("woid");
+        var oprid = relatedTarget.data("oprid");
         $("#P11PartNo").text(partno);
         $("#P11PerPart").text(partno);
         $("#P11Rout").text(route);
@@ -567,6 +572,9 @@ $(document).ready(function () {
         $("#P11Shop").text(shopname);
         $("#P11McName").text(mcname);
         $("#P6TbTotalOffUnit").text(uomname);
+        $("#P6TbAcpUnit").text(uomname);
+        $("#P11NonUnit").text(uomname);
+        $("#P11InputBtnUnit").text(uomname);
         $("#P6TbInspTotalUnit").text(uomname);
         $("#P6TbTotalNcUnit").text(uomname);
         $("#P6TotalInspUnit").text(uomname);
@@ -576,17 +584,78 @@ $(document).ready(function () {
         $("#P7OprNoSpan").text(opname);
         $("#P7PartId").val(partid);
         $("#P7InwHeaderId").val(id);
+        $("#P7OprId").val(oprid);
         $("#P7woid").val(woid);
         $("#P11TotalInsp").val(qntoff);
         $("#P11TbTotalOff").val(qntoff);
         $("#P11TbInspTotal").val(accp);
         $("#P11TbTotalNc").val(ncqnty);
-        $("#P11InputBtn").hide();
+        $("#P11InputBtn").show();
+        $("#P11InputBtnTr").show();
+        $("#FLessMsg").hide();
+        $("#GGreaterMsg").hide();
         showPopup();
         loadDocUploadList();
         loadNclog(id);
     });
-    $("#P11TbTotalOff, #P11TbInspTotal").on("input", calculateNc);
+    document.getElementById("P11NonBtnCOunt").addEventListener("input", function () {
+        var totalGridNC = $("#P6TotalNc").val();
+        var P6FinNcCount = this.value;
+        if (parseInt(P6FinNcCount) > parseInt(totalGridNC)) {
+            $("#ErrorMessage12").modal("show");
+        }
+    });
+    $('#ErrorMessage12').on('show.bs.modal', function (event) {
+        document.getElementById('Popup11').style.filter = 'blur(5px)';
+    });
+    $('#ErrorMessage12').on('hidden.bs.modal', function (event) {
+        document.getElementById('Popup11').style.filter = 'none';
+    });
+    $("#SaveNEsca").on("click", function () {
+        var E2Com = $("#E2Com").val();
+        var P6PartId = parseInt($("#P7PartId").val());
+        if (E2Com.length === 0) {
+            var newNamevalidate = document.getElementById('E2Com');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('E2Com');
+            newNamevalidate.style.border = '';
+        }
+        let Acount = parseFloat($("#P11TbTotalOff").val()) || 0;
+        let BCOunt = parseFloat($("#P11NonBtnCOunt").val()) || 0;
+        let CCOunt = parseFloat($("#P11InputBtnCount").val()) || 0;
+        let ECount = parseFloat($("#P11PerBal").text()) || 0;
+        let DCount = Acount + BCOunt + CCOunt;
+        let FCount = ECount - DCount;
+        var rowData = {
+            inv_Mismatch_ListId: 0,
+            calling_UI_ID: 90,
+            pO_Ref: parseInt($("#P6PoId").val()),
+            part_No: parseInt(P6PartId),
+            mismatch_Qnty: parseInt(FCount),
+            report_date: new Date().toISOString(),
+            resolution_Comments: ".",
+            resolved: 'N',
+            mismatch_Comments: E2Com,
+            mismatch_Status: "Less",
+        };
+        $.ajax({
+            type: "POST",
+            url: '/workOrder/PostInv_Mismatch_List',
+            contentType: "application/json; charset=utf-8",
+            headers: { 'Content-Type': 'application/json' },
+            data: JSON.stringify(rowData),
+            dataType: "json",
+            success: function (result) {
+                $("#ErrorMessage2").modal("hide");
+                $("#popup5").modal("hide");
+                $("#popup4PoLineData").modal("hide");
+                $("#popupInward").modal("hide");
+            }
+        });
+    });
+    $("#P11TbTotalOff, #P11NonBtnCOunt, #P11InputBtnCount").on("input", calculateNc);
     $("#P11NonBtn").on('click', function (event) {
         $("#popup7").modal("show");
         var P7NcBallonDesc = document.getElementById('P7NcBallonDesc');
@@ -628,11 +697,12 @@ $(document).ready(function () {
         if (P11Save ) {
                 $("#warning").modal("show");
         } else if (mandatory == "Y") {
-            if (comment.length <= 0) {
-                $("#NotUploaded").modal("show");
-            } else {
-                $("#Popup11").modal("hide");
-            }
+            $("#Popup11").modal("hide");
+            //if (comment.length <= 0) {
+            //    //$("#NotUploaded").modal("show");
+            //} else {
+            //    $("#Popup11").modal("hide");
+            //}
         }
         else {
             $("#Popup11").modal("hide");
@@ -723,7 +793,7 @@ $(document).ready(function () {
         };
         $.ajax({
             type: "POST",
-            url: '/workOrder/PostNcLog',
+            url: '/workOrder/PostInspNcLog',
             contentType: "application/json; charset=utf-8",
             headers: { 'Content-Type': 'application/json' },
             data: JSON.stringify(rowData),
@@ -734,9 +804,8 @@ $(document).ready(function () {
             }
         });
     });
-    $("#Error4Exit").on("click", function () {
+    $("#Error4Edit").on("click", function () {
         $("#ErrorMessage4").modal("hide");
-        $("#Popup11").modal("hide");
     });
     $('#ErrorMessage4').on('show.bs.modal', function (event) {
         document.getElementById('Popup11').style.filter = 'blur(5px)';
@@ -753,7 +822,53 @@ $(document).ready(function () {
         var suppCountVM = $("#P11TotalInsp").val();
         var P6TotalNc = $("#P6TotalNc").val();
         var P11TbTotalNc = $("#P11TbTotalNc").val();
-
+        var P11NonBtnCOunt = $("#P11TbTotalNc").val();
+        var P11InputBtnCount = $("#P11InputBtnCount").val();
+        var P11Opertor = parseInt($("#P11Opertor").val());
+        if (P11Opertor == 0) {
+            var newNamevalidate = document.getElementById('P11Opertor');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('P11Opertor');
+            newNamevalidate.style.border = '';
+        }
+        if (parseInt(ourCountVM) == 0) {
+            var newNamevalidate = document.getElementById('P11TbTotalOff');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('P11TbTotalOff');
+            newNamevalidate.style.border = '';
+        }
+        if (parseInt(P11NonBtnCOunt) == 0) {
+            var newNamevalidate = document.getElementById('P11NonBtnCOunt');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('P11NonBtnCOunt');
+            newNamevalidate.style.border = '';
+        }
+        if (parseInt(P11InputBtnCount) == 0) {
+            var newNamevalidate = document.getElementById('P11InputBtnCount');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('P11InputBtnCount');
+            newNamevalidate.style.border = '';
+        }
+        let Acount = parseFloat($("#P11TbTotalOff").val()) || 0;
+        let BCOunt = parseFloat($("#P11NonBtnCOunt").val()) || 0;
+        let CCOunt = parseFloat($("#P11InputBtnCount").val()) || 0;
+        let ECount = parseFloat($("#P11PerBal").text()) || 0;
+        let DCount = Acount + BCOunt + CCOunt;
+        let FCount = ECount - DCount;
+        if (FCount < 0) {
+            $("#ErrorMessage4").modal("show");
+            return false;
+        } else {
+            $("#ErrorMessage4").modal("hide");
+        }
         var formdata = {
             mc_Wait_ListId: parseInt($("#P7InwHeaderId").val()),
             nonConQnty: parseInt($("#P11TbTotalNc").val()),
@@ -765,7 +880,7 @@ $(document).ready(function () {
         }).catch((error) => {
             console.log(error);
         });
-        if ((parseInt(suppCountVM) != parseInt(ourCountVM)) || (parseInt(P6TotalNc) < parseInt(P11TbTotalNc))) {
+        if (FCount < 0) {
             $("#ErrorMessage4").modal("show");
         } else {
             var qnty = parseInt($("#P11TbInspTotal").val());
@@ -780,23 +895,24 @@ $(document).ready(function () {
                 } else {
                     logId = 0;
                 }
+                var oprNo = parseInt($("#P7OprId").val());
                 var rowData = {
-                    Inv_Trans_LogId: logId,
+                    Inv_Trans_LogId: 0,
                     Input_Part_NoId: P6PartId,
                     Input_Routing_Id: 0,
-                    Input_Opr_No: 0,
+                    Input_Opr_No: oprNo,
                     Output_Part_No: P6PartId,
                     Output_Routing_Id: 0,
                     Output_Opr_No: 0,
                     Wo_Id: 0,
                     PO_No_Id: P6PoId,
-                    Transaction_Id: 1,
-                    Qnty: qnty,
+                    Transaction_Id: 7,
+                    Qnty: Acount,
                     From_Location_Id: 0,
                     To_Location_Id: 1,
                     Part_Status: 1,
                     Movement_Compl: 'N'
-                };
+                };         // Ensure these fields exist
                 api.post("/WorkOrder/PostInv_Trans_Log", rowData).then((Insdata) => {
                     $("#P6MessageBox").text("Inspection Complete");
                     P11Save = false;
@@ -804,16 +920,15 @@ $(document).ready(function () {
                         Part_NoId: P6PartId,
                         Routing_Id: 0,
                         Inv_Trans_Log_Id: Insdata.inv_Trans_LogId,
-                        Opr_No_Id: 0,
-                        Current_QntOnHand: qnty,
+                        Opr_No_Id: oprNo,
+                        Current_QntOnHand: Acount,
                         Location_Id: 1
                     };
                     api.post("/WorkOrder/PostInventory_Master", InvMasterrowData).then((data) => {
 
-                        var woId = parseInt($("#P7woid").val());             // Ensure these fields exist
-                        var oprNo = parseInt($("#P7OprId").val());           // Operation number
+                        var woId = parseInt($("#P7woid").val());     
                         var mcId = 0;             // Machine ID
-                        var balBookoutQty = parseInt($("#P11TbInspTotal").val());  // Balance Bookout Quantity
+                        var balBookoutQty = ECount - Acount;  // Balance Bookout Quantity
                         var bookoutTime = new Date().toISOString();          // Current time in ISO format
 
                         var statusUpdateData = {
@@ -830,6 +945,22 @@ $(document).ready(function () {
                             })
                             .catch((error) => {
                                 console.log("Error updating WO status", error);
+                            });
+                        var shopinsLog = {
+                            operator_Id: P11Opertor,
+                            inspected_on: new Date().toISOString(),
+                            qnty_OK_finished: Acount,
+                            qnty_ok_input: 0,
+                            input_Opr_NoId: oprNo,
+                            input_Part_No: P6PartId,
+                            mc_Reference: parseInt($("#P7InwHeaderId").val())
+                        };
+                        api.post("/WorkOrder/PostShop_Insp_Log", shopinsLog)
+                            .then((res) => {
+
+                            })
+                            .catch((error) => {
+                                console.log("Error PostShop_Insp_Log", error);
                             });
 
 
@@ -848,14 +979,18 @@ $(document).ready(function () {
 });
 function loadEmployeeSel() {
     var OrgEmpl = $('#P9Operator');
+    var P11Opertor = $('#P11Opertor');
     OrgEmpl.html('');
+    P11Opertor.html('');
     api.get("/Employee/GetAllEmployee").then((data) => {
         const filteredData = data.filter(item => item.designation_Id === 2);
         div_data = "<option value='" + 0 + "'>" + "--Select--" + "</option>";
         OrgEmpl.append(div_data);
+        P11Opertor.append(div_data);
         for (i = 0; i < filteredData.length; i++) {
             div_data = "<option value='" + filteredData[i].employee_ID + "'>" + filteredData[i].employee_name + "</option>";
             OrgEmpl.append(div_data);
+            P11Opertor.append(div_data);
         }
     }).catch((error) => {
     });
@@ -929,21 +1064,36 @@ function loadNclog(mcWaitId) {
 }
 function calculateNc() {
     let totalOff = parseFloat($("#P11TbTotalOff").val()) || 0;
-    let inspTotal = parseFloat($("#P11TbInspTotal").val()) || 0;
+    let inspTotal = parseFloat($("#P11NonBtnCOunt").val()) || 0;
+    let P11InputBtnCount = parseFloat($("#P11InputBtnCount").val()) || 0;
     let balqny = parseFloat($("#P11PerBal").text()) || 0;
-    if (totalOff > balqny) {
-        $("#ErrorMessage11").modal("show");
-    }
-    let totalNc = totalOff - inspTotal;
+    let GCount = parseFloat($("#P6TotalNc").val()) || 0;
+    let totalNc = totalOff + inspTotal + P11InputBtnCount;
+    //if (totalNc > balqny) {
+    //    $("#ErrorMessage11").modal("show");
+    //}
     if (totalNc < 0) {
         totalNc = 0; // optional: prevent negative result
        // $("#P11NonBtn").prop('disabled', true);
     } else {
        // $("#P11NonBtn").prop('disabled', false);
     }
+    let FCount = balqny - totalNc;
+    if (FCount < 0) {
+        $("#FLessMsg").show();
+    } else {
+        $("#FLessMsg").hide();
+    }
+    let BCcount = inspTotal + P11InputBtnCount;
+    if (BCcount <= GCount) {
+        $("#GGreaterMsg").hide();
+    } else {
+        $("#GGreaterMsg").show();
+    }
     P11Save = true;
-    $("#P11TbTotalNc").val(totalNc);
-    $("#P11TotalInsp").val(totalOff);
+    $("#P11TotalInsp").val(totalNc);
+    $("#P6BalInput").val(FCount);
+    //$("#P11TotalInsp").val(totalOff);
 }
 function formatDateTime(date) {
     const yyyy = date.getFullYear();

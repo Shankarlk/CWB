@@ -617,10 +617,20 @@ $(function () {
     });
     
     $("#btnRawMaterialDetailSubmit").click(function (event) {
+        event.preventDefault();
         ////debugger;
+        let $btn = $(this);
+
+        // ⛔ Prevent double click
+        if ($btn.prop("disabled")) return;
+
+        // Disable button immediately
+        $btn.prop("disabled", true);
+
         if (!modelObj.Edit) {
             if ($("#RawMaterialDetailId").val() != "0") {
-                alert("Älready saved... RM");
+                $btn.prop("disabled", false);
+                alert("Already saved... RM");
                 event.preventDefault();
                 return;
             }
@@ -635,12 +645,16 @@ $(function () {
                     //  document.getElementById("RawMetform").reset();
                 }).catch((error) => {
                     AppUtil.HandleError("RawMetform", error);
-                });
+                }).finally(() => {
+                        // Re-enable button after API completes
+                        $btn.prop("disabled", false);
+                    });
             //} else {
             //    alert("Invalid form...")
             //}
+        } else {
+            $btn.prop("disabled", false);
         }
-        event.preventDefault();
     });
 
     $('#dialog-AddUOM').on('show.bs.modal', function (e) {

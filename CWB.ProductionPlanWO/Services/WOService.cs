@@ -49,6 +49,8 @@ namespace CWB.ProductionPlanWO.Services
         private readonly IFinalInspectDocTypeRepository _IFinalInspectDocTypeRepository;
         private readonly IOperationSettingsRepository _operationSettingsRepository;
         private readonly ICont_RCA_CA_LogRepository _Cont_RCA_CA_LogRepository;
+        private readonly IInv_Mismatch_ListRepository _Inv_Mismatch_ListRepository;
+        private readonly IInv_Master_LogRepository _Inv_Master_LogRepository;
         private readonly INC_Decision_LogRepository _NC_Decision_LogRepository;
         private readonly INC_Wk_List_Tmpl_DetRepository _NC_Wk_List_Tmpl_DetRepository;
         private readonly INC_Disp_Decs_Appl_ListRepository _NC_Disp_Decs_Appl_ListRepository;
@@ -98,7 +100,7 @@ namespace CWB.ProductionPlanWO.Services
             ,IInw_Recpt_HeaderRepository Inw_Recpt_Header, IInw_Recpt_Part_NoRepository Inw_Recpt_Part_No,
             IInwardDocTypeRepository InwardDocTypeRepository,IRcCaDocTypeRepository RcCaDocTypeRepository
             , ILineInspectDocTypeRepository LineInspectDocTypeRepository, IFinalInspectDocTypeRepository FinalInspectDocTypeRepository,
-            IInspectDocTypeRepository InspectDocTypeRepository,INcLogStatusRepository ncLogStatusRepository,IOperationSettingsRepository operationSettingsRepository,ICont_RCA_CA_LogRepository Cont_RCA_CA_LogRepository
+            IInspectDocTypeRepository InspectDocTypeRepository,INcLogStatusRepository ncLogStatusRepository,IOperationSettingsRepository operationSettingsRepository,ICont_RCA_CA_LogRepository Cont_RCA_CA_LogRepository,IInv_Mismatch_ListRepository Inv_Mismatch_ListRepository,IInv_Master_LogRepository Inv_Master_LogRepository
             ,INC_Decision_LogRepository NC_Decision_LogRepository,INC_Wk_List_Tmpl_DetRepository NC_Wk_List_Tmpl_DetRepository ,INC_Disp_Decs_Appl_ListRepository NC_Disp_Decs_Appl_ListRepository  ,INC_Wk_List_Tmpl_HeadRepository NC_Wk_List_Tmpl_HeadRepository  ,INC_Work_ListRepository NC_Work_ListRepository ,INC_Wk_List_HeaderRepository NC_Wk_List_HeaderRepository ,ICust_NC_Decs_Matrix_OptRepositoy Cust_NC_Decs_Matrix_OptRepository
             ,ICust_NC_Decs_MatrixRepository Cust_NC_Decs_MatrixRepository ,ICont_RCA_CA_Status_ListRepository Cont_RCA_CA_Status_ListRepository,INC_Disp_Decision_ListRepository NC_Disp_Decision_ListRepository
             ,INC_work_StatusRepository NC_work_StatusRepository, IMc_Not_Avl_ReasonRepository Mc_Not_Avl_ReasonRepository, IMode_ListRepository Mode_ListRepository,
@@ -176,6 +178,8 @@ namespace CWB.ProductionPlanWO.Services
             _Mc_Wait_ListRepository = Mc_Wait_ListRepository;
             _Matl_Issue_SettingsRepository = Matl_Issue_SettingsRepository;
             _Matl_Issue_ListRepository = Matl_Issue_ListRepository;
+            _Inv_Mismatch_ListRepository = Inv_Mismatch_ListRepository;
+            _Inv_Master_LogRepository = Inv_Master_LogRepository;
             _TempMc_Wait_ListRepository = TempMc_Wait_ListRepository;
         }
 
@@ -849,6 +853,9 @@ namespace CWB.ProductionPlanWO.Services
             upp.RoutingId = pp.RoutingId;
             upp.StartingOpNo = pp.StartingOpNo;
             upp.EndingOpNo = pp.EndingOpNo;
+            upp.ActCompletionDate = pp.ActCompletionDate;
+            upp.ActWOQty = pp.ActWOQty;
+            upp.Status = pp.Status;
             upp.Changed = 1;
             pp = await _productionPlan_WORepository.UpdateAsync(pp.Id, upp);
             try
@@ -1217,6 +1224,7 @@ namespace CWB.ProductionPlanWO.Services
         public async Task<Inventory_MasterVM> PostInventory_Master(Inventory_MasterVM workOrdersVM)
         {
             var wo = _mapper.Map<Inventory_Master>(workOrdersVM);
+            var invmasterlog = new Inv_Master_Log();
             wo.Dt_time = DateTime.Now;
             if (wo.Id == 0)
             {
@@ -1232,13 +1240,92 @@ namespace CWB.ProductionPlanWO.Services
             }
             else
             {
-                var wkord = await _IInventory_MasterRepository.SingleOrDefaultAsync(x => x.Id == wo.Inv_Trans_Log_Id);
-                wo.Current_QntOnHand = wkord.Current_QntOnHand + wo.Current_QntOnHand;
-                if (wkord == null)
+                try
                 {
-                    return workOrdersVM;
+                    var list = await _IInventory_MasterRepository
+    .AwaitGetRangeAsync(x => x.Id == wo.Id || x.Part_NoId == wo.Part_NoId);
+
+                    var wkord = list.FirstOrDefault();   // SAFE — will never throw
+
+                    if (wo.Routing_Id != wkord.Routing_Id)
+                    {
+                        invmasterlog.Field_Changed = "Routing";
+                        invmasterlog.Old_Value = wkord.Routing_Id.ToString();
+                        invmasterlog.New_Value = wo.Routing_Id.ToString();
+                        invmasterlog.Reason_Desc = "-";
+                    }
+                    if (wo.Opr_No_Id != wkord.Opr_No_Id)
+                    {
+                        invmasterlog.Field_Changed = "Opr_No";
+                        invmasterlog.Old_Value = wkord.Opr_No_Id.ToString();
+                        invmasterlog.New_Value = wo.Opr_No_Id.ToString();
+                        invmasterlog.Reason_Desc = "-";
+                    }
+                    if (wo.Current_QntOnHand != wkord.Current_QntOnHand)
+                    {
+                        invmasterlog.Field_Changed = "Current_QntOnHand";
+                        invmasterlog.Old_Value = wkord.Current_QntOnHand.ToString();
+                        invmasterlog.New_Value = wo.Current_QntOnHand.ToString();
+                        invmasterlog.Reason_Desc = "-";
+                    }
+                    if (wo.Location_Id != wkord.Location_Id)
+                    {
+                        invmasterlog.Field_Changed = "Location";
+                        invmasterlog.Old_Value = wkord.Location_Id.ToString();
+                        invmasterlog.New_Value = wo.Location_Id.ToString();
+                        invmasterlog.Reason_Desc = "-";
+                    }
+                    if (workOrdersVM.ReasonDesc == null)
+                    {
+                        wo.Current_QntOnHand = wkord.Current_QntOnHand + wo.Current_QntOnHand;
+                    }
+                    if (wkord == null)
+                    {
+                        return workOrdersVM;
+                    }
+                }
+                catch (Exception ex)
+                {
+
                 }
                 wo = await _IInventory_MasterRepository.UpdateAsync(wo.Id, wo);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            if(wo.Id == 0)
+            {
+                invmasterlog.Inv_mast_ID = wo.Id;
+                invmasterlog.Dt_time = DateTime.Now;
+                invmasterlog.Part_No = wo.Part_NoId;
+                invmasterlog.Changed_by = wo.TenantId;
+                invmasterlog.Field_Changed = "New Entry";
+                invmasterlog.Old_Value = "-";
+                invmasterlog.New_Value = wo.Current_QntOnHand.ToString();
+                invmasterlog.Reason_Desc = "-";
+                invmasterlog.Financial_Impact = 0;
+                invmasterlog.TenantId = wo.TenantId;
+                await _Inv_Master_LogRepository.AddAsync(invmasterlog);
+            }
+            else
+            {
+                invmasterlog.Inv_mast_ID = wo.Id;
+                invmasterlog.Dt_time = DateTime.Now;
+                invmasterlog.Part_No = wo.Part_NoId;
+                invmasterlog.Changed_by = wo.TenantId;
+                invmasterlog.Financial_Impact = 0;
+                if(workOrdersVM.ReasonDesc != null)
+                {
+                    invmasterlog.Reason_Desc = workOrdersVM.ReasonDesc;
+                }
+                invmasterlog.TenantId = wo.TenantId;
+                await _Inv_Master_LogRepository.AddAsync(invmasterlog);
             }
             try
             {
@@ -3859,6 +3946,120 @@ namespace CWB.ProductionPlanWO.Services
             return false;
         }
 
+
+        public async Task<IEnumerable<Inv_Master_LogVM>> GetAllInv_Master_Log(long tenantId)
+        {
+            var allDocuType = _Inv_Master_LogRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Inv_Master_LogVM>>(allDocuType);
+        }
+        public async Task<Inv_Master_LogVM> PostInv_Master_Log(Inv_Master_LogVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Inv_Master_Log>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Inv_Master_LogRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Inv_Master_LogRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Inv_Master_LogRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Inv_Master_LogId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteInv_Master_Log(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _Inv_Master_LogRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _Inv_Master_LogRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        
+        public async Task<IEnumerable<Inv_Mismatch_ListVM>> GetAllInv_Mismatch_List(long tenantId)
+        {
+            var allDocuType = _Inv_Mismatch_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Inv_Mismatch_ListVM>>(allDocuType);
+        }
+        public async Task<Inv_Mismatch_ListVM> PostInv_Mismatch_List(Inv_Mismatch_ListVM itemMasterDocList)
+        {
+            var itemMaster = _mapper.Map<Inv_Mismatch_List>(itemMasterDocList);
+            if (itemMaster.Id == 0)
+            {
+                try
+                {
+                    await _Inv_Mismatch_ListRepository.AddAsync(itemMaster);
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+                var itemMasterDoc = await _Inv_Mismatch_ListRepository.SingleOrDefaultAsync(x => x.Id == itemMaster.Id);
+                if (itemMasterDoc == null)
+                {
+                    return itemMasterDocList;
+                }
+                itemMaster = await _Inv_Mismatch_ListRepository.UpdateAsync(itemMasterDoc.Id, itemMaster);
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            itemMasterDocList.Inv_Mismatch_ListId = itemMaster.Id;
+            return itemMasterDocList;
+        }
+        public async Task<bool> DeleteInv_Mismatch_List(long itemMasterDocListId, long tenantId)
+        {
+            var co = await _Inv_Mismatch_ListRepository.SingleOrDefaultAsync(m => m.Id == itemMasterDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _Inv_Mismatch_ListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
 
     }
 }

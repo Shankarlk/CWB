@@ -35,19 +35,30 @@ namespace CWB.App.Models.WorkOrder
         public long Our_RGP_Ref { get; set; }
         public long TenantId { get; set; }
         public string PartNo { get; set; } = string.Empty;
+        public long QntyStr { get; set; }
+        public string Dt_timeStr { get; set; } = string.Empty;
+        public string WoNumber { get; set; } = string.Empty;
+        public string InputPartNo { get; set; } = string.Empty;
+        public string OutPutPartNo { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string MasterPartType { get; set; } = string.Empty;
         public string ToSender { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
         public string FromSender { get; set; } = string.Empty;
         public string PartStatus { get; set; } = string.Empty;
         public string UpdateResp { get; set; } = string.Empty;
         public string MisMatchStatus { get; set; } = string.Empty;
         public string OprNo { get; set; } = string.Empty;
+        public string OutputOprNo { get; set; } = string.Empty;
+        public string InputOprNo { get; set; } = string.Empty;
         public string RoutingName { get; set; } = string.Empty;
+        public string OutPutRoutingName { get; set; } = string.Empty;
+        public string InPutRoutingName { get; set; } = string.Empty;
         public string OkQnty { get; set; } = string.Empty;
         public string NcAvl { get; set; } = string.Empty;
         public string RwkQnty { get; set; } = string.Empty;
         public string CompanyName { get; set; } = string.Empty;
         public string WfInwdInsp { get; set; } = string.Empty;
+        public string TransactionName { get; set; } = string.Empty;
     }
 }

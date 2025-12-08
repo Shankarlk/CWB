@@ -64,6 +64,8 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<IEnumerable<NC_Wk_List_Tmpl_DetVM>> GetAllNC_Wk_List_Tmpl_Det();
         Task<IEnumerable<NC_Wk_List_Tmpl_HeadVM>> GetAllNC_Wk_List_Tmpl_Head();
         Task<IEnumerable<Cont_RCA_CA_LogVM>> GetAllCont_RCA_CA_log();
+        Task<IEnumerable<Inv_Mismatch_ListVM>> GetAllInv_Mismatch_List();
+        Task<IEnumerable<Inv_Master_LogVM>> GetAllInv_Master_Log();
         Task<IEnumerable<Inv_Trans_LogVM>> GetAllInv_Trans_Log();
         Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_Master();
         Task<IEnumerable<NC_Decision_LogVM>> GetAllNC_Decision_Log();
@@ -80,17 +82,22 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<NC_Disp_Decs_Appl_ListVM> PostNC_Disp_Decs_Appl_List(NC_Disp_Decs_Appl_ListVM RcaCaDocTypeVM);
         Task<NC_Wk_List_Tmpl_HeadVM> PostNC_Wk_List_Tmpl_Head(NC_Wk_List_Tmpl_HeadVM RcaCaDocTypeVM);
         Task<Cont_RCA_CA_LogVM> PostCont_RCA_CA_Log(Cont_RCA_CA_LogVM RcaCaDocTypeVM);
+        Task<Inv_Master_LogVM> PostInv_Master_Log(Inv_Master_LogVM RcaCaDocTypeVM);
+        Task<Inv_Mismatch_ListVM> PostInv_Mismatch_List(Inv_Mismatch_ListVM RcaCaDocTypeVM);
         Task<Inventory_MasterVM> PostInventory_Master(Inventory_MasterVM RcaCaDocTypeVM);
         Task<Inv_Trans_LogVM> PostInv_Trans_Log(Inv_Trans_LogVM RcaCaDocTypeVM);
         Task<NC_Decision_LogVM> PostNC_Decision_Log(NC_Decision_LogVM RcaCaDocTypeVM);
         Task<OperationSettingsVM> PostOperationsSettings(OperationSettingsVM RcaCaDocTypeVM);
         Task<bool> DeleteRcaCaDocList(long itemMasterDocListId);
+        Task<bool> DeleteInvMismatch(long itemMasterDocListId);
         Task<bool> DeleteNC_Disp_Decs_Appl_List(long itemMasterDocListId);
 
 
         Task<IEnumerable<WO_Wait_ListVM>> GetAllWO_Wait_List();
         Task<WO_Wait_ListVM> PostWO_Wait_List(WO_Wait_ListVM FinalDocTypeVM);
         Task<bool> DeleteWO_Wait_List(long itemMasterDocListId);
+        Task<bool> DeleteInv_Mismatch_List(long itemMasterDocListId);
+        Task<bool> DeleteInv_Master_Log(long itemMasterDocListId);
         Task<IEnumerable<TempWO_Wait_ListVM>> GetAllTempWo_Wait_List();
         Task<TempWO_Wait_ListVM> PostTempWo_Wait_List(TempWO_Wait_ListVM FinalDocTypeVM);
         Task<bool> DeleteTempWo_Wait_List(long itemMasterDocListId);

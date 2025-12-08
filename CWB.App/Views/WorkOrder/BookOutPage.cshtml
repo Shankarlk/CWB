@@ -1,4 +1,7 @@
 ﻿
+@{
+    ViewData["Title"] = "Shop BookOut";
+}
 <input value="B-BP" type="hidden" id="hdn-nav-menu" />
 <div class="content">
     <div class="row" id="myRadioGroup">
@@ -420,7 +423,20 @@
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center justify-content-fornt">
-                                                <h6 class="me-2 mb-0">Total Quantity Taken for Inspection</h6>
+                                                <h6 class="me-2 mb-0">Operator</h6>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <select class="form-select form-select-sm" aria-label="form-select-sm" id="P11Opertor" title="" data-plugin="tippy" data-tippy-placement="top">
+                                                <option value="">------</option>
+                                            </select>
+                                        </td>
+                                        <td id="P6TbTotalOffUnit">Units</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center justify-content-fornt">
+                                                <h6 class="me-2 mb-0">Accepted Qnty after Operation / Inspection</h6>
                                             </div>
                                         </td>
                                         <td>
@@ -428,9 +444,9 @@
                                                    data-plugin="tippy" data-tippy-placement="top" placeholder=""
                                                    id="P11TbTotalOff">
                                         </td>
-                                        <td id="P6TbTotalOffUnit">Units</td>
+                                        <td id="P6TbAcpUnit">Units</td>
                                     </tr>
-                                    <tr>
+                                    <tr hidden>
                                         <td>
                                             <div class="d-flex align-items-center justify-content-fornt">
                                                 <h6 class="me-2 mb-0">Accepted Qnty (after Inspection)</h6>
@@ -443,18 +459,41 @@
                                         </td>
                                         <td id="P6TbInspTotalUnit">Units</td>
                                     </tr>
-                                    <tr>
+                                    <tr id="P11NonBtnTr">
                                         <td>
-                                            <div class="d-flex align-items-center justify-content-fornt">
-                                                <h6 class="me-2 mb-0">Non-Conforming Quantity (after Inspection)</h6>
+                                            <div class="d-flex flex-column align-items-start">
+                                                <h6 class="mb-1">Non-Conforming Quantity after Operation /  Inspection *</h6> <br>
+                                                <button class="btn btn-primary w-50 btn-sm" id="P11NonBtn" data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
+                                                        title="Enter Operation Completed NC Details by clicking on the button. Each NC to be entered separately">
+                                                    Output Part Non Conformance Data Entry
+                                                </button>
                                             </div>
                                         </td>
                                         <td>
-                                            <input class="form-control form-control-sm w-100" type="text" title=""
+                                            <input class="form-control form-control-sm w-100 mt-4" type="text" title=""
                                                    data-plugin="tippy" data-tippy-placement="top" placeholder=""
-                                                   id="P11TbTotalNc" readonly>
+                                                   id="P11NonBtnCOunt">
                                         </td>
-                                        <td id="P6TbTotalNcUnit">Units</td>
+                                        <td><h6 id="P11NonUnit" style="color: rgba(69, 69, 68, 0.84);" class="mt-4">Units</h6></td>
+                                    </tr>
+                                    <tr id="P11InputBtnTr">
+                                        <td>
+                                            <div class="d-flex flex-column align-items-start">
+                                                <h6 class="mb-1">Non-Conforming Quantity before Operation *</h6> <br>
+                                                <button class="btn btn-primary w-50 btn-sm" id="P11InputBtn" data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
+                                                        title="Enter NC Details of Input Parts by clicking on the button. Each NC to be entered separately">
+                                                    Input Part Non Conformance Data Entry
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input class="form-control form-control-sm w-100 mt-4" type="text" title=""
+                                                   data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                   id="P11InputBtnCount">
+                                        </td>
+                                        <td ><h6 id="P11InputBtnUnit" style="color: rgba(69, 69, 68, 0.84);" class="mt-4">Units</h6></td>
                                     </tr>
                                     <tr>
                                         <td class="text-end">
@@ -470,14 +509,31 @@
                                         </td>
                                         <td id="P6TotalInspUnit">Units</td>
                                     </tr>
+                                    <tr>
+                                        <td class="text-end">
+                                            <div class="d-flex align-items-center justify-content-end">
+                                                <h6 class="me-2 mb-0">Balance Input Parts to be processed</h6>
+
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input class="form-control form-control-sm w-100" type="text" title=""
+                                                   data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                   id="P6BalInput" readonly>
+                                        </td>
+                                        <td id="P6TotalInspUnit">Units</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                     <!-- ========================= -->
                     <div class="col-md-12 text-center">
-                        <button class="btn btn-primary w-50 btn-sm" id="P11NonBtn">Non Conformance Data Entry</button>
-                        <button class="btn btn-primary w-50 btn-sm mt-1" id="P11InputBtn">Input Part Non Conformance Data Entry</button>
+                        <h6 id="FLessMsg" style="background-color: #acdbf0; color:red; border:solid #14adf4 thin"  class="w-75 p-1 text-center ms-5">Quantity Inspected (Accepted + NC) is greater than the Parts available for Inspection as per System. Pl Check & Update</h6>                                 <br>
+                        <h6 id="GGreaterMsg" style="background-color: #acdbf0; color:red; border:solid #14adf4 thin"  class="w-75 p-1 text-center ms-5">
+                            NC Part Quantity (Finish + Input) > No of NC (From Grid)
+                            Pl Check NC data & Update
+                        </h6>
                     </div>
                     <div class="col-md-12 mt-2">
                         <div class="table-responsive table-he-330">
@@ -707,36 +763,63 @@
     <div class="modal-dialog ">
         <div class="modal-content" style="border: 4px solid #32AADD;">
             <div class="modal-header">
-                <h4 class="modal-title" id="mySmallModalLabel">Offered vs Inspected Count Mismatch Error Message</h4>
+                <h4 class="modal-title" id="mySmallModalLabel">Qnty Inspected > Qnty available for Inspection Mismatch Error</h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
                         <div class="row">
-                            <h6>Inspected Qnty is not matching Offered for Inspection Qnty.</h6>
                             <label class="form-label col-md-6 mb-2">
 
-                                <br>
                                 Recheck Inspected Qnty
+                                <br>
                                 <br>
                                 or
                                 <br>
-                                Needs to be clarified with Inward Store /
-                                Supplier. Inspection will have to be redone
-                                for this line item after Quantities
-                                are checked / corrected. if Supplier
-                                Documentation changes it would have to
-                                be uploaded by Seniors
+                                <br>
+                                Save entered data with Mismatch Error
+                                for resolution by Seniors ... Mismatch
+                                Data will be uploaded in List
 
 
 
                             </label>
                             <div class="col-md-6 text-center">
                                 <button class="btn btn-sm btn-primary mt-3" id="Error4Edit">Edit Entered Data</button>
-                                <br>
-                                <button class="btn btn-sm mt-4 btn-primary" id="Error4Exit">Exit without Saving Entered Data</button>
+                                <label class="form-label col-md-12 mt-2 text-start ms-3">
+                                    Enter Comment *
+                                </label>
+                                <div class="col-md-8  ms-3">
+                                    <textarea type="text" class="form-control form-control-sm" id="E2Com" style="height: 43px;"> </textarea>
+                                </div>
+                                <button class="btn btn-sm mt-2 btn-primary" id="SaveNEsca">Save & Escalate Mismatch</button>
                             </div>
+                        </div>
+                    </form>
+                    <!-- ========================= -->
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" id="ErrorMessage12" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mySmallModalLabel">NC Qnty entered is greater than NCs listed</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                        <div class="row">
+                            <h6 class="form-label col-md-12 mb-2">
+                                1 Part can have more than 1 NC. Hence No of NCs can be > No of NC parts
+                                Recheck Counts & Update
+                            </h6>
                         </div>
                     </form>
                     <!-- ========================= -->
@@ -1167,6 +1250,7 @@
                        data-accp="{accepted}"
                        data-woid="{wo_Id}"
                        data-ncqnty="{nonConQnty}"
+                       data-oprid="{opr_No_Id}"
                        data-id="{activeId}">Setup Approval</a>
                     <!-- item-->
                 </div>

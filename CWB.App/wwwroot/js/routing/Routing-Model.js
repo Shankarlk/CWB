@@ -1136,12 +1136,32 @@ function SetPreferredMachine(event, routingStepId, routingStepMachineId) {
 }
 function EditRoute(routingId,routingName,manufPartId) {
     //alert("Todo..");
-    RoutingDetails["routingName"] = routingName;
-    RoutingDetails["manufacturedPartId"] = manufPartId;
-    RoutingDetails["routingId"] = routingId;
-    RoutingDetails["stepNumber"] = "";
-    DoRoutingDetailsJob();
-    $('a[href="#rou-det"]').tab("show");
+    var SpanPartName = $("#SpanPartName").text();
+    var SpanPartDesc = $("#SpanPartDesc").text();
+    var SpanComp = $("#SpanComp").text();
+    api.getbulk("/WorkOrder/GetAllInvMaster").then((data) => {
+        data = data.filter(i => i.routing_Id == parseInt(routingId));
+        var tablebody = $("#P24Grid tbody");
+        $(tablebody).html("");
+        if (data.length > 0) {
+            $("#Popup4").modal("show");
+            $("#P45PartName").text(SpanPartName);
+            $("#P45PartDesc").text(SpanPartDesc);
+            $("#P45Comp").text(SpanComp);
+            $("#P45Rout").text(routingName);
+            for (i = 0; i < data.length; i++) {
+                $(tablebody).append(AppUtil.ProcessTemplateData("P24GridRow", data[i]));
+            }
+            return false;
+        } else {
+            RoutingDetails["routingName"] = routingName;
+            RoutingDetails["manufacturedPartId"] = manufPartId;
+            RoutingDetails["routingId"] = routingId;
+            RoutingDetails["stepNumber"] = "";
+            DoRoutingDetailsJob();
+            $('a[href="#rou-det"]').tab("show");
+        }
+    });
     //"#rou-det"
 }
 function ViewRoute() {

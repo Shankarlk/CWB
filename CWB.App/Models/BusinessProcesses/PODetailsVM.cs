@@ -17,6 +17,7 @@ namespace CWB.App.Models.BusinessProcesses
         public long CompanyId { get; set; }
         public DateTime PlanPoReceiptDate { get; set; }
         public char PoSent { get; set; }
+        public char Mismatch_Resolved { get; set; }
         public int PoQntyRecd { get; set; }
         public int Status { get; set; }
         public long TenantId { get; set; }

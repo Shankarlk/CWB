@@ -1,0 +1,1520 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "Inventory Queries / Controls";
+}
+
+
+<div class="content">
+    <div class="card">
+        <div class="card-body">
+            <div class="tab-pane show active" id="tab222">
+                <div class="row">
+
+                    <div class="col-md-11">
+                        <h4 style="padding: 10px;">Inventory Queries / Controls</h4>
+                    </div>
+                    <div class="col-md-1 text-end">
+                        <a asp-action="WipControl" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                            X
+                        </a>
+                    </div>
+                </div>
+                @{
+                    List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM> permissionResult = null;
+                    var permissionsJson = HttpContextAccessor.HttpContext.Session.GetString("Permissions");
+                    if (permissionsJson != null)
+                    {
+                        permissionResult = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM>>(permissionsJson);
+
+                    }
+                }
+                <div class="row mt-1 mb-3">
+                    <div class="col-md-12">
+                        <button class="btn btn-sm btn-outline-primary " data-bs-toggle="modal" data-bs-target="#Popup2">View  Inventory Transaction Log</button>
+                        <button class="btn btn-sm btn-outline-primary ms-1" data-bs-toggle="modal" data-bs-target="#Popup1">View Inventory Master</button>
+                        <button class="btn btn-sm btn-outline-primary ms-1" data-bs-toggle="modal" data-bs-target="#Popup21">View CMP WO Progress</button>
+                        <button class="btn btn-sm btn-outline-primary  ms-1" data-bs-toggle="modal" data-bs-target="#Popup23">View Assy WO Progress</button>
+                    </div>
+                    <div class="col-md-12 mt-2">
+                        <button class="btn btn-sm btn-outline-primary w-25" data-bs-toggle="modal" data-bs-target="#Popup5" id="FirstInvMasterBtn">First Time Inventory Master Update</button> <span class="ms-1" id="SFirstInvMasterCount">xxx</span>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <h4 class="">Inventory Mismatch List</h4>
+                    <div class="row">
+                        <label class="form-label col-md-1 mb-2">Part No </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="SPartNo" name="master_co" placeholder="Part No">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Part Desc </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="SPartDesc" name="master_co" placeholder="Part Desc">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Location </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="SPartLoc" name="master_co" placeholder="Location">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Transaction </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="STran" name="master_co" placeholder="Transaction">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Reported by </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="SReportedBy" name="master_co" placeholder="Reported by">
+                        </div>
+                        @*<label class="form-label col-md-1 mb-2">Resolved</label>
+                <div class="col-md-3 mb-2">
+                    <input class="form-control form-control-sm" type="text" id="S" name="master_co" placeholder="Resolved by">
+                </div>*@
+                        <label class="form-label col-md-1 mb-2">Date</label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="date" id="SDate" name="master_co" placeholder="Resolved">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">From Date</label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="date" id="master_co" name="master_co" placeholder="Resolved">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">To Date</label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="date" id="master_co" name="master_co" placeholder="Resolved">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Resolved</label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-check-input mt-1" type="checkbox" name="gp-4">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Not Resolved</label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-check-input mt-1" type="checkbox" name="gp-4">
+                        </div>
+                    </div>
+                    <div class="table-responsive mb-2 table-he-350">
+                        <table class="table table-sm table-bordered w-100 text-center" id="InvMisGrid">
+                            <thead class="table-info th-sti">
+                                <tr class="table-border-bottom">
+                                    <th>Date / Time</th>
+                                    <th>Reported by</th>
+                                    <th>Transaction being done</th>
+                                    <th>Location </th>
+                                    <th>Part No / Desc / Routing / Opr No </th>
+                                    <th>Mismatch Qnty</th>
+                                    <th>Resolved</th>
+                                    <th>Resolution Date</th>
+                                    <th>Resolved by</th>
+                                    <th width="5%"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <!-- ==================== -->
+                <!-- ==================== -->
+            </div>
+        </div>
+        <!-- end card -->
+    </div>
+    <!-- end row -->
+    <!-- Modal -->
+
+    <div id="Popup1" class="modal fade " tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content ">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="standard-modalLabel">View / Edit Inventory Master</h4>
+                    <button type="button" id="AddDeptClose" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <label class="form-label col-md-1 mb-2">Part Type </label>
+                        <div class="col-md-3 mb-2">
+                            <select class="form-select form-select-sm" id="P1SPartType" data-plugin="tippy"
+                                    data-tippy-placement="top" data-tippy="">
+                                <option id="mp-bf" value="0">--Select--</option>
+                            </select>
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Company </label>
+                        <div class="col-md-3 mb-2">
+                            <select class="form-select form-select-sm" id="P1SComp" data-plugin="tippy"
+                                    data-tippy-placement="top" data-tippy="">
+                                <option id="mp-bf" value="0">--Select--</option>
+                            </select>
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Part Status </label>
+                        <div class="col-md-3 mb-2">
+                            <select class="form-select form-select-sm" id="P1SPartStatus" data-plugin="tippy"
+                                    data-tippy-placement="top" data-tippy="">
+                                <option id="mp-bf" value="0">--Select--</option>
+                                <option id="mp-bf" value="Accepted">Accepted</option>
+                                <option id="mp-bf" value="Rework">Rework</option>
+                                <option id="mp-bf" value="Rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Part Number </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="P1SPartNo" name="master_co"
+                                   placeholder="Part No">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Part Desc </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="P1SPartDesc" name="master_co"
+                                   placeholder="Part Desc">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Location </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="P1SLoc" name="master_co"
+                                   placeholder="Part Desc">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3 mt-1">
+                            <div class="table-responsive table-he-250">
+                                <table id="P1InvMasterGrid" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Date</th>
+                                            <th>Part Type</th>
+                                            <th>Company / Part No / Desc</th>
+                                            <th>Routing / Opr No</th>
+                                            <th>Qnty</th>
+                                            <th>Status</th>
+                                            <th>Location</th>
+                                            <th width="5%">Logs</th>
+                                            <th width="5%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                        </div>
+                        <div class="col-md-4 mt-3">
+                            <div class="table-responsive table-he-330">
+                                <table id="DeptRoleGrid" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Total by Status</th>
+                                            <th>Qnty</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td>xx</td>
+                                        </tr>
+                                        <tr>
+                                            <td>xx</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td>xx</td>
+                                        </tr>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div id="Popup2" class="modal fade modal-fullscreen-xl-down" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content" style="border: 4px solid #5eafd2;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="standard-modalLabel">View Inventory Transaction Log</h4>
+                    <button type="button" id="AddDeptClose" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <label class="form-label col-md-1 mb-2">Input / Output </label>
+                        <div class="col-md-2 mb-2">
+                            <select class="form-select form-select-sm" id="SP2IO" data-plugin="tippy"
+                                    data-tippy-placement="top" data-tippy="">
+                                <option value="0">--Select--</option>
+                                <option value="1">Input</option>
+                                <option value="2">Output</option>
+                            </select>
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Part Number </label>
+                        <div class="col-md-2 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="SP2PartNo" name="master_co"
+                                   placeholder="Part No">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Part Desc </label>
+                        <div class="col-md-2 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="SP2PartDesc" name="master_co"
+                                   placeholder="Part Desc">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Part Status </label>
+                        <div class="col-md-2 mb-2">
+                            <select class="form-select form-select-sm" id="SP2PartStatus" data-plugin="tippy"
+                                    data-tippy-placement="top" data-tippy="">
+                                <option id="mp-bf" value="0">--Select--</option>
+                                <option id="mp-bf" value="Accepted">Accepted</option>
+                                <option id="mp-bf" value="Rework">Rework</option>
+                                <option id="mp-bf" value="Rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Transaction / WO Date </label>
+                        <div class="col-md-2 mb-2">
+                            <select class="form-select form-select-sm" id="MasterPart" data-plugin="tippy"
+                                    data-tippy-placement="top" data-tippy="">
+                                <option value="0">--Select--</option>
+                                <option value="0">Transaction Date</option>
+                                <option value="0">WO Date</option>
+                            </select>
+                        </div>
+                        <label class="form-label col-md-1 mb-2">From Date </label>
+                        <div class="col-md-2 mb-2">
+                            <input class="form-control form-control-sm" type="date" id="SP2FromDate" name="master_co"
+                                   placeholder="Part No">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">To Date </label>
+                        <div class="col-md-2 mb-2">
+                            <input class="form-control form-control-sm" type="date" id="SP2ToDate" name="master_co"
+                                   placeholder="Part No">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Transaction Type </label>
+                        <div class="col-md-2 mb-2">
+                            <select class="form-select form-select-sm" id="SP2TransType" data-plugin="tippy"
+                                    data-tippy-placement="top" data-tippy="">
+                                <option value="0">--Select--</option>
+                                <option value="Inward RM / BOF">Inward RM / BOF</option>
+                                <option value="Inward SubCon (Fin Part)">
+                                    Inward SubCon (Fin Part)
+                                </option>
+                                <option value="Return Unprocessed Parts to Stores from Subcon">
+                                    Return Unprocessed Parts to Stores from Subcon
+                                </option>
+                                <option value="Return Unprocessed Parts to Stores from Shop">
+                                    Return Unprocessed Parts to Stores from Shop
+                                </option>
+                                <option value="Issue Shop">
+                                    Issue Shop
+                                </option>
+                                <option value="Issue SubCon">
+                                    Issue SubCon
+                                </option>
+                                <option value="Within Shop Bookout">
+                                    Within Shop Bookout
+                                </option>
+                                <option value="Bookout from Shop">
+                                    Bookout from Shop
+                                </option>
+                                <option value="Dispatch">
+                                    Dispatch
+                                </option>
+                                <option value="Move to Scrap">
+                                    Move to Scrap
+                                </option>
+                            </select>
+                        </div>
+                        <label class="form-label col-md-1 mb-2">From Location </label>
+                        <div class="col-md-2 mb-2">
+                            <select class="form-select form-select-sm" id="SP2FromLoc" data-plugin="tippy"
+                                    data-tippy-placement="top" data-tippy="">
+                                <option value="0">--Select--</option>
+                                <option value="SubCon">SubCon</option>
+                                <option value="Stores">Stores</option>
+                            </select>
+                        </div>
+                        <label class="form-label col-md-1 mb-2">To Location </label>
+                        <div class="col-md-2 mb-2">
+                            <select class="form-select form-select-sm" id="SP2ToLoc" data-plugin="tippy"
+                                    data-tippy-placement="top" data-tippy="">
+                                <option value="0">--Select--</option>
+                                <option value="SubCon">SubCon</option>
+                                <option value="Stores">Stores</option>
+                            </select>
+                        </div>
+                        <label class="form-label col-md-1 mb-2">WO ID </label>
+                        <div class="col-md-2 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="SP2WoId" name="master_co"
+                                   placeholder="Enter WO ID">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">User </label>
+                        <div class="col-md-2 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="SP2User" name="master_co"
+                                   placeholder="User">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Ready to Issue</label>
+                        <div class="col-md-1 mb-2">
+                            <input class="form-check-input mt-1" type="checkbox" id="Sp2ChkRead" name="gp-4">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Movement Started</label>
+                        <div class="col-md-1 mb-2">
+                            <input class="form-check-input mt-1" type="checkbox" id="Sp2ChkMov" name="gp-4">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Movement Completed</label>
+                        <div class="col-md-1 mb-2">
+                            <input class="form-check-input mt-1" type="checkbox" id="Sp2ChkMovComp" name="gp-4">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Quantity Mismatch</label>
+                        <div class="col-md-1 mb-2">
+                            <input class="form-check-input mt-1" type="checkbox" id="Sp2ChkQntyMis" name="gp-4">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Mismatch Status </label>
+                        <div class="col-md-2 mb-2">
+                            <select class="form-select form-select-sm" id="Sp2Mistach" data-plugin="tippy"
+                                    data-tippy-placement="top" data-tippy="">
+                                <option value="0">--Select--</option>
+                                <option value="1">Less</option>
+                                <option value="2">Extra</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3 mt-1">
+                            <div class="table-responsive table-he-330">
+                                <table id="P2InvTranLogGrid" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Transaction Date</th>
+                                            <th>WO ID</th>
+                                            <th>Transaction Type</th>
+                                            <th>User</th>
+                                            <th>Input Part No / Desc / Routing / Opr No</th>
+                                            <th>Output Part / Desc / Routing / Opr No</th>
+                                            <th>From Location</th>
+                                            <th>To Location</th>
+                                            <th>Status</th>
+                                            <th>Qnty</th>
+                                            <th>Mismatch Status</th>
+                                            <th width="5%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="Popup3" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content" style="border: 4px solid #5eafd2;">
+                <div class="modal-header position-relative">
+                    <h4 class="modal-title" id="mySmallModalLabel">
+                        <span style="font-weight: bold;">Edit Inventory Master Record</span>
+
+                    </h4>
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5>
+                        Record Date : <span id="P3Date">xxxxx </span>  <br> <br />
+                        Part No : <span id="P3PartName">xxxxx</span>  <br> <br />
+                        Part Desc : <span id="P3PartDesc">xxxxx</span>  <br> <br />
+                        Company : <span id="P3Comp">xxxxx</span> <br> <br />
+                        Quantity :<span id="P3Qnty">xxxxx</span>  <br> <br />
+                        Part Type : <span id="P3PartType">xxxxx</span> <br> <br />
+                        Located in : <span id="P3Loc">xxxxx</span>
+                    </h5>
+                    <div class="row mt-3">
+                        <label class="form-label col-md-4 mb-2">Corrected Quantity  </label>
+                        <div class="col-md-6 mb-2">
+                            <input class="form-control form-control-sm w-25" id="P3CorrectedQnty" type="text" placeholder="">
+                        </div>
+                        <label class="form-label col-md-4 mb-2">Reason for Correction *  </label>
+                        <div class="col-md-6 mb-2">
+                            <input class="form-control form-control-sm" id="P3CorrectedReason" type="text" placeholder="Enter Notes">
+                            <input class="form-control form-control-sm" id="P3InvMasterId" type="text" hidden>
+                        </div>
+                        <div class="col-md-12 text-end mt-2 mb-2">
+                            <button type="button" class="btn btn-primary btn-sm" id="P3Save">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="Popup4" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content" style="border: 4px solid #5eafd2;">
+                <div class="modal-header position-relative">
+                    <h4 class="modal-title" id="mySmallModalLabel">
+                        <span style="font-weight: bold;">
+                            Warning : Editing Routing while there
+                            are Parts from the Routing in Inventory
+                            is not Allowed
+                        </span>
+
+                    </h4>
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5>
+                        Part No <span id="P45PartName">xxxxx</span>  <br>
+                        Part Desc <span id="P45PartName">xxxxx</span>  <br>
+                        Company : <span id="P45Rout">xxxxx</span> <br>
+                        Routing No :<span id="P45ShopName">xxxxx</span>
+                    </h5>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P24Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Opr No</th>
+                                            <th>Location</th>
+                                            <th>Qnty</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <h6>
+                        Bookout all parts before Editing Routing
+                        Editing Routing while parts are in Inventory linked to the routing could likely cause errors in Inv. Master ... hence Editing not allowed
+                    </h6>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div id="Popup5" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="standard-modalLabel">First Time Inventory Master Update (for Location / Qnty)</h4>
+                    <button type="button" id="AddDeptClose" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <label class="form-label col-md-1 mb-2">Part Type </label>
+                        <div class="col-md-3 mb-2">
+                            <select class="form-select form-select-sm" id="P5SPt" data-plugin="tippy"
+                                    data-tippy-placement="top" data-tippy="">
+                                <option id="mp-bf" value="0">--Select--</option>
+                            </select>
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Company </label>
+                        <div class="col-md-3 mb-2">
+                            <select class="form-select form-select-sm" id="P5SComp" data-plugin="tippy"
+                                    data-tippy-placement="top" data-tippy="">
+                                <option id="mp-bf" value="0">--Select--</option>
+                            </select>
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Part Number </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="P5SPN" name="master_co"
+                                   placeholder="Part No">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Part Desc </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="P5SPD" name="master_co"
+                                   placeholder="Part Desc">
+                        </div>
+                        <label class="form-label col-md-1 mb-2">Location </label>
+                        <div class="col-md-3 mb-2">
+                            <select class="form-select form-select-sm" id="P5SLoc" data-plugin="tippy"
+                                    data-tippy-placement="top" data-tippy="">
+                                <option id="mp-bf" value="0">--Select--</option>
+                                <option id="mp-bf" value="1">Inhouse</option>
+                                <option id="mp-bf" value="2">Stores</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3 mt-1">
+                            <div class="table-responsive table-he-330">
+                                <table id="P5Grid" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Company / Part No / Desc</th>
+                                            <th>Part Type</th>
+                                            <th>Qnty</th>
+                                            <th>Location</th>
+                                            <th width="5%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="Popup6" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog ">
+            <div class="modal-content" style="border: 4px solid #5eafd2;">
+                <div class="modal-header position-relative">
+                    <h4 class="modal-title" id="mySmallModalLabel">
+                        <span style="font-weight: bold;">Add New (Accepted / OK) Part to Inventory Master </span>
+
+                    </h4>
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <h5>Instructions </h5>
+                        <h6>
+                            Only Accepted Parts Count to be entered <br>
+                            If Qnty is not available ... Zero can be entered <br>
+                            <span style="text-decoration-line: underline;">Child Manufactured Part</span> : Enter Input Part before entering CMP data <br>
+                            <span style="text-decoration-line: underline;">Assembly</span> : Enter all BOM parts before entering Assembly Part No Data
+                        </h6>
+                    </div>
+                    <div class="row mt-3">
+                        <label class="form-label col-md-4 mb-2">Company / Part No / Desc </label>
+                        <div class="col-md-6 mb-2">
+                            <input class="form-control form-control-sm" id="P6CPTPD" type="text" placeholder="Company / Part No / Desc" readonly>
+                        </div>
+                        <label class="form-label col-md-4 mb-2">Quantity * </label>
+                        <div class="col-md-6 mb-2">
+                            <input class="form-control form-control-sm w-25" id="P6Q" type="text" placeholder="Qnty">
+                        </div>
+                        <label class="form-label col-md-4 mb-2">Location *</label>
+                        <div class="col-md-3 mb-2">
+                            <select class="form-select form-select-sm" id="P6Loc" data-plugin="tippy"
+                                    data-tippy-placement="top" data-tippy="">
+                                <option id="mp-bf" value="0">--Select--</option>
+                                <option id="mp-bf" value="1">Inhouse</option>
+                                <option id="mp-bf" value="2">Stores</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12 text-end mt-2 mb-2">
+                            <input class="form-control form-control-sm w-25" id="P6InvMastId" type="text" hidden>
+                            <button type="button" class="btn btn-primary btn-sm" id="P6Save">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="Popup7" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="border: 4px solid #5eafd2;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="mySmallModalLabel">
+                        Inventory Master Change Log
+
+                    </h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5>
+                        Part No : <span id="P7PartName">xxxxx</span>  <br>
+                        Part Desc : <span id="P7PartDesc">xxxxx</span>  <br>
+                        Company : <span id="P7Comp">xxxxx</span> <br>
+                        Location :<span id="P7Loc">xxxxx</span>
+                    </h5>
+                    <div class="row mt-3">
+                        <div class="col-md-12 mb-4" id="P6partInspectPlanGridDiv">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="P7Grid"
+                                           class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Date</th>
+                                                <th>User</th>
+                                                <th>Field Changed</th>
+                                                <th>Old Value</th>
+                                                <th>New Value</th>
+                                                <th>Reason</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                            <!-- -------------  -->
+                                            <!-- -------------  -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+    <div class="modal fade modal-fullscreen-xl-down" id="Popup21" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content" style="border: 4px solid #5eafd2;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="mySmallModalLabel">
+                        Child Manufactured Part WO in Progress
+
+                    </h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <label class="form-label col-md-2 mb-2">Child Manf Part No </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="P22PN" name="master_co"
+                                   placeholder="Enter Part Number">
+                        </div>
+                        <label class="form-label col-md-2 mb-2">Part Desc </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="P22PD" name="master_co"
+                                   placeholder="Part Desc">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12 mb-4" id="P6partInspectPlanGridDiv">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="P22CmpGrid"
+                                           class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>WO Details</th>
+                                                <th>
+                                                    Input Part No / Desc
+                                                    Output Part No / Desc
+                                                </th>
+                                                <th>1st Input Issue Date </th>
+                                                <th>Input Part Issue Qnty</th>
+                                                <th>1st Output B/O Date</th>
+                                                <th>
+                                                    Output Part
+                                                    Bookout Qnty
+                                                </th>
+                                                <th>WIP Qnty</th>
+                                                <th>Scrap</th>
+                                                <th>W/f Rework *</th>
+                                                <th>% input Coverage</th>
+                                                <th>% BO Completion</th>
+                                                <th>Elapsed days</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                            <!-- -------------  -->
+                                            <!-- -------------  -->
+                                            <!-- -------------  -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <h6>* Waiting for Rework</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="Popup22" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg" style="border: 4px solid #5eafd2;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="mySmallModalLabel">
+                        Child Manufactured Part Processing Details
+
+                    </h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row mb-2">
+                                <div class="col-2 fw-bold">WO No</div>
+                                <div class="col-2" id="P22Wo">xxxx</div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-2 fw-bold">Child Manf Part No / Desc</div>
+                                <div class="col-2" id="P22CPND">xxxxx / xxx</div>
+                                <div class="col-2 fw-bold">Input Part No / Desc</div>
+                                <div class="col-2" id="P22CInPND">xxx / xxxx</div>
+                                <div class="col-2 fw-bold">Routing No</div>
+                                <div class="col-2" id="P22Routing">xxxx</div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-2 fw-bold">Planned WO Qnty</div>
+                                <div class="col-2" id="P22PQ">xxx</div>
+                                <div class="col-2 fw-bold">Plan Start Date</div>
+                                <div class="col-2" id="P22PStDt">xxx</div>
+                                <div class="col-2 fw-bold">Plan End Date</div>
+                                <div class="col-2" id="P22PEndDt">xxxx</div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-2">Input Coverage</div>
+                                <div class="col-2" id="P22InCov">xxx%</div>
+                                <div class="col-2">Bookout Compl.</div>
+                                <div class="col-2" id="P22Book">xxx%</div>
+                            </div>
+                            <hr>
+                        </div>
+
+                        <div class="col-md-12 mt-2 mb-2" id="P6partInspectPlanGridDiv">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="P22GridWo"
+                                           class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Starting Opr No</th>
+                                                <th>Ending Opr No </th>
+                                                <th>From Location </th>
+                                                <th>To Location</th>
+                                                <th>Input Qnty</th>
+                                                <th>Bookout Qnty</th>
+                                                <th>WIP Qnty</th>
+                                                <th>Scrap</th>
+                                                <th>W/f Rework *</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <h6>* Waiting for Rework</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="Popup225" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="border: 4px solid #5eafd2;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="mySmallModalLabel">
+                        Child Manufactured Part Inventory Transaction Log
+
+                    </h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row mb-2">
+                                <div class="col-3 fw-bold">WO No</div>
+                                <div class="col-2" id="P225Wo">xxxx</div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-3 fw-bold">Child Manf Part No / Desc</div>
+                                <div class="col-2" id="P225CPND">xxxxx / xxx</div>
+                                <div class="col-3 fw-bold">Input Part No / Desc</div>
+                                <div class="col-2" id="P225CInPND">xxx / xxxx</div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-3 fw-bold">Routing No</div>
+                                <div class="col-2" id="P225Routing">xxxx</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-3 fw-bold">Starting Opr No</div>
+                                <div class="col-2" id="P225StOp">xxx</div>
+                                <div class="col-3 fw-bold">Ending Opr No</div>
+                                <div class="col-2" id="P225EndOp">xxx</div>
+                            </div>
+                            <div class="row mb-2">
+                                <div class="col-3 fw-bold">From Location</div>
+                                <div class="col-2" id="P225FromLoc">xxx</div>
+                                <div class="col-3 fw-bold">To Location</div>
+                                <div class="col-2" id="P225ToLoc">xxx</div>
+                            </div>
+
+                            <div class="row mb-2">
+                                <div class="col-3 fw-bold">Input Coverage</div>
+                                <div class="col-2" id="P225InvCov">xxx%</div>
+                                <div class="col-3 fw-bold">Bookout Compl.</div>
+                                <div class="col-2" id="P225BookCov">xxx%</div>
+                            </div>
+                            <hr>
+                        </div>
+                        <div class="col-md-12 mt-2 mb-2" id="P6partInspectPlanGridDiv">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="P225Grid" class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Transaction Date</th>
+                                                <th>Transaction Type </th>
+                                                <th>User </th>
+                                                <th>Input Qnty</th>
+                                                <th>Bookout Qnty</th>
+                                                <th>WIP Qnty</th>
+                                                <th>Scrap</th>
+                                                <th>W/f Rework *</th>
+                                                @*<th></th>*@
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                            <tr id="P225GridTotalTr">
+                                                <td colspan="3" class="text-end"> Total</td>
+                                                <td> A xxx</td>
+                                                <td> B xxx</td>
+                                                <td>C</td>
+                                                <td>D xxx</td>
+                                                <td>E xxx</td>
+                                                <td></td>
+                                            </tr>
+                                            <!-- -------------  -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <h6>* Waiting for Rework</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade modal-fullscreen-xl-down" id="Popup23" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content" style="border: 4px solid #5eafd2;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="mySmallModalLabel">
+                        Assembly WO in Progress
+
+                    </h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+
+                        <label class="form-label col-md-2 mb-2">Assy Part No </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="P223APN" name="master_co"
+                                   placeholder="Enter Part Number">
+                        </div>
+                        <label class="form-label col-md-2 mb-2">Assy Part Desc </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control form-control-sm" type="text" id="P223APD" name="master_co"
+                                   placeholder="Enter Part Desc">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12 mb-4" id="P6partInspectPlanGridDiv">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="P223Grid"
+                                           class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>WO Details</th>
+                                                <th>Assy Part No / Desc </th>
+                                                <th>1st Assy KIt Issue Date </th>
+                                                <th>Assy Kits Issue Qnty</th>
+                                                <th>1st Assy B/O Date</th>
+                                                <th>
+                                                    Assy
+                                                    Bookout Qnty
+                                                </th>
+                                                <th>WIP Kit Qnty</th>
+                                                <th>Scrap</th>
+                                                <th>W/f Rework *</th>
+                                                <th>% input Coverage</th>
+                                                <th>% BO Completion</th>
+                                                <th>Elapsed days</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                            <!-- -------------  -->
+                                            <!-- -------------  -->
+                                        </tbody>
+                                    </table>
+                                    <h6>* Waiting for Rework</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="Popup24" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="border: 4px solid #5eafd2;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="mySmallModalLabel">
+                        Assembly / Sub-Assembly BOM Coverage
+
+                    </h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <div class="col-md-12">
+                                <div class="row mb-2">
+                                    <div class="col-2 fw-bold">WO No</div>
+                                    <div class="col-2" id="P24WoN">xxxx</div>
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="col-2 fw-bold">Assy Part No / Desc</div>
+                                    <div class="col-2" id="P24As">xxxxx / xxx</div>
+                                    <div class="col-2 fw-bold">(Assembly)</div>
+                                    <div class="col-2 fw-bold">Routing No</div>
+                                    <div class="col-2" id="P24Rout">xxxx</div>
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="col-2 fw-bold">Planned WO Qnty</div>
+                                    <div class="col-2" id="P224PQnty">xxx</div>
+                                    <div class="col-2 fw-bold">Plan Start Date </div>
+                                    <div class="col-2" id="P224StDt">xxx</div>
+                                    <div class="col-2 fw-bold">Plan End Date</div>
+                                    <div class="col-2" id="P224EndDts">xxx</div>
+                                </div>
+                                <hr>
+                            </div>
+                            <div class="row">
+                                <label class="form-label col-md-7 mb-2" style="font-weight: bold; color: black; font-size: 14px;">No of Assemblies / Sub-Assemblies that can be assembled </label>
+                                <div class="col-md-3 mb-2">
+                                    <input class="form-control form-control-sm w-25" type="text" id="P224TotalAssemCov" name="master_co"
+                                           placeholder="" readonly>
+                                </div>
+                            </div>
+                            <hr>
+                        </div>
+                        <div class="col-md-12 mt-2 mb-2" id="P6partInspectPlanGridDiv">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="P224Grid"
+                                           class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Part No / Desc</th>
+                                                <th>From Location </th>
+                                                <th>To Location</th>
+                                                <th>BOM Qnty</th>
+                                                <th>Transaction Qnty</th>
+                                                <th># Assy Coverage</th>
+                                                <th>% Coverage</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                            <!-- -------------  -->
+                                            <!-- -------------  -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <h6>* Waiting for Rework</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="Popup241" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="border: 4px solid #5eafd2;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="mySmallModalLabel">
+                        Assembly / Sub-Assembly BOM Coverage
+
+                    </h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-12">
+
+                                <div class="col-md-12">
+                                    <div class="row mb-2">
+                                        <div class="col-2 fw-bold">WO No</div>
+                                        <div class="col-2" id="P241WoN">xxxx</div>
+                                    </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-2 fw-bold">Assy Part No / Desc</div>
+                                        <div class="col-2" id="P241As">xxxxx / xxx</div>
+                                        <div class="col-2 fw-bold">(Sub - Assembly)</div>
+                                        <div class="col-2 fw-bold">Routing No</div>
+                                        <div class="col-2" id="P241Rout">xxxx</div>
+                                    </div>
+
+                                    <div class="row mb-2">
+                                        <div class="col-2 fw-bold">Planned WO Qnty</div>
+                                        <div class="col-2" id="P2241PQnty">xxx</div>
+                                        <div class="col-2 fw-bold">Plan Start Date </div>
+                                        <div class="col-2" id="P2241StDt">xxx</div>
+                                        <div class="col-2 fw-bold">Plan End Date</div>
+                                        <div class="col-2" id="P2241EndDts">xxx</div>
+                                    </div>
+                                    <hr>
+                                </div>
+                                <div class="row">
+                                    <label class="form-label col-md-7 mb-2" style="font-weight: bold; color: black; font-size: 14px;">No of Assemblies / Sub-Assemblies that can be assembled </label>
+                                    <div class="col-md-3 mb-2">
+                                        <input class="form-control form-control-sm w-25" type="text" id="P2241TotalAssemCov" name="master_co"
+                                               placeholder="" readonly>
+                                    </div>
+                                </div>
+                                <hr>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mt-2 mb-2" id="P6partInspectPlanGridDiv">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="P2241Grid"
+                                           class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Part No / Desc</th>
+                                                <th>From Location </th>
+                                                <th>To Location</th>
+                                                <th>BOM Qnty</th>
+                                                <th>Transaction Qnty</th>
+                                                <th># Assy Coverage</th>
+                                                <th>% Coverage</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                            <!-- -------------  -->
+                                            <!-- -------------  -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <h6>* Waiting for Rework</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="Popup25" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="border: 4px solid #5eafd2;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="mySmallModalLabel">
+                        Assembly Part Inventory Transaction Log
+
+                    </h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row mb-1">
+                                <div class="col-3">WO No</div>
+                                <div class="col-2" id="P225WoNo">xxxx</div>
+                            </div>
+                            <div class="row mb-1">
+                                <div class="col-3">Part No / Desc</div>
+                                <div class="col-2" id="P225PNo">xxxxx / xxx</div>
+                            </div>
+                            <div class="row mb-1">
+                                <div class="col-3">From Location</div>
+                                <div class="col-2" id="P225AFromloc">xxxxx </div>
+                                <div class="col-3">To Location</div>
+                                <div class="col-2" id="P225AToloc">xxxxx </div>
+                            </div>
+                            <div class="row mb-1">
+                                <div class="col-3">Total Qnty Reqd </div>
+                                <div class="col-2" id="P225ATotalQnty">xx </div>
+                                <div class="col-3">% Coverage</div>
+                                <div class="col-2" id="P225APCov">xxx% </div>
+                            </div>
+                            <hr>
+                        </div>
+                        <div class="col-md-12 mt-2 mb-2" id="P6partInspectPlanGridDiv">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="P225AsemGrid"
+                                           class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Transaction Date</th>
+                                                <th>Transaction Type </th>
+                                                <th>User </th>
+                                                <th>Transaction Qnty</th>
+                                                @*<th></th>*@
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                            <!-- -------------  -->
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <!-- -------------  -->
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <!-- -------------  -->
+                                            <tr id="P225Tr">
+                                                <td colspan="3" class="text-end"> Total</td>
+                                                <td> A xxx</td>
+                                                <td></td>
+                                            </tr>
+                                            <!-- -------------  -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <h6>* Waiting for Rework</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+
+    <!-- Modal End-->
+</div>
+
+<template id="InvMisGridRow">
+    <tr>
+        <td>{report_dateStr}</td>
+        <td>{reported_ByName}</td>
+        <td>{transactionDone}</td>
+        <td>{locationStr}</td>
+        <td>{partNoStr} / {routName} / {opNoName}</td>
+        <td>{mismatch_Qnty}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown"
+                   aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    @if (permissionResult != null)
+                    {
+
+                    }
+                    else
+                    {
+                    <a href="javascript:void(0);" onclick="DelInvmist({inv_Mismatch_ListId});"
+                       class="dropdown-item">Delete</a>
+                    }
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="P1InvMasterGridRow">
+    <tr>
+        <td>{dateStr}</td>
+        <td>{partTypeStr}</td>
+        <td>{companyStr} / {partNoStr} / {partDescStr} </td>
+        <td>{routName} {opName}</td>
+        <td>{qnty}</td>
+        <td>{partStatus}</td>
+        <td>{locationStr}</td>
+        <td>
+            {historyLink}
+        </td>
+        <td>
+            <div class="dropdown float-center mt-1">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown"
+                   aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-bs-target="#Popup2" data-invmasterid="{inventory_MasterId}" data-partno="{partNoStr}" data-partdesc="{partDescStr}"
+                       data-compname="{companyStr}" data-locname="{locationStr}" data-rout="{routName}" data-opname="{opName}">View Transaction Log</a>
+                    {cycleCountOption}
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="P1HistoryLinkTemplate">
+    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+       data-bs-target="#Popup7" data-invmasterid="{inventory_MasterId}" data-partno="{partNoStr}" data-partdesc="{partDescStr}"
+       data-compname="{companyStr}" data-locname="{locationStr}">
+        <i class="fa fa-history "></i>
+    </a>
+</template>
+<template id="P1CycleCountOptionTemplate">
+    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+       data-bs-target="#Popup3" data-invmasterid="{inventory_MasterId}" data-partno="{partNoStr}" data-partdesc="{partDescStr}"
+       data-compname="{companyStr}" data-locname="{locationStr}" data-parttype="{partTypeStr}" data-qnty="{qnty}" data-datestr="{dateStr}">Cycle Count</a>
+</template>
+<template id="P2InvTranLogGridRow">
+    <tr>
+        <td>{dt_timeStr}</td>
+        <td>{woNumber}</td>
+        <td>{transactionName}</td>
+        <td>{userName}</td>
+        <td>{inputPartInfo}</td>
+        <td>{outputPartInfo}</td>
+        <td>{fromSender}</td>
+        <td>{toSender}</td>
+        <td>{partStatus}</td>
+        <td>{qntyStr}</td>
+        <td>{misMatchStatus}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown"
+                   aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    @*<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                        data-bs-target="#addRole">View Transaction Log</a>*@
+                    @*<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                        data-bs-target="#Popup3">Cycle Count</a>*@
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="P5GridRow">
+    <tr>
+        <td>{companyStr} / {partNoStr} / {partDescStr} </td>
+        <td>{partTypeStr}</td>
+        <td>{qnty}</td>
+        <td>{locationStr}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown"
+                   aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-bs-target="#Popup6" data-invmasterid="{inventory_MasterId}" data-partno="{partNoStr}" data-partdesc="{partDescStr}"
+                       data-compname="{companyStr}" data-locname="{locationStr}" data-rout="{routName}" data-opname="{opName}">Update</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="P7GridRow">
+    <tr>
+        <td>{dateStr}</td>
+        <td>{userName}</td>
+        <td>{field_Changed}</td>
+        <td>{old_Value}</td>
+        <td>{new_Value}</td>
+        <td>{reason_Desc}</td>
+    </tr>
+</template>
+
+<template id="P22CmpGridRow">
+    <tr>
+        <td>
+            WO ID : {woNumber}, Pln Qnty : {woQnty} <br />
+            Pln St Dt : {planStDate}, Pln End Dt : {planEndDate}
+        </td>
+        <td>
+            Input : {inputPartNo} / {inputPartDesc} <br />
+            Output : {partNo} / {partDesc}
+        </td>
+        <td>{input_Issue_Date}</td>
+        <td>{input_Qnty}</td>
+        <td>{output_Bookout_Date}</td>
+        <td>{output_Qnty}</td>
+        <td>{wiP_Qnty}</td>
+        <td>{scrap_Qnty}</td>
+        <td>{rework_Qnty}</td>
+        <td>{input_Coverage_Pct}</td>
+        <td>{wO_Completion_Pct}</td>
+        <td>{elapsed_Days}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown"
+                   aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-wonum="{woNumber}" data-cmpart="{partNo}" data-cmpartdesc="{partDesc}" data-inpt="{inputPartNo}" data-inptd="{inputPartDesc}"
+                       data-rout="{routingName}" data-woqnty="{woQnty}" data-planstdt="{planStDate}" data-planenddt="{planEndDate}" data-inpcov="{input_Coverage_Pct}"
+                       data-bocov="{wO_Completion_Pct}" data-woid="{woId}"
+                       data-bs-target="#Popup22">Processing Details</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="P22GridWoRow">
+    <tr>
+        <td>{startingOprNo}</td>
+        <td>{endingOprNo}</td>
+        <td>{fromLocation}</td>
+        <td>{toLocation}</td>
+        <td>{inputQnty}</td>
+        <td>{bookoutQnty}</td>
+        <td>{wipQnty}</td>
+        <td>{scrap}</td>
+        <td>{wfRework}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown"
+                   aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-bs-target="#Popup225" data-woid="{woId}" data-opid="{startingOprNoId}" data-stop="{startingOprNo}" data-endop="{endingOprNo}"
+                       data-fromloc="{fromLocation}" data-toloc="{toLocation}">Show Inv Trans Log</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="P225GridRow">
+    <tr>
+        <td>{transactionDate}</td>
+        <td>{transactionType}</td>
+        <td>{user}</td>
+        <td>{inputQnty}</td>
+        <td>{bookoutQnty}</td>
+        <td>{wipQnty}</td>
+        <td>{scrap}</td>
+        <td>{wfRework}</td>
+        @*<td></td>*@
+    </tr>
+</template>
+<template id="P223GridRow">
+    <tr>
+        <td>{woDetails}</td>
+        <td>{assyPartNoDesc}</td>
+        <td>{firstKitIssueDate}</td>
+        <td>{kitIssueQnty}</td>
+        <td>{firstBookoutDate}</td>
+        <td>{bookoutQnty}</td>
+        <td>{wipKitQnty}</td>
+        <td>{scrapQnty}</td>
+        <td>{reworkQnty}</td>
+        <td>{inputCoverage}</td>
+        <td>{boCompletion}</td>
+        <td>{elapsedDays}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown"
+                   aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-bs-target="#Popup24" data-woid="{woId}">Show BOM Coverage</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<template id="P224GridRow">
+    <tr>
+        <td>{partNo} / {partDesc} ({partType})</td>
+        <td>{fromLocation}</td>
+        <td>{toLocation}</td>
+        <td>{bomQnty}</td>
+        <td>{transactionQnty}</td>
+        <td>{assyCoverage}</td>
+        <td>{percentCoverage}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown"
+                   aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <a href="javascript:void(0);" class="dropdown-item bom-cov" data-bs-toggle="modal"
+                       data-bs-target="#Popup241" data-woid="{woId}" data-partid="{partId}" data-partno="{partNo}" data-partdesc="{partDesc}">Show BOM Coverage</a>
+                    <a href="javascript:void(0);" class="dropdown-item inv-log" data-bs-toggle="modal"
+                       data-bs-target="#Popup25" data-woid="{woId}" data-fromloc="{fromLocation}" data-toloc="{toLocation}"
+                       data-assemcov="{assyCoverage}" data-percov="{percentCoverage}" data-partid="{partId}" data-partno="{partNo}" data-partdesc="{partDesc}">Show Inv Trans Log</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="P2241GridRow">
+    <tr>
+        <td>{partNo} /{partDesc} ({partType})</td>
+        <td>{fromLocation}</td>
+        <td>{toLocation}</td>
+        <td>{bomQnty}</td>
+        <td>{transactionQnty}</td>
+        <td>{assyCoverage}</td>
+        <td>{percentCoverage}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown"
+                   aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    @*<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                        data-bs-target="#Popup241" data-woid="{woId}">Show BOM Coverage</a>*@
+                    <a href="javascript:void(0);" class="dropdown-item inv-log" data-bs-toggle="modal"
+                       data-bs-target="#Popup25" data-woid="{woId}" data-fromloc="{fromLocation}" data-toloc="{toLocation}"
+                       data-assemcov="{assyCoverage}" data-percov="{percentCoverage}" data-partid="{partId}">Show Inv Trans Log</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="P225AsemGridRow">
+    <tr>
+        <td>{transactionDate}</td>
+        <td>{transactionType}</td>
+        <td>{user}</td>
+        <td>{transactionQnty}</td>
+        @*<td></td>*@
+    </tr>
+</template>
+
+@section Scripts {
+    <script src="~/js/InvenControl.js"></script>
+}

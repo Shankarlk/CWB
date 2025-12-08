@@ -110,6 +110,17 @@ function loadNclog(inwheaderid) {
             $("#P6TotalInsp").val(totalQuantity);
             calculateTotals();
         }
+        if (totalQuantity === 0) {
+            $("#P6FinNcCount").hide();
+            $("#P6FinNcUnit").hide();
+            $("#P6InputNcCount").hide();
+            $("#P6InputNcUnit").hide();
+        } else {
+            $("#P6FinNcCount").show();
+            $("#P6FinNcUnit").show();
+            $("#P6InputNcCount").show();
+            $("#P6InputNcUnit").show();
+        }
     }).catch((error) => {
     });
 }
@@ -315,6 +326,27 @@ $(document).ready(function () {
         $("#NotUploaded").modal("hide");
     });
     $("#P6TbInspTotal, #P6TbTotalNc, #P6TbUnpro").on("input", calculateTotalInsp);
+    document.getElementById("P6FinNcCount").addEventListener("input", function () {
+        var totalGridNC = $("#P6TotalInsp").val();
+        var P6FinNcCount = this.value;
+        if (P6FinNcCount > totalGridNC) {
+            $("#ErrorMessage12").modal("show");
+        }
+    });
+    document.getElementById("P6InputNcCount").addEventListener("input", function () {
+        var totalGridNC = $("#P6TotalNc").val();
+        var P6FinNcCount = this.value;
+        if (parseInt(P6FinNcCount) > parseInt(totalGridNC)) {
+            $("#ErrorMessage12").modal("show");
+        }
+    });
+    $('#ErrorMessage12').on('show.bs.modal', function (event) {
+        document.getElementById('popupInspect6').style.filter = 'blur(5px)';
+    });
+    $('#ErrorMessage12').on('hidden.bs.modal', function (event) {
+        document.getElementById('popupInspect6').style.filter = 'none';
+    });
+
     $('#popupInspect6').on('show.bs.modal', function (event) {
         $("#P6TbInspTotal").val(0);
         $("#P6TotalInsp").val(0);
@@ -346,6 +378,8 @@ $(document).ready(function () {
         $("#P6TbUnproUnit").text(units);
         $("#P6TbInspTotalUnit").text(units);
         $("#P6TbTotalNcUnit").text(units);
+        $("#P6InputNcUnit").text(units);
+        $("#P6FinNcUnit").text(units);
         $("#P7UnitVM").text(units);
         $("#P6TotalInspUnit").text(units);
         $("#P6SuppSpan").text(supp);
@@ -367,8 +401,10 @@ $(document).ready(function () {
         $("#P6MessageBox").text("");
         $("#P7NcLocation").prop("disabled", true);
         $("#P6FinNc").hide();
+        $("#P6FinNcTr").hide();
         $("#P6PrintFin").hide();
         $("#P6InputNc").show();
+        $("#P6InputNcTr").show();
         $("#P6PrintInput").show();
         if (parttype == "SubCon") {
             $("#P7RoutingDiv").prop("hidden",false);
@@ -394,8 +430,10 @@ $(document).ready(function () {
                 });
             });
             $("#P6InputNc").hide();
+            $("#P6InputNcTr").hide();
             $("#P6PrintInput").hide();
             $("#P6FinNc").show();
+            $("#P6FinNcTr").show();
             $("#P6PrintFin").show();
         }
     });
@@ -472,7 +510,7 @@ $(document).ready(function () {
         };
         $.ajax({
             type: "POST",
-            url: '/workOrder/PostNcLog',
+            url: '/workOrder/PostInspNcLog',
             contentType: "application/json; charset=utf-8",
             headers: { 'Content-Type': 'application/json' },
             data: JSON.stringify(rowData),
@@ -579,8 +617,15 @@ $(document).ready(function () {
                     } else {
                         logId = 0;
                     }
+                    var firstColumnText = $('#P6InwardGrid tbody tr:first-child td:first-child').text();
+                    var partstatus = 0;
+                    if (firstColumnText != "OK Parts declared by Supplier" || firstColumnText != "NC Qnty declared by Supplier") {
+                        partstatus = 2;
+                    } else {
+                        partstatus = 1;
+                    }
                     var rowData = {
-                        Inv_Trans_LogId: logId,
+                        Inv_Trans_LogId: 0,
                         Input_Part_NoId: 0,
                         Input_Routing_Id: 0,
                         Input_Opr_No: 0,
@@ -593,7 +638,7 @@ $(document).ready(function () {
                         Qnty: qnty,
                         From_Location_Id: 0,
                         To_Location_Id: 1,
-                        Part_Status: 1,
+                        Part_Status: partstatus,
                         Movement_Compl: 'N'
                     };
                     api.post("/WorkOrder/PostInv_Trans_Log", rowData).then((Insdata) => {
@@ -649,8 +694,15 @@ $(document).ready(function () {
                         api.getbulk("/WorkOrder/GetRoutings?manufPartId=" + parseInt(P6PartId)).then((data) => {
                             api.getbulk("/WorkOrder/RoutingSteps?routingId=" + data[data.length - 1].routingId).then((stepdata) => {
 
+                                var firstColumnText = $('#P6InwardGrid tbody tr:first-child td:first-child').text();
+                                var partstatus = 0;
+                                if (firstColumnText != "OK Parts declared by Supplier" || firstColumnText != "NC Qnty declared by Supplier") {
+                                    partstatus = 2;
+                                } else {
+                                    partstatus = 1;
+                                }
                                 var rowData = {
-                                    Inv_Trans_LogId: logId,
+                                    Inv_Trans_LogId: 0,
                                     Input_Part_NoId: P6PartId,
                                     Input_Routing_Id: data[0].routingId,
                                     Input_Opr_No: stepdata[0].stepId,
@@ -663,7 +715,7 @@ $(document).ready(function () {
                                     Qnty: qnty,
                                     From_Location_Id: stepdata[0].stepLocation,
                                     To_Location_Id: 1,
-                                    Part_Status: 1,
+                                    Part_Status: partstatus,
                                     Movement_Compl: 'N'
                                 };
                                 api.post("/WorkOrder/PostInv_Trans_Log", rowData).then((Insdata) => {

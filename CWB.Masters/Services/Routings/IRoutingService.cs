@@ -26,8 +26,10 @@ namespace CWB.Masters.Services.Routings
         Task<IEnumerable<RoutingStepVM>> ChangeSequence(IEnumerable<RoutingStepVM> routingStepVM);
         Task<RoutingStepPartVM> RoutingStepPart(RoutingStepPartVM routingStepPartVM);
         IEnumerable<RoutingVM> GetRoutingsForManufId(int manufId);
+        IEnumerable<RoutingVM> GetAllRoutingsForManufId(long tenantId);
         Task<List<RoutingListItemVM>> GetRoutingListItemsAsync(long tenantId);
         IEnumerable<RoutingStepVM> GetStepsForRoutingId(int routingId);
+        IEnumerable<RoutingStepVM> GetAllStepsForRouting(long tenantId);
         IEnumerable<RoutingStepPartVM> GetPartsForStepId(int stepId);
         Task<bool> DeleteStep(int stepId);
         Task<bool> DeleteStepMachine(int stepId, int machineId);
@@ -38,6 +40,7 @@ namespace CWB.Masters.Services.Routings
         Task<IEnumerable<Routing>> GetAllRoutings();
 
         Task<IEnumerable<RoutingStepMachineVM>> StepMachines(int stepId);
+        Task<IEnumerable<RoutingStepMachineVM>> AllStepMachines(long tenantId);
         Task<IEnumerable<RoutingStepSupplierVM>> StepSuppliers(int stepId);
 
         Task<RoutingStepMachineVM> PreferredStepMachine(string routingStepId, string routingStepMachineId,int maxMachineCount);

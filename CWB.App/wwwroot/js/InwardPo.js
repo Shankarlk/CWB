@@ -355,11 +355,57 @@ $(document).ready(function () {
         $("#P8PartNoSpan").text(partno);
         $("#P8RoutingSpan").hide();
     });
+    $("#SaveNEsca").on("click", function () {
+        var E2Com = $("#E2Com").val();
+        var baltorectd22B = $("#baltorectd22B").text();
+        var alRecdC = $("#alRecdC").text();
+        var baltorectd2D = $("#baltorectd2D").text();
+        var cdb = parseInt(alRecdC) + parseInt(baltorectd2D) - parseInt(baltorectd22B);
+        var popupPoPartId = parseInt($("#popupPoPartId").val());
+        if (E2Com.length === 0) {
+            var newNamevalidate = document.getElementById('E2Com');
+            newNamevalidate.style.border = '2px solid red';
+            return false;
+        } else {
+            var newNamevalidate = document.getElementById('E2Com');
+            newNamevalidate.style.border = '';
+        }
+        var rowData = {
+            inv_Mismatch_ListId: 0,
+            calling_UI_ID: 90,
+            pO_Ref: parseInt($("#popupPoHeaderId").val()),
+            part_No: parseInt(popupPoPartId),
+            mismatch_Qnty: parseInt(cdb),
+            report_date: new Date().toISOString(),
+            resolution_Comments: ".",
+            resolved: 'N',
+            mismatch_Comments: E2Com,
+            mismatch_Status: "More",
+        };
+        $.ajax({
+            type: "POST",
+            url: '/workOrder/PostInv_Mismatch_List',
+            contentType: "application/json; charset=utf-8",
+            headers: { 'Content-Type': 'application/json' },
+            data: JSON.stringify(rowData),
+            dataType: "json",
+            success: function (result) {
+                $("#ErrorMessage2").modal("hide");
+                $("#popup5").modal("hide");
+                $("#popup4PoLineData").modal("hide");
+                $("#popupInward").modal("hide");
+            }
+        });
+    });
     $("#popup4LineComplete").on("click", function () {
         var ourCountVM = $("#ourCountVM").text();
         var suppCountVM = $("#suppCountVM").text();
+        var baltorectd22B = $("#baltorectd22B").text();
+        var alRecdC = $("#alRecdC").text();
+        var baltorectd2D = $("#baltorectd2D").text();
         var totalPOQnty = 0;
         var subtotalPOQnty = 0;
+        var bCD = parseInt(baltorectd22B) - parseInt(alRecdC) - parseInt(baltorectd2D);
         $("#popupBalanceItemGrid tbody tr").each(function () {
             var poQnty = $(this).find("td:nth-child(2)").text().trim();
             var subpoQnty = $(this).find("td:nth-child(5)").text().trim();
@@ -368,8 +414,8 @@ $(document).ready(function () {
         });
         if (parseInt(suppCountVM) != parseInt(ourCountVM)) {
             $("#ErrorMessage1").modal("show");
-        } else if (parseInt(suppCountVM) > parseInt(totalPOQnty) && parseInt(suppCountVM) > parseInt(ourCountVM)) {
-            if (PPartType == "ManufacturedPart") {
+        } else if (parseInt(suppCountVM) > parseInt(baltorectd22B) - parseInt(alRecdC) - parseInt(baltorectd2D)) {
+            if (PPartType == "SubCon") {
                 $("#ErrorMessage2").modal("show");
                 $("#ErSp2Sent").text(suppCountVM);
                 $("#ErSp2To").text(subtotalPOQnty);
@@ -747,6 +793,10 @@ $(document).ready(function () {
         var parttype = relatedTarget.data("parttype");
         var docavl = relatedTarget.data("docavl");
         var poqntyrecd = relatedTarget.data("poqntyrecd");
+        var mismatch_Resolved = relatedTarget.data("mismatchresolved");
+        if (mismatch_Resolved == undefined || mismatch_Resolved == null) {
+            mismatch_Resolved = "-";
+        }
         var inwardDate = new Date();
         calculateTotals();
         poQnty = poqnty;
@@ -827,6 +877,7 @@ $(document).ready(function () {
           data-partid="${partid || ''}"
           data-porcptdate="${porcptdate || ''}"
           data-balnqnty="${baltorec || ''}"
+          data-poqntytodayrecd="${poqntytodayrecd || ''}"
           data-edit="{0}" onclick="OpenPopup4(this)">
           Inward
       </a>`
@@ -846,6 +897,7 @@ $(document).ready(function () {
           data-partid="${partid || ''}"
           data-porcptdate="${porcptdate || ''}"
           data-balnqnty="${baltorec || ''}"
+          data-poqntytodayrecd="${poqntytodayrecd || ''}"
           data-edit="{1}"
           onclick="OpenPopup4(this)">
           Edit
@@ -858,41 +910,46 @@ $(document).ready(function () {
                         <td>${opname || ''}</td>
                         <td>${poqnty || ''}</td>
                         <td>${poqntyrecdstr || ''}</td>
-                        <td id="baltorectd22">0</td>
-                        <td>${poqntyrecdstr || ''}</td>
-                        <td id="baltorectd2">${poqntytodayrecdstr || ''}</td>
+                        <td id="baltorectd22B">${poqnty - poqntyrecd }</td>
+                        <td id="alRecdC">${poqntytodayrecdstr || ''}</td>
+                        <td id="baltorectd2D">${poqntyrecdstr || ''}</td>
                         <td>${baltorec || '0'}</td>
                         <td>${units || ''}</td>
                         <td>${docavl || ''}</td>
                         <td>${postatus}</td>
+                        <td>${mismatch_Resolved}</td>
                         <td>
-                            <div class="dropdown float-center">
-                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="mdi mdi-dots-vertical"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    ${dropdownOptions}
-                                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                                       data-poref="${poref || ''}"
-                                       data-podate="${podate || ''}"
-                                       data-supp="${supp || ''}"
-                                       data-poqnty="${poQnty || ''}" 
-                                       data-noofline="${noofline || ''}"
-                                       data-units="${units || ''}"
-                                       data-docavl="${docavl || ''}"
-                                       data-podetails="${podetails || ''}"
-                                       data-postatus="${postatus || ''}"
-                                       data-procid="${procid || ''}"
-                                       data-partno="${partNo || ''}"
-                                       data-partid="${partid || ''}"
-                                       data-porcptdate="${porcptdate || ''}"
-                                       data-balnqnty="${baltorec || ''}"
-                                       data-edit="{2}"
-                                       data-bs-target="#popup4PoLineData">
-                                        View Details
+                            ${mismatch_Resolved === 'N'
+                                                        ? ''
+                                                        : `
+                                <div class="dropdown float-center">
+                                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="mdi mdi-dots-vertical"></i>
                                     </a>
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        ${dropdownOptions}
+                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                           data-poref="${poref || ''}"
+                                           data-podate="${podate || ''}"
+                                           data-supp="${supp || ''}"
+                                           data-poqnty="${poQnty || ''}" 
+                                           data-noofline="${noofline || ''}"
+                                           data-units="${units || ''}"
+                                           data-docavl="${docavl || ''}"
+                                           data-podetails="${podetails || ''}"
+                                           data-postatus="${postatus || ''}"
+                                           data-procid="${procid || ''}"
+                                           data-partno="${partNo || ''}"
+                                           data-partid="${partid || ''}"
+                                           data-porcptdate="${porcptdate || ''}"
+                                           data-balnqnty="${baltorec || ''}"
+                                           data-edit="{2}"
+                                           data-bs-target="#popup4PoLineData">
+                                            View Details
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
+                            `}
                         </td>
                     </tr>
                 `);
@@ -1008,35 +1065,39 @@ $(document).ready(function () {
                         <td>${units || ''}</td>
                         <td>${docavl || ''}</td>
                         <td>${postatus}</td>
+                        <td>${mismatch_Resolved}</td>
                         <td>
-                            <div class="dropdown float-center">
-                                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="mdi mdi-dots-vertical"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    ${dropdownOptions}
-                                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                                       data-poref="${poref || ''}"
-                                       data-podate="${podate || ''}"
-                                       data-units="${units || ''}"
-                                       data-docavl="${docavl || ''}"
-                                       data-supp="${supp || ''}"
-                                       data-poqnty="${poQnty || ''}" 
-                                       data-noofline="${noofline || ''}"
-                                       data-postatus="${postatus || ''}"
-                                       data-podetails="${podetails || ''}"
-                                       data-procid="${procid || ''}"
-                                       data-partno="${parttype || ''}"
-                                       data-partno="${partNo || ''}"
-                                       data-partid="${partid || ''}"
-                                       data-porcptdate="${porcptdate || ''}"
-                                       data-balnqnty="${baltorec || ''}"
-                                       data-edit="{2}"
-                                       data-bs-target="#popup4PoLineData">
-                                        View Details
+                            ${mismatch_Resolved === 'N'
+                                                    ? ''
+                                                    : `
+                                <div class="dropdown float-center">
+                                    <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="mdi mdi-dots-vertical"></i>
                                     </a>
+                                    <div class="dropdown-menu dropdown-menu-end">
+                                        ${dropdownOptions}
+                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                           data-poref="${poref || ''}"
+                                           data-podate="${podate || ''}"
+                                           data-supp="${supp || ''}"
+                                           data-poqnty="${poQnty || ''}" 
+                                           data-noofline="${noofline || ''}"
+                                           data-units="${units || ''}"
+                                           data-docavl="${docavl || ''}"
+                                           data-podetails="${podetails || ''}"
+                                           data-postatus="${postatus || ''}"
+                                           data-procid="${procid || ''}"
+                                           data-partno="${partNo || ''}"
+                                           data-partid="${partid || ''}"
+                                           data-porcptdate="${porcptdate || ''}"
+                                           data-balnqnty="${baltorec || ''}"
+                                           data-edit="{2}"
+                                           data-bs-target="#popup4PoLineData">
+                                            View Details
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
+                            `}
                         </td>
                     </tr>
                 `);

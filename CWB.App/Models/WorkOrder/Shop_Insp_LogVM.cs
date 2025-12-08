@@ -9,6 +9,7 @@ namespace CWB.App.Models.WorkOrder
     {
         public long Shop_Insp_LogId { get; set; }
         public long Mc_Reference { get; set; }
+        public long Operator_Id { get; set; }
         public long Inspected_by { get; set; }
         public DateTime Inspected_on { get; set; }
         public int Qnty_OK_finished { get; set; }

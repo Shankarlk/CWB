@@ -2,8 +2,10 @@
 using CWB.App.Models.Contacts;
 using CWB.App.Models.DocumentManagement;
 using CWB.App.Models.ItemMaster;
+using CWB.App.Models.WorkOrder;
 using CWB.App.Services.DocumentMagement;
 using CWB.App.Services.Masters;
+using CWB.App.Services.ProductionPlanWo;
 using CWB.App.Services.Routings;
 using CWB.CommonUtils.Common;
 using CWB.Logging;
@@ -31,9 +33,10 @@ namespace CWB.App.Controllers
         private readonly IDocMangService _docMangService;
         private readonly IRoutingService _routingService;
         private readonly IOperationService _operationService;
+        private readonly IWOService _woService;
         IHostingEnvironment _hostingEnvironment = null;
         public MastersController(ILoggerManager logger, IMachineService machineService, IMastersServices mastersService, IDocMangService docMangService,
-           IRoutingService routingService, IHostingEnvironment hostingEnvironment
+           IRoutingService routingService, IHostingEnvironment hostingEnvironment, IWOService woService
             , IHttpContextAccessor httpContextAccessor, IOperationService operationService)
         {
             _logger = logger;
@@ -43,6 +46,7 @@ namespace CWB.App.Controllers
             _routingService = routingService;
             _operationService = operationService;
             _hostingEnvironment = hostingEnvironment;
+            _woService = woService;
         }
         public IActionResult Index()
         {
@@ -464,6 +468,14 @@ namespace CWB.App.Controllers
                 return BadRequest(ModelState);
             }
             var result = await _mastersService.ManufacturedPartNoDetail(model);
+            if(model.PartId == 0)
+            {
+                var postinvmaster = new Inventory_MasterVM();
+                postinvmaster.Part_NoId = result.PartId;
+                postinvmaster.Location_Id = 0;
+                postinvmaster.Dt_time = DateTime.Now;
+                var invmaster = await _woService.PostInventory_Master(postinvmaster);
+            }
             return Ok(result);
         }
 
@@ -559,6 +571,14 @@ namespace CWB.App.Controllers
                 return BadRequest(ModelState);
             }
             var result = await _mastersService.RawMaterialDetail(model);
+            if (model.PartId == 0)
+            {
+                var postinvmaster = new Inventory_MasterVM();
+                postinvmaster.Part_NoId = result.PartId;
+                postinvmaster.Location_Id = 0;
+                postinvmaster.Dt_time = DateTime.Now;
+                var invmaster = await _woService.PostInventory_Master(postinvmaster);
+            }
             return Ok(result);
         }
 
@@ -2044,12 +2064,15 @@ namespace CWB.App.Controllers
             var mfpdListTask = _mastersService.ItemMasterParts();
             var docmandTask = _mastersService.Getallitemmasterdoclist();
             var docListVMsTask = _docMangService.GetAllDocList();
+            var allPartPurchasesTask = _mastersService.PartPurchases();
 
-            await Task.WhenAll(mfpdListTask, docmandTask, docListVMsTask);
+
+            await Task.WhenAll(mfpdListTask, docmandTask, docListVMsTask, allPartPurchasesTask);
 
             var mfpdList = mfpdListTask.Result;
             var docmand = docmandTask.Result;
             var docListVMs = docListVMsTask.Result;
+            var allPartPurchases = allPartPurchasesTask.Result;
 
             // Cache manufactured parts for later use
             var manufacturedParts = mfpdList
@@ -2124,7 +2147,7 @@ namespace CWB.App.Controllers
                             2 => "Catalog BOF",
                             _ => "Purchased Made to Print BOF"
                         };
-                        var bofSuppliers = await _mastersService.PartPurchasesFor((int)item.PartId);
+                        var bofSuppliers = allPartPurchases.Where(s=>s.PPartId == (int)item.PartId);
                         item.SupplierAvl = bofSuppliers.Any() ? "Yes" : "No";
                         item.BomAvl = "N/A";
                         item.RmAvl = "N/A";
@@ -2136,7 +2159,7 @@ namespace CWB.App.Controllers
                         (item.MandocAvl, item.DocStatus) = await GetDocStatusAsync(docmand, docListVMs, (int)item.PartId, 3, 4, 5);
                         var rm = await _mastersService.GetRMPart((int)item.PartId);
                         item.MasterDisplay = rm.RawMaterialMadeType == 1 ? "Own Purchased RM" : "Customer Supplied RM";
-                        var rmSuppliers = await _mastersService.PartPurchasesFor((int)item.PartId);
+                        var rmSuppliers = allPartPurchases.Where(s => s.PPartId == (int)item.PartId);
                         item.SupplierAvl = rmSuppliers.Any() ? "Yes" : "No";
                         item.BomAvl = "N/A";
                         item.RmAvl = "N/A";
@@ -2769,6 +2792,14 @@ namespace CWB.App.Controllers
                 return BadRequest(ModelState);
             }
             var result = await _mastersService.BoughtOutFinishDetail(model);
+            if (model.PartId == 0)
+            {
+                var postinvmaster = new Inventory_MasterVM();
+                postinvmaster.Part_NoId = result.PartId;
+                postinvmaster.Location_Id = 0;
+                postinvmaster.Dt_time = DateTime.Now;
+                var invmaster = await _woService.PostInventory_Master(postinvmaster);
+            }
             return Ok(result);
         }
         #endregion
@@ -2788,6 +2819,12 @@ namespace CWB.App.Controllers
         {
             var result = await _mastersService.CheckPartNo(partNo);
             return Json(!result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPartStatus()
+        {
+            var statuses = await _mastersService.GetStatuses();
+            return Ok(statuses);
         }
 
         #region Private Functions - ViewBag

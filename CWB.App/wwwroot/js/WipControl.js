@@ -44,7 +44,7 @@ function InwardPo() {
         let totalBOF = 0;
 
         for (let i = 0; i < data.length; i++) {
-            if (data[i].partType === "ManufacturedPart") {
+            if (data[i].partType === "SubCon") {
                 totalSubCon++; // Adjust based on the actual property name
             } else if (data[i].partType === "RawMaterial") {
                 totalRawMaterial++;

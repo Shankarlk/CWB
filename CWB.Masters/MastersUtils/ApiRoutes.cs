@@ -82,9 +82,12 @@
             public const string PostRoutingStepMachine = Base + "/routingstepmachine";
             public const string PreferredStepMachine = Base + "/preferredstepmachine/{routingStepId}/{routingStepMachineId}/{maxMachineCount}";
             public const string RoutingList = Base + "/routings/{manufPartId}";
+            public const string RoutingAllList = Base + "/allroutings/{tenantId}";
             public const string RoutingSteps = Base + "/routingsteps/{routingId}";
+            public const string AllRoutingSteps = Base + "/allroutingsteps/{tenantId}";
             public const string StepSuppliers = Base + "/stepsuppliers/{stepId}";
             public const string StepMachines = Base + "/stepmachines/{stepId}";
+            public const string AllStepMachines = Base + "/allstepmachines/{tenantId}";
             public const string StepParts = Base + "/stepparts/{stepId}";
             public const string DeleteStep = Base + "/deletestep/{stepId}";
             public const string GetRoutingStep = Base + "/getroutingstep/{stepId}";

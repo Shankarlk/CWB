@@ -53,6 +53,9 @@ namespace CWB.ProductionPlanWO.Configurations
                .HasColumnName("PoSent")
                .IsRequired();
             builder
+               .Property(t => t.Mismatch_Resolved)
+               .HasColumnName("Mismatch_Resolved");
+            builder
                .Property(t => t.PoQntyRecd)
                .HasColumnName("PoQntyRecd")
                .IsRequired();
