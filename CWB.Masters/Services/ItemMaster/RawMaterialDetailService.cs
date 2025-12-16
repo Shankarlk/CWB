@@ -100,84 +100,158 @@ namespace CWB.Masters.Services.ItemMaster
             return (int)part.Id;
         }
 
-
         public async Task<RawMaterialDetailVM> RawMaterialDetail(RawMaterialDetailVM rawMaterialDetailVM)
         {
-            try {
+            long? createdMasterPartId = null;
+            long? createdStatusLogId = null;
+            long? createdRawMaterialDetailId = null;
+
+            try
+            {
                 var rawmaterialdetail = _mapper.Map<RawMaterialDetail>(rawMaterialDetailVM);
-                if(rawmaterialdetail.RawMaterialMadeType == 1)
+
+                if (rawmaterialdetail.RawMaterialMadeType == 1)
                 {
-                    rawmaterialdetail.SupplierId = 1;//self
+                    rawmaterialdetail.SupplierId = 1; // self
                 }
-                var masterPart = _mapper.Map<Domain.ItemMaster.MasterPart>(rawMaterialDetailVM);
+
+                var masterPart = _mapper.Map<MasterPart>(rawMaterialDetailVM);
                 int id = GetPartId(masterPart.PartNo);
+
+                // --------------------------------------------------------------------
+                // NEW MASTER PART CREATION
+                // --------------------------------------------------------------------
                 if (id == 0)
                 {
                     masterPart.Id = 0;
                     masterPart.Status = "Not Released";
                     masterPart.Inv_Trans = 'N';
                     masterPart.Linked_to_BOM = 'N';
+
                     await _masterPartRepository.AddAsync(masterPart);
-                    await _unitOfWork.CommitAsync();
+                    await _unitOfWork.CommitAsync();  // get masterPart.Id from DB
+
+                    createdMasterPartId = masterPart.Id;
+
                     rawMaterialDetailVM.PartId = (int)masterPart.Id;
-                    PartStatusChangeLog partStatus = new PartStatusChangeLog()
+                    rawmaterialdetail.PartId = (int)masterPart.Id;
+
+                    var partStatus = new PartStatusChangeLog()
                     {
-                        MasterPartId = masterPart.Id,
+                        MasterPartId = masterPart.Id,   // Must NOT be 0!!
                         Status = masterPart.Status,
                         ChangeReason = masterPart.StatusChangeReason,
                         TenantId = masterPart.TenantId
                     };
+
                     await _partStatusChangeLogRepository.AddAsync(partStatus);
+                    await _unitOfWork.CommitAsync();
+
+                    createdStatusLogId = partStatus.Id;
                 }
                 else
                 {
+                    // --------------------------------------------------------------------
+                    // EXISTING PART → UPDATE STATUS + LOG
+                    // --------------------------------------------------------------------
                     masterPart.Id = id;
                     rawmaterialdetail.PartId = masterPart.Id;
-                    if (id == rawmaterialdetail.PartId)
+
+                    var findmp = await _masterPartRepository.SingleOrDefaultAsync(s => s.Id == masterPart.Id);
+
+                    var partStatus = new PartStatusChangeLog()
                     {
-                        var findmp = await _masterPartRepository.SingleOrDefaultAsync(s => s.Id == masterPart.Id);
-                        PartStatusChangeLog partStatus = new PartStatusChangeLog()
-                        {
-                            MasterPartId = masterPart.Id,
-                            Status = masterPart.Status,
-                            FromChangedStatus = findmp.Status.ToString(),
-                            ChangeReason = masterPart.StatusChangeReason,
-                            TenantId = masterPart.TenantId
-                        };
-                        await _partStatusChangeLogRepository.AddAsync(partStatus);
-                        masterPart = await _masterPartRepository.UpdateAsync(masterPart.Id, masterPart);
-                        await _unitOfWork.CommitAsync();
-                        rawMaterialDetailVM.PartId = (int)masterPart.Id;
-                    }
+                        MasterPartId = masterPart.Id,
+                        Status = masterPart.Status,
+                        FromChangedStatus = findmp.Status,
+                        ChangeReason = masterPart.StatusChangeReason,
+                        TenantId = masterPart.TenantId
+                    };
+
+                    await _partStatusChangeLogRepository.AddAsync(partStatus);
+                    masterPart = await _masterPartRepository.UpdateAsync(masterPart.Id, masterPart);
+                    await _unitOfWork.CommitAsync();
+
+                    createdStatusLogId = partStatus.Id; // for rollback
+                    rawMaterialDetailVM.PartId = (int)masterPart.Id;
                 }
+
+                // --------------------------------------------------------------------
+                // INSERT / UPDATE RAW MATERIAL DETAIL
+                // --------------------------------------------------------------------
                 rawmaterialdetail.PartId = rawMaterialDetailVM.PartId;
-                if(masterPart.Id>0)
-                {
-                    rawmaterialdetail.PartId = masterPart.Id;
-                }
+
                 if (rawmaterialdetail.Id == 0)
                 {
                     try
                     {
                         _rawMaterialDetailRepository.AddRawMaterial(rawmaterialdetail);
-                    } catch (Exception ex)
+                        await _unitOfWork.CommitAsync();
+                        createdRawMaterialDetailId = rawmaterialdetail.Id;
+                    }
+                    catch (Exception ex)
                     {
-                        string str = ex.InnerException.Message;
-                        string str1 = ex.StackTrace;
+                        throw; // bubble up to rollback block
                     }
                 }
                 else
                 {
                     rawmaterialdetail = await _rawMaterialDetailRepository.UpdateAsync(rawmaterialdetail.Id, rawmaterialdetail);
+                    await _unitOfWork.CommitAsync();
                 }
-                await _unitOfWork.CommitAsync();
+
                 rawMaterialDetailVM.RawMaterialDetailId = rawmaterialdetail.Id;
             }
             catch (Exception ex)
             {
-                string msg = ex.InnerException.Message;
-                throw ex;
+                string msg = ex.InnerException?.Message ?? ex.Message;
+
+                // --------------------------------------------------------------------
+                // ROLLBACK (Delete in reverse order)
+                // --------------------------------------------------------------------
+
+                // 1️⃣ REMOVE RawMaterialDetail
+                if (createdRawMaterialDetailId.HasValue)
+                {
+                    var rm = await _rawMaterialDetailRepository
+                        .SingleOrDefaultAsync(r => r.Id == createdRawMaterialDetailId.Value);
+
+                    if (rm != null)
+                    {
+                        _rawMaterialDetailRepository.Remove(rm);
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+
+                // 2️⃣ REMOVE Status Log
+                if (createdStatusLogId.HasValue)
+                {
+                    var status = await _partStatusChangeLogRepository
+                        .SingleOrDefaultAsync(s => s.Id == createdStatusLogId.Value);
+
+                    if (status != null)
+                    {
+                        _partStatusChangeLogRepository.Remove(status);
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+
+                // 3️⃣ REMOVE Master Part
+                if (createdMasterPartId.HasValue)
+                {
+                    var mp = await _masterPartRepository
+                        .SingleOrDefaultAsync(s => s.Id == createdMasterPartId.Value);
+
+                    if (mp != null)
+                    {
+                        _masterPartRepository.Remove(mp);
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+
+                throw; // IMPORTANT: rethrow original error
             }
+
             return rawMaterialDetailVM;
         }
 
@@ -197,6 +271,21 @@ namespace CWB.Masters.Services.ItemMaster
             {
                 try
                 {
+                    List<PartPurchaseDetailsVM> lst = GetPartPurchasesForPartNo((int)partPurchaseDetail.PartId, (int)partPurchaseDetail.TenantId).ToList();
+                    if (partPurchaseDetail.PreferredSupplier == 1)
+                    {
+                        foreach (PartPurchaseDetailsVM rv in lst)
+                        {
+                            var pp = _mapper.Map<PartPurchaseDetails>(rv);
+                            pp.PreferredSupplier = 0;
+                            await _partPurchaseRepository.UpdateAsync(pp.Id, pp);
+                        }
+                        await _unitOfWork.CommitAsync();
+                    }
+                    if(lst.Count() == 0)
+                    {
+                        partPurchaseDetail.PreferredSupplier = 1;
+                    }
                     _partPurchaseRepository.AddPartPurchase(partPurchaseDetail);
                 }
                 catch (Exception ex)

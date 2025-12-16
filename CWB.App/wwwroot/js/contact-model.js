@@ -285,7 +285,7 @@ $(function () {
         $("#PlantName").val("ps");
         var Location = document.getElementById('Location');
         if (!Location.value) {
-            $("#Location").val(" ");
+            $("#Location").val("-");
         } else {
             Location.style.border = '';
         }

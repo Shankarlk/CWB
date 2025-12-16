@@ -1,48 +1,60 @@
 ﻿<div class="modal fade" id="dialog-EditMakeFrom" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-sm">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="myLargeModalLabel">Edit MakeFrom Raw Material </h5>
+                <h5 class="modal-title" id="myLargeModalLabel">Edit MakeFrom Raw Material for <span id="lblEInpPartNumber"></span>  / <span id="lblEInpPartDesc"></span></h5>
                 <button id="btnEditMakeFromClose" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div>
                     <form method="post" name="FormEditMakeFrom" id="FormEditMakeFrom" onsubmit="return false;">
-                    <div class="row mt-8">
+                        <div class="row mt-8">
+                            <label class="form-label col-md-4 mb-2">Input Part No</label>
+                            <div class="col-md-8 mb-2" title="Enter the Input Weight in kgs" data-plugin="tippy" data-tippy-placement="top">
+                                <input type="text" class="form-control form-control-sm" id="EditMFDescription" name="MFDescription" value="0" readonly />
+                            </div>
+                            <label class="form-label col-md-4 mb-2"> Input Part Type </label>
+                            <div class="col-md-8 mb-2">
+                                <textarea id="EditMFPartType" class="form-control form-control-sm" readonly></textarea>
+                            </div>
                             <label class="form-label col-md-4 mb-2">Input Weight (Kgs)</label>
                             <div class="col-md-8 mb-2" title="Enter the Input Weight in kjgs" data-plugin="tippy" data-tippy-placement="top">
-                                <input class="form-control form-control-sm" type="text" id="EditInputWeight" name="inputWeight" placeholder="enter here" required>
+                                <input class="form-control form-control-sm" type="text" id="EditInputWeight" name="inputWeight" placeholder="enter here" readonly>
                             </div>
                             <!-- ========================= -->
                             <!-- ========================= -->
                             <label class="form-label col-md-4 mb-2">Quantity per Input</label>
                             <div class="col-md-8 mb-2" title="Enter the number of Finished Part Nos that can manufactured from a single Input Material. Example multiple finished Part Nos can be made from a single input Bar or Sheet ..." data-plugin="tippy" data-tippy-placement="top">
-                                <input class="form-control form-control-sm" type="text" id="EditQuantityPerInput" name="QuantityPerInput" placeholder="enter here" required>
+                                <input class="form-control form-control-sm" type="text" id="EditQuantityPerInput" name="QuantityPerInput" placeholder="enter here" required value="1">
                             </div>
 
                             <label class="form-label col-md-4 mb-2">Scrap Generated</label>
                             <div class="col-md-8 mb-2" title="Scrap Generated..." data-plugin="tippy" data-tippy-placement="top">
-                                    <input class="form-control form-control-sm" type="text" id="EditScrapgenerated" name="Scrapgenerated" value="0" />
+                                <input class="form-control form-control-sm" type="text" id="EditScrapgenerated" name="Scrapgenerated" value="0" />
+                                <span id="EditScrap-Error" style="color:red"></span>
                             </div>
 
                             <label class="form-label col-md-4 mb-2">Yeild Notes</label>
                             <div class="col-md-7 mb-2" title="" data-plugin="tippy" data-tippy-placement="top">
-                                    <textarea id="EditYieldNotes" name="YieldNotes" class="form-control form-control-sm"></textarea>
+                                <textarea id="EditYieldNotes" name="YieldNotes" class="form-control form-control-sm"></textarea>
                             </div>
-                            <label class="form-label col-md-4 mb-2">Preferred Raw Material</label>
+                            <label class="form-label col-md-4 mb-2">Make as Preferred Input Matl</label>
                             <div class="col-md-8 mb-2" title="" data-plugin="tippy" data-tippy-placement="top">
-                            <input class="form-check-input mt-1" id="PreferedRawMaterial" name="PreferedRawMaterial" type="checkbox" title="If multiple Input Raw Material Options exist, select the Preferred Raw Material Checkbox if this is the preferred RM " data-plugin="tippy" data-tippy-placement="top">
+                                <input class="form-check-input mt-1" id="PreferedRawMaterial" name="PreferedRawMaterial" type="checkbox" title="If multiple Input Raw Material Options exist, select the Preferred Raw Material Checkbox if this is the preferred RM " data-plugin="tippy" data-tippy-placement="top">
                             </div>
                             <!-- ========================= -->
-                            <div class="text-center">
-                                    <input type="text" hidden id="EditPartMadeFrom" name="PartMadeFrom" value="0" />
-                                    <input type="text" hidden id="EditPreferedRawMaterial" name="PreferedRawMaterial" value="0" />
-                                    <input type="text" hidden id="EditMFDescription" name="MFDescription" value="0" />
-                                    <input type="text" hidden id="EditInputPartNo" name="InputPartNo" value="0" />
-                                    <input type="text" hidden id="EditMPMakeFromId" name="MPMakeFromId" value="0" />
-                                    <input type="text" hidden id="EditMPPartId" name="MPPartId" value="0" />
-                                    <input type="text" hidden id="EditManufPartId" name="ManufPartId" value="0" />
+                            <div class="col-md-8 mb-2">
+                                <h6>Finished Weight of <span id="lblEFinPartNumber"></span> / <span id="lblEFinPartDesc"></span> : <span id="EFnshWeightSpan"></span> Kg</h6>
+                                @* <button class="btn btn-sm btn-primary" id="btnAddMPMakeFrom" onclick="AddAnotherRM()">Save</button>*@
+                            </div>
+                            <div class="col-md-4 mt-2 text-end">
+                                <input type="text" hidden id="EditPartMadeFrom" name="PartMadeFrom" value="0" />
+                                <input type="text" hidden id="EditPreferedRawMaterial" name="PreferedRawMaterial" value="0" />
+                                <input type="text" hidden id="EditInputPartNo" name="InputPartNo" value="0" />
+                                <input type="text" hidden id="EditMPMakeFromId" name="MPMakeFromId" value="0" />
+                                <input type="text" hidden id="EditMPPartId" name="MPPartId" value="0" />
+                                <input type="text" hidden id="EditManufPartId" name="ManufPartId" value="0" />
                                 <button type="button" id="EditMakeFrom" class="btn btn-sm btn-primary" title="Select to Edit another Supplier for the RM" data-plugin="tippy" data-tippy-placement="top">Save</button>
                             </div>
                             <!-- ========================= -->

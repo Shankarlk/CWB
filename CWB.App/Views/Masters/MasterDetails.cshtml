@@ -26,7 +26,7 @@
                                     <h5>View / Edit Item Master</h5>
                                 </td>
                                 <td class="text-end">
-                                    <a asp-action="Index" asp-controller="Masters"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></a>
+                                    <a id="MastersDetailClose" asp-action="Index" asp-controller="Masters"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></a>
                                 </td>
                             </tr>
                         </tbody>
@@ -250,6 +250,7 @@
                                         <th>RM Avl</th>
                                         <th>Supplier Avl</th>
                                         <th>Mandatory Doc Avl</th>
+                                        <th>Part Status</th>
                                         <th>Docu Status</th>
                                         <th width="5%"></th>
                                     </tr>
@@ -398,7 +399,7 @@
         <td data-key="RmAvl">{rmAvl}</td>
         <td data-key="SupplierAvl">{supplierAvl}</td>
         <td data-key="MandocAvl">{mandocAvl}</td>
-        <td data-key="Status" hidden>{status}</td>
+        <td data-key="Status">{status}</td>
         <td data-key="FinalPart" hidden>{finalPart}</td>
         <td data-key="DocStatus">{docStatus}</td>
         <td>

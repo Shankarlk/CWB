@@ -243,15 +243,15 @@ var ManufPartFormUtil = {
             var newNamevalidate = document.getElementById('QuantityPerInput');
             newNamevalidate.style.border = '';
         }
-        if ($("#YieldNotes").val().length == "") {
-            RawMeterial = false;
-            var newNamevalidate = document.getElementById('YieldNotes');
-            newNamevalidate.style.border = '2px solid red';
-         }
-        else {
-            var newNamevalidate = document.getElementById('YieldNotes');
-            newNamevalidate.style.border = '';
-        }
+        //if ($("#YieldNotes").val().length == "") {
+        //    RawMeterial = false;
+        //    var newNamevalidate = document.getElementById('YieldNotes');
+        //    newNamevalidate.style.border = '2px solid red';
+        // }
+        //else {
+        //    var newNamevalidate = document.getElementById('YieldNotes');
+        //    newNamevalidate.style.border = '';
+        //}
          if (RawMeterial == false) {
             //alert("Field(s) cannot be left blank.");
         }
@@ -725,7 +725,13 @@ $(document).ready(function () {
         //    $("#MFDescription").val(partDesc);
             $("#lblPartDescription").text(partDesc);
             $("#lblInpPartDesc").text(partDesc);
-            $("#lblFinPartNumber").text(partDesc);
+            $("#lblFinPartDesc").text(partDesc);
+
+            $("#lblEInpPartNumber").text(partNo);
+            $("#lblEInpPartDesc").text(partDesc);
+            $("#lblEFinPartNumber").text(partNo);
+            $("#lblEFinPartDesc").text(partDesc);
+            $("#EFnshWeightSpan").text(FinishedWeight);
             var tablebody = $("#tbl-MakeFromRM tbody");
             tablebody.html("");
             makeFroms = new Array();
@@ -820,10 +826,39 @@ $(document).ready(function () {
         }).catch((error) => {
         });
     });
+    $("#EditScrapgenerated").on("input", function () {
+
+        var inputwieght = parseFloat($("#EditInputWeight").val()) || 0;
+        var ScrapGenerated = parseFloat($(this).val()) || 0;
+        var FinishedWeight = parseFloat($("#FinishedWeight").val()) || 0;
+        var QuantityPerInput = parseFloat($("#EditQuantityPerInput").val()) || 0;
+
+        var totalinputweight = inputwieght - (FinishedWeight * QuantityPerInput);
+
+        if (ScrapGenerated > totalinputweight) {
+            $("#EditScrap-Error").text("Check Entered Scrap Weight");
+        } else {
+            $("#EditScrap-Error").text("");
+        }
+    });
+
 
     //rm-select
     $("#EditMakeFrom").click(function (event) {
         ////debugger;
+
+        var inputwieght = parseFloat($("#EditInputWeight").val());
+        var ScrapGenerated = parseFloat($("#EditScrapgenerated").val());
+        var FinishedWeight = parseFloat($("#FinishedWeight").val());
+        var QuantityPerInput = parseFloat($("#EditQuantityPerInput").val());
+        var totalinputweight = inputwieght - (FinishedWeight * QuantityPerInput);
+
+        if (ScrapGenerated > totalinputweight) {
+            $("#EditScrap-Error").text("Check Entered Scrap Weight");
+            return false;
+        } else {
+            $("#EditScrap-Error").text("");
+        }
         EditMakeFrom(event);
     });
 
@@ -948,6 +983,7 @@ $(document).ready(function () {
     $('#dialog-EditMakeFrom').on('show.bs.modal', function (event) {
         var relatedTarget = $(event.relatedTarget);
         var makefromid = relatedTarget.data("makefromid");
+        $("#EditScrap-Error").text("");
         api.get("/masters/getmakefrom?Id=" + makefromid).then((eData) => {
             //console.log(eData);
             key = "inputPartNo";
@@ -968,6 +1004,11 @@ $(document).ready(function () {
             $("#EditPreferedRawMaterial").val(eData[key]);
             
             key = "mpPartMadeFrom";
+            if (eData[key] === 1 || eData[key] === 2) {
+                $("#EditMFPartType").val("Raw Material");
+            } else {
+                $("#EditMFPartType").val(eData["masterPartType"]);
+            }
             $("#EditPartMadeFrom").val(eData[key]);
             key = "scrapGenerated";
             $("#EditScrapgenerated").val(eData[key]);
@@ -1581,7 +1622,32 @@ $(document).ready(function () {
         $("#MFDescription").val('');
         $("#MFPartType").val('');
         $("#inputpart").modal("hide");
+        $("#Scrap-Error").text("");
     });
+    $('#inputpart').on('hidden.bs.modal', function (event) {
+        document.getElementById('dialog-company').style.filter = 'none';
+        $("#MFDescription").val('');
+        $("#MFPartType").val('');
+        $("#MPPartId").val(0);
+        $("#InputWeight").val('');
+        $("#Scrap-Error").text("");
+    });
+    $("#ScrapGenerated").on("input", function () {
+
+        var inputwieght = parseFloat($("#InputWeight").val()) || 0;
+        var ScrapGenerated = parseFloat($(this).val()) || 0;
+        var FinishedWeight = parseFloat($("#FinishedWeight").val()) || 0;
+        var QuantityPerInput = parseFloat($("#QuantityPerInput").val()) || 0;
+
+        var totalinputweight = inputwieght - (FinishedWeight * QuantityPerInput);
+
+        if (ScrapGenerated > totalinputweight) {
+            $("#Scrap-Error").text("Check Entered Scrap Weight");
+        } else {
+            $("#Scrap-Error").text("");
+        }
+    });
+
     $("#btnAddMPMakeFrom").click(function (event) {
         if (ManufPartFormUtil.ValidateMPMakeFrom()) {
             if ($("#MPRawMaterial").valid()) {
@@ -1590,12 +1656,16 @@ $(document).ready(function () {
                 var formData = AppUtil.GetFormData("MPRawMaterial");
                 var tablebody = $("#tbl-MakeFromRM tbody");
                 var inputwieght = parseFloat($("#InputWeight").val());
-                var FinishedWeight = $("#FinishedWeight").val();
-                var QuantityPerInput = $("#QuantityPerInput").val();
-                totalinputweight = FinishedWeight * QuantityPerInput;
-                if (inputwieght <= totalinputweight) {
-                    $("#Scrap-Error").text("Check Scrap Weight");
+                var ScrapGenerated = parseFloat($("#ScrapGenerated").val());
+                var FinishedWeight = parseFloat($("#FinishedWeight").val());
+                var QuantityPerInput = parseFloat($("#QuantityPerInput").val());
+                var totalinputweight = inputwieght - (FinishedWeight * QuantityPerInput);
+
+                if (ScrapGenerated > totalinputweight) {
+                    $("#Scrap-Error").text("Check Entered Scrap Weight");
                     return false;
+                } else {
+                    $("#Scrap-Error").text("");
                 }
                 api.post("/masters/mpmakefrom", formData).then((data) => {
                     //   //debugger;
@@ -1667,9 +1737,13 @@ $("#OSupplierPartNo").on("keyup", function () {
 $("#ORawMaterialMadeSubType").change(function () {
     debugger;
     var value = parseFloat($("#ORawMaterialMadeSubType option:selected").val());
-    $("#OwnRMTable tbody tr").filter(function () {
-        $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
-    });
+    if (value == 0) {
+        $("#OwnRMTable tbody tr").show();
+    } else {
+        $("#OwnRMTable tbody tr").filter(function () {
+            $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
+        });
+    }
 });
 
 $("#ORawMaterialTypeId").on("keyup", function () {
@@ -1689,9 +1763,13 @@ $("#OBaseRawMaterialId").on("keyup", function () {
 $("#CRawMaterialMadeSubType").change(function () {
     debugger;
     var value = parseFloat($("#CRawMaterialMadeSubType option:selected").val());
-    $("#CustRMTable tbody tr").filter(function () {
-        $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
-    });
+    if (value == 0) {
+        $("#CustRMTable tbody tr").show();
+    } else {
+        $("#CustRMTable tbody tr").filter(function () {
+            $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
+        });
+    }
 });
 
 $("#CRawMaterialTypeId").on("keyup", function () {
@@ -2098,7 +2176,7 @@ function copyOwnData() {
     var radiochkd = $('input[name=OSRM]:checked');
     var selval = radiochkd.val();
     $('#InputPartNo').val(data[selval].partNo);
-    $('#MFDescription').val(data[selval].partDescription);
+    $('#MFDescription').val(data[selval].partNo +" / "+data[selval].partDescription);
     $('#MPPartId').val(data[selval].partId);
     $('#MFPartType').val("Raw Material");
     if (data[selval].multiplePartsMadeFrom1InputRM == 'N') {
@@ -2138,8 +2216,9 @@ function copyData() {
     else if (CURRENT_TAB == "TabHeadMakefrom") {
         $('#InputPartNo').val(data[selval].partNo);
         $('#MPPartId').val(data[selval].partId);
-        $('#MFDescription').val(data[selval].partDescription);
+        $('#MFDescription').val(data[selval].partNo+" / "+data[selval].partDescription);
         $('#MFPartType').val(data[selval].masterPartType);
+        $('#InputWeight').val(data[selval].finishedWeight ?? 0);
        // $('#FnshWeightSpan').text(data[selval].finishedWeight ?? 0);
     }
     else {

@@ -90,51 +90,54 @@ namespace CWB.Masters.Services.ItemMaster
             return rms.PartNo;
         }
 
-
         public async Task<ManufacturedPartNoDetailVM> ManufacturedPartNoDetail(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM)
         {
+            long? createdMasterPartId = null;
+            long? createdStatusLogId = null;
+            long? createdMPNDetailId = null;
+
             try
             {
                 var manufacturedpartnodetail = _mapper.Map<ManufacturedPartNoDetail>(manufacturedPartNoDetailVM);
                 var masterPart = _mapper.Map<Domain.ItemMaster.MasterPart>(manufacturedPartNoDetailVM);
+
                 int id = GetPartId(masterPart.PartNo);
                 manufacturedpartnodetail.PartId = id;
                 manufacturedPartNoDetailVM.PartId = id;
+
                 if (id == 0)
                 {
+                    // NEW MASTER PART
                     masterPart.Id = 0;
                     masterPart.Status = "Not Released";
                     masterPart.Inv_Trans = 'N';
                     masterPart.Linked_to_BOM = 'N';
+
                     await _masterPartRepository.AddAsync(masterPart);
-                    await _unitOfWork.CommitAsync();
+                    await _unitOfWork.CommitAsync(); // need ID from DB
+                    createdMasterPartId = masterPart.Id;
+
                     manufacturedpartnodetail.PartId = (int)masterPart.Id;
                     manufacturedPartNoDetailVM.PartId = (int)masterPart.Id;
+
                     PartStatusChangeLog partStatus = new PartStatusChangeLog()
                     {
                         MasterPartId = masterPart.Id,
-                        Status=masterPart.Status,
+                        Status = masterPart.Status,
                         ChangeReason = masterPart.StatusChangeReason,
                         TenantId = masterPart.TenantId
                     };
                     await _partStatusChangeLogRepository.AddAsync(partStatus);
                     await _unitOfWork.CommitAsync();
+                    createdStatusLogId = partStatus.Id;
                 }
                 else
                 {
+                    // EXISTING MASTER PART
                     if (id == manufacturedpartnodetail.PartId)
                     {
-                        //var findmp = await _masterPartRepository.SingleOrDefaultAsync(m => m.Id == masterPart.Id);
-                        //if(findmp.Status != masterPart.Status)
-                        //{
-                        //    var findpartStatus= await _partStatusChangeLogRepository.SingleOrDefaultAsync(m => m.MasterPartId == masterPart.Id);
-                        //    findpartStatus.Status = masterPart.Status;
-                        //    findpartStatus.ChangeReason = masterPart.StatusChangeReason;
-                        //    findpartStatus.LastModifiedDate = DateTime.Now;
-                        //    await _partStatusChangeLogRepository.UpdateAsync(findpartStatus.Id, findpartStatus);
-                        //}
-
                         var findmp = await _masterPartRepository.SingleOrDefaultAsync(s => s.Id == masterPart.Id);
+
                         PartStatusChangeLog partStatus = new PartStatusChangeLog()
                         {
                             MasterPartId = masterPart.Id,
@@ -143,31 +146,87 @@ namespace CWB.Masters.Services.ItemMaster
                             ChangeReason = masterPart.StatusChangeReason,
                             TenantId = masterPart.TenantId
                         };
+
                         await _partStatusChangeLogRepository.AddAsync(partStatus);
                         masterPart = await _masterPartRepository.UpdateAsync(masterPart.Id, masterPart);
                         await _unitOfWork.CommitAsync();
+
+                        // if you also want to rollback this status log on failure:
+                        createdStatusLogId = partStatus.Id;
                     }
                 }
 
+                //throw new Exception("TEST: Rollback Simulation");
+                // MPN DETAIL
                 if (manufacturedpartnodetail.Id == 0)
                 {
                     await _manufacturedPartNoDetailRepository.AddAsync(manufacturedpartnodetail);
+                    await _unitOfWork.CommitAsync();
+                    createdMPNDetailId = manufacturedpartnodetail.Id;
                 }
                 else
                 {
-                    manufacturedpartnodetail = await _manufacturedPartNoDetailRepository.UpdateAsync(manufacturedpartnodetail.Id, manufacturedpartnodetail);
+                    manufacturedpartnodetail = await _manufacturedPartNoDetailRepository
+                        .UpdateAsync(manufacturedpartnodetail.Id, manufacturedpartnodetail);
+                    await _unitOfWork.CommitAsync();
                 }
 
-                await _unitOfWork.CommitAsync();
                 manufacturedPartNoDetailVM.ManufacturedPartNoDetailId = manufacturedpartnodetail.Id;
             }
             catch (Exception ex)
             {
-                string msg = ex.InnerException.Message;
-                throw ex;
+                // avoid NullReferenceException here
+                string msg = ex.InnerException?.Message ?? ex.Message;
+
+                // ROLLBACK IN REVERSE ORDER OF CREATION
+
+                // 1. Remove ManufacturedPartNoDetail if it was created
+                if (createdMPNDetailId.HasValue)
+                {
+                    // ❌ you searched with createdMasterPartId earlier
+                    var mpn = await _manufacturedPartNoDetailRepository
+                        .SingleOrDefaultAsync(s => s.Id == createdMPNDetailId.Value);
+
+                    if (mpn != null)
+                    {
+                        _manufacturedPartNoDetailRepository.Remove(mpn);
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+
+                // 2. Remove StatusLog if it was created
+                if (createdStatusLogId.HasValue)
+                {
+                    var statusLog = await _partStatusChangeLogRepository
+                        .SingleOrDefaultAsync(s => s.Id == createdStatusLogId.Value);
+
+                    if (statusLog != null)
+                    {
+                        _partStatusChangeLogRepository.Remove(statusLog);
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+
+                // 3. Remove newly created MasterPart if it was created
+                if (createdMasterPartId.HasValue)
+                {
+                    var mp = await _masterPartRepository
+                        .SingleOrDefaultAsync(s => s.Id == createdMasterPartId.Value);
+
+                    if (mp != null)
+                    {
+                        _masterPartRepository.Remove(mp);
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+
+                // VERY IMPORTANT: rethrow so caller knows it failed
+                throw;
             }
+
             return manufacturedPartNoDetailVM;
         }
+
         public async Task<IEnumerable<PartStatusChangeLogVM>> GetPartStatusChangelog(long tenantId)
         {
             var allDocuType = _partStatusChangeLogRepository.GetRangeAsync(d => d.TenantId == tenantId);

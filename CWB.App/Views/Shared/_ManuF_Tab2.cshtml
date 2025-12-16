@@ -175,13 +175,13 @@
                         <!-- -------------------------------------  -->
                         <label class="form-label col-md-3 mb-2"> Input Wt (Kgs) * </label>
                         <div class="col-md-4 mb-2">
-                            <input class="form-control form-control-sm" type="text" id="InputWeight" asp-for="InputWeight" name="inputWeight" placeholder="enter here">
+                            <input class="form-control form-control-sm" type="text" id="InputWeight" asp-for="InputWeight" name="inputWeight" placeholder="enter here" readonly>
                         </div>
                         <div class="col-md-5 mb-2"></div>
                         <!-- -------------------------------------  -->
                         <label class="form-label col-md-3 mb-2"> Qnty of Finished Parts per Input Part * </label>
                         <div class="col-md-4 mb-2">
-                            <input class="form-control form-control-sm" type="text" id="QuantityPerInput" asp-for="QuantityPerInput" name="quantityPerInput" placeholder="enter here">
+                            <input class="form-control form-control-sm" type="text" id="QuantityPerInput" asp-for="QuantityPerInput" name="quantityPerInput" placeholder="enter here" value="1">
                         </div>
                         <div class="col-md-5 mb-2"></div>
                         <!-- -------------------------------------  -->
@@ -207,7 +207,7 @@
                         </div>
                         <!-- -------------------------------------  -->
                         <div class="col-md-8 mb-2">
-                            <h6>Finished Weight of <span id="lblFinPartNumber"></span> / <span id="lblFinPartNumber"></span> : <span id="FnshWeightSpan"></span> Kg</h6>
+                            <h6>Finished Weight of <span id="lblFinPartNumber"></span> / <span id="lblFinPartDesc"></span> : <span id="FnshWeightSpan"></span> Kg</h6>
                            @* <button class="btn btn-sm btn-primary" id="btnAddMPMakeFrom" onclick="AddAnotherRM()">Save</button>*@
                         </div>
                         <div class="col-md-4 mt-2 text-end">

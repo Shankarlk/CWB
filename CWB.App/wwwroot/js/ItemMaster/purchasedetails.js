@@ -422,7 +422,8 @@ function AddPurchaseDetail(event) {
         //formData.append("PreferredSupplier", parseInt(pref));
         let data = {};
         api.post("/masters/partpurchase", formData).then((data) => {
-            UpdatePurchaseDetailsTable(data);
+            //UpdatePurchaseDetailsTable(data);
+            reloadPPDs($("#PartNo").val());
             ppLlist.push(data);
           //  AppUtil.ProcessTemplateDataNew();
             let MasterPartId = $("#PPartId").val();

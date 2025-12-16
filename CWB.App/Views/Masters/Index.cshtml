@@ -31,7 +31,7 @@
                             {
                                 <div class="col-md-3">
                                     <div class="widget-simple text-center card btn btn-outline-info">
-                                        <a asp-action="MasterDetails">
+                                        <a asp-action="MasterDetails" onclick="removesessionitem()">
                                             <div class="card-body">
                                                 <h5><br>View / Edit Part Numbers<br><br></h5>
                                             </div>
@@ -81,7 +81,7 @@
 
                             <div class="col-md-3">
                                 <div class="widget-simple text-center card btn btn-outline-info">
-                                    <a asp-action="MasterDetails">
+                                    <a asp-action="MasterDetails" onclick="removesessionitem()">
                                         <div class="card-body">
                                             <h5><br>View / Edit Part Numbers<br><br></h5>
                                         </div>
@@ -132,3 +132,9 @@
     </div>
     <!-- end col -->
 </div>
+
+<script>
+    function removesessionitem() {
+        sessionStorage.removeItem("ItemMaster_SearchFilters");
+    }
+</script>

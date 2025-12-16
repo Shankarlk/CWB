@@ -36,8 +36,6 @@ namespace CWB.App.Models.Contacts
         public string DivisionName { get; set; }
 
         [Display(Name = "Location")]
-        [Required(ErrorMessage = "Please enter {0}.")]
-        [StringLength(25, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = 2)]
         public string Location { get; set; }
 
         [Display(Name = "Notes")]

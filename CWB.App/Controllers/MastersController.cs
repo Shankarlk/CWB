@@ -509,6 +509,18 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetMakeFrom(string Id)
         {
             var mpmakefromlist = await _mastersService.GetMakeFrom(Id);
+            if(mpmakefromlist.MPPartMadeFrom == 3)
+            {
+                var pt = await _mastersService.GetManufPart(mpmakefromlist.MPPartId);
+                if (pt != null)
+                {
+                    mpmakefromlist.MasterPartType = "ManufacturedPart";
+                }
+                else
+                {
+                    mpmakefromlist.MasterPartType = "BOF";
+                }
+            }
             return Ok(mpmakefromlist);
 
         }

@@ -31,6 +31,7 @@
                     <label class="form-label col-md-2 mb-2"> RM Category</label>
                     <div class="col-md-4 mb-2" title="Select the Raw Material Category  from the  list" data-plugin="tippy" data-tippy-placement="top">
                         <select id="ORawMaterialMadeSubType" name="RawMaterialMadeSubType" class="form-select form-select-sm">
+                            <option value="0"> All </option>
                             <option value="1"> Made to Print </option>
                             <option value="2"> Standard Purchased RM </option>
                         </select>
@@ -60,7 +61,7 @@
                                 <tr class="table-border-bottom">
                                     <th width="5%"></th>
                                     <th>Company</th>
-                                    <th>Part No</th>
+                                    <th>Part No / Part Description</th>
                                     <th>AdditionalInformation</th>
                                 </tr>
                             </thead>
@@ -86,7 +87,7 @@
             <input class="form-check-input mt-1" type="radio" name="OSRM" value="{num}">
         </td>
         <td data-key="supplier">{supplier}</td>
-        <td data-key="masterPartNo">{partNo}</td>
+        <td data-key="masterPartNo">{partNo} / {partDescription}</td>
         <td data-key="additionalInformation">{additionalInfo}</td>
         <td style="visibility:collapse" data-key="masterPartId" hidden>{partId}</td>
         <td style="visibility:collapse" data-key="rmMadeSubType" hidden>{rawMaterialMadeSubType}</td>

@@ -3421,22 +3421,19 @@ namespace CWB.App.Controllers
                 // --- 1. Fast Concurrent Data Fetching ---
                 var productionsTask = _woService.AllProductionPlan_Wo();
                 var allTransLogsTask = _woService.GetAllInv_Trans_Log();
-                var allShopInspLogsTask = _woService.GetAllShop_Insp_Log();
                 var allMcWaitListsTask = _woService.GetAllMc_Wait_List();
                 var masterpartsTask = _masterService.ItemMasterParts();
                 var allTimeslotsTask = _woService.GetAllTimeslot_List();
                 var allRwkListTask = _woService.GetAllRwk_List();
                 var allNcLogsTask = _woService.GetAllNcLog();
-                var allSalesOrdersTask = _baService.AllSalesOrders(); // Fetch SOs for fast lookup
                 var procplanTask = _woService.GetAllProcPlan();
                 var shopInspLogsTask = _woService.GetAllShop_Insp_Log();
 
-                await Task.WhenAll(productionsTask, allTransLogsTask, allShopInspLogsTask, allMcWaitListsTask,
-                                   masterpartsTask, allTimeslotsTask, allRwkListTask, allNcLogsTask, allSalesOrdersTask, procplanTask, shopInspLogsTask);
+                await Task.WhenAll(productionsTask, allTransLogsTask, allMcWaitListsTask,
+                                   masterpartsTask, allTimeslotsTask, allRwkListTask, allNcLogsTask, procplanTask, shopInspLogsTask);
 
                 var productions = productionsTask.Result;
                 var allTransLogs = allTransLogsTask.Result;
-                var allShopInspLogs = allShopInspLogsTask.Result;
                 var allMcWaitLists = allMcWaitListsTask.Result;
                 var masterparts = masterpartsTask.Result;
                 var allTimeslots = allTimeslotsTask.Result;

@@ -2,7 +2,40 @@
 let partType = "ManufacturedPart";
 let status = "Active";
 
+const FILTER_KEY = "ItemMaster_SearchFilters";
+
+function saveItemMasterFilters() {
+    const filters = {
+        MasterPart: $("#MasterPart").val(),
+        Company: $("#master_co").val(),
+        Status: $("#Status").val(),
+        PartNo: $("#master_partno").val(),
+        PartDesc: $("#master_description").val(),
+        DocRefStatus: $("#DocRefStatus").val()
+    };
+
+    sessionStorage.setItem(FILTER_KEY, JSON.stringify(filters));
+}
+
 $(function () {
+
+    $("#MasterPart, #master_co, #Status, #master_partno, #master_description, #DocRefStatus")
+        .on("change keyup", saveItemMasterFilters);
+    const savedFilters = sessionStorage.getItem("ItemMaster_SearchFilters");
+
+    if (savedFilters) {
+        const filters = JSON.parse(savedFilters);
+
+        $("#MasterPart").val(filters.MasterPart);
+        $("#master_co").val(filters.Company);
+        $("#Status").val(filters.Status);
+        $("#master_partno").val(filters.PartNo);
+        $("#master_description").val(filters.PartDesc);
+        $("#DocRefStatus").val(filters.DocRefStatus);
+    }
+    $("#MastersDetailClose").on("click", function () {
+        sessionStorage.removeItem("ItemMaster_SearchFilters");
+    });
 
     $("#master_co").on("keyup", function () {
         var value = $(this).val().toLowerCase();
@@ -1105,6 +1138,7 @@ $(function () {
 
         var SearchFileExtn = $('#MasterPart');
         SearchFileExtn.val(0).trigger('change');
+        $("#Status").val("Released").trigger('change');
     });
 
     $("#AddToMasterDocList").click(function (event) {
@@ -1661,6 +1695,59 @@ function loadMPDList() {
         });
     }
 }
+function getItemMasterFilters() {
+    return {
+        MasterPart: $("#MasterPart option:selected").text(),          // 0,1,2,3,4
+        Company: $("#master_co").val()?.trim(),
+        Status: $("#Status").val(),
+        PartNo: $("#master_partno").val()?.trim(),
+        PartDesc: $("#master_description").val()?.trim(),
+        DocRefStatus: $("#DocRefStatus").val()
+    };
+}
+function applyItemMasterFilters(data, filters) {
+    return data.filter(item => {
+
+        // Part Type
+        if (filters.MasterPart && filters.MasterPart !== "0" && $("#MasterPart").val() != "0") {
+            var mp = filters.MasterPart.replace(/\s+/g, '');
+            if (item.masterPartType != mp)
+                return false;
+        }
+
+        // Company
+        if (filters.Company) {
+            if (!item.company?.toLowerCase().includes(filters.Company.toLowerCase()))
+                return false;
+        }
+
+        // Part Status
+        if (filters.Status) {
+            if (item.status !== filters.Status)
+                return false;
+        }
+
+        // Part No
+        if (filters.PartNo) {
+            if (!item.partNo?.toLowerCase().includes(filters.PartNo.toLowerCase()))
+                return false;
+        }
+
+        // Part Description
+        if (filters.PartDesc) {
+            if (!item.description?.toLowerCase().includes(filters.PartDesc.toLowerCase()))
+                return false;
+        }
+
+        // Document Status
+        if (filters.DocRefStatus && filters.DocRefStatus !== "0") {
+            if (item.docRefStatus != filters.DocRefStatus)
+                return false;
+        }
+
+        return true;
+    });
+}
 
 function loadEditParts() {
     var tablebody = $("#mptable tbody");
@@ -1672,8 +1759,13 @@ function loadEditParts() {
             data = data.filter(item => item.status === "Obsolete");
             dataMPDList = data;
             partType = " ";
-            $("#Status").val("Inactive");
+            $("#Status").val("Obsolete");
             $("#Status").prop("disabled", true);
+        }
+        const filters = getItemMasterFilters();
+        const savedFilters = sessionStorage.getItem("ItemMaster_SearchFilters");
+        if (savedFilters) {
+            data = applyItemMasterFilters(data, filters);
         }
         if (data.length === 0) {
             // 2. Insert the "No Records Found" row
@@ -1688,8 +1780,8 @@ function loadEditParts() {
         }
         for (i = 0; i < data.length; i++) {
            
-            //if (!(data[i]['status'] == strActive))
-            //    continue;
+            if (!(data[i]['status'] == "Released"))
+                continue;
             data[i].activeName = data[i]['status'] == "Active" ? "Make Inactive" : "Make Active";
             let canDelete = (data[i].inv_Trans === "N" && data[i].linked_to_BOM ==="N");
             let canalsoDelete = (data[i].inv_Trans === "N" && data[i].linked_to_BOM === "Y");
@@ -1698,6 +1790,7 @@ function loadEditParts() {
             $(tablebody).append(tBody);
             //console.log(tBody);
         }
+        $("#Status").val("Released");
         $('#preloaderblurred').hide();
     }).catch((error) => {
         $('#preloaderblurred').hide();

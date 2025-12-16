@@ -52,71 +52,151 @@ namespace CWB.Masters.Services.ItemMaster
             return (int)part.Id;
         }
 
-        public async Task<BoughtOutFinishDetailVM> BoughtOutFinishDetail(BoughtOutFinishDetailVM boughtOutFinishDetailVM)
+        public async Task<BoughtOutFinishDetailVM> BoughtOutFinishDetail(BoughtOutFinishDetailVM vm)
         {
-            try { 
-                var masterPart = _mapper.Map<Domain.ItemMaster.MasterPart>(boughtOutFinishDetailVM);
-                var boughtoutfinishdetail = _mapper.Map<BoughtOutFinishDetail>(boughtOutFinishDetailVM);
+            long? createdMasterPartId = null;
+            long? createdStatusLogId = null;
+            long? createdBOFDetailId = null;
+
+            try
+            {
+                var masterPart = _mapper.Map<MasterPart>(vm);
+                var boughtOutFinishDetail = _mapper.Map<BoughtOutFinishDetail>(vm);
+
                 int id = GetPartId(masterPart.PartNo);
-                boughtoutfinishdetail.PartId = id;
-                boughtOutFinishDetailVM.PartId = id;
+
+                boughtOutFinishDetail.PartId = id;
+                vm.PartId = id;
+
+                // --------------------------------------------------------------------
+                // CASE 1: NEW MASTER PART
+                // --------------------------------------------------------------------
                 if (id == 0)
                 {
                     masterPart.Id = 0;
                     masterPart.Status = "Not Released";
                     masterPart.Inv_Trans = 'N';
                     masterPart.Linked_to_BOM = 'N';
+
                     await _masterPartRepository.AddAsync(masterPart);
-                    await _unitOfWork.CommitAsync();
-                    boughtoutfinishdetail.PartId = (int)masterPart.Id;
-                    boughtOutFinishDetailVM.PartId = (int)masterPart.Id;
-                    PartStatusChangeLog partStatus = new PartStatusChangeLog()
+                    await _unitOfWork.CommitAsync();     // get DB identity Id
+
+                    createdMasterPartId = masterPart.Id;
+
+                    boughtOutFinishDetail.PartId = (int)masterPart.Id;
+                    vm.PartId = (int)masterPart.Id;
+
+                    var status = new PartStatusChangeLog()
                     {
                         MasterPartId = masterPart.Id,
                         Status = masterPart.Status,
                         ChangeReason = masterPart.StatusChangeReason,
                         TenantId = masterPart.TenantId
                     };
-                    await _partStatusChangeLogRepository.AddAsync(partStatus);
 
+                    await _partStatusChangeLogRepository.AddAsync(status);
+                    await _unitOfWork.CommitAsync();
+
+                    createdStatusLogId = status.Id;
                 }
                 else
                 {
-                    if (id == boughtoutfinishdetail.PartId)
+                    // --------------------------------------------------------------------
+                    // CASE 2: EXISTING PART → UPDATE STATUS + LOG
+                    // --------------------------------------------------------------------
+                    var existing = await _masterPartRepository.SingleOrDefaultAsync(s => s.Id == masterPart.Id);
+
+                    var status = new PartStatusChangeLog()
                     {
-                        var findmp = await _masterPartRepository.SingleOrDefaultAsync(s => s.Id == masterPart.Id);
-                        PartStatusChangeLog partStatus = new PartStatusChangeLog()
-                        {
-                            MasterPartId = masterPart.Id,
-                            Status = masterPart.Status,
-                            FromChangedStatus = findmp.Status.ToString(),
-                            ChangeReason = masterPart.StatusChangeReason,
-                            TenantId = masterPart.TenantId
-                        };
-                        await _partStatusChangeLogRepository.AddAsync(partStatus);
-                        masterPart = await _masterPartRepository.UpdateAsync(masterPart.Id, masterPart);
-                        await _unitOfWork.CommitAsync();
-                    }
+                        MasterPartId = masterPart.Id,
+                        Status = masterPart.Status,
+                        FromChangedStatus = existing.Status,
+                        ChangeReason = masterPart.StatusChangeReason,
+                        TenantId = masterPart.TenantId
+                    };
+
+                    await _partStatusChangeLogRepository.AddAsync(status);
+                    await _masterPartRepository.UpdateAsync(masterPart.Id, masterPart);
+                    await _unitOfWork.CommitAsync();
+
+                    createdStatusLogId = status.Id;   // rollback support
+                    vm.PartId = (int)masterPart.Id; 
                 }
-            
-                if (boughtoutfinishdetail.Id == 0)
+
+                boughtOutFinishDetail.PartId = vm.PartId;
+
+                // --------------------------------------------------------------------
+                // INSERT / UPDATE BOUGHT OUT FINISH DETAIL
+                // --------------------------------------------------------------------
+                if (boughtOutFinishDetail.Id == 0)
                 {
-                    await _boughtOutFinishDetailRepository.AddAsync(boughtoutfinishdetail);
+                    await _boughtOutFinishDetailRepository.AddAsync(boughtOutFinishDetail);
+                    await _unitOfWork.CommitAsync();
+                    createdBOFDetailId = boughtOutFinishDetail.Id;
                 }
                 else
                 {
-                    boughtoutfinishdetail = await _boughtOutFinishDetailRepository.UpdateAsync(boughtoutfinishdetail.Id, boughtoutfinishdetail);
+                    boughtOutFinishDetail = await _boughtOutFinishDetailRepository
+                            .UpdateAsync(boughtOutFinishDetail.Id, boughtOutFinishDetail);
+                    await _unitOfWork.CommitAsync();
                 }
-                await _unitOfWork.CommitAsync();
-                boughtOutFinishDetailVM.BoughtOutFinishDetailId = boughtoutfinishdetail.Id;
+
+                vm.BoughtOutFinishDetailId = boughtOutFinishDetail.Id;
             }
             catch (Exception ex)
             {
-                string msg = ex.InnerException.Message;
-                throw ex;
+                string msg = ex.InnerException?.Message ?? ex.Message;
+
+                // --------------------------------------------------------------------
+                // ROLLBACK SECTION (reverse order)
+                // --------------------------------------------------------------------
+
+                // 1️⃣ DELETE BOUGHT OUT FINISH DETAIL
+                if (createdBOFDetailId.HasValue)
+                {
+                    var bof = await _boughtOutFinishDetailRepository
+                        .SingleOrDefaultAsync(s => s.Id == createdBOFDetailId.Value);
+
+                    if (bof != null)
+                    {
+                        _boughtOutFinishDetailRepository.Remove(bof);
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+
+                // 2️⃣ DELETE STATUS LOG
+                if (createdStatusLogId.HasValue)
+                {
+                    var status = await _partStatusChangeLogRepository
+                        .SingleOrDefaultAsync(s => s.Id == createdStatusLogId.Value);
+
+                    if (status != null)
+                    {
+                        _partStatusChangeLogRepository.Remove(status);
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+
+                // 3️⃣ DELETE MASTER PART
+                if (createdMasterPartId.HasValue)
+                {
+                    var mp = await _masterPartRepository
+                        .SingleOrDefaultAsync(s => s.Id == createdMasterPartId.Value);
+
+                    if (mp != null)
+                    {
+                        _masterPartRepository.Remove(mp);
+                        await _unitOfWork.CommitAsync();
+                    }
+                }
+
+                throw;  // Return original error
             }
-            return boughtOutFinishDetailVM;
+
+            return vm;
         }
+
+
         public bool CheckPartNo(long partId)
         {
             var bofs = _boughtOutFinishDetailRepository.GetRangeAsync(c => c.PartId == (partId));
