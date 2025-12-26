@@ -19,12 +19,12 @@ namespace CWB.CompanySettings.Services.Location
         Task<PlantWorkingDetailsVM> PostPlantWD(PlantWorkingDetailsVM plantWd);
         Task<CityVM> PostCity(CityVM plantWd);
         Task<CountryVM> PostCountry(CountryVM plantWd);
-        IEnumerable<CityVM> GetCitys(long TenantId);
+        Task<IEnumerable<CityVM>> GetCitysAsync(long TenantId);
         IEnumerable<SectionsVM> GetSections(long TenantId);
         Task<SectionsVM> PostSections(SectionsVM plantWdVM);
         Task<IEnumerable<NoOfDaysTimeSlotVM>> GetNoOfDaysTimeSlots();
         Task<IEnumerable<TimeSlotDurationVM>> GetTimeSlotDurations();
-        IEnumerable<CountryVM> GetCountrys(long TenantId);
+        Task<IEnumerable<CountryVM>> GetCountrysAsync(long TenantId);
         Task<bool> CheckCity(string city);
         Task<bool> CheckSections(string city);
         Task<bool> CheckCountry(string country);

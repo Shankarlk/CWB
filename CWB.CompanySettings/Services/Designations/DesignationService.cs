@@ -53,9 +53,9 @@ namespace CWB.CompanySettings.Services.Designations
             return designationVM;
         }
 
-        public IEnumerable<DesignationListVM> GetDesignations(long TenantId)
+        public async Task<IEnumerable<DesignationListVM>> GetDesignationsAsync(long TenantId)
         {
-            var designations = _designationRepository.GetRangeAsync(d => d.TenantId == TenantId);
+            var designations = await _designationRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<DesignationListVM>>(designations);
         }
 

@@ -2575,7 +2575,7 @@ namespace CWB.ProductionPlanWO.Services
         }
         public async Task<IEnumerable<Cont_RCA_CA_Status_ListVM>> GetAllCont_RCA_CA_Status_List()
         {
-            var allDocuType = _Cont_RCA_CA_Status_ListRepository.GetAllAsync();
+            var allDocuType =await _Cont_RCA_CA_Status_ListRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<Cont_RCA_CA_Status_ListVM>>(allDocuType);
         }
         public async Task<Cont_RCA_CA_Status_ListVM> PostCont_RCA_CA_Status_List(Cont_RCA_CA_Status_ListVM itemMasterDocList)
@@ -4060,6 +4060,534 @@ namespace CWB.ProductionPlanWO.Services
             }
             return false;
         }
+        public async Task<IEnumerable<TempMc_Wait_ListVM>> GetAllSetUpApprolList(long tenantId)
+        {
+            var result = new List<TempMc_Wait_ListVM>();
 
+            // 1. Load all local master data in parallel
+            var waitListTask = GetAllMc_Wait_List(tenantId);
+            var timeslotsTask = GetAllTimeslot_List(tenantId);
+            var allWOTask = AllProductionWo(tenantId);
+            var translogsTask = GetAllInvTransLog(tenantId);
+
+            await Task.WhenAll(waitListTask, timeslotsTask, allWOTask, translogsTask);
+
+            // 2. Filter the Main List
+            var rawWaitList = waitListTask.Result;
+            var waitList = rawWaitList
+                .Where(x => x.Setup_Start_time != null && x.Setup_Apprvl_time == null)
+                .ToList();
+
+            if (waitList.Count == 0) return result;
+
+            // 3. Convert Lists to Dictionaries
+            var allWO = allWOTask.Result
+                .GroupBy(x => x.ProductionPlanId).ToDictionary(g => g.Key, g => g.First());
+
+            var timeSlots = timeslotsTask.Result
+                .GroupBy(x => x.Timeslot_ListId).ToDictionary(g => g.Key, g => g.First());
+
+            // 4. Optimize Translogs (Assuming Input_Part_NoId and Output_Part_No are the link keys)
+            var translogs = translogsTask.Result;
+
+            var translogInputIndex = translogs
+                .GroupBy(t => t.Input_Part_NoId)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var translogOutputIndex = translogs
+                .GroupBy(t => t.Output_Part_No)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            // 5. The Loop
+            foreach (var mcWait in waitList)
+            {
+                // A. Fast Fail lookups
+                if (!allWO.TryGetValue(mcWait.Wo_Id, out var wo)) continue;
+
+                // Note: Machine lookup removed as it requires external DB call
+
+                // B. Translog Logic
+                Inv_Trans_LogVM translog = null;
+
+                // Try Input Part ID
+                if (!translogInputIndex.TryGetValue(wo.PartId, out translog))
+                {
+                    // Fallback: Try Output Part ID
+                    translogOutputIndex.TryGetValue(wo.PartId, out translog);
+                }
+
+                if (translog == null) continue;
+
+                // C. Data Mapping
+                var currentStart = timeSlots.GetValueOrDefault(mcWait.Plan_start_time_Id)?.Start_time;
+
+                result.Add(new TempMc_Wait_ListVM
+                {
+                    // External data fields left empty as per instructions to exclude other API calls
+                    ShopName = "",
+                    McName = "",
+                    PartNo = "",
+                    RoutingName = "",
+                    OprNoName = "",
+                    PlannedSetupTime = "",
+                    Mc_Id = mcWait.Mc_Id,
+                    Wo_Id = mcWait.Wo_Id,
+                    Opr_No_Id = mcWait.Opr_No_Id,
+                    // Local Data mapping
+                    WoNumber = wo.WONumber ?? "",
+                    WoQnty = wo.CalcWOQty.ToString(),
+                    Plan_Qnty = mcWait.Plan_Qnty,
+                    ActiveId = mcWait.Mc_Wait_ListId,
+                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString(),
+                    PlanStartStr = currentStart?.ToString("hh:mm tt") ?? "",
+                    SetUpTimeStr = mcWait.Setup_Start_time?.ToString("hh:mm tt") ?? "",
+                    MatlReceptTime = translog.Dt_time.ToString("hh:mm tt"),
+                    Rework_Wo = 'N',
+                    TenantId = tenantId
+                });
+            }
+
+            return result;
+        }
+        // ... inside class WOService ...
+        public async Task<IEnumerable<TempMc_Wait_ListVM>> GetAllSetUpCnfList(long tenantId)
+        {
+            var result = new List<TempMc_Wait_ListVM>();
+
+            // 1. Load all local master data in parallel
+            var waitListTask = GetAllMc_Wait_List(tenantId);
+            var timeslotsTask = GetAllTimeslot_List(tenantId);
+            var allWOTask = AllProductionWo(tenantId);
+            var translogsTask = GetAllInvTransLog(tenantId);
+
+            await Task.WhenAll(waitListTask, timeslotsTask, allWOTask, translogsTask);
+
+            var waitList = waitListTask.Result;
+            // Note: No filter applied to waitList as per provided requirement code
+
+            if (!waitList.Any()) return result;
+
+            // 2. Convert Lists to Dictionaries/Lookups
+            var allWO = allWOTask.Result
+                .GroupBy(x => x.ProductionPlanId)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var timeSlots = timeslotsTask.Result
+                .GroupBy(x => x.Timeslot_ListId)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var translogs = translogsTask.Result;
+            var translogInputLookup = translogs
+                .GroupBy(x => x.Input_Part_NoId)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var translogOutputLookup = translogs
+                .GroupBy(x => x.Output_Part_No)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            // 3. The Loop
+            foreach (var mcWait in waitList)
+            {
+                // A. Fast Fail lookups for WO
+                if (!allWO.TryGetValue(mcWait.Wo_Id, out var wo)) continue;
+
+                // B. Translog Logic
+                Inv_Trans_LogVM translog = null;
+
+                // Try Input Part first
+                if (!translogInputLookup.TryGetValue(wo.PartId, out translog))
+                {
+                    // Fallback: Output Part search
+                    translogOutputLookup.TryGetValue(wo.PartId, out translog);
+                }
+
+                if (translog == null) continue;
+
+                // C. Data Mapping
+                var currentStart = timeSlots.GetValueOrDefault(mcWait.Plan_start_time_Id)?.Start_time;
+
+                result.Add(new TempMc_Wait_ListVM
+                {
+                    // CRITICAL: Map IDs for MVC Controller enrichment
+                    Mc_Id = mcWait.Mc_Id,
+                    Wo_Id = mcWait.Wo_Id,
+                    Opr_No_Id = mcWait.Opr_No_Id,
+
+                    // Local Data mapping
+                    WoNumber = wo.WONumber ?? "",
+                    WoQnty = wo.CalcWOQty.ToString(),
+                    Plan_Qnty = mcWait.Plan_Qnty,
+                    ActiveId = mcWait.Mc_Wait_ListId,
+                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString(),
+                    PlanStartStr = currentStart?.ToString("hh:mm tt") ?? "",
+                    MatlReceptTime = translog.Dt_time.ToString("hh:mm tt"),
+                    Rework_Wo = 'N',
+                    TenantId = tenantId,
+
+                    // Fields to be populated by MVC
+                    ShopName = "",
+                    McName = "",
+                    PartNo = "",
+                    RoutingName = "",
+                    OprNoName = ""
+                });
+            }
+
+            return result;
+        }
+        public async Task<IEnumerable<TempMc_Wait_ListVM>> GetAllBookOutList(long tenantId)
+        {
+            var result = new List<TempMc_Wait_ListVM>();
+
+            // 1. Load local master data in parallel
+            var waitListTask = GetAllMc_Wait_List(tenantId);
+            var timeslotsTask = GetAllTimeslot_List(tenantId);
+            var allWOTask = AllProductionWo(tenantId);
+            var translogsTask = GetAllInvTransLog(tenantId);
+
+            await Task.WhenAll(waitListTask, timeslotsTask, allWOTask, translogsTask);
+
+            // 2. Filter: Setup_Apprvl_time != null
+            var rawWaitList = waitListTask.Result;
+            var waitList = rawWaitList
+                .Where(x => x.Setup_Apprvl_time != null)
+                .ToList();
+
+            if (!waitList.Any()) return result;
+
+            // 3. Convert Lists to Dictionaries/Lookups
+            var allWO = allWOTask.Result
+                .GroupBy(x => x.ProductionPlanId)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var timeSlots = timeslotsTask.Result
+                .GroupBy(x => x.Timeslot_ListId)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            var translogs = translogsTask.Result;
+            var translogLookup = translogs
+                .GroupBy(x => x.Input_Part_NoId)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            // 4. The Loop
+            foreach (var mcWait in waitList)
+            {
+                // A. WO Lookup
+                if (!allWO.TryGetValue(mcWait.Wo_Id, out var wo)) continue;
+
+                // B. Translog Lookup
+                Inv_Trans_LogVM translog = null;
+                if (!translogLookup.TryGetValue(wo.PartId, out translog))
+                {
+                    // Fallback: Output Part search
+                    translog = translogs.FirstOrDefault(t => t.Output_Part_No == wo.PartId);
+                    if (translog == null) continue;
+                }
+
+                // C. Data Mapping
+                var startTS = timeSlots.GetValueOrDefault(mcWait.Plan_start_time_Id);
+
+                result.Add(new TempMc_Wait_ListVM
+                {
+                    // --- IDs for MVC Enrichment ---
+                    Mc_Id = mcWait.Mc_Id,
+                    Wo_Id = mcWait.Wo_Id,
+                    Opr_No_Id = mcWait.Opr_No_Id,
+                    // Assuming TempMc_Wait_ListVM has PartId. If not, MVC will retrieve it via WO_Id lookup
+                    // PartId = wo.PartId, 
+
+                    // --- Local Data ---
+                    WoNumber = wo.WONumber ?? "",
+                    WoQnty = wo.CalcWOQty.ToString(),
+                    Plan_Qnty = mcWait.Plan_Qnty,
+                    ActiveId = mcWait.Mc_Wait_ListId,
+
+                    // Specific BookOut Fields
+                    QntyOffered = mcWait.QntyOffered,
+                    Accepted = mcWait.Accepted,
+                    NonConQnty = mcWait.NonConQnty,
+
+                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString(),
+                    MatlReceptTime = translog.Dt_time.ToString("hh:mm tt"),
+
+                    PlanStartStr = startTS?.Start_time.ToString("hh:mm tt") ?? "",
+                    SetUpTimeStr = mcWait.Setup_Apprvl_time.Value.ToLocalTime().ToString("hh:mm tt"),
+
+                    Rework_Wo = 'N',
+                    TenantId = tenantId,
+
+                    // --- Empty External Fields ---
+                    ShopName = "",
+                    McName = "",
+                    PartNo = "",
+                    RoutingName = "",
+                    OprNoName = "",
+                    UomName = ""
+                });
+            }
+
+            return result;
+        }
+        public async Task<IEnumerable<ProductionPlan_WOVM>> AllProductionWoReadForProd(long tenantId)
+        {
+            // 1. Fetch Local Data in Parallel
+            var woTask = AllProductionWo(tenantId);
+            var procTask = AllProcPlan(tenantId);
+            var transTask = GetAllInvTransLog(tenantId);
+            var ncTask = GetAllInsp_Outcome_Details(tenantId);
+
+            await Task.WhenAll(woTask, procTask, transTask, ncTask);
+
+            var productions = woTask.Result.ToList();
+            var procPlans = procTask.Result;
+            var transLogs = transTask.Result;
+            var ncLogs = ncTask.Result;
+
+            // 2. Create Lookups (Optimization)
+            // ProcPlan by WorkOrderId
+            var procPlanDict = procPlans
+                .GroupBy(p => p.WorkOrderId)
+                .ToDictionary(g => g.Key, g => g.FirstOrDefault());
+
+            // NC Logs count by PartId
+            var ncLogCountDict = ncLogs
+                .GroupBy(n => n.Inw_Recpt_Part_No_Id)
+                .ToDictionary(g => g.Key, g => g.Count());
+
+            // TransLogs (Input and Output)
+            // We group by PartId to quickly check quantities
+            var transLogInputDict = transLogs
+                .GroupBy(t => t.Input_Part_NoId)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            var transLogOutputDict = transLogs
+                .Where(t => t.Output_Part_No != null)
+                .GroupBy(t => t.Output_Part_No)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            // 3. Process Logic
+            foreach (var item in productions)
+            {
+                // A. PartType & PlanStartDateStr
+                if (item.PartType == 2)
+                {
+                    item.PlanStartDateStr = item.PlanStartDate.ToString("dd-MM-yyyy");
+                    item.PartTypeName = "Assembly";
+                }
+                else
+                {
+                    if (procPlanDict.TryGetValue(item.WoId, out var pp) && pp != null)
+                    {
+                        item.PlanStartDateStr = pp.CalcReceiptDate.ToString("dd-MM-yyyy");
+                    }
+                    item.PartTypeName = "Child Part";
+                }
+
+                // B. SO Completion Date
+                //if (item.SoComplDate.HasValue)
+                //{
+                    item.SoComplDateStr = item.SoComplDate.ToString("dd-MM-yyyy");
+                //}
+
+                // C. No of Open NC
+                item.NoOfOpenNc = ncLogCountDict.GetValueOrDefault(item.PartId, 0);
+
+                // D. Ready For Prod
+                // Logic: Check if sufficient quantity exists in TransLogs for the ProcPlan part
+                item.ReadyForProd = "N";
+                if (procPlanDict.TryGetValue(item.WoId, out var procplanwo) && procplanwo != null)
+                {
+                    bool hasStock = false;
+
+                    // Check Input Parts
+                    if (transLogInputDict.TryGetValue(procplanwo.PartId, out var inputs))
+                    {
+                        if (inputs.Any(t => t.Qnty >= procplanwo.Calc_Proc_Qnty)) hasStock = true;
+                    }
+
+                    // Check Output Parts (Fallback)
+                    if (!hasStock && transLogOutputDict.TryGetValue(procplanwo.PartId, out var outputs))
+                    {
+                        if (outputs.Any(t => t.Qnty >= procplanwo.Calc_Proc_Qnty)) hasStock = true;
+                    }
+
+                    if (hasStock) item.ReadyForProd = "Y";
+                }
+            }
+
+            return productions;
+        }
+        public async Task<IEnumerable<ProductionPlan_WOVM>> GetAllReadyforProductionWo(long tenantId)
+        {
+            // 1. Fetch Local Data in Parallel
+            var woTask = AllProductionWo(tenantId);
+            var procTask = AllProcPlan(tenantId);
+            var tempWaitTask = GetAllTempWO_Wait_List(tenantId);
+            var activeWaitTask = GetAllWO_Wait_List(tenantId);
+            var oprTask = GetAllOpr_List(tenantId);
+            var timeslotTask = GetAllTimeslot_List(tenantId);
+            var mcTimeslotTask = GetAllMc_Timeslot_List(tenantId);
+
+            await Task.WhenAll(woTask, procTask, tempWaitTask, activeWaitTask, oprTask, timeslotTask, mcTimeslotTask);
+
+            var productions = woTask.Result.ToList();
+            var procPlans = procTask.Result;
+            var tempWaitList = tempWaitTask.Result;
+            var activeWaitList = activeWaitTask.Result;
+            var oprLists = oprTask.Result;
+            var allTimeslots = timeslotTask.Result;
+            var allMcTimeslots = mcTimeslotTask.Result;
+
+            // 2. Create Efficient Lookups
+            var procPlanDict = procPlans.GroupBy(p => p.WorkOrderId).ToDictionary(g => g.Key, g => g.First());
+            var tempWaitDict = tempWaitList.GroupBy(w => w.Wo_Id).ToDictionary(g => g.Key, g => g.First());
+            var activeWaitDict = activeWaitList.GroupBy(w => w.Wo_Id).ToDictionary(g => g.Key, g => g.First());
+            var oprDict = oprLists.GroupBy(o => o.Wo_Id).ToDictionary(g => g.Key, g => g.ToList());
+            var mcTimeDict = allMcTimeslots.ToDictionary(m => m.Mc_Timeslot_List_Id);
+            var timeDict = allTimeslots.ToDictionary(t => t.Timeslot_ListId);
+
+            // HashSet for fast Parent check
+            var parentWoIds = new HashSet<long>(productions.Select(x => x.ParentWoId));
+
+            var result = new List<ProductionPlan_WOVM>();
+
+            // 3. Process Logic
+            foreach (var item in productions)
+            {
+                // FILTER: Item MUST exist in TempWO_Wait_List to be included
+                if (!tempWaitDict.TryGetValue(item.ProductionPlanId, out var wO_Wait_List))
+                    continue;
+
+                // A. Plan Start Date Logic
+                if (item.PartType == 2)
+                {
+                    item.PlanStartDateStr = item.PlanStartDate.ToString("dd-MM-yyyy");
+                    item.PartTypeName = "Assembly"; // Default for Type 2
+                }
+                else
+                {
+                    if (procPlanDict.TryGetValue(item.WoId, out var pp))
+                    {
+                        item.PlanStartDateStr = pp.CalcReceiptDate.ToString("dd-MM-yyyy");
+                    }
+
+                    // Part Type Name Logic (Moved here as it depends on local WO structure)
+                    bool isParentWo = parentWoIds.Contains(item.WoId);
+                    if (item.PartType == 1 && item.ParentWoId == 0)
+                    {
+                        item.PartTypeName = isParentWo ? "Parent CMP" : "CMP";
+                    }
+                }
+
+                // B. SO Completion Date (Base Format)
+                //if (item.SoComplDate.HasValue)
+                //{
+                    item.SoComplDateStr = item.SoComplDate.ToString("dd-MM-yyyy");
+                //}
+
+                // C. Actual Start Date Calculation (Earliest Timeslot)
+                DateTime? earliestStartTime = null;
+                if (oprDict.TryGetValue(item.ProductionPlanId, out var operations))
+                {
+                    foreach (var opr in operations)
+                    {
+                        if (mcTimeDict.TryGetValue(opr.Shop_Plan_start_time, out var mcTimeslot))
+                        {
+                            if (timeDict.TryGetValue(mcTimeslot.Timeslot_List_Id, out var timeslot))
+                            {
+                                if (earliestStartTime == null || timeslot.Start_time < earliestStartTime)
+                                {
+                                    earliestStartTime = timeslot.Start_time;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (earliestStartTime != null)
+                {
+                    item.ActStartDateStr = earliestStartTime.Value.ToString("dd-MM-yyyy");
+                }
+
+                // D. Data Change Flag
+                item.DataChange = (item.Changed == 0) ? "N" : "Y";
+
+                // E. Wait List Dates & Criticality
+                item.CsStartDate = wO_Wait_List.Plan_Start_Date.ToString("dd-MM-yyyy");
+                item.CsEndDate = wO_Wait_List.Plan_End_Date.ToString("dd-MM-yyyy");
+
+                if (activeWaitDict.TryGetValue(item.ProductionPlanId, out var activeWait))
+                {
+                    item.PsStartDate = activeWait.Plan_Start_Date.ToString("dd-MM-yyyy");
+                    item.PsEndDate = activeWait.Plan_End_Date.ToString("dd-MM-yyyy");
+                }
+
+                // Critical Parts Calculation
+                item.CriticalParts = (wO_Wait_List.Plan_End_Date > item.PlanCompletionDate) ? "Y" : "N";
+
+                result.Add(item);
+            }
+
+            return result;
+        }
+        public async Task<IEnumerable<Matl_Issue_ListVM>> GetAllMatlIssueListForShop(long tenantId)
+        {
+            // 1. Fetch Local Data
+            var issueListTask = GetAllMatl_Issue_List(tenantId);
+            var tempOprTask = GetAllTempOpr_List(tenantId);
+            var woTask = AllProductionWo(tenantId);
+            var transLogTask = GetAllInvTransLog(tenantId);
+
+            await Task.WhenAll(issueListTask, tempOprTask, woTask, transLogTask);
+
+            var resultList = issueListTask.Result;
+            var tempOprList = tempOprTask.Result;
+            var woList = woTask.Result;
+            var transLogs = transLogTask.Result;
+
+            // 2. Lookups
+            var tempOprDict = tempOprList.ToDictionary(t => t.TempOpr_ListId);
+            var woDict = woList.ToDictionary(w => w.ProductionPlanId);
+
+            // --- CRITICAL FIX HERE ---
+            // Only identify operations where Movement is NOT Complete ('N')
+            var pendingOprIds = new HashSet<long>(
+                transLogs
+                .Where(t => t.Movement_Compl == 'N')
+                .Select(t => t.Input_Opr_No)
+            );
+            // -------------------------
+
+            var finalResult = new List<Matl_Issue_ListVM>();
+
+            // 3. Filter & Map Local Fields
+            foreach (var item in resultList)
+            {
+                if (!tempOprDict.TryGetValue(item.Part_Ref, out var tempopr)) continue;
+
+                // FILTER: Skip if an incomplete transaction exists for this Operation
+                if (pendingOprIds.Contains(tempopr.Opr_No)) continue;
+
+                // FILTER: Skip if WO is missing or Status is 8 (Deleted/Closed)
+                if (!woDict.TryGetValue(tempopr.Wo_Id, out var pp)) continue;
+                if (pp.Status == 8) continue;
+
+                // Map WO Data
+                item.WoNumber = pp.WONumber ?? "";
+                item.BalWoQnty = pp.CalcWOQty.ToString();
+                item.QntyAvl = 0;
+                item.BookOutQnty = 0;
+                item.QntyRecdCnf = "Not Confirmed";
+                item.IssueMovDtStr = item.Issue_Mov_date.ToString("dd-MM-yyyy");
+
+                // Pass necessary IDs for Controller to use for enrichment
+                item.PartId = (long)pp.PartId;
+                item.RoutingId = (long)pp.RoutingId;
+
+                finalResult.Add(item);
+            }
+
+            return finalResult;
+        }
     }
 }

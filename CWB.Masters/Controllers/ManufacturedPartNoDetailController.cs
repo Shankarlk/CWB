@@ -195,6 +195,14 @@ namespace CWB.Masters.Controllers
             return Ok(mpmakefromlist);
         }
         [HttpGet]
+        [Route(ApiRoutes.ManufacturedPartNoDetail.GetAllMPMakeFromList)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<MPMakeFromVM>))]
+        public IActionResult GetAllMPMakeFromList(long tenantID)
+        {
+            var mpmakefromlist = _manufacturedPartNoDetailService.GetAllMPMakeFromList(tenantID);
+            return Ok(mpmakefromlist);
+        }
+        [HttpGet]
         [Route(ApiRoutes.ManufacturedPartNoDetail.GetMPMakeFrom)]
         [Produces(AppContentTypes.ContentType, Type = typeof(MPMakeFromVM))]
         public async Task<IActionResult> GetMPMakeFrom(long Id)

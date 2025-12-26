@@ -194,9 +194,9 @@ namespace CWB.CompanySettings.Services.Location
             return _mapper.Map<PlantWorkingDetailsVM>(plantWd);
         }
 
-        public IEnumerable<CityVM> GetCitys(long TenantId)
+        public async Task<IEnumerable<CityVM>> GetCitysAsync(long TenantId)
         {
-            var plants = _cityRepository.GetRangeAsync(p => p.TenantId == TenantId);
+            var plants =await _cityRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<CityVM>>(plants);
         }
         public IEnumerable<SectionsVM> GetSections(long TenantId)
@@ -214,9 +214,9 @@ namespace CWB.CompanySettings.Services.Location
             var plants = await _TimeSlotDurationRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<TimeSlotDurationVM>>(plants);
         }
-        public IEnumerable<CountryVM> GetCountrys(long TenantId)
+        public async Task<IEnumerable<CountryVM>> GetCountrysAsync(long TenantId)
         {
-            var plants = _countryRepository.GetRangeAsync(p => p.TenantId == TenantId);
+            var plants = await _countryRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<CountryVM>>(plants);
         }
         public async Task<CityVM> PostCity(CityVM plantWdVM)

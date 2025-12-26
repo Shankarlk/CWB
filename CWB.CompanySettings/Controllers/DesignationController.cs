@@ -35,9 +35,9 @@ namespace CWB.CompanySettings.Controllers
         [Route(ApiRoutes.Designation.GetDesignations)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<DesignationListVM>))]
         [Authorize(Roles = Roles.ADMIN)]
-        public IActionResult GetDesignations(long tenantId)
+        public async Task<IActionResult> GetDesignations(long tenantId)
         {
-            var designations = _designationService.GetDesignations(tenantId);
+            var designations = await _designationService.GetDesignationsAsync(tenantId);
             return Ok(designations);
         }
 

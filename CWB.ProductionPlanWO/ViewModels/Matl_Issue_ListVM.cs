@@ -17,5 +17,21 @@ namespace CWB.ProductionPlanWO.ViewModels
         public long From_Location { get; set; }
         public long To_Location { get; set; }
         public long TenantId { get; set; }
+        public long QntyAvl { get; set; }
+        public long BookOutQnty { get; set; }
+        public string BalWoQnty { get; set; }
+        public string To_LocationStr { get; set; }
+        public string WoNumber { get; set; }
+        public string Shop { get; set; }
+        public string QntyRecdCnf { get; set; }
+        public string IssueMovDtStr { get; set; }
+        public string PartNo { get; set; }
+        public string InputPartNo { get; set; }
+        public string RoutingName { get; set; }
+        public string OpNo { get; set; }
+        public string From_LocationStr { get; set; }
+        public long PartId { get; set; }
+        public long RoutingId { get; set; }
+        public long OprId { get; set; }
     }
 }

@@ -30,5 +30,8 @@ namespace CWB.App.Models.WorkOrder
         public string RoutingName { get; set; }
         public string OpNo { get; set; }
         public string From_LocationStr { get; set; }
+        public long PartId { get; set; }
+        public long RoutingId { get; set; } 
+        public long OprId { get; set; }
     }
 }

@@ -263,6 +263,11 @@ namespace CWB.Masters.Services.ItemMaster
             var mpmakefromlist =  _mpMakeFromRepository.GetRangeAsync(m => m.ManufPartId.ToString().Equals(manufPartId));
             return _mapper.Map<IEnumerable<MPMakeFromVM>>(mpmakefromlist);
         }
+        public IEnumerable<MPMakeFromVM> GetAllMPMakeFromList(long tenantID)
+        {
+            var mpmakefromlist =  _mpMakeFromRepository.GetRangeAsync(m => m.TenantId.Equals(tenantID));
+            return _mapper.Map<IEnumerable<MPMakeFromVM>>(mpmakefromlist);
+        }
 
 
         public async Task<MPMakeFromVM> PreferredInputMatl(MPMakeFromVM mPMakeFromVM)

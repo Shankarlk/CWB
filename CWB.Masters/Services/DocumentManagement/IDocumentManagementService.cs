@@ -30,6 +30,7 @@ namespace CWB.Masters.Services.DocumentManagement
         Task<RefDocReasonListVM> PostDocReason(RefDocReasonListVM uiList);
         Task<DocStatusVM> GetDocStatus(long statusid);
         Task<Doc_status_listVM> GetDocListStatus(long statusid);
+        Task<IEnumerable<Doc_status_listVM>> GetAllDocListStatus(long tenantId);
         Task<bool> CheckPartNoInDocList(long partId, long tenantId);
         Task<bool> DeleteDocType(long doctypeId, long tenantId);
         Task<bool> DeleteCustRetData(long custRetId, long tenantId);

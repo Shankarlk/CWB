@@ -62,6 +62,14 @@ namespace CWB.Masters.Controllers
             RawMaterialDetailVM manufP = await _masterPartService.GetRMPart(partId, tenantId);
             return Ok(manufP);
         }
+        [HttpGet]
+        [Route(ApiRoutes.ManufacturedPartNoDetail.GetAllRMPart)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(RawMaterialDetailVM))]
+        public async Task<IActionResult> GetAllRMPart(long tenantId)
+        {
+            List<RawMaterialDetailVM> manufP = (List<RawMaterialDetailVM>)await _masterPartService.GetAllRMPart(tenantId);
+            return Ok(manufP);
+        }
 
 
         /**

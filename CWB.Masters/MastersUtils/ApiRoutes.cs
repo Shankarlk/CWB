@@ -116,11 +116,13 @@
             // Added for Listing ManufacturedPartNoDetails
             public const string GetManufPart = Base + "/getmanufpart/{partId}/{tenantId}";
             public const string GetRMPart = Base + "/getrmpart/{partId}/{tenantId}";
+            public const string GetAllRMPart = Base + "/getallrmpart/{tenantId}";
             public const string GetBOFPart = Base + "/getbofpart/{partId}/{tenantId}";
 
             public const string GetManufacturedPartNoDetailList = Base + "/getmanufacturedpartnodetailList/{ManufPartType}/{companyName}/{tenantId}";
             public const string GetAllManufacturedPartNoDetailList = Base + "/mfdlist/{tenantId}";
             public const string GetMPMakeFromList = Base + "/mpmakefromlist/{partId}";//pass manufPartId from MPRawMeterials
+            public const string GetAllMPMakeFromList = Base + "/allmpmakefromlist/{tenantId}";//pass manufPartId from MPRawMeterials
             public const string GetMPMakeFrom = Base + "/getmakefrom/{Id}";
             public const string RemMakeFrom = Base + "/remmakefrom";
             public const string GetPartStatus = Base + "/getpartstatus/{tenantId}";
@@ -180,6 +182,7 @@
         public static class MasterParts
         {
             public const string CheckPartNo = Base + "/check-partno/{partNo}";
+            public const string MasterPartList = Base + "/masterpartlist/{tenantId}";
         }
 
        
@@ -207,6 +210,7 @@
             public const string GetAllRefDoc = Base + "/getallrefdoc/{tenantId}";
             public const string GetDocStatus = Base + "/getdocstatus/{statusid}";
             public const string GetDocListStatus = Base + "/getdocliststatus/{statusid}";
+            public const string GetAllDocListStatus = Base + "/getalldocliststatus/{tenantId}";
             public const string PostDocumentType = Base + "/postdocumenttype";
             public const string PostCustRetnData = Base + "/postcustretndata";
             public const string PostExtn = Base + "/postextn";

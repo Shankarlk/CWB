@@ -207,6 +207,12 @@ namespace CWB.App.Services.DocumentMagement
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<Doc_status_listVM>.GetAsync(uri, headers);
         }
+        public async Task<IEnumerable<Doc_status_listVM>> GetAllDoc_Status_List()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getalldocliststatus/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<IEnumerable<Doc_status_listVM>>.GetAsync(uri, headers);
+        }
 
     }
 }

@@ -201,6 +201,12 @@ namespace CWB.ProductionPlanWO.Services
         Task<IEnumerable<Inv_Mismatch_ListVM>> GetAllInv_Mismatch_List(long tenantId);
         Task<Inv_Mismatch_ListVM> PostInv_Mismatch_List(Inv_Mismatch_ListVM itemMasterDocList);
         Task<bool> DeleteInv_Mismatch_List(long itemMasterDocListId, long tenantId);
+        Task<IEnumerable<TempMc_Wait_ListVM>> GetAllSetUpApprolList(long tenantId);
+        Task<IEnumerable<TempMc_Wait_ListVM>> GetAllSetUpCnfList(long tenantId);
+        Task<IEnumerable<TempMc_Wait_ListVM>> GetAllBookOutList(long tenantId);
+        Task<IEnumerable<ProductionPlan_WOVM>> AllProductionWoReadForProd(long tenantId);
+        Task<IEnumerable<ProductionPlan_WOVM>> GetAllReadyforProductionWo(long tenantId);
+        Task<IEnumerable<Matl_Issue_ListVM>> GetAllMatlIssueListForShop(long tenantId);
 
         string HelloWorld();
     }

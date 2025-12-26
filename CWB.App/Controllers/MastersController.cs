@@ -2072,6 +2072,12 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> MasterParts()
         {
+            var mfpdList = await _mastersService.MasterPartList();
+            return Json(mfpdList);
+        }
+        [HttpGet]
+        public async Task<IActionResult> MasterPartsss()
+        {
             // Start initial calls in parallel
             var mfpdListTask = _mastersService.ItemMasterParts();
             var docmandTask = _mastersService.Getallitemmasterdoclist();
@@ -2090,6 +2096,17 @@ namespace CWB.App.Controllers
             var manufacturedParts = mfpdList
                 .Where(item => item.MasterPartType == "ManufacturedPart" || item.MasterPartType == "Assembly")
                 .ToList();
+
+            var mpMakeFromList = await _mastersService.GetAllMPMakeFromList();
+            var rmParts = await _mastersService.GetAllRMPart();
+            var docStatusMap = await _docMangService.GetAllDoc_Status_List();
+            var mpMakeDict = mpMakeFromList
+    .GroupBy(x => x.ManufPartId)
+    .ToDictionary(g => g.Key, g => g.ToList());
+
+            var rmDict = rmParts.ToDictionary(x => x.PartId);
+            var docStatusDict = docStatusMap.ToDictionary(x => x.Doc_status_listId);
+
 
             // --- STEP 1: Pre-fetch Manufactured Part Details and BOMs in parallel ---
             var manufPartTasks = manufacturedParts
@@ -2125,11 +2142,12 @@ namespace CWB.App.Controllers
                 {
                     case "ManufacturedPart":
                         var manuf = manufPartDict[(int)item.PartId];
-                        var mk = await _mastersService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
+                        var mkExists = mpMakeDict.TryGetValue(manuf.ManufacturedPartNoDetailId, out var mkList)
+                   && mkList.Any();
 
+                        item.RmAvl = mkExists ? "Yes" : "No";
                         item.FinalPart = manuf.FinalPartNosoldtoCustomer == 0 ? "N" : "Y";
-                        (item.MandocAvl, item.DocStatus) = await GetDocStatusAsync(docmand, docListVMs, (int)item.PartId, 1);
-                        item.RmAvl = mk.Any() ? "Yes" : "No";
+                        (item.MandocAvl, item.DocStatus) = GetDocStatusCached(docmand, docListVMs, docStatusDict, (int)item.PartId, 1);
                         item.SupplierAvl = "N/A";
                         item.BomAvl = "N/A";
                         item.MasterDisplay = "ManufacturedPart";
@@ -2142,7 +2160,7 @@ namespace CWB.App.Controllers
                         var assemblyBOM = bomDict[(int)item.PartId];
 
                         item.FinalPart = assembly.FinalPartNosoldtoCustomer == 0 ? "N" : "Y";
-                        (item.MandocAvl, item.DocStatus) = await GetDocStatusAsync(docmand, docListVMs, (int)item.PartId, 2);
+                        (item.MandocAvl, item.DocStatus) = GetDocStatusCached(docmand, docListVMs, docStatusDict, (int)item.PartId, 2);
                         item.BomAvl = assemblyBOM.Any() ? "Yes" : "No";
                         item.RmAvl = "N/A";
                         item.SupplierAvl = "N/A";
@@ -2152,7 +2170,7 @@ namespace CWB.App.Controllers
                         break;
 
                     case "BOF":
-                        (item.MandocAvl, item.DocStatus) = await GetDocStatusAsync(docmand, docListVMs, (int)item.PartId, 6, 7, 8);
+                        (item.MandocAvl, item.DocStatus) = GetDocStatusCached(docmand, docListVMs, docStatusDict, (int)item.PartId, 6, 7, 8);
                         item.MasterDisplay = item.BoughtOutFinishMadeType switch
                         {
                             1 => "Standard BOF",
@@ -2168,9 +2186,12 @@ namespace CWB.App.Controllers
                         break;
 
                     case "RawMaterial":
-                        (item.MandocAvl, item.DocStatus) = await GetDocStatusAsync(docmand, docListVMs, (int)item.PartId, 3, 4, 5);
-                        var rm = await _mastersService.GetRMPart((int)item.PartId);
-                        item.MasterDisplay = rm.RawMaterialMadeType == 1 ? "Own Purchased RM" : "Customer Supplied RM";
+                        (item.MandocAvl, item.DocStatus) = GetDocStatusCached(docmand, docListVMs, docStatusDict, (int)item.PartId, 3, 4, 5);
+                        if (rmDict.TryGetValue((long)item.PartId, out var rm))
+                        {
+                            item.MasterDisplay =
+                                rm.RawMaterialMadeType == 1 ? "Own Purchased RM" : "Customer Supplied RM";
+                        }
                         var rmSuppliers = allPartPurchases.Where(s => s.PPartId == (int)item.PartId);
                         item.SupplierAvl = rmSuppliers.Any() ? "Yes" : "No";
                         item.BomAvl = "N/A";
@@ -2186,38 +2207,34 @@ namespace CWB.App.Controllers
             return Json(mfpdList);
         }
 
-        private async Task<(string MandocAvl, string DocStatus)> GetDocStatusAsync(
+        private (string MandocAvl, string DocStatus) GetDocStatusCached(
     IEnumerable<ItemMasterDocListVM> docmand,
     IEnumerable<DocListVM> docListVMs,
+    IDictionary<long, Doc_status_listVM> docStatusDict,
     int partId,
-    params int[] contentIds)
+    params long[] contentIds)
         {
-            if (!docmand.Any(d => Array.IndexOf(contentIds, d.ContentId) >= 0))
+            if (!docmand.Any(d => contentIds.Contains(d.ContentId)))
                 return ("N/A", "N/A");
 
-            bool hasDocs = docListVMs.Any(doc => docmand.Any(dm => doc.DocumentTypeId == dm.DocumentTypeId));
-            if (!hasDocs)
+            var docsForPart = docListVMs.Where(d => d.PartId == partId).ToList();
+            if (!docsForPart.Any())
                 return ("No", "N/A");
 
-            bool hasMandatoryDocs = docListVMs.Any(doc =>
-                docmand.Any(dm => doc.DocumentTypeId == dm.DocumentTypeId && dm.Mandatory == 'Y'));
+            var mandatory = docmand
+                .Where(d => d.Mandatory == 'Y')
+                .Select(d => d.DocumentTypeId)
+                .ToHashSet();
 
-            if (!hasMandatoryDocs)
+            var mandatoryDoc = docsForPart
+                .FirstOrDefault(d => mandatory.Contains(d.DocumentTypeId));
+
+            if (mandatoryDoc == null)
                 return ("Yes", "N/A");
 
-            var firstMatch = docListVMs.FirstOrDefault(doc =>
-                docmand.Any(dm =>
-                    doc.DocumentTypeId == dm.DocumentTypeId &&
-                    dm.Mandatory == 'Y' &&
-                    doc.PartId == partId));
-
-            if (firstMatch != null)
-            {
-                var getdoc = await _docMangService.GetDoc_Status_List(firstMatch.AppvStatus);
-                return ("Yes", getdoc.Doc_Status_Desc);
-            }
-
-            return ("Yes", "N/A");
+            return docStatusDict.TryGetValue((int)mandatoryDoc.AppvStatus, out var status)
+                ? ("Yes", status.Doc_Status_Desc)
+                : ("Yes", "N/A");
         }
 
         [HttpGet]

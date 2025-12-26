@@ -1,0 +1,200 @@
+2025-12-24 11:12:48.4249 ERROR Error: AutoMapper.AutoMapperMappingException: Missing type map configuration or unsupported mapping.
+
+Mapping types:
+Task`1 -> IEnumerable`1
+System.Threading.Tasks.Task`1[[System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.Domain.UiList, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] -> System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.ViewModels.EmployeeMaster.UiListVM, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.CompanySettings.Services.EmployeeMaster.EmployeeService.GetAllUiList(Int64 TenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Services\EmployeeMaster\EmployeeService.cs:line 61
+   at CWB.CompanySettings.Controllers.EmployeeMasterController.GetAllUiList(Int64 tenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Controllers\EmployeeMasterController.cs:line 34
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in D:\EvolutionSoftware\CWB-Latest\CWB\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2025-12-24 11:12:48.4249 ERROR Error: AutoMapper.AutoMapperMappingException: Missing type map configuration or unsupported mapping.
+
+Mapping types:
+AsyncStateMachineBox`1 -> IEnumerable`1
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1[[System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.Domain.Designation, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[CWB.CommonUtils.Common.Repositories.Repository`1+<GetAllAsync>d__7[[CWB.CompanySettings.Domain.Designation, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], CWB.CommonUtils, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.ViewModels.Designations.DesignationListVM, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.CompanySettings.Services.Designations.DesignationService.GetDesignations(Int64 TenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Services\Designations\DesignationService.cs:line 59
+   at CWB.CompanySettings.Controllers.DesignationController.GetDesignations(Int64 tenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Controllers\DesignationController.cs:line 40
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in D:\EvolutionSoftware\CWB-Latest\CWB\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2025-12-24 11:12:48.4249 ERROR Error: AutoMapper.AutoMapperMappingException: Missing type map configuration or unsupported mapping.
+
+Mapping types:
+Task`1 -> IEnumerable`1
+System.Threading.Tasks.Task`1[[System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.Domain.UiList, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] -> System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.ViewModels.EmployeeMaster.UiListVM, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.CompanySettings.Services.EmployeeMaster.EmployeeService.GetAllUiList(Int64 TenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Services\EmployeeMaster\EmployeeService.cs:line 61
+   at CWB.CompanySettings.Controllers.EmployeeMasterController.GetAllUiList(Int64 tenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Controllers\EmployeeMasterController.cs:line 34
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in D:\EvolutionSoftware\CWB-Latest\CWB\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2025-12-24 11:12:52.4075 ERROR Error: AutoMapper.AutoMapperMappingException: Missing type map configuration or unsupported mapping.
+
+Mapping types:
+AsyncStateMachineBox`1 -> IEnumerable`1
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1[[System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.Domain.Permission_List, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[CWB.CommonUtils.Common.Repositories.Repository`1+<GetAllAsync>d__7[[CWB.CompanySettings.Domain.Permission_List, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], CWB.CommonUtils, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.ViewModels.EmployeeMaster.Permission_ListVM, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.CompanySettings.Services.EmployeeMaster.EmployeeService.GetAllPermissionList(Int64 TenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Services\EmployeeMaster\EmployeeService.cs:line 276
+   at CWB.CompanySettings.Controllers.EmployeeMasterController.GetAllPermissionList(Int64 tenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Controllers\EmployeeMasterController.cs:line 169
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in D:\EvolutionSoftware\CWB-Latest\CWB\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2025-12-24 11:12:57.6136 ERROR Error: AutoMapper.AutoMapperMappingException: Missing type map configuration or unsupported mapping.
+
+Mapping types:
+AsyncStateMachineBox`1 -> IEnumerable`1
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1[[System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.Domain.UiList, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[CWB.CommonUtils.Common.Repositories.Repository`1+<GetAllAsync>d__7[[CWB.CompanySettings.Domain.UiList, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], CWB.CommonUtils, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.ViewModels.EmployeeMaster.UiListVM, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.CompanySettings.Services.EmployeeMaster.EmployeeService.GetAllUiList(Int64 TenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Services\EmployeeMaster\EmployeeService.cs:line 61
+   at CWB.CompanySettings.Controllers.EmployeeMasterController.GetAllUiList(Int64 tenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Controllers\EmployeeMasterController.cs:line 34
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in D:\EvolutionSoftware\CWB-Latest\CWB\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2025-12-24 11:12:59.2285 ERROR Error: AutoMapper.AutoMapperMappingException: Missing type map configuration or unsupported mapping.
+
+Mapping types:
+Task`1 -> IEnumerable`1
+System.Threading.Tasks.Task`1[[System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.Domain.Designation, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]] -> System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.ViewModels.Designations.DesignationListVM, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.CompanySettings.Services.Designations.DesignationService.GetDesignations(Int64 TenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Services\Designations\DesignationService.cs:line 59
+   at CWB.CompanySettings.Controllers.DesignationController.GetDesignations(Int64 tenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Controllers\DesignationController.cs:line 40
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in D:\EvolutionSoftware\CWB-Latest\CWB\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2025-12-24 11:13:00.7899 ERROR Error: AutoMapper.AutoMapperMappingException: Missing type map configuration or unsupported mapping.
+
+Mapping types:
+AsyncStateMachineBox`1 -> IEnumerable`1
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1[[System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.Domain.UiList, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[CWB.CommonUtils.Common.Repositories.Repository`1+<GetAllAsync>d__7[[CWB.CompanySettings.Domain.UiList, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], CWB.CommonUtils, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.ViewModels.EmployeeMaster.UiListVM, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.CompanySettings.Services.EmployeeMaster.EmployeeService.GetAllUiList(Int64 TenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Services\EmployeeMaster\EmployeeService.cs:line 61
+   at CWB.CompanySettings.Controllers.EmployeeMasterController.GetAllUiList(Int64 tenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Controllers\EmployeeMasterController.cs:line 34
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in D:\EvolutionSoftware\CWB-Latest\CWB\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2025-12-24 11:13:01.5819 ERROR Error: AutoMapper.AutoMapperMappingException: Missing type map configuration or unsupported mapping.
+
+Mapping types:
+AsyncStateMachineBox`1 -> IEnumerable`1
+System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1+AsyncStateMachineBox`1[[System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.Domain.Permission_List, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e],[CWB.CommonUtils.Common.Repositories.Repository`1+<GetAllAsync>d__7[[CWB.CompanySettings.Domain.Permission_List, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], CWB.CommonUtils, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.IEnumerable`1[[CWB.CompanySettings.ViewModels.EmployeeMaster.Permission_ListVM, CWB.CompanySettings, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.CompanySettings.Services.EmployeeMaster.EmployeeService.GetAllPermissionList(Int64 TenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Services\EmployeeMaster\EmployeeService.cs:line 276
+   at CWB.CompanySettings.Controllers.EmployeeMasterController.GetAllPermissionList(Int64 tenantId) in D:\DockerTestCWB\CWB-Latest\CWB\CWB.CompanySettings\Controllers\EmployeeMasterController.cs:line 169
+   at lambda_method(Closure , Object , Object[] )
+   at Microsoft.Extensions.Internal.ObjectMethodExecutor.Execute(Object target, Object[] parameters)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.SyncActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeActionMethodAsync()
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeNextActionFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in D:\EvolutionSoftware\CWB-Latest\CWB\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26

@@ -173,6 +173,12 @@ namespace CWB.Masters.Services.ItemMaster
             }
             return rmObj;
         }
+        public async Task<IEnumerable<RawMaterialDetailVM>> GetAllRMPart(long tenantId)
+        {
+            
+            var part = await _rawMaterialDetailService.GetAllRMPart(tenantId); 
+            return part;
+        }
 
         public async Task<BoughtOutFinishDetailVM> GetBOFPart(int partId, long tenantId)
         {

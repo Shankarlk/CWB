@@ -39,6 +39,18 @@ namespace CWB.App.Services.ProductionPlanWo
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<IEnumerable<ProductionPlan_WoVM>>.GetAsync(uri, headers);
         }
+        public async Task<IEnumerable<ProductionPlan_WoVM>> AllProductionWoReadForProd()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/allproductionworeadforprod/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<IEnumerable<ProductionPlan_WoVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<ProductionPlan_WoVM>> GetAllReadyforProductionWo()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getallreadyforproductionwo/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<IEnumerable<ProductionPlan_WoVM>>.GetAsync(uri, headers);
+        }
 
         public async Task<List<ProductionPlan_WoVM>> ProductionPlanWoPost(IEnumerable<ProductionPlan_WoVM> productions)
         {
@@ -727,6 +739,24 @@ namespace CWB.App.Services.ProductionPlanWo
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<Mc_Wait_ListVM>>.GetAsync(uri, headers);
         }
+        public async Task<IEnumerable<TempMc_Wait_ListVM>> GetAllSetUpApprolList()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getallsetupapprovallist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<TempMc_Wait_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<TempMc_Wait_ListVM>> GetAllSetUpCnfList()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getallsetupcnflist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<TempMc_Wait_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<TempMc_Wait_ListVM>> GetAllBookOutList()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getallbookoutlist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<TempMc_Wait_ListVM>>.GetAsync(uri, headers);
+        }
         public async Task<Mc_Wait_ListVM> PostMc_Wait_List(Mc_Wait_ListVM purchaseDetailVM)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postmcwaitlist");
@@ -800,6 +830,12 @@ namespace CWB.App.Services.ProductionPlanWo
         public async Task<IEnumerable<Matl_Issue_ListVM>> GetAllMatl_Issue_List()
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getmatlissuelist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Matl_Issue_ListVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Matl_Issue_ListVM>> GetAllMatlIssueListForShop()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getallmatlissuelistforshop/{tenantId}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<Matl_Issue_ListVM>>.GetAsync(uri, headers);
         }

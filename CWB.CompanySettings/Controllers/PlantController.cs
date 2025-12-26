@@ -211,7 +211,7 @@ namespace CWB.CompanySettings.Controllers
         public async Task<IActionResult> GetCitys(long tenantId)
         {
             // var companyTypes = _plantService.GetPlants(tenantId);
-            var plants =  _plantService.GetCitys(tenantId);
+            var plants =  await _plantService.GetCitysAsync(tenantId);
             return Ok(plants);
         }
         [HttpGet]
@@ -249,7 +249,7 @@ namespace CWB.CompanySettings.Controllers
         public async Task<IActionResult> GetCountrys(long tenantId)
         {
             // var companyTypes = _plantService.GetPlants(tenantId);
-            var plants =  _plantService.GetCountrys(tenantId);
+            var plants = await _plantService.GetCountrysAsync(tenantId);
             return Ok(plants);
         }
 

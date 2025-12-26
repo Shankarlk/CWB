@@ -199,6 +199,13 @@ namespace CWB.App.Services.Masters
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<MPMakeFromVM>>.GetAsync(uri, headers);
         }
+        
+        public async Task<IEnumerable<MPMakeFromVM>> GetAllMPMakeFromList()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/allmpmakefromlist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<MPMakeFromVM>>.GetAsync(uri, headers);
+        }
 
         public async Task<MPMakeFromVM> GetMakeFrom(string id)
         {
@@ -267,6 +274,12 @@ namespace CWB.App.Services.Masters
             var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getrmpart/{partId}/{tenantId}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<RawMaterialDetailVM>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<RawMaterialDetailVM>> GetAllRMPart()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getallrmpart/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<IEnumerable<RawMaterialDetailVM>>.GetAsync(uri, headers);
         }
 
         public async Task<BoughtOutFinishDetailVM> GetBOFPart(int partId)
@@ -354,6 +367,12 @@ namespace CWB.App.Services.Masters
         public async Task<IEnumerable<ItemMasterPartVM>> ItemMasterParts()
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbms/itemmasterparts/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<ItemMasterPartVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<ItemMasterPartVM>> MasterPartList()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/masterpartlist/{tenantId}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<ItemMasterPartVM>>.GetAsync(uri, headers);
         }

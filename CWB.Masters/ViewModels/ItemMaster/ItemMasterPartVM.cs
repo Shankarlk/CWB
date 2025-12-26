@@ -27,5 +27,13 @@ namespace CWB.Masters.ViewModels.ItemMaster
         public long TenantId { get; set; }
         public char Inv_Trans { get; set; }
         public char Linked_to_BOM { get; set; }
+        public string FinalPart { get; set; }
+        public string MandocAvl { get; set; }
+        public string DocStatus { get; set; }
+        public string RmAvl { get; set; }
+        public string SupplierAvl { get; set; }
+        public string BomAvl { get; set; }
+        public string MasterDisplay { get; set; }
+        public string ListAssembly { get; set; }
     }
 }

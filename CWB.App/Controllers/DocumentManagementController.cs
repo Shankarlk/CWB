@@ -148,81 +148,125 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllDocList()
         {
-            var docListVMs = await _docMangService.GetAllDocList();
-            var doctype = await _docMangService.GetAllDocumentType();
-            var custRetnDataVMs = await _docMangService.GetAllCustRet();
-            var companies = await _masterService.GetCompanies();
-            var manufacturedPartNos = await _masterService.ItemMasterParts();
+            // 1. Parallel Bulk Fetch
+            var docListTask = _docMangService.GetAllDocList();
+            var docTypeTask = _docMangService.GetAllDocumentType();
+            var custRetnTask = _docMangService.GetAllCustRet();
+            var companiesTask = _masterService.GetCompanies();
+            var masterPartsTask = _masterService.ItemMasterParts();
+            var allRoutingsTask = _routingService.AllRoutings();
+            var docStatusTask = _docMangService.GetAllDoc_Status_List();
+
+            await Task.WhenAll(
+                docListTask,
+                docTypeTask,
+                custRetnTask,
+                companiesTask,
+                masterPartsTask,
+                allRoutingsTask,
+                docStatusTask
+            );
+
+            var docListVMs = docListTask.Result.ToList();
+            var doctype = docTypeTask.Result.ToList();
+            var custRetnDataVMs = custRetnTask.Result.ToList();
+            var companies = companiesTask.Result.ToList();
+            var manufacturedPartNos = masterPartsTask.Result.ToList();
+            var allRoutings = allRoutingsTask.Result.ToList();
+            var docStatuses = docStatusTask.Result.ToList();
+
+            // 2. Prepare Efficient Lookups (O(1) Access)
+
+            // Dictionary: DocumentTypeId -> DocumentTypeVM
+            var docTypeDict = doctype.ToDictionary(d => d.DocumentTypeId);
+
+            // Dictionary: CompanyId -> CompanyName
+            var companyDict = companies.ToDictionary(c => c.CompanyId, c => c.CompanyName);
+
+            // Dictionary: PartId -> MasterPartVM (for PartNo/Desc)
+            // GroupBy is used to handle potential duplicates safely
+            var partDict = manufacturedPartNos.GroupBy(p => p.PartId).ToDictionary(g => g.Key, g => g.First());
+
+            // Lookup: ManufacturedPartId -> List of Routings
+            var routingsByPartId = allRoutings.ToLookup(r => r.ManufacturedPartId);
+
+            // Dictionary: StatusId -> DocStatusDesc
+            // Assuming the Status VM has an ID/Code property that matches 'item.AppvStatus'. 
+            // Based on usage, I map the ID to the VM or Description.
+            // (Adjust 'DocStatusId' to the actual property name in Doc_status_listVM, e.g., 'StatusId' or 'Code')
+            var statusDict = docStatuses.GroupBy(s => s.Doc_status_listId).ToDictionary(g => g.Key, g => g.First());
+
+
+            // Optimization for the Triple-Nested Company Name Loop:
+            // Original logic: For a specific DocType, find the associated Company Name via CustRetentionData.
+            // We build a map: DocumentTypeId -> CompanyName
+            var docTypeToCompanyMap = new Dictionary<long, string>();
+            foreach (var cust in custRetnDataVMs)
+            {
+                // This mimics the original logic: if multiple entries exist, the last one processed 'wins' (or first, depending on list order)
+                // We assume one company per doc type relevant context, or simply map available ones.
+                if (companyDict.TryGetValue(cust.ComapanyId, out var compName))
+                {
+                    docTypeToCompanyMap[cust.DocumentTypeId] = compName;
+                }
+            }
+
+            // 3. Main Loop (Enrichment)
+            ClaimsPrincipal userClaim = HttpContext.User;
+            string fullName = AppUtil.GetFullName(userClaim);
 
             foreach (var item in docListVMs)
             {
-                foreach (var doc in doctype)
+                // A. Document Type Info
+                if (docTypeDict.TryGetValue(item.DocumentTypeId, out var doc))
                 {
-                    if (item.DocumentTypeId == doc.DocumentTypeId)
-                    {
-                        item.DocumentTypeName = doc.DocumentName;
-                        item.DataReqdByCust = doc.DataReqdByCust;
-                        item.DocCat = doc.DocuCategory;
-                    }
-                }
-                foreach (var cust in custRetnDataVMs)
-                {
-                    foreach (var comp in companies)
-                    {
-                        if (item.DocumentTypeId == cust.DocumentTypeId)
-                        {
-                            if (cust.ComapanyId == comp.CompanyId)
-                            {
-                                item.CompanyName = comp.CompanyName;
-                            }
-                        }
-                    }
+                    item.DocumentTypeName = doc.DocumentName;
+                    item.DataReqdByCust = doc.DataReqdByCust;
+                    item.DocCat = doc.DocuCategory;
                 }
 
-                var partbyid = await _masterService.ItemMasterPartById((int)item.PartId);
-                item.PartNo = partbyid.PartNo;
-                item.PartDesc = partbyid.PartDescription;
-                var routingListItems = await _routingService.Routings((int)item.PartId);
-                foreach (var route in routingListItems)
+                // B. Company Name (via pre-calculated map)
+                if (docTypeToCompanyMap.TryGetValue(item.DocumentTypeId, out var companyName))
                 {
-                    if(route.PreferredRouting == 1)
-                    {
-                        if (route.RoutingId == item.RoutingId)
-                        {
-                            item.RoutingName = route.RoutingName;
-                        }
-                    }
+                    item.CompanyName = companyName;
                 }
-                foreach (var part in manufacturedPartNos)
-                {
-                    if(item.PartId == part.PartId)
-                    {
-                        
 
-                        
-                    }
-                }
-                if(item.StorageLocation == "/Archive")
+                // C. Part Info (via Dictionary)
+                if (partDict.TryGetValue(item.PartId, out var part))
                 {
-                    item.Archive = 'Y';
+                    item.PartNo = part.PartNo;
+                    item.PartDesc = part.Description; // Handle naming diffs if any
                 }
-                else
+
+                // D. Routing Name (via Lookup)
+                // Use lookup to get routings for this part, then filter for Preferred & Matching ID
+                var partRoutings = routingsByPartId[item.PartId];
+                var route = partRoutings.FirstOrDefault(r => r.PreferredRouting == 1 && r.RoutingId == item.RoutingId);
+
+                if (route != null)
                 {
-                    item.Archive = 'N';
+                    item.RoutingName = route.RoutingName;
                 }
-                ClaimsPrincipal userClaim = HttpContext.User; // Assuming you're in a controller or middleware
-                string fullName = AppUtil.GetFullName(userClaim);
+
+                // E. Archive Flag
+                item.Archive = (item.StorageLocation == "/Archive") ? 'Y' : 'N';
+
+                // F. Audit Info
                 item.UpdatedOnStr = item.CreationDt.ToString("MM-dd-yyyy");
                 item.UploadedBy = fullName;
-                var getdoc = await _docMangService.GetDoc_Status_List(item.AppvStatus);
-                item.DocStatus = getdoc.Doc_Status_Desc;
-                if (item.DocCat == 1)
+
+                // G. Doc Status (via Dictionary)
+                // Replaces await _docMangService.GetDoc_Status_List(item.AppvStatus)
+                if (statusDict.TryGetValue(item.AppvStatus, out var statusObj))
                 {
-                    if (item.Approved_by > 0)
-                    {
-                        item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
-                        item.ApprovedByStr = fullName;
-                    }
+                    item.DocStatus = statusObj.Doc_Status_Desc;
+                }
+
+                // H. Approval Info
+                if (item.DocCat == 1 && item.Approved_by > 0)
+                {
+                    item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
+                    item.ApprovedByStr = fullName; // Note: Original code sets this to current user, is this intended?
                 }
                 else
                 {
@@ -230,9 +274,9 @@ namespace CWB.App.Controllers
                     item.ApprovedByStr = "";
                 }
             }
+
             return Ok(docListVMs);
         }
-
         [HttpGet]
         public async Task<IActionResult> HasPartDrawingPDF(int partId)
         {

@@ -55,9 +55,9 @@ namespace CWB.CompanySettings.Services.EmployeeMaster
             return uiListVM;
         }
 
-        public IEnumerable<UiListVM> GetAllUiList(long TenantId)
+        public async Task<IEnumerable<UiListVM>> GetAllUiList(long TenantId)
         {
-            var designations = _ui_ListRepository.GetRangeAsync(d => d.TenantId == TenantId);
+            var designations = await _ui_ListRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<UiListVM>>(designations);
         }
 
@@ -270,9 +270,9 @@ namespace CWB.CompanySettings.Services.EmployeeMaster
             return uiListVM;
         }
 
-        public IEnumerable<Permission_ListVM> GetAllPermissionList(long TenantId)
+        public async Task<IEnumerable<Permission_ListVM>> GetAllPermissionListAsync(long TenantId)
         {
-            var designations = _IPermission_ListRepository.GetRangeAsync(d => d.TenantId == TenantId);
+            var designations = await _IPermission_ListRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<Permission_ListVM>>(designations);
         }
 

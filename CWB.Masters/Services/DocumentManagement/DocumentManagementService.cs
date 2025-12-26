@@ -546,6 +546,11 @@ namespace CWB.Masters.Services.DocumentManagement
             }
             return _mapper.Map<Doc_status_listVM>(docStatus);
         }
+        public async Task<IEnumerable<Doc_status_listVM>> GetAllDocListStatus(long tenantId)
+        {
+            var docStatus = await _docStatusListRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<Doc_status_listVM>>(docStatus);
+        }
 
         public async Task<bool> DeleteDocType(long doctypeId, long tenantId)
         {

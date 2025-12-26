@@ -1661,6 +1661,60 @@ namespace CWB.ProductionPlanWO.Controllers
             var result = await _woSerivce.DeleteInv_Mismatch_List(Id, tenantId);
             return Ok(result);
         }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllSetUpApprolList)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<TempMc_Wait_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllSetUpApprolList(long tenantId)
+        {
+            var result = await _woSerivce.GetAllSetUpApprolList(tenantId);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllSetUpCnfList)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<TempMc_Wait_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllSetUpCnfList(long tenantId)
+        {
+            var result = await _woSerivce.GetAllSetUpCnfList(tenantId);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllBookOutList)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<TempMc_Wait_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllBookOutList(long tenantId)
+        {
+            var result = await _woSerivce.GetAllBookOutList(tenantId);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.AllProductionWoReadForProd)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<ProductionPlan_WOVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> AllProductionWoReadForProd(long tenantId)
+        {
+            var result = await _woSerivce.AllProductionWoReadForProd(tenantId);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllReadyforProductionWo)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<ProductionPlan_WOVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllReadyforProductionWo(long tenantId)
+        {
+            var result = await _woSerivce.GetAllReadyforProductionWo(tenantId);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllMatlIssueListForShop)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Matl_Issue_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllMatlIssueListForShop(long tenantId)
+        {
+            var result = await _woSerivce.GetAllMatlIssueListForShop(tenantId);
+            return Ok(result);
+        }
 
 
     }

@@ -29,9 +29,9 @@ namespace CWB.CompanySettings.Controllers
         [Route(ApiRoutes.EmployeeMaster.GetAllUiList)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<UiListVM>))]
         [Authorize(Roles = Roles.ADMIN)]
-        public IActionResult GetAllUiList(long tenantId)
+        public async Task<IActionResult> GetAllUiListAsync(long tenantId)
         {
-            var designations = _employeeSerivce.GetAllUiList(tenantId);
+            var designations = await _employeeSerivce.GetAllUiList(tenantId);
             return Ok(designations);
         }
         [HttpPost]
@@ -164,9 +164,9 @@ namespace CWB.CompanySettings.Controllers
         [Route(ApiRoutes.EmployeeMaster.GetAllPermissionList)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<Permission_ListVM>))]
         [Authorize(Roles = Roles.ADMIN)]
-        public IActionResult GetAllPermissionList(long tenantId)
+        public async Task<IActionResult> GetAllPermissionListAsync(long tenantId)
         {
-            var designations = _employeeSerivce.GetAllPermissionList(tenantId);
+            var designations = await _employeeSerivce.GetAllPermissionListAsync(tenantId);
             return Ok(designations);
         }
         [HttpPost]

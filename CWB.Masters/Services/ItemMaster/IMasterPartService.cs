@@ -19,6 +19,7 @@ namespace CWB.Masters.Services.ItemMaster
         Task<MasterPartVM> GetMasterPart(int partId);
         Task<ManufacturedPartNoDetailVM> GetManufPart(int partId, long tenantId);
         Task<RawMaterialDetailVM> GetRMPart(int partId, long tenantId);
+        Task<IEnumerable<RawMaterialDetailVM>> GetAllRMPart(long tenantId);
         Task<BoughtOutFinishDetailVM> GetBOFPart(int partId, long tenantId);
 
         Task<ManufacturedPartNoDetailVM> MasterPart(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM);

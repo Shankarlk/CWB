@@ -115,6 +115,10 @@ namespace CWB.App.Controllers
             {
                 model.ProdDept = false;
             }
+            if (model.NoOfShifts == 0)
+            {
+                model.NoOfShifts= 1;
+            }
             var result = await _departmentService.PostDepartment(model);
             return Ok(result);
         }

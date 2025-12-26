@@ -204,6 +204,12 @@ namespace CWB.ProductionPlanWO.Utils
             public const string GetAllInv_Mismatch_List = Base + "/getinvmismatchlist/{tenantId}";
             public const string PostInv_Mismatch_List = Base + "/postinvmismatchlist";
             public const string DeleteInv_Mismatch_List = Base + "/deleteinvmismatchlist/{Id}/{tenantId}";
+            public const string GetAllSetUpApprolList = Base + "/getallsetupapprovallist/{tenantId}";
+            public const string GetAllSetUpCnfList = Base + "/getallsetupcnflist/{tenantId}";
+            public const string GetAllBookOutList = Base + "/getallbookoutlist/{tenantId}";
+            public const string AllProductionWoReadForProd = Base + "/allproductionworeadforprod/{tenantId}";
+            public const string GetAllReadyforProductionWo = Base + "/getallreadyforproductionwo/{tenantId}";
+            public const string GetAllMatlIssueListForShop = Base + "/getallmatlissuelistforshop/{tenantId}";
         }
     }
 }

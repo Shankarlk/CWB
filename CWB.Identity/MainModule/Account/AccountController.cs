@@ -257,7 +257,7 @@ namespace CWB.Identity
                 return SignOut(new AuthenticationProperties { RedirectUri = url }, vm.ExternalAuthenticationScheme);
             }
 
-            return View("LoggedOut", vm);
+            return Redirect(vm.PostLogoutRedirectUri);
         }
 
         [HttpGet]

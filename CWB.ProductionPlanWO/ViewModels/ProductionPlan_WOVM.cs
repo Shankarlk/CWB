@@ -48,5 +48,17 @@ namespace CWB.ProductionPlanWO.ViewModels
         public bool Done { get; set; }
         public string Comment { get; set; }
         public long TenantId { get; set; }
+        public string ReadyForProd { get; internal set; }
+        public int NoOfOpenNc { get; internal set; }
+        public string SoComplDateStr { get; internal set; }
+        public string PartTypeName { get; internal set; }
+        public string PlanStartDateStr { get; internal set; }
+        public string ActStartDateStr { get; internal set; }
+        public string DataChange { get; internal set; }
+        public string CsStartDate { get; internal set; }
+        public string CsEndDate { get; internal set; }
+        public string PsStartDate { get; internal set; }
+        public string PsEndDate { get; internal set; }
+        public string CriticalParts { get; internal set; }
     }
 }

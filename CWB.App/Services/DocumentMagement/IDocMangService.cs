@@ -34,5 +34,6 @@ namespace CWB.App.Services.DocumentMagement
         Task<bool> CheckDocTypeName(string docTypeName);
         Task<bool> CheckExtnName(string extnName);
         Task<Doc_status_listVM> GetDoc_Status_List(long extnName);
+        Task<IEnumerable<Doc_status_listVM>> GetAllDoc_Status_List();
     }
 }

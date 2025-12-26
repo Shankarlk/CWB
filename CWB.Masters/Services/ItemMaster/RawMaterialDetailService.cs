@@ -615,6 +615,11 @@ namespace CWB.Masters.Services.ItemMaster
             }
             return new RawMaterialDetailVM { RawMaterialDetailId = -1 };
         }
+        public async Task<IEnumerable<RawMaterialDetailVM>> GetAllRMPart(long tenantId)
+        {
+            var part = _rawMaterialDetailRepository.GetRangeAsync(m => m.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<RawMaterialDetailVM>>(part);
+        }
 
 
     }

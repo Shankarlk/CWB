@@ -29,5 +29,22 @@ namespace CWB.ProductionPlanWO.ViewModels
         public DateTime? Act_End_time { get; set; }
         public decimal Mc_TPT { get; set; }
         public long TenantId { get; set; }
+
+        public string ShopName { get; set; }
+        public string McName { get; set; }
+        public string WoNumber { get; set; }
+        public string PartNo { get; set; }
+        public string RoutingName { get; set; }
+        public string OprNoName { get; set; }
+        public string WoQnty { get; set; }
+        public string MatlIssued { get; set; }
+        public string PlanStartStr { get; set; }
+        public string SetUpTimeStr { get; set; }
+        public string MatlReceptTime { get; set; }
+        public string PlannedSetupTime { get; set; }
+        public long QntyOffered { get; internal set; }
+        public long Accepted { get; internal set; }
+        public long NonConQnty { get; internal set; }
+        public string UomName { get; internal set; }
     }
 }

@@ -90,122 +90,91 @@ namespace CWB.App.Controllers
                     HttpContext.Session.SetString("Permissions", JsonConvert.SerializeObject(res));
                     return View();
                 }
-                if (sorgs != null && sorgs.Count > 0)
+
+                //---------------------------
+                // 1) Department-Based Role UI List (FromDept = "Y")
+                //---------------------------
+                foreach (var sorg in sorgs)
                 {
-                    //-----------------------------------------
-                    // 1) Department-Based Role UI (FromDept = "Y")
-                    //-----------------------------------------
-                    foreach (var sorg in sorgs)
+                    var deptrole = deptroles.Where(d => d.Dept_Struct_Id == sorg.Dept_Posn).ToList();
+                    foreach (var dept in deptrole)
                     {
-                        var deptRoleList = deptroles.Where(d => d.Dept_Struct_Id == sorg.Dept_Posn).ToList();
-
-                        foreach (var deptRole in deptRoleList)
+                        var result = roleui.Where(r => r.RoleId == dept.Role_Access_Id).ToList();
+                        foreach (var rui in result)
                         {
-                            var result = roleui.Where(r => r.RoleId == deptRole.Role_Access_Id).ToList();
-                            // ---------- Inside rui loop ----------
-                            foreach (var rui in result)
-                            {
-                                // Split comma-separated Ui_Ids
-                                var uiIds = rui.Ui_Id.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                                     .Select(x => x.Trim())
-                                                     .ToList();
+                            var vm = new Role_UI_ListVM();
 
-                                foreach (var uiIdStr in uiIds)
-                                {
-                                    if (!int.TryParse(uiIdStr, out int uiId))
-                                        continue;
+                            // Copy base details
+                            vm.Role_Ui_ListId = rui.Role_Ui_ListId;
+                            vm.RoleId = rui.RoleId;
+                            vm.Ui_Id = rui.Ui_Id;
 
-                                    var vm = new Role_UI_ListVM
-                                    {
-                                        Role_Ui_ListId = rui.Role_Ui_ListId,
-                                        RoleId = rui.RoleId,
-                                        Ui_Id = uiId.ToString(),
-                                        Active = sorg.Active,
-                                        FromDept = "Y",
-                                        Add_dateStr = sorg.Add_date.ToString("dd-MM-yyyy"),
-                                        Deact_dateStr = sorg.Deact_date != DateTime.MinValue
-                                                         ? sorg.Deact_date.ToString("dd-MM-yyyy")
-                                                         : string.Empty
-                                    };
+                            // Get Role Name
+                            var r = role.FirstOrDefault(u => u.Role_ListId == rui.RoleId);
+                            vm.RoleName = r?.Role_Desc ?? "";
 
-                                    // Lookup Role Name
-                                    var r = role.FirstOrDefault(u => u.Role_ListId == rui.RoleId);
-                                    vm.RoleName = r?.Role_Desc ?? "";
+                            // Build Menu Hierarchy
+                            BuildUiHierarchy(vm, designation, rui.Ui_Id);
 
-                                    // Build Menu Hierarchy directly from designation (no UI_Part_linked_to)
-                                    var d = designation.FirstOrDefault(u => u.UiListId == uiId);
-                                    if (d != null)
-                                    {
-                                        // Directly assign menu names
-                                        vm.Menu1 = d.Menu1 ?? "";
-                                        vm.Menu2 = d.Menu2 ?? "";
-                                        vm.Menu3 = d.Menu3 ?? "";
-                                        vm.Menu4 = d.Menu4 ?? "";
-                                        vm.Menu5 = d.Menu5 ?? "";
-                                        vm.UiLevel = string.Join("+", new[] { vm.Menu1, vm.Menu2, vm.Menu3, vm.Menu4, vm.Menu5 }
-                                                                    .Where(x => !string.IsNullOrEmpty(x)));
-                                    }
+                            // Map Permissions
+                            MapPermissions(vm, rui.PermissionId);
 
-                                    role_UI_ListVMs.Add(vm);
-                                }
-                            }
+                            vm.Add_dateStr = sorg.Add_date.ToString("dd-MM-yyyy");
+                            vm.Deact_dateStr = sorg.Deact_date != DateTime.MinValue ? sorg.Deact_date.ToString("dd-MM-yyyy") : string.Empty;
+                            vm.Active = sorg.Active;
+                            vm.FromDept = "Y";
 
+                            role_UI_ListVMs.Add(vm);
                         }
                     }
                 }
 
-                // ---------- Inside emui loop ----------
+                //---------------------------
+                // 2) Employee-Specific UI List (FromDept = "N")
+                //---------------------------
                 foreach (var emui in empUiList)
                 {
-                    var uiIds = emui.Ui_Id.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                                          .Select(x => x.Trim())
-                                          .ToList();
+                    var vm = new Role_UI_ListVM();
 
-                    foreach (var uiIdStr in uiIds)
+                    // Copy base details
+                    vm.Role_Ui_ListId = emui.Employee_UI_ListId;
+                    vm.Ui_Id = emui.Ui_Id.ToString();
+                    vm.RoleId = 0; // Since this is directly assigned to Employee
+                    var empDept = sorgs.FirstOrDefault();
+
+                    if (empDept != null)
                     {
-                        if (!int.TryParse(uiIdStr, out int uiId))
-                            continue;
+                        // 2. Find role mapping for this department
+                        var deptRole = deptroles.FirstOrDefault(d => d.Dept_Struct_Id == empDept.Dept_Posn);
 
-                        var vm = new Role_UI_ListVM
+                        if (deptRole != null)
                         {
-                            Role_Ui_ListId = emui.Employee_UI_ListId,
-                            Ui_Id = uiId.ToString(),
-                            RoleId = 0,
-                            Active = emui.Active,
-                            FromDept = "N",
-                            Add_dateStr = emui.Add_date.ToString("dd-MM-yyyy"),
-                            Deact_dateStr = emui.Deact_date != DateTime.MinValue
-                                             ? emui.Deact_date.ToString("dd-MM-yyyy")
-                                             : string.Empty
-                        };
-
-                        // Get role name from dept role if available
-                        var empDept = sorgs.FirstOrDefault();
-                        if (empDept != null)
-                        {
-                            var deptRole = deptroles.FirstOrDefault(d => d.Dept_Struct_Id == empDept.Dept_Posn);
-                            if (deptRole != null)
-                            {
-                                var roleInfo = role.FirstOrDefault(r => r.Role_ListId == deptRole.Role_Access_Id);
-                                vm.RoleName = roleInfo?.Role_Desc ?? "";
-                            }
+                            // 3. Lookup the RoleName from role master
+                            //var roleInfo = role.FirstOrDefault(r => r.Role_ListId == deptRole.Role_Access_Id);
+                            vm.RoleName = string.Empty;
                         }
-
-                        // Build Menu Hierarchy (no UI_Part_linked_to)
-                        var d = designation.FirstOrDefault(u => u.UiListId == uiId);
-                        if (d != null)
+                        else
                         {
-                            vm.Menu1 = d.Menu1 ?? "";
-                            vm.Menu2 = d.Menu2 ?? "";
-                            vm.Menu3 = d.Menu3 ?? "";
-                            vm.Menu4 = d.Menu4 ?? "";
-                            vm.Menu5 = d.Menu5 ?? "";
-                            vm.UiLevel = string.Join("+", new[] { vm.Menu1, vm.Menu2, vm.Menu3, vm.Menu4, vm.Menu5 }
-                                                        .Where(x => !string.IsNullOrEmpty(x)));
+                            vm.RoleName = string.Empty; // No role mapping found
                         }
-
-                        role_UI_ListVMs.Add(vm);
                     }
+                    else
+                    {
+                        vm.RoleName = string.Empty; // No department found for employee
+                    }
+
+                    // Build Menu Hierarchy
+                    BuildUiHierarchy(vm, designation, emui.Ui_Id);
+
+                    // Map Access_Level to permissions
+                    MapPermissions(vm, emui.Access_Level);
+
+                    vm.Add_dateStr = emui.Add_date.ToString("dd-MM-yyyy");
+                    vm.Deact_dateStr = emui.Deact_date != DateTime.MinValue ? emui.Deact_date.ToString("dd-MM-yyyy") : string.Empty;
+                    vm.Active = emui.Active;
+                    vm.FromDept = "N";
+
+                    role_UI_ListVMs.Add(vm);
                 }
 
 
@@ -213,6 +182,53 @@ namespace CWB.App.Controllers
             }
             return View();
         }
+
+        private void BuildUiHierarchy(Role_UI_ListVM vm, IEnumerable<UiListVM> designation, string uiIdString)
+        {
+            if (string.IsNullOrWhiteSpace(uiIdString))
+            {
+                vm.UiLevel = "";
+                return;
+            }
+
+            // ✅ Split by commas, trim, convert to int
+            var uiIds = uiIdString.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                  .Select(id => Convert.ToInt32(id.Trim()))
+                                  .ToList();
+
+            // ✅ Map to UI name labels
+            var uiNames = uiIds
+                .Select(id => designation.FirstOrDefault(d => d.UiListId == id)?.UI_Name_Label)
+                .Where(name => !string.IsNullOrWhiteSpace(name))
+                .ToList();
+
+            // ✅ Assign Menu1..Menu5 if needed
+            if (uiNames.Count > 0) vm.Menu1 = uiNames.ElementAtOrDefault(0);
+            if (uiNames.Count > 1) vm.Menu2 = uiNames.ElementAtOrDefault(1);
+            if (uiNames.Count > 2) vm.Menu3 = uiNames.ElementAtOrDefault(2);
+            if (uiNames.Count > 3) vm.Menu4 = uiNames.ElementAtOrDefault(3);
+            if (uiNames.Count > 4) vm.Menu5 = uiNames.ElementAtOrDefault(4);
+
+            // ✅ Build UiLevel like "Masters+Item Masters+View/Edit Part No+Edit Part"
+            vm.UiLevel = string.Join("+", uiNames);
+        }
+        private void MapPermissions(Role_UI_ListVM vm, long permissionId)
+        {
+            vm.View_Allowed = "N";
+            vm.Add_Edit_Allowed = "N";
+            vm.Delete_Allowed = "N";
+            vm.Approval_Allowed = "N";
+            vm.PermissionId = permissionId;
+
+            switch (permissionId)
+            {
+                case 2: vm.View_Allowed = "Y"; break;
+                case 3: vm.View_Allowed = "Y"; vm.Add_Edit_Allowed = "Y"; break;
+                case 4: vm.View_Allowed = "Y"; vm.Add_Edit_Allowed = "Y"; vm.Delete_Allowed = "Y"; break;
+                case 5: vm.View_Allowed = "Y"; vm.Add_Edit_Allowed = "Y"; vm.Delete_Allowed = "Y"; vm.Approval_Allowed = "Y"; break;
+            }
+        }
+
 
         public IActionResult Privacy()
         {

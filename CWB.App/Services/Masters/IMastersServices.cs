@@ -47,6 +47,7 @@ namespace CWB.App.Services.Masters
         Task<PartPurchaseDetailsVM> PreferredSupplier(PartPurchaseDetailsVM manufacturedPartNoDetailVM);
         Task<MPBomVM> MPBOM(MPBomVM manufacturedPartNoDetailVM);
         Task<IEnumerable<MPMakeFromVM>> GetMPMakeFromListByPartId(string partId);
+        Task<IEnumerable<MPMakeFromVM>> GetAllMPMakeFromList();
         
         Task<IEnumerable<PartUOMVM>> GetPartsUOMs();
 
@@ -69,6 +70,7 @@ namespace CWB.App.Services.Masters
         Task<MPBomVM> GetBOM(string id);
 
         Task<IEnumerable<ItemMasterPartVM>> ItemMasterParts();
+        Task<IEnumerable<ItemMasterPartVM>> MasterPartList();
         Task<IEnumerable<PartStatusChangeLogVM>> GetPartStatus();
         Task<IEnumerable<ItemMasterContentVM>> ItemMasterContents();
         Task<ItemMasterDocListVM> PostItemMasteDocList(ItemMasterDocListVM masterDocListVM);
@@ -92,6 +94,7 @@ namespace CWB.App.Services.Masters
 
         Task<ManufacturedPartNoDetailVM> GetManufPart(int partId);
         Task<RawMaterialDetailVM> GetRMPart(int partId);
+        Task<IEnumerable<RawMaterialDetailVM>> GetAllRMPart();
         Task<BoughtOutFinishDetailVM> GetBOFPart(int partId);
         Task<UOMVM> AddUOM(UOMVM model);
         Task<bool> CheckUOM(string uomName);

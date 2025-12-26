@@ -14,6 +14,8 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<ProductionPlan_WoVM> UpdateProductionPlan_Wo(ProductionPlan_WoVM productions);
         Task<ProductionPlan_WoVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WoVM productions);
         Task<IEnumerable<ProductionPlan_WoVM>> AllProductionPlan_Wo();
+        Task<IEnumerable<ProductionPlan_WoVM>> AllProductionWoReadForProd();
+        Task<IEnumerable<ProductionPlan_WoVM>> GetAllReadyforProductionWo();
         Task<List<ProcPlanVM>> ProcPlanPost(IEnumerable<ProcPlanVM> procPlans);
         Task<List<WorkOrdersVM>> UpdateMultipleWorkOrder(IEnumerable<WorkOrdersVM> workOrders);
         Task<List<BOMListVM>> BomListPost(IEnumerable<BOMListVM> bomlist);
@@ -116,6 +118,9 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<TempMc_Timeslot_ListVM> PostTempMc_Timeslot_List(TempMc_Timeslot_ListVM FinalDocTypeVM);
         Task<bool> DeleteTempMc_Timeslot_List(long itemMasterDocListId);
         Task<IEnumerable<Mc_Wait_ListVM>> GetAllMc_Wait_List();
+        Task<IEnumerable<TempMc_Wait_ListVM>> GetAllSetUpApprolList();
+        Task<IEnumerable<TempMc_Wait_ListVM>> GetAllSetUpCnfList();
+        Task<IEnumerable<TempMc_Wait_ListVM>> GetAllBookOutList();
         Task<Mc_Wait_ListVM> PostMc_Wait_List(Mc_Wait_ListVM FinalDocTypeVM);
         Task<bool> DeleteMc_Wait_List(long itemMasterDocListId);
         Task<IEnumerable<Matl_Issue_SettingsVM>> GetAllMatl_Issue_Settings();
@@ -128,6 +133,7 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<DispatchDetailsVM> PostDispatchDetails(DispatchDetailsVM FinalDocTypeVM);
         Task<bool> DeleteDispatchDetails(long itemMasterDocListId);
         Task<IEnumerable<Matl_Issue_ListVM>> GetAllMatl_Issue_List();
+        Task<IEnumerable<Matl_Issue_ListVM>> GetAllMatlIssueListForShop();
         Task<Matl_Issue_ListVM> PostMatl_Issue_List(Matl_Issue_ListVM FinalDocTypeVM);
         Task<bool> DeleteMatl_Issue_List(long itemMasterDocListId);
         Task<IEnumerable<TempMc_Wait_ListVM>> GetAllTempMc_Wait_List();

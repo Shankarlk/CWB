@@ -2456,7 +2456,7 @@ namespace CWB.App.Controllers
         } 
         
         [HttpGet]
-        public async Task<IActionResult> AllProductionWo()  // AllProductionWoReadForProd
+        public async Task<IActionResult> AllProductionWos()  // AllProductionWoReadForProd
         {
             var productions = await _woService.AllProductionPlan_Wo();
             var masterparts = await _masterService.ItemMasterParts();
@@ -2561,7 +2561,134 @@ namespace CWB.App.Controllers
                 item.NoOfDocWf = docPendingApprovalCount;
             }
             return Ok(productions);
-        }   
+        }
+        [HttpGet]
+        public async Task<IActionResult> AllProductionWo()
+        {
+            // 1. Bulk Fetch Data (Parallelize Backend & External Service Calls)
+            var productionTask = _woService.AllProductionWoReadForProd();
+            var masterPartsTask = _masterService.ItemMasterParts();
+            var customerTask = _baService.GetCustomerOrders();
+            var allDocsTask = _docMangService.GetAllDocList();
+            var allSalesOrdersTask = _baService.AllSalesOrders();
+            var allRoutingStepsTask = _routingService.AllRoutingSteps();
+
+            await Task.WhenAll(productionTask, masterPartsTask, customerTask, allDocsTask, allSalesOrdersTask, allRoutingStepsTask);
+
+            // 2. Prepare Data Structures (Dictionaries & Lookups for O(1) access)
+            var productions = productionTask.Result.ToList();
+            var masterparts = masterPartsTask.Result.ToDictionary(p => p.PartId);
+            var customers = customerTask.Result.ToList();
+
+            // Dictionary for fast Sales Order lookup
+            var salesOrdersDict = allSalesOrdersTask.Result.ToDictionary(s => s.SalesOrderId);
+
+            // Lookup for Docs grouped by RoutingId (Drastically speeds up the count logic)
+            var docsByRouting = allDocsTask.Result.ToLookup(d => d.RoutingId);
+
+            // Lookup for Routing Steps grouped by RoutingId
+            var stepsByRouting = allRoutingStepsTask.Result.ToLookup(r => r.RoutingId);
+
+            // 3. Pre-fetch Operational Doc Requirements (Optimization)
+            // Identify all unique Operation IDs used across these WOs to batch-fetch their doc types
+            var uniqueOpIds = productions
+                .SelectMany(p => stepsByRouting[(int)p.RoutingId])
+                .Select(step => Convert.ToInt64(step.StepOperation))
+                .Distinct()
+                .ToList();
+
+            // Create tasks to fetch doc types for each unique operation in parallel
+            var opDocTasks = uniqueOpIds.ToDictionary(
+                id => id,
+                id => _operationService.GetOperationalDocTypesByOptId(id)
+            );
+
+            await Task.WhenAll(opDocTasks.Values);
+
+            // Dictionary: OperationId -> List of Mandatory Doc Types
+            var opDocsMap = opDocTasks.ToDictionary(k => k.Key, k => k.Value.Result.ToList());
+
+            // 4. Main Loop for Data Enrichment
+            foreach (var item in productions)
+            {
+                // A. Populate Part Details
+                if (masterparts.TryGetValue(item.PartId, out var imp))
+                {
+                    item.PartNo = imp.PartNo;
+                    item.PartDesc = imp.Description;
+                }
+
+                // B. Sales Order Logic
+                // OPTIMIZATION: Use dictionary lookup instead of await _baService.GetOneSO(...)
+                SalesOrderVM so = null;
+                salesOrdersDict.TryGetValue(item.SalesOrderId, out so);
+
+                if (so != null)
+                {
+                    // Logic for Direct SO
+                    if (item.PlanCompletionDate >= so.RequiredByDate && item.CalcWOQty >= so.RequiredQuantity)
+                        item.WoRelease = "Y";
+                    else
+                        item.WoRelease = "N";
+
+                    var cust = customers.FirstOrDefault(c => c.CustomerOrderId == so.CustomerOrderId);
+                    if (cust != null) item.Customer = cust.CustomerName;
+                }
+                else
+                {
+                    // Logic for SO via Relations
+                    // NOTE: Kept internal API call as requested ("except GetSoWoRel")
+                    var wosos = await _woService.GetSoWoRel(item.WoId);
+
+                    foreach (var woso in wosos)
+                    {
+                        // OPTIMIZATION: Use dictionary lookup for the related SO
+                        SalesOrderVM sos = null;
+                        salesOrdersDict.TryGetValue(woso.SalesOrderId, out sos);
+
+                        if (sos != null)
+                        {
+                            item.SoComplDateStr = sos.RequiredByDateStr;
+
+                            if (sos.RequiredByDate > item.PlanCompletionDate)
+                                item.WoRelease = "Y";
+                            else
+                                item.WoRelease = "N";
+
+                            var cust = customers.FirstOrDefault(c => c.CustomerOrderId == sos.CustomerOrderId);
+                            if (cust != null) item.Customer = cust.CustomerName;
+                        }
+                    }
+                }
+
+                // C. Document Workflow Logic
+                // OPTIMIZATION: Use pre-fetched steps and pre-fetched doc requirements
+                var oprnos = stepsByRouting[(int)item.RoutingId];
+                int docPendingApprovalCount = 0;
+
+                // Retrieve all docs for this Routing once (from Lookup)
+                var wODocs = docsByRouting[item.RoutingId];
+
+                foreach (var op in oprnos)
+                {
+                    long opId = Convert.ToInt64(op.StepOperation);
+
+                    // Retrieve pre-fetched requirements for this operation
+                    if (opDocsMap.TryGetValue(opId, out var docmand) && docmand.Any())
+                    {
+                        // Count matching docs from the pre-filtered wODocs list
+                        var pendingDocs = wODocs.Count(doc =>
+                            doc.AppvStatus == 1 &&
+                            docmand.Any(docMand => doc.DocumentTypeId == docMand.DocumentTypeId));
+
+                        docPendingApprovalCount += pendingDocs;
+                    }
+                }
+                item.NoOfDocWf = docPendingApprovalCount;
+            }
+
+            return Ok(productions);
+        }
         [HttpGet]
         public async Task<IActionResult> AllRMWo(int rmpartids)
         {
@@ -7319,7 +7446,7 @@ namespace CWB.App.Controllers
                 return Ok(result);
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllMatl_Issue_List()
+        public async Task<IActionResult> GetAllMatl_Issue_Lists()
         {
             var result = await _woService.GetAllMatl_Issue_List();
             var tempoprs = await _woService.GetAllTempOpr_List();
@@ -7371,6 +7498,100 @@ namespace CWB.App.Controllers
     .GroupBy(x => new { x.PartNo, x.Issue_Qnty, x.IssueMovDtStr, x.OpNo, x.WoNumber })
     .Select(g => g.First()) // Take the first full original object
     .ToList();
+            return Ok(groupedResult);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllMatl_Issue_List()
+        {
+            // 1. Parallel Fetch: Transaction Data + Master Data + Lookups
+            // We add bulk fetches for Manufactured Parts, Routings, and Routing Steps here.
+            var matlIssueTask = _woService.GetAllMatlIssueListForShop();
+            var tempOprTask = _woService.GetAllTempOpr_List();
+            var deptTask = _departmentService.GetDepartments(1);
+            var masterPartsTask = _masterService.ItemMasterParts();
+
+            // New Bulk Tasks
+            var allManufPartsTask = _masterService.GetAllManufacturedPartNoDetailList();
+            var allRoutingsTask = _routingService.AllRoutings();
+            var allRoutingStepsTask = _routingService.AllRoutingSteps();
+
+            await Task.WhenAll(
+                matlIssueTask,
+                tempOprTask,
+                deptTask,
+                masterPartsTask,
+                allManufPartsTask,
+                allRoutingsTask,
+                allRoutingStepsTask
+            );
+
+            var resultList = matlIssueTask.Result.ToList();
+            if (!resultList.Any()) return Ok(resultList);
+
+            // 2. Prepare Efficient Lookups (O(1) Access)
+            var tempOprs = tempOprTask.Result.ToDictionary(t => t.TempOpr_ListId);
+            var depts = deptTask.Result.ToDictionary(d => d.DepartmentId);
+            var masterParts = masterPartsTask.Result.ToDictionary(m => m.PartId);
+
+            // Lookup: PartId -> ManufacturedPartNoDetailVM
+            // Used to replace _masterService.GetManufPart((int)item.PartId)
+            var manufPartLookup = allManufPartsTask.Result
+                                    .GroupBy(m => m.PartId)
+                                    .ToDictionary(g => g.Key, g => g.First());
+
+            // Lookup: ManufacturedPartNoDetailId -> List of Routings
+            // Used to replace _routingService.Routings(mf.ManufacturedPartNoDetailId)
+            var routingsByManufId = allRoutingsTask.Result.ToLookup(r => r.ManufacturedPartId);
+
+            // Lookup: RoutingId -> List of RoutingSteps
+            // Used to replace _routingService.RoutingSteps((int)item.RoutingId)
+            var stepsByRoutingId = allRoutingStepsTask.Result.ToLookup(s => s.RoutingId);
+
+            // 3. Enrich Data (Memory Access Only)
+            foreach (var item in resultList)
+            {
+                // A. Departments & Shop Name
+                var todept = depts.ContainsKey(item.To_Location) ? depts[item.To_Location].Name : "Stores";
+                var fromdept = depts.ContainsKey(item.From_Location) ? depts[item.From_Location].Name : "Stores";
+
+                item.To_LocationStr = todept;
+                item.From_LocationStr = fromdept;
+
+                if (todept != "Stores") item.Shop = todept;
+                else if (fromdept != "Stores") item.Shop = fromdept;
+
+                // B. Part No
+                if (masterParts.TryGetValue(item.PartId, out var part))
+                {
+                    item.PartNo = (part.PartNo ?? "") + " / " + part.Description;
+                }
+
+                // C. Routing & OpNo
+                if (tempOprs.TryGetValue(item.Part_Ref, out var tempOpr))
+                {
+                    // OPTIMIZATION: Retrieve ManufPart from dictionary
+                    if (manufPartLookup.TryGetValue((int)item.PartId, out var mf))
+                    {
+                        // OPTIMIZATION: Retrieve Routings from Lookup (No DB Call)
+                        var routingList = routingsByManufId[mf.ManufacturedPartNoDetailId];
+                        var routing = routingList.FirstOrDefault(r => r.RoutingId == item.RoutingId);
+                        item.RoutingName = routing?.RoutingName;
+
+                        // OPTIMIZATION: Retrieve RoutingSteps from Lookup (No DB Call)
+                        // Note: Using Lookup key prevents iterating through all steps in the system
+                        var routSteps = stepsByRoutingId[(int)item.RoutingId];
+                        var step = routSteps.FirstOrDefault(s => s.StepId == tempOpr.Opr_No);
+                        item.OpNo = step?.StepNumber ?? "";
+                    }
+                }
+            }
+
+            // 4. Grouping Logic
+            var groupedResult = resultList
+                .GroupBy(x => new { x.PartNo, x.Issue_Qnty, x.IssueMovDtStr, x.OpNo, x.WoNumber })
+                .Select(g => g.First())
+                .ToList();
+
             return Ok(groupedResult);
         }
         [HttpPost]
@@ -7607,6 +7828,70 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllSetUpCnfList()
         {
+            // 2. Start all parallel tasks
+            var cnfListTask = _woService.GetAllSetUpCnfList();
+            var partsTask = _masterService.ItemMasterParts();
+            var machinesTask = _machineService.GetMachinesList();
+            // var shopsTask = _departmentService.GetDepartments(1); // Not strictly needed if MachineVM has ShopName, but kept if needed
+            var allWOTask = _woService.AllProductionPlan_Wo();
+            var allMfTask = _masterService.GetAllManufacturedPartNoDetailList();
+            var allRoutingTask = _routingService.AllRoutings();
+            var allRoutingStepsTask = _routingService.AllRoutingSteps();
+
+            await Task.WhenAll(cnfListTask, partsTask, machinesTask, allWOTask, allMfTask, allRoutingTask, allRoutingStepsTask);
+
+            var resultList = cnfListTask.Result.ToList();
+            if (!resultList.Any()) return Ok(resultList);
+
+            // 3. Create Lookups
+            var parts = partsTask.Result.ToDictionary(x => x.PartId);
+            var machines = machinesTask.Result.ToDictionary(x => x.MachineId);
+            var allWO = allWOTask.Result.ToDictionary(x => x.ProductionPlanId);
+
+            // Efficient Routing Lookups
+            var mfDict = allMfTask.Result.GroupBy(x => x.PartId).ToDictionary(g => g.Key, g => g.First());
+            var routingDict = allRoutingTask.Result.ToLookup(x => x.ManufacturedPartId);
+            var routingStepDict = allRoutingStepsTask.Result.ToLookup(x => x.RoutingId);
+
+            // 4. Enrich Data
+            foreach (var item in resultList)
+            {
+                // A. Machine & Shop
+                if (machines.TryGetValue(item.Mc_Id, out var machine))
+                {
+                    item.McName = machine.Name;
+                    item.ShopName = machine.Shop;
+                }
+
+                // B. Routing & Part Info
+                if (allWO.TryGetValue(item.Wo_Id, out var wo))
+                {
+                    // Part Name
+                    if (parts.TryGetValue(wo.PartId, out var part))
+                    {
+                        item.PartNo = $"{part.PartNo} / {part.Description}";
+                    }
+
+                    // Routing Name
+                    if (mfDict.TryGetValue((int)wo.PartId, out var mf))
+                    {
+                        var routing = routingDict[mf.ManufacturedPartNoDetailId]
+                                        .FirstOrDefault(r => r.RoutingId == wo.RoutingId);
+                        item.RoutingName = routing?.RoutingName ?? "";
+                    }
+
+                    // Operation/Step Name
+                    var step = routingStepDict[wo.RoutingId].FirstOrDefault(r => r.StepId == item.Opr_No_Id);
+                    item.OprNoName = step?.StepNumber ?? "";
+                }
+            }
+
+            return Ok(resultList);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSetUpCnfLists()
+        {
             var result = new List<TempMc_Wait_ListVM>();
 
             // ---- PARALLEL LOAD ALL REQUIRED MASTER DATA ----
@@ -7697,9 +7982,86 @@ namespace CWB.App.Controllers
 
             return Ok(result);
         }
-
         [HttpGet]
         public async Task<IActionResult> GetAllSetUpApprolList()
+        {
+            // . Start all data fetch tasks in parallel (Faster Performance)
+            //    We fetch the API result and all necessary master data at the same time.
+            var setupListTask = _woService.GetAllSetUpApprolList();
+            var machinesTask = _machineService.GetMachinesList();
+            var partsTask = _masterService.ItemMasterParts();
+            var allWOTask = _woService.AllProductionPlan_Wo();
+
+            // Routing Data
+            var allRoutingsTask = _routingService.AllRoutings();
+            var allRoutingStepsTask = _routingService.AllRoutingSteps();
+            var allStepMachinesTask = _routingService.AllStepMachines();
+
+            // Await all tasks
+            await Task.WhenAll(setupListTask, machinesTask, partsTask, allWOTask, allRoutingsTask, allRoutingStepsTask, allStepMachinesTask);
+
+            var resultList = setupListTask.Result.ToList();
+            if (!resultList.Any()) return Ok(resultList);
+
+            // 3. Create Dictionaries/Lookups for O(1) Access
+            var machines = machinesTask.Result.ToDictionary(m => m.MachineId);
+            var parts = partsTask.Result.ToDictionary(p => p.PartId);
+            var workOrders = allWOTask.Result.ToDictionary(w => w.ProductionPlanId);
+
+            var routings = allRoutingsTask.Result.ToDictionary(r => r.RoutingId);
+            // Use ToLookup for one-to-many relationships (Routing -> Steps)
+            var routingSteps = allRoutingStepsTask.Result.ToLookup(rs => rs.RoutingId);
+            var stepMachines = allStepMachinesTask.Result.ToLookup(sm => sm.RoutingStepId);
+
+            // 4. Populate the missing fields using the local master data
+            foreach (var item in resultList)
+            {
+                // A. Populate Machine & Shop Name
+                if (machines.TryGetValue(item.Mc_Id, out var machine))
+                {
+                    item.McName = machine.Name;
+                    item.ShopName = machine.Shop; // Assuming MachineListVM contains Shop Name
+                }
+
+                // B. Get Work Order Details
+                if (workOrders.TryGetValue(item.Wo_Id, out var wo))
+                {
+                    // C. Populate Part No
+                    if (parts.TryGetValue(wo.PartId, out var part))
+                    {
+                        item.PartNo = $"{part.PartNo} / {part.Description}";
+                    }
+
+                    // D. Populate Routing Name
+                    if (routings.TryGetValue((int)wo.RoutingId, out var routing))
+                    {
+                        item.RoutingName = routing.RoutingName;
+                    }
+
+                    // E. Populate Operation Name & Planned Setup Time
+                    var steps = routingSteps[wo.RoutingId];
+                    var step = steps.FirstOrDefault(s => s.StepId == item.Opr_No_Id);
+
+                    if (step != null)
+                    {
+                        item.OprNoName = step.StepNumber;
+
+                        // Find the setup time for the specific machine on this step
+                        var stepMcs = stepMachines[step.StepId];
+                        var specificMc = stepMcs.FirstOrDefault(sm => sm.MachineId == item.Mc_Id);
+
+                        if (specificMc != null)
+                        {
+                            item.PlannedSetupTime = specificMc.SetupTime;
+                        }
+                    }
+                }
+            }
+
+            return Ok(resultList);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllSetUpApprolLists()
         {
             var result = new List<TempMc_Wait_ListVM>();
 
@@ -7843,7 +8205,7 @@ namespace CWB.App.Controllers
             return Ok(result);
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllBookOutList()
+        public async Task<IActionResult> GetAllBookOutLists()
         {
             var result = new List<TempMc_Wait_ListVM>();
 
@@ -7974,6 +8336,84 @@ namespace CWB.App.Controllers
 
             return Ok(result);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllBookOutList()
+        {
+            // 2. Start all parallel tasks
+            var bookOutListTask = _woService.GetAllBookOutList();
+
+            var partsTask = _masterService.ItemMasterParts();
+            var machinesTask = _machineService.GetMachinesList();
+            // var shopsTask = _departmentService.GetDepartments(1); // Optional if MachineVM has ShopName
+            var uomTask = _masterService.GetUOMs();
+
+            // Routing Data
+            var allWOTask = _woService.AllProductionPlan_Wo(); // Needed to map WO_Id -> PartId/RoutingId
+            var allMfTask = _masterService.GetAllManufacturedPartNoDetailList();
+            var allRoutingTask = _routingService.AllRoutings();
+            var allRoutingStepsTask = _routingService.AllRoutingSteps();
+
+            await Task.WhenAll(
+                bookOutListTask, partsTask, machinesTask, uomTask,
+                allWOTask, allMfTask, allRoutingTask, allRoutingStepsTask
+            );
+
+            var resultList = bookOutListTask.Result.ToList();
+            if (!resultList.Any()) return Ok(resultList);
+
+            // 3. Create Lookups
+            var parts = partsTask.Result.ToDictionary(p => p.PartId);
+            var machines = machinesTask.Result.ToDictionary(m => m.MachineId);
+            var uoms = uomTask.Result.ToDictionary(u => u.UOMId);
+            var allWO = allWOTask.Result.ToDictionary(w => w.ProductionPlanId);
+
+            var mfDict = allMfTask.Result.GroupBy(x => x.PartId).ToDictionary(g => g.Key, g => g.First());
+            var routingDict = allRoutingTask.Result.ToLookup(x => x.ManufacturedPartId);
+            var routingStepDict = allRoutingStepsTask.Result.ToLookup(x => x.RoutingId);
+
+            // 4. Enrich Data
+            foreach (var item in resultList)
+            {
+                // A. Machine & Shop
+                if (machines.TryGetValue(item.Mc_Id, out var machine))
+                {
+                    item.McName = machine.Name;
+                    item.ShopName = machine.Shop;
+                }
+
+                // B. Context via WO
+                if (allWO.TryGetValue(item.Wo_Id, out var wo))
+                {
+                    // Part Details
+                    if (parts.TryGetValue(wo.PartId, out var part))
+                    {
+                        item.PartNo = $"{part.PartNo} / {part.Description}";
+                    }
+
+                    // Routing Name & UOM
+                    if (mfDict.TryGetValue((int)wo.PartId, out var mf))
+                    {
+                        // UOM
+                        if (uoms.TryGetValue(mf.UOMId, out var u))
+                        {
+                            item.UomName = u.Name;
+                        }
+
+                        // Routing Name
+                        var routing = routingDict[mf.ManufacturedPartNoDetailId]
+                                        .FirstOrDefault(r => r.RoutingId == wo.RoutingId);
+                        item.RoutingName = routing?.RoutingName ?? "";
+                    }
+
+                    // Operation/Step Name
+                    var step = routingStepDict[wo.RoutingId].FirstOrDefault(r => r.StepId == item.Opr_No_Id);
+                    item.OprNoName = step?.StepNumber ?? "";
+                }
+            }
+
+            return Ok(resultList);
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> UpdateQntyMc_Wait_List(Mc_Wait_ListVM masterDocListVM)
@@ -7990,8 +8430,51 @@ namespace CWB.App.Controllers
             }
             return Ok("Not Found McWait");
         }
+
         [HttpGet]
         public async Task<IActionResult> GetSetupSummaryByShop()
+        {
+
+            // 2. Start all Data Fetching Tasks in Parallel (Optimized)
+            //    We call the Services directly to avoid the overhead of fetching Parts/Routings in the Controller actions
+            var cnfTask = _woService.GetAllSetUpCnfList();       // Waiting
+            var approvalTask = _woService.GetAllSetUpApprolList(); // Approval
+            var bookoutTask = _woService.GetAllBookOutList();    // Bookout
+            var machinesTask = _machineService.GetMachinesList();        // Needed for Shop Name mapping
+
+            await Task.WhenAll(cnfTask, approvalTask, bookoutTask, machinesTask);
+
+            // 3. Extract Results
+            var waitingList = cnfTask.Result.ToList();
+            var approvalList = approvalTask.Result.ToList();
+            var bookoutList = bookoutTask.Result.ToList();
+
+            // 4. Create Machine Lookup for Shop Names (O(1) access)
+            var machines = machinesTask.Result.ToDictionary(m => m.MachineId, m => m.Shop);
+
+            // 5. Consolidate all unique Shop Names from the 3 lists
+            //    We map Mc_Id to ShopName here on the fly
+            var allShops = waitingList.Select(x => machines.GetValueOrDefault(x.Mc_Id, "Unknown"))
+                .Union(approvalList.Select(x => machines.GetValueOrDefault(x.Mc_Id, "Unknown")))
+                .Union(bookoutList.Select(x => machines.GetValueOrDefault(x.Mc_Id, "Unknown")))
+                .Where(s => !string.IsNullOrEmpty(s) && s != "Unknown")
+                .Distinct()
+                .OrderBy(s => s)
+                .ToList();
+
+            // 6. Calculate Counts
+            var summaryList = allShops.Select(shop => new
+            {
+                Shop = shop,
+                WaitingForSetupStart = waitingList.Count(x => machines.GetValueOrDefault(x.Mc_Id) == shop),
+                ReadyForSetupApproval = approvalList.Count(x => machines.GetValueOrDefault(x.Mc_Id) == shop),
+                Bookout = bookoutList.Count(x => machines.GetValueOrDefault(x.Mc_Id) == shop)
+            }).ToList();
+
+            return Ok(summaryList);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetSetupSummaryByShops()
         {
             // Fetch and process ALL data in a single, optimized method
             var fullDataSet = await GetFullWaitListDataSet();
@@ -8221,41 +8704,69 @@ namespace CWB.App.Controllers
             var masterparts = await _masterService.ItemMasterParts();
             var machines = await _machineService.GetMachinesList();
             var mcWaitList = await _woService.GetAllTempMc_Wait_List();
+
             foreach (var item in result)
             {
-                var nclog = nclogs.Where(n => n.Insp_Outcome_Details_Id == item.NC_Log_Id).FirstOrDefault();
-                var recpt = recpts.Where(r => r.Inw_Recpt_HeaderId == nclog.Inw_Recpt_Header_Id).FirstOrDefault();
-                var podetail = podetails.Where(p => p.PoDetailsId == recpt.PoHeaderId).FirstOrDefault();
-                var procplan = procplans.Where(pp => pp.ProcPlanId == podetail.ProcPlanId).FirstOrDefault();
-                var prodnwo = prodnwos.Where(w => w.WoId == procplan.WorkOrderId).FirstOrDefault();
-                var masterprt = masterparts.Where(m => m.PartId == prodnwo.PartId).FirstOrDefault();
-                item.WoNumber = prodnwo.WONumber;
-                item.PartNo = masterprt.PartNo + " / " + masterprt.Description;
-                item.RwkQnty = (int)nclog.NC_Qnty;
-                item.Planndt = prodnwo.WODate.Value.ToString("dd-MM-yyyy");
-                item.RecdComplDt = prodnwo.PlanCompletionDate.Value.ToString("dd-MM-yyyy");
-                var machine = machines.Where(m => m.MachineId == item.Mc_Id).FirstOrDefault();
+                // ---- NC Log ----
+                var nclog = nclogs.FirstOrDefault(n => n.Insp_Outcome_Details_Id == item.NC_Log_Id);
+                if (nclog == null) continue;
+
+                // ---- Receipt ----
+                var recpt = recpts.FirstOrDefault(r => r.Inw_Recpt_HeaderId == nclog.Inw_Recpt_Header_Id);
+                if (recpt == null) continue;
+
+                // ---- PO Detail ----
+                var podetail = podetails.FirstOrDefault(p => p.PoDetailsId == recpt.PoHeaderId);
+                if (podetail == null) continue;
+
+                // ---- Process Plan ----
+                var procplan = procplans.FirstOrDefault(pp => pp.ProcPlanId == podetail.ProcPlanId);
+                if (procplan == null) continue;
+
+                // ---- Work Order ----
+                var prodnwo = prodnwos.FirstOrDefault(w => w.WoId == procplan.WorkOrderId);
+                if (prodnwo == null) continue;
+
+                // ---- Master Part ----
+                var masterprt = masterparts.FirstOrDefault(m => m.PartId == prodnwo.PartId);
+
+                item.WoNumber = prodnwo.WONumber ?? "";
+                item.PartNo = masterprt != null
+                    ? $"{masterprt.PartNo} / {masterprt.Description}"
+                    : "";
+
+                item.RwkQnty = (int)(nclog.NC_Qnty);
+                item.Planndt = prodnwo.WODate?.ToString("dd-MM-yyyy") ?? "";
+                item.RecdComplDt = prodnwo.PlanCompletionDate?.ToString("dd-MM-yyyy") ?? "";
+
+                // ---- Machine ----
+                var machine = machines.FirstOrDefault(m => m.MachineId == item.Mc_Id);
                 item.MachineName = machine?.Name ?? "";
                 item.ShopName = machine?.Shop ?? "";
-                if (mcWaitList.Any(m => m.Wo_Id == prodnwo.ProductionPlanId))
-                {
-                    item.InProcess = "Y";
-                }
-                else
-                {
-                   item.InProcess = "N";
-                }
-                if(item.Plan_Duration == null)
-                {
-                    item.Plan_Duration = string.Empty;
-                }
+
+                // ---- In Process ----
+                item.InProcess = mcWaitList.Any(m => m.Wo_Id == prodnwo.ProductionPlanId) ? "Y" : "N";
+
+                // ---- Plan Duration ----
+                item.Plan_Duration ??= string.Empty;
+
+                // ---- Manufactured Part ----
                 var mf = await _masterService.GetManufPart((int)prodnwo.PartId);
-                item.PartType = mf.ManufacturedPartType;
-                var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
-                item.RoutingName = routingList.First(r => r.RoutingId == prodnwo.RoutingId).RoutingName;
+                if (mf != null)
+                {
+                    item.PartType = mf.ManufacturedPartType;
+
+                    var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                    var routing = routingList
+                        .FirstOrDefault(r => r.RoutingId == prodnwo.RoutingId);
+
+                    item.RoutingName = routing?.RoutingName ?? "";
+                }
             }
+
             return Ok(result);
         }
+
         [HttpPost]
         public async Task<IActionResult> PostRwk_List(Rwk_ListVM masterDocListVM)
         {
@@ -9480,7 +9991,7 @@ namespace CWB.App.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllReadyforProductionWo()
+        public async Task<IActionResult> GetAllReadyforProductionWos()
         {
             var productions = await _woService.AllProductionPlan_Wo();
             var masterparts = await _masterService.ItemMasterParts();
@@ -9613,7 +10124,105 @@ namespace CWB.App.Controllers
             }
             return Ok(result);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllReadyforProductionWo()
+        {
+            // 1. Fetch Data in Parallel (Backend API + External Services)
+            // We add bulk fetches for Sales Orders, Manufactured Parts, and Routings here.
+            var productionTask = _woService.GetAllReadyforProductionWo();
+            var masterPartsTask = _masterService.ItemMasterParts();
+            var customerTask = _baService.GetCustomerOrders();
+            var allSalesOrdersTask = _baService.AllSalesOrders();
+            var allManufPartsTask = _masterService.GetAllManufacturedPartNoDetailList();
+            var allRoutingsTask = _routingService.AllRoutings();
 
+            // Await all tasks concurrently
+            await Task.WhenAll(productionTask, masterPartsTask, customerTask, allSalesOrdersTask, allManufPartsTask, allRoutingsTask);
+
+            var productions = productionTask.Result.ToList();
+            var masterparts = masterPartsTask.Result.ToDictionary(p => p.PartId);
+            var customers = customerTask.Result.ToList();
+
+            // 2. Create Optimized Lookups
+            // Dictionary for fast Sales Order lookup by ID
+            var salesOrderDict = allSalesOrdersTask.Result.ToDictionary(s => s.SalesOrderId);
+
+            // Dictionary for Manufactured Part details by PartId (assuming PartId is available in the VM)
+            // Note: If multiple ManufParts exist for one PartId, use GroupBy. FirstOrDefault is used here for safety.
+            var manufPartDict = allManufPartsTask.Result
+                                    .GroupBy(m => m.PartId)
+                                    .ToDictionary(g => g.Key, g => g.First());
+
+            // Lookup for Routings grouped by ManufacturedPartId
+            // This allows us to quickly get all routings for a specific part without an API call
+            var routingLookup = allRoutingsTask.Result.ToLookup(r => r.ManufacturedPartId);
+
+            // 3. Enrich Data
+            foreach (var item in productions)
+            {
+                // A. Enrich Part Details
+                if (masterparts.TryGetValue(item.PartId, out var imp))
+                {
+                    item.PartNo = imp.PartNo;
+                    item.PartDesc = imp.Description;
+
+                    // Determine Part Type Name
+                    bool isParentWo = productions.Any(x => x.ParentWoId == item.WoId);
+                    if (item.PartType == 1 && item.ParentWoId == 0)
+                    {
+                        item.PartTypeName = isParentWo ? "Parent CMP" : "CMP";
+                    }
+                    else if (item.PartType == 2)
+                    {
+                        item.PartTypeName = "Assembly";
+                    }
+                }
+
+                // B. Enrich Customer & WO Release Status
+                // OPTIMIZATION: Use dictionary lookup instead of _baService.GetOneSO(item.SalesOrderId)
+                SalesOrderVM so = null;
+                salesOrderDict.TryGetValue(item.SalesOrderId, out so);
+
+                if (so != null)
+                {
+                    var cust = customers.FirstOrDefault(c => c.CustomerOrderId == so.CustomerOrderId);
+                    if (cust != null) item.Customer = cust.CustomerName;
+                }
+                else
+                {
+                    // Indirect SO Check (via WOSO Relation)
+                    // This remains inside the loop as requested ("except GetSoWoRel")
+                    var wosos = await _woService.GetSoWoRel(item.WoId);
+
+                    foreach (var woso in wosos)
+                    {
+                        // OPTIMIZATION: Use dictionary lookup instead of _baService.GetOneSO(woso.SalesOrderId)
+                        SalesOrderVM sos = null;
+                        salesOrderDict.TryGetValue(woso.SalesOrderId, out sos);
+
+                        if (sos != null)
+                        {
+                            item.SoComplDateStr = sos.RequiredByDateStr;
+                            item.WoRelease = (sos.RequiredByDate > item.PlanCompletionDate) ? "Y" : "N";
+
+                            var cust = customers.FirstOrDefault(c => c.CustomerOrderId == sos.CustomerOrderId);
+                            if (cust != null) item.Customer = cust.CustomerName;
+                        }
+                    }
+                }
+
+                // C. Enrich Routing Count
+                // OPTIMIZATION: Use dictionary lookup instead of _masterService.GetManufPart
+                if (manufPartDict.TryGetValue((int)item.PartId, out var mf))
+                {
+                    // OPTIMIZATION: Use lookup instead of _routingService.Routings(...)
+                    // We count the routings associated with this ManufacturedPartNoDetailId
+                    item.NoOfRoutes = routingLookup[mf.ManufacturedPartNoDetailId].Count();
+                }
+            }
+
+            return Ok(productions);
+        }
         [HttpGet]
         public async Task<IActionResult> CompareMcTimeSlot(long McWaitId)
         {

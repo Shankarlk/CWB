@@ -8,7 +8,7 @@ namespace CWB.CompanySettings.Services.EmployeeMaster
 {
     public interface IEmployeeSerivce
     {
-        IEnumerable<UiListVM> GetAllUiList(long TenantId);
+        Task<IEnumerable<UiListVM>> GetAllUiList(long TenantId);
         Task<UiListVM> PostUilist(UiListVM uiListVM);
         //bool CheckDesignationExisit(CheckDesignationVM checkDesignationVM);
         Task<bool> DelUiList(long designationId);
@@ -25,7 +25,7 @@ namespace CWB.CompanySettings.Services.EmployeeMaster
         IEnumerable<Empl_Role_ListVM> GetAllEmplRoleList(long TenantId);
         Task<bool> DelEmplRoleList(long designationId);
         Task<Permission_ListVM> PostPermissionList(Permission_ListVM uiListVM);
-        IEnumerable<Permission_ListVM> GetAllPermissionList(long TenantId);
+        Task<IEnumerable<Permission_ListVM>> GetAllPermissionListAsync(long TenantId);
         Task<bool> DelPermissionList(long designationId);
         Task<EmployeeVM> PostEmployee(EmployeeVM uiListVM);
         IEnumerable<EmployeeVM> GetAllEmployee(long TenantId);

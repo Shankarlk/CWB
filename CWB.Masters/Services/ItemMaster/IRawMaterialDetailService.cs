@@ -35,6 +35,7 @@ namespace CWB.Masters.Services.ItemMaster
         Task<RawMaterialStandardVM> RMStandard(RawMaterialStandardVM rMStandardVm);
         bool CheckPartNo(long partId);
         Task<RawMaterialDetailVM> GetRMPart(int partId, long tenantId);
+        Task<IEnumerable<RawMaterialDetailVM>> GetAllRMPart(long tenantId);
 
 
     }

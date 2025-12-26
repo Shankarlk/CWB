@@ -105,17 +105,21 @@
                                         <li><a asp-action="Index" asp-controller="Organization" data-navid="C-OR">Department Structure</a></li>
                                     }
                                     @*@if (permissionResult.Any(r => r.Menu2 == "Designation List"))
-                                        {
-                                            <li><a asp-action="Index" asp-controller="Designation" data-navid="C-DE">Designation</a></li>
-                                        }*@
+        {
+            <li><a asp-action="Index" asp-controller="Designation" data-navid="C-DE">Designation</a></li>
+        }*@
+                                    @if (permissionResult.Any(r => r.Menu2 == "Roles"))
+                                    {
+                                        <li><a asp-action="Index" asp-controller="RolePage" data-navid="C-RO">Roles</a></li>
+                                    }
                                     @if (permissionResult.Any(r => r.Menu2 == "Employee Master"))
                                     {
                                         <li><a asp-action="Index" asp-controller="Employee" data-navid="M-E">Employee</a></li>
                                     }
                                     @*@if (permissionResult.Any(r => r.Menu2 == "Employee Master"))
-                                        {
-                                            <li><a asp-action="Index" asp-controller="EmployeeMaster" data-navid="C-EM">Employee Master</a></li>
-                                        }*@ @* Add more conditions for additional submenus *@
+        {
+            <li><a asp-action="Index" asp-controller="EmployeeMaster" data-navid="C-EM">Employee Master</a></li>
+        }*@ @* Add more conditions for additional submenus *@
                                 </ul>
                             </div>
                         }
