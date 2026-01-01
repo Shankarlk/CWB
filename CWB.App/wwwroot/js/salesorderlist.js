@@ -42,7 +42,7 @@ function PostDeliverySchedule() {
         formName = "EditSOForm";
     }
     var formData = AppUtil.GetFormData(formName);
-    api.post("/businessaquisition/deliveryschedule", formData).then((data) => {
+    return api.post("/businessaquisition/deliveryschedule", formData).then((data) => {
 
         $('#Edit-SalesOrder').modal('hide');
         loadSO();
@@ -57,7 +57,7 @@ function PostSOHold() {
     //console.log("....PostSOHold....");
     var formData = AppUtil.GetFormData("poholdform");
     //  console.log(formData);
-    api.post("/businessaquisition/solog", formData).then((data) => {
+    return api.post("/businessaquisition/solog", formData).then((data) => {
         //console.log("****PostSOHold****");
         //console.log(data);
         //console.log("****End-PostSOHold****");
@@ -394,13 +394,13 @@ $(document).ready(function () {
         }
     });
 
-    $("#BtnEditSO").on("click", function () {
+    $("#BtnEditSO").secureClick( function () {
         //alert("Add Schedule clicked");
         //if ($("#SalesCustomerOrderId").val() == "0") {
         //    alert("Please create a customer oder first.");
         //    return;
         //}
-        PostDeliverySchedule();
+        return PostDeliverySchedule();
     });
 
     $('#po-hold').on('hidden.bs.modal', function (event) {
@@ -441,7 +441,7 @@ $(document).ready(function () {
         $('#POHCustomerOrderId').val(customerorderid);
     });
 
-    $("#BtnPOHold").on("click", function () {
+    $("#BtnPOHold").secureClick( function () {
         // alert("Add CustomerOrder clicked");
         var comt = $("#POHComment").val();
         if (comt.length == 0) {
@@ -453,10 +453,10 @@ $(document).ready(function () {
             newNamevalidate.style.border = '';
         }
         if (holdsalesorder) {
-            PostSOHold();
+            return PostSOHold();
         }
         else {
-            PostPOHold();
+            return PostPOHold();
         }
 
     });

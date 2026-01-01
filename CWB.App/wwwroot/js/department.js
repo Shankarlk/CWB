@@ -190,7 +190,7 @@ $(function () {
         var newNamevalidate = document.getElementById('OrgRole');
         newNamevalidate.style.border = '';
     });
-    $("#OrgSave").on("click", function (event) {
+    $("#OrgSave").secureClick( function (event) {
         var id = $("#POrgId").val(); 
         var deptId = $("#DepartmentId").val();
         var roleId = parseInt($("#OrgRole").val());
@@ -212,7 +212,7 @@ $(function () {
             role_Access_Id: parseInt(roleId)
         };
 
-        api.get("/department/GetDept_Role_List").then((data) => {
+        return api.get("/department/GetDept_Role_List").then((data) => {
             //console.log(data);
             var existingRoles = data.filter(i => i.dept_Struct_Id === parseInt(deptId));
 
@@ -233,13 +233,13 @@ $(function () {
             //console.log(error);
         });
     });
-    $("#SaveDept").on("click", function (event) {
+    $("#SaveDept").secureClick(function (event) {
         var formData = AppUtil.GetFormData("DepartmentForm");
         //console.log(formData);
         var form = document.getElementById("DepartmentForm");
         if (form.checkValidity())
         {
-            api.post("/department/postdepartment", formData).then((data) => {
+            return  api.post("/department/postdepartment", formData).then((data) => {
                 //console.log(data);
                 LoadDepartments();
                 document.getElementById("AddDeptClose").click();

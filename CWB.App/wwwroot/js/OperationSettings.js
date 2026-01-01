@@ -354,7 +354,7 @@ $(document).ready(function () {
         var newNamevalidate = document.getElementById('P5NcDispDec');
         newNamevalidate.style.border = '';
     });
-    $("#NcP5Save").on('click', function (event) {
+    $("#NcP5Save").secureClick( function (event) {
         var P5NcDispDec = parseInt($("#P5NcDispDec").val());
         var P5NcDispAplId = parseInt($("#P5NcDispAplId").val());
         var P5Lvl2Chk = document.getElementById("P5Lvl2Chk");
@@ -408,7 +408,7 @@ $(document).ready(function () {
             cmp: P5CmpChkval,
             assy: P5AssyChkval
         };
-        api.post("/WorkOrder/PostNC_Disp_Decs_Appl_List", formdata).then((data) => {
+        return api.post("/WorkOrder/PostNC_Disp_Decs_Appl_List", formdata).then((data) => {
             loadGetAllNC_Wk_List_Appl();
             $("#NcPopup5").modal("hide");
         }).catch((error) => {
@@ -416,7 +416,7 @@ $(document).ready(function () {
         });
 
     });
-    $("#P3Save").on('click',function (event) {
+    $("#P3Save").secureClick(function (event) {
         var P3Resp = parseInt($("#P3Resp").val());
         var P3Ui = parseInt($("#P3Ui").val());
         var nC_Wk_List_Tmpl_HeadId = parseInt($("#ItemDocId").val());
@@ -470,7 +470,7 @@ $(document).ready(function () {
                 seq_no: parseInt(P3SeqNo) + 1
             };
         }
-        api.post("/WorkOrder/PostNC_Wk_List_Tmpl_Det", formdata).then((data) => {
+        return api.post("/WorkOrder/PostNC_Wk_List_Tmpl_Det", formdata).then((data) => {
             loadNC_Wk_List_Tmpl_Det(nC_Wk_List_Tmpl_HeadId);
             loadGetAllNC_Wk_List_Tmpl_Head();
             $("#DocTypeId").val('');
@@ -482,7 +482,7 @@ $(document).ready(function () {
             console.log(error);
         });
     });
-    $("#NcPopup2Save").click(function (event) {
+    $("#NcPopup2Save").secureClick(function (event) {
         var NcPopup2Decision = parseInt($("#NcPopup2Decision").val());
         if (NcPopup2Decision == 0) {
             var newNamevalidate = document.getElementById('NcPopup2Decision');
@@ -497,14 +497,14 @@ $(document).ready(function () {
             NC_Disp_Decision_Id: NcPopup2Decision,
             No_of_steps: 0
         };
-        api.post("/WorkOrder/PostNC_Wk_List_Tmpl_Head", rowData).then((data) => {
+        return api.post("/WorkOrder/PostNC_Wk_List_Tmpl_Head", rowData).then((data) => {
             loadGetAllNC_Wk_List_Tmpl_Head();
         }).catch((error) => {
             AppUtil.HandleError("FormEditMakeFrom", error);
         });
 
     });
-    $("#AddToinwardDocList").click(function (event) {
+    $("#AddToinwardDocList").secureClick(function (event) {
         var DocTypeName = parseInt($("#inwardDocDocTypeName").val());
         var ItemDocId = parseInt($("#InwardDocId").val());
         var mandatory = 'N';
@@ -528,7 +528,7 @@ $(document).ready(function () {
             Mandatory: mandatory,
             UpdatedOn: deletionDate
         };
-        api.getbulk("/workOrder/GetAllInWardDocLists").then((getdata) => {
+        return api.getbulk("/workOrder/GetAllInWardDocLists").then((getdata) => {
             getdata = getdata.filter(item => item.documentTypeId === DocTypeName);
             if (getdata.length===0) {
                 api.post("/WorkOrder/PostInWardDocList", rowData).then((data) => {
@@ -564,7 +564,7 @@ $(document).ready(function () {
         loadDocTypes();
     });
 
-    $("#NcPopup27Save").click(function (event) {
+    $("#NcPopup27Save").secureClick(function (event) {
         var NcPopup2Decision = parseInt($("#NcPopup27Decision").val());
         var P7MatrixId = parseInt($("#P7MatrixId").val());
         if (P7MatrixId === 0 || isNaN(P7MatrixId)) {
@@ -584,7 +584,7 @@ $(document).ready(function () {
             Cust_NC_Decs_Matrix_Id: P7MatrixId,
             NC_Disp_Decision_Id: NcPopup2Decision
         };
-        api.post("/WorkOrder/PostCust_NC_Decs_Matrix_Opt", rowData).then((data) => {
+        return api.post("/WorkOrder/PostCust_NC_Decs_Matrix_Opt", rowData).then((data) => {
             LoadCustMatrix();
             LoadCustMatOpt(P7MatrixId);
             $("#NcPopup27").modal("hide");
@@ -593,7 +593,7 @@ $(document).ready(function () {
         });
 
     });
-    $("#AddToinspectDoc").click(function (event) {
+    $("#AddToinspectDoc").secureClick(function (event) {
         var DocTypeName = parseInt($("#inspectDocDocTypeName").val());
         var ItemDocId = parseInt($("#inspectDocId").val());
         var mandatory = 'N';
@@ -617,7 +617,7 @@ $(document).ready(function () {
             Mandatory: mandatory,
             UpdatedOn: deletionDate
         };
-        api.getbulk("/workOrder/GetAllInspectDocLists").then((getdata) => {
+        return api.getbulk("/workOrder/GetAllInspectDocLists").then((getdata) => {
             getdata = getdata.filter(item => item.documentTypeId === DocTypeName);
             if (getdata.length === 0) {
                 api.post("/WorkOrder/PostinspectDocList", rowData).then((data) => {
@@ -637,7 +637,7 @@ $(document).ready(function () {
         }).catch((error) => {
         });
     });
-    $("#P7Save").click(function (event) {
+    $("#P7Save").secureClick(function (event) {
         var P7RtoCust = parseInt($("#P7RtoCust").val());
         var P7Feed = parseInt($("#P7Feed").val());
         var P7MatrixId = parseInt($("#P7MatrixId").val());
@@ -666,7 +666,7 @@ $(document).ready(function () {
             Cust_Feedback_Id: P7Feed,
             TenantId: 0
         };
-        api.post("/WorkOrder/PostCust_NC_Decs_Matrix", rowData).then((data) => {
+        return api.post("/WorkOrder/PostCust_NC_Decs_Matrix", rowData).then((data) => {
             $("#P7MatrixId").val(data.cust_NC_Decs_MatrixId);
         }).catch((error) => {
 
@@ -688,7 +688,7 @@ $(document).ready(function () {
         loadDocTypes();
     });
 
-    $("#AddTolineDocList").click(function (event) {
+    $("#AddTolineDocList").secureClick(function (event) {
         var DocTypeName = parseInt($("#lineDocTypeName").val());
         var ItemDocId = parseInt($("#lineDocId").val());
         var mandatory = 'N';
@@ -712,7 +712,7 @@ $(document).ready(function () {
             Mandatory: mandatory,
             UpdatedOn: deletionDate
         };
-        api.getbulk("/workOrder/GetAlllineDocLists").then((getdata) => {
+        return api.getbulk("/workOrder/GetAlllineDocLists").then((getdata) => {
             getdata = getdata.filter(item => item.documentTypeId === DocTypeName);
             if (getdata.length === 0) {
                 api.post("/WorkOrder/PostlineDocList", rowData).then((data) => {
@@ -748,7 +748,7 @@ $(document).ready(function () {
         loadDocTypes();
     });
 
-    $("#AddTofinalDocList").click(function (event) {
+    $("#AddTofinalDocList").secureClick(function (event) {
         var DocTypeName = parseInt($("#finalDocTypeName").val());
         var ItemDocId = parseInt($("#finalDocId").val());
         var mandatory = 'N';
@@ -772,7 +772,7 @@ $(document).ready(function () {
             Mandatory: mandatory,
             UpdatedOn: deletionDate
         };
-        api.getbulk("/workOrder/GetAllfinalDocLists").then((getdata) => {
+        return api.getbulk("/workOrder/GetAllfinalDocLists").then((getdata) => {
             getdata = getdata.filter(item => item.documentTypeId === DocTypeName);
             if (getdata.length === 0) {
                 api.post("/WorkOrder/PostfinalDocList", rowData).then((data) => {
@@ -808,10 +808,10 @@ $(document).ready(function () {
         loadDocTypes();
     });
 
-    $("#UiEnableBtn").click(function (event) {
+    $("#UiEnableBtn").secureClick(function (event) {
         let uncheckedItems = [];
         let operationSettingsMap = {};
-        api.getbulk("/workOrder/GetAllOperationSettings")
+        return api.getbulk("/workOrder/GetAllOperationSettings")
             .then((data) => {
                 if (data.length > 0) {
                     data.forEach(item => {
@@ -865,7 +865,7 @@ $(document).ready(function () {
                 console.error("Error fetching operation settings:", error);
             });
     });
-    $("#AddTorcacaDocList").click(function (event) {
+    $("#AddTorcacaDocList").secureClick(function (event) {
         var DocTypeName = parseInt($("#rcacaDocTypeName").val());
         var ItemDocId = parseInt($("#rccaDocId").val());
         var mandatory = 'N';
@@ -889,7 +889,7 @@ $(document).ready(function () {
             Mandatory: mandatory,
             UpdatedOn: deletionDate
         };
-        api.getbulk("/workOrder/GetAllrcacaDocLists").then((getdata) => {
+        return api.getbulk("/workOrder/GetAllrcacaDocLists").then((getdata) => {
             getdata = getdata.filter(item => item.documentTypeId === DocTypeName);
             if (getdata.length === 0) {
                 api.post("/WorkOrder/PostrcacaDocList", rowData).then((data) => {
@@ -940,7 +940,7 @@ $(document).ready(function () {
         $("#St16ReasonId").val(id);
 
     });
-    $("#SaveStPopup16").click(function (event) {
+    $("#SaveStPopup16").secureClick(function (event) {
         var St16Reason = $("#St16Reason").val();
         var setupType = $("#St16Type").val();
         var St16ReasonId = parseInt($("#St16ReasonId").val());
@@ -960,7 +960,7 @@ $(document).ready(function () {
             setupType: setupType,
             reason: St16Reason
         };
-        api.getbulk("/workOrder/GetAllSetupVariationReason").then((getdata) => {
+        return api.getbulk("/workOrder/GetAllSetupVariationReason").then((getdata) => {
             getdata = getdata.filter(item => item.reason === St16Reason && item.setupType === setupType);
             if (getdata.length === 0) {
                 api.post("/WorkOrder/PostSetupVariationReason", rowData).then((data) => {
@@ -996,7 +996,7 @@ $(document).ready(function () {
         newNamevalidate.style.border = '';
         $("#Text-Error-mcreason").text("");
     });
-    $("#SaveMcPopup13").click(function (event) {
+    $("#SaveMcPopup13").secureClick(function (event) {
         var Mc13Reason = $("#Mc13Reason").val();
         var Mc13ReasonId = parseInt($("#Mc13ReasonId").val());
         if (Mc13Reason.length == 0) {
@@ -1011,7 +1011,7 @@ $(document).ready(function () {
             mc_Not_Avl_ReasonId: Mc13ReasonId,
             reason_Desc: Mc13Reason
         };
-        api.getbulk("/workOrder/GetAllMc_not_avl_reason").then((getdata) => {
+        return api.getbulk("/workOrder/GetAllMc_not_avl_reason").then((getdata) => {
             getdata = getdata.filter(item => item.reason_Desc === Mc13Reason);
             if (getdata.length === 0) {
                 api.post("/WorkOrder/PostMc_not_avl_reason", rowData).then((data) => {
@@ -1056,7 +1056,7 @@ $(document).ready(function () {
         const savedValue = getCookie("simulationpercent");
         $("#Mc14Reason").val(savedValue);
     });
-    $("#McP11Save").click(function (event) {
+    $("#McP11Save").secureClick(function (event) {
         var McP11TimeSettingId = parseInt($("#McP11TimeSettingId").val());
         var McP11TimeDur = parseInt($("#McP11TimeDur").val());
         var McP11NoDay = parseInt($("#McP11NoDay").val());
@@ -1166,7 +1166,7 @@ $(document).ready(function () {
                 change_flag: 'N'
             };
 
-            api.post("/WorkOrder/PostTimeslot_Setting", rowData).then((data) => {
+            return api.post("/WorkOrder/PostTimeslot_Setting", rowData).then((data) => {
                 $("#Text-Error-mcreason").text("");
                 loadMcNotAvlReasonList();
                 $("#McPopup11").modal("hide");
@@ -1178,8 +1178,8 @@ $(document).ready(function () {
         });
 
     });
-    $("#TimeSlotSettingsBtn").on("click", function () {
-        $.ajax({
+    $("#TimeSlotSettingsBtn").secureClick( function () {
+        return $.ajax({
             type: "POST",
             url: '/WorkOrder/PostTimeslot_List',
             contentType: "application/json; charset=utf-8",
@@ -1227,7 +1227,7 @@ $(document).ready(function () {
         $("#P10Id").val(id);
         $("#P10ShopId").val(shopid);
     });
-    $("#SaveMcPopup10").click(function (event) {
+    $("#SaveMcPopup10").secureClick(function (event) {
         var P10NoDays = parseInt($("#P10NoDays").val());
         var P10IssueDay = parseInt($("#P10IssueDay").val());
         var P10ShopId = parseInt($("#P10ShopId").val());
@@ -1264,7 +1264,7 @@ $(document).ready(function () {
             issueDay: P10IssueDay
         };
 
-        api.post("/WorkOrder/PostMatl_Issue_Settings", rowData).then((data) => {
+        return api.post("/WorkOrder/PostMatl_Issue_Settings", rowData).then((data) => {
             $("#Text-Error-mcreason").text("");
             loadMcCoverage();
             $("#McPopup10").modal("hide");

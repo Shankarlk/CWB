@@ -15,6 +15,7 @@ namespace CWB.Masters.Services.ItemMaster
         Task<MPMakeFromVM> PreferredInputMatl(MPMakeFromVM mPMakeFromVM);
         IEnumerable<MPMakeFromVM> GetMPMakeFromList(string manufPartId, long tenantID);
         IEnumerable<MPMakeFromVM> GetAllMPMakeFromList(long tenantID);
+        IEnumerable<MPBOMVM> GetAllMPBOMList(long tenantID);
         Task<MPMakeFromVM> GetMPMakeFrom(long Id);
         Task<MPMakeFromVM> RemMakeFrom(MPMakeFromVM mPMakeFromListVM);
 

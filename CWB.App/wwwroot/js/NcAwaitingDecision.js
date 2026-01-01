@@ -363,7 +363,7 @@ $(document).ready(function () {
             $("#P10NClvl1VM").show();
         }
     });
-    $("#P10Save2").on("click", function () {
+    $("#P10Save2").secureClick( function () {
         const restrictDt = new Date();
         var P10RequestedDate = new Date(Date.parse($("#P10RequestedDate").val()));
         var P10FeedbackReceiptDate = new Date(Date.parse($("#P10FeedbackReceiptDate").val()));
@@ -400,7 +400,7 @@ $(document).ready(function () {
             } else if (P10RequestedDate <= restrictDt) {
                 var newNamevalidate = document.getElementById('P10RequestedDate');
                 newNamevalidate.style.border = '2px solid red';
-                alert("New Date Retained Should Be Greater Than Current Date Retained");
+                alert("Customer / Design Requested Date Should Be Greater Than Todays Date.");
                 return false;
                 // or display an error message to the user
             }
@@ -420,7 +420,7 @@ $(document).ready(function () {
             } else if (P10FeedbackReceiptDate <= restrictDt) {
                 var newNamevalidate = document.getElementById('P10FeedbackReceiptDate');
                 newNamevalidate.style.border = '2px solid red';
-                alert("New Date Retained Should Be Greater Than Current Date Retained");
+                alert("Customer / Design Feedback Receipt Date Should Be Greater Than Customer / Design Requested Date");
                 return false;
                 // or display an error message to the user
             }
@@ -470,7 +470,7 @@ $(document).ready(function () {
             nC_Disp_Decision_Id: 0,
             nC_Disp_Instruction: 0
         };
-        api.post("/WorkOrder/PostNC_Decision_Log", formdata).then((data) => {
+        return api.post("/WorkOrder/PostNC_Decision_Log", formdata).then((data) => {
             //loadGetAllNC_Wk_List_Appl();
             if (P10RedoChkl1.checked) {
                 var P14RCLogId = parseInt($("#P14RCLogId").val());
@@ -500,7 +500,7 @@ $(document).ready(function () {
     $("#P14UploadOther").on("click", function () {
         $("#doc-item").modal("show");
     });
-    $("#P10Save").on("click", function () {
+    $("#P10Save").secureClick( function () {
         //var P10RequestedDate = $("#P10RequestedDate").val();
         const restrictDt = new Date();
         var P10RequestedDate = new Date(Date.parse($("#P10RequestedDate").val()));
@@ -556,7 +556,7 @@ $(document).ready(function () {
         } else if (P10RequestedDate <= restrictDt) {
             var newNamevalidate = document.getElementById('P10RequestedDate');
             newNamevalidate.style.border = '2px solid red';
-            alert("New Date Retained Should Be Greater Than Current Date Retained");
+            alert("Customer / Design Requested Date Should Be Greater Than Todays Date.");
             return false;
             // or display an error message to the user
         }
@@ -575,7 +575,7 @@ $(document).ready(function () {
             } else if (P10FeedbackReceiptDate <= restrictDt) {
                 var newNamevalidate = document.getElementById('P10FeedbackReceiptDate');
                 newNamevalidate.style.border = '2px solid red';
-                alert("New Date Retained Should Be Greater Than Current Date Retained");
+                alert("Customer / Design Feedback Receipt Date Should Be Greater Than Customer / Design Requested Date");
                 return false;
                 // or display an error message to the user
             }
@@ -617,7 +617,7 @@ $(document).ready(function () {
             nC_Disp_Decision_Id: 0,
             nC_Disp_Instruction: 0
         };
-        api.post("/WorkOrder/PostNC_Decision_Log", formdata).then((data) => {
+        return api.post("/WorkOrder/PostNC_Decision_Log", formdata).then((data) => {
             //loadGetAllNC_Wk_List_Appl();
             $("#popup10").modal("hide");
             loadNCLog();
@@ -954,7 +954,7 @@ $(document).ready(function () {
         }
         //$("#P14Containt").val('');
     });
-    $("#P14Save").on("click", function () {
+    $("#P14Save").secureClick( function () {
         var P14Containt = $("#P14Containt").val().trim();
         var P14Comment = $("#P14Comment").val();
         var P14NCLogId = $("#P14NCLogId").val();
@@ -978,7 +978,7 @@ $(document).ready(function () {
             senior_Feedback: " ",
             cont_RCA_CA_Status_Id: 1
         };
-        api.post("/WorkOrder/PostCont_RCA_CA_log", formdata).then((data) => {
+        return api.post("/WorkOrder/PostCont_RCA_CA_log", formdata).then((data) => {
             //loadGetAllNC_Wk_List_Appl();
             $("#P14RCLogId").val(data.cont_RCA_CA_LogId);
             alert("Containment Action taken & outcome Saved");
@@ -988,7 +988,7 @@ $(document).ready(function () {
             console.log(error);
         });
     });
-    $("#P14SaveRca").on("click", function () {
+    $("#P14SaveRca").secureClick( function () {
         var P14Containt = $("#P14Containt").val().trim();
         var P14Comment = $("#P14Comment").val();
         var P14NCLogId = $("#P14NCLogId").val();
@@ -1019,7 +1019,7 @@ $(document).ready(function () {
             senior_Feedback: P14Comment,
             cont_RCA_CA_Status_Id: status
         };
-        api.post("/WorkOrder/PostCont_RCA_CA_log", formdata).then((data) => {
+        return api.post("/WorkOrder/PostCont_RCA_CA_log", formdata).then((data) => {
             alert("Feedback on Root Cause Analysis & Corrective Action Saved");
             $("#popup14").modal("hide");
             loadNCLog();
@@ -1027,7 +1027,7 @@ $(document).ready(function () {
             console.log(error);
         });
     });
-    $("#P14CnfSave").on("click", function () {
+    $("#P14CnfSave").secureClick( function () {
         accp = 1;
         var P14Containt = $("#P14Containt").val().trim();
         var P14Comment = $("#P14Comment").val();
@@ -1075,7 +1075,7 @@ $(document).ready(function () {
             cnfComments: P14CNfCom,
             cont_RCA_CA_Status_Id: status
         };
-        api.post("/WorkOrder/PostCont_RCA_CA_log", formdata).then((data) => {
+        return api.post("/WorkOrder/PostCont_RCA_CA_log", formdata).then((data) => {
             alert("Confirmation of completion of Corrective Action Saved");
             $("#popup14").modal("hide");
             loadNCLog();

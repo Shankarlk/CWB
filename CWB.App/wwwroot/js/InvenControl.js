@@ -726,7 +726,7 @@ $(document).ready(function () {
 
     });
     $("#P3CorrectedQnty").on("input", calculateCount);
-    $("#P3Save").on("click", function () {
+    $("#P3Save").secureClick( function () {
         var P3CorrectedQnty = $("#P3CorrectedQnty").val();
         var P3Qnty = $("#P3Qnty").text();
         var P3CorrectedReason = $("#P3CorrectedReason").val();
@@ -761,7 +761,7 @@ $(document).ready(function () {
             Location_Id: 1,
             ReasonDesc: P3CorrectedReason
         };
-        api.post("/WorkOrder/UpdateInvMasterCon", InvMasterrowData).then((data) => {
+        return api.post("/WorkOrder/UpdateInvMasterCon", InvMasterrowData).then((data) => {
             $("Updated Inventory Master Record Succesfully");
             $("#Popup3").modal("hide");
             loadInvMaster();
@@ -813,7 +813,7 @@ $(document).ready(function () {
         $("#P6CPTPD").val(compname + " / " + partno + " / " + partdesc);
         $("#P6InvMastId").val(invmasterid);
     });
-    $("#P6Save").on("click", function () {
+    $("#P6Save").secureClick( function () {
         var P6Q = $("#P6Q").val();
         var P6Loc = $("#P6Loc").val();
         var P6InvMastId = parseInt($("#P6InvMastId").val());
@@ -843,7 +843,7 @@ $(document).ready(function () {
             Location_Id: P6Loc,
             ReasonDesc: "First Time Inventory Master Update"
         };
-        api.post("/WorkOrder/UpdateInvMasterFirst", InvMasterrowData).then((data) => {
+        return api.post("/WorkOrder/UpdateInvMasterFirst", InvMasterrowData).then((data) => {
             $("#Popup6").modal("hide");
             loadInvMisFirst();
         }).catch((error) => {

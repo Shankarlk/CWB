@@ -2,6 +2,7 @@
 using CWB.App.Services.CompanySettings;
 using CWB.App.Services.DocumentMagement;
 using CWB.App.Services.Masters;
+using CWB.App.Services.Routings;
 using CWB.Constants.UserIdentity;
 using CWB.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -21,15 +22,17 @@ namespace CWB.App.Controllers
         private readonly IPlantService _plantService;
         private readonly IOperationService _operationService;
         private readonly IDocMangService _docMangService;
+        private readonly IRoutingService _routingService;
 
         public MachineController(ILoggerManager logger, IMachineService machineService, IPlantService plantService,
-            IOperationService operationService, IDocMangService docMangService)
+            IOperationService operationService, IDocMangService docMangService, IRoutingService routingService)
         {
             _logger = logger;
             _machineService = machineService;
             _plantService = plantService;
             _operationService = operationService;
             _docMangService = docMangService;
+            _routingService = routingService;
 
         }
         public async Task<IActionResult> Index()
@@ -71,6 +74,18 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> DeleteMcTypeDoc(long mcTypeDocListId)
         {
             var result = await _machineService.DeleteMcTypeDoc(mcTypeDocListId);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteMachine(long mcTypeDocListId)
+        {
+            var routemc =await  _routingService.AllStepMachines();
+            if (routemc.Any(x => x.MachineId == mcTypeDocListId))
+            {
+                string msg = "This Machine is already used in the Routing Step. Delete The Step Machine in the Routings.";
+                return Ok(msg);
+            }
+            var result = await _machineService.DeleteMachine(mcTypeDocListId);
             return Ok(result);
         }
 

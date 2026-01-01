@@ -22,6 +22,7 @@ namespace CWB.Masters.Services.Machines
         IEnumerable<McSlNoDocListVM> GetMcSlNoDocList(long TenantId);
         Task<McSlNoDocListVM> PostMcSlNoDocList(McSlNoDocListVM mcTypeDocListVM);
         Task<bool> DeleteMcSlNoDocList(long mcSlNoDocListId, long tenantId);
+        Task<bool> DeleteMachine(long mcSlNoDocListId, long tenantId);
         Task<MachineProcDocumentVM> MachineProcDoc(MachineProcDocumentVM machineProcDocumentVM);
         bool CheckMachineProcDoc(long MachineId, long MachineProcDocId, long TenantId, long DocumentTypeId);
     }

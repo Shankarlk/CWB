@@ -397,7 +397,7 @@ $(document).ready(function () {
         $("#P5DocListId").val(doclistid);
     });
     //RetentionSave
-    $("#RetentionSave").on("click", function () {
+    $("#RetentionSave").secureClick( function () {
         var P5DocListId = parseInt($("#P5DocListId").val());
         var P5RetentionDate = new Date(Date.parse($("#P5RetentionDate").val()));
         const currentDate = $('#P5CurrentDate').val();
@@ -433,7 +433,7 @@ $(document).ready(function () {
             docListId: P5DocListId,
             deletionDate: formattedDate
         };
-        $.ajax({
+        return $.ajax({
             type: "POST",
             url: '/DocumentManagement/PostDocList',
             contentType: "application/json; charset=utf-8",

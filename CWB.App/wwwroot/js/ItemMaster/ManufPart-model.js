@@ -668,13 +668,13 @@ $(document).ready(function () {
                 //do nothing 
             }
             else {
-                document.getElementById("ManufPartForm").reset();
-                //Reset hidden fields
-                $("#CompanyName").val("");
-                $("#PartId").val("0");
-                $("#ManufacturedPartNoDetailId").val("0");
-                ManufPartFormUtil.ClearMainTab();
-                $("#CompanyId").val("").trigger('change');
+                //document.getElementById("ManufPartForm").reset();
+                ////Reset hidden fields
+                //$("#CompanyName").val("");
+                //$("#PartId").val("0");
+                //$("#ManufacturedPartNoDetailId").val("0");
+                //ManufPartFormUtil.ClearMainTab();
+                //$("#CompanyId").val("").trigger('change');
             }
         }
 
@@ -833,9 +833,9 @@ $(document).ready(function () {
         var FinishedWeight = parseFloat($("#FinishedWeight").val()) || 0;
         var QuantityPerInput = parseFloat($("#EditQuantityPerInput").val()) || 0;
 
-        var totalinputweight = inputwieght - (FinishedWeight * QuantityPerInput);
-
-        if (ScrapGenerated > totalinputweight) {
+        var maxAllowedScrap = inputwieght - (FinishedWeight * QuantityPerInput);
+        if (maxAllowedScrap < 0) maxAllowedScrap = 0;
+        if (ScrapGenerated > parseFloat(maxAllowedScrap.toFixed(3))) {
             $("#EditScrap-Error").text("Check Entered Scrap Weight");
         } else {
             $("#EditScrap-Error").text("");
@@ -844,22 +844,22 @@ $(document).ready(function () {
 
 
     //rm-select
-    $("#EditMakeFrom").click(function (event) {
+    $("#EditMakeFrom").secureClick(function (event) {
         ////debugger;
 
         var inputwieght = parseFloat($("#EditInputWeight").val());
         var ScrapGenerated = parseFloat($("#EditScrapgenerated").val());
         var FinishedWeight = parseFloat($("#FinishedWeight").val());
         var QuantityPerInput = parseFloat($("#EditQuantityPerInput").val());
-        var totalinputweight = inputwieght - (FinishedWeight * QuantityPerInput);
-
-        if (ScrapGenerated > totalinputweight) {
+        var maxAllowedScrap = inputwieght - (FinishedWeight * QuantityPerInput);
+        if (maxAllowedScrap < 0) maxAllowedScrap = 0;
+        if (ScrapGenerated > parseFloat(maxAllowedScrap.toFixed(3))) {
             $("#EditScrap-Error").text("Check Entered Scrap Weight");
             return false;
         } else {
             $("#EditScrap-Error").text("");
         }
-        EditMakeFrom(event);
+        return EditMakeFrom(event);
     });
 
     $("#DelMakeFrom").click(function (event) {
@@ -867,9 +867,13 @@ $(document).ready(function () {
         DeleteMakdeFrom(event);
     });
 
-    $("#EditBOM").click(function (event) {
+    $("#EditBOM").secureClick(function (event) {
         ////debugger;
-        EditBOM(event);
+        return EditBOM(event);
+    });
+    $("#AddBOM").secureClick(function (event) {
+        ////debugger;
+        return AddToBOM(event);
     });
 
     $("#DelBOM").click(function (event) {
@@ -1597,6 +1601,10 @@ $(document).ready(function () {
                 return;
             }
         }
+        var RevNo = $("#RevNo").val();
+        if (RevNo.length == 0) {
+            $("#RevNo").val("0");
+        }
         if (ManufPartFormUtil.ValidateManufPartDetails(2)) {
             if ($("#ManufPartForm").valid()) {
                 //////debugger;
@@ -1632,6 +1640,12 @@ $(document).ready(function () {
         $("#InputWeight").val('');
         $("#Scrap-Error").text("");
     });
+    $("#QuantityPerInput").on("input", function () {
+        calculateScrap();
+    });
+    $("#InputWeight").on("change", function () {
+        calculateScrap();
+    });
     $("#ScrapGenerated").on("input", function () {
 
         var inputwieght = parseFloat($("#InputWeight").val()) || 0;
@@ -1639,9 +1653,9 @@ $(document).ready(function () {
         var FinishedWeight = parseFloat($("#FinishedWeight").val()) || 0;
         var QuantityPerInput = parseFloat($("#QuantityPerInput").val()) || 0;
 
-        var totalinputweight = inputwieght - (FinishedWeight * QuantityPerInput);
-
-        if (ScrapGenerated > totalinputweight) {
+        var maxAllowedScrap = inputwieght - (FinishedWeight * QuantityPerInput);
+        if (maxAllowedScrap < 0) maxAllowedScrap = 0;
+        if (ScrapGenerated > parseFloat(maxAllowedScrap.toFixed(3))) {
             $("#Scrap-Error").text("Check Entered Scrap Weight");
         } else {
             $("#Scrap-Error").text("");
@@ -1659,9 +1673,9 @@ $(document).ready(function () {
                 var ScrapGenerated = parseFloat($("#ScrapGenerated").val());
                 var FinishedWeight = parseFloat($("#FinishedWeight").val());
                 var QuantityPerInput = parseFloat($("#QuantityPerInput").val());
-                var totalinputweight = inputwieght - (FinishedWeight * QuantityPerInput);
-
-                if (ScrapGenerated > totalinputweight) {
+                var maxAllowedScrap = inputwieght - (FinishedWeight * QuantityPerInput);
+                if (maxAllowedScrap < 0) maxAllowedScrap = 0;
+                if (ScrapGenerated > parseFloat(maxAllowedScrap.toFixed(3))) {
                     $("#Scrap-Error").text("Check Entered Scrap Weight");
                     return false;
                 } else {
@@ -1809,7 +1823,7 @@ function copyBOFData() {
 }
 
 
-function AddToBOM() {
+function AddToBOM(event) {
     if (ManufPartFormUtil.ValidateBOM()) {
         if ($("#MPBOM").valid()) {
             //////debugger;
@@ -1817,7 +1831,7 @@ function AddToBOM() {
             var formData = AppUtil.GetFormData("MPBOM");
             var tablebody = $("#tbl-BOM tbody");
             var templateElement = $("#BOM-template").html();
-            api.post("/masters/mpbom", formData).then((data) => {
+            return api.post("/masters/mpbom", formData).then((data) => {
                 ////debugger;
                 data['deleted'] = false;
                 boms.push(data);
@@ -1829,7 +1843,7 @@ function AddToBOM() {
                 //document.getElementById("MPBOM").reset();
               //  ManufPartFormUtil.ClearBOMTabAfterAddBOM();
                 //                ManufPartFormUtil.UpdateMPMakeFromTable(data.inputPartNo, data.mpMakeFromId);
-                preventDefault();
+                event.preventDefault();
             }).catch((error) => {
                 AppUtil.HandleError("MPBOM", error);
             });
@@ -1859,7 +1873,7 @@ function checkboxFinalPart() {
 function EditMakeFrom(event) {
     var formData = AppUtil.GetFormData("FormEditMakeFrom");
     var partId = $("#EditManufPartId").val();
-    api.post("/masters/mpmakefrom", formData).then((data) => {
+    return api.post("/masters/mpmakefrom", formData).then((data) => {
         //debugger;
         //var partId = data['manufPartId'];
         //reloadMakeFroms(partId);
@@ -1895,7 +1909,7 @@ function DeleteMakdeFrom(event) {
 function EditBOM(event){
     var formData = AppUtil.GetFormData("FormEditBOM");
     var partId = $("#EditBOMManufPartId").val();
-    api.post("/masters/mpbom", formData).then((data) => {
+    return api.post("/masters/mpbom", formData).then((data) => {
         //var partNo = data['bomPartNo'];
         //console.log("====1")
         //console.log(data);
@@ -2152,6 +2166,22 @@ function enableOtherCustRadios() {
     document.getElementById("csrm").disabled = false;
 }
 
+function calculateScrap() {
+    // Get values (default to 0 if empty or invalid)
+    var inputWeight = parseFloat($("#InputWeight").val()) || 0;
+    var finishedWeight = parseFloat($("#FinishedWeight").val()) || 0;
+    var quantityPerInput = parseFloat($("#QuantityPerInput").val()) || 0;
+
+    // Formula: Scrap = Input Weight - (Finished Weight * Qnty per Input)
+    var scrapWeight = inputWeight - (finishedWeight * quantityPerInput);
+
+    // Optional: Handle negative results if logic dictates scrap can't be negative
+     if (scrapWeight < 0) scrapWeight = 0; 
+
+    // Update the ScrapGenerated field (fixed to 2 or 3 decimal places is usually safer)
+    $("#ScrapGenerated").val(scrapWeight.toFixed(3));
+}
+
 function copyCustData() {
     var data = custRM;
     var radiochkd = $('input[name=CSRM]:checked');
@@ -2164,9 +2194,11 @@ function copyCustData() {
     if (data[selval].multiplePartsMadeFrom1InputRM == 'N') {
         $("#InputWeight").val(data[selval].rawMaterialWeight);
         $("#InputWeight").prop('readonly', true);
+        calculateScrap();
     } else {
         $("#InputWeight").val(data[selval].rawMaterialWeight);
         $("#InputWeight").prop('readonly', false);
+        calculateScrap();
     }
     document.getElementById("btn-close-CustRM").click();
     ownRMSelected = false;
@@ -2182,9 +2214,11 @@ function copyOwnData() {
     if (data[selval].multiplePartsMadeFrom1InputRM == 'N') {
         $("#InputWeight").val(data[selval].rawMaterialWeight);
         $("#InputWeight").prop('readonly', true);
+        calculateScrap();
     } else {
         $("#InputWeight").val(data[selval].rawMaterialWeight);
         $("#InputWeight").prop('readonly', false);
+        calculateScrap();
     }
     document.getElementById("btn-close-RMSelect").click();
     ownRMSelected = true;
@@ -2219,6 +2253,7 @@ function copyData() {
         $('#MFDescription').val(data[selval].partNo+" / "+data[selval].partDescription);
         $('#MFPartType').val(data[selval].masterPartType);
         $('#InputWeight').val(data[selval].finishedWeight ?? 0);
+        calculateScrap();
        // $('#FnshWeightSpan').text(data[selval].finishedWeight ?? 0);
     }
     else {

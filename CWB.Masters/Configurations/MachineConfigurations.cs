@@ -60,6 +60,11 @@ namespace CWB.Masters.Configurations
             builder.HasIndex(c => c.PlantId).HasDatabaseName("Machine_PlantId");
             builder.HasIndex(c => c.OperationListId).HasDatabaseName("Machine_OperationListId");
             builder.HasIndex(c => c.MachineTypeId).HasDatabaseName("Machine_MachineTypeId");
+            builder.HasMany(m => m.RoutingStepMachines)
+               .WithOne(rsm => rsm.Machine)
+               .HasForeignKey(rsm => rsm.MachineId)
+               .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }

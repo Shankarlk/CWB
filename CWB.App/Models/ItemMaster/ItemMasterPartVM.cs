@@ -32,6 +32,8 @@ namespace CWB.App.Models.ItemMaster
         public string NoOfManufInActive { get; set; } = string.Empty;
         public string NoOfAssemblyActive { get; set; } = string.Empty;
         public string NoOfAssemblyInActive { get; set; } = string.Empty;
+        public string NoOfManufHold { get; set; } = string.Empty;
+        public string NoOfAssemblyHold { get; set; } = string.Empty;
         public string ManufWithOutRm { get; set; } = string.Empty;
         public string AssemWithOutBom { get; set; } = string.Empty;
         public string RoutingNotAvl { get; set; } = string.Empty;

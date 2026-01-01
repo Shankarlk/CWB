@@ -439,7 +439,7 @@ function PostCustomerOder() {
     //console.log("....PostCustomerOrder....");
     var formData = AppUtil.GetFormData("CustomerOrderForm");
     //  console.log(formData);
-    api.post("/businessaquisition/customerorder", formData).then((data) => {
+    return api.post("/businessaquisition/customerorder", formData).then((data) => {
         //console.log("****CustomerOrder****");
         //console.log(data);
         //console.log("****End-CustomerOrder****");
@@ -466,7 +466,7 @@ function PostDeliverySchedule() {
         formName = "EditSOForm";
     }
     var formData = AppUtil.GetFormData(formName);
-    api.post("/businessaquisition/deliveryschedule", formData).then((data) => {
+    return api.post("/businessaquisition/deliveryschedule", formData).then((data) => {
 
         if (editSalesOrder) {
             var cuoid = $('#SalesCustomerOrderId').val();
@@ -963,7 +963,7 @@ $(function () {
         LoadSalesOrders(1);
     });
 
-    $("#BtnAddCustomerOrder").on("click", function () {
+    $("#BtnAddCustomerOrder").secureClick( function () {
         // alert("Add CustomerOrder clicked");
         const POPIN = $("#POPIN").val();
         const podate = $("#PODate").val();
@@ -977,7 +977,7 @@ $(function () {
         if (POPIN.length === 0) {
             return;
         } else {
-            PostCustomerOder();
+            return PostCustomerOder();
         }
     });
 
@@ -1042,7 +1042,7 @@ $(function () {
         //    }
         //});
     });
-    $("#SavePoLineItem").on("click", function () {
+    $("#SavePoLineItem").secureClick( function () {
         //alert("Add Schedule clicked");
         if ($("#SalesCustomerOrderId").val() == "0") {
             alert("Please create a customer oder first.");
@@ -1099,9 +1099,9 @@ $(function () {
         $("#DSComment").val(POSoComment);
         $("#EditSOComment").val(POSoComment);
         if (editSalesOrder) {
-            PostDeliverySchedule();
+            return PostDeliverySchedule();
         } else {
-            PostDeliverySchedule();
+            return PostDeliverySchedule();
         }
         $("#LaunchDeliverySchedule").show();
     });

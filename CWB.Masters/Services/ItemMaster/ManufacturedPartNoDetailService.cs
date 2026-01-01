@@ -333,6 +333,12 @@ namespace CWB.Masters.Services.ItemMaster
                         };
             return query.ToList();
         }
+
+        public IEnumerable<MPBOMVM> GetAllMPBOMList(long tenantID)
+        {
+            var mpmakefromlist = _mpBOMRepository.GetRangeAsync(m => m.TenantId.Equals(tenantID));
+            return _mapper.Map<IEnumerable<MPBOMVM>>(mpmakefromlist);
+        }
         public async Task<MPBOMVM> MPBOM(MPBOMVM mpBovm)
         {
             var mpBOM = _mapper.Map<MPBOM>(mpBovm);

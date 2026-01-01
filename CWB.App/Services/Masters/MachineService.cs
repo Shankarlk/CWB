@@ -140,6 +140,12 @@ namespace CWB.App.Services.Masters
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<bool>.GetAsync(uri, headers);
         }
+        public async Task<bool> DeleteMachine(long mcTypeDocListId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/deletemachine/{mcTypeDocListId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
 
         public async Task<MachineVM> Machine(MachineVM machineVM)
         {

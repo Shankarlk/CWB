@@ -196,6 +196,8 @@ $(function () {
         $("#manufacturer").val('');
         $("#search-machine-sec").val('');
         $("#tbl-machine-list tbody tr").show();
+        var $tableBody = $("#tbl-machine-list tbody");
+        $tableBody.find(".norecordsfound").remove();
     });
 
     $("#search-machine-sec").change(function () {
@@ -240,10 +242,10 @@ $(function () {
     });
 
 
-    $("#btnMachineGeneralSave").click(function () {
+    $("#btnMachineGeneralSave").secureClick(function () {
         if ($("#frmMachineGeneral").valid()) {
             var formData = AppUtil.GetFormData("frmMachineGeneral");
-            api.post("/Machine/Machine", formData).then((data) => {
+            return api.post("/Machine/Machine", formData).then((data) => {
                 $("#MachineMachineId").val(data.machineMachineId);
                 //set for other Tabs..
                 $("#MachineProcDocumentMachineId").val(data.machineMachineId);

@@ -129,8 +129,7 @@ var ContactsFormUtil = {
     ClearDivision: () => {
         $("#DivisionId").val("0");
         $("#DivisionName").val("");
-        $("#City").val("");
-        $("#Country").val("");
+        $("#CitySelect").val("").trigger("change");
     },
     HasFunction: (obj, methodName) => {
         return ((typeof obj[methodName]) == "function");
@@ -178,6 +177,9 @@ function SetDivisionEditValues(divisionId, divisionName, location, notes, compan
 
 $(function () {
     $("#btnAddDivision").hide();
+    $("#DivDivisionName").hide();
+    $("#lblDivisionName").hide();
+    $("#btnAddDivisionDiv").hide();
     $('#dialog-company').on('show.bs.modal', function (event) {
         ContactsFormUtil.ClearForm();
         ContactsFormUtil.ClearConstants();
@@ -190,6 +192,7 @@ $(function () {
             var tablebody = $("#tbl-division tbody");
             $(tablebody).html("");//empty tbody
             $("#btnAddDivision").hide();
+            $("#btnAddDivisionDiv").hide();
             return;
         }
         else {
@@ -222,8 +225,15 @@ $(function () {
             });
         }
         $("#btnAddDivision").show();
+        $("#btnAddDivisionDiv").show();
+        $("#DivDivisionName").show();
+        $("#lblDivisionName").show();
+        divisionDecisionTaken = true;
+        addDivision = true;
         ContactsFormUtil.UpdateDivisonTable(companyId, divisionId);
     });
+    let divisionDecisionTaken = false;
+    let addDivision = false;
     $('#dialog-company').on('hide.bs.modal', function (event) {
         ContactsFormUtil.ClearForm();
         ContactsFormUtil.ClearConstants();
@@ -236,6 +246,10 @@ $(function () {
         DivisionName.style.border = '';
         var PlantName = document.getElementById('PlantName');
         PlantName.style.border = '';
+        $("#DivDivisionName").hide();
+        $("#lblDivisionName").hide();
+        divisionDecisionTaken = false;
+        addDivision = false;
         //var City = document.getElementById('City');
         //City.style.border = '';
         //var Country = document.getElementById('Country');
@@ -249,9 +263,38 @@ $(function () {
     /*$("#btnContactClose").click(function () {
         $("#dialog-company").dialog("close");
     });*/
+    $("#btnYesDivision").on("click", function () {
+        addDivision = true;
+        divisionDecisionTaken = true;
+        $("#divisionConfirmModal").modal("hide");
+        handleDivisionUI();
+    });
+    $('#divisionConfirmModal').on('show.bs.modal', function (event) {
+        document.getElementById('dialog-company').style.filter = 'blur(5px)';
+    });
+    $('#divisionConfirmModal').on('hidden.bs.modal', function (event) {
+        document.getElementById('dialog-company').style.filter = 'none';
+    });
 
-    $("#btnContactSubmit").on('click',function () {
-     //   //debugger;
+    $("#btnNoDivision").on("click", function () {
+        addDivision = false;
+        divisionDecisionTaken = true;
+        $("#divisionConfirmModal").modal("hide");
+        handleDivisionUI();
+    });
+    function handleDivisionUI() {
+        if (addDivision) {
+            $("#DivDivisionName").show();
+            $("#lblDivisionName").show();
+        } else {
+            $("#DivisionName").val("Main");
+            $("#DivDivisionName").hide();
+            $("#lblDivisionName").hide();
+        }
+    }
+    $("#btnContactSubmit").secureClick(function (e) {
+        //   //debugger;
+
         var CompanyType = document.getElementById('CompanyType');
         if (!CompanyType.value) {
             CompanyType.style.border = '2px solid red';
@@ -267,6 +310,22 @@ $(function () {
             return false;
         } else {
             CompanyName.style.border = '';
+        }
+        // Ask only once
+
+        if (!divisionDecisionTaken) {
+            $("#divisionConfirmModal").modal("show");
+            return;
+            divisionDecisionTaken = true;
+        }
+
+        if (addDivision) {
+            $("#DivDivisionName").show();
+            $("#lblDivisionName").show();
+        } else {
+            $("#DivisionName").val("Main");
+            $("#DivDivisionName").hide();
+            $("#lblDivisionName").hide();
         }
         var DivisionName = document.getElementById('DivisionName');
         if (!DivisionName.value) {
@@ -327,13 +386,20 @@ $(function () {
         }
         if ($("#frmCompany").valid()) {
             var formData = AppUtil.GetFormData("frmCompany");
-            api.post("/contacts/company", formData).then((data) => {
+            return api.post("/contacts/company", formData).then((data) => {
+                $("#CompanyId").val(data.companyId);
                 var cid = $("#CompanyId").val();
                 if (cid == 0 || cid == "0") {
                     ContactsFormUtil.ClearForm();
                 }
                 ContactsFormUtil.UpdateFormIDs(data);
                 ContactsFormUtil.UpdateDivisonTable(data.companyId, data.divisionId);
+                if (addDivision) {
+                    $("#btnAddDivisionDiv").hide();
+                } else {
+                    $('#dialog-company').modal("hide");
+                }
+                $('#dialog-company').modal("hide");
                 $("#btnAddDivision").show();
                 ContactsFormUtil.ClearConstants();
                 if (typeof OnCompanyCreated === 'function') {

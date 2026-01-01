@@ -84,3 +84,22 @@ $(function () {
         MachieListUtil.LoadShop($(this).val());
     });
 });
+
+function DeleteMachine(element) {
+    var relatedTarget = $(element);
+    var doclistid = relatedTarget.data("id");
+    var confrimval = confirm("Do You Want This Machine.");
+    if (confrimval) {
+        api.get("/Machine/DeleteMachine?mcTypeDocListId=" + doclistid).then((data) => {
+            //console.log(data);
+            if (data == false || data == true) {
+
+            } else {
+                alert(data);
+            }
+            MachieListUtil.LoadMachineList();
+        }).catch((error) => {
+            //console.log(error);
+        });
+    }
+}

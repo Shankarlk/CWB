@@ -117,7 +117,7 @@ $(document).ready(function () {
         $("#P25DispPrev").val(formatDate(disp));
         $("#P25RecptPrev").val(formatDate(recp));
     });
-    $("#P25Save").on('click', function (event) {
+    $("#P25Save").secureClick( function (event) {
         var P25DispNew = $("#P25DispNew").val();
         var P25RecptNew = $("#P25RecptNew").val();
         if (P25DispNew.length === 0) {
@@ -175,7 +175,7 @@ $(document).ready(function () {
             plan_Disp_date: $("#P25DispNew").val(),
             plan_Recpt_date: $("#P25RecptNew").val()
         };
-        api.post("/WorkOrder/UpdateTempSubCon_List", formdata).then((data) => {
+        return api.post("/WorkOrder/UpdateTempSubCon_List", formdata).then((data) => {
             alert("Subcon Dispatch Date and Receipt Date Saved");
             isP81Modified = false;
             $("#Popup25").modal("hide");

@@ -1444,7 +1444,7 @@ $(function () {
             $("#email-error").text("Please enter a valid email address.").css("color", "red");
         }
     });
-    $("#EmployeeSave").click(function () {
+    $("#EmployeeSave").secureClick(function () {
         //   //debugger;
         var EPEmpId = parseInt($("#EPEmpId").val());
         var EPEmpNo = $("#EPEmpNo").val();
@@ -1662,7 +1662,7 @@ $(function () {
             date_Of_Resigning: EPDateOfLeave
         };
 
-        api.getbulk("/Employee/GetUnique?empNo=" + EPEmpNo)
+      return api.getbulk("/Employee/GetUnique?empNo=" + EPEmpNo)
             .then((data) => {
                 // If employee number already exists
                 if (data !== true && EPEmpId === 0) {
@@ -2612,7 +2612,7 @@ $(function () {
             $("#UiAccessRUiId").val(uilistid);
         }
     });
-    $("#UiAccessRSave").click(function () {
+    $("#UiAccessRSave").secureClick(function () {
         var UiAccessRMenu1 = parseInt($("#UiAccessRMenu1").val());
         var UiAccessRMenu2 = parseInt($("#UiAccessRMenu2").val());
         var UiAccessRMenu3 = parseInt($("#UiAccessRMenu3").val());
@@ -2707,7 +2707,7 @@ $(function () {
         //api.getbulk("/Employee/GetUniqueRole?roleName=" + ARPName).then((data) => {
         //    if (data == true) {
         //        $("#error-rolename").text("").css("color", "red");
-        api.post("/Employee/PostRoleUiList", rowData).then((data) => {
+        return api.post("/Employee/PostRoleUiList", rowData).then((data) => {
             LoadRoleUiById(UiAccessRRoleid);
             LoadRoleUiAll();
             $("#addUiAccessRole").modal("hide");
@@ -2724,7 +2724,7 @@ $(function () {
         //}).catch((error) => { });
     });
 
-    $("#ARPSave").click(function () {
+    $("#ARPSave").secureClick(function () {
         var ARPWork = $("#ARPWork").val();
         var ARPName = $("#ARPName").val();
         var ARPId = $("#ARPId").val();
@@ -2750,7 +2750,7 @@ $(function () {
             role_ListId: ARPId
         };
 
-        api.getbulk("/Employee/GetUniqueRole?roleName=" + ARPName).then((data) => {
+        return api.getbulk("/Employee/GetUniqueRole?roleName=" + ARPName).then((data) => {
             if (data == true || ARPId > 0) {
                 $("#error-rolename").text("").css("color", "red");
                 api.post("/Employee/PostRolelist", rowData).then((data) => {
@@ -2844,7 +2844,7 @@ $(function () {
             $("#UiAccessEUiId").val(uilistid);
         }
     });
-    $("#UiAccessESave").click(function () {
+    $("#UiAccessESave").secureClick(function () {
         var UiAccessRMenu1 = parseInt($("#UiAccessEMenu1").val());
         var UiAccessRMenu2 = parseInt($("#UiAccessEMenu2").val());
         var UiAccessRMenu3 = parseInt($("#UiAccessEMenu3").val());
@@ -2895,7 +2895,7 @@ $(function () {
             active: 'Y',
             add_date: todaydate
         };
-        api.post("/Department/PostEmployee_UI_List", rowData).then((data) => {
+        return api.post("/Department/PostEmployee_UI_List", rowData).then((data) => {
             LoadEmplUiById();
             $("#addUiAccessEmpl").modal("hide");
         }).catch((error) => {
@@ -3067,7 +3067,7 @@ $(function () {
     $(document).on("change", ".row-checkbox", function () {
         $(".row-checkbox").not(this).prop("checked", false); // uncheck others
     });
-    $("#DeptLinkSave").on("click", function () {
+    $("#DeptLinkSave").secureClick( function () {
         var selectedRow = $("#DeptP1Grid tbody tr").has("input.row-checkbox:checked");
 
         if (selectedRow.length === 0) {
@@ -3093,7 +3093,7 @@ $(function () {
             active: 'Y',
             add_date: todaydate
         };
-        api.post("/Department/PostDept_Employee", rowData).then((data) => {
+        return api.post("/Department/PostDept_Employee", rowData).then((data) => {
             $("#Popup1").modal("hide");
             LoadDeptEmp(parseInt(empId));
             LoadDepartments();

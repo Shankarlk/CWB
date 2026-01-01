@@ -458,7 +458,7 @@ $(document).ready(function () {
     });
     var supdate = {};
     var totalwoplanqnty = 0;
-    $("#P20SaveWo").on("click", function () {
+    $("#P20SaveWo").secureClick( function () {
         var qntys = $("#P20DelQnty").val();
         var P20AgrDate = $("#P20AgrDate").val();
         var P20AddnInfo = $("#P20AddnInfo").val();
@@ -519,14 +519,14 @@ $(document).ready(function () {
             recieptDate: P20AgrDate
         };
 
-        api.post("/WorkOrder/WoSubConSupplier", rowData).then((data) => {
+        return api.post("/WorkOrder/WoSubConSupplier", rowData).then((data) => {
             //loadWO();
             $("#Popup20WoSubConId").val('');
             GetAllSubCons(Newwoid);
         }).catch((error) => {
         });
     });
-    $("#P10SaveWo").on("click", function () {
+    $("#P10SaveWo").secureClick( function () {
         var qntys = $("#P10DelQnty").val();
         var P20AgrDate = $("#P10AgrDate").val();
         var P20AddnInfo = $("#P10AddnInfo").val();
@@ -583,7 +583,7 @@ $(document).ready(function () {
 
         }
 
-        api.post("/WorkOrder/WoSubConSupplier", rowData).then((data) => {
+        return api.post("/WorkOrder/WoSubConSupplier", rowData).then((data) => {
             //loadWO();
             GetAllSubConsP10(Newwoid);
             $("#P10DelQnty").val('');

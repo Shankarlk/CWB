@@ -42,7 +42,7 @@
 };
 
 $(function () {
-    $("#btnMachineProDocSubmit").click(function () {
+    $("#btnMachineProDocSubmit").secureClick(function () {
         var mctypeid = parseInt($("#MachineMachineId").val());
         if (mctypeid == 0) {
             alert("Please Save the Machine Type.");
@@ -80,7 +80,7 @@ $(function () {
             updatedBy: 0,
             updatedOn: deletionDate
         };
-        api.post("/Machine/PostMcProcDoc", rowData).then((data) => {
+        return api.post("/Machine/PostMcProcDoc", rowData).then((data) => {
             // console.log(data);
             MachineProcDocUtil.LoadMachineProcDocList(mctypeid);
             $("#ProcManChK").prop("checked", false);

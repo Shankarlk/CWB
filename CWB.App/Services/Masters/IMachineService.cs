@@ -20,6 +20,7 @@ namespace CWB.App.Services.Masters
         Task<McSlNoDocListVM> PostMcProcDocList(McSlNoDocListVM machineVM);
         Task<bool> DeleteMcProcDoc(long mcSlNoDocListId);
         Task<bool> DeleteMcTypeDoc(long mcTypeDocListId);
+        Task<bool> DeleteMachine(long mcTypeDocListId);
         Task<IEnumerable<MachineProcDocumentListVM>> GetMachineProcsDocLists(long MachineId);
         Task<IEnumerable<DocumentTypeListVM>> GetMachineDocTypes(long MachineId);
         Task<MachineProcDocumentVM> MachineProcDoc(MachineProcDocumentVM machineProcDocumentVM);

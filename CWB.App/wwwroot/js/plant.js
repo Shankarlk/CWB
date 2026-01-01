@@ -49,7 +49,7 @@ function DeleteHoliday(holidayId,name,plantId) {
 }
 function AddHolidayToList() {
     var formData = AppUtil.GetFormData("HolidayForm");
-    api.post("/plant/plantholiday", formData).then((data) => {
+    return api.post("/plant/plantholiday", formData).then((data) => {
         var plantId = $("#HolidayPlantId").val();
         LoadHolidays(plantId);
         $("#HolidayId").val("0");
@@ -117,7 +117,7 @@ function GetPlantWD(plantId) {
 
 function AddWorkingDetails() {
     var formData = AppUtil.GetFormData("WDForm");
-    api.post("/plant/plantwd", formData).then((data) => {
+    return api.post("/plant/plantwd", formData).then((data) => {
         //console.log(data);
         $("#WDId").val(data.wdId);
         $("#WDPlantId").val(data.plantId);
@@ -465,7 +465,7 @@ $(function () {
 
     //SaveWorkDetails
     //AddHoliday
-    $("#SaveWorkDetails").on('click', function (event) {
+    $("#SaveWorkDetails").secureClick( function (event) {
         var WeeklyOff2 = document.getElementById('WeeklyOff2');
         var WeeklyOff1 = document.getElementById('WeeklyOff1');
         var NoOfWeeklyOff = document.getElementById('NoOfWeeklyOff');
@@ -690,10 +690,10 @@ $(function () {
         } else {
             return false;
         }
-        AddWorkingDetails();
+        return AddWorkingDetails();
         $("#btn-shopdetails-close").prop('disabled', false);
     });
-    $("#AddHoliday").on('click', function (event) {
+    $("#AddHoliday").secureClick( function (event) {
         var nameInput = document.getElementById('HName');
         var dateInput = document.getElementById('HolidayDate');
         var PlantId = document.getElementById('PlantId');
@@ -718,7 +718,7 @@ $(function () {
         } else {
             dateInput.style.border = '';
         }
-        AddHolidayToList();
+        return AddHolidayToList();
         
     });
 
@@ -876,7 +876,7 @@ $(function () {
         });
         // }
     });
-    $("#BtnSavePlant").on('click', function (event) {
+    $("#BtnSavePlant").secureClick(function (event) {
         var Name = document.getElementById('Name');
         if (!Name.value) {
             Name.style.border = '2px solid red';
@@ -927,7 +927,7 @@ $(function () {
             PanNo.style.border = '';
         }
         var formData = AppUtil.GetFormData("PlantForm");
-        api.getbulk("/Plant/getplants").then((data) => {
+        return api.getbulk("/Plant/getplants").then((data) => {
             data = data.filter(item => item.name == Name.value);
             if (data.length === 0 || formData.PlantId > 0) {
 

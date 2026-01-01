@@ -634,7 +634,7 @@ $(document).ready(function () {
             }
         });
 
-        $("#MultipleWo").on("click", function () {
+        $("#MultipleWo").secureClick( function () {
             const selectedValue = $('input[name="equalwo"]:checked').val();
             var eq = "";
             if (selectedValue == "1") {
@@ -662,7 +662,7 @@ $(document).ready(function () {
             });
             var tdata = [];
             if (noofWOCreation.length > 1) {
-                $.ajax({
+                return $.ajax({
                     type: "POST",
                     url: '/BusinessAquisition/MultipleWOPost',
                     contentType: "application/json; charset=utf-8",
@@ -1346,7 +1346,7 @@ $(document).ready(function () {
         document.getElementById("NewSaveWo").textContent = "Generate WO";
     });
 
-    $("#NewSaveWo").on("click", function () {
+    $("#NewSaveWo").secureClick( function () {
         var woid = parseInt($("#Newwoid").val());
         var soid = parseInt($("#Newsoid").val());
         var partid = parseInt($("#NewpartId").val());
@@ -1395,7 +1395,7 @@ $(document).ready(function () {
             status: parseInt(wostatus)
         };
 
-        api.post("/businessaquisition/WOpost", rowData).then((data) => {
+        return api.post("/businessaquisition/WOpost", rowData).then((data) => {
             //console.log(data);
             resultData.push(data);
             $('#popup3NewWo').modal('hide');
@@ -1669,7 +1669,7 @@ $(document).ready(function () {
         });
     });
 
-    $("#popup7SaveWo").on("click", function () {
+    $("#popup7SaveWo").secureClick( function () {
         var woid = parseInt($("#Popup7woid").val());
         var soid = parseInt($("#Popup7soid").val());
         var partid = parseInt($("#Popup7partId").val());
@@ -1699,7 +1699,7 @@ $(document).ready(function () {
             buildToStock: 'Y'
         };
 
-        api.post("/businessaquisition/WOpost", rowData).then((data) => {
+        return api.post("/businessaquisition/WOpost", rowData).then((data) => {
             //console.log(data);
             $('#popup7').modal('hide');
             loadWO();
@@ -1761,7 +1761,7 @@ $(document).ready(function () {
     });
 
 
-    $("#BtnWOHold").on("click", function () {
+    $("#BtnWOHold").secureClick( function () {
         var woid = parseInt($("#HoldWorkOrderId").val());
         var soid = parseInt($("#HoldSalesOrderId").val());
         var partid = parseInt($("#HoldPartId").val());
@@ -1813,7 +1813,7 @@ $(document).ready(function () {
             comment: WoComment
         };
 
-        api.post("/workorder/WOpost", rowData).then((data) => {
+        return api.post("/workorder/WOpost", rowData).then((data) => {
             //console.log(data);
             $('#wohold').modal('hide');
             loadWO();
@@ -2669,12 +2669,18 @@ function DeleteWo(element) {
     var relatedTarget = $(element);
     var workOrderId = relatedTarget.data("workorderid");
     //var subconid = relatedTarget.data("subconid");
-    api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
-        data = data.filter(item => item.status === 1 && item.woId === workOrderId);
-        if (data.length > 0) {
-            api.getbulk("/WorkOrder/DeleteWo?id=" + workOrderId).then((data) => {
-                loadWO();
-            });
-        }
-    });
+
+    let result = confirm("Are You Sure You Want To Delete This WO?");
+    if (result) {
+        api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
+            data = data.filter(item => item.status === 1 && item.woId === workOrderId);
+            if (data.length > 0) {
+                api.getbulk("/WorkOrder/DeleteWo?id=" + workOrderId).then((data) => {
+                    loadWO();
+                });
+            }
+        });
+    } else {
+        return false;
+    }
 }

@@ -55,9 +55,6 @@ namespace CWB.Masters.Controllers
         [Produces(AppContentTypes.ContentType, Type = typeof(List<ItemMasterPartVM>))]
         public async Task<IActionResult> MasterParts(long tenantId)
         {
-            // --- Step 1: Fetch all data sequentially (Avoids EF Core threading issues) ---
-
-            // 1a. Fetch Base Data (User's Logic)
             var companies = (await _companyService.GetCompaniesByTenant(tenantId)).ToList();
             var masterParts = _masterPartService.GetAllMasterParts().Where(m => m.TenantId == tenantId).ToList();
             var manufList = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant(tenantId).ToList();
@@ -67,25 +64,50 @@ namespace CWB.Masters.Controllers
 
             // 1b. Fetch Enrichment Data (Docs & Statuses)
             var docmand = (await _masterPartService.GetAllItemMasterDocList(tenantId)).ToList();
-            var docListVMs = (await _documentManagementService.GetAllDocList(tenantId)).ToList();
-            // We fetch all status descriptions upfront to avoid async calls inside the parallel loop
-            // Assuming GetAllDocListStatus or similar exists, otherwise we map manually if needed. 
-            // For now, we will assume we can get status descriptions or just use the ID if desc isn't bulk fetchable.
-            // If you have a bulk fetch for status desc, add it here.
-
-            // --- Step 2: Build fast lookup dictionaries (in memory) ---
-            var companyLookup = companies.ToDictionary(c => c.CompanyId, c => c.CompanyName);
+            var docListVMs = (await _documentManagementService.GetAllDocList(tenantId)).ToList(); 
+            var makeFromList = _manufacturedPartNoDetailService.GetAllMPMakeFromList(tenantId).ToList();
+            var allBOMs = _manufacturedPartNoDetailService.GetAllMPBOMList(tenantId).ToList();
+            var companyLookup = companies
+            .Select(c => new { c.CompanyId, c.CompanyName })
+            .Distinct().ToDictionary(c => c.CompanyId, c => c.CompanyName);
             var masterPartLookup = masterParts.ToDictionary(m => m.MasterPartId);
 
             var purchaseByBof = partPurchases
                 .Where(p => p.BOFId > 0)
                 .GroupBy(p => p.BOFId)
-                .ToDictionary(g => g.Key, g => g.First().PSupplier);
+                .ToDictionary(g => g.Key, g => g.First().PSupplierId);
 
             var purchaseByRm = partPurchases
                 .Where(p => p.RMId > 0)
                 .GroupBy(p => p.RMId)
-                .ToDictionary(g => g.Key, g => g.First().PSupplier);
+                .ToDictionary(g => g.Key, g => g.First().PSupplierId);
+
+            var makeFromLookup = makeFromList
+                .Select(x => x.ManufPartId)
+                .Distinct()
+                .ToHashSet();
+
+            var bomParentLookup = allBOMs
+                .Select(x => x.BOMManufPartId) // Assuming BOMManufPartId is the Parent's ManufPartDetailId
+                .Distinct()
+                .ToHashSet();
+
+            var parentPartNoMap = manufList
+        .Where(m => masterPartLookup.ContainsKey(m.PartId))
+        .ToDictionary(
+            m => m.ManufacturedPartNoDetailId,
+            m => masterPartLookup[m.PartId].PartNo
+        );
+
+            // 2. Map Child PartId -> Comma Separated Parent PartNos
+            // We group BOMs by the Child Part (BOMPartId) to see where that child is used.
+            var childUsageMap = allBOMs
+                .Where(b => parentPartNoMap.ContainsKey(b.BOMManufPartId)) // Ensure valid parent
+                .GroupBy(b => b.BOMPartId) // Group by the Child Part
+                .ToDictionary(
+                    g => g.Key,
+                    g => string.Join(", ", g.Select(b => parentPartNoMap[b.BOMManufPartId]).Distinct())
+                );
 
             var list = new ConcurrentBag<ItemMasterPartVM>();
 
@@ -99,8 +121,14 @@ namespace CWB.Masters.Controllers
                         masterPartLookup.TryGetValue(m.PartId, out var mp);
                         companyLookup.TryGetValue(m.CompanyId, out var coName);
 
+                        childUsageMap.TryGetValue(m.PartId, out var usedInAssemblies);
+
                         // Doc Status Logic (In-Memory)
                         var docStatus = GetDocStatusInMemory(docmand, docListVMs, m.PartId, m.ManufacturedPartType == 1 ? 1 : 2);
+
+                        // LOGIC FIX: Check lookups instead of DB flags
+                        var rmAvl = makeFromLookup.Contains((int)m.ManufacturedPartNoDetailId) ? "Yes" : "No";
+                        var bomAvl = bomParentLookup.Contains(m.ManufacturedPartNoDetailId) ? "Yes" : "No";
 
                         list.Add(new ItemMasterPartVM
                         {
@@ -110,7 +138,8 @@ namespace CWB.Masters.Controllers
                             Company = coName ?? string.Empty,
                             PartNo = mp?.PartNo ?? string.Empty,
                             Inv_Trans = mp?.Inv_Trans ?? 'N',
-                            Linked_to_BOM = mp?.Linked_to_BOM ?? 'N',
+                            ListAssembly = usedInAssemblies ?? "-",
+                            Linked_to_BOM = string.IsNullOrEmpty(usedInAssemblies) ? 'N' : 'Y',
                             Description = mp?.PartDescription ?? string.Empty,
                             Status = mp?.Status,
                             Notes = mp?.PartDescription ?? string.Empty,
@@ -121,8 +150,8 @@ namespace CWB.Masters.Controllers
                             MasterDisplay = m.ManufacturedPartType == 1 ? "ManufacturedPart" : "Assembly",
                             MandocAvl = docStatus.MandocAvl,
                             DocStatus = docStatus.DocStatusDesc,
-                            RmAvl = "N/A", // Can populate if MakeFrom list was fetched, otherwise N/A
-                            BomAvl = mp?.Linked_to_BOM == 'Y' ? "Yes" : "No", // Simplified BOM check based on MasterPart flag
+                            RmAvl = m.ManufacturedPartType == 1 ? rmAvl : "N/A", // RmAvl only relevant for Manuf Parts
+                            BomAvl = m.ManufacturedPartType == 2 ? bomAvl : "N/A", // BomAvl usually only relevant for Assemblies
                             SupplierAvl = "N/A"
                         });
                     }
@@ -135,20 +164,23 @@ namespace CWB.Masters.Controllers
                     {
                         masterPartLookup.TryGetValue(b.PartId, out var mp);
                         purchaseByBof.TryGetValue((int)b.BoughtOutFinishDetailId, out var supp);
+                        childUsageMap.TryGetValue(b.PartId, out var usedInAssemblies);
 
                         var docStatus = GetDocStatusInMemory(docmand, docListVMs, b.PartId, 6, 7, 8);
 
+                        companyLookup.TryGetValue(supp, out var coName);
                         list.Add(new ItemMasterPartVM
                         {
                             PartId = b.PartId,
                             MasterPartType = "BOF",
-                            Company = supp ?? string.Empty,
+                            Company = coName ?? string.Empty,
                             PartNo = mp?.PartNo ?? string.Empty,
                             Description = mp?.PartDescription ?? string.Empty,
                             Status = mp?.Status,
                             Notes = mp?.PartDescription ?? string.Empty,
                             Inv_Trans = mp?.Inv_Trans ?? 'N',
-                            Linked_to_BOM = mp?.Linked_to_BOM ?? 'N',
+                            ListAssembly = usedInAssemblies ?? "-",
+                            Linked_to_BOM = string.IsNullOrEmpty(usedInAssemblies) ? 'N' : 'Y',
                             BOFId = (int)b.BoughtOutFinishDetailId,
                             TenantId = b.TenantId,
 
@@ -156,7 +188,7 @@ namespace CWB.Masters.Controllers
                             MasterDisplay = b.BoughtOutFinishMadeType switch { 1 => "Standard BOF", 2 => "Catalog BOF", _ => "Purchased Made to Print BOF" },
                             MandocAvl = docStatus.MandocAvl,
                             DocStatus = docStatus.DocStatusDesc,
-                            SupplierAvl = string.IsNullOrEmpty(supp) ? "No" : "Yes",
+                            SupplierAvl = string.IsNullOrEmpty(coName) ? "No" : "Yes",
                             BomAvl = "N/A",
                             RmAvl = "N/A"
                         });
@@ -170,19 +202,21 @@ namespace CWB.Masters.Controllers
                     {
                         masterPartLookup.TryGetValue((int)r.PartId, out var mp);
                         purchaseByRm.TryGetValue((int)r.RawMaterialDetailId, out var supp);
-
+                        childUsageMap.TryGetValue((int)r.PartId, out var usedInAssemblies);
                         var docStatus = GetDocStatusInMemory(docmand, docListVMs, r.PartId, 3, 4, 5);
 
+                        companyLookup.TryGetValue(supp, out var coName);
                         list.Add(new ItemMasterPartVM
                         {
                             PartId = r.PartId,
                             MasterPartType = "RawMaterial",
-                            Company = supp ?? string.Empty,
+                            Company = coName ?? string.Empty,
                             PartNo = mp?.PartNo ?? string.Empty,
                             Description = mp?.PartDescription ?? string.Empty,
                             Status = mp?.Status,
                             Inv_Trans = mp?.Inv_Trans ?? 'N',
-                            Linked_to_BOM = mp?.Linked_to_BOM ?? 'N',
+                            ListAssembly = usedInAssemblies ?? "-",
+                            Linked_to_BOM = string.IsNullOrEmpty(usedInAssemblies) ? 'N' : 'Y',
                             Notes = mp?.PartDescription ?? string.Empty,
                             RMId = (int)r.RawMaterialDetailId,
                             TenantId = r.TenantId,
@@ -191,7 +225,7 @@ namespace CWB.Masters.Controllers
                             MasterDisplay = r.RawMaterialMadeType == 1 ? "Own Purchased RM" : "Customer Supplied RM",
                             MandocAvl = docStatus.MandocAvl,
                             DocStatus = docStatus.DocStatusDesc,
-                            SupplierAvl = string.IsNullOrEmpty(supp) ? "No" : "Yes",
+                            SupplierAvl = string.IsNullOrEmpty(coName) ? "No" : "Yes",
                             BomAvl = "N/A",
                             RmAvl = "N/A"
                         });
@@ -200,7 +234,7 @@ namespace CWB.Masters.Controllers
             );
 
             // --- Step 4: Deduplicate by PartId ---
-            return Ok(list.GroupBy(x => x.PartId).Select(g => g.First()).ToList());
+            return Ok(list.GroupBy(x => x.PartNo).Select(g => g.First()).ToList());
         }
 
         // Helper for In-Memory Doc Status Calculation (No DB calls)

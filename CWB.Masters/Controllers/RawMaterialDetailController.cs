@@ -219,7 +219,7 @@ namespace CWB.Masters.Controllers
                         };
             List<RawMaterialDetailVM> temp = query.ToList();
             List<RawMaterialDetailVM> temp1 = query0.ToList();
-            temp.AddRange(temp1);
+            //temp.AddRange(temp1);
             return Ok(temp);
         }
 

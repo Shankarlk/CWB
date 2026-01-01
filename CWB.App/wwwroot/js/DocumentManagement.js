@@ -569,7 +569,7 @@ $(document).ready(function () {
         gobaldoctypename = doctypename;
     });
 
-    $("#AddDocType").on("click", function () {
+    $("#AddDocType").secureClick( function () {
         var DocTypeName = $("#DTDTypeName").val();
         var DTDDocTypeId = parseInt($("#DTDDocTypeId").val());
         var DTDDocCat = parseInt($("#DTDDocCat").val());
@@ -643,7 +643,7 @@ $(document).ready(function () {
             defaultRetPerYear: DTDRetYear,
             retentionDays:0
         };
-        api.getbulk("/DocumentManagement/CheckDocTypeName?docTypeName=" + DocTypeName).then((data) => {
+        return api.getbulk("/DocumentManagement/CheckDocTypeName?docTypeName=" + DocTypeName).then((data) => {
             //console.log(data);
             // if (DTDDocTypeId === 0) {
             if (!data || gobaldoctypename === DocTypeName) {
@@ -750,7 +750,7 @@ $(document).ready(function () {
 
     });
 
-    $("#CDRPCustRetSave").on("click", function () {
+    $("#CDRPCustRetSave").secureClick( function () {
         var CDRPCustRetId = parseInt($("#CDRPCustRetId").val());
         var CDRPDocTypeName = parseInt($("#CDRPDocTypeName").val());
         var CDRPCustomer = parseInt($("#CDRPCustomer").val());
@@ -792,7 +792,7 @@ $(document).ready(function () {
             retPerMon: CDRPRetPerMon,
             retPerYear: CDRPRetPerYear
         };
-        $.ajax({
+        return $.ajax({
             type: "POST",
             url: '/DocumentManagement/PostCustRetndata',
             contentType: "application/json; charset=utf-8",
@@ -813,7 +813,7 @@ $(document).ready(function () {
         });
     });
 
-    $("#DocUploadSave").on("click", function () {
+    $("#DocUploadSave").secureClick( function () {
         var selectedRowsData = {};
         var selectedRowsDataView = {};
         var deptupload = {};
@@ -845,7 +845,7 @@ $(document).ready(function () {
         selectedRowsDataView = Object.values(deptView);
         if (selectedRowsData.length > 0) {
 
-            $.ajax({
+            return  $.ajax({
                 type: "POST",
                 url: '/DocumentManagement/PostDocUpload',
                 contentType: "application/json; charset=utf-8",
@@ -918,7 +918,7 @@ $(document).ready(function () {
         });
     });
 
-    $("#RefReasonSave").on("click", function () {
+    $("#RefReasonSave").secureClick( function () {
         var fileExtensionEditId = parseInt($("#DocReasonId").val());
         var fileExtensionNameEdit = $("#DocReason").val();
 
@@ -941,7 +941,7 @@ $(document).ready(function () {
             //console.log(data);
             // if (DTDDocTypeId === 0) {
             /*if (!data) {*/
-                $.ajax({
+        return  $.ajax({
                     type: "POST",
                     url: '/DocumentManagement/PostDocReason',
                     contentType: "application/json; charset=utf-8",

@@ -32,6 +32,11 @@ namespace CWB.Masters.Configurations
                .Property(m => m.MachineId)
                .HasColumnName("MachineId")
                .IsRequired();
+
+            builder.HasOne(rsm => rsm.Machine)
+                   .WithMany(m => m.RoutingStepMachines)
+                   .HasForeignKey(rsm => rsm.MachineId)
+                   .OnDelete(DeleteBehavior.Restrict);
             builder
                .Property(m => m.SetupTime)
                .HasColumnName("SetupTime")

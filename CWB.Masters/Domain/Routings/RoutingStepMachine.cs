@@ -10,6 +10,8 @@ namespace CWB.Masters.Domain.Routings
     {
         public long TenantId { get; set; }
         public long MachineId { get; set; }
+
+        public Machine Machine { get; set; }
         //public Machine Machine { get; set; }
         public long RoutingStepId { get; set; }
         //public RoutingStep RoutingStep { get; set; }

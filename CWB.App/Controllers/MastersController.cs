@@ -457,6 +457,10 @@ namespace CWB.App.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ManufacturedPartNoDetail(ManufacturedPartNoDetailVM model)
         {
+            if(model.RevNo.Length == 0)
+            {
+                model.RevNo = "0";
+            }
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -712,8 +716,9 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> ManufAssemCompLinq()
         {
-            var mfpdList = await _mastersService.ItemMasterParts();
-            var groupedByCompany = mfpdList.GroupBy(item => item.Company);
+            var mfpdList = await _mastersService.MasterPartList();
+            var manufacturedPartNoDetails = await _mastersService.GetAllManufacturedPartNoDetailList();
+            var groupedByCompany = mfpdList.Where(m=>m.MasterPartType == "Assembly" || m.MasterPartType == "ManufacturedPart").GroupBy(item => item.Company);
             List<ItemMasterPartVM> result = new List<ItemMasterPartVM>();
 
             // Get routing list items once for efficiency
@@ -724,7 +729,7 @@ namespace CWB.App.Controllers
             foreach (var companyGroup in groupedByCompany)
             {
                 // Initialize counts
-                int manufActive = 0, manufInactive = 0, assemActive = 0, assemInactive = 0;
+                int manufActive = 0, manufInactive = 0, assemActive = 0, assemInactive = 0, manufHold = 0 , assemHold = 0;
                 int finalpart = 0, woRm = 0, woBom = 0, woRoute = 0;
                 int docnotavl = 0;
                 // Cache manufactured parts
@@ -735,7 +740,7 @@ namespace CWB.App.Controllers
                 {
                     if (!manufPartsCache.TryGetValue((int)item.PartId, out var manuf))
                     {
-                        manuf = await _mastersService.GetManufPart((int)item.PartId);
+                        manuf = manufacturedPartNoDetails.Where(m=>m.PartId== item.PartId).FirstOrDefault();
                         manufPartsCache[(int)item.PartId] = manuf;
                     }
 
@@ -758,7 +763,12 @@ namespace CWB.App.Controllers
                             woRm++;
                         }
 
-                        if (item.Status == "Active") manufActive++; else manufInactive++;
+                        if (item.Status == "Released")
+                        {
+                            manufActive++;
+                        }
+                        else if (item.Status == "Not Released") { manufInactive++; }
+                        else if (item.Status == "Hold") { manufHold++; }
                     }
                     else if (item.MasterPartType == "Assembly")
                     {
@@ -780,7 +790,12 @@ namespace CWB.App.Controllers
                         {
                             woRoute++;
                         }
-                        if (item.Status == "Active") assemActive++; else assemInactive++;
+                        if (item.Status == "Released")
+                        {
+                            assemActive++;
+                        }
+                        else if (item.Status == "Not Released") { assemInactive++; }
+                        else if (item.Status == "Hold") { assemHold++; }
                     }
 
                     if (manuf.FinalPartNosoldtoCustomer == 1)
@@ -801,6 +816,8 @@ namespace CWB.App.Controllers
                     NoOfAssemblyActive = assemActive.ToString(),
                     NoOfManufInActive = manufInactive.ToString(),
                     NoOfAssemblyInActive = assemInactive.ToString(),
+                    NoOfManufHold = manufHold.ToString(),
+                    NoOfAssemblyHold = assemHold.ToString(),
                     RmAvl = woRm.ToString(),
                     BomAvl = woBom.ToString(),
                     RoutingNotAvl = woRoute.ToString()
@@ -935,7 +952,8 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> ManufAssemlist(string company)
         {
-            var mfpdList = await _mastersService.ItemMasterParts();
+            var mfpdList = await _mastersService.MasterPartList();
+            var manufacturedPartNoDetails = await _mastersService.GetAllManufacturedPartNoDetailList();
             var result = new List<ItemMasterPartVM>();
             var filteredItems = mfpdList.Where(item => item.Company == company).ToList();
 
@@ -951,7 +969,7 @@ namespace CWB.App.Controllers
 
             var tasks = filteredItems.Select(async item =>
             {
-                var manuf = await _mastersService.GetManufPart((int)item.PartId);
+                var manuf = manufacturedPartNoDetails.Where(m => m.PartId == item.PartId).FirstOrDefault(); 
                 item.FinalPart = manuf.FinalPartNosoldtoCustomer != 0 ? "Yes" : "No";
 
                 var contentId = item.MasterPartType == "ManufacturedPart" ? 1 : 2;
@@ -1160,7 +1178,7 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> RMList()
         {
-            var mfpdList = await _mastersService.ItemMasterParts();
+            var mfpdList = await _mastersService.MasterPartList();
             var result = new List<ItemMasterPartVM>();
             var docmand = await _mastersService.Getallitemmasterdoclist();
             var docListVMs = await _docMangService.GetAllDocList();
@@ -1275,7 +1293,7 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllManufByRM(long partid)
         {
-            var mfpdList = await _mastersService.ItemMasterParts();
+            var mfpdList = await _mastersService.MasterPartList();
             var result = new List<ItemMasterPartVM>();
             var manufacturedParts = mfpdList
                 .Where(item => item.MasterPartType == "ManufacturedPart")
@@ -1323,7 +1341,7 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> AllBofList()
         {
-            var mfpdList = await _mastersService.ItemMasterParts();
+            var mfpdList = await _mastersService.MasterPartList();
             var docmand = await _mastersService.Getallitemmasterdoclist();
             var docListVMs = await _docMangService.GetAllDocList();
 
@@ -1446,7 +1464,7 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAssemByBof(long partid)
         {
-            var mfpdList = await _mastersService.ItemMasterParts();
+            var mfpdList = await _mastersService.MasterPartList();
             var result = new List<ItemMasterPartVM>();
             var assemblyItems = mfpdList.Where(item => item.MasterPartType == "Assembly").ToList();
             var assemblyTasks = assemblyItems.Select(async item =>
@@ -1491,7 +1509,7 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> RmByComp()
         {
-            var mfpdList = await _mastersService.ItemMasterParts();
+            var mfpdList = await _mastersService.MasterPartList();
             var docmand = await _mastersService.Getallitemmasterdoclist();
             var docListVMs = await _docMangService.GetAllDocList();
 
@@ -1499,8 +1517,8 @@ namespace CWB.App.Controllers
                 .GroupBy(item => item.Company)
                 .Select(async companyGroup =>
                 {
-                    int rawMaterialActive = companyGroup.Count(item => item.MasterPartType == "RawMaterial" && item.Status == "Active");
-                    int rawMaterialInactive = companyGroup.Count(item => item.MasterPartType == "RawMaterial" && item.Status != "Active");
+                    int rawMaterialActive = companyGroup.Count(item => item.MasterPartType == "RawMaterial" && item.Status == "Released");
+                    int rawMaterialInactive = companyGroup.Count(item => item.MasterPartType == "RawMaterial" && item.Status == "Not Released");
 
                     int manufActive = 0;
                     int manufInactive = 0;
@@ -1646,7 +1664,7 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> RmSupplierList(string company)
         {
-            var mfpdList = await _mastersService.ItemMasterParts();
+            var mfpdList = await _mastersService.MasterPartList();
             var docmand = await _mastersService.Getallitemmasterdoclist();
             var docListVMs = await _docMangService.GetAllDocList();
             var rmTypes = await _mastersService.GetRMTypes();
@@ -1786,7 +1804,7 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> BofByComp()
         {
-            var mfpdList = await _mastersService.ItemMasterParts();
+            var mfpdList = await _mastersService.MasterPartList();
             var docmand = await _mastersService.Getallitemmasterdoclist();
             var docListVMs = await _docMangService.GetAllDocList();
             var result = new List<ItemMasterPartVM>();
@@ -1946,7 +1964,7 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> BofSumByComp(string company)
         {
-            var mfpdList = await _mastersService.ItemMasterParts();
+            var mfpdList = await _mastersService.MasterPartList();
             var docmand = await _mastersService.Getallitemmasterdoclist();
             var docListVMs = await _docMangService.GetAllDocList();
             var partStatusList = await _mastersService.GetPartStatus();

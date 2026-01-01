@@ -194,6 +194,23 @@ namespace CWB.Masters.Services.Machines
             }
             return false;
         }
+        public async Task<bool> DeleteMachine(long mcSlNoDocListId, long tenantId)
+        {
+            var co = await _machineRepository.SingleOrDefaultAsync(m => m.Id == mcSlNoDocListId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _machineRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (System.Exception ex)
+                {
+                }
+            }
+            return false;
+        }
 
         public IEnumerable<MachineProcDocumentListVM> GetMachineProcDocuments(long MachineId, long TenantId)
         {

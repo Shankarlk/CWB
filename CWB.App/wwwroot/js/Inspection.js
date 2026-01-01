@@ -108,18 +108,15 @@ function loadNclog(inwheaderid) {
             $("#P6TotalNc").val(totalQuantity);
             $("#P6TbTotalNc").val(totalQuantity);
             $("#P6TotalInsp").val(totalQuantity);
+            $("#P6FinNcCount").val(totalQuantity);
             calculateTotals();
         }
         if (totalQuantity === 0) {
             $("#P6FinNcCount").hide();
             $("#P6FinNcUnit").hide();
-            $("#P6InputNcCount").hide();
-            $("#P6InputNcUnit").hide();
         } else {
             $("#P6FinNcCount").show();
             $("#P6FinNcUnit").show();
-            $("#P6InputNcCount").show();
-            $("#P6InputNcUnit").show();
         }
     }).catch((error) => {
     });
@@ -454,7 +451,7 @@ $(document).ready(function () {
     $("#popupInwardClose").on("click", function () {
         $("#popupInspect6").modal("hide");
     });
-    $("#P7Save").on("click", function () {
+    $("#P7Save").secureClick( function () {
         var P7BallonNo = $("#P7BallonNo").val();
         var P7NcBallonDesc = $("#P7NcBallonDesc").val();
         var P7NcDesc = $("#P7NcDesc").val();
@@ -508,7 +505,7 @@ $(document).ready(function () {
             storage_Location: P7NcLocation,
             nC_Log_status_Id: 1
         };
-        $.ajax({
+        return $.ajax({
             type: "POST",
             url: '/workOrder/PostInspNcLog',
             contentType: "application/json; charset=utf-8",
@@ -585,7 +582,7 @@ $(document).ready(function () {
         $("#P8SuppSpan").text(supp);
         $("#P8PartNoSpan").text(partno);
     });
-    $("#P6LineInspupdate").on("click", function () {
+    $("#P6LineInspupdate").secureClick(function () {
         var ourCountVM = $("#P6TbInspTotal").val();
         var P6TbUnpro = $("#P6TbUnpro").val();
         var suppCountVM = $("#P6TbTotalOff").val();
@@ -608,7 +605,7 @@ $(document).ready(function () {
                 var P6PartId = parseInt($("#P6PartId").val());
                 var P6PoId = parseInt($("#P6PoId").val());
 
-                api.getbulk("/WorkOrder/GetAllInv_Trans_Log").then((logdata) => {
+                return api.getbulk("/WorkOrder/GetAllInv_Trans_Log").then((logdata) => {
                     var heid = parseInt($("#P7InwHeaderId").val());
                     logdata = logdata.filter(item => item.pO_No_Id === heid);
                     var logId = 0;
@@ -679,10 +676,10 @@ $(document).ready(function () {
                     }
                     $("#P6TbUnpro").val(qntyValue);
                 });
-                if (parseInt(qntyValue) > suppCountVM && accpet ===0) {
-                        $("#ErrorMessage5").modal("show");
-                    } else {
-                    api.getbulk("/WorkOrder/GetAllInv_Trans_Log").then((logdata) => {
+                if (parseInt(qntyValue) > suppCountVM && accpet === 0) {
+                    $("#ErrorMessage5").modal("show");
+                } else {
+                    return api.getbulk("/WorkOrder/GetAllInv_Trans_Log").then((logdata) => {
                         var heid = parseInt($("#P7InwHeaderId").val());
                         logdata = logdata.filter(item => item.pO_No_Id === heid);
                         var logId = 0;

@@ -13,8 +13,8 @@ namespace CWB.App.Models.Machine
         [Required(ErrorMessage = "Select {0}.")]
         public long MachineDepartmentId { get; set; }
 
-        [Display(Name = "Section")]
-        [Required(ErrorMessage = "Select {0}.")]
+        //[Display(Name = "Section")]
+        //[Required(ErrorMessage = "Select {0}.")]
         public long SectionId { get; set; }
 
         [Display(Name = "Name")]

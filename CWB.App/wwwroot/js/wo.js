@@ -178,7 +178,7 @@ $(document).ready(function () {
     //$("#initiateDetailedbtn").on("click", function () {
 
     //});
-    $("#btnAG").on("click", function () {
+    $("#btnAG").secureClick( function () {
         var checkboxes = $("#SalesOrders1 tbody input[type='checkbox']:checked"); // Select only checked checkboxes
         var selectedRowsData = {};
         var partIdMap = {};
@@ -224,7 +224,7 @@ $(document).ready(function () {
 
         if (selectedRowsData.length === 1) {
             // Single checkbox selected, post to WOpost
-            api.post("/businessaquisition/WOpost", selectedRowsData[0]).then((data) => {
+            return api.post("/businessaquisition/WOpost", selectedRowsData[0]).then((data) => {
                 // Handle success if needed
                 loadWO();
                 SalesorderId.forEach(function (arr, outerIndex) {
@@ -260,7 +260,7 @@ $(document).ready(function () {
             // Multiple checkboxes selected, post to MultiWOpost
             //console.log("-- multiplepostwo");
 
-            $.ajax({
+            return $.ajax({
                 type: "POST",
                 url: '/BusinessAquisition/MultipleWOPost',
                 contentType: "application/json; charset=utf-8",
@@ -312,7 +312,7 @@ $(document).ready(function () {
         }
     });
 
-    $("#btnGW").on("click", function () {
+    $("#btnGW").secureClick( function () {
         var checkboxes = $("#SalesOrders1 tbody input[type='checkbox']:checked"); // Select only checked checkboxes
         var selectedRowsData = {};
         var partIdMap = {};
@@ -357,7 +357,7 @@ $(document).ready(function () {
 
         if (selectedRowsData.length === 1) {
             // Single checkbox selected, post to WOpost
-            api.post("/businessaquisition/WOpost", selectedRowsData[0]).then((data) => {
+            return api.post("/businessaquisition/WOpost", selectedRowsData[0]).then((data) => {
                 // Handle success if needed
                 loadWO();
                 SalesorderId.forEach(function (arr, outerIndex) {
@@ -373,7 +373,7 @@ $(document).ready(function () {
                 });
                 //console.log(WoSoRel);
                 WoSOMethod = Object.values(WoSoRel);
-                $.ajax({
+                return $.ajax({
                     type: "POST",
                     url: '/BusinessAquisition/PostWoSoRel',
                     contentType: "application/json; charset=utf-8",
@@ -3318,20 +3318,30 @@ function DeleteSubSupplier(element) {
     var relatedTarget = $(element);
     var workOrderId = relatedTarget.data("woid");
     var subconid = relatedTarget.data("subconid");
-    api.getbulk("/WorkOrder/DeleteSubCon?id=" + subconid).then((data) => {
-        GetAllSubCons(workOrderId);
-    });
+    let result = confirm("Are You Sure You Want To Delete This?");
+    if (result) {
+        api.getbulk("/WorkOrder/DeleteSubCon?id=" + subconid).then((data) => {
+            GetAllSubCons(workOrderId);
+        });
+    } else {
+        return false;
+    }
 }
 function DeleteWo(element) {
     var relatedTarget = $(element);
     var workOrderId = relatedTarget.data("workorderid");
     //var subconid = relatedTarget.data("subconid");
-    api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
-        data = data.filter(item => item.status === 1 && item.woId === workOrderId);
-        if (data.length > 0) {
-            api.getbulk("/WorkOrder/DeleteWo?id=" + workOrderId).then((data) => {
-                loadWO();
-            });
-        }
-    });
+    let result = confirm("Are You Sure You Want To Delete This WO?");
+    if (result) {
+        api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
+            data = data.filter(item => item.status === 1 && item.woId === workOrderId);
+            if (data.length > 0) {
+                api.getbulk("/WorkOrder/DeleteWo?id=" + workOrderId).then((data) => {
+                    loadWO();
+                });
+            }
+        });
+    } else {
+        return false;
+    }
 }

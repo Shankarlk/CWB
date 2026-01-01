@@ -239,8 +239,8 @@ $(function () {
 
     $('#VMStatus').change(function () {
         var selectedValue = $(this).val();
-        if (selectedValue == "1") {
-            var data = "Active";
+        if (selectedValue != "0") {
+            var data = selectedValue;
             var value = data.toLowerCase();
             $("#VMOneGrid tbody tr").filter(function () {
                 $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
@@ -257,32 +257,20 @@ $(function () {
             } else {
                 $tableBody.find(".norecordsfound").remove();
             }
-        } else if (selectedValue == "2") {
-            var data = "Inactive";
-            var value = data.toLowerCase();
-            $("#VMOneGrid tbody tr").filter(function () {
-                $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
-            });
+        } else if (selectedValue == "0") {
             var $tableBody = $("#VMOneGrid tbody");
-            if ($tableBody.find("tr:visible").length === 0) {
-                const noRecordsRow = `
-                <tr class="norecordsfound">
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-                $tableBody.append(noRecordsRow);
-            } else {
-                $tableBody.find(".norecordsfound").remove();
-            }
+            $tableBody.find(".norecordsfound").remove();
+            $("#VMOneGrid tbody tr").show();
+            
         } else {
+            $tableBody.find(".norecordsfound").remove();
             $("#VMOneGrid tbody tr").show();
         }
     });
     $('#P5Status').change(function () {
         var selectedValue = $(this).val();
-        if (selectedValue == "1") {
-            var data = "Active";
+        if (selectedValue != "0") {
+            var data = selectedValue;
             var value = data.toLowerCase();
             $("#P5Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
@@ -299,25 +287,12 @@ $(function () {
             } else {
                 $tableBody.find(".norecordsfound").remove();
             }
-        } else if (selectedValue == "2") {
-            var data = "Inactive";
-            var value = data.toLowerCase();
-            $("#P5Grid tbody tr").filter(function () {
-                $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
-            });
-            var $tableBody = $("#P5Grid tbody");
-            if ($tableBody.find("tr:visible").length === 0) {
-                const noRecordsRow = `
-                <tr class="norecordsfound">
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-                $tableBody.append(noRecordsRow);
-            } else {
-                $tableBody.find(".norecordsfound").remove();
-            }
+        } else if (selectedValue == "0") {
+            var $tableBody = $("#VMOneGrid tbody");
+            $tableBody.find(".norecordsfound").remove();
+            $("#P5Grid tbody tr").show();
         } else {
+            $tableBody.find(".norecordsfound").remove();
             $("#P5Grid tbody tr").show();
         }
     });
@@ -357,60 +332,18 @@ $(function () {
             $tableBody.find(".norecordsfound").remove();
         }
     });
-    $("#P5MatlSpec").on("keyup", function () {
-        var value = $(this).val().toLowerCase();
-        $("#P5Grid tbody tr").filter(function () {
-            $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
-        });
-        var $tableBody = $("#P5Grid tbody");
-        if ($tableBody.find("tr:visible").length === 0) {
-            const noRecordsRow = `
-                <tr class="norecordsfound">
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-            $tableBody.append(noRecordsRow);
-        } else {
-            $tableBody.find(".norecordsfound").remove();
-        }
+    $("#P5MatlSpec").on("change", function () {
+        filterP5Grid(6, $(this).val()); // column index 6
     });
-    $("#P5BaseRm").on("keyup", function () {
-        var value = $(this).val().toLowerCase();
-        $("#P5Grid tbody tr").filter(function () {
-            $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
-        });
-        var $tableBody = $("#P5Grid tbody");
-        if ($tableBody.find("tr:visible").length === 0) {
-            const noRecordsRow = `
-                <tr class="norecordsfound">
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-            $tableBody.append(noRecordsRow);
-        } else {
-            $tableBody.find(".norecordsfound").remove();
-        }
+
+    $("#P5BaseRm").on("change", function () {
+        filterP5Grid(5, $(this).val()); // column index 5
     });
-    $("#P5RmType").on("keyup", function () {
-        var value = $(this).val().toLowerCase();
-        $("#P5Grid tbody tr").filter(function () {
-            $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
-        });
-        var $tableBody = $("#P5Grid tbody");
-        if ($tableBody.find("tr:visible").length === 0) {
-            const noRecordsRow = `
-                <tr class="norecordsfound">
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-            $tableBody.append(noRecordsRow);
-        } else {
-            $tableBody.find(".norecordsfound").remove();
-        }
+
+    $("#P5RmType").on("change", function () {
+        filterP5Grid(4, $(this).val()); // column index 4
     });
+
     $("#P5PartNo").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#P5Grid tbody tr").filter(function () {
@@ -587,8 +520,8 @@ $(function () {
     });
     $('#P9StatusSearch').change(function () {
         var selectedValue = $(this).val();
-        if (selectedValue == "1") {
-            var data = "Active";
+        if (selectedValue != "0") {
+            var data = selectedValue;
             var value = data.toLowerCase();
             $("#P9Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
@@ -605,24 +538,10 @@ $(function () {
             } else {
                 $tableBody.find(".norecordsfound").remove();
             }
-        } else if (selectedValue == "2") {
-            var data = "Inactive";
-            var value = data.toLowerCase();
-            $("#P9Grid tbody tr").filter(function () {
-                $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
-            });
-            var $tableBody = $("#P9Grid tbody");
-            if ($tableBody.find("tr:visible").length === 0) {
-                const noRecordsRow = `
-                <tr class="norecordsfound">
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-                $tableBody.append(noRecordsRow);
-            } else {
-                $tableBody.find(".norecordsfound").remove();
-            }
+        } else if (selectedValue == "0") {
+            var $tableBody = $("#VMOneGrid tbody");
+            $tableBody.find(".norecordsfound").remove();
+            $("#P5Grid tbody tr").show();
         } else {
             $("#P9Grid tbody tr").show();
         }
@@ -800,9 +719,9 @@ $(function () {
         $("#P5PartNo").val('');
         $("#P5Company").val('');
         $("#P5Source").val('');
-        $("#P5RmType").val('');
-        $("#P5BaseRm").val('');
-        $("#P5MatlSpec").val('');
+        $("#P5RmType").val(0);
+        $("#P5BaseRm").val(0);
+        $("#P5MatlSpec").val(0);
         $("#P5Status").val(0);
         $("#P5Supplier2").prop('checked', false);
         $("#P5SuppWith1").prop('checked', false);
@@ -997,9 +916,28 @@ $(function () {
         }
 
     });
-    $("#VMFinalPart").click(function (event) {
-        var isChecked = $(this).prop("checked");
-        if (isChecked) {
+    $("#VMFinalPart").change(function (event) {
+        var selectedValue = $(this).val();
+        //var isChecked = $(this).prop("checked");
+        if (selectedValue == "1") {
+            var data = "Yes";
+            var value = data.toLowerCase();
+            $("#VMOneGrid tbody tr").filter(function () {
+                $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
+            });
+            var $tableBody = $("#VMOneGrid tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
+        } else if (selectedValue == "1") {
             var data = "No";
             var value = data.toLowerCase();
             $("#VMOneGrid tbody tr").filter(function () {
@@ -1017,7 +955,10 @@ $(function () {
             } else {
                 $tableBody.find(".norecordsfound").remove();
             }
-        } else {
+        }
+        else {
+            var $tableBody = $("#VMOneGrid tbody");
+            $tableBody.find(".norecordsfound").remove();
             $("#VMOneGrid tbody tr").show();
         }
     });
@@ -1403,7 +1344,80 @@ $(function () {
         }
 
     });
+    loadrmtypes();
+    loadbaserms();
+    loadRMSpecs();
 });
+function filterP5Grid(columnIndex, value) {
+    var $tableBody = $("#P5Grid tbody");
+
+    // Remove old "No Records"
+    $tableBody.find(".norecordsfound").remove();
+
+    // If "0" → show all rows
+    if (value === "0") {
+        $tableBody.find("tr").show();
+        return;
+    }
+
+    value = value.toLowerCase();
+
+    $("#P5Grid tbody tr").each(function () {
+        var cellText = $(this).children(columnIndex).text().toLowerCase();
+        $(this).toggle(cellText.indexOf(value) > -1);
+    });
+
+    // Show "No Records Found" if nothing visible
+    if ($tableBody.find("tr:visible").length === 0) {
+        $tableBody.append(`
+            <tr class="norecordsfound">
+                <td colspan="20" style="text-align:center;color:#888;">
+                    <strong>No Records Found</strong>
+                </td>
+            </tr>
+        `);
+    }
+}
+
+function loadrmtypes() {
+    var selElem = $('#P5RmType');
+    selElem.html('');
+    api.getbulk("/masters/rmtypes").then((data) => {
+
+        div_data = "<option value='" + 0 + "'>" + "All RM Type" + "</option>";
+        selElem.append(div_data);
+        for (i = 0; i < data.length; i++) {
+            div_data = "<option value='" + data[i].name + "'>" + data[i].name + "</option>";
+            selElem.append(div_data);
+        }
+    });
+}
+function loadbaserms() {
+    var selElem = $('#P5BaseRm');
+    selElem.html('');
+    api.getbulk("/masters/baserms").then((data) => {
+
+        div_data = "<option value='" + 0 + "'>" + "All Base RM" + "</option>";
+        selElem.append(div_data);
+        for (i = 0; i < data.length; i++) {
+            div_data = "<option value='" + data[i].name + "'>" + data[i].name + "</option>";
+            selElem.append(div_data);
+        }
+    });
+}
+function loadRMSpecs() {
+    var selElem = $('#P5MatlSpec');
+    selElem.html('');
+    api.getbulk("/masters/RMSpecs").then((data) => {
+
+        div_data = "<option value='" + 0 + "'>" + "All MatlSpec" + "</option>";
+        selElem.append(div_data);
+        for (i = 0; i < data.length; i++) {
+            div_data = "<option value='" + data[i].name + "'>" + data[i].name + "</option>";
+            selElem.append(div_data);
+        }
+    });
+}
 function BofSupplier() {
     var tablebody = $("#P6Grid tbody");
     $(tablebody).html("");//empty tbody
@@ -1801,7 +1815,13 @@ function DeletePart(element) {
     var doclistid = relatedTarget.data("partid");
     var listassem = relatedTarget.data("listassem");
     if (doclistid != 0 && listassem != "-") {
-        var confrimval = confirm("This Part No is linked to following BOM: " + listassem + "  If deleted, the BOM will also get updated without the deleted Part Do you want to Delete.");
+        var msg = "Do you want to delete Part";
+        if (listassem == null) {
+            msg = "Do you want to delete Part";
+        } else {
+            msg = "This Part No is linked to following BOM: " + listassem + "  If deleted, the BOM will also get updated without the deleted Part Do you want to Delete.";
+        }
+        var confrimval = confirm(msg);
         if (confrimval) {
             api.get("/masters/DeleteItemMasterPart?itemMasterDocListId=" + doclistid).then((data) => {
                 //console.log(data);
@@ -1836,6 +1856,8 @@ function loadManufAssem() {
         let totalAssemWithoutBOM = 0;
         let totalMandatoryDocsNotUploaded = 0;
         let totalRoutingNotAvl = 0;
+        let totalnoOfManufHold= 0;
+        let totalnoOfAssemblyHold= 0;
 
         for (let i = 0; i < data.length; i++) {
             const item = data[i];
@@ -1850,6 +1872,8 @@ function loadManufAssem() {
             totalAssemWithoutBOM += parseInt(item.bomAvl) || 0;
             totalMandatoryDocsNotUploaded += parseInt(item.mandocAvl) || 0;
             totalRoutingNotAvl += parseInt(item.routingNotAvl) || 0;
+            totalnoOfManufHold += parseInt(item.noOfManufHold) || 0;
+            totalnoOfAssemblyHold += parseInt(item.noOfAssemblyHold) || 0;
 
 
             // Append the row data for each company
@@ -1865,6 +1889,8 @@ function loadManufAssem() {
             <td>${totalAssemActive}</td>
             <td>${totalManfInactive}</td>
             <td>${totalAssemInactive}</td>
+            <td>${totalnoOfManufHold}</td>
+            <td>${totalnoOfAssemblyHold}</td>
             <td>${totalManfWithoutRM}</td>
             <td>${totalAssemWithoutBOM}</td>
             <td>${totalMandatoryDocsNotUploaded}</td>
@@ -1894,6 +1920,9 @@ function loadManufAssemComp(company) {
             $(tablebody).append(noRecordsRow);
         }
         for (i = 0; i < data.length; i++) {
+            if (data[i].partNo == "") {
+                continue;
+            }
             $(tablebody).append(AppUtil.ProcessTemplateData("VMGridRow", data[i]));
         }
     }).catch((error) => {

@@ -274,5 +274,14 @@ namespace CWB.Masters.Controllers
             var result = await _machineService.DeleteMcSlNoDocList(mcSlNoDocListId, tenantId);
             return Ok(result);
         }
+        [HttpGet]
+        [Route(ApiRoutes.Machine.DeleteMachine)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> DeleteMachine(long machineId, long tenantId)
+        {
+            var result = await _machineService.DeleteMachine(machineId, tenantId);
+            return Ok(result);
+        }
     }
 }

@@ -271,7 +271,7 @@ $(document).ready(function () {
         $("#P26Woid").val(ppid);
         loadRouting(partid, parseInt(calwoqty), routingid);
     });
-    $("#P26Save").on('click', function (event) {
+    $("#P26Save").secureClick( function (event) {
         var selectedCheckboxes = $("#P26Grid .P26GridChk:checked");
 
         if (selectedCheckboxes.length !== 1) {
@@ -287,7 +287,7 @@ $(document).ready(function () {
         currentRoutingId = parseInt(routingId);
         originalRoutingId = parseInt(routingId);
         // Call API
-        api.get("/workOrder/UpdateProdWo?pwoid=" + pwoid + "&routingId=" + routingId).then((data) => {
+        return api.get("/workOrder/UpdateProdWo?pwoid=" + pwoid + "&routingId=" + routingId).then((data) => {
             loadSimulationWos();
             $("#Popup26").modal("hide");
         }).catch((error) => {
@@ -444,7 +444,7 @@ $(document).ready(function () {
     });
 
 
-    $("#BtnWOHold").on("click", function () {
+    $("#BtnWOHold").secureClick( function () {
         var woid = parseInt($("#HoldWorkOrderId").val());
         var soid = parseInt($("#HoldSalesOrderId").val());
         var partid = parseInt($("#HoldPartId").val());
@@ -497,7 +497,7 @@ $(document).ready(function () {
             comment: WoComment
         };
 
-        api.post("/workorder/WoWaitlingpost", rowData).then((data) => {
+        return api.post("/workorder/WoWaitlingpost", rowData).then((data) => {
             //console.log(data);
             $('#wohold').modal('hide');
             loadSimulationWos();

@@ -38,13 +38,13 @@
                                     data-plugin="tippy" data-tippy-placement="top" data-key="Shop" id="search-machine-shop">
                             </select>
                         </div>
-                        <label class="col-md-1 form-label mb-2">Section</label>
+                        @*<label class="col-md-1 form-label mb-2">Section</label>
                         <div class="col-md-3 mb-2">
                             <select class="form-select form-select-sm machine-list-search" aria-label="form-select-sm"
                                     title="Select the Shop from the Drop Down. Shops from the selected Shop are shown"
                                     data-plugin="tippy" data-tippy-placement="top" data-key="Shop" id="search-machine-sec">
                             </select>
-                        </div>
+                        </div>*@
                         <!-- -----------------  -->
                         <label class="col-md-1 form-label mb-2">Name</label>
                         <div class="col-md-3 mb-2">
@@ -77,7 +77,7 @@
                                                 <th>M/c Name</th>
                                                 <th>Sl No</th>
                                                 <th>Manufacturer</th>
-                                                <th>Section</th>
+                                                @*<th>Section</th>*@
                                                 <th width="5%"></th>
                                             </tr>
                                         </thead>
@@ -98,7 +98,7 @@
                                                     <td data-key="Name">@machine.Name</td>
                                                     <td data-key="SlNo">@machine.SlNo</td>
                                                     <td data-key="Manufacturer">@machine.Manufacturer</td>
-                                                    <td data-key="Shop">@machine.SectionName</td>
+                                                    @*<td data-key="Shop">@machine.SectionName</td>*@
                                                     <td>
                                                         <div class="dropdown float-center">
                                                             <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
@@ -115,7 +115,7 @@
                                                                         }
                                                                         if (pr.PermissionId >= 4)
                                                                         {
-                                                                            <a href="javascript:void(0);" data-id="@machine.MachineId" class="dropdown-item">Delete</a>
+                                                                            <a href="javascript:void(0);" data-id="@machine.MachineId" class="dropdown-item" onclick="DeleteMachine(this)">Delete</a>
                                                                         }
                                                                     }
 
@@ -125,7 +125,7 @@
                                                                 {
                                                                     <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#dialog-machine" data-id="@machine.MachineId" class="dropdown-item">Edit</a>
                                                                     <!-- item-->
-                                                                    <a href="javascript:void(0);" data-id="@machine.MachineId" class="dropdown-item">Delete</a>
+                                                                    <a href="javascript:void(0);" data-id="@machine.MachineId" class="dropdown-item" onclick="DeleteMachine(this)">Delete</a>
                                                                 }
                                                             </div>
                                                         </div>
@@ -161,7 +161,7 @@
         <td data-key="Name">{name}</td>
         <td data-key="SlNo">{slNo}</td>
         <td data-key="Manufacturer">{manufacturer}</td>
-        <td data-key="SectionName">{sectionName}</td>
+        @*<td data-key="SectionName">{sectionName}</td>*@
         <td>
             <div class="dropdown float-center">
                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
@@ -178,7 +178,7 @@
                             }
                             if (pr.PermissionId >= 4)
                             {
-                                <a href="javascript:void(0);" data-id="{machineId}" class="dropdown-item">Delete</a>
+                                <a href="javascript:void(0);" data-id="{machineId}" class="dropdown-item" onclick="DeleteMachine(this)">Delete</a>
                             }
                         }
 
@@ -188,7 +188,7 @@
                     {
                         <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#dialog-machine" data-id="{machineId}" class="dropdown-item">Edit</a>
                         <!-- item-->
-                        <a href="javascript:void(0);" data-id="{machineId}" class="dropdown-item">Delete</a>
+                        <a href="javascript:void(0);" data-id="{machineId}" class="dropdown-item" onclick="DeleteMachine(this)">Delete</a>
                     }
                 </div>
             </div>

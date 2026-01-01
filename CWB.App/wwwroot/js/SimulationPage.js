@@ -128,7 +128,7 @@ $(document).ready(function () {
             }
         });
     });
-    $("#P1Simulate").on("click", function () {
+    $("#P1Simulate").secureClick( function () {
         let selectedWOs = [];
 
         $(".P1gridChk:checked").each(function () {
@@ -143,7 +143,7 @@ $(document).ready(function () {
         alert('Simulation Has Started');
         isDataSaved = false;
         $('#preloadersim').show();
-        $.ajax({
+        return $.ajax({
             type: "POST",
             url: '/WorkOrder/SimulateWOAllocation',
             contentType: "application/json; charset=utf-8",
@@ -444,7 +444,7 @@ $(document).ready(function () {
         $("#Popup26").modal("hide");
         $("#ErrorMessage1").modal("hide");
     });
-    $("#P81Save1").on('click', function (event) {
+    $("#P81Save1").secureClick( function (event) {
         var P81NonPlandId = parseInt($("#P81NonPlandId").val());
         var P81MachinceId = parseInt($("#P81MachinceId").val());
         var P81NonPlanType = parseInt($("#P81NonPlanType").val());
@@ -544,7 +544,7 @@ $(document).ready(function () {
             plan_Duration: P81ReqDur,
             work_Description: P81WorkDesc
         };
-        api.post("/WorkOrder/PostNon_Plan_Wk_List", formdata).then((data) => {
+        return api.post("/WorkOrder/PostNon_Plan_Wk_List", formdata).then((data) => {
             alert("Non Plan Work Saved");
             isP81Modified = false;
             $("#Popup81").modal("hide");
@@ -1699,7 +1699,7 @@ $(document).ready(function () {
             //console.log(error);
         });
     });
-    $("#P14Save").on('click', async function (event) {
+    $("#P14Save").secureClick( async function (event) {
         var P14ShopId = parseInt($("#P14ShopId").val());
         var P14McId = parseInt($("#P14McId").val());
         var P14McTmId = parseInt($("#P14McTmId").val());
@@ -1816,7 +1816,7 @@ $(document).ready(function () {
             GetEndTime: combinedEndDateTimeStr,
             not_Avl_reason: P14Reason
         };
-        api.post("/WorkOrder/PostNotAvlMcTimeslot", formdata).then((data) => {
+        return api.post("/WorkOrder/PostNotAvlMcTimeslot", formdata).then((data) => {
             alert("Machine Non Availability Slot Details Saved");
             $("#Popup14").modal("hide");
             loadNotAvlMcTimeslot();
@@ -1859,7 +1859,7 @@ $(document).ready(function () {
         });
     });
     $("#ReSimulateBtn").hide();
-    $('#ReSimulateBtn').on('click', function () {
+    $('#ReSimulateBtn').secureClick( function () {
         var selectedWOIds = [];
 
         $('#SimWoGrid tbody tr').each(function () {
@@ -1878,7 +1878,7 @@ $(document).ready(function () {
         alert('Re-Simulation Has Started');
         isDataSaved = false;
         $('#preloadersim').show();
-        $.ajax({
+        return $.ajax({
             type: "POST",
             url: '/WorkOrder/ReSimulateWOAllocation',
             contentType: "application/json; charset=utf-8",
@@ -1898,7 +1898,7 @@ $(document).ready(function () {
             }
         });
     });
-    $('#FreezeBtn').on('click', function () {
+    $('#FreezeBtn').secureClick( function () {
         var selectedWOIds = [];
 
         $('#SimWoGrid tbody tr').each(function () {
@@ -1914,7 +1914,7 @@ $(document).ready(function () {
         }
         document.getElementById('preloader').style.display = 'block';
         document.getElementById('status').style.display = 'block';
-        $.ajax({
+        return $.ajax({
             type: "POST",
             url: '/WorkOrder/FreezeSimulation',
             contentType: "application/json; charset=utf-8",

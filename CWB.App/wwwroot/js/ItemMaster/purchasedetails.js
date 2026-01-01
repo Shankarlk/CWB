@@ -21,13 +21,13 @@ $(function () {
         $("#EdPPDSupplier").val($("#EdPPDSupplierId option:selected").text());
     });
 
-    $("#AddSupplier").click(function (event) {
+    $("#AddSupplier").secureClick(function (event) {
         ////debugger;
-        AddPurchaseDetail(event);
+        return AddPurchaseDetail(event);
     });
-    $("#EditSupplier").click(function (event) {
+    $("#EditSupplier").secureClick(function (event) {
         ////debugger;
-        EditPurchaseDetail(event);
+        return EditPurchaseDetail(event);
     });
 
     $("#DelSupplier").click(function (event) {
@@ -336,7 +336,7 @@ function EditPurchaseDetail(event) {
 
     if ($("#FormEditPurchaseDetails").valid()) {
         var formData = AppUtil.GetFormData(formName);
-        api.post("/masters/partpurchase", formData).then((editData) => {
+        return api.post("/masters/partpurchase", formData).then((editData) => {
             editStatus = 1;
             //alert("edited..." + editStatus);
             //modifyPPDListForEdit(editData);
@@ -421,7 +421,7 @@ function AddPurchaseDetail(event) {
         var formData = AppUtil.GetFormData(formName);
         //formData.append("PreferredSupplier", parseInt(pref));
         let data = {};
-        api.post("/masters/partpurchase", formData).then((data) => {
+        return api.post("/masters/partpurchase", formData).then((data) => {
             //UpdatePurchaseDetailsTable(data);
             reloadPPDs($("#PartNo").val());
             ppLlist.push(data);

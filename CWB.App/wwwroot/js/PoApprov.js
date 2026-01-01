@@ -292,7 +292,7 @@ $(document).ready(function () {
         $("#P10AddnInfo").val('');
 
     });
-    $("#P10SaveWo").on("click", function () {
+    $("#P10SaveWo").secureClick( function () {
         var qntys = $("#P10DelQnty").val();
         var P20AgrDate = $("#P10AgrDate").val();
         var P20AddnInfo = $("#P10AddnInfo").val();
@@ -360,7 +360,7 @@ $(document).ready(function () {
 
         }
 
-        api.post("/WorkOrder/WoSubConSupplier", rowData).then((data) => {
+        return api.post("/WorkOrder/WoSubConSupplier", rowData).then((data) => {
             //loadWO();
             GetAllSubConsP10(Newwoid);
             $("#P10DelQnty").val('');
@@ -373,7 +373,7 @@ $(document).ready(function () {
     });
 
 
-    $("#McListBtn").on("click", function () {
+    $("#McListBtn").secureClick( function () {
         var selectedRowsData = {};
         var temprowdata = {};
         var checkboxes = $("#PoGrid1 tbody input[type='checkbox']:checked");
@@ -388,7 +388,7 @@ $(document).ready(function () {
 
         selectedRowsData = Object.values(temprowdata);
         if (selectedRowsData.length > 0) {
-            $.ajax({
+            return $.ajax({
                 type: "POST",
                 url: '/WorkOrder/UpdatePOdetails',
                 contentType: "application/json; charset=utf-8",

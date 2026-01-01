@@ -74,7 +74,7 @@ $(document).ready(function () {
             }
         }
     });
-    $('#P1Issue').on('click', function () {
+    $('#P1Issue').secureClick( function () {
         let selectedIds = [];
 
         $('#P1Grid tbody tr').each(function () {
@@ -97,7 +97,7 @@ $(document).ready(function () {
         // AJAX POST
         document.getElementById('preloader').style.display = 'block';
         document.getElementById('status').style.display = 'block';
-        $.ajax({
+        return $.ajax({
             url: '/WorkOrder/PostIssueInv_Trans_Log', // Replace with your controller
             type: 'POST',
             contentType: 'application/json',
@@ -205,7 +205,7 @@ $(document).ready(function () {
         var isChecked = $(this).is(':checked');
         $('.P2gridChk').prop('checked', isChecked);
     });
-    $('#P2Movt').on('click', function () {
+    $('#P2Movt').secureClick( function () {
         let selectedIds = [];
 
         $('#P2Grid tbody tr').each(function () {
@@ -228,7 +228,7 @@ $(document).ready(function () {
         // AJAX POST
         document.getElementById('preloader').style.display = 'block';
         document.getElementById('status').style.display = 'block';
-        $.ajax({
+        return $.ajax({
             url: '/WorkOrder/PostIssueInv_Trans_Log', // Replace with your controller
             type: 'POST',
             contentType: 'application/json',
@@ -291,7 +291,7 @@ $(document).ready(function () {
             }
         }
     });
-    $('#P3Issue').on('click', function () {
+    $('#P3Issue').secureClick( function () {
         let selectedIds = [];
 
         $('#P3Grid tbody tr').each(function () {
@@ -314,7 +314,7 @@ $(document).ready(function () {
         // AJAX POST
         document.getElementById('preloader').style.display = 'block';
         document.getElementById('status').style.display = 'block';
-        $.ajax({
+        return $.ajax({
             url: '/WorkOrder/PostIssueInvSubCon', // Replace with your controller
             type: 'POST',
             contentType: 'application/json',

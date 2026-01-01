@@ -49,6 +49,7 @@
             public const string GetMcSlNoDocList = Base + "/getmcslnodoclist/{tenantId}";
             public const string PostMcSlNoDocList = Base + "/postmcslnodoclist";
             public const string DeleteMcSlNoDocList = Base + "/deletemcslnodoclist/{mcSlNoDocListId}/{tenantId}";
+            public const string DeleteMachine = Base + "/deletemachine/{machineId}/{tenantId}";
         }
 
 

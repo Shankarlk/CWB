@@ -560,12 +560,14 @@
                         <table class="table table-sm table-bordered tableFixHead w-100" id="Popup1Grid">
                             <thead class="table-info th-sti text-center">
                                 <tr class="table-border-bottom">
-                                    <th width="20%">Company</th>
+                                    <th>Company</th>
                                     <th># Final Part Sold to Customer</th>
-                                    <th># Manf Parts (Active)</th>
-                                    <th># Assemblies (Active)</th>
-                                    <th># Manf Parts (Inactive)</th>
-                                    <th># Assemblies (Inactive)</th>
+                                    <th># Manf Parts (Released)</th>
+                                    <th># Assemblies (Released)</th>
+                                    <th># Manf Parts (Not Released)</th>
+                                    <th># Assemblies (Not Released)</th>
+                                    <th># Manf Parts (Hold)</th>
+                                    <th># Assemblies (Hold)</th>
                                     <th># Active Manf Part w/o RM</th>
                                     <th># Active Assemblies w/o BOM</th>
                                     <th># Mandatory Docs not Uploaded</th>
@@ -575,7 +577,7 @@
                             </thead>
                             <tbody class="text-center">
                                 <!-- ---------- -->
-                                <tr style="font-weight: bold;font-size: 16px;">
+                                @*<tr style="font-weight: bold;font-size: 16px;">
                                     <td style="text-align: end; ">Total</td>
                                     <td>xxx</td>
                                     <td>xxx</td>
@@ -586,7 +588,7 @@
                                     <td>xxx</td>
                                     <td>xxx</td>
                                     <td>xxx</td>
-                                </tr>
+                                </tr>*@
                                 <!-- ---------- -->
                             </tbody>
                         </table>
@@ -612,10 +614,25 @@
                 <div class="row">
                     <div class="row">
                         <div class="col-md-2 mb-2">
+                            <label class="form-check-label">Part Type</label>
                             <select class="form-select form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top" id="VMSearchPartTypr">
-                                <option value="0">Part Type </option>
+                                <option value="0">All Part Types</option>
                                 <option value="1">Manufactured Part </option>
                                 <option value="2">Assembly</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-check-label">Part Status</label>
+                            <select class="form-select form-select-sm" id="VMStatus" name="Status" asp-items="ViewBag.Statuses">
+                                <option value="0">All Part Status</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <label class="form-check-label">Final Part No Sold to Customer</label>
+                            <select class="form-select form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top" id="VMFinalPart">
+                                <option value="0">All Parts</option>
+                                <option value="1">Final Part No Sold to Customer </option>
+                                <option value="2">Child Parts / Sub Assy</option>
                             </select>
                         </div>
                         <!-- ----------- -->
@@ -640,19 +657,8 @@
                         </div>
                         <!-- ----------- -->
                         <!-- ----------- -->
-                        <div class="col-md-2 mb-2">
-                            <select class="form-select form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top" id="VMStatus">
-                                <option value="0">Status</option>
-                                <option value="1">Active</option>
-                                <option value="2">Inactive</option>
-                            </select>
-                        </div>
                         <!-- ----------- -->
-                        <div class="col-md-6" style="display: flex;justify-content: space-between;">
-                            <div>
-                                <label class="form-check-label">Final Part No Sold to Customer</label>
-                                <input class="form-check-input m-l-15 mt-1" type="checkbox" id="VMFinalPart">
-                            </div>
+                        <div class="col-md-4" style="display: flex;justify-content: space-between;">
                             <div>
                                 <label class="form-check-label">Assembly Part No without BOM</label>
                                 <input class="form-check-input m-l-15 mt-1" type="checkbox" id="VMAssWithoutBOm">
@@ -663,8 +669,8 @@
                             </div>
                         </div>
                         <!-- ----------- -->
-                        <div class="col">
-                            <button class="btn btn-purple btn-sm" id="BtnClearFlieds"><i class="fas fa-filter m-r-15"></i> Cancel Filter</button>
+                        <div class="col text-end mt-1">
+                            <button class="btn btn-outline-purple btn-sm" id="BtnClearFlieds">Clear Filter</button>
                         </div>
                         <!-- ----------- -->
                     </div>
@@ -726,42 +732,49 @@
                             <input class="form-control form-control-sm" type="text" placeholder="Source" id="P5Source">
                         </div>
                         <!-- ----------- -->
-                        <div class="col-md-2 mb-2">
-                            <label class="form-check-label">Parts with 2+ Suppliers</label>
-                            <input class="form-check-input m-l-15 mt-1" type="checkbox" id="P5Supplier2">
-                        </div>
                         <!-- ----------- -->
-                        <div class="col-md-2"></div>
                         <!-- ----------- -->
                         <!-- ----------- -->
                         <div class="col-md-2 mb-2">
-                            <select class="form-select form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top" id="P5Status">
-                                <option value="0">Status </option>
-                                <option value="1">Active </option>
-                                <option value="2">Inactive </option>
+                            <select class="form-select form-select-sm" id="P5Status" name="Status" asp-items="ViewBag.Statuses">
+                                <option value="0">All Part Status</option>
                             </select>
                         </div>
                         <!-- ----------- -->
                         <div class="col-md-2 mb-2">
-                            <input class="form-control form-control-sm" type="text" placeholder="RM Type" id="P5RmType">
+                            @*<input class="form-control form-control-sm" type="text" placeholder="RM Type" id="P5RmType">*@
+
+                            <select class="form-select form-select-sm" id="P5RmType">
+                                <option value="0">All RM Type</option>
+                            </select>
                         </div>
                         <!-- ----------- -->
                         <div class="col-md-2 mb-2">
-                            <input class="form-control form-control-sm" type="text" placeholder="Base RM" id="P5BaseRm">
+                            @*<input class="form-control form-control-sm" type="text" placeholder="Base RM" id="P5BaseRm">*@
+                            <select class="form-select form-select-sm" id="P5BaseRm">
+                                <option value="0">All Base RM</option>
+                            </select>
                         </div>
                         <!-- ----------- -->
                         <div class="col-md-2 mb-2">
-                            <input class="form-control form-control-sm" type="text" placeholder="Matl Spec" id="P5MatlSpec">
+                            @*<input class="form-control form-control-sm" type="text" placeholder="Matl Spec" id="P5MatlSpec">*@
+                            <select class="form-select form-select-sm" id="P5MatlSpec">
+                                <option value="0">All MatlSpec</option>
+                            </select>
                         </div>
                         <!-- ----------- -->
+                        <div class="col-md-2 mb-2">
+                            <label class="form-check-label">Parts with 2+ Suppliers</label>
+                            <input class="form-check-input m-l-15 mt-1" type="checkbox" id="P5Supplier2">
+                        </div>
                         <div class="col-md-2 mb-2">
                             <label class="form-check-label">Parts with 1 Supplier</label>
                             <input class="form-check-input m-l-15 mt-1" type="checkbox" id="P5SuppWith1">
                         </div>
                         <!-- ----------- -->
                         <!-- ----------- -->
-                        <div class="col text-end">
-                            <button class="btn btn-purple btn-sm" id="btnP5CancelFields"><i class="fas fa-filter m-r-15"></i>Filter</button>
+                        <div class="col text-end mt-1">
+                            <button class="btn btn-outline-purple btn-sm" id="btnP5CancelFields">Clear Filter</button>
                         </div>
                         <!-- ----------- -->
                     </div>
@@ -866,10 +879,13 @@
                         <div class="col-md-6 mb-2"></div>
                         <!-- ----------- -->
                         <div class="col-md-3 mb-2">
-                            <select class="form-select form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top" id="P7Status">
+                            @*<select class="form-select form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top" id="P7Status">
                                 <option value="0">Status</option>
                                 <option value="1">Active</option>
                                 <option value="2">Inactive</option>
+                            </select>*@
+                            <select class="form-select form-select-sm" id="P7Status" name="Status" asp-items="ViewBag.Statuses">
+                                <option value="0">All Part Status</option>
                             </select>
                         </div>
                         <!-- ----------- -->
@@ -943,10 +959,14 @@
                         <!-- ----------- -->
                         <!-- ----------- -->
                         <div class="col-md-2 mb-2">
-                            <select class="form-select form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top" id="P9StatusSearch">
+                            @*<select class="form-select form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top" id="P9StatusSearch">
                                 <option value="0">Status </option>
                                 <option value="1">Active </option>
                                 <option value="2">Inactive</option>
+                            </select>*@
+
+                            <select class="form-select form-select-sm" id="P9StatusSearch" name="Status" asp-items="ViewBag.Statuses">
+                                <option value="0">All Part Status</option>
                             </select>
                         </div>
                         <!-- ----------- -->
@@ -1072,8 +1092,8 @@
                                     <th># Standard RM</th>
                                     <th># Catalog</th>
                                     <th># Preferred</th>
-                                    <th># Active</th>
-                                    <th># Inactive</th>
+                                    <th># Released</th>
+                                    <th># Not Released</th>
                                     <th># Item Mast. Mandatory Docs Not Avl</th>
                                     <th># Parts Supplied</th>
                                     <th>View List</th>
@@ -1469,6 +1489,8 @@
         <td>{noOfAssemblyActive}</td>
         <td>{noOfManufInActive}</td>
         <td>{noOfAssemblyInActive}</td>
+        <td>{noOfManufHold}</td>
+        <td>{noOfAssemblyHold}</td>
         <td>{rmAvl}</td>
         <td>{bomAvl}</td>
         <td>{mandocAvl}</td>

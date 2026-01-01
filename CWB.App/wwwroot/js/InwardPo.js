@@ -397,7 +397,7 @@ $(document).ready(function () {
             }
         });
     });
-    $("#popup4LineComplete").on("click", function () {
+    $("#popup4LineComplete").secureClick( function () {
         var ourCountVM = $("#ourCountVM").text();
         var suppCountVM = $("#suppCountVM").text();
         var baltorectd22B = $("#baltorectd22B").text();
@@ -436,7 +436,7 @@ $(document).ready(function () {
 
             selectedRowsData = Object.values(temprowdata);
             if (selectedRowsData.length > 0) {
-                $.ajax({
+                return $.ajax({
                     type: "POST",
                     url: '/WorkOrder/UpdateInwardPOdetails',
                     contentType: "application/json; charset=utf-8",
@@ -464,7 +464,7 @@ $(document).ready(function () {
             $("#popupInwardExitBtn").prop("disabled", true);
         }
     });
-    $("#P5Save").on("click", function () {
+    $("#P5Save").secureClick( function () {
         var P5Condition = parseInt($("#P5Condition").val());
         var P5OurCount = parseInt($("#P5OurCount").val());
         var P5SuppCount = parseInt($("#P5SuppCount").val());
@@ -522,7 +522,7 @@ $(document).ready(function () {
             inward_Condition: P5Condition,
             comment: P5Comment
         };
-        $.ajax({
+        return $.ajax({
             type: "POST",
             url: '/workOrder/PostInw_Recpt_Details',
             contentType: "application/json; charset=utf-8",
@@ -637,7 +637,7 @@ $(document).ready(function () {
             }
         });
     });
-    $("#popupInwardSaveWo").on("click", function () {
+    $("#popupInwardSaveWo").secureClick( function () {
         var popupInwardHeaderId = parseInt($("#popupInwardHeaderId").val());
         var popupPoHeaderId = parseInt($("#popupPoHeaderId").val());
         var popupBalLine = parseInt($("#popupBalLine").val());
@@ -669,7 +669,7 @@ $(document).ready(function () {
         } else if (popupInwardDcDate <= restrictDt) {
             var newNamevalidate = document.getElementById('popupInwardDcDate');
             newNamevalidate.style.border = '2px solid red';
-            alert("New Date Retained Should Be Greater Than Current Date Retained");
+            alert("Supplier DC Date Should Be Greater Than Supplier Inv Date");
             return false;
             // or display an error message to the user
         }
@@ -718,7 +718,7 @@ $(document).ready(function () {
             Supplier_Inv_date: formattedDate2,
             Inw_Date_time: formattedDate
         };
-        $.ajax({
+        return $.ajax({
             type: "POST",
             url: '/workOrder/PostInw_Recpt_Header',
             contentType: "application/json; charset=utf-8",

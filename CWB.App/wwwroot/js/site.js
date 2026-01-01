@@ -320,3 +320,27 @@ function checkTokenExpiry(expiryTime) {
         }
     }, interval);
 }
+
+$.fn.secureClick = function (selector, handler) {
+    // Check if the first argument is actually the handler (direct bind)
+    if (typeof selector === 'function') {
+        handler = selector;
+        selector = null; // No delegation
+    }
+
+    // Use .on() to handle both direct and delegated events
+    this.on('click', selector, function (event) {
+        event.preventDefault();
+        let $btn = $(this);
+
+        if ($btn.prop("disabled") || $btn.hasClass("processing")) return;
+
+        $btn.prop("disabled", true).addClass("processing");
+
+        Promise.resolve(handler.call(this, event))
+            .finally(() => {
+                $btn.prop("disabled", false).removeClass("processing");
+            });
+    });
+    return this;
+};

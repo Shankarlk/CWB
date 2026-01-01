@@ -526,7 +526,7 @@ data-partno="${group.partNoDesc}" data-soid="${group.soId}" data-dispatchfid="${
         // Slice to get only YYYY-MM-DD part
         return today.toISOString().slice(0, 10);
     }
-    $("#P14Save").on('click', function (event) {
+    $("#P14Save").secureClick( function (event) {
         var P14InvNo=$("#P14InvNo").val();
         var P14DetailsId=$("#P14DetailsId").val();
         var P14SoidId = $("#P14SoidId").val();
@@ -567,7 +567,7 @@ data-partno="${group.partNoDesc}" data-soid="${group.soId}" data-dispatchfid="${
             PartNoId: parseInt(P14partId),
 
         };
-        api.post("/WorkOrder/PostDispatchDetails", formdata).then((data) => {
+        return api.post("/WorkOrder/PostDispatchDetails", formdata).then((data) => {
             alert("Customer Dispatch Details Saved");
             $("#popup14").modal("hide");
             loadSoDispatch();
@@ -575,7 +575,7 @@ data-partno="${group.partNoDesc}" data-soid="${group.soId}" data-dispatchfid="${
             console.log(error);
         });
     });
-    $("#P12Save").on('click', function (event) {
+    $("#P12Save").secureClick( function (event) {
         //var P12FinQnty = $("#P12FinQnty").val();
         var P12FinQnty = parseInt($("#P12FinQnty").val());
         var P12BalQnty= parseInt($("#P12BalQnty").text());
@@ -597,7 +597,7 @@ data-partno="${group.partNoDesc}" data-soid="${group.soId}" data-dispatchfid="${
             FinalDispQnty: P12FinQnty,
 
         };
-        api.post("/WorkOrder/UpdateSOFinDisp", formdata).then((data) => {
+        return api.post("/WorkOrder/UpdateSOFinDisp", formdata).then((data) => {
             alert("Qnty to Dispatch Saved");
             $("#popup12").modal("hide");
             loadSoDispatch();
@@ -607,7 +607,7 @@ data-partno="${group.partNoDesc}" data-soid="${group.soId}" data-dispatchfid="${
     });
     // --- Function to handle the bulk update for suggested quantities ---
     // --- Function to handle the bulk update for suggested quantities ---
-    $("#AcptSuggested").on('click', function (event) {
+    $("#AcptSuggested").secureClick( function (event) {
         // Show a preloader/loading indicator
         $("#preloaderblurred").show();
 
@@ -655,7 +655,7 @@ data-partno="${group.partNoDesc}" data-soid="${group.soId}" data-dispatchfid="${
 
         // 4. Send the bulk data to the server
         // Using the NEW endpoint /WorkOrder/UpdateSOFinDispBulk as defined in the previous step
-        $.ajax({
+        return $.ajax({
             type: "POST",
             url: '/workOrder/UpdateSOFinDispBulk',
             contentType: "application/json; charset=utf-8",

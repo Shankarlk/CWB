@@ -190,7 +190,7 @@ $(document).ready(function () {
         $("#P7RcptTime").text(matlrcpt);
         $("#P7PlanTime").text(plantime);
     });
-    $("#P7Save").on('click', function (event) {
+    $("#P7Save").secureClick( function (event) {
         var P7SetUpTime = $("#P7SetUpTime").val();
         var P7McWaitId = parseInt($("#P7McWaitId").val());
         if (P7SetUpTime.length === 0) {
@@ -222,7 +222,7 @@ $(document).ready(function () {
             mc_Wait_ListId: P7McWaitId,
             setup_Start_time: setupStartFormatted,
         };
-        api.post("/WorkOrder/UpdateSetupMc_Wait_List", formdata).then((data) => {
+        return api.post("/WorkOrder/UpdateSetupMc_Wait_List", formdata).then((data) => {
             alert("Setup Start Confirmation Saved");
             $("#Popup7").modal("hide");
             loadSetUpConfList();
@@ -448,7 +448,7 @@ $(document).ready(function () {
             $("#P9AchFtrDiv").show(); // Shows the select element (reverts display to its default, usually block/inline-block)
         }
     });
-    $("#P9Save").on('click', function (event) {
+    $("#P9Save").secureClick( function (event) {
         var P9SetDoc = $("#P9SetDoc").val();
         var P9Com = $("#P9Com").val();
         var P9SetChk = $("#P7SetChk").val();
@@ -512,7 +512,7 @@ $(document).ready(function () {
             addntimeforSetup: P9Adntime,
 
         };
-        api.post("/WorkOrder/UpdateSetupAplMc_Wait_List", formdata).then((data) => {
+        return api.post("/WorkOrder/UpdateSetupAplMc_Wait_List", formdata).then((data) => {
             alert("Setup Approval Saved");
             $("#Popup9").modal("hide");
             loadSetUpAplList();
@@ -611,7 +611,7 @@ $(document).ready(function () {
     $('#ErrorMessage12').on('hidden.bs.modal', function (event) {
         document.getElementById('Popup11').style.filter = 'none';
     });
-    $("#SaveNEsca").on("click", function () {
+    $("#SaveNEsca").secureClick( function () {
         var E2Com = $("#E2Com").val();
         var P6PartId = parseInt($("#P7PartId").val());
         if (E2Com.length === 0) {
@@ -640,7 +640,7 @@ $(document).ready(function () {
             mismatch_Comments: E2Com,
             mismatch_Status: "Less",
         };
-        $.ajax({
+        return $.ajax({
             type: "POST",
             url: '/workOrder/PostInv_Mismatch_List',
             contentType: "application/json; charset=utf-8",
@@ -737,7 +737,7 @@ $(document).ready(function () {
         $("#P7NcTrackNo").val(nctrack);
         $("#P7NcId").val(id);
     });
-    $("#P7NCSave").on("click", function () {
+    $("#P7NCSave").secureClick( function () {
         var P7BallonNo = $("#P7BallonNo").val();
         var P7NcBallonDesc = $("#P7NcBallonDesc").val();
         var P7NcDesc = $("#P7NcDesc").val();
@@ -791,7 +791,7 @@ $(document).ready(function () {
             storage_Location: P7NcLocation,
             nC_Log_status_Id: 1
         };
-        $.ajax({
+        return $.ajax({
             type: "POST",
             url: '/workOrder/PostInspNcLog',
             contentType: "application/json; charset=utf-8",
@@ -817,7 +817,7 @@ $(document).ready(function () {
         $("#warning").modal("hide");
         $("#Popup11").modal("hide");
     });
-    $("#P6LineInspupdate").on("click", function () {
+    $("#P6LineInspupdate").secureClick( function () {
         var ourCountVM = $("#P11TbTotalOff").val();
         var suppCountVM = $("#P11TotalInsp").val();
         var P6TotalNc = $("#P6TotalNc").val();
@@ -882,12 +882,13 @@ $(document).ready(function () {
         });
         if (FCount < 0) {
             $("#ErrorMessage4").modal("show");
+            return ;
         } else {
             var qnty = parseInt($("#P11TbInspTotal").val());
             var P6PartId = parseInt($("#P7PartId").val());
             var P6PoId = parseInt($("#P6PoId").val());
 
-            api.getbulk("/WorkOrder/GetAllInv_Trans_Log").then((logdata) => {
+            return api.getbulk("/WorkOrder/GetAllInv_Trans_Log").then((logdata) => {
                 logdata = logdata.filter(item => item.input_Part_NoId === P6PartId);
                 var logId = 0;
                 if (Array.isArray(logdata) && logdata.length > 0) {

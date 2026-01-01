@@ -252,7 +252,7 @@ $(document).ready(function () {
             //console.log(P17Data);
         }
     });
-    $("#P16Save").on("click", function () {
+    $("#P16Save").secureClick( function () {
         var P16id = $("#P16id").val();
         var P16MisQnty = $("#P16MisQnty").val();
         var P16Comment2 = $("#P16Comment2").val().trim();
@@ -284,7 +284,7 @@ $(document).ready(function () {
                 movement_Compl: move,
                 qnty_Mismatch_Comment: P16Comment2
             };
-            api.post("/WorkOrder/UpdateInv_Trans_Log", formdata).then((data) => {
+            return api.post("/WorkOrder/UpdateInv_Trans_Log", formdata).then((data) => {
                 loadInvLog();
                 $("#popup16").modal("hide");
                 $("#ErrorMessage9").modal("hide");

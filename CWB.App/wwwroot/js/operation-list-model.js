@@ -166,7 +166,7 @@ $(function () {
         });
         $("#OperationListDocumentId").val(0);
     });
-    $("#btnOperationSubmit").click(function () {
+    $("#btnOperationSubmit").secureClick(function () {
         var did = $("#Operation").val();
         if (did.length == 0) {
             var newNamevalidate = document.getElementById('Operation');
@@ -190,14 +190,14 @@ $(function () {
         //$("IsSubCon").val(subcon);
         if ($("#frmOperationlist").valid()) {
             var formData = AppUtil.GetFormData("frmOperationlist");
-            api.post("/operationlist/Operation", formData).then((data) => {
+            return api.post("/operationlist/Operation", formData).then((data) => {
                 OperationListFormUtil.ProcessOperationList(data.operationId, false);
             }).catch((error) => {
                 AppUtil.HandleError("frmOperationlist", error);
             });
         }
     });
-    $("#btnOperationDocTypeSubmit").click(function () {
+    $("#btnOperationDocTypeSubmit").secureClick(function () {
 
         var opId = parseInt($("#OperationListIdForDocType").val());
         if (opId == 0) {
@@ -219,7 +219,7 @@ $(function () {
             var OperationListIdForDocType = formData["OperationListIdForDocType"];  // Use quotes around the key name
             var OperationListDocumentId = formData["OperationListDocumentId"];  // Use quotes around the key name
 
-            api.get("/operationlist/GetOperationalDocuments/" + parseInt(OperationListIdForDocType)).then((data) => {
+            return api.get("/operationlist/GetOperationalDocuments/" + parseInt(OperationListIdForDocType)).then((data) => {
                 data = data.filter(item => item.documentTypeId == doctypeid);
                 if (parseInt(OperationListDocumentId) == 0 && data.length ==1) {
                     if (data.length > 0 && data[0].documentTypeId == parseInt(doctypeid)) {
