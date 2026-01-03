@@ -1,10 +1,12 @@
 ﻿using CWB.App.Models.OperationList;
 using CWB.App.Services.DocumentMagement;
 using CWB.App.Services.Masters;
+using CWB.App.Services.Routings;
 using CWB.Constants.UserIdentity;
 using CWB.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CWB.App.Controllers
@@ -15,13 +17,15 @@ namespace CWB.App.Controllers
         private readonly ILoggerManager _logger;
         private readonly IOperationService _operationService;
         private readonly IDocMangService _docMangService;
+        private readonly IRoutingService _routingService;
 
         public OperationListController(ILoggerManager logger, IOperationService operationService,
-            IDocMangService docMangService)
+            IDocMangService docMangService, IRoutingService routingService)
         {
             _logger = logger;
             _operationService = operationService;
             _docMangService = docMangService;
+            _routingService = routingService;
         }
 
         public async Task<IActionResult> Index()
@@ -160,6 +164,18 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> DeletOperationDoc(long opDocId)
         {
             var result = await _operationService.DeletOperationDoc(opDocId);
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteOperations(long opDocId)
+        {
+            var routemc = await _routingService.AllRoutingSteps();
+            if (routemc.Any(x => x.StepOperation == opDocId.ToString()))
+            {
+                string msg = "This Operation is already used in the Routing Step . Delete The Routing Step in the Routings.";
+                return Ok(msg);
+            }
+            var result = await _operationService.DeleteOperations(opDocId);
             return Ok(result);
         }
 

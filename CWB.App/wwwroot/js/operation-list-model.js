@@ -276,3 +276,21 @@ function DeletOperationDoc(element) {
 
     });
 }
+function DeleteOperation(element) {
+    var relatedTarget = $(element);
+    var doclistid = relatedTarget.data("id");
+    var confrimval = confirm("Do You Want This Operation.");
+    if (confrimval) {
+        api.get("/OperationList/DeleteOperations?opDocId=" + doclistid).then((data) => {
+            //console.log(data);
+            if (data == false || data == true) {
+
+            } else {
+                alert(data);
+            }
+            MachieListUtil.LoadMachineList();
+        }).catch((error) => {
+            //console.log(error);
+        });
+    }
+}

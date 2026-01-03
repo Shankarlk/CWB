@@ -11,6 +11,9 @@ namespace CWB.Masters.Domain.Routings
         public string StepNumber { get; set; }
         public string StepDescription { get; set; }
         public string RoutingStepOperation { get; set; } //Operation List
+        public long RoutingStepOperationId { get; set; }
+        public OperationList Operation { get; set; }
+
         public string RoutingStepLocation { get; set; }
         public RoutingStepSequence RoutingStepSequence { get; set; }
         public int NumberOfSimMachines { get; set; }

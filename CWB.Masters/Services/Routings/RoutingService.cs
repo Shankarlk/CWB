@@ -554,10 +554,12 @@ namespace CWB.Masters.Services.Routings
                 var routingStep = _mapper.Map<RoutingStep>(routingStepVM);
                 if (routingStep.Id == 0)
                 {
+                    routingStep.RoutingStepOperationId = Convert.ToInt64(routingStep.RoutingStepOperation);
                     await _routingStepRepository.AddAsync(routingStep);
                 }
                 else
                 {
+                    routingStep.RoutingStepOperationId = Convert.ToInt64(routingStep.RoutingStepOperation);
                     routingStep = await _routingStepRepository.UpdateAsync(routingStep.Id, routingStep);
                 }
                 await _unitOfWork.CommitAsync();

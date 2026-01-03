@@ -80,7 +80,7 @@
                                                                         <!-- item-->}
                                                                     if (pr.PermissionId >= 4)
                                                                     {
-                                                                        <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#dialog-operation" data-id="@operation.OperationId" class="dropdown-item">Delete</a>
+                                                                        <a href="javascript:void(0);"  onclick="DeleteOperation(this)" data-id="@operation.OperationId" class="dropdown-item">Delete</a>
                                                                     }
                                                                 }
 
@@ -90,7 +90,7 @@
                                                             {
                                                                 <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#dialog-operation" data-id="@operation.OperationId" class="dropdown-item">Edit</a>
                                                                 <!-- item-->
-                                                                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#dialog-operation" data-id="@operation.OperationId" class="dropdown-item">Delete</a>
+                                                                <a href="javascript:void(0);"  onclick="DeleteOperation(this)" data-id="@operation.OperationId" class="dropdown-item">Delete</a>
                                                             }
                                                         </div>
                                                     </div>
@@ -164,7 +164,7 @@
                             }
                             if (pr.PermissionId >= 4)
                             {
-                                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#dialog-operation"
+                                <a href="javascript:void(0);" onclick="DeleteOperation(this)"
                                    data-id="{operationId}" class="dropdown-item">Delete</a>
                             }
                         }
@@ -175,7 +175,7 @@
                     {
                         <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#dialog-operation"
                            data-id="{operationId}" class="dropdown-item">Edit</a>
-                        <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#dialog-operation"
+                        <a href="javascript:void(0);"  onclick="DeleteOperation(this)"
                            data-id="{operationId}" class="dropdown-item">Delete</a>
                     }
                     <!-- item-->

@@ -133,5 +133,13 @@ namespace CWB.Masters.Controllers
             var result = await _operationListService.DeleteOperationDoc(opDocId, tenantId);
             return Ok(result);
         }
+        [HttpGet]
+        [Route(ApiRoutes.OperationList.DeleteOperations)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteOperations(long opDocId, long tenantId)
+        {
+            var result = await _operationListService.DeleteOperations(opDocId, tenantId);
+            return Ok(result);
+        }
     }
 }

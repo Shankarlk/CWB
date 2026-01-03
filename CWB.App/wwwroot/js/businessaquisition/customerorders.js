@@ -969,7 +969,7 @@ $(function () {
         const podate = $("#PODate").val();
         const currentDate = new Date();
         const userDate = new Date(podate);
-        if (userDate < currentDate) {
+        if (userDate > currentDate) {
             alert('Please Enter A Date Greater Than Or Equal To Today\'s Date');
             $("#PODate").val('');
             return;

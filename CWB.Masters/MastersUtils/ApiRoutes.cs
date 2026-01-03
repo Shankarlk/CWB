@@ -30,6 +30,7 @@
             public const string PostOperationalDocumentTypes = Base + "/operation-doctype";
             public const string IsOperationExist = Base + "/check-operation";
             public const string DeleteOperationDoc = Base + "/deleteopdoclist/{opDocId}/{tenantId}";
+            public const string DeleteOperations = Base + "/deleteoperation/{opDocId}/{tenantId}";
         }
 
         public static class Machine

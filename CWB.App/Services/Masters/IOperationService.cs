@@ -18,6 +18,7 @@ namespace CWB.App.Services.Masters
 
         Task<OperationDocumentTypeVM> OperationDocument(OperationDocumentTypeVM operationDocumentTypeVM);
         Task<bool> DeletOperationDoc(long opDocId);
+        Task<bool> DeleteOperations(long opDocId);
         Task<IEnumerable<OperationalDocumentListVM>> GetOperationalDocTypesByOptId(long Id);
     }
 }

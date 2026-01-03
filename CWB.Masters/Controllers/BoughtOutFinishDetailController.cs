@@ -84,7 +84,7 @@ namespace CWB.Masters.Controllers
                             StatusChangeReason = scojoin.StatusChangeReason,
                             MasterPartType = Convert.ToString(scojoin.MasterPartType)
                         };
-            var querylist = query.ToList();
+            var querylist = query.Where(m => m.Status == "Released").ToList();
             return Ok(querylist);
         }
 

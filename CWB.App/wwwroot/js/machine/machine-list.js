@@ -3,7 +3,7 @@
         api.get("/plant/getplants/").then((data) => {
             var plantSelect = $("#search-machine-plant");
             $(plantSelect).html("");
-            $(plantSelect).append('<option value="">--Select Plant--</option>');
+            $(plantSelect).append('<option value="">--All Plant--</option>');
             for (i = 0; i < data.length; i++) {
                 $(plantSelect).append('<option value="' + data[i].plantId + '">' + data[i].name + '</option>');
             }
@@ -16,13 +16,13 @@
         if (plantId == "") {
             var plantSelect = $("#search-machine-shop");
             $(plantSelect).html("");
-            $(plantSelect).append('<option value="">--Select Shop--</option>');
+            $(plantSelect).append('<option value="">--All Shop--</option>');
             return;
         }
         api.get("/department/getdepartments/" + plantId).then((data) => {
             var plantSelect = $("#search-machine-shop");
             $(plantSelect).html("");
-            $(plantSelect).append('<option value="">--Select Shop--</option>');
+            $(plantSelect).append('<option value="">--All Shop--</option>');
             for (i = 0; i < data.length; i++) {
                 $(plantSelect).append('<option value="' + data[i].departmentId + '">' + data[i].name + '</option>');
             }
@@ -83,6 +83,7 @@ $(function () {
     $("#search-machine-plant").change(function () {
         MachieListUtil.LoadShop($(this).val());
     });
+    MachieListUtil.LoadShop("0");
 });
 
 function DeleteMachine(element) {

@@ -13,5 +13,6 @@ namespace CWB.Masters.Services.OperationList
         IEnumerable<OperationalDocumentListVM> GetOperationDocumentTypes(long TenantId, long OperationId);
         Task<OperationalDocumentListVM> OperationDocumentTypes(OperationalDocumentListVM operationalDocumentListVM);
         Task<bool> DeleteOperationDoc(long opDocId, long tenantId);
+        Task<bool> DeleteOperations(long opDocId, long tenantId);
     }
 }

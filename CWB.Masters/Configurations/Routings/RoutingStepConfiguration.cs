@@ -42,6 +42,14 @@ namespace CWB.Masters.Configurations
                .HasMaxLength(300)
                .IsRequired();
             builder
+             .Property(m => m.RoutingStepOperationId)
+             .HasColumnName("RoutingStepOperationId");
+            builder.HasOne(rs => rs.Operation)
+               .WithMany(op => op.RoutingSteps)
+               .HasForeignKey(rs => rs.RoutingStepOperationId)
+               .OnDelete(DeleteBehavior.Restrict);
+
+            builder
                .Property(t => t.RoutingStepLocation)
                .HasColumnName("RoutingStepLocation")
                .HasConversion<string>()

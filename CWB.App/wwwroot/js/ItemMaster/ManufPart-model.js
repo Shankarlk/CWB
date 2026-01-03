@@ -311,13 +311,35 @@ function DecodeManufPartId() {
                 $("#createfep").hide();
                 $("#statusDiv").show();
                 $("#statusLbl").show();
+                $("#popuphistorybtn").show();
+                $("#historybtn").show();
+                //$("#ManufacturedPartType").prop("disabled", true);
+                var parttype = $("#ManufacturedPartType").val();
+                if (parttype == "2") {
+                    $("#lblUOM").hide();
+                    $("#DivUom").addClass("d-none");
+                } else {
+                    $("#lblUOM").show();
+                    $("#DivUom").removeClass("d-none");
+                }
                 closeatag.href = "/Masters/MasterDetails";
             } else {
+                var parttype = $("#ManufacturedPartType").val();
+                if (parttype == "2") {
+                    $("#lblUOM").hide();
+                    $("#DivUom").addClass("d-none");
+                } else {
+                    $("#lblUOM").show();
+                    $("#DivUom").removeClass("d-none");
+                }
                 $("#headingN").text("New");
                 $("#createfep").show();
                 $("#Status").val("Active");
-                $("#statusDiv").hide();
-                $("#statusLbl").hide();
+                $("#statusDiv").show();
+                $("#statusLbl").show();
+                $("#popuphistorybtn").hide();
+                $("#historybtn").hide();
+                //$("#ManufacturedPartType").prop("disabled", false);
                 closeatag.href = "/Masters/Index";
             }
         }
@@ -951,6 +973,8 @@ $(document).ready(function () {
             $("#DelMPPartId").val(eData[key]);
             key = "manufPartId";
             $("#DelManufPartId").val(eData[key]);
+            key = "mfDescription";
+            $("#SMkPartNoD").text(eData[key]);
 
         }).catch((error) => {
         });
@@ -1242,8 +1266,12 @@ $(document).ready(function () {
     $('#status-info').on('show.bs.modal', function (event) {
         var currentStatus = $("#Status").val();
         var currentrReason = $("#StatusChangeReason").val();
+        if (currentrReason == "Regular Release") {
+            $("#statusResasonopup").val("");
+        } else {
+            $("#statusResasonopup").val(currentrReason);
+        }
         $("#CurrentStatus").val(currentStatus);
-        $("#statusResasonopup").val(currentrReason);
     });
     $("#BtnstatusSave").click(function (event) {
         var streason = $("#statusResasonopup").val();
@@ -1604,6 +1632,10 @@ $(document).ready(function () {
         var RevNo = $("#RevNo").val();
         if (RevNo.length == 0) {
             $("#RevNo").val("0");
+        }
+        var parttype = $("#ManufacturedPartType").val();
+        if (parttype == "2") {
+            $("#FinishedWeight").val("0");
         }
         if (ManufPartFormUtil.ValidateManufPartDetails(2)) {
             if ($("#ManufPartForm").valid()) {

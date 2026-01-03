@@ -113,5 +113,11 @@ namespace CWB.App.Services.Masters
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<bool>.GetAsync(uri, headers);
         }
+        public async Task<bool> DeleteOperations(long opDocId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/deleteoperation/{opDocId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
     }
 }

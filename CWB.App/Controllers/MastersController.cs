@@ -183,13 +183,18 @@ namespace CWB.App.Controllers
             return View(manuf);
         }
 
-        public async Task<IActionResult> ManufPart(string Id)
+        public async Task<IActionResult> ManufPart(string Id, string parttype=null)
         {
 
             await CustomerViewBag();
             await CompaniesViewBagForManuF();
             await StatusViewBagForManuf();
-            return View(new ManufacturedPartNoDetailVM { MasterPartType = "0", PartId = 0, ManufacturedPartNoDetailId = 0, ManufacturedPartType = 1 });
+            int mt = 1;
+            if(parttype == "Assem")
+            {
+                mt = 2;
+            }
+            return View(new ManufacturedPartNoDetailVM { MasterPartType = "0", PartId = 0, ManufacturedPartNoDetailId = 0, ManufacturedPartType = mt });
         }
 
         public async Task<IActionResult> EditBOF(string partId)
@@ -955,7 +960,7 @@ namespace CWB.App.Controllers
             var mfpdList = await _mastersService.MasterPartList();
             var manufacturedPartNoDetails = await _mastersService.GetAllManufacturedPartNoDetailList();
             var result = new List<ItemMasterPartVM>();
-            var filteredItems = mfpdList.Where(item => item.Company == company).ToList();
+            var filteredItems = mfpdList.Where(item => item.Company == company && item.MasterPartType == "Assembly" || item.MasterPartType == "ManufacturedPart").ToList();
 
             var allDocuments = await _mastersService.Getallitemmasterdoclist();
             var allDocListVMs = await _docMangService.GetAllDocList();
@@ -2402,7 +2407,7 @@ namespace CWB.App.Controllers
             {
                 //getmaterparts
                 var mf = await _mastersService.GetMPMakeFromListByPartId(partId);
-                var mpart = await _mastersService.ItemMasterParts();
+                var mpart = await _mastersService.MasterPartList();
                 List<MPMakeFromVM> MFList = new List<MPMakeFromVM>();
                 var query = from mfl in mf
                             join mp in mpart on mfl.MPPartId equals mp.PartId

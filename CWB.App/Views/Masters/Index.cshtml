@@ -51,6 +51,18 @@
                                     </div>
                                 </div>
                             }
+                            @if (permissionResult.Any(r => r.Menu3 == "Create New Manf Part No"))
+                            {
+                                <div class="col-md-3">
+                                    <div class="widget-simple text-center card btn btn-outline-info">
+                                        <a asp-action="ManufPart" asp-route-id="@ViewBag.IndexId">
+                                            <div class="card-body">
+                                                <h5><br>Create New Assembly <br><br></h5>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
                             @if (permissionResult.Any(r => r.Menu3 == "Create New Raw Material Part No"))
                             {
                                 <div class="col-md-3">
@@ -94,6 +106,16 @@
                                     <a asp-action="ManufPart" asp-route-id="@ViewBag.IndexId">
                                         <div class="card-body">
                                             <h5><br>Create New Manf Part No <br><br></h5>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- end -->
+                            <div class="col-md-3">
+                                <div class="widget-simple text-center card btn btn-outline-info">
+                                    <a asp-action="ManufPart" asp-route-id="@ViewBag.IndexId" asp-route-parttype="Assem">
+                                        <div class="card-body">
+                                            <h5><br>Create New Assembly <br><br></h5>
                                         </div>
                                     </a>
                                 </div>

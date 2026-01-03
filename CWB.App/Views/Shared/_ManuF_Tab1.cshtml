@@ -2,7 +2,21 @@
 @model CWB.App.Models.ItemMaster.ManufacturedPartNoDetailVM
 <div class="row mt-n1">
     <div class="col-md-12">
-        <h5><span id="headingN">New</span> Manufactured Part No Details</h5>
+        @{
+            var pt = "";
+            if (Model.ManufacturedPartType == 1)
+            {
+                pt = "Manufactured Part No Details";
+            }
+            else
+            {
+                pt = "Assembly Details";
+            }
+        }
+        <h5>
+            <span id="headingN">New</span> @pt
+
+        </h5>
     </div>
     <!-- ============================= -->
     <div class="col-md-7 mb-2">
@@ -49,7 +63,7 @@
             <div class="row">
                 <label class="form-label col-md-3">Part Type <span class="text-danger">*</span></label>
                 <div class="col-md-9 mb-2">
-                    <select class="form-select form-select-sm" asp-for="ManufacturedPartType">
+                    <select class="form-select form-select-sm" asp-for="ManufacturedPartType" style="pointer-events: none; background-color: #e9ecef;">
                         <option value="1" id="ManufChildPart" data-plugin="tippy" data-tippy-placement="top" data-tippy="" data-original-title="Use to select if the Part No refers to a Manufactured Child Part or an Assembly - Collection of 2 or more parts assembled, welded, joined together. The Assembly Part no will require the BOM (Bill of Material) to be filled ">
                             Manufactured Child
                             Part
@@ -133,8 +147,8 @@
         <div class="col-md-4">
             <div class="row">
                 <div class="row border rounded p-2 ms-2">
-                <label class="form-label col-md-4 mb-2"> Unit of Measurement (UoM)</label>
-                <div class="col-md-8 mb-2 d-flex align-items-center">
+                <label class="form-label col-md-4 mb-2" id="lblUOM"> Unit of Measurement (UoM)</label>
+                <div class="col-md-8 mb-2 d-flex align-items-center" id="DivUom">
                     <div class="input-group" style="flex-grow: 1;" data-plugin="tippy" data-tippy-placement="top" data-tippy="" data-original-title="Select the Unit of Measurement (UoM). Default is Numbers (Nos)">
                         <select class="form-select form-select-sm" id="UOMId" asp-for="UOMId" asp-items="@ViewBag.UOMs"></select>
 
@@ -203,7 +217,7 @@
                                 <i class="fas fa-pencil-alt"></i>
                             </button>
 
-                            <button type="button" class="btn btn-sm btn-outline-secondary p-1"
+                            <button type="button" class="btn btn-sm btn-outline-secondary p-1" id="historybtn"
                                     data-plugin="tippy" data-tippy-placement="top"
                                     data-bs-toggle="modal" data-bs-target="#ChangeListPopup"
                                     title="View Status History">
@@ -409,7 +423,7 @@
                     <!-- =============== -->
                     <div class="col-md-6">
                         <button type="button" class="btn btn-sm waves-effect waves-light"
-                                data-plugin="tippy" data-tippy-placement="top"
+                                data-plugin="tippy" data-tippy-placement="top" id="popuphistorybtn"
                                 data-bs-toggle="modal" data-bs-target="#ChangeListPopup"
                                 data-original-title="View Status History">
                             <i class="fa fa-history font-20"></i>

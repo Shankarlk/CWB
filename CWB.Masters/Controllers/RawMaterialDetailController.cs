@@ -115,7 +115,8 @@ namespace CWB.Masters.Controllers
 
             var ownRms = _rawMaterialDetailService.GetOwnRMS(tenantId);
             List<RawMaterialDetailVM> rawmaterialdetails = ownRms.Result.ToList();
-            List<MasterPartVM> mps = _masterPartService.GetAllMasterParts().ToList();
+            List<MasterPartVM> mps = _masterPartService.GetAllMasterParts()
+                .Where(r => r.Status == "Released").ToList();
             List<PartPurchaseDetailsVM> ppd = _rawMaterialDetailService.GetPartPurchases(tenantId).ToList();
             List<RawMaterialTypeVM> rmtypes = _rawMaterialDetailService.GetRMTypes(tenantId).ToList();
             List<BaseRawMaterialVM> baserms = _rawMaterialDetailService.GetBaseRMs(tenantId).ToList();
@@ -228,7 +229,8 @@ namespace CWB.Masters.Controllers
         [Produces(AppContentTypes.ContentType, Type = typeof(List<RawMaterialDetailVM>))]
         public IActionResult SupplierRMS(long supplierId, long tenantId)
         {
-            List<MasterPartVM> mps = _masterPartService.GetAllMasterParts().ToList();
+            List<MasterPartVM> mps = _masterPartService.GetAllMasterParts()
+                .Where(r => r.Status == "Released").ToList();
             List<RawMaterialDetailVM> rawmaterialdetails = _rawMaterialDetailService.GetSupplierRMS(supplierId).Result.ToList();
             List<RawMaterialTypeVM> rmtypes = _rawMaterialDetailService.GetRMTypes(tenantId).ToList();
             List<BaseRawMaterialVM> baserms = _rawMaterialDetailService.GetBaseRMs(tenantId).ToList();
@@ -687,53 +689,71 @@ namespace CWB.Masters.Controllers
         {
             var vcos = await _companyService.GetCompaniesByTenant(tenantId);
             List<CompaniesVM> cos = vcos.ToList();
-            List<MasterPartVM> masterParts = _masterPartService.GetAllMasterParts().ToList();
-            List<ManufacturedPartNoDetailVM> manufList = _manufacturedPartNoDetailService.GetAllManufacturedPartNoDetailsByTypeTenant(tenantId).ToList();
-            var query = from manuf in manufList
-                        join mp in masterParts on manuf.PartId equals mp.MasterPartId into mpjoin
-                        from smpjoin in mpjoin.DefaultIfEmpty()
-                        join co in cos on manuf.CompanyId equals co.CompanyId into cojoin
-                        from scojoin in cojoin.DefaultIfEmpty()
-                        select new SelectPartVM
-                        {
-                            PartId = manuf.PartId,
-                            MasterPartType = manuf.ManufacturedPartType == 1 ? "Child" : "Assembly",
-                            BoughtOutFinishMadeType = "",
-                            Company = scojoin?.CompanyName??string.Empty,
-                            PartNo = smpjoin.PartNo,
-                            Description = smpjoin?.PartDescription ?? string.Empty,
-                        };
+
+            // ✅ Take only Released master parts
+            List<MasterPartVM> masterParts = _masterPartService
+                .GetAllMasterParts()
+                .Where(mp => mp.Status == "Released")
+                .ToList();
+
+            List<ManufacturedPartNoDetailVM> manufList =
+                _manufacturedPartNoDetailService
+                .GetAllManufacturedPartNoDetailsByTypeTenant(tenantId)
+                .ToList();
+
+            var query =
+                from manuf in manufList
+                join mp in masterParts
+                    on manuf.PartId equals mp.MasterPartId
+                join co in cos
+                    on manuf.CompanyId equals co.CompanyId into cojoin
+                from scojoin in cojoin.DefaultIfEmpty()
+                select new SelectPartVM
+                {
+                    PartId = manuf.PartId,
+                    MasterPartType = manuf.ManufacturedPartType == 1 ? "Child" : "Assembly",
+                    BoughtOutFinishMadeType = "",
+                    Company = scojoin?.CompanyName ?? string.Empty,
+                    PartNo = mp.PartNo,
+                    Description = mp.PartDescription ?? string.Empty
+                };
+
             List<SelectPartVM> list = query.ToList();
+
             try
             {
-                var bofs = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(tenantId);
+                var bofs = _boughtOutFinishDetailService
+                    .GetBoughtOutFinishDetailsByTenant(tenantId);
+
                 var query1 =
                     from bof in bofs
-                    join mp in masterParts on bof.PartId equals mp.MasterPartId into bofjoin
-                    from subpp in bofjoin.DefaultIfEmpty()
+                    join mp in masterParts
+                        on bof.PartId equals mp.MasterPartId
                     select new SelectPartVM
                     {
                         PartId = bof.PartId,
                         MasterPartType = "BOF",
-                        BoughtOutFinishMadeType = (bof.BoughtOutFinishMadeType == 1) ? "Standard" :(((bof.BoughtOutFinishMadeType == 2) ? "Catalog" : "Made To Print")),
+                        BoughtOutFinishMadeType =
+                            bof.BoughtOutFinishMadeType == 1 ? "Standard" :
+                            bof.BoughtOutFinishMadeType == 2 ? "Catalog" :
+                            "Made To Print",
                         Company = string.Empty,
-                        PartNo = subpp.PartNo,
-                        Description = subpp?.PartDescription ?? string.Empty,
-                        
+                        PartNo = mp.PartNo,
+                        Description = mp.PartDescription ?? string.Empty
                     };
-                List<SelectPartVM> list1 = query1.ToList();
-                list.AddRange(list1);
+
+                list.AddRange(query1.ToList());
             }
             catch (Exception ex)
             {
-                string str = ex.InnerException.Message;
+                string str = ex.InnerException?.Message;
             }
 
             return list;
         }
-      
+
     }
-   
+
 
 
 }

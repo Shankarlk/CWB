@@ -82,7 +82,7 @@ namespace CWB.App.Controllers
             var routemc =await  _routingService.AllStepMachines();
             if (routemc.Any(x => x.MachineId == mcTypeDocListId))
             {
-                string msg = "This Machine is already used in the Routing Step. Delete The Step Machine in the Routings.";
+                string msg = "This Machine is already used in the Routing Step Machine. Delete The Step Machine in the Routings.";
                 return Ok(msg);
             }
             var result = await _machineService.DeleteMachine(mcTypeDocListId);

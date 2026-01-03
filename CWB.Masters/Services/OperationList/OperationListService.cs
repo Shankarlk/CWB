@@ -110,6 +110,21 @@ namespace CWB.Masters.Services.OperationList
             }
             return false;
         }
+        public async Task<bool> DeleteOperations(long opDocId, long tenantId)
+        {
+            var co = await _operationListRepository.SingleOrDefaultAsync(m => m.Id == opDocId && m.TenantId == tenantId);
+            if (co != null)
+            {
+                try
+                {
+                    _operationListRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
 
     }
 }

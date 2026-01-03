@@ -1,4 +1,5 @@
 ﻿using CWB.CommonUtils.Common;
+using CWB.Masters.Domain.Routings;
 using System.Collections.Generic;
 
 namespace CWB.Masters.Domain
@@ -13,5 +14,7 @@ namespace CWB.Masters.Domain
 
         public ICollection<OperationalDocument> OperationalDocuments { get; set; }
         public ICollection<Machine> Machines { get; set; }
+        public ICollection<RoutingStep> RoutingSteps { get; set; }
+
     }
 }
