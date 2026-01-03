@@ -56,6 +56,7 @@ namespace CWB.BusinessAquisition.Configurations
             builder
                .Property(t => t.Comment)
                .HasColumnName("Comment")
+               .HasDefaultValue("-")
                .IsRequired();
             builder
                .Property(t => t.LineNo)

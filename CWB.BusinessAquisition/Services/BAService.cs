@@ -75,56 +75,66 @@ namespace CWB.BusinessAquisition.Services
 
         public async Task<CustomerOrderVM> CustomerOrder(CustomerOrderVM customerOrderVM)
         {
-            var customerOrder = _mapper.Map<CustomerOrder>(customerOrderVM);
-            if (customerOrder.Id == 0)
+            try
             {
-                customerOrder.Plan = 0;
-                customerOrder.Matl = 0;
-                customerOrder.Hold = false;
-                customerOrder.Done = false;
-                customerOrder.Status = (int)OrdStatus.NOTPlanned;
-                customerOrder.LineNo = "";
-                if(customerOrder.DirectEntryDetails == null)
-                {
-                    customerOrder.DirectEntryDetails = " ";
-                }if(customerOrder.PONumber == null)
-                {
-                    customerOrder.PONumber = " ";
-                }
 
-                await _customerOrderRepository.AddAsync(customerOrder);
-                await _unitOfWork.CommitAsync();
-                customerOrderVM.CustomerOrderId = customerOrder.Id;
-                await POLog(LogPOEntry(customerOrder));
+                var customerOrder = _mapper.Map<CustomerOrder>(customerOrderVM);
+                if (customerOrder.Id == 0)
+                {
+                    customerOrder.Plan = 0;
+                    customerOrder.Matl = 0;
+                    customerOrder.Hold = false;
+                    customerOrder.Done = false;
+                    customerOrder.Status = (int)OrdStatus.NOTPlanned;
+                    customerOrder.LineNo = "";
+                    if (customerOrder.DirectEntryDetails == null)
+                    {
+                        customerOrder.DirectEntryDetails = " ";
+                    }
+                    if (customerOrder.PONumber == null)
+                    {
+                        customerOrder.PONumber = " ";
+                    }
+
+                    await _customerOrderRepository.AddAsync(customerOrder);
+                    await _unitOfWork.CommitAsync();
+                    customerOrderVM.CustomerOrderId = customerOrder.Id;
+                    await POLog(LogPOEntry(customerOrder));
+                }
+                else
+                {
+                    customerOrder = await _customerOrderRepository.SingleOrDefaultAsync(x => x.Id == customerOrder.Id);
+                    if (customerOrder == null) { return customerOrderVM; }
+
+                    customerOrder.PONumber = customerOrderVM.PONumber;
+                    customerOrder.PODate = customerOrderVM.PODate;
+                    customerOrder.DirectEntryDetails = customerOrderVM.DirectEntryDetails;
+                    customerOrder.POAddress = customerOrderVM.POAddress;
+                    customerOrder.POPIN = customerOrderVM.POPIN;
+                    customerOrder.POCity = customerOrderVM.POCity;
+                    customerOrder.POCountry = customerOrderVM.POCountry;
+                    customerOrder.Comment = customerOrderVM.Comment;
+                    customerOrder.OrderType = customerOrderVM.OrderType;
+                    if (customerOrder.DirectEntryDetails == null)
+                    {
+                        customerOrder.DirectEntryDetails = " ";
+                    }
+                    if (customerOrder.PONumber == null)
+                    {
+                        customerOrder.PONumber = " ";
+                    }
+                    customerOrder = await _customerOrderRepository.UpdateAsync(customerOrder.Id, customerOrder);
+                    await _unitOfWork.CommitAsync();
+                    customerOrderVM.CustomerOrderId = customerOrder.Id;
+                    await POLog(LogPOEdit(customerOrder));
+                }
+                return customerOrderVM;
             }
-            else
+            catch (Exception ex)
             {
-                customerOrder = await _customerOrderRepository.SingleOrDefaultAsync(x => x.Id == customerOrder.Id);
-                if(customerOrder == null) { return customerOrderVM; }
-                
-                customerOrder.PONumber = customerOrderVM.PONumber;
-                customerOrder.PODate = customerOrderVM.PODate;
-                customerOrder.DirectEntryDetails = customerOrderVM.DirectEntryDetails;
-                customerOrder.POAddress = customerOrderVM.POAddress;
-                customerOrder.POPIN = customerOrderVM.POPIN;
-                customerOrder.POCity = customerOrderVM.POCity;
-                customerOrder.POCountry = customerOrderVM.POCountry;
-                customerOrder.Comment = customerOrderVM.Comment;
-                customerOrder.OrderType = customerOrderVM.OrderType;
-                if (customerOrder.DirectEntryDetails == null)
-                {
-                    customerOrder.DirectEntryDetails = " ";
-                }
-                if (customerOrder.PONumber == null)
-                {
-                    customerOrder.PONumber = " ";
-                }
-                customerOrder = await _customerOrderRepository.UpdateAsync(customerOrder.Id, customerOrder);
-                await _unitOfWork.CommitAsync();
-                customerOrderVM.CustomerOrderId = customerOrder.Id;
-                await POLog(LogPOEdit(customerOrder));
+
+                return customerOrderVM;
             }
-            return customerOrderVM;
         }
 
         public async Task<bool> AddSalesOrders(long tenantId,long customerOrderId)

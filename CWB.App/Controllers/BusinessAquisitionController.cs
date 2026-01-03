@@ -275,7 +275,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> AllWorkOrders()
         {
             var workOrders = await _baService.AllWorkOrders();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             foreach (WorkOrdersVM item in workOrders)
             {
                 foreach (ItemMasterPartVM imp in masterparts)
@@ -299,7 +299,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetPOLogs(long customerOrderId)
         {
             var pologs = await _baService.GetPOLogs(customerOrderId);
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             ClaimsPrincipal userClaim = HttpContext.User;
             string fullName = AppUtil.GetFullName(userClaim);
             foreach (var item in pologs)
@@ -333,7 +333,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> AllSalesOrders()
         {
             var salesorders = await _baService.AllSalesOrders();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var customer= await _baService.GetCustomerOrders();
             foreach (SalesOrderVM sovm in salesorders)
             {
@@ -359,7 +359,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetSalesOrders(long customerOrderId,long partId=0)
         {
             var salesorders = await _baService.GetSalesOrders(customerOrderId);
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             foreach(SalesOrderVM sovm in salesorders)
             {
                 foreach(ItemMasterPartVM impvm in masterparts)
@@ -389,7 +389,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetPOLines(long customerOrderId)
         {
             var salesorders = await _baService.GetSalesOrders(customerOrderId);
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             List<POLineVM> pOLines = new List<POLineVM>();
             foreach (SalesOrderVM sovm in salesorders)
             {
@@ -471,7 +471,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetSchedules(long customerOrderId)
         {
             var schedules = await _baService.GetSchedules(customerOrderId);
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             foreach (DeliveryScheduleVM sovm in schedules)
             {
                 foreach (ItemMasterPartVM impvm in masterparts)
@@ -516,6 +516,10 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> CustomerOrder(CustomerOrderVM customerOrderVM)
         {
+            if(customerOrderVM.Comment == null)
+            {
+                customerOrderVM.Comment = ".";
+            }
             var customerOrder = await _baService.PostCustomerOrder(customerOrderVM);
             return Ok(customerOrder);
         }

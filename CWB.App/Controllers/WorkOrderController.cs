@@ -179,7 +179,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> AllSalesOrders()
         {
             var salesorders = await _baService.AllSalesOrders();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var customer = await _baService.GetCustomerOrders();
             foreach (SalesOrderVM sovm in salesorders)
             {
@@ -260,7 +260,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> AllSODispatch(int? take = null)
         {
             var salesorders = await _baService.AllSalesOrders();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var customer = await _baService.GetCustomerOrders();
             var trans = await _woService.GetAllInv_Trans_Log();
             var DispatchDetails = await _woService.GetAllDispatchDetails(); 
@@ -447,7 +447,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> CustomerMis()
         {
             var salesorders = await _baService.AllSalesOrders();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var customers = await _baService.GetCustomerOrders();
 
             foreach (SalesOrderVM sovm in salesorders)
@@ -492,7 +492,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> AllWorkOrders()
         {
             var workOrders = await _baService.AllWorkOrders();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             foreach (WorkOrdersVM item in workOrders)
             {
                 foreach (ItemMasterPartVM imp in masterparts)
@@ -2459,7 +2459,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> AllProductionWos()  // AllProductionWoReadForProd
         {
             var productions = await _woService.AllProductionPlan_Wo();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var procplan = await _woService.GetAllProcPlan();
             var customer = await _baService.GetCustomerOrders();
             var nclogs = await _woService.GetAllNcLog();
@@ -2567,7 +2567,7 @@ namespace CWB.App.Controllers
         {
             // 1. Bulk Fetch Data (Parallelize Backend & External Service Calls)
             var productionTask = _woService.AllProductionWoReadForProd();
-            var masterPartsTask = _masterService.ItemMasterParts();
+            var masterPartsTask = _masterService.MasterPartList();
             var customerTask = _baService.GetCustomerOrders();
             var allDocsTask = _docMangService.GetAllDocList();
             var allSalesOrdersTask = _baService.AllSalesOrders();
@@ -2693,7 +2693,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> AllRMWo(int rmpartids)
         {
             var productions = await _woService.AllProductionPlan_Wo();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             List<ProductionPlan_WoVM> ppwos = new List<ProductionPlan_WoVM>();
             foreach (ProductionPlan_WoVM item in productions)
             {
@@ -2755,7 +2755,7 @@ namespace CWB.App.Controllers
         public async Task<ActionResult> DownloadProductionWoGridData()
         {
             var productions = await _woService.AllProductionPlan_Wo();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             foreach (ProductionPlan_WoVM item in productions)
             {
                 foreach (ItemMasterPartVM imp in masterparts)
@@ -2853,7 +2853,7 @@ namespace CWB.App.Controllers
         {
             var mctimelist = await _woService.GetAllMcTimeList();
             var productions = await _woService.AllProductionPlan_Wo();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             foreach (var mctime in mctimelist)
             {
                 var machine = await _machineService.GetMachine((int)mctime.MachineId);
@@ -3042,7 +3042,7 @@ namespace CWB.App.Controllers
         {
             var mctimelist = await _woService.GetAllMcTimeList();
             var productions = await _woService.AllProductionPlan_Wo();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             foreach (var mctime in mctimelist)
             {
                 var machineTypes = await _machineService.GetMachineTypes();
@@ -3161,7 +3161,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetAllInv_Mismatch_List()
         {
             var inv_Mismatch_ListVMs = await _woService.GetAllInv_Mismatch_List();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var companies = await _masterService.GetCompanies();
             foreach (var item in inv_Mismatch_ListVMs)
             {
@@ -3211,7 +3211,7 @@ namespace CWB.App.Controllers
             var doclist = await _woService.GetAllInWardDocList();
             List<PODetailsVM> woSubs = new List<PODetailsVM>();
             var companies = await _masterService.GetCompanies();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var uoms = await _masterService.GetUOMs();
             var uomDict = uoms.ToDictionary(uom => uom.UOMId, uom => uom.Name);
             foreach (var item in procdutionpost)
@@ -3299,7 +3299,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetAllInvMaster()
         {
             var result = await _woService.GetAllInventory_Master();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var companies = await _masterService.GetCompanies();
             var inv_Trans = await _woService.GetAllInv_Trans_Log();
             foreach (var item in result)
@@ -3409,7 +3409,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetAllInvTranLog()
         {
             var result = await _woService.GetAllInv_Trans_Log();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var prodwos = await _woService.AllProductionPlan_Wo();
             foreach (var item in result)
             {
@@ -3549,7 +3549,7 @@ namespace CWB.App.Controllers
                 var productionsTask = _woService.AllProductionPlan_Wo();
                 var allTransLogsTask = _woService.GetAllInv_Trans_Log();
                 var allMcWaitListsTask = _woService.GetAllMc_Wait_List();
-                var masterpartsTask = _masterService.ItemMasterParts();
+                var masterpartsTask = _masterService.MasterPartList();
                 var allTimeslotsTask = _woService.GetAllTimeslot_List();
                 var allRwkListTask = _woService.GetAllRwk_List();
                 var allNcLogsTask = _woService.GetAllNcLog();
@@ -3874,7 +3874,7 @@ namespace CWB.App.Controllers
                 var wo = allWos.FirstOrDefault(w => w.ProductionPlanId == woId);
                 if (wo == null) return NotFound("Work Order not found");
 
-                var masterParts = await _masterService.ItemMasterParts();
+                var masterParts = await _masterService.MasterPartList();
                 var part = masterParts.FirstOrDefault(p => p.PartId == wo.PartId);
 
                 // 2. Fetch Routing & Operations to Determine Context (Previous/Current)
@@ -4063,7 +4063,7 @@ namespace CWB.App.Controllers
                 // 1. Fetch all necessary data in parallel
                 var productionsTask = _woService.AllProductionPlan_Wo();
                 var allTransLogsTask = _woService.GetAllInv_Trans_Log();
-                var masterpartsTask = _masterService.ItemMasterParts();
+                var masterpartsTask = _masterService.MasterPartList();
                 var allNcLogsTask = _woService.GetAllNcLog();
                 var allRwkListTask = _woService.GetAllRwk_List();
                 var procplanTask = _woService.GetAllProcPlan();
@@ -4201,7 +4201,7 @@ namespace CWB.App.Controllers
                 // 1. Fetch all necessary data in parallel
                 var productionsTask = _woService.AllProductionPlan_Wo();
                 var allTransLogsTask = _woService.GetAllInv_Trans_Log();
-                var masterpartsTask = _masterService.ItemMasterParts();
+                var masterpartsTask = _masterService.MasterPartList();
                 var routingsTask = _routingService.GetRoutingListItems(); // Assuming this gets routing list headers
                 var procplanTask = _woService.GetAllProcPlan();
 
@@ -4340,7 +4340,7 @@ namespace CWB.App.Controllers
                 if (wo == null) return NotFound("Work Order not found");
 
                 // 2. Fetch Part Details (The Child Part from BOM)
-                var masterParts = await _masterService.ItemMasterParts();
+                var masterParts = await _masterService.MasterPartList();
                 var childPart = masterParts.FirstOrDefault(p => p.PartId == bomPartId);
                 var assyPart = masterParts.FirstOrDefault(p => p.PartId == wo.PartId); // The parent Assembly
 
@@ -4445,7 +4445,7 @@ namespace CWB.App.Controllers
                 // 1. Fetch all necessary data in parallel
                 var productionsTask = _woService.AllProductionPlan_Wo();
                 var allTransLogsTask = _woService.GetAllInv_Trans_Log();
-                var masterpartsTask = _masterService.ItemMasterParts();
+                var masterpartsTask = _masterService.MasterPartList();
                 var routingsTask = _routingService.GetRoutingListItems(); // Assuming this gets routing list headers
                 var procplanTask = _woService.GetAllProcPlan();
 
@@ -4581,7 +4581,7 @@ namespace CWB.App.Controllers
         //        // --- 1. Fetch Core Data ---
         //        // Fetch specific WO transactions directly if possible, otherwise fetch all and filter (optimized for in-memory)
         //        var allTransLogsTask = _woService.GetAllInv_Trans_Log();
-        //        var masterpartsTask = _masterService.ItemMasterParts();
+        //        var masterpartsTask = _masterService.MasterPartList();
         //        var employeesTask = _employeeService.GetAllEmployee(); // For "Transacted By"
         //        var departmentsTask = _departmentService.GetDepartments(1); // For Shop Names
         //        var companiesTask = _masterService.GetCompanies(); // For Supplier Names
@@ -5416,7 +5416,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetAllInv_Trans_Log()
         {
             var result = await _woService.GetAllInv_Trans_Log();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             foreach (var item in result)
             {
                 if(item.Output_Part_No == 0)
@@ -5631,7 +5631,7 @@ namespace CWB.App.Controllers
             var procPlanTask = _woService.GetAllProcPlan();
             var inwHeaderTask = _woService.GetAllInw_Recpt_Header();
             var companiesTask = _masterService.GetCompanies();
-            var masterPartsTask = _masterService.ItemMasterParts();
+            var masterPartsTask = _masterService.MasterPartList();
             var uomsTask = _masterService.GetUOMs();
             var wosTask = _woService.AllProductionPlan_Wo();
 
@@ -5763,7 +5763,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetAllInw_Recpt_Details()
         {
             var result = await _woService.GetAllInw_Recpt_Details();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var condition = await _woService.GetAllInward_Condn_list();
             foreach (var item in result)
             {
@@ -5790,7 +5790,7 @@ namespace CWB.App.Controllers
         {
             var result = await _woService.GetAllNcLog();
             List<Insp_Outcome_DetailsVM> listnc = new List<Insp_Outcome_DetailsVM>();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var rcclog = await _woService.GetAllCont_RCA_CA_log();
             var ncdisplog = await _woService.GetAllNC_Decision_Log();
             var inw = await _woService.GetAllInw_Recpt_Details();
@@ -5868,7 +5868,7 @@ namespace CWB.App.Controllers
         {
             var result = await _woService.GetAllNcLog();
             List<Insp_Outcome_DetailsVM> listnc = new List<Insp_Outcome_DetailsVM>();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var loc = await _departmentService.GetDepartments(1);
             var rcclog = await _woService.GetAllCont_RCA_CA_log();
             var ncdisplog = await _woService.GetAllNC_Decision_Log();
@@ -6364,7 +6364,7 @@ namespace CWB.App.Controllers
         {
             var result = await _woService.GetAllWO_Wait_List();
             var prodnWos = await _woService.AllProductionPlan_Wo();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var customer = await _baService.GetCustomerOrders();
             var nclogs = await _woService.GetAllNcLog();
             foreach (var item in result)
@@ -7108,7 +7108,7 @@ namespace CWB.App.Controllers
             var machineTypes = await _machineService.GetMachineTypes();
             var getshop = await _departmentService.GetDepartments(1);
             var getsection = await _departmentService.GetSections();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var alProductionWOs = await _woService.AllProductionPlan_Wo();
             var partinQ = 0;
             foreach (var item in waitList)
@@ -7453,7 +7453,7 @@ namespace CWB.App.Controllers
             var depts = await _departmentService.GetDepartments(1);
             var prodns = await _woService.AllProductionPlan_Wo();
             var translog = await _woService.GetAllInv_Trans_Log();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var finalresult = new List<Matl_Issue_ListVM>();
             foreach (var item in result)
             {
@@ -7508,7 +7508,7 @@ namespace CWB.App.Controllers
             var matlIssueTask = _woService.GetAllMatlIssueListForShop();
             var tempOprTask = _woService.GetAllTempOpr_List();
             var deptTask = _departmentService.GetDepartments(1);
-            var masterPartsTask = _masterService.ItemMasterParts();
+            var masterPartsTask = _masterService.MasterPartList();
 
             // New Bulk Tasks
             var allManufPartsTask = _masterService.GetAllManufacturedPartNoDetailList();
@@ -7602,7 +7602,7 @@ namespace CWB.App.Controllers
                 var tempoprs = await _woService.GetAllTempOpr_List();
                 var depts = await _departmentService.GetDepartments(1);
                 var prodns = await _woService.AllProductionPlan_Wo();
-                var masterparts = await _masterService.ItemMasterParts();
+                var masterparts = await _masterService.MasterPartList();
                 var matl_Issue_Lists = await _woService.GetAllMatl_Issue_List();
                 foreach (var item in selectedMatlIds)
                 {
@@ -7643,7 +7643,7 @@ namespace CWB.App.Controllers
         {
             var subconOps = await _woService.GetAllTempSubCon_List();
             var productions = await _woService.AllProductionPlan_Wo();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var compaines = await _masterService.GetCompanies();
             foreach (var item in subconOps)
             {
@@ -7674,7 +7674,7 @@ namespace CWB.App.Controllers
                 var tempoprs = await _woService.GetAllTempOpr_List();
                 var depts = await _departmentService.GetDepartments(1);
                 var prodns = await _woService.AllProductionPlan_Wo();
-                var masterparts = await _masterService.ItemMasterParts();
+                var masterparts = await _masterService.MasterPartList();
                 var tempSubCon_Lists = await _woService.GetAllTempSubCon_List();
                 var procplans = await _woService.GetAllProcPlan();
                 var podetails = await _woService.GetAllPodetails();
@@ -7722,7 +7722,7 @@ namespace CWB.App.Controllers
             var waitList = await _woService.GetAllTempMc_Wait_List();
             var timeslots = await _woService.GetAllTempMc_Timeslot_List();
             var allTimeslots = await _woService.GetAllTimeslot_List();
-            var parts = await _masterService.ItemMasterParts();
+            var parts = await _masterService.MasterPartList();
             var machines = await _machineService.GetMachinesList();
             var shops = await _departmentService.GetDepartments(1);
             var allWO = await _woService.AllProductionPlan_Wo();
@@ -7779,7 +7779,7 @@ namespace CWB.App.Controllers
             var subconWos = await _woService.GetAllTempSubCon_List();
             var woList = await _woService.AllProductionPlan_Wo();
             var companies = await _masterService.GetCompanies();
-            var parts = await _masterService.ItemMasterParts();
+            var parts = await _masterService.MasterPartList();
             var transactions = await _woService.GetAllInv_Trans_Log();
 
             var result = new List<TempSubCon_ListVM>();
@@ -7830,7 +7830,7 @@ namespace CWB.App.Controllers
         {
             // 2. Start all parallel tasks
             var cnfListTask = _woService.GetAllSetUpCnfList();
-            var partsTask = _masterService.ItemMasterParts();
+            var partsTask = _masterService.MasterPartList();
             var machinesTask = _machineService.GetMachinesList();
             // var shopsTask = _departmentService.GetDepartments(1); // Not strictly needed if MachineVM has ShopName, but kept if needed
             var allWOTask = _woService.AllProductionPlan_Wo();
@@ -7897,7 +7897,7 @@ namespace CWB.App.Controllers
             // ---- PARALLEL LOAD ALL REQUIRED MASTER DATA ----
             var waitListTask = _woService.GetAllMc_Wait_List();
             var timeslotTask = _woService.GetAllTimeslot_List();
-            var itemPartsTask = _masterService.ItemMasterParts();
+            var itemPartsTask = _masterService.MasterPartList();
             var machinesTask = _machineService.GetMachinesList();
             var shopsTask = _departmentService.GetDepartments(1);
             var allWoTask = _woService.AllProductionPlan_Wo();
@@ -7989,7 +7989,7 @@ namespace CWB.App.Controllers
             //    We fetch the API result and all necessary master data at the same time.
             var setupListTask = _woService.GetAllSetUpApprolList();
             var machinesTask = _machineService.GetMachinesList();
-            var partsTask = _masterService.ItemMasterParts();
+            var partsTask = _masterService.MasterPartList();
             var allWOTask = _woService.AllProductionPlan_Wo();
 
             // Routing Data
@@ -8068,7 +8068,7 @@ namespace CWB.App.Controllers
             // 1. Load all master data in parallel (Network I/O - Unchanged)
             var waitListTask = _woService.GetAllMc_Wait_List();
             var timeslotsTask = _woService.GetAllTimeslot_List();
-            var partsTask = _masterService.ItemMasterParts();
+            var partsTask = _masterService.MasterPartList();
             var machinesTask = _machineService.GetMachinesList();
             var shopsTask = _departmentService.GetDepartments(1);
             var allWOTask = _woService.AllProductionPlan_Wo();
@@ -8212,7 +8212,7 @@ namespace CWB.App.Controllers
             // ---- Load everything in parallel ----
             var waitListTask = _woService.GetAllMc_Wait_List();
             var timeslotsTask = _woService.GetAllTimeslot_List();
-            var partsTask = _masterService.ItemMasterParts();
+            var partsTask = _masterService.MasterPartList();
             var machinesTask = _machineService.GetMachinesList();
             var shopsTask = _departmentService.GetDepartments(1);
             var allWOTask = _woService.AllProductionPlan_Wo();
@@ -8342,7 +8342,7 @@ namespace CWB.App.Controllers
             // 2. Start all parallel tasks
             var bookOutListTask = _woService.GetAllBookOutList();
 
-            var partsTask = _masterService.ItemMasterParts();
+            var partsTask = _masterService.MasterPartList();
             var machinesTask = _machineService.GetMachinesList();
             // var shopsTask = _departmentService.GetDepartments(1); // Optional if MachineVM has ShopName
             var uomTask = _masterService.GetUOMs();
@@ -8516,7 +8516,7 @@ namespace CWB.App.Controllers
             var tasks = new List<Task>
     {
         _woService.GetAllMc_Wait_List(),
-        _masterService.ItemMasterParts(),
+        _masterService.MasterPartList(),
         _machineService.GetMachinesList(),
         _departmentService.GetDepartments(1),
         _woService.AllProductionPlan_Wo(),
@@ -8701,7 +8701,7 @@ namespace CWB.App.Controllers
             var podetails = await _woService.GetAllPodetails();
             var procplans = await _woService.GetAllProcPlan();
             var prodnwos = await _woService.AllProductionPlan_Wo();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var machines = await _machineService.GetMachinesList();
             var mcWaitList = await _woService.GetAllTempMc_Wait_List();
 
@@ -9994,7 +9994,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetAllReadyforProductionWos()
         {
             var productions = await _woService.AllProductionPlan_Wo();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var procplan = await _woService.GetAllProcPlan();
             var customer = await _baService.GetCustomerOrders();
             var wO_Wait_Lists = await _woService.GetAllTempWo_Wait_List();
@@ -10130,7 +10130,7 @@ namespace CWB.App.Controllers
             // 1. Fetch Data in Parallel (Backend API + External Services)
             // We add bulk fetches for Sales Orders, Manufactured Parts, and Routings here.
             var productionTask = _woService.GetAllReadyforProductionWo();
-            var masterPartsTask = _masterService.ItemMasterParts();
+            var masterPartsTask = _masterService.MasterPartList();
             var customerTask = _baService.GetCustomerOrders();
             var allSalesOrdersTask = _baService.AllSalesOrders();
             var allManufPartsTask = _masterService.GetAllManufacturedPartNoDetailList();
@@ -11025,7 +11025,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetAllSimOutputWo()
         {
             var productions = await _woService.AllProductionPlan_Wo();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var procplan = await _woService.GetAllProcPlan();
             var customer = await _baService.GetCustomerOrders();
             var wO_Wait_Lists = await _woService.GetAllTempWo_Wait_List();
@@ -11171,7 +11171,7 @@ namespace CWB.App.Controllers
             var findwo = productions.Where(p => p.WoId == woId && p.ParentWoId == 0).FirstOrDefault();
             var childwos = productions.Where(p => p.ParentWoId == woId).ToList();
             var childpros = procplan.Where(p => p.WorkOrderId == woId).ToList();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var pODetails = await _woService.GetAllPodetails();
             var masterPartDict = masterparts.ToDictionary(p => p.PartId);
             List<ProductionPlan_WoVM> result = new List<ProductionPlan_WoVM>();
@@ -11288,7 +11288,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetAllMcWos(long mcId)
         {
             var productions = await _woService.AllProductionPlan_Wo();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             var mcwaitList = await _woService.GetAllTempMc_Wait_List();
             var allTimeSlots = await _woService.GetAllTimeslot_List();
             var mcwaits = mcwaitList.Where(m => m.Mc_Id == mcId).ToList();
@@ -11517,7 +11517,7 @@ namespace CWB.App.Controllers
             var subcons = subconOps.Where(s => s.Supplier_Id == Suppid).ToList();
             var productions = await _woService.AllProductionPlan_Wo();
             var wO_Wait_Lists = await _woService.GetAllTempWo_Wait_List();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             foreach (var item in subcons)
             {
                 var pwo = productions.Where(p => p.ProductionPlanId == item.Wo_Id).FirstOrDefault();
@@ -11908,7 +11908,7 @@ namespace CWB.App.Controllers
             var tempoprs = await _woService.GetAllTempOpr_List();
             var depts = await _departmentService.GetDepartments(1);
             var prodns = await _woService.AllProductionPlan_Wo();
-            var masterparts = await _masterService.ItemMasterParts();
+            var masterparts = await _masterService.MasterPartList();
             foreach (var item in result)
             {
                 var tempopr = tempoprs.Where(o => o.TempOpr_ListId == item.Part_Ref).FirstOrDefault();
@@ -11973,7 +11973,7 @@ namespace CWB.App.Controllers
             var waitList = await _woService.GetAllMc_Wait_List();
             var timeslots = await _woService.GetAllTempMc_Timeslot_List();
             var allTimeslots = await _woService.GetAllTimeslot_List();
-            var parts = await _masterService.ItemMasterParts();
+            var parts = await _masterService.MasterPartList();
             var machines = await _machineService.GetMachinesList();
             var shops = await _departmentService.GetDepartments(1);
             var allWO = await _woService.AllProductionPlan_Wo();
