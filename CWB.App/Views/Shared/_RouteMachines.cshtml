@@ -25,17 +25,18 @@
 <template id="RouteMachinesRowTemplate">
     <tr bgcolor="{bgColor}">
         <td>
-            <input type="radio" class="form-check-input" name="pref" {checked} disabled>
+            <input type="checkbox"
+ class="form-check-input" {checked} disabled>
         </td>
         <td data-key="machine">{name}</td>
-        <td data-key="ftoftime">{firstPieceProcessingTime}</td>
+        <td data-key="ftoftime">{floorToFloorTime}</td>
         <td data-key="setTime">{setupTime}</td>
         <td data-key="mandocAvl">{mandocAvl}</td>
         <td>
             <div class="dropdown float-center">
                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
                 <div class="dropdown-menu dropdown-menu-end">
-                    <a href="javascript:void(0);" onclick="SetPreferredMachine(event,{routingStepMachineId},{routingStepId});" class="dropdown-item">Set Preferred Machine</a>
+                    <a href="javascript:void(0);" onclick="SetPreferredMachine(event,{routingStepMachineId},{routingStepId});" class="dropdown-item {prefActionClass}">Set Preferred Machine</a>
                     <!-- item-->
                     <a href="javascript:void(0);"
                        data-firstpieceprocessingtime="{firstPieceProcessingTime}"

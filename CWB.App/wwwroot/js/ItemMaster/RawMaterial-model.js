@@ -48,7 +48,7 @@ var RawMaterialDetailFormUtil = {
 
         //$("#OPRM").prop("checked", true).trigger("click");
         $("#MPRM").prop("checked", true).trigger("click");
-        $("#Status").val("Active");
+        $("#Status").val("Not Released");
         //$("#Status").trigger("change");
         $("#StatusChangeReason").val("");
         $("#Standard").val(1);
@@ -280,9 +280,14 @@ function DecodeRawPartId() {
                 closeatag.href = "/Masters/MasterDetails";
                 $("#statusDiv").show();
                 $("#statusLbl").show();
+                $("#popuphistorybtn").show();
+                $("#historybtn").show();
             } else {
-                $("#statusDiv").hide();
-                $("#statusLbl").hide();
+                $("#statusDiv").show();
+                $("#statusLbl").show();
+                $("#popuphistorybtn").hide();
+                $("#historybtn").hide();
+                $("#Status").val("Not Released");
                 closeatag.href = "/Masters/Index";
             }
         }

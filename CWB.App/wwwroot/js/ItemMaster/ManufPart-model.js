@@ -317,9 +317,11 @@ function DecodeManufPartId() {
                 var parttype = $("#ManufacturedPartType").val();
                 if (parttype == "2") {
                     $("#lblUOM").hide();
+                    $("#FinsedMand").hide();
                     $("#DivUom").addClass("d-none");
                 } else {
                     $("#lblUOM").show();
+                    $("#FinsedMand").show();
                     $("#DivUom").removeClass("d-none");
                 }
                 closeatag.href = "/Masters/MasterDetails";
@@ -327,14 +329,16 @@ function DecodeManufPartId() {
                 var parttype = $("#ManufacturedPartType").val();
                 if (parttype == "2") {
                     $("#lblUOM").hide();
+                    $("#FinsedMand").hide();
                     $("#DivUom").addClass("d-none");
                 } else {
                     $("#lblUOM").show();
+                    $("#FinsedMand").show();
                     $("#DivUom").removeClass("d-none");
                 }
                 $("#headingN").text("New");
                 $("#createfep").show();
-                $("#Status").val("Active");
+                $("#Status").val("Not Released");
                 $("#statusDiv").show();
                 $("#statusLbl").show();
                 $("#popuphistorybtn").hide();

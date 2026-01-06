@@ -139,9 +139,7 @@ namespace CWB.Masters.Controllers
                                RoutingId = routingLookup.ContainsKey(manuf.ManufacturedPartNoDetailId)
                                                 ? (int)routingLookup[manuf.ManufacturedPartNoDetailId].First.Id
                                                 : 0,
-                               Status = routingLookup.ContainsKey(manuf.ManufacturedPartNoDetailId)
-                                                ? routingLookup[manuf.ManufacturedPartNoDetailId].First.Status
-                                                : "---",
+                               Status = mp.Status,
                                HasRouting = routingLookup.ContainsKey(manuf.ManufacturedPartNoDetailId)
                            }).ToList();
 

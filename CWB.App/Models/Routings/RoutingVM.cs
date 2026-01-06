@@ -30,7 +30,7 @@
         public int OprnGreaterAvgCycleTime { get; set; }  = 0;
         public int TotalSetupTime { get; set; }  = 0;
         public int MaxSetupTime { get; set; }  = 0;
-        public int BacthManufTime { get; set; }  = 0;
+        public double BacthManufTime { get; set; }  = 0;
         public int NoOprns { get; set; } 
     }
 }

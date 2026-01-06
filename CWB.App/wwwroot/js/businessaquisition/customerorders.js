@@ -836,6 +836,8 @@ $(function () {
         $(tablebody).html("");//empty tbody
         var tablebody = $("#POLinesTable tbody");
         $(tablebody).html("");//empty tbody
+        var newNamevalidate = document.getElementById('POPIN');
+        newNamevalidate.style.border = '';
 
         $(LaunchDeliverySchedule).prop("disabled", true);
         $("#searchpart").prop("disabled", true);
@@ -966,17 +968,21 @@ $(function () {
     $("#BtnAddCustomerOrder").secureClick( function () {
         // alert("Add CustomerOrder clicked");
         const POPIN = $("#POPIN").val();
-        const podate = $("#PODate").val();
-        const currentDate = new Date();
-        const userDate = new Date(podate);
-        if (userDate > currentDate) {
-            alert('Please Enter A Date Greater Than Or Equal To Today\'s Date');
-            $("#PODate").val('');
-            return;
-        }
+        //const podate = $("#PODate").val();
+        //const currentDate = new Date();
+        //const userDate = new Date(podate);
+        //if (userDate > currentDate) {
+        //    alert('Please Enter A Date Greater Than Or Equal To Today\'s Date');
+        //    $("#PODate").val('');
+        //    return;
+        //}
         if (POPIN.length === 0) {
+            var newNamevalidate = document.getElementById('POPIN');
+            newNamevalidate.style.border = '2px solid red';
             return;
         } else {
+            var newNamevalidate = document.getElementById('POPIN');
+            newNamevalidate.style.border = '';
             return PostCustomerOder();
         }
     });

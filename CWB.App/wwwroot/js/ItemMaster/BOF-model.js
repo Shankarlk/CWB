@@ -132,11 +132,16 @@ function DecodePartId() {
                 $("#headingN").text("Edit");
                 $("#statusDiv").show();
                 $("#statusLbl").show();
+                $("#popuphistorybtn").show();
+                $("#historybtn").show();
                 closeatag.href = "/Masters/MasterDetails";
             } else {
-                $("#statusDiv").hide();
-                $("#statusLbl").hide();
+                $("#statusDiv").show();
+                $("#statusLbl").show();
+                $("#popuphistorybtn").hide();
+                $("#historybtn").hide();
                 $("#headingN").text("New");
+                $("#Status").val("Not Released");
                 closeatag.href = "/Masters/Index";
             }
         }

@@ -1098,19 +1098,32 @@ function loadStepMachines() {
                 </tr>`;
             $(tablebody).append(noRecordsRow);
         }
-        for (i = 0; i < data.length; i++) {
-            data[i].bgColor = "white"
-            data[i].strPreferedMachine = ""
+        let maxPref = parseInt($("#NumberOfSimMachines").val());
+
+        let preferredCount = data.filter(x => x.preferredMachine == 1).length;
+
+        for (let i = 0; i < data.length; i++) {
+
+            data[i].bgColor = "white";
+            data[i].checked = "";
+            data[i].prefActionClass = "";
+
             if (data[i].preferredMachine == 1) {
-                data[i].bgColor = "#eee"
-                data[i].strPreferedMachine = "Yes"
+                data[i].bgColor = "#eee";
+                data[i].checked = "checked";
             }
-            data[i].checked = data[i].preferredMachine === 1 ? 'checked' : '';
-            $(tablebody).append(AppUtil.ProcessTemplateData("RouteMachinesRowTemplate", data[i]));
+
+            if (preferredCount >= maxPref && data[i].preferredMachine != 1) {
+                data[i].prefActionClass = "d-none"; // Bootstrap hide
+            }
+
+            tablebody.append(
+                AppUtil.ProcessTemplateData("RouteMachinesRowTemplate", data[i])
+            );
         }
         var noofmc = parseInt($("#NumberOfSimMachines").val());
         if (noofmc == data.length) {
-            $("#addMachine").prop('disabled', true);
+            //$("#addMachine").prop('disabled', true);
         } else {
             $("#addMachine").prop('disabled', false);
         }
@@ -2274,7 +2287,7 @@ $(function () {
         $("#RoutingDetailsClose").click();
     });
     $('#add-machine').on('hidden.bs.modal', function (event) {
-        $("#RoutingDetailsClose").click();
+        $("#RoutingAvailableClose").click();
     });
     
     ////SubConWSSubConDetailsId//SubConWSRoutingStepId//SubConWSDetailsId //WorkStepDesc//MachineType//FloorToFloorTime//SetupTime//NoOfPartsPerLoading
@@ -2587,14 +2600,14 @@ $(function () {
             CostPerPart.style.border = '';
         }
         var Notes = document.getElementById('Notes');
-        if (!Notes.value) {
-            // Add red border directly using inline style
-            Notes.style.border = '1px solid red';
-            return false;
-        } else {
-            // Remove the red border if the input is valid
-            Notes.style.border = '';
-        }
+        //if (!Notes.value) {
+        //    // Add red border directly using inline style
+        //    Notes.style.border = '1px solid red';
+        //    return false;
+        //} else {
+        //    // Remove the red border if the input is valid
+        //    Notes.style.border = '';
+        //}
         AddSubCon();
     });
     $("#SaveSubConWS").on("click", function (event) {
@@ -2776,23 +2789,45 @@ $(function () {
         var machinename = currentrow.find("td:eq(4)").html();
         $("#MachineId").val(machineId);
         var formData = AppUtil.GetFormData("FormRoutingMachine");
-        api.post("/routings/savestepmachine", formData).then((data) => {
-            //console.log(data);
-            var mcid = data["routingStepMachineId"];
-            $("#RoutingStepMachineId").val(mcid);
-            loadStepMachines();
-            McIdUploadDocList(machineId);
-            //document.getElementById("Add-Machine-Close").click();
-            const params = new Proxy(new URLSearchParams(window.location.search), {
-                get: (searchParams, prop) => searchParams.get(prop),
-            });
-            alert("Machine Added Successfully!");
-            //var encodedManufPartId = params.manufPartId;
-            //var parttypeurl = params.partType;
-            //window.location.href = "/routings/routingdetails?manufPartId=" + encodedManufPartId + "&partType=" + parttypeurl;
-            //EditRoute();
+        api.get("/routings/stepmachines?stepId=" + formData.RoutingStepId).then((data) => {
+            //data = data.filter(m => m.machineId == parseInt(formData.MachineId));
+
+            const machineId = parseInt(formData.MachineId);
+            const routingStepMachineId = parseInt(formData.RoutingStepMachineId);
+
+            // exclude current record during edit
+            const exists = data.some(m =>
+                m.machineId === machineId &&
+                m.routingStepMachineId !== routingStepMachineId
+            );
+
+            if (exists && routingStepMachineId === 0) {
+                alert("This Machine Already Exists in the List. Please select a different machine.");
+                return;
+            }
+            //if (data.length == 0 && parseInt(formData.RoutingStepMachineId) == 0) {
+                api.post("/routings/savestepmachine", formData).then((data) => {
+                    //console.log(data);
+                    var mcid = data["routingStepMachineId"];
+                    $("#RoutingStepMachineId").val(mcid);
+                    loadStepMachines();
+                    McIdUploadDocList(machineId);
+                    //document.getElementById("Add-Machine-Close").click();
+                    const params = new Proxy(new URLSearchParams(window.location.search), {
+                        get: (searchParams, prop) => searchParams.get(prop),
+                    });
+                    alert("Machine Added Successfully!");
+                    //var encodedManufPartId = params.manufPartId;
+                    //var parttypeurl = params.partType;
+                    //window.location.href = "/routings/routingdetails?manufPartId=" + encodedManufPartId + "&partType=" + parttypeurl;
+                    //EditRoute();
+                }).catch((error) => {
+                    AppUtil.HandleError("FormRoutingMachine", error);
+                });
+            //} else {
+            //    alert("This Machine Already Exisits in The List. Please Select The Different Machine.");
+            //}
         }).catch((error) => {
-            AppUtil.HandleError("FormRoutingMachine", error);
         });
         event.preventDefault();
     });

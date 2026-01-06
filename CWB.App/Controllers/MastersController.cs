@@ -194,7 +194,7 @@ namespace CWB.App.Controllers
             {
                 mt = 2;
             }
-            return View(new ManufacturedPartNoDetailVM { MasterPartType = "0", PartId = 0, ManufacturedPartNoDetailId = 0, ManufacturedPartType = mt });
+            return View(new ManufacturedPartNoDetailVM { MasterPartType = "0", PartId = 0, ManufacturedPartNoDetailId = 0, ManufacturedPartType = mt, Status = "Not Released" });
         }
 
         public async Task<IActionResult> EditBOF(string partId)

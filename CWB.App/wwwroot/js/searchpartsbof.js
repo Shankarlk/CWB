@@ -100,6 +100,7 @@ function downloadParts() {
     }
     else
     {
+        var partNo = $("#PartNo").val();
         api.get("/masters/selectparts").then((data) => {
             bofParts = data;
             for (i = 0; i < data.length; i++) {
@@ -112,6 +113,10 @@ function downloadParts() {
                     array.push(data[i]);
                 }
                 if (data[i]['masterPartType'] == "Assembly") {
+
+                    if (data[i]['partNo'] == partNo) {
+                        continue;
+                    }
                     $(tablebody2).append(AppUtil.ProcessTemplateDataNew("AssemblyPartTemplate", data[i],i));
                     array.push(data[i]);
                 }

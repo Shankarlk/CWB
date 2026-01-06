@@ -322,21 +322,32 @@ namespace CWB.App.Controllers
                     item.LocationName = "Company";
                 }
                 var stepmc = await _routingService.StepMachines((int)item.StepId);
-                if(stepmc.Count() != 0)
+
+                var preferredMcs = stepmc
+                    .Where(m => m.PreferredMachine == 1)
+                    .Take(item.NumberOfSimMachines)
+                    .ToList();
+
+                if (preferredMcs.Any())
                 {
-                    foreach (var mc in stepmc)
-                    {
-                       // if (mc.PreferredMachine == 1)
-                        //{
-                            TimeSpan time = TimeSpan.Parse(mc.FloorToFloorTime);
-                             mcminutes= (int)time.TotalMinutes;
-                            TimeSpan Settime = TimeSpan.Parse(mc.SetupTime);
-                            mcsetminutes = (int)Settime.TotalMinutes;
-                        //}
-                    }
-                    item.CycleTime = mcminutes.ToString();
-                    item.SetupTime = mcsetminutes.ToString();
+                    item.CycleTime = preferredMcs
+                        .Sum(m => ToMinutes(m.FloorToFloorTime))
+                        .ToString();
+
+                    item.SetupTime = preferredMcs
+                        .Sum(m => ToMinutes(m.SetupTime))
+                        .ToString();
+
+                    item.FirstPieceTime = preferredMcs
+                        .Sum(m => ToMinutes(m.FirstPieceProcessingTime))
+                        .ToString();
                 }
+                else
+                {
+                    item.CycleTime = "";
+                    item.SetupTime = "";
+                }
+
                 var stepsubcon =await _routingService.SubCons((int)item.StepId);
                 if(stepsubcon.Count() != 0)
                 {
@@ -388,6 +399,13 @@ namespace CWB.App.Controllers
             }
             
             return Ok(result);
+        }
+        private static double ToMinutes(string hhmmss)
+        {
+            if (string.IsNullOrWhiteSpace(hhmmss))
+                return 0;
+
+            return TimeSpan.Parse(hhmmss).TotalMinutes;
         }
 
         [HttpGet]
@@ -1073,18 +1091,38 @@ namespace CWB.App.Controllers
         .Select(op => int.Parse(op.SetupTime))
         .DefaultIfEmpty(0)
         .Max();
-                    var batchSizeManfTime = totalnoofmc > 0
-     ? oprnos.Where(op => !string.IsNullOrEmpty(op.CycleTime) && !string.IsNullOrEmpty(op.SetupTime))
-         .Select(op => (batchSize * (int.TryParse(op.CycleTime, out int cycleTime) ? cycleTime : 0)) / (totalnoofmc + (int.TryParse(op.SetupTime, out int setupTime) ? setupTime : 0)))
-         .Sum()
-     : 0; 
+                    double batchSizeManfTimeMinutes = 0;
+
+                    foreach (var op in oprnos)
+                    {
+                        if (string.IsNullOrWhiteSpace(op.CycleTime) ||
+                            string.IsNullOrWhiteSpace(op.SetupTime) ||
+                            string.IsNullOrWhiteSpace(op.FirstPieceTime) ||
+                            op.NumberOfSimMachines <= 0)
+                            continue;
+
+                        double cycleMin = double.Parse(op.CycleTime);
+                        double firstPieceMin = double.Parse(op.FirstPieceTime);
+                        double setupMin = double.Parse(op.SetupTime);
+                        int simMc = op.NumberOfSimMachines;
+
+                        double batchPerMachine = (double)batchSize / simMc;
+
+                        double perMachineTime =
+                            setupMin +
+                            firstPieceMin +
+                            (batchPerMachine - 1) * cycleMin;
+
+                        batchSizeManfTimeMinutes += perMachineTime;
+                    }
+
                     item.MaxSetupTime = maxSetupTime;
                     item.TotalSetupTime = totalSetupTime;
                     item.AvgCycleTime = avgCycleTime;
                     item.OprnGreaterAvgCycleTime = countAboveAvg;
                     item.InhouseNo = inhousecount;
                     item.SubconNo = subconcount;
-                    item.BacthManufTime = batchSizeManfTime / 60;
+                    item.BacthManufTime = Math.Round(batchSizeManfTimeMinutes / 60, 2);
                 }
             }
             return Ok(resultList);

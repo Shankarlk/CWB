@@ -697,54 +697,64 @@ namespace CWB.Masters.Services.Routings
             RoutingStepVM stepVM = _mapper.Map<RoutingStepVM>(step);
             return stepVM.NumberOfSimMachines;
         }
-
-        public async Task<RoutingStepMachineVM> PreferredStepMachine(string routingStepMachineId, string routingStepId, int maxMachineCount)
+        public async Task<RoutingStepMachineVM> PreferredStepMachine(
+    string routingStepMachineId,
+    string routingStepId,
+    int maxMachineCount)
         {
-            RoutingStepMachineVM routingStepMachineVM = new RoutingStepMachineVM { };
+            var response = new RoutingStepMachineVM();
+
             try
             {
-                var routingStepMachine = await _routingStepMachineRepository.SingleOrDefaultAsync(m=>m.Id == Convert.ToInt64(routingStepMachineId));
+                long rsmId = Convert.ToInt64(routingStepMachineId);
+
+                var routingStepMachine =
+                    await _routingStepMachineRepository.SingleOrDefaultAsync(x => x.Id == rsmId);
+
                 if (routingStepMachine == null)
-                    return new RoutingStepMachineVM { RoutingStepMachineId=-1};
-                if (routingStepMachine.Id != 0)
                 {
-                    var stepmachines = StepMachines((int)routingStepMachine.RoutingStepId).Result.ToList();
-                    int prefCount = 0;
-                    foreach (var stepmachine in stepmachines)
-                    {
-                        var rm = _mapper.Map<RoutingStepMachine>(stepmachine);
-                        if(rm.PreferredMachine == 1)
-                        {
-                            prefCount++;
-                        }
-                    }
-                    if (prefCount >= maxMachineCount)
-                    {
-                        foreach (var stepmachine in stepmachines)
-                        {
-                            var rm = _mapper.Map<RoutingStepMachine>(stepmachine);
-                            if (rm.PreferredMachine == 1)
-                            {
-                                rm.PreferredMachine = 0;
-                                await _routingStepMachineRepository.UpdateAsync(rm.Id, rm);
-                                break;
-                            }
-                        }
-                    }
-                    routingStepMachine.PreferredMachine = 1;
-                    routingStepMachine = await _routingStepMachineRepository.UpdateAsync(routingStepMachine.Id, routingStepMachine);
-                    routingStepMachineVM = _mapper.Map<RoutingStepMachineVM>(routingStepMachine);
+                    return new RoutingStepMachineVM { RoutingStepMachineId = -1 };
                 }
+
+                // 🔹 Already preferred → no action
+                if (routingStepMachine.PreferredMachine == 1)
+                {
+                    response = _mapper.Map<RoutingStepMachineVM>(routingStepMachine);
+                    return response;
+                }
+
+                // 🔢 Count preferred machines
+                var stepMachines = await StepMachines((int)routingStepMachine.RoutingStepId);
+                int prefCount = stepMachines.Count(x => x.PreferredMachine == 1);
+
+                // 🚫 Limit reached → block
+                if (prefCount >= maxMachineCount)
+                {
+                    return new RoutingStepMachineVM
+                    {
+                        RoutingStepMachineId = -2 // Custom code: limit reached
+                    };
+                }
+
+                // ✅ Allow set preferred
+                routingStepMachine.PreferredMachine = 1;
+                routingStepMachine =
+                    await _routingStepMachineRepository.UpdateAsync(routingStepMachine.Id, routingStepMachine);
+
                 await _unitOfWork.CommitAsync();
-                routingStepMachineVM.RoutingStepMachineId = (int)routingStepMachine.Id;
+
+                response = _mapper.Map<RoutingStepMachineVM>(routingStepMachine);
+                response.RoutingStepMachineId = (int)routingStepMachine.Id;
             }
             catch (Exception ex)
             {
-                string msg = ex.InnerException.Message;
-                string src = ex.InnerException.Source;
+                // log properly
+                throw;
             }
-            return routingStepMachineVM;
+
+            return response;
         }
+
         public async Task<RoutingStepMachineVM> RoutingStepMachine(RoutingStepMachineVM routingStepMachineVM)
         {
             try

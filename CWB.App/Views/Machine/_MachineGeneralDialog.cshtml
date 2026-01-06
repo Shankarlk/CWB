@@ -3,7 +3,10 @@
     <form id="frmMachineGeneral" method="post">
         <div class="row">
             <!-- -----------------  -->
-            <label class="col-md-2 form-label mb-2" asp-for="MachinePlantId"></label>
+            @*<label class="col-md-2 form-label mb-2" asp-for="MachinePlantId"></label>*@
+            <label class="col-md-2 form-label mb-2" asp-for="MachinePlantId">
+                Plant <span class="text-danger">*</span>
+            </label>
             <div class="col-md-4 mb-2">
                 <select class="form-select form-select-sm" aria-label="form-select-sm" title="Select the Plant from the Drop Down" data-plugin="tippy"
                         data-tippy-placement="top" asp-items="ViewBag.Plants" asp-for="MachinePlantId">
@@ -12,14 +15,18 @@
                 <span asp-validation-for="MachinePlantId"></span>
             </div>
             <!-- -----------------  -->
-            <label class="col-md-2 form-label mb-2" asp-for="MachineMachineName"></label>
+            <label class="col-md-2 form-label mb-2" asp-for="MachineMachineName">
+                Model <span class="text-danger">*</span>
+            </label>
             <div class="col-md-4 mb-2">
-                <input class="form-control form-control-sm" type="text" placeholder="Name" title="Enter the Name of the Machine. Typically how the machine is referred to in the shop"
+                <input class="form-control form-control-sm" type="text" placeholder="Model" title="Enter the Name of the Machine. Typically how the machine is referred to in the shop"
                        data-plugin="tippy" data-tippy-placement="top" asp-for="MachineMachineName" />
                 <span asp-validation-for="MachineMachineName"></span>
             </div>
             <!-- -----------------  -->
-            <label class="col-md-2 form-label mb-2" asp-for="MachineDepartmentId"></label>
+            <label class="col-md-2 form-label mb-2" asp-for="MachineDepartmentId">
+                Department <span class="text-danger">*</span>
+            </label>
             <div class="col-md-4 mb-2">
                 <select class="form-select form-select-sm" aria-label="form-select-sm" title="Select the Shop from the Drop Down. Shops from the selected Shop are shown"
                         data-plugin="tippy" data-tippy-placement="top" asp-for="MachineDepartmentId">
@@ -27,7 +34,9 @@
                 <span asp-validation-for="MachineDepartmentId"></span>
             </div>
             <!-- -----------------  -->
-            <label class="col-md-2 form-label mb-2" asp-for="MachineMachineSlNo"></label>
+            <label class="col-md-2 form-label mb-2" asp-for="MachineMachineSlNo">
+                Sl No <span class="text-danger">*</span>
+            </label>
             <div class="col-md-4 mb-2">
                 <input class="form-control form-control-sm" type="text" placeholder="Sl No" title=" Enter the Unique Serial No. of the Machine. Required to identify similar machines in and across the shop"
                        data-plugin="tippy" data-tippy-placement="top" asp-for="MachineMachineSlNo" />
@@ -35,21 +44,25 @@
             </div>
             <!-- -----------------  -->
             @*<label class="col-md-2 form-label mb-2" asp-for="SectionId"></label>
-            <div class="col-md-4 mb-2">
-                <select class="form-select form-select-sm" aria-label="form-select-sm" title="Select the Shop from the Drop Down. Shops from the selected Shop are shown"
-                        data-plugin="tippy" data-tippy-placement="top" asp-for="SectionId">
-                </select>
-                <span asp-validation-for="SectionId"></span>
-            </div>*@
+        <div class="col-md-4 mb-2">
+            <select class="form-select form-select-sm" aria-label="form-select-sm" title="Select the Shop from the Drop Down. Shops from the selected Shop are shown"
+                    data-plugin="tippy" data-tippy-placement="top" asp-for="SectionId">
+            </select>
+            <span asp-validation-for="SectionId"></span>
+        </div>*@
             <!-- -----------------  -->
-            <label class="col-md-2 form-label mb-2" asp-for="MachineMachineManufacturer"></label>
+            <label class="col-md-2 form-label mb-2" asp-for="MachineMachineManufacturer">
+                Manufacturer <span class="text-danger">*</span>
+            </label>
             <div class="col-md-4 mb-2">
                 <input class="form-control form-control-sm" type="text" placeholder="Manufacturer" title="Enter the Manufacturer of the Machine"
                        data-plugin="tippy" data-tippy-placement="top" asp-for="MachineMachineManufacturer" />
                 <span asp-validation-for="MachineMachineManufacturer"></span>
             </div>
             <!-- -----------------  -->
-            <label class="col-md-2 form-label mb-2" asp-for="MachineMachineTypeId"></label>
+            <label class="col-md-2 form-label mb-2" asp-for="MachineMachineTypeId">
+                Machine Type <span class="text-danger">*</span>
+            </label>
             <div class="col-md-4 mb-2">
                 <div class="input-group">
                     <select class="form-select form-select-sm" title="Select the Machine Type (VMC, Horizonal CNC Lathe, Broaching M/c ...)"
@@ -66,7 +79,10 @@
                 <span asp-validation-for="MachineMachineTypeId"></span>
             </div>
             <!-- -----------------  -->
-            <label class="col-md-2 form-label mb-2" asp-for="MachineOperationListId"></label>
+            <label class="col-md-2 form-label mb-2" asp-for="MachineOperationListId">
+                Operation <span class="text-danger">*</span>
+            </label>
+
             <div class="col-md-4 mb-2">
                 <select class="form-select form-select-sm" aria-label="form-select-sm" title="Select the Operation carried out in the Machine. This is required for linking Operation related Documents. If Operation is not in the list ... It is to added from the Masters Menu -> Operation"
                         data-plugin="tippy" data-tippy-placement="top" asp-items="ViewBag.Operations" asp-for="MachineOperationListId">
