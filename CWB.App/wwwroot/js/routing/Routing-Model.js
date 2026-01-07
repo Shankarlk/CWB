@@ -1239,7 +1239,7 @@ function RouteloadMachinesToTable(tableName, rowTemplate, addEdit,machineid) {
     api.get("/machine/getmachines").then((data) => {
         //console.log(data);
         var opid = $("#StepOperation").val();
-        data = data.filter(item.machineOperationListId == parseInt(opid));
+        data = data.filter(item=> item.machineOperationListId == parseInt(opid));
         machinelist = data;
         if (data.length === 0) {
             // 2. Insert the "No Records Found" row
