@@ -170,6 +170,19 @@ namespace CWB.Masters.Services.Routings
                 return new List<RoutingStepVM>();
             }
         }
+        public IEnumerable<RoutingStepVM> GetRoutingNameStepPartName(long opid, long tenantId)
+        {
+            try
+            {
+                var routingsteps = _routingStepRepository.GetRangeAsync(m => m.TenantId == tenantId).OrderBy(m => m.Id);
+                return _mapper.Map<IEnumerable<RoutingStepVM>>(routingsteps);
+            } catch(Exception ex)
+            {
+                string msg = ex.InnerException.Message;
+                string src = ex.InnerException.Source;
+                return new List<RoutingStepVM>();
+            }
+        }
         public async Task<RoutingStepVM> GetStep(int stepId)
         {
             RoutingStep step = await _routingStepRepository.SingleOrDefaultAsync(m=>m.Id == stepId);

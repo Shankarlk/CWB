@@ -1788,6 +1788,7 @@ function DeletePart(element) {
     var relatedTarget = $(element);
     var doclistid = relatedTarget.data("partid");
     var listassem = relatedTarget.data("listassem");
+    var partno = relatedTarget.data("partno");
     if (doclistid != 0 && listassem != "-") {
         var msg = "Do you want to delete Part";
         if (listassem == null) {
@@ -1797,8 +1798,13 @@ function DeletePart(element) {
         }
         var confrimval = confirm(msg);
         if (confrimval) {
-            api.get("/masters/DeleteItemMasterPart?itemMasterDocListId=" + doclistid).then((data) => {
+            api.get("/masters/DeleteItemMasterPart?itemMasterDocListId=" + doclistid+"&partno=" + partno).then((data) => {
                 //console.log(data);
+                if (data == false || data == true) {
+
+                } else {
+                    alert(data);
+                }
                 loadEditParts();
             }).catch((error) => {
                 //console.log(error);
@@ -1807,9 +1813,14 @@ function DeletePart(element) {
     } else if (doclistid != 0 && listassem === "-") {
         var confrimval = confirm("Do you want to Delete This Part.");
         if (confrimval) {
-            api.get("/masters/DeleteItemMasterPart?itemMasterDocListId=" + doclistid).then((data) => {
+            api.get("/masters/DeleteItemMasterPart?itemMasterDocListId=" + doclistid + "&partno=" + partno).then((data) => {
                 //console.log(data);
                 loadEditParts();
+                if (data == false || data == true) {
+
+                } else {
+                    alert(data);
+                }
             }).catch((error) => {
                 //console.log(error);
             });

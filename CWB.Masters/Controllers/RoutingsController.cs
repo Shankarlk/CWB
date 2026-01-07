@@ -73,6 +73,13 @@ namespace CWB.Masters.Controllers
         {
             return _routingService.GetAllStepsForRouting(tenantId);
         }
+        [HttpGet]
+        [Route(ApiRoutes.Routings.GetRoutingNameStepPartName)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(IEnumerable<RoutingStepVM>))]
+        public IEnumerable<RoutingStepVM> GetRoutingNameStepPartName(long opid, long tenantId)
+        {
+            return _routingService.GetRoutingNameStepPartName(opid, tenantId);
+        }
 
         [HttpGet]
         [Route(ApiRoutes.Routings.StepParts)]

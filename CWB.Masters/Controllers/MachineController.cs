@@ -132,13 +132,13 @@ namespace CWB.Masters.Controllers
             if (!validationResult.IsValid)
                 return BadRequest(validationResult.Errors);
             //check if duplicate
-            var machineExist = _machineService.CheckMachine(machineVM.MachineMachineName, machineVM.MachineMachineSlNo,
-                machineVM.MachineMachineId, machineVM.TenantId);
-            if (machineExist)
-            {
-                ModelState.AddModelError("MachineMachineName", $"Machine Already Exist");
-                return BadRequest(ModelState);
-            }
+            //var machineExist = _machineService.CheckMachine(machineVM.MachineMachineName, machineVM.MachineMachineSlNo,
+            //    machineVM.MachineMachineId, machineVM.TenantId);
+            //if (machineExist)
+            //{
+            //    ModelState.AddModelError("MachineMachineName", $"Machine Already Exist");
+            //    return BadRequest(ModelState);
+            //}
             var result = await _machineService.Machine(machineVM);
             return Ok(result);
         }

@@ -30,6 +30,7 @@ namespace CWB.Masters.Services.Routings
         Task<List<RoutingListItemVM>> GetRoutingListItemsAsync(long tenantId);
         IEnumerable<RoutingStepVM> GetStepsForRoutingId(int routingId);
         IEnumerable<RoutingStepVM> GetAllStepsForRouting(long tenantId);
+        IEnumerable<RoutingStepVM> GetRoutingNameStepPartName(long opid, long tenantId);
         IEnumerable<RoutingStepPartVM> GetPartsForStepId(int stepId);
         Task<bool> DeleteStep(int stepId);
         Task<bool> DeleteStepMachine(int stepId, int machineId);

@@ -87,6 +87,7 @@
             public const string RoutingAllList = Base + "/allroutings/{tenantId}";
             public const string RoutingSteps = Base + "/routingsteps/{routingId}";
             public const string AllRoutingSteps = Base + "/allroutingsteps/{tenantId}";
+            public const string GetRoutingNameStepPartName = Base + "/getroutingnamesteppart/{opid}/{tenantId}";
             public const string StepSuppliers = Base + "/stepsuppliers/{stepId}";
             public const string StepMachines = Base + "/stepmachines/{stepId}";
             public const string AllStepMachines = Base + "/allstepmachines/{tenantId}";

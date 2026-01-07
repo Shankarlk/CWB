@@ -712,9 +712,18 @@ namespace CWB.App.Controllers
             return Ok(result);
         }
         [HttpGet]
-        public async Task<IActionResult> DeleteItemMasterPart(long itemMasterDocListId)
+        public async Task<IActionResult> DeleteItemMasterPart(long itemMasterDocListId,string partno)
         {
-            var result = await _mastersService.DeleteItemMasterPart(itemMasterDocListId);
+            var allRoute = await _routingService.GetRoutingListItems();
+            ManufacturedPartNoDetailVM manuf = await _mastersService.GetManufPart((int)itemMasterDocListId);
+
+            if (allRoute.Any(x => x.ManufacturedPartId == manuf.ManufacturedPartNoDetailId))
+            {
+                string msg =
+                    $"This Part No has Routing. Delete Routings Of This Part No : " + partno +".";
+                return Ok(msg);
+            }
+                var result = await _mastersService.DeleteItemMasterPart(itemMasterDocListId);
             return Ok(result);
         }
 

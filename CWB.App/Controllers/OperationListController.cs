@@ -18,14 +18,16 @@ namespace CWB.App.Controllers
         private readonly IOperationService _operationService;
         private readonly IDocMangService _docMangService;
         private readonly IRoutingService _routingService;
+        private readonly IMastersServices _mastersServices;
 
         public OperationListController(ILoggerManager logger, IOperationService operationService,
-            IDocMangService docMangService, IRoutingService routingService)
+            IDocMangService docMangService, IRoutingService routingService, IMastersServices mastersServices)
         {
             _logger = logger;
             _operationService = operationService;
             _docMangService = docMangService;
             _routingService = routingService;
+            _mastersServices = mastersServices;
         }
 
         public async Task<IActionResult> Index()
@@ -169,10 +171,23 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteOperations(long opDocId)
         {
+            var allRoute = await _routingService.AllRoutings();
             var routemc = await _routingService.AllRoutingSteps();
+            var parts = await _mastersServices.GetAllManufacturedPartNoDetailList();
             if (routemc.Any(x => x.StepOperation == opDocId.ToString()))
             {
-                string msg = "This Operation is already used in the Routing Step . Delete The Routing Step in the Routings.";
+                var rt = routemc.FirstOrDefault(x => x.StepOperation == opDocId.ToString());
+                var routname = allRoute.FirstOrDefault(x => x.RoutingId == rt.RoutingId);
+                var master =  parts.FirstOrDefault(p => p.ManufacturedPartNoDetailId == routname.ManufacturedPartId);
+                var masterpart = await _mastersServices.ItemMasterPartById(master.PartId);
+                var routingName = routname?.RoutingName ?? "Unknown Routing";
+                var stepNumber = rt.StepNumber?.ToString() ?? "Unknown Step";
+                var partNo = masterpart?.PartNo ?? "Unknown Part";
+
+                string msg =
+                    $"This Operation is already used in the Routing {routingName} " +
+                    $"and Routing Step : {stepNumber} of the PartNo {partNo}. " +
+                    $"Delete the Routing Step in the Routings.";
                 return Ok(msg);
             }
             var result = await _operationService.DeleteOperations(opDocId);
