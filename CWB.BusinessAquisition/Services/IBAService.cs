@@ -32,6 +32,7 @@ namespace CWB.BusinessAquisition.Services
 
         bool CheckPartNo(long partId);
         Task<BAStatusVM> GetBAStatus(long Id);
+        Task<IEnumerable<BAStatusVM>> GetBAAllStatus();
         //Task<List<SalesOrderVM>> UpdateWoInSo(List<SalesOrderVM> sales);
         /*IEnumerable<CompanyTypeVM> GetCompanyTypes();
 

@@ -303,6 +303,14 @@ namespace BAapi.Controllers
             var bastatus = await _baService.GetBAStatus(Id);
             return Ok(bastatus);
         }
+        [HttpGet]
+        [Route(ApiRoutes.Aquisition.GetBAAllStatus)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(BAStatusVM))]
+        public async Task<IActionResult> GetBAAllStatus()
+        {
+            var bastatus = await _baService.GetBAAllStatus();
+            return Ok(bastatus);
+        }
 
     }
 }

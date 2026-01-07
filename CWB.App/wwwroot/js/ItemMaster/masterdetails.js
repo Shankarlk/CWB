@@ -288,7 +288,7 @@ $(function () {
                 $tableBody.find(".norecordsfound").remove();
             }
         } else if (selectedValue == "0") {
-            var $tableBody = $("#VMOneGrid tbody");
+            var $tableBody = $("#P5Grid tbody");
             $tableBody.find(".norecordsfound").remove();
             $("#P5Grid tbody tr").show();
         } else {
@@ -436,8 +436,8 @@ $(function () {
     });
     $('#P3StatusSr').change(function () {
         var selectedValue = $(this).val();
-        if (selectedValue == "1") {
-            var data = "Active";
+        if (selectedValue != "0") {
+            var data = selectedValue;
             var value = data.toLowerCase();
             $("#P3Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
@@ -454,32 +454,19 @@ $(function () {
             } else {
                 $tableBody.find(".norecordsfound").remove();
             }
-        } else if (selectedValue == "2") {
-            var data = "Inactive";
-            var value = data.toLowerCase();
-            $("#P3Grid tbody tr").filter(function () {
-                $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
-            });
+        } else if (selectedValue == "0") {
             var $tableBody = $("#P3Grid tbody");
-            if ($tableBody.find("tr:visible").length === 0) {
-                const noRecordsRow = `
-                <tr class="norecordsfound">
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-                $tableBody.append(noRecordsRow);
-            } else {
-                $tableBody.find(".norecordsfound").remove();
-            }
+            $tableBody.find(".norecordsfound").remove();
+            $("#P3Grid tbody tr").show();
         } else {
+            $tableBody.find(".norecordsfound").remove();
             $("#P3Grid tbody tr").show();
         }
     });
     $('#P7Status').change(function () {
         var selectedValue = $(this).val();
-        if (selectedValue == "1") {
-            var data = "Active";
+        if (selectedValue != "0") {
+            var data = selectedValue;
             var value = data.toLowerCase();
             $("#P7Grid tbody tr").filter(function () {
                 $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
@@ -496,25 +483,12 @@ $(function () {
             } else {
                 $tableBody.find(".norecordsfound").remove();
             }
-        } else if (selectedValue == "2") {
-            var data = "Inactive";
-            var value = data.toLowerCase();
-            $("#P7Grid tbody tr").filter(function () {
-                $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
-            });
-            var $tableBody = $("#P7Grid tbody");
-            if ($tableBody.find("tr:visible").length === 0) {
-                const noRecordsRow = `
-                <tr class="norecordsfound">
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-                $tableBody.append(noRecordsRow);
-            } else {
-                $tableBody.find(".norecordsfound").remove();
-            }
+        } else if (selectedValue == "0") {
+            var $tableBody = $("#P5Grid tbody");
+            $tableBody.find(".norecordsfound").remove();
+            $("#P7Grid tbody tr").show();
         } else {
+            $tableBody.find(".norecordsfound").remove();
             $("#P7Grid tbody tr").show();
         }
     });
@@ -539,9 +513,9 @@ $(function () {
                 $tableBody.find(".norecordsfound").remove();
             }
         } else if (selectedValue == "0") {
-            var $tableBody = $("#VMOneGrid tbody");
+            var $tableBody = $("#P9Grid tbody");
             $tableBody.find(".norecordsfound").remove();
-            $("#P5Grid tbody tr").show();
+            $("#P9Grid tbody tr").show();
         } else {
             $("#P9Grid tbody tr").show();
         }

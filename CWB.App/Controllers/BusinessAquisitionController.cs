@@ -324,6 +324,13 @@ namespace CWB.App.Controllers
 
         }
         [HttpGet]
+        public async Task<IActionResult> GetBAAllStatus()
+        {
+            var pologs = await _baService.GetBAAllStatus();
+            return Ok(pologs);
+
+        }
+        [HttpGet]
         public async Task<string> HelloWorld()
         {
             return await _baService.HelloWorld();
@@ -381,6 +388,13 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetCustOrders()
         {
             var custOrders = await _baService.GetCustomerOrders();
+            var bastatus = await _baService.GetBAAllStatus();
+            foreach (var item in custOrders)
+            {
+                var statusname = bastatus.FirstOrDefault(c => c.StatusId == item.Status);
+                if (statusname != null)
+                item.StrStatus = statusname.Status;
+            }
             return Ok(custOrders);
         }
 

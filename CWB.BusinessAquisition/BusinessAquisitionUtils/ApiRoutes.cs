@@ -37,6 +37,7 @@
             
             public const string CheckPartNo = Base + "/checkpartno/{partId}";
             public const string GetBAStatus = Base + "/getbastatus/{Id}";
+            public const string GetBAAllStatus = Base + "/getallbastatus/{tenantId}";
         }
     }
 }

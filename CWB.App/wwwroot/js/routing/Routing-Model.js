@@ -773,7 +773,7 @@ function loadStepMachinesForAdd() {
     if (!selElem.length)
         return;
     selElem.empty();
-    var div_data = "<option value=''></option>";
+    var div_data = "<option value=''>Select</option>";
     selElem.append(div_data);
     let stepId = RoutingDetails["stepId"];
     //console.log("stepId" + stepId);
@@ -1238,6 +1238,8 @@ function RouteloadMachinesToTable(tableName, rowTemplate, addEdit,machineid) {
     $(tablebody).html("");//empty tbody
     api.get("/machine/getmachines").then((data) => {
         //console.log(data);
+        var opid = $("#StepOperation").val();
+        data = data.filter(item.machineOperationListId == parseInt(opid));
         machinelist = data;
         if (data.length === 0) {
             // 2. Insert the "No Records Found" row
@@ -1256,6 +1258,10 @@ function RouteloadMachinesToTable(tableName, rowTemplate, addEdit,machineid) {
         if (addEdit != "Add") {
             // Corrected parentheses
             $("input[name='stepmachineselect'][value='" + machineid + "']").prop('checked', true);
+            data = data.filter(m => m.machineId == machineid);
+            $("#MPopupMcNameSpan").text(data[0].slNo + " / " + data[0].name + " / " + data[0].manufacturer);
+            $("#MPopupMcPlantSpan").text(data[0].plant + " / " + data[0].shop);
+
         }
         return machinelist;
         //console.log($(tablebody).html());
@@ -1395,12 +1401,12 @@ $(function () {
         //debugger;
         let selVal = $(this).val();
         var val = $('input[name=mod-12]:checked').val();
-        alert(selVal + "/" + val);
-        if (val == "2") {
+        //alert(selVal + "/" + val);
+        //if (val == "2") {
             let data = stepMachines;
             //console.log(data);
             for (i = 0; i < data.length; i++) {
-                if (selVal == data[i].routingStepMachineId) {
+                if (parseInt(selVal) == data[i].routingStepMachineId) {
                     $("#SetupTime").val(data[i].setupTime);
                     $("#FloorToFloorTime").val(data[i].floorToFloorTime);
                     $("#FirstPieceProcessingTime").val(data[i].firstPieceProcessingTime);
@@ -1408,7 +1414,7 @@ $(function () {
                     break;
                 }
             }
-        }
+        //}
     });
 
     $("#MAC_Shops").change(function () {
@@ -2256,6 +2262,13 @@ $(function () {
     // Optionally, trigger the event handler once to set the initial state of the button
     handleCheckboxChange();
 
+    $("#P2McSelect").click(function (event) {
+        $("#machine-list-popup").modal("hide");
+        $("#MACHINEDIV").show();
+        $("#COPYDIV").show();
+        $("#MACHINEDDiv").show();
+        $("#DOCUMENTDIV").show();
+    });
     $("#BtnAltRoutingSave").click(function (event) {
         //routings/addnewrouting
         var newName = $("#AltRoutingName").val();
@@ -2314,6 +2327,9 @@ $(function () {
         var tablebody = $("#TitleTableMachine tbody");
         tablebody.html("");
         $(tablebody).append(AppUtil.ProcessTemplateData("TitleRowMachine", RoutingDetails));
+        $("#MpoupCompPart").text(RoutingDetails.companyName + " / " + RoutingDetails.partNo);
+        $("#MachineRoutingStepSpan").text(RoutingDetails.routingName + " / " + RoutingDetails.stepNumber);
+        $("#MPopupMcStepSpan").text($("#StepOperation option:selected").text());
         if (addEdit == "Add") {
             $("#MachineRoutingStepId").val(RoutingDetails["stepId"]);
             var chkdelm = $('input[name=stepmachineselect]:checked');
@@ -2323,8 +2339,16 @@ $(function () {
             var tablebody = $("#MachineDocGrid tbody");
             $(tablebody).html("");//empty tbody
             RouteloadMachinesToTable("AddMachineListTable", "AddMachineListRow", addEdit, 0);
+            $("#MACHINEDIV").hide();
+            $("#COPYDIV").hide();
+            $("#MACHINEDDiv").hide();
+            $("#DOCUMENTDIV").hide();
         }
         else {
+            $("#MACHINEDIV").show();
+            $("#COPYDIV").show();
+            $("#MACHINEDDiv").show();
+            $("#DOCUMENTDIV").show();
             //console.log("-------------");
             //console.log(rTgt.data("setuptime"));
             $("#SetupTime").val(rTgt.data("setuptime"));
@@ -2334,7 +2358,12 @@ $(function () {
             //console.log("-------------");
             $("#FirstPieceProcessingTime").val(rTgt.data("firstpieceprocessingtime"));
             $("#NoOfPartsPerLoading").val(rTgt.data("noofpartsperloading"));
-            $("#PreferredMachine").val(rTgt.data("preferredmachine"));
+            if (rTgt.data("preferredmachine") == 1) {
+                $("#SetPreferred").prop("checked", true);
+            } else {
+                $("#SetPreferred").prop("checked",false);
+            }
+
             $("#MachineId").val(rTgt.data("machineid"));
             $("#MachineRoutingStepId").val(rTgt.data("machineroutingstepid"));//maps to StepId
             $("#RoutingStepMachineId").val(rTgt.data("routingstepmachineid"));//maps to Id
@@ -2557,15 +2586,16 @@ $(function () {
         if (currentrow.length > 0) {
             // Extract values from specific columns within the row
             var machineId = chkdelm.val();  // Get the machine ID from the radio button's value
+            var slno = currentrow.find("td:eq(2)").text();  // Second column (Plant)
             var plantName = currentrow.find("td:eq(1)").text();  // Second column (Plant)
             var shopName = currentrow.find("td:eq(2)").text();   // Third column (Shop)
-            var machinename = currentrow.find("td:eq(4)").text(); // Fifth column (M/c Name)
+            var machinename = currentrow.find("td:eq(3)").text(); // Fifth column (M/c Name)
 
             // Update the target elements with the retrieved values
             $("#MachineId").val(machineId);
-            $("#MPopupMcNameSpan").text(machinename);
+            $("#MPopupMcNameSpan").text(slno+" / "+machinename);
             $("#MPopupMcPlantSpan").text(plantName);
-            $("#MPopupMcShopSpan").text(shopName);
+            //$("#MPopupMcShopSpan").text(shopName);
             //McIdUploadDocList(parseInt(machineId));
         } else {
         }
@@ -2806,6 +2836,11 @@ $(function () {
                 return;
             }
             //if (data.length == 0 && parseInt(formData.RoutingStepMachineId) == 0) {
+            if (formData.PreferredMachine == "true") {
+                formData.PreferredMachine = 1;
+            } else {
+                formData.PreferredMachine = 0;
+            }
                 api.post("/routings/savestepmachine", formData).then((data) => {
                     //console.log(data);
                     var mcid = data["routingStepMachineId"];

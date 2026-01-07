@@ -84,7 +84,7 @@ function LoadCustomerOrders() {
             $(tablebody).append(noRecordsRow);
         }
         for (i = 0; i < data.length; i++) {
-            data[i].strStatus = OrdStatus[data[i].status];
+            //data[i].strStatus = OrdStatus[data[i].status];
             //if (data[i].hold) {
             //    data[i].strHold = "Y";
             //}
@@ -182,11 +182,11 @@ function copyPartData() {
             url: "/masters/CheckPartNoInDocList",
             data: { partId: partId },
             success: function (response) {
-                if (!response) {
-                    alert("This Part Doesnot Have Required Document.");
-                    return;
-                }
-                else {
+                //if (!response) {
+                //    alert("This Part Doesnot Have Required Document.");
+                //    return;
+                //}
+                //else {
                     $('#PartId').val(data[selval].partId);
                     $('#PartNo').val(data[selval].partNo);
                     $('#DSPartId').val(data[selval].partId);
@@ -199,7 +199,7 @@ function copyPartData() {
                     //console.log(data[selval].partId + "/" + data[selval].partNo);
                     LoadSalesOrders(customerorderid);
                     LoadDeliverySchedules($('#SalesCustomerOrderId').val());
-                }
+                //}
         //PostDeliverySchedule();
 
                }
@@ -976,15 +976,15 @@ $(function () {
         //    $("#PODate").val('');
         //    return;
         //}
-        if (POPIN.length === 0) {
-            var newNamevalidate = document.getElementById('POPIN');
-            newNamevalidate.style.border = '2px solid red';
-            return;
-        } else {
-            var newNamevalidate = document.getElementById('POPIN');
-            newNamevalidate.style.border = '';
+        //if (POPIN.length === 0) {
+        //    var newNamevalidate = document.getElementById('POPIN');
+        //    newNamevalidate.style.border = '2px solid red';
+        //    return;
+        //} else {
+            //var newNamevalidate = document.getElementById('POPIN');
+            //newNamevalidate.style.border = '';
             return PostCustomerOder();
-        }
+        //}
     });
 
     $("#BtnPODelete").on("click", function () {
@@ -1276,23 +1276,34 @@ $(function () {
             $tableBody.find(".norecordsfound").remove();
         }
     }); 
-    $("#Search-BA-Status").on("keyup", function () {
-        var value = $(this).val().toLowerCase();
-        $("#CustomerOrders tbody tr").filter(function () {
-            $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(value) > -1)
-        });
-        var $tableBody = $("#CustomerOrders tbody");
-        if ($tableBody.find("tr:visible").length === 0) {
-            const noRecordsRow = `
+    $("#Search-BA-Status").change(function () {
+        var selectedValue = $(this).val();
+        if (selectedValue != "0") {
+            var data = selectedValue;
+            var value = data.toLowerCase();
+            $("#CustomerOrders tbody tr").filter(function () {
+                $(this).toggle($(this.children[4]).text().toLowerCase().indexOf(value) > -1)
+            });
+            var $tableBody = $("#CustomerOrders tbody");
+            if ($tableBody.find("tr:visible").length === 0) {
+                const noRecordsRow = `
                 <tr class="norecordsfound">
                     <td colspan="20" style="text-align: center; color: #888;">
                         <strong>No Records Found</strong>
                     </td>
                 </tr>`;
-            $tableBody.append(noRecordsRow);
-        } else {
+                $tableBody.append(noRecordsRow);
+            } else {
+                $tableBody.find(".norecordsfound").remove();
+            }
+        } else if (selectedValue == "0") {
+            var $tableBody = $("#CustomerOrders tbody");
             $tableBody.find(".norecordsfound").remove();
+            $("#CustomerOrders tbody tr").show();
+        } else {
+            $("#CustomerOrders tbody tr").show();
         }
+        
     });
     $("#Search-BA-PONumber").on("keyup", function () {
         var value = $(this).val().toLowerCase();
@@ -1385,9 +1396,21 @@ $(function () {
     $('#PONoDetailsPopup').on('hidden.bs.modal', () => {
         document.getElementById('new-order-entry').style.filter = 'none';
     });
-
+    loadBaStatus();
 });
+function loadBaStatus() {
+    const selectElement = $('#Search-BA-Status');
+    selectElement.html("");
 
+    api.getbulk("/businessaquisition/GetBAAllStatus").then((data) => {
+        div_data = "<option value='" + 0 + "'>" + "--Select--" + "</option>";
+        selectElement.append(div_data);
+        for (i = 0; i < data.length; i++) {
+            div_data = "<option value='" + data[i].status + "'>" + data[i].status + "</option>";
+            selectElement.append(div_data);
+        }
+    });
+}
 function DeliverySechudeleLoad(element) {
     var relatedTarget = $(element);
     //document.getElementById('PONoDetailsPopup').style.filter = 'blur(5px)';

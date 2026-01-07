@@ -247,5 +247,11 @@ namespace CWB.App.Services.BusinessProcesses
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<BAStatusVM>.GetAsync(uri, headers);
         }
+        public async Task<IEnumerable<BAStatusVM>> GetBAAllStatus()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbba/getallbastatus/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<BAStatusVM>>.GetAsync(uri, headers);
+        }
     }
 }

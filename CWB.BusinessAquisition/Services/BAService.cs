@@ -681,6 +681,16 @@ namespace CWB.BusinessAquisition.Services
             }
             return new BAStatusVM { StatusId = -1 };
         }
+        public async Task<IEnumerable<BAStatusVM>> GetBAAllStatus()
+        {
+            var bastatus = await _baStatusRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<BAStatusVM>>(bastatus);
+            //if (bastatus != null)
+            //{
+            //    
+            //}
+            //return new BAStatusVM { StatusId = -1 };
+        }
 
     }
 }

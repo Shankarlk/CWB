@@ -24,17 +24,17 @@
                         <h5 class="mb-2">Machine List</h5>
                         <!-- -----------------  -->
                         <label class="col-md-1 form-label mb-2">Plant</label>
-                        <div class="col-md-3 mb-2">
+                        <div class="col-md-2 mb-2">
                             <select class="form-select form-select-sm machine-list-search" aria-label="form-select-sm" title="Select the Plant from the Drop Down"
                                     data-plugin="tippy" data-tippy-placement="top" data-key="Plant" asp-items="ViewBag.Plants" id="search-machine-plant">
                                 <option value="">--All Plant--</option>
                             </select>
                         </div>
                         <!-- -----------------  -->
-                        <label class="col-md-1 form-label mb-2">Shop</label>
-                        <div class="col-md-3 mb-2">
+                        <label class="col-md-1 form-label mb-2">Department</label>
+                        <div class="col-md-2 mb-2">
                             <select class="form-select form-select-sm machine-list-search" aria-label="form-select-sm"
-                                    title="Select the Shop from the Drop Down. Shops from the selected Shop are shown"
+                                    title="Select the Department from the Drop Down. Departments from the selected Shop are shown"
                                     data-plugin="tippy" data-tippy-placement="top" data-key="Shop" id="search-machine-shop">
                             </select>
                         </div>
@@ -46,20 +46,20 @@
                             </select>
                         </div>*@
                         <!-- -----------------  -->
-                        <label class="col-md-1 form-label mb-2">Name</label>
-                        <div class="col-md-3 mb-2">
-                            <input class="form-control form-control-sm machine-list-search" type="text" placeholder="enter Name"
+                        <label class="col-md-1 form-label mb-2">Model</label>
+                        <div class="col-md-2 mb-2">
+                            <input class="form-control form-control-sm machine-list-search" type="text" placeholder="enter Model"
                                    title="Enter the Name of the Machine (partially or fully) to short list the machines"
                                    data-plugin="tippy" data-tippy-placement="top" id="machineName" data-key="Name">
                         </div>
                         <!-- -----------------  -->
                         <label class="col-md-1 form-label mb-2">Manufacturer</label>
-                        <div class="col-md-3 mb-2">
+                        <div class="col-md-2 mb-2">
                             <input class="form-control form-control-sm machine-list-search" type="text" placeholder="enter Manufacturer" id="manufacturer"
                                    title="Enter the Machine Manufacturer" data-plugin="tippy" data-tippy-placement="top" data-key="Manufacturer">
                         </div>
                         <!-- -----------------  -->
-                        <div class="col-md-3 mb-2">
+                        <div class="col-md-3 mb-2" hidden>
                             <button class="btn btn-sm btn-primary" data-plugin="tippy" data-tippy-placement="top" data-tippy="" data-original-title="" id="clearMachineBtn">Clear Search Fields </button>
                         </div>
                         <!-- ======================== -->
@@ -73,7 +73,7 @@
                                         <thead class="  table-info th-sti">
                                             <tr class="table-border-bottom">
                                                 <th>Plant</th>
-                                                <th>Shop</th>
+                                                <th>Department</th>
                                                 <th>Model</th>
                                                 <th>Sl No</th>
                                                 <th>Manufacturer</th>

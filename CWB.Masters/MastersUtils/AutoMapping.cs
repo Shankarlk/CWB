@@ -107,6 +107,7 @@ namespace CWB.Masters.MastersUtils
             CreateMap<Machine, MachineListVM>()
                 .ForMember(m => m.MachineId, m => m.MapFrom(src => src.Id))
                 .ForMember(m => m.SectionId, m => m.MapFrom(src => src.SectionId))
+                .ForMember(m => m.MachineOperationListId, m => m.MapFrom(src => src.OperationListId))
                 .ForMember(m => m.MachineTypeId, m => m.MapFrom(src => src.MachineTypeId));
 
             CreateMap<MachineProcessDocument, MachineProcDocumentListVM>()

@@ -8,6 +8,7 @@
         public string Manufacturer { get; set; }
         public string SlNo { get; set; }
         public long PlantId { get; set; }
+        public long MachineOperationListId { get; set; }
         public string Plant { get; set; }
         public long ShopId { get; set; }
         public long MachineTypeId { get; set; }
