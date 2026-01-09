@@ -12,6 +12,6 @@
         public string MasterPartType { get; set; }
         public bool HasRouting { get; set; }
         public int NoOfRoutes { get; set; } = 0;
-
+        public string MandocAvl { get; set; }
     }
 }

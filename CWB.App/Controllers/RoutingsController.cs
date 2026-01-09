@@ -9,6 +9,7 @@ using CWB.App.Models.Routings;
 using CWB.App.Services.DocumentMagement;
 using CWB.App.Services.EmployeeMaster;
 using CWB.App.Services.Masters;
+using CWB.App.Services.ProductionPlanWo;
 using CWB.App.Services.Routings;
 using CWB.CommonUtils.Common;
 using CWB.Constants.UserIdentity;
@@ -35,9 +36,11 @@ namespace CWB.App.Controllers
         private readonly IMachineService _machineService;
         private readonly IOperationService _operationService;
         private readonly IDocMangService _docMangService;
+        private readonly IWOService _woService;
 
         public RoutingsController(ILoggerManager logger, IMachineService machineService, IRoutingService routingService, IEmployeeService employeeService,
-            IMastersServices mastersServices, IOperationService operationService, IDocMangService docMangService)
+            IMastersServices mastersServices, IOperationService operationService, IDocMangService docMangService
+            , IWOService woService)
         {
             _logger = logger;
             _routingService = routingService;
@@ -46,6 +49,7 @@ namespace CWB.App.Controllers
             _operationService = operationService;
             _docMangService = docMangService;
             _employeeService = employeeService;
+            _woService = woService;
         }
 
         public async Task<IActionResult> Index()
@@ -54,6 +58,11 @@ namespace CWB.App.Controllers
         }
 
         public async Task<IActionResult> RoutingListItems()
+        {
+            var result = (await _routingService.OptimizedRoutingListItems()).ToList();
+            return Json(result);
+        }
+        public async Task<IActionResult> RoutingListItemss()
         {
             var result = (await _routingService.GetRoutingListItems()).ToList();
             var docListVMs = (await _docMangService.GetAllDocList()).ToList();
@@ -166,10 +175,16 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteRouting(int routingId)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            //var prodns = await _woService.AllProductionPlan_Wo();
+
+            //if (prodns)
+            //{
+
+            //}
+            //if (!ModelState.IsValid)
+            //{
+            //    return BadRequest(ModelState);
+            //}
             var result = await _routingService.DeleteRouting(routingId);
             return Ok(result);
         }
@@ -324,7 +339,7 @@ namespace CWB.App.Controllers
                 var stepmc = await _routingService.StepMachines((int)item.StepId);
 
                 var preferredMcs = stepmc
-                    .Where(m => m.PreferredMachine == 1)
+                    .OrderByDescending(m => m.PreferredMachine == 1)
                     .Take(item.NumberOfSimMachines)
                     .ToList();
 

@@ -12,6 +12,7 @@ namespace CWB.App.Services.Routings
     public interface IRoutingService
     {
         Task<List<RoutingListItemVM>> GetRoutingListItems();
+        Task<List<RoutingListItemVM>> OptimizedRoutingListItems();
         Task<RoutingVM> Routing(RoutingVM routingVM);
         Task<RoutingVM> AltRouting(RoutingVM routingVM);
         

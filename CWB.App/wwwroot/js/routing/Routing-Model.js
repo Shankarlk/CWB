@@ -780,12 +780,21 @@ function loadStepMachinesForAdd() {
     api.get("/routings/stepmachines?stepId=" + stepId).then((data) => {
         stepMachines = data;
         for (i = 0; i < data.length; i++) {
+            var machineId = $("#MachineId").val();
+            if (data[i].machineId == parseInt(machineId)) {
+                continue;
+            }
             div_data = "<option value='" +
                 data[i].routingStepMachineId + "'>" +
                 data[i].name +
                 "</option>";
            // console.log(div_data);
             selElem.append(div_data);
+        }
+        if (data.length > 1) {
+            $("#COPYDIV").show();
+        } else {
+            $("#COPYDIV").hide();
         }
     }).catch((error) => {
     });
@@ -1411,6 +1420,7 @@ $(function () {
                     $("#FloorToFloorTime").val(data[i].floorToFloorTime);
                     $("#FirstPieceProcessingTime").val(data[i].firstPieceProcessingTime);
                     $("#NoOfPartsPerLoading").val(data[i].noOfPartsPerLoading);
+                    McIdUploadDocList(data[i].machineId);
                     break;
                 }
             }
@@ -2265,9 +2275,10 @@ $(function () {
     $("#P2McSelect").click(function (event) {
         $("#machine-list-popup").modal("hide");
         $("#MACHINEDIV").show();
-        $("#COPYDIV").show();
+        //$("#COPYDIV").show();
         $("#MACHINEDDiv").show();
         $("#DOCUMENTDIV").show();
+        loadStepMachinesForAdd();
     });
     $("#BtnAltRoutingSave").click(function (event) {
         //routings/addnewrouting
@@ -2300,7 +2311,8 @@ $(function () {
         $("#RoutingDetailsClose").click();
     });
     $('#add-machine').on('hidden.bs.modal', function (event) {
-        $("#RoutingAvailableClose").click();
+        $("#RoutingDetailsClose").click();
+        //$("#RoutingAvailableClose").click();
     });
     
     ////SubConWSSubConDetailsId//SubConWSRoutingStepId//SubConWSDetailsId //WorkStepDesc//MachineType//FloorToFloorTime//SetupTime//NoOfPartsPerLoading
@@ -2345,8 +2357,9 @@ $(function () {
             $("#DOCUMENTDIV").hide();
         }
         else {
+            loadStepMachinesForAdd();
             $("#MACHINEDIV").show();
-            $("#COPYDIV").show();
+            //$("#COPYDIV").show();
             $("#MACHINEDDiv").show();
             $("#DOCUMENTDIV").show();
             //console.log("-------------");
@@ -2377,7 +2390,6 @@ $(function () {
         //NoOfPartsPerLoading//PreferredMachine//MachineId
         //MachineRoutingStepId
         //RoutingStepMachineId
-        loadStepMachinesForAdd();
 
         if ($("#stepmachine_1").length) {
             $("#stepmachine_1").prop('checked', true);
@@ -2593,6 +2605,7 @@ $(function () {
 
             // Update the target elements with the retrieved values
             $("#MachineId").val(machineId);
+            McIdUploadDocList(machineId);
             $("#MPopupMcNameSpan").text(slno+" / "+machinename);
             $("#MPopupMcPlantSpan").text(plantName);
             //$("#MPopupMcShopSpan").text(shopName);
@@ -3080,6 +3093,7 @@ $(function () {
     $('#doc-item').on('hidden.bs.modal', function (event) {
         var InfoComments = document.getElementById('InfoComments');
         InfoComments.style.border = '';
+        document.getElementById('add-machine').style.filter = 'none';
         var newNamevalidate = document.getElementById('fileNameDisplay');
         newNamevalidate.style.border = '';
         $("#doclistidFile").val(0);
@@ -3093,6 +3107,7 @@ $(function () {
 
     });
     $('#doc-item').on('show.bs.modal', function (event) {
+        document.getElementById('add-machine').style.filter = 'blur(5px)';
         var relatedTarget = $(event.relatedTarget);
         var filename = relatedTarget.data("filename");
         var doctypename = relatedTarget.data("doctypename");

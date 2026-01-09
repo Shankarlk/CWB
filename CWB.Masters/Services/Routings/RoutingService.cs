@@ -93,7 +93,7 @@ namespace CWB.Masters.Services.Routings
         {
             // Get manufactured parts
             var manufParts = (_manufacturedPartNoDetailRepository
-                .GetRangeAsync(m => m.TenantId == tenantId ))
+                .GetRangeAsync(m => m.TenantId == tenantId))
                 .ToList();
 
             if (!manufParts.Any())
@@ -124,20 +124,22 @@ namespace CWB.Masters.Services.Routings
             // Projection
             var result = manufParts.Select(m =>
             {
-                var hasRouting = routings.TryGetValue(m.PartId, out var routingInfo);
+                // Fixed: Lookup using ManufacturedPartNoDetailId (m.Id), not MasterPartId (m.PartId)
+                var hasRouting = routings.TryGetValue(m.Id, out var routingInfo);
                 var part = parts.GetValueOrDefault(m.PartId);
                 var company = companies.GetValueOrDefault(m.CompanyId);
 
                 return new RoutingListItemVM
                 {
-                    ManufacturedPartId = m.PartId,
+                    // Fixed: Set ManufacturedPartId to m.Id
+                    ManufacturedPartId = m.Id,
                     CompanyName = company?.Name,
                     PartNo = part?.PartNo,
                     PartDescription = part?.PartDescription,
                     MasterPartType = m.ManufacturedPartType == 1 ? "ManufacturedPart" : "Assembly",
                     NoOfRoutes = hasRouting ? routingInfo.Count : 0,
                     RoutingId = hasRouting ? (int)routingInfo.First.Id : 0,
-                    Status = hasRouting ? routingInfo.First.Status : "---",
+                    Status = hasRouting ? part?.Status : "---",
                     HasRouting = hasRouting
                 };
             }).ToList();

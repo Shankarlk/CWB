@@ -5106,8 +5106,15 @@ namespace CWB.App.Controllers
             return Ok(result);
         }
         [HttpGet]
-        public async Task<IActionResult> DeleteWo(long id)
+        public async Task<IActionResult> DeleteWo(long id, long productionPlanId)
         {
+            var wowaitlists = await _woService.GetAllWO_Wait_List();
+            var wowaitlist = wowaitlists.FirstOrDefault(w => w.Wo_Id == productionPlanId);
+            if (wowaitlist != null)
+            {
+                string msg = "This Workorder is already used in the Simulation.";
+                return Ok(msg);
+            }
             var result = await _woService.DeleteWo(id);
             return Ok(result);
         }

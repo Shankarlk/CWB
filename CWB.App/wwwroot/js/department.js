@@ -80,6 +80,11 @@ function DelDept(name, deptId) {
     if (confirmval) {
         api.get("/department/deldept?departmentId=" + deptId).then((data) => {
             //console.log(data);
+            if (data == false || data == true) {
+
+            } else {
+                alert(data);
+            }
             LoadDepartments();
         }).catch((error) => {
             //console.log(error);

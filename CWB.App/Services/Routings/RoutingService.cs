@@ -34,6 +34,12 @@ namespace CWB.App.Services.Routings
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<RoutingListItemVM>>.GetAsync(uri, headers);
         }
+        public async Task<List<RoutingListItemVM>> OptimizedRoutingListItems()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/routinglistitemsop/{tenantId}");   
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<RoutingListItemVM>>.GetAsync(uri, headers);
+        }
 
         public async Task<RoutingVM> DeleteWS(int subConWSId)
         {

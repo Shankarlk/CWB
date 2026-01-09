@@ -6,9 +6,12 @@ using CWB.Masters.Domain.Routings;
 using CWB.Masters.MastersUtils;
 using CWB.Masters.MastersUtils.ItemMaster;
 using CWB.Masters.Services.Company;
+using CWB.Masters.Services.DocumentManagement;
 using CWB.Masters.Services.ItemMaster;
+using CWB.Masters.Services.OperationList;
 using CWB.Masters.Services.Routings;
 using CWB.Masters.ViewModels.Company;
+using CWB.Masters.ViewModels.OperationList;
 using CWB.Masters.ViewModels.Routings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,17 +32,22 @@ namespace CWB.Masters.Controllers
         private readonly IMasterPartService _masterPartService;
         private readonly IManufacturedPartNoDetailService _manufacturedPartNoDetailService;
         private readonly ICompanyService _companyService;
+        private readonly IDocumentManagementService _documentManagementService;
+        private readonly IOperationListService _operationListService;
         public RoutingsController(ILoggerManager logger
             ,IRoutingService routingService
             , IMasterPartService masterPartService
             , IManufacturedPartNoDetailService manufacturedPartNoDetailService
-            , ICompanyService companyService)
+            , ICompanyService companyService, IDocumentManagementService documentManagementService
+            , IOperationListService operationListService)
         { 
             _logger = logger;
             _routingService = routingService;
             _masterPartService = masterPartService;
             _companyService = companyService;
-            _manufacturedPartNoDetailService = manufacturedPartNoDetailService;      
+            _manufacturedPartNoDetailService = manufacturedPartNoDetailService;
+            _documentManagementService = documentManagementService;
+            _operationListService = operationListService;
         }
 
         
@@ -49,6 +57,103 @@ namespace CWB.Masters.Controllers
         public IEnumerable<RoutingVM> RoutingList(int manufPartId)
         {
             return _routingService.GetRoutingsForManufId(manufPartId);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Routings.OptimizedRoutingListItems)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<RoutingListItemVM>))]
+        public async Task<IActionResult> RoutingListItems(long tenantId)
+        {
+            // Step 1: Fetch Routing List Items using the Service
+            var result = await _routingService.GetRoutingListItemsAsync(tenantId);
+            if (result == null || !result.Any())
+                return Ok(new List<RoutingListItemVM>());
+
+            // Fetch Document List
+            var docListVMs = (await _documentManagementService.GetAllDocList(tenantId)).ToList();
+
+            // Step 2: Fetch all routing steps once
+            var routingStepsMap = new Dictionary<long, List<RoutingStepVM>>();
+            foreach (var item in result)
+            {
+                // Note: GetStepsForRoutingId is synchronous in IRoutingService interface provided
+                var steps = _routingService.GetStepsForRoutingId(item.RoutingId);
+                if (steps != null)
+                {
+                    routingStepsMap[item.RoutingId] = steps.ToList();
+                }
+            }
+
+            // Step 3: Collect all unique StepOperation IDs
+            var allStepOps = routingStepsMap.Values
+                .SelectMany(x => x)
+                .Select(s => Convert.ToInt64(s.StepOperation))
+                .Distinct()
+                .ToList();
+
+            // Step 4: Prefetch all doc types
+            var opDocsMap = new Dictionary<long, List<OperationalDocumentListVM>>();
+            foreach (var opId in allStepOps)
+            {
+                // Note: GetOperationDocumentTypes is synchronous in IOperationListService interface provided
+                var opDocs = _operationListService.GetOperationDocumentTypes(tenantId, opId);
+                if (opDocs != null && opDocs.Any())
+                    opDocsMap[opId] = opDocs.ToList();
+            }
+
+            // Step 5: Convert docListVMs to HashSet for O(1) lookups
+            // Assuming DocListVM has RoutingId property as implied by the logic
+            var docSet = new HashSet<(long DocumentTypeId, long RoutingId)>(
+                docListVMs.Select(d => (d.DocumentTypeId, d.RoutingId))
+            );
+
+            // Step 6: Logic to determine MandocAvl
+            foreach (var item in result)
+            {
+                if (!routingStepsMap.TryGetValue(item.RoutingId, out var steps) || steps.Count == 0)
+                {
+                    item.MandocAvl = "N/A";
+                    continue;
+                }
+
+                bool anyYes = false;
+                bool anyNo = false;
+
+                foreach (var op in steps)
+                {
+                    var opId = Convert.ToInt64(op.StepOperation);
+
+                    if (!opDocsMap.TryGetValue(opId, out var docmand))
+                    {
+                        item.MandocAvl = "N/A";
+                        break;
+                    }
+
+                    foreach (var docMand in docmand)
+                    {
+                        if (docSet.Contains((docMand.DocumentTypeId, item.RoutingId)))
+                        {
+                            anyYes = true;
+                        }
+                        else
+                        {
+                            anyNo = true;
+                        }
+
+                        if (anyYes && anyNo)
+                            break;
+                    }
+
+                    if (item.MandocAvl == "N/A" || (anyYes && anyNo))
+                        break;
+                }
+
+                if (item.MandocAvl != "N/A")
+                {
+                    item.MandocAvl = anyYes ? "Yes" : "No";
+                }
+            }
+
+            return Ok(result);
         }
 
         [HttpGet]

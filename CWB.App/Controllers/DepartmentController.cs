@@ -1,6 +1,7 @@
 ﻿using CWB.App.Models.Departments;
 using CWB.App.Services.CompanySettings;
 using CWB.App.Services.EmployeeMaster;
+using CWB.App.Services.Masters;
 using CWB.Constants.UserIdentity;
 using CWB.Logging;
 using Microsoft.AspNetCore.Authorization;
@@ -18,12 +19,16 @@ namespace CWB.App.Controllers
         private readonly ILoggerManager _logger;
         private readonly IDepartmentService _departmentService;
         private readonly IEmployeeService _employeeService;
+        private readonly IMachineService _machineService;
 
-        public DepartmentController(ILoggerManager logger, IDepartmentService departmentService, IEmployeeService employeeService)
+
+        public DepartmentController(ILoggerManager logger, IDepartmentService departmentService,
+            IMachineService machineService, IEmployeeService employeeService)
         {
             _logger = logger;
             _departmentService = departmentService;
             _employeeService = employeeService;
+            _machineService = machineService;
         }
         public IActionResult Index()
         {
@@ -126,6 +131,13 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> deldept(int departmentId)
         {
+            var machinesList = await _machineService.GetMachinesList();
+            var mc = machinesList.FirstOrDefault(m => m.ShopId == departmentId);
+            if (mc != null)
+            {
+                string msg = "This Department is already used in the Machine SlNo: " + mc.SlNo + ". Delete The Machine.";
+                return Ok(msg);
+            }
             var result = await _departmentService.DelDepartment(departmentId);
             return Ok(result);
         }

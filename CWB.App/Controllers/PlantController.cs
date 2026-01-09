@@ -1,10 +1,12 @@
 ﻿using CWB.App.Models.CoSettings;
 using CWB.App.Models.Plants;
 using CWB.App.Services.CompanySettings;
+using CWB.App.Services.Masters;
 using CWB.Constants.UserIdentity;
 using CWB.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CWB.App.Controllers
@@ -14,11 +16,13 @@ namespace CWB.App.Controllers
     {
         private readonly ILoggerManager _logger;
         private readonly IPlantService _plantService;
+        private readonly IMachineService _machineService;
 
-        public PlantController(ILoggerManager logger, IPlantService plantService)
+        public PlantController(ILoggerManager logger, IPlantService plantService, IMachineService machineService)
         {
             _logger = logger;
             _plantService = plantService;
+            _machineService = machineService;
         }
         public IActionResult Index()
         {
@@ -144,6 +148,13 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> DelPlant(long plantId)
         {
+            var machinesList = await _machineService.GetMachinesList();
+            var mc = machinesList.FirstOrDefault(m => m.PlantId == plantId);
+            if (mc != null)
+            {
+                string msg = "This Plant is already used in the Machine SlNo: " + mc.SlNo + ". Delete The Machine.";
+                return Ok(msg);
+            }
             var result = await _plantService.DelPlant(plantId);
             return Json(result);
         }

@@ -509,6 +509,10 @@ function PostPODelete() {
         //console.log("****PostPODelete****");
         //console.log(data);
         //console.log("****End-PostPODelete****");
+        if (data != null && typeof data === 'string') {
+            alert(data);
+        }
+
         LoadCustomerOrders();
         document.getElementById("btnpodeleteclose").click();
     }).catch((error) => {
@@ -1343,14 +1347,20 @@ $(function () {
         }
     });
 
-    $("#SearchPOdateTO").on("change", function () {
+    $("#SearchPOdateFrom, #SearchPOdateTO").on("change", function () {
         var fromDate = $("#SearchPOdateFrom").val().split("/").reverse().join("-");
         var toDate = $("#SearchPOdateTO").val().split("/").reverse().join("-");
         var fromDateTimestamp = new Date(fromDate).getTime();
         var toDateTimestamp = new Date(toDate).getTime();
-
+        if (toDate == "" || fromDate == "") {
+            $("#CustomerOrders tbody tr").show();
+            $("#CustomerOrders tbody").find(".norecordsfound").remove();
+            return false;
+        }
         if (fromDateTimestamp > toDateTimestamp) {
             alert("PO Date From Is Greater Than PO Date To");
+            $("#CustomerOrders tbody tr").show();
+            $("#CustomerOrders tbody").find(".norecordsfound").remove();
             $("#SearchPOdateFrom").val('');
             $("#SearchPOdateTO").val('');
             return false;

@@ -4,6 +4,7 @@ using CWB.App.Models.ItemMaster;
 using CWB.App.Models.Routing;
 using CWB.App.Services.BusinessProcesses;
 using CWB.App.Services.Masters;
+using CWB.App.Services.ProductionPlanWo;
 using CWB.App.Services.Routings;
 using CWB.Constants.UserIdentity;
 using Microsoft.AspNetCore.Authorization;
@@ -44,12 +45,16 @@ namespace CWB.App.Controllers
         private readonly IBAService _baService;
         private readonly IMastersServices _masterService;
         private readonly IRoutingService _routingService;
-        public BusinessAquisitionController(ILogger<BusinessAquisitionController> logger, IBAService baService,IMastersServices masterServices, IRoutingService routingService)
+        private readonly IWOService _woService;
+        public BusinessAquisitionController(ILogger<BusinessAquisitionController> logger
+            , IWOService woService,
+            IBAService baService,IMastersServices masterServices, IRoutingService routingService)
         {
             _logger = logger;
             _baService = baService;
             _masterService = masterServices;
             _routingService = routingService;
+            _woService = woService;
         }
         public IActionResult Index()
         {
@@ -510,12 +515,40 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> POLog(POLogVM pOLogVM)
         {
+            var wo = await _baService.AllWorkOrders();
+            var prodnwo = await _woService.AllProductionPlan_Wo();
+            var findwo = wo.FirstOrDefault(w => w.SalesOrderId == pOLogVM.SalesOrderId);
+            var findprodwo = prodnwo.FirstOrDefault(w => w.SalesOrderId == pOLogVM.SalesOrderId);
+            if (findwo != null)
+            {
+                string msg = "This SaleOrder is already used in the WO: " + findwo.WONumber;
+                return Ok(msg);
+            }
+            if (findprodwo != null)
+            {
+                string msg = "This SaleOrder is already used in the WO: " + findprodwo.WONumber;
+                return Ok(msg);
+            }
             var salesOrder = await _baService.PostPOLog(pOLogVM);
             return Ok(salesOrder);
         }
         [HttpPost]
         public async Task<IActionResult> SOLog(POLogVM pOLogVM)
         {
+            var wo = await _baService.AllWorkOrders();
+            var prodnwo = await _woService.AllProductionPlan_Wo();
+            var findwo = wo.FirstOrDefault(w => w.SalesOrderId == pOLogVM.SalesOrderId);
+            var findprodwo = prodnwo.FirstOrDefault(w => w.SalesOrderId == pOLogVM.SalesOrderId);
+            if (findwo != null)
+            {
+                string msg = "This SaleOrder is already used in the WO: "+ findwo.WONumber;
+                return Ok(msg);
+            }
+            if (findprodwo != null)
+            {
+                string msg = "This SaleOrder is already used in the WO: "+ findprodwo.WONumber;
+                return Ok(msg);
+            }
             var salesOrder = await _baService.PostSOLog(pOLogVM);
             return Ok(salesOrder);
         }

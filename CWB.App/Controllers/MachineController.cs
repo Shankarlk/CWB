@@ -23,9 +23,11 @@ namespace CWB.App.Controllers
         private readonly IOperationService _operationService;
         private readonly IDocMangService _docMangService;
         private readonly IRoutingService _routingService;
+        private readonly IMastersServices _mastersServices;
 
         public MachineController(ILoggerManager logger, IMachineService machineService, IPlantService plantService,
-            IOperationService operationService, IDocMangService docMangService, IRoutingService routingService)
+            IOperationService operationService, IDocMangService docMangService, IRoutingService routingService,
+            IMastersServices mastersServices)
         {
             _logger = logger;
             _machineService = machineService;
@@ -33,6 +35,7 @@ namespace CWB.App.Controllers
             _operationService = operationService;
             _docMangService = docMangService;
             _routingService = routingService;
+            _mastersServices = mastersServices;
 
         }
         public async Task<IActionResult> Index()
@@ -79,10 +82,26 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteMachine(long mcTypeDocListId)
         {
+            var allRoute = await _routingService.AllRoutings();
+            var routestep = await _routingService.AllRoutingSteps();
+            var parts = await _mastersServices.GetAllManufacturedPartNoDetailList();
             var routemc =await  _routingService.AllStepMachines();
-            if (routemc.Any(x => x.MachineId == mcTypeDocListId))
+            var routemcs = routemc.FirstOrDefault(x => x.MachineId == mcTypeDocListId);
+            if (routemcs!= null)
             {
-                string msg = "This Machine is already used in the Routing Step Machine. Delete The Step Machine in the Routings.";
+                var rt = routestep.FirstOrDefault(x => x.StepId == routemcs.RoutingStepId);
+                var routname = allRoute.FirstOrDefault(x => x.RoutingId == rt.RoutingId);
+                var master = parts.FirstOrDefault(p => p.ManufacturedPartNoDetailId == routname.ManufacturedPartId);
+                var masterpart = await _mastersServices.ItemMasterPartById(master.PartId);
+                var routingName = routname?.RoutingName ?? "Unknown Routing";
+                var stepNumber = rt.StepNumber?.ToString() ?? "Unknown Step";
+                var partNo = masterpart?.PartNo ?? "Unknown Part";
+
+                string msg =
+                    $"This Machine is already used in the Routing {routingName} " +
+                    $"and Routing Step : {stepNumber} of the PartNo {partNo}. " +
+                    $"Delete the Routing Step Machine in the Routings.";
+                //string msg = "This Machine is already used in the Routing Step Machine. Delete The Step Machine in the Routings.";
                 return Ok(msg);
             }
             var result = await _machineService.DeleteMachine(mcTypeDocListId);

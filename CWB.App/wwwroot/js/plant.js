@@ -195,6 +195,12 @@ function DelPlant(name, plantId) {
     let confirmval = confirm("Are your sure you want to delete this plant? : " + name, "Yes", "No");
     if (confirmval) {
         api.get("/plant/delplant?plantId=" + plantId).then((data) => {
+
+            if (data == false || data == true) {
+
+            } else {
+                alert(data);
+            }
             //console.log(data);
             LoadPlants();
         }).catch((error) => {
