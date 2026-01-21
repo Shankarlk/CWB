@@ -329,7 +329,8 @@ $(document).ready(function () {
                 partType: 0,
                 partlevel: ' ',
                 calcWOQty: parseInt($(row).find("td:eq(8)").text()),
-                planCompletionDate: $(row).find("td:eq(12)").text()
+                planCompletionDate: $(row).find("td:eq(12)").text(),
+                soComplDate: $(row).find("td:eq(12)").text()
             };
             var balanceSoQty = parseInt($(row).find("td:eq(9)").text())
             if (balanceSoQty > 0) {
