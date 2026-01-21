@@ -424,6 +424,18 @@ namespace CWB.Masters.Services.Routings
             if (routing.Id == 0)
             {
                 await _routingRepository.AddAsync(routing);
+                await _unitOfWork.CommitAsync();
+
+                RoutingStatusLog routingStatusLog = new RoutingStatusLog();
+                routingStatusLog.UpdatedBy = routing.TenantId;
+                routingStatusLog.RoutingId = routing.Id;
+                routingStatusLog.TenantId = routing.TenantId;
+                routingStatusLog.PrevStatus = "-";
+                routingStatusLog.ChangedStatus = routing.Status;
+                routingStatusLog.UpdatedDate = DateTime.Now;
+                routingStatusLog.Reason = routing.StatusChangeReason;
+                await _routingStatusLogRepository.AddAsync(routingStatusLog);
+                await _unitOfWork.CommitAsync();
             }
             else
             {
@@ -441,8 +453,8 @@ namespace CWB.Masters.Services.Routings
                     await _routingStatusLogRepository.AddAsync(routingStatusLog);
                 }
                 routing = await _routingRepository.UpdateAsync(routing.Id, routing);
+                await _unitOfWork.CommitAsync();
             }
-            await _unitOfWork.CommitAsync();
             routingVM.RoutingId = (int)routing.Id;
             return routingVM;
         }
@@ -570,6 +582,9 @@ namespace CWB.Masters.Services.Routings
                 if (routingStep.Id == 0)
                 {
                     routingStep.RoutingStepOperationId = Convert.ToInt64(routingStep.RoutingStepOperation);
+                    var rtstep = _routingStepRepository.GetRangeAsync(r => r.RoutingId == routingStepVM.RoutingId);
+                    int seq = rtstep.Select(r=>r.RoutingStepSequence).Max();
+                    routingStep.RoutingStepSequence = seq + 1;
                     await _routingStepRepository.AddAsync(routingStep);
                 }
                 else

@@ -187,6 +187,8 @@
         {
             public const string CheckPartNo = Base + "/check-partno/{partNo}";
             public const string MasterPartList = Base + "/masterpartlist/{tenantId}";
+            public const string GetFailure = Base + "/getfailure/{tenantId}";
+            public const string Postfailure = Base + "/postfailure";
         }
 
        

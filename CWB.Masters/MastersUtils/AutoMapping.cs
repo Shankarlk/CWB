@@ -10,6 +10,7 @@ using CWB.Masters.ViewModels.Routings;
 using CWB.Masters.Domain.Routings;
 using CWB.Masters.ViewModels.DocumentManagement;
 using CWB.Masters.Domain.DocumentManagement;
+using CWB.Masters.ViewModels.FailureError;
 
 namespace CWB.Masters.MastersUtils
 {
@@ -109,6 +110,12 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(m => m.SectionId, m => m.MapFrom(src => src.SectionId))
                 .ForMember(m => m.MachineOperationListId, m => m.MapFrom(src => src.OperationListId))
                 .ForMember(m => m.MachineTypeId, m => m.MapFrom(src => src.MachineTypeId));
+            CreateMap<Failure, FailureVM>()
+                .ForMember(m => m.FailureId, m => m.MapFrom(src => src.Id))
+                .ForMember(m => m.Message, m => m.MapFrom(src => src.Message));
+            CreateMap<FailureVM, Failure>()
+                .ForMember(m => m.Id, m => m.MapFrom(src => src.FailureId))
+                .ForMember(m => m.Message, m => m.MapFrom(src => src.Message));
 
             CreateMap<MachineProcessDocument, MachineProcDocumentListVM>()
                 .ForMember(m => m.MachineProcDocumentId, m => m.MapFrom(src => src.Id))
@@ -493,6 +500,7 @@ namespace CWB.Masters.MastersUtils
                 .ForMember(s => s.StepLocation, s => s.MapFrom(src => src.RoutingStepLocation))
                 .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
                 .ForMember(s => s.StepSequence, s => s.MapFrom(src => src.RoutingStepSequence))
+                .ForMember(s => s.StepNextSequence, s => s.MapFrom(src => src.StepNextSequence))
                 .ForMember(s => s.NumberOfSimMachines, s => s.MapFrom(src => src.NumberOfSimMachines));
 
             CreateMap<RoutingStepVM, RoutingStep>()
@@ -505,6 +513,7 @@ namespace CWB.Masters.MastersUtils
               .ForMember(s => s.RoutingStepLocation, s => s.MapFrom(src => src.StepLocation))
               .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
               .ForMember(s => s.RoutingStepSequence, s => s.MapFrom(src => src.StepSequence))
+                .ForMember(s => s.StepNextSequence, s => s.MapFrom(src => src.StepNextSequence))
               .ForMember(s => s.NumberOfSimMachines, s => s.MapFrom(src => src.NumberOfSimMachines));
 
             CreateMap<RoutingStepPartVM, RoutingStepPart>()

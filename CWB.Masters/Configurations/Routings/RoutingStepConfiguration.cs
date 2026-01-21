@@ -64,6 +64,10 @@ namespace CWB.Masters.Configurations
              .HasColumnName("RoutingStepSequence")
              .IsRequired();
             builder
+             .Property(t => t.StepNextSequence)
+             .HasColumnName("StepNextSequence")
+             .IsRequired();
+            builder
              .Property(t => t.NumberOfSimMachines)
              .HasColumnName("NumberOfSimMachines")
              .IsRequired();

@@ -1796,7 +1796,7 @@ $(function () {
             checkbox.prop("checked", true);
         }
         else {
-            checkbox.prop("checked", false);
+            checkbox.prop("checked", true);
         }
     });
     $('#preferred-rout').on('hide.bs.modal', function (event) {
@@ -1864,6 +1864,9 @@ $(function () {
         api.get("/routings/deleterouting?routingId="+routingId).then((data) => {
            // console.log(data);
             routdeleted = true;
+            if (data != null && typeof data === 'string') {
+                alert(data);
+            }
             document.getElementById("BtnDelRoutingClose").click();
             location.reload();
         }).catch((error) => {
@@ -2922,30 +2925,40 @@ $(function () {
             StepLocation.style.border = '';
         }
         var formData = AppUtil.GetFormData("FormRoutingStep");
-        api.post("/routings/savestep", formData).then((data) => {
-            stepModel = data;
-            RoutingDetails["stepNumber"] = data["stepNumber"];
-            RoutingDetails["stepId"] = data["stepId"];
-            //console.log("====1=====");
-            //console.log(data);
-            //console.log("====1-End=====");
-            $("#StepId").val(data.stepId);
-            $("#BOMRoutingStepId").val(data.stepId);
-            document.getElementById('addMachine').removeAttribute('disabled');
-            document.getElementById('addSubCon').removeAttribute('disabled');
-            var StepNumber = document.getElementById('StepNumber');
-            StepNumber.style.border = '';
-            var StepDescription = document.getElementById('StepDescription');
-            StepDescription.style.border = '';
-            var StepOperation = document.getElementById('StepOperation');
-            StepOperation.style.border = '1px solid red';
-            StepOperation.style.border = '';
-            var StepLocation = document.getElementById('StepLocation');
-            StepLocation.style.border = '';
-            alert("Step Basic Info Saved Successfully!");
 
+        api.get("/routings/routingsteps?routingId=" + parseInt(formData.RoutingId)).then((rData) => {
+            var dataexist = rData.filter(a => a.stepNumber === formData.StepNumber);
+            if (dataexist.length > 0 && parseInt(formData.StepId) === 0) {
+                $("#error-stepnumber").text("Step Number already exists in this Routing.").css("color","red");
+            } else {
+                $("#error-stepnumber").text("");
+                api.post("/routings/savestep", formData).then((data) => {
+                    stepModel = data;
+                    RoutingDetails["stepNumber"] = data["stepNumber"];
+                    RoutingDetails["stepId"] = data["stepId"];
+                    //console.log("====1=====");
+                    //console.log(data);
+                    //console.log("====1-End=====");
+                    $("#StepId").val(data.stepId);
+                    $("#BOMRoutingStepId").val(data.stepId);
+                    document.getElementById('addMachine').removeAttribute('disabled');
+                    document.getElementById('addSubCon').removeAttribute('disabled');
+                    var StepNumber = document.getElementById('StepNumber');
+                    StepNumber.style.border = '';
+                    var StepDescription = document.getElementById('StepDescription');
+                    StepDescription.style.border = '';
+                    var StepOperation = document.getElementById('StepOperation');
+                    StepOperation.style.border = '1px solid red';
+                    StepOperation.style.border = '';
+                    var StepLocation = document.getElementById('StepLocation');
+                    StepLocation.style.border = '';
+                    alert("Step Basic Info Saved Successfully!");
+
+                }).catch((error) => {
+                    AppUtil.HandleError("FormRoutingStep", error);
+                });
+            }
         }).catch((error) => {
-            AppUtil.HandleError("FormRoutingStep", error);
         });
         event.preventDefault();
     });
@@ -3037,6 +3050,7 @@ $(function () {
     $("#BtnAddNextStep").click(function (event) {
         //routings/addnewrouting
         //alert("next step... todo...");
+        $("#error-stepnumber").text("");
         document.getElementById("FormRoutingStep").reset();
         hideMachinesSuppliersTable();
         //getRoutingInfoFromTable();
@@ -3074,8 +3088,8 @@ $(function () {
                 //stepLocationSelect.value = locationMapping[firstRowLocation];
                 $("#StepLocation").val(locationMapping[firstRowLocation]).trigger('change');
             }
-            var selectStepLoc = document.getElementById('StepLocation');
-            selectStepLoc.style.pointerEvents = 'none';
+            //var selectStepLoc = document.getElementById('StepLocation');
+            //selectStepLoc.style.pointerEvents = 'none';
         } else {
             var selectStepLoc = document.getElementById('StepLocation');
             selectStepLoc.style.pointerEvents = 'auto';

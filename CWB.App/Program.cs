@@ -11,13 +11,19 @@ namespace CWB.App
     {
         public static void Main(string[] args)
         {
+            StartupFileLogger.Log("Program.Main started");
             try
             {
+                StartupFileLogger.Log("Building host");
                 CreateHostBuilder(args).Build().Run();
+                StartupFileLogger.Log("Host exited normally");
             }
             catch (Exception ex)
             {
                 LogManager.GetCurrentClassLogger().Error(ex, "CWB APP startup failed");
+                StartupFileLogger.Log(
+                    $"Program.Main FAILED: {ex}\n"
+                );
             }
         }
 
@@ -25,6 +31,7 @@ namespace CWB.App
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    StartupFileLogger.Log("Configuring WebHost");
                     webBuilder.UseStartup<Startup>();
                 });
     }

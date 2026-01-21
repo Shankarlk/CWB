@@ -251,7 +251,7 @@ $(function () {
                 $("#MachineProcDocumentMachineId").val(data.machineMachineId);
                 MachieListFormUtil.ProcessTabs(data.machineMachineId, false);
                 MachineGeneralFormUtil.SetMachineInfoHeader();
-                alert("Machine Details Saved!");
+                //alert("Machine Details Saved!");
 
             }).catch((error) => {
                 AppUtil.HandleError("frmMachineGeneral", error);

@@ -1930,6 +1930,9 @@ function DeleteMakdeFrom(event) {
         //modifyMakeFromListForDel(data);
         reloadMakeFroms(partId);
         document.getElementById("btnDelMakeFromClose").click();
+        if (data != null && typeof data === 'string') {
+            alert(data);
+        }
         if (dataWritten && ownRMSelected) {
             disableOtherCustRadios();
         }
@@ -1967,6 +1970,9 @@ function DeleteBOM(event){
         //console.log(data);
         //console.log("====4")
         //modifyBOMListForDel(data);
+        if (data != null && typeof data === 'string') {
+            alert(data);
+        }
         reloadBOMs(partId);
         event.preventDefault();
         document.getElementById("btnDelBOMClose").click();

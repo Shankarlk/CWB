@@ -23,6 +23,8 @@ namespace CWB.App.Services.Masters
 
 
         Task<IEnumerable<UOMVM>> GetUOMs();
+        Task<IEnumerable<FailureVM>> GetFailures();
+        Task<FailureVM> PostFailures(FailureVM model);
 
 
         Task<IEnumerable<ManufacturedPartNoDetailVM>> GetManufacturedPartNoDetailList(long ManufPartType, string companyName);

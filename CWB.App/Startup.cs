@@ -28,9 +28,28 @@ namespace CWB.App
         private readonly string _localIpAddress;
         public Startup(IConfiguration configuration)
         {
-            //LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
-            Configuration = configuration;
-            _localIpAddress = Environment.GetEnvironmentVariable("HOST_DEFAULT_SWITCH_IP");
+            StartupFileLogger.Log("Startup constructor started");
+            LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+            try
+            {
+                Configuration = configuration;
+
+                _localIpAddress = Environment.GetEnvironmentVariable("HOST_DEFAULT_SWITCH_IP");
+
+                StartupFileLogger.Log(
+                    $"HOST_DEFAULT_SWITCH_IP = '{_localIpAddress ?? "NULL"}'"
+                );
+
+                if (string.IsNullOrWhiteSpace(_localIpAddress))
+                    throw new Exception("HOST_DEFAULT_SWITCH_IP is missing");
+
+                StartupFileLogger.Log("Startup constructor completed successfully");
+            }
+            catch (Exception ex)
+            {
+                StartupFileLogger.Log($"Startup constructor FAILED: {ex}");
+                throw;
+            }
         }
 
         public IConfiguration Configuration { get; }
@@ -38,139 +57,157 @@ namespace CWB.App
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            StartupFileLogger.Log("ConfigureServices started");
             //Configure logger
-            services.ConfigureLoggerService();
-            services.AddControllersWithViews();
+            try
+            {
+                services.ConfigureLoggerService();
+                services.AddControllersWithViews();
 
-            //configureApp URLS..
-            ApiUrls apiUrls = new ApiUrls
-            {
-                Idenitity = $"http://{_localIpAddress}:9003",
-                Gateway = $"http://{_localIpAddress}:9001"
-            };
-            services.AddSingleton(apiUrls);
-            //services.Configure<ApiUrls>(Configuration.GetSection("ApiUrls"));
-            //Dependency Injection..
-            services.ConfigureAppDI();
-            
-            services.AddControllers().AddJsonOptions(options =>
-           options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter()));
-
-            if (!_enableAuth)
-                return;
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = "oidc";
-            }).AddCookie(options =>
-            {
-                options.Cookie.Name = "cwbmvc";
-            })
-                .AddOpenIdConnect("oidc", options =>
+                //configureApp URLS..
+                ApiUrls apiUrls = new ApiUrls
                 {
-                    options.Authority = $"http://{_localIpAddress}:9003";
-                    options.ClientId = "cwbmvc";
-                    options.ClientSecret = "cwbsecret";
-                    //options.ResponseType = "code";
-                    //options.GetClaimsFromUserInfoEndpoint = true;
-                    //options.Scope.Add("cwb");
-                    ////options.Scope.Add("role");
-                    //options.Scope.Add("openid");
-                    //options.Scope.Add("profile");
-                    ////options.Scope.Add("roles");
-                    //options.Scope.Add("offline_access");
-                    //options.ClaimActions.MapUniqueJsonKey("role", "role", "role");
-                    //options.TokenValidationParameters = new TokenValidationParameters
-                    //{
-                    //    NameClaimType = "name",
-                    //    RoleClaimType = "role"
-                    //};
-                    //options.SaveTokens = true;
+                    Idenitity = $"http://{_localIpAddress}:9003",
+                    Gateway = $"http://{_localIpAddress}:9001"
+                };
+                services.AddSingleton(apiUrls);
+                //services.Configure<ApiUrls>(Configuration.GetSection("ApiUrls"));
+                //Dependency Injection..
+                services.ConfigureAppDI();
 
-                    //options.GetClaimsFromUserInfoEndpoint = true;
-                    //options.RequireHttpsMetadata = false;
-                    //options.Events = new OpenIdConnectEvents
-                    //{
-                    //    OnUserInformationReceived = usr =>
-                    //    {
-                    //        return Task.FromResult(usr);
-                    //    }
-                    //};
-                    options.ResponseType = "code";
-                    options.ResponseMode = "query";
+                services.AddControllers().AddJsonOptions(options =>
+               options.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter()));
 
-                    options.Scope.Clear();
-                    options.Scope.Add("openid");
-                    options.Scope.Add("profile");
-                    options.Scope.Add("cwb");
-                    options.Scope.Add("offline_access");
-                    options.RequireHttpsMetadata = false;
-                    // keeps id_token smaller
-                    options.GetClaimsFromUserInfoEndpoint = true;
-                    options.ClaimActions.MapJsonKey("role", "role", "role");
-                    options.SaveTokens = true;
-
-                    options.TokenValidationParameters = new TokenValidationParameters
+                if (!_enableAuth)
+                    return;
+                services.AddAuthentication(options =>
+                {
+                    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = "oidc";
+                }).AddCookie(options =>
+                {
+                    options.Cookie.Name = "cwbmvc";
+                })
+                    .AddOpenIdConnect("oidc", options =>
                     {
-                        NameClaimType = "name",
-                        RoleClaimType = "role"
-                    };
+                        options.Authority = $"http://{_localIpAddress}:9003";
+                        options.ClientId = "cwbmvc";
+                        options.ClientSecret = "cwbsecret";
+                        //options.ResponseType = "code";
+                        //options.GetClaimsFromUserInfoEndpoint = true;
+                        //options.Scope.Add("cwb");
+                        ////options.Scope.Add("role");
+                        //options.Scope.Add("openid");
+                        //options.Scope.Add("profile");
+                        ////options.Scope.Add("roles");
+                        //options.Scope.Add("offline_access");
+                        //options.ClaimActions.MapUniqueJsonKey("role", "role", "role");
+                        //options.TokenValidationParameters = new TokenValidationParameters
+                        //{
+                        //    NameClaimType = "name",
+                        //    RoleClaimType = "role"
+                        //};
+                        //options.SaveTokens = true;
+
+                        //options.GetClaimsFromUserInfoEndpoint = true;
+                        //options.RequireHttpsMetadata = false;
+                        //options.Events = new OpenIdConnectEvents
+                        //{
+                        //    OnUserInformationReceived = usr =>
+                        //    {
+                        //        return Task.FromResult(usr);
+                        //    }
+                        //};
+                        options.ResponseType = "code";
+                        options.ResponseMode = "query";
+
+                        options.Scope.Clear();
+                        options.Scope.Add("openid");
+                        options.Scope.Add("profile");
+                        options.Scope.Add("cwb");
+                        options.Scope.Add("offline_access");
+                        options.RequireHttpsMetadata = false;
+                        // keeps id_token smaller
+                        options.GetClaimsFromUserInfoEndpoint = true;
+                        options.ClaimActions.MapJsonKey("role", "role", "role");
+                        options.SaveTokens = true;
+
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            NameClaimType = "name",
+                            RoleClaimType = "role"
+                        };
+                    });
+                services.AddSession(options =>
+                {
+                    options.IdleTimeout = TimeSpan.FromMinutes(60); // Set the session timeout
+                    options.Cookie.HttpOnly = true; // Make the session cookie HTTP only
+                    options.Cookie.IsEssential = true; // Make the session cookie essential
                 });
-            services.AddSession(options =>
+                services.AddAuthorization();
+                StartupFileLogger.Log("ConfigureServices completed successfully");
+            }
+            catch (Exception ex)
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(60); // Set the session timeout
-                options.Cookie.HttpOnly = true; // Make the session cookie HTTP only
-                options.Cookie.IsEssential = true; // Make the session cookie essential
-            });
-            services.AddAuthorization();
+                StartupFileLogger.Log($"ConfigureServices FAILED: {ex}");
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
-            app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Strict });
-            if (env.IsDevelopment())
+            StartupFileLogger.Log("Configure pipeline started");
+
+            try
             {
-                app.UseDeveloperExceptionPage();
-                IdentityModelEventSource.ShowPII = true;
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                //app.UseHsts();
-            }
-            //app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            logger.LogInformation("Application started");
-            
-            app.UseRouting();
-            
-            if (_enableAuth)
-            {
-                app.UseAuthentication();
-                app.UseAuthorization();
-                app.UseSession();
-                app.UseEndpoints(endpoints =>
+                app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Strict });
+                if (env.IsDevelopment())
                 {
-                    endpoints.MapDefaultControllerRoute()
-                        .RequireAuthorization();
-                });
+                    app.UseDeveloperExceptionPage();
+                    IdentityModelEventSource.ShowPII = true;
+                }
+                else
+                {
+                    app.UseExceptionHandler("/Home/Error");
+                    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                    //app.UseHsts();
+                }
+                //app.UseHttpsRedirection();
+                app.UseStaticFiles();
+                logger.LogInformation("Application started");
+
+                app.UseRouting();
+
+                if (_enableAuth)
+                {
+                    app.UseAuthentication();
+                    app.UseAuthorization();
+                    app.UseSession();
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapDefaultControllerRoute()
+                            .RequireAuthorization();
+                    });
+                    //app.UseEndpoints(endpoints =>
+                    //{
+                    //    endpoints.MapControllerRoute(
+                    //        name: "HiddenFeature",
+                    //        pattern: "HiddenFeature",
+                    //        defaults: new { controller = "WorkOrder", action = "SoToWo" });
+                    //});
+                }
                 //app.UseEndpoints(endpoints =>
                 //{
                 //    endpoints.MapControllerRoute(
-                //        name: "HiddenFeature",
-                //        pattern: "HiddenFeature",
-                //        defaults: new { controller = "WorkOrder", action = "SoToWo" });
+                //        name: "default",
+                //
+                //     pattern: "{controller=Home}/{action=Index}/{id?}");
                 //});
             }
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapControllerRoute(
-            //        name: "default",
-            //
-            //     pattern: "{controller=Home}/{action=Index}/{id?}");
-            //});
+            catch (Exception ex)
+            {
+                StartupFileLogger.Log($"Configure pipeline FAILED: {ex}");
+            }
         }
     }
 }
