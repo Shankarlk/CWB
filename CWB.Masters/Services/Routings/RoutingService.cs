@@ -464,8 +464,8 @@ namespace CWB.Masters.Services.Routings
                     await _routingStatusLogRepository.AddAsync(routingStatusLog);
                 }
                 routing = await _routingRepository.UpdateAsync(routing.Id, routing);
+                await _unitOfWork.CommitAsync();
             }
-            await _unitOfWork.CommitAsync();
             routingVM.RoutingId = (int)routing.Id;
             return routingVM;
         }
@@ -593,6 +593,9 @@ namespace CWB.Masters.Services.Routings
                 if (routingStep.Id == 0)
                 {
                     routingStep.RoutingStepOperationId = Convert.ToInt64(routingStep.RoutingStepOperation);
+                    var rtstep = _routingStepRepository.GetRangeAsync(r => r.RoutingId == routingStepVM.RoutingId);
+                    int seq = rtstep.Select(r=>r.RoutingStepSequence).Max();
+                    routingStep.RoutingStepSequence = seq + 1;
                     await _routingStepRepository.AddAsync(routingStep);
                 }
                 else

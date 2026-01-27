@@ -1,0 +1,9 @@
+2026-01-14 11:06:22 | Program.Main started
+2026-01-14 11:06:22 | Building host
+2026-01-14 11:06:27 | Configuring WebHost
+2026-01-14 11:06:36 | Startup constructor started
+2026-01-14 11:06:39 | HOST_DEFAULT_SWITCH_IP = '172.19.144.1'
+2026-01-14 11:06:39 | Startup constructor completed successfully
+2026-01-14 11:06:44 | ConfigureServices started
+2026-01-14 11:06:58 | ConfigureServices completed successfully
+2026-01-14 11:07:01 | Configure pipeline started

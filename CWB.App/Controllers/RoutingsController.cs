@@ -175,16 +175,13 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteRouting(int routingId)
         {
-            //var prodns = await _woService.AllProductionPlan_Wo();
-
-            //if (prodns)
-            //{
-
-            //}
-            //if (!ModelState.IsValid)
-            //{
-            //    return BadRequest(ModelState);
-            //}
+            var prodns = await _woService.AllProductionPlan_Wo();
+            var prodrt = prodns.FirstOrDefault(p => p.RoutingId == routingId);
+            if (prodrt!= null)
+            {
+                string msg = "This Routing is already used in the WO: "+ prodrt.WONumber + " .";
+                return Ok(msg);
+            }
             var result = await _routingService.DeleteRouting(routingId);
             return Ok(result);
         }
@@ -301,6 +298,32 @@ namespace CWB.App.Controllers
        
         public async Task<IActionResult> DelStep(int stepId)
         {
+            var stepMachines = await _routingService.StepMachines(stepId);
+            if (stepMachines != null && stepMachines.Any())
+            {
+                return Ok("This Step is already used in the Machines. Please delete them first.");
+            }
+
+            // 2. Dependency: Check for Parts configured on this step
+            var stepParts = await _routingService.StepParts(stepId);
+            if (stepParts != null && stepParts.Any())
+            {
+                return Ok("This Step is already used in the StepParts. Please delete them first.");
+            }
+
+            // 3. Dependency: Check for SubCons (if applicable location)
+            var subCons = await _routingService.SubCons(stepId);
+            if (subCons != null && subCons.Any())
+            {
+                return Ok("This Step is already used in the SubCon. Please delete them first.");
+            }
+            var prodns = await _woService.AllProductionPlan_Wo();
+            var prodrt = prodns.FirstOrDefault(p => p.StartingOpNo == stepId || p.EndingOpNo == stepId);
+            if (prodrt != null)
+            {
+                string msg = "This Routing is already used in the WO: " + prodrt.WONumber + " .";
+                return Ok(msg);
+            }
             var result = await _routingService.DeleteStep(stepId);
             return Ok(result);
         }

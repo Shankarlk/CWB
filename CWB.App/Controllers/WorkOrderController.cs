@@ -770,8 +770,8 @@ namespace CWB.App.Controllers
                         DateTime planstartdt = DateTime.Now;
                         if (mf.ManufacturedPartType == 2)
                         {
-                            var workdetails = await _plantService.GetPlantWD(1);
-                            var holidaylist = await _plantService.GetHolidays(1);
+                            var workdetails = await _plantService.GetPlantWD(13);
+                            var holidaylist = await _plantService.GetHolidays(13);
                             string weekOff1 = workdetails.WeeklyOff1;
                             string weekOff2 = workdetails.WeeklyOff2;
                             var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
@@ -979,8 +979,8 @@ namespace CWB.App.Controllers
                                     foreach (var bomgrp in bomgroupedResults)
                                     {
                                         var mp = await _masterService.ItemMasterPartById(bomgrp.PartId);
-                                        var workdetails = await _plantService.GetPlantWD(1);
-                                        var holidaylist = await _plantService.GetHolidays(1);
+                                        var workdetails = await _plantService.GetPlantWD(13);
+                                        var holidaylist = await _plantService.GetHolidays(13);
                                         string weekOff1 = workdetails.WeeklyOff1;
                                         string weekOff2 = workdetails.WeeklyOff2;
                                         var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
@@ -1068,7 +1068,7 @@ namespace CWB.App.Controllers
                                                             ProcPlanVM subppdata = new ProcPlanVM
                                                             {
                                                                 PartId = grouped.PartId,
-                                                                PartType = subptype.MasterPartType,
+                                                                PartType = subptype.MasterPartType ?? "ManufacturedPart",
                                                                 Calc_Proc_Qnty = (int)intermediateResult,
                                                                 UOMId = manufchild.UOMId,
                                                                 PlanReceiptDate = item.PlanStartDate,
@@ -1080,7 +1080,7 @@ namespace CWB.App.Controllers
                                                             {
                                                                 ParentWoId = item.WoId,
                                                                 Child_Part_No_ID = grouped.PartId,
-                                                                Child_Part_No_Type = subptype.MasterPartType.ToString(),
+                                                                Child_Part_No_Type = subptype.MasterPartType ?? "ManufacturedPart",
                                                                 Calc_Qnty = (int)intermediateResult,
                                                                 Plan_Qnty = item.CalcWOQty,
                                                                 Plan_Start_Dt = planstdt,
@@ -1214,8 +1214,8 @@ namespace CWB.App.Controllers
 
                             //McTimeList---
                             ManufacturedPartNoDetailVM mcmf = await _masterService.GetManufPart((int)item.PartId);
-                            var mcworkdetails = await _plantService.GetPlantWD(1);
-                            var mcholidaylist = await _plantService.GetHolidays(1);
+                            var mcworkdetails = await _plantService.GetPlantWD(13);
+                            var mcholidaylist = await _plantService.GetHolidays(13);
                             string mcweekOff1 = mcworkdetails.WeeklyOff1;
                             string mcweekOff2 = mcworkdetails.WeeklyOff2;
                             var mcresultList = await _routingService.Routings(mcmf.ManufacturedPartNoDetailId);
@@ -1259,7 +1259,7 @@ namespace CWB.App.Controllers
                                     }
                                 }
                             }
-                            int mcassyTime = (mcminutes * item.CalcWOQty) / mcworkdetails.NoOfShifts;
+                            int mcassyTime = (mcminutes * item.CalcWOQty) / ((mcworkdetails?.NoOfShifts ?? 0) > 0 ? mcworkdetails.NoOfShifts : 1);
                             int mcassyTimeInDays = mcassyTime / 1440;
                             DateTime mcplanstartdt = item.PlanCompletionDate.Value.AddDays(-mcassyTimeInDays);
                             var routingstep = await _routingService.RoutingSteps((int)item.RoutingId);
@@ -1438,7 +1438,7 @@ namespace CWB.App.Controllers
                                                 ProcPlanVM ppdata = new ProcPlanVM
                                                 {
                                                     PartId = grouped.PartId,
-                                                    PartType = ptype.MasterPartType,
+                                                    PartType = ptype.MasterPartType ?? "ManufacturedPart",
                                                     Calc_Proc_Qnty = (int)intermediateResult,
                                                     UOMId = mf.UOMId,
                                                     PlanReceiptDate = item.PlanStartDate,
@@ -1450,7 +1450,7 @@ namespace CWB.App.Controllers
                                                 {
                                                     ParentWoId = item.WoId,
                                                     Child_Part_No_ID = grouped.PartId,
-                                                    Child_Part_No_Type = ptype.MasterPartType.ToString(),
+                                                    Child_Part_No_Type = ptype.MasterPartType ?? "ManufacturedPart",
                                                     Calc_Qnty = (int)intermediateResult,
                                                     Plan_Qnty = item.CalcWOQty,
                                                     //Plan_Start_Dt = planstartdt,
@@ -1488,8 +1488,8 @@ namespace CWB.App.Controllers
                                         foreach (var bomgrp in bomgroupedResults)
                                         {
                                             var mp = await _masterService.ItemMasterPartById(bomgrp.PartId);
-                                            var workdetails = await _plantService.GetPlantWD(1);
-                                            var holidaylist = await _plantService.GetHolidays(1);
+                                            var workdetails = await _plantService.GetPlantWD(13);
+                                            var holidaylist = await _plantService.GetHolidays(13);
                                             string weekOff1 = workdetails.WeeklyOff1;
                                             string weekOff2 = workdetails.WeeklyOff2;
                                             var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
@@ -1579,7 +1579,7 @@ namespace CWB.App.Controllers
                                                                 ProcPlanVM subppdata = new ProcPlanVM
                                                                 {
                                                                     PartId = grouped.PartId,
-                                                                    PartType = subptype.MasterPartType,
+                                                                    PartType = subptype.MasterPartType ?? "ManufacturedPart",
                                                                     Calc_Proc_Qnty = (int)intermediateResult,
                                                                     UOMId = manufchild.UOMId,
                                                                     PlanReceiptDate = item.PlanStartDate,
@@ -1591,7 +1591,7 @@ namespace CWB.App.Controllers
                                                                 {
                                                                     ParentWoId = item.WoId,
                                                                     Child_Part_No_ID = grouped.PartId,
-                                                                    Child_Part_No_Type = subptype.MasterPartType.ToString(),
+                                                                    Child_Part_No_Type = subptype.MasterPartType ?? "ManufacturedPart",
                                                                     Calc_Qnty = (int)intermediateResult,
                                                                     Plan_Qnty = item.CalcWOQty,
                                                                     Plan_Start_Dt = planstartdt,
@@ -1724,8 +1724,8 @@ namespace CWB.App.Controllers
 
                                 //McTimeList---
                                 ManufacturedPartNoDetailVM mcmf = await _masterService.GetManufPart((int)item.PartId);
-                                var mcworkdetails = await _plantService.GetPlantWD(1);
-                                var mcholidaylist = await _plantService.GetHolidays(1);
+                                var mcworkdetails = await _plantService.GetPlantWD(13);
+                                var mcholidaylist = await _plantService.GetHolidays(13);
                                 string mcweekOff1 = mcworkdetails.WeeklyOff1;
                                 string mcweekOff2 = mcworkdetails.WeeklyOff2;
                                 var mcresultList = await _routingService.Routings(mcmf.ManufacturedPartNoDetailId);
@@ -1769,7 +1769,7 @@ namespace CWB.App.Controllers
                                         }
                                     }
                                 }
-                                int mcassyTime = (mcminutes * item.CalcWOQty) / mcworkdetails.NoOfShifts;
+                                int mcassyTime = (mcminutes * item.CalcWOQty) / ((mcworkdetails?.NoOfShifts ?? 0) > 0 ? mcworkdetails.NoOfShifts : 1);
                                 int mcassyTimeInDays = mcassyTime / 1440;
                                 DateTime mcplanstartdt = item.PlanCompletionDate.Value.AddDays(-mcassyTimeInDays);
                                 var routingstep = await _routingService.RoutingSteps((int)item.RoutingId);
@@ -1954,7 +1954,7 @@ namespace CWB.App.Controllers
                                                     ProcPlanVM ppdata = new ProcPlanVM
                                                     {
                                                         PartId = grouped.PartId,
-                                                        PartType = ptype.MasterPartType,
+                                                        PartType = ptype.MasterPartType ?? "ManufacturedPart",
                                                         Calc_Proc_Qnty = (int)intermediateResult,
                                                         UOMId = mf.UOMId,
                                                         PlanReceiptDate = item.PlanStartDate,
@@ -1966,7 +1966,7 @@ namespace CWB.App.Controllers
                                                     {
                                                         ParentWoId = item.WoId,
                                                         Child_Part_No_ID = grouped.PartId,
-                                                        Child_Part_No_Type = ptype.MasterPartType.ToString(),
+                                                        Child_Part_No_Type = ptype.MasterPartType ?? "ManufacturedPart",
                                                         Calc_Qnty = (int)intermediateResult,
                                                         Plan_Qnty = item.CalcWOQty,
                                                         //Plan_Start_Dt = planstartdt,
@@ -2004,8 +2004,8 @@ namespace CWB.App.Controllers
                                             foreach (var bomgrp in bomgroupedResults)
                                             {
                                                 var mp = await _masterService.ItemMasterPartById(bomgrp.PartId);
-                                                var workdetails = await _plantService.GetPlantWD(1);
-                                                var holidaylist = await _plantService.GetHolidays(1);
+                                                var workdetails = await _plantService.GetPlantWD(13);
+                                                var holidaylist = await _plantService.GetHolidays(13);
                                                 string weekOff1 = workdetails.WeeklyOff1;
                                                 string weekOff2 = workdetails.WeeklyOff2;
                                                 var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
@@ -2095,7 +2095,7 @@ namespace CWB.App.Controllers
                                                                     ProcPlanVM subppdata = new ProcPlanVM
                                                                     {
                                                                         PartId = grouped.PartId,
-                                                                        PartType = subptype.MasterPartType,
+                                                                        PartType = subptype.MasterPartType ?? "ManufacturedPart",
                                                                         Calc_Proc_Qnty = (int)intermediateResult,
                                                                         UOMId = manufchild.UOMId,
                                                                         PlanReceiptDate = item.PlanStartDate,
@@ -2107,7 +2107,7 @@ namespace CWB.App.Controllers
                                                                     {
                                                                         ParentWoId = item.WoId,
                                                                         Child_Part_No_ID = grouped.PartId,
-                                                                        Child_Part_No_Type = subptype.MasterPartType.ToString(),
+                                                                        Child_Part_No_Type = subptype.MasterPartType ?? "ManufacturedPart",
                                                                         Calc_Qnty = (int)intermediateResult,
                                                                         Plan_Qnty = item.CalcWOQty,
                                                                         Plan_Start_Dt = planstartdt,
@@ -2240,8 +2240,8 @@ namespace CWB.App.Controllers
 
                                     //McTimeList---
                                     ManufacturedPartNoDetailVM mcmf = await _masterService.GetManufPart((int)item.PartId);
-                                    var mcworkdetails = await _plantService.GetPlantWD(1);
-                                    var mcholidaylist = await _plantService.GetHolidays(1);
+                                    var mcworkdetails = await _plantService.GetPlantWD(13);
+                                    var mcholidaylist = await _plantService.GetHolidays(13);
                                     string mcweekOff1 = mcworkdetails.WeeklyOff1;
                                     string mcweekOff2 = mcworkdetails.WeeklyOff2;
                                     var mcresultList = await _routingService.Routings(mcmf.ManufacturedPartNoDetailId);
@@ -2285,7 +2285,7 @@ namespace CWB.App.Controllers
                                             }
                                         }
                                     }
-                                    int mcassyTime = (mcminutes * item.CalcWOQty) / mcworkdetails.NoOfShifts;
+                                    int mcassyTime = (mcminutes * item.CalcWOQty) / ((mcworkdetails?.NoOfShifts ?? 0) > 0 ? mcworkdetails.NoOfShifts : 1);
                                     int mcassyTimeInDays = mcassyTime / 1440;
                                     DateTime mcplanstartdt = item.PlanCompletionDate.Value.AddDays(-mcassyTimeInDays);
                                     var routingstep = await _routingService.RoutingSteps((int)item.RoutingId);
@@ -4261,10 +4261,11 @@ namespace CWB.App.Controllers
                     // C. # Assy Coverage (Floor calculation)
                     // How many assemblies can we make with this specific child part?
                     double assyCoverage = 0;
-                    if (bomQtyPerUnit > 0)
+                    if (bomQtyPerUnit == 0 || bomQtyPerUnit!= null)
                     {
-                        assyCoverage = Math.Floor((double)(issuedQty / bomQtyPerUnit));
+                        bomQtyPerUnit = 1;
                     }
+                    assyCoverage = Math.Floor((double)(issuedQty / bomQtyPerUnit));
 
                     // Update the global minimum (Bottleneck calculation)
                     if (assyCoverage < minAssemblyCoverage)
@@ -4274,10 +4275,11 @@ namespace CWB.App.Controllers
 
                     // D. % Coverage
                     double percentCoverage = 0;
-                    if (wo.CalcWOQty > 0)
+                    if (wo.CalcWOQty == 0)
                     {
-                        percentCoverage = (assyCoverage / wo.CalcWOQty) * 100;
+                        wo.CalcWOQty = 1;
                     }
+                    percentCoverage = (assyCoverage / wo.CalcWOQty) * 100;
 
                     // Locations (Simplified logic based on typical flow)
                     string fromLocation = "Stores";
@@ -4402,9 +4404,7 @@ namespace CWB.App.Controllers
                 }
 
                 // 6. Calculate Header Metrics
-                string percentCoverage = totalQtyReqd > 0
-                    ? $"{((double)totalIssued / totalQtyReqd * 100):0.00}%"
-                    : "0.00%";
+                string percentCoverage =$"{(double)totalIssued / (totalQtyReqd > 0 ? totalQtyReqd : 1) * 100:0.00}%";
 
                 // Determine Locations (Logic based on your existing controllers)
                 // Usually from Stores to Shop
@@ -4505,10 +4505,7 @@ namespace CWB.App.Controllers
                     // C. # Assy Coverage (Floor calculation)
                     // How many assemblies can we make with this specific child part?
                     double assyCoverage = 0;
-                    if (bomQtyPerUnit > 0)
-                    {
-                        assyCoverage = Math.Floor((double)(issuedQty / bomQtyPerUnit));
-                    }
+                        assyCoverage = Math.Floor((double)(issuedQty / ((bomQtyPerUnit) > 0 ? bomQtyPerUnit : 1)));
 
                     // Update the global minimum (Bottleneck calculation)
                     if (assyCoverage < minAssemblyCoverage)
@@ -4774,11 +4771,11 @@ namespace CWB.App.Controllers
             var inltialDt = DateTime.Parse(initialDate);
             List<ProductionPlan_WoVM> previousWorkdays = new List<ProductionPlan_WoVM>();
             DateTime currentDate = inltialDt;
-            var workdetails = await _plantService.GetPlantWD(1);
-            var holidaylist = await _plantService.GetHolidays(1);
+            var workdetails = await _plantService.GetPlantWD(13);
+            var holidaylist = await _plantService.GetHolidays(13);
             string weekOff1 = workdetails.WeeklyOff1;
             string weekOff2 = workdetails.WeeklyOff2;
-            int quantityPerDay = quantity / numDays;
+            int quantityPerDay = quantity / (numDays > 0 ? numDays : 1);
 
             for (int i = 0; i < numDays; i++)
             {
@@ -4847,8 +4844,8 @@ namespace CWB.App.Controllers
             var dispatchStartDt = DateTime.Parse(dispatchStartDate);
             var soCompletionDt = DateTime.Parse(soCompletionDate);
 
-            var workdetails = await _plantService.GetPlantWD(1);
-            var holidaylist = await _plantService.GetHolidays(1);
+            var workdetails = await _plantService.GetPlantWD(13);
+            var holidaylist = await _plantService.GetHolidays(13);
             string weekOff1 = workdetails.WeeklyOff1;
             string weekOff2 = workdetails.WeeklyOff2;
 
@@ -5096,7 +5093,7 @@ namespace CWB.App.Controllers
             {
                 var findsubcom = procdutionpost.Where(s => s.WoSubConSupplierId == id).FirstOrDefault();
                 var wosubcon = procdutionpost.Where(s => s.WoId == findsubcom.WoId).ToList();
-                var qnty = Convert.ToDouble(findsubcom.Qnty) / wosubcon.Count();
+                var qnty = Convert.ToDouble(findsubcom.Qnty) / (wosubcon.Count() > 0 ? wosubcon.Count() : 1);
                 foreach (var item in wosubcon)
                 {
                     item.Qnty = (Convert.ToDouble(item.Qnty) + qnty).ToString();
@@ -8964,7 +8961,7 @@ namespace CWB.App.Controllers
                 int timeslotDuration = plant.Timeslot_duration;
                 rwk.Plan_Duration = "00:" + rwk.Plan_Duration;
                 int durationInMinutes = (int)TimeSpan.Parse(rwk.Plan_Duration).TotalMinutes;
-                int requiredSlots = (int)Math.Ceiling((double)durationInMinutes / timeslotDuration);
+                int requiredSlots = (int)Math.Ceiling((double)durationInMinutes / (timeslotDuration > 0 ? timeslotDuration : 1));
 
                 var timeslots = allTimeslots
                     .Where(t => t.PlantId == machine.MachinePlantId && t.Start_time >= DateTime.Now && t.Break_Slot != 'Y')
@@ -9025,7 +9022,7 @@ namespace CWB.App.Controllers
                 int timeslotDuration = plant.Timeslot_duration;
                 np.Plan_Duration = "00:" + np.Plan_Duration;
                 int durationInMinutes = (int)TimeSpan.Parse(np.Plan_Duration).TotalMinutes;
-                int requiredSlots = (int)Math.Ceiling((double)durationInMinutes / timeslotDuration);
+                int requiredSlots = (int)Math.Ceiling((double)durationInMinutes / (timeslotDuration > 0 ? timeslotDuration : 1));
 
                 var timeslots = allTimeslots
                     .Where(t => t.PlantId == machine.MachinePlantId && t.Start_time >= np.Plan_start_time && t.Break_Slot != 'Y')
@@ -9192,8 +9189,8 @@ namespace CWB.App.Controllers
                             if (plant.NoOfShifts == 3)
                                 totalWorkingMinutes += (int)TimeSpan.Parse(plant.ThirdShiftDuration).TotalMinutes;
 
-                            int slotsPerDay = totalWorkingMinutes / plant.Timeslot_duration;
-                            int subconDays = (int)Math.Ceiling(totalMinutes / totalWorkingMinutes);
+                            int slotsPerDay = totalWorkingMinutes / (plant.Timeslot_duration > 0 ? plant.Timeslot_duration : 1);
+                            int subconDays = (int)Math.Ceiling(totalMinutes / (totalWorkingMinutes > 0 ? totalWorkingMinutes : 1));
 
 
                             // Timeslot allocation logic
@@ -9270,7 +9267,7 @@ namespace CWB.App.Controllers
                     else
                     {
                         int noOfMcs = noOfSimultMcs;
-                        int qtyPerMc = wo.Plan_Simul_Qnty / noOfMcs;
+                        int qtyPerMc = wo.Plan_Simul_Qnty / (noOfMcs > 0 ? noOfMcs : 1);
                         var machines = await _routingService.StepMachines((int)opr.Opr_No);
                         List<TempMc_Wait_ListVM> mcWaits = new List<TempMc_Wait_ListVM>();
                         var insttempMCTime = new TempMc_Timeslot_ListVM();
@@ -9282,7 +9279,7 @@ namespace CWB.App.Controllers
                             var tpt = setupTime.TotalMinutes + (floorToFloorTime.TotalMinutes * qtyPerMc); // total time in minutes
                             var getmachine = await _machineService.GetMachine(mc.MachineId);
                             var plantwd = await _plantService.GetPlantWD(getmachine.MachinePlantId);
-                            int slotsRequired = (int)Math.Ceiling(tpt / plantwd.Timeslot_duration);
+                            int slotsRequired = (int)Math.Ceiling(tpt / (plantwd.Timeslot_duration > 0 ? plantwd.Timeslot_duration : 1));
 
                             var plantSlots = allTimeslots
                                 .Where(t => t.PlantId == getmachine.MachinePlantId && t.Break_Slot !='Y')
@@ -10575,7 +10572,7 @@ namespace CWB.App.Controllers
 
                 int timeslotDuration = plant.Timeslot_duration;
                 int durationInMinutes = (int)TimeSpan.Parse(rwk.Plan_Duration).TotalMinutes;
-                int requiredSlots = (int)Math.Ceiling((double)durationInMinutes / timeslotDuration);
+                int requiredSlots = (int)Math.Ceiling((double)durationInMinutes / (timeslotDuration > 0 ? timeslotDuration : 1));
 
                 var timeslots = allTimeslots
                     .Where(t => t.PlantId == machine.MachinePlantId && t.Start_time >= DateTime.Now && t.Break_Slot != 'Y')
@@ -10638,7 +10635,7 @@ namespace CWB.App.Controllers
 
                 int timeslotDuration = plant.Timeslot_duration;
                 int durationInMinutes = (int)TimeSpan.Parse(np.Plan_Duration).TotalMinutes;
-                int requiredSlots = (int)Math.Ceiling((double)durationInMinutes / timeslotDuration);
+                int requiredSlots = (int)Math.Ceiling((double)durationInMinutes / (timeslotDuration > 0 ? timeslotDuration : 1));
 
                 var timeslots = allTimeslots
                     .Where(t => t.PlantId == machine.MachinePlantId && t.Start_time >= np.Plan_start_time && t.Break_Slot != 'Y')
@@ -10761,8 +10758,8 @@ namespace CWB.App.Controllers
                             if (plant.NoOfShifts == 3)
                                 totalWorkingMinutes += (int)TimeSpan.Parse(plant.ThirdShiftDuration).TotalMinutes;
 
-                            int slotsPerDay = totalWorkingMinutes / plant.Timeslot_duration;
-                            int subconDays = (int)Math.Ceiling(totalMinutes / totalWorkingMinutes);
+                            int slotsPerDay = totalWorkingMinutes / (plant.Timeslot_duration > 0 ? plant.Timeslot_duration : 1);
+                            int subconDays = (int)Math.Ceiling(totalMinutes / (totalWorkingMinutes > 0 ? totalWorkingMinutes : 1));
 
 
                             // Timeslot allocation logic
@@ -10794,7 +10791,7 @@ namespace CWB.App.Controllers
                     else
                     {
                         int noOfMcs = noOfSimultMcs;
-                        int qtyPerMc = wo.Plan_Simul_Qnty / noOfMcs;
+                        int qtyPerMc = wo.Plan_Simul_Qnty / (noOfMcs > 0 ? noOfMcs : 1);
                         var machines = await _routingService.StepMachines((int)opr.Opr_No);
                         List<Mc_Wait_ListVM> mcWaits = new List<Mc_Wait_ListVM>();
 
@@ -10805,7 +10802,7 @@ namespace CWB.App.Controllers
                             var tpt = setupTime.TotalMinutes + (floorToFloorTime.TotalMinutes * qtyPerMc); // total time in minutes
                             var getmachine =await _machineService.GetMachine(mc.MachineId);
                             var plantwd = await _plantService.GetPlantWD(getmachine.MachinePlantId);
-                            int slotsRequired = (int)Math.Ceiling(tpt / plantwd.Timeslot_duration);
+                            int slotsRequired = (int)Math.Ceiling(tpt / (plantwd.Timeslot_duration > 0 ? plantwd.Timeslot_duration : 1));
 
                             var mcTimeslots = allMcTimeslots
                                 .Where(s => s.Mc_Id == mc.MachineId && s.Allocation == 1 && s.Slot_Not_Avl != 'Y')
@@ -11685,8 +11682,8 @@ namespace CWB.App.Controllers
                             if (plant.NoOfShifts == 3)
                                 totalWorkingMinutes += (int)TimeSpan.Parse(plant.ThirdShiftDuration).TotalMinutes;
 
-                            int slotsPerDay = totalWorkingMinutes / plant.Timeslot_duration;
-                            int subconDays = (int)Math.Ceiling(totalMinutes / totalWorkingMinutes);
+                            int slotsPerDay = totalWorkingMinutes / (plant.Timeslot_duration > 0 ? plant.Timeslot_duration : 1);
+                            int subconDays = (int)Math.Ceiling(totalMinutes / (totalWorkingMinutes > 0 ? totalWorkingMinutes : 1));
 
 
                             // Timeslot allocation logic
@@ -11763,7 +11760,7 @@ namespace CWB.App.Controllers
                     else
                     {
                         int noOfMcs = noOfSimultMcs;
-                        int qtyPerMc = wo.Plan_Simul_Qnty / noOfMcs;
+                        int qtyPerMc = wo.Plan_Simul_Qnty / (noOfMcs > 0 ? noOfMcs : 1);
                         var machines = await _routingService.StepMachines((int)opr.Opr_No);
                         List<TempMc_Wait_ListVM> mcWaits = new List<TempMc_Wait_ListVM>();
                         var insttempMCTime = new TempMc_Timeslot_ListVM();
@@ -11775,7 +11772,7 @@ namespace CWB.App.Controllers
                             var tpt = setupTime.TotalMinutes + (floorToFloorTime.TotalMinutes * qtyPerMc); // total time in minutes
                             var getmachine = await _machineService.GetMachine(mc.MachineId);
                             var plantwd = await _plantService.GetPlantWD(getmachine.MachinePlantId);
-                            int slotsRequired = (int)Math.Ceiling(tpt / plantwd.Timeslot_duration);
+                            int slotsRequired = (int)Math.Ceiling(tpt / (plantwd.Timeslot_duration > 0 ? plantwd.Timeslot_duration : 1));
 
                             var plantSlots = allTimeslots
                                 .Where(t => t.PlantId == getmachine.MachinePlantId && t.Break_Slot != 'Y')

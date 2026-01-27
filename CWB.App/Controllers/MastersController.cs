@@ -3,6 +3,7 @@ using CWB.App.Models.Contacts;
 using CWB.App.Models.DocumentManagement;
 using CWB.App.Models.ItemMaster;
 using CWB.App.Models.WorkOrder;
+using CWB.App.Services.BusinessProcesses;
 using CWB.App.Services.DocumentMagement;
 using CWB.App.Services.Masters;
 using CWB.App.Services.ProductionPlanWo;
@@ -29,6 +30,7 @@ namespace CWB.App.Controllers
     {
         private readonly ILoggerManager _logger;
         private readonly IMastersServices _mastersService;
+        private readonly IBAService _baService;
         private readonly IMachineService _machineService;
         private readonly IDocMangService _docMangService;
         private readonly IRoutingService _routingService;
@@ -37,7 +39,8 @@ namespace CWB.App.Controllers
         IHostingEnvironment _hostingEnvironment = null;
         public MastersController(ILoggerManager logger, IMachineService machineService, IMastersServices mastersService, IDocMangService docMangService,
            IRoutingService routingService, IHostingEnvironment hostingEnvironment, IWOService woService
-            , IHttpContextAccessor httpContextAccessor, IOperationService operationService)
+            , IHttpContextAccessor httpContextAccessor, IOperationService operationService,
+           IBAService baService)
         {
             _logger = logger;
             _mastersService = mastersService;
@@ -47,6 +50,8 @@ namespace CWB.App.Controllers
             _operationService = operationService;
             _hostingEnvironment = hostingEnvironment;
             _woService = woService;
+            _baService = baService;
+
         }
         public IActionResult Index()
         {
@@ -723,7 +728,14 @@ namespace CWB.App.Controllers
                     $"This Part No has Routing. Delete Routings Of This Part No : " + partno +".";
                 return Ok(msg);
             }
-                var result = await _mastersService.DeleteItemMasterPart(itemMasterDocListId);
+            var salesOrders = await _baService.AllSalesOrders();
+            var usedSo = salesOrders.FirstOrDefault(s => s.PartId == manuf.ManufacturedPartNoDetailId);
+            if (usedSo != null)
+            {
+                string msg = "This Part is already used in Sales Order: " + usedSo.SONumber + ".";
+                return Ok(msg);
+            }
+            var result = await _mastersService.DeleteItemMasterPart(itemMasterDocListId);
             return Ok(result);
         }
 
@@ -2455,6 +2467,13 @@ namespace CWB.App.Controllers
             {
                 return BadRequest(ModelState);
             }
+            var podetails =await _woService.GetAllPodetails();
+            var podetail = podetails.FirstOrDefault(p => p.PartId == model.MPPartId);
+            if(podetail!= null)
+            {
+                string msg = "This Make From has The PO: " + podetail.POReference + ".";
+                return Ok(msg);
+            }
             var result = await _mastersService.RemMakeFrom(model);
             return Ok(result);
         }
@@ -2465,6 +2484,13 @@ namespace CWB.App.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            var podetails = await _woService.GetAllPodetails();
+            var podetail = podetails.FirstOrDefault(p => p.PartId == model.BOMPartId);
+            if (podetail != null)
+            {
+                string msg = "This Make From has The PO: " + podetail.POReference + ".";
+                return Ok(msg);
             }
             var result = await _mastersService.RemBOM(model);
             return Ok(result);
@@ -2886,6 +2912,20 @@ namespace CWB.App.Controllers
         {
             var statuses = await _mastersService.GetStatuses();
             return Ok(statuses);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetFailures()
+        {
+            var mfpdList = await _mastersService.GetFailures();
+            return Json(mfpdList);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostFailures(FailureVM model)
+        {
+            var result = await _mastersService.PostFailures(model);
+            return Ok(result);
         }
 
         #region Private Functions - ViewBag

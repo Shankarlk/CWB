@@ -10,6 +10,7 @@
         public string StepOperation { get; set; } //Operation List
         public string StepLocation { get; set; }
         public int StepSequence { get; set; }
+        public int StepNextSequence { get; set; }
 
         public string Status { get; set; } = "Active";
 

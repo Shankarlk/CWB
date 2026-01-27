@@ -374,6 +374,14 @@ namespace CWB.App.Controllers
 
         public async Task<IActionResult> DeleteDocType(long doctypeId)
         {
+            var allDocs = await _docMangService.GetAllDocList();
+            var usedDoc = allDocs.FirstOrDefault(d => d.DocumentTypeId == doctypeId);
+
+            if (usedDoc != null)
+            {
+                string msg = "This Document Type is already used in a Document: " + usedDoc.FileName + ".";
+                return Ok(msg);
+            }
             var result = await _docMangService.DeleteDocType(doctypeId);
             return Ok(result);
         }

@@ -75,6 +75,19 @@ namespace CWB.App.Services.Masters
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<UOMVM>>.GetAsync(uri, headers);
         }
+        public async Task<IEnumerable<FailureVM>> GetFailures()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getfailure/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<FailureVM>>.GetAsync(uri, headers);
+        }
+        public async Task<FailureVM> PostFailures(FailureVM model)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/postfailure");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            model.TenantId = tenantId;
+            return await RestHelper<FailureVM>.PostAsync(uri, model, headers);
+        }
 
         public async Task<IEnumerable<ContactsVM>> GetCompanies()
         {

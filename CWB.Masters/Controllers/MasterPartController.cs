@@ -6,9 +6,11 @@ using CWB.Masters.MastersUtils;
 using CWB.Masters.MastersUtils.ItemMaster;
 using CWB.Masters.Services.Company;
 using CWB.Masters.Services.DocumentManagement;
+using CWB.Masters.Services.Failures;
 using CWB.Masters.Services.ItemMaster;
 using CWB.Masters.ViewModels.Company;
 using CWB.Masters.ViewModels.DocumentManagement;
+using CWB.Masters.ViewModels.FailureError;
 using CWB.Masters.ViewModels.ItemMaster;
 using CWB.Masters.ViewModelValidators.ItemMaster;
 using FluentValidation;
@@ -31,6 +33,7 @@ namespace CWB.Masters.Controllers
         private readonly IBoughtOutFinishDetailService _boughtOutFinishDetailService;
         private readonly IManufacturedPartNoDetailService _manufacturedPartNoDetailService;
         private readonly IMasterPartService _masterPartService;
+        private readonly IFailureServices _IFailureServices;
         private readonly ICompanyService _companyService;
         private readonly IDocumentManagementService _documentManagementService; // Injected Service
 
@@ -40,6 +43,7 @@ namespace CWB.Masters.Controllers
             , IManufacturedPartNoDetailService manufacturedPartNoDetailService
             , IBoughtOutFinishDetailService boughtOutFinishDetailService
             ,ICompanyService companyService
+            , IFailureServices IFailureServices
             , IMasterPartService masterPartService, IDocumentManagementService documentManagementService)
         {
             _logger = logger;
@@ -47,6 +51,7 @@ namespace CWB.Masters.Controllers
             _manufacturedPartNoDetailService = manufacturedPartNoDetailService;
             _boughtOutFinishDetailService = boughtOutFinishDetailService;
             _masterPartService = masterPartService;
+            _IFailureServices = IFailureServices;
             _documentManagementService = documentManagementService;
             _companyService = companyService;
         }
@@ -354,6 +359,24 @@ namespace CWB.Masters.Controllers
             bool exists = false;
             exists = await _masterPartService.CheckDocumentTypeInItemMaster(documentTypeId,contentId, tenantId);
             return Ok(exists);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.MasterParts.Postfailure)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(FailureVM))]
+        public async Task<IActionResult> PostFailure([FromBody] FailureVM documentType)
+        {
+            var result = await _IFailureServices.PostFailure(documentType);
+            return Ok(result);
+        }
+
+
+        [HttpGet]
+        [Route(ApiRoutes.MasterParts.GetFailure)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(FailureVM))]
+        public async Task<IActionResult> GetAllFailure(long tenantId)
+        {
+            var result = await _IFailureServices.GetFailure(tenantId);
+            return Ok(result);
         }
 
     }

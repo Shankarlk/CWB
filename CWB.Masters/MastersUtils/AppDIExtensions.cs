@@ -1,12 +1,14 @@
 ﻿using CWB.Masters.Infrastructure;
 using CWB.Masters.Repositories.Company;
 using CWB.Masters.Repositories.DocumentManagement;
+using CWB.Masters.Repositories.Failures;
 using CWB.Masters.Repositories.ItemMaster;
 using CWB.Masters.Repositories.Machines;
 using CWB.Masters.Repositories.OperationList;
 using CWB.Masters.Repositories.Routings;
 using CWB.Masters.Services.Company;
 using CWB.Masters.Services.DocumentManagement;
+using CWB.Masters.Services.Failures;
 using CWB.Masters.Services.ItemMaster;
 using CWB.Masters.Services.Machines;
 using CWB.Masters.Services.OperationList;
@@ -73,7 +75,9 @@ namespace CWB.Masters.MastersUtils
             services.AddTransient<IRefDocLogRepository, RefDocLogRepository>();
             services.AddTransient<IRoutingStatusLogRepository, RoutingStatusLogRepository>();
             services.AddTransient<IDoc_status_listRepository, Doc_status_listRepository>();
+            services.AddTransient<IFailureRepository, FailureRepository>();
             services.AddTransient<IDocumentManagementService, DocumentManagementService>();
+            services.AddTransient<IFailureServices, FailureService>();
         }
     }
 }

@@ -32,7 +32,7 @@
         });
     },
     LoadMachineList: () => {
-        api.get("/Machine/GetMachines").then((data) => {
+        api.getbulk("/Machine/GetMachines").then((data) => {
             var tablebody = $("#tbl-machine-list tbody");
             $(tablebody).html("");//empty tbody
             if (data.length === 0) {

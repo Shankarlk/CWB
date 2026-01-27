@@ -108,18 +108,46 @@ function ShowFailureNotifiers() {
     }
 };
 
+//function AddDoingNotifier(elementId) {
+
+//    if (document.getElementById(elementId) != null) {
+//        $('#' + elementId).html(`
+//					            <div id="op-alert" class="alert alert-success" role="success">
+//		                		Saving...
+//			                    </div>`);
+//        setInterval(function () {
+//            $('#op-alert').alert('close');
+//        }, 5000);
+//    }
+//};
 function AddDoingNotifier(elementId) {
 
-    if (document.getElementById(elementId) != null) {
-        $('#' + elementId).html(`
-					            <div id="op-alert" class="alert alert-success" role="success">
-		                		Saving...
-			                    </div>`);
-        setInterval(function () {
-            $('#op-alert').alert('close');
-        }, 5000);
+    let $target = null;
+
+    // If modal is open → use floating notifier
+    if ($('.modal.show').length > 0) {
+        $target = $('#global-notifier');
     }
-};
+    // Else → use normal top notifier
+    else if ($('#op-notifier').length > 0) {
+        $target = $('#op-notifier');
+    }
+
+    if (!$target || $target.length === 0) return;
+
+    const alertHtml = `
+        <div class="alert alert-success" role="success">
+          Saving
+        </div>`;
+
+    $target.html(alertHtml);
+
+    // Optional auto-close after 2 sec
+    setTimeout(() => {
+        $target.find('.alert').alert('close');
+    }, 2000);
+}
+
 
 function ShowLoadingNotifier() {
     let nLen = notifiers.length;
@@ -128,47 +156,128 @@ function ShowLoadingNotifier() {
     }
 };
 
+//function AddLoadingNontifier(elementId) {
+
+//    if (document.getElementById(elementId) != null) {
+//        $('#' + elementId).html(`
+//					            <div id="op-alert" class="alert alert-success" role="success">
+//		                		Loading...
+//			                    </div>`);
+//       /* setInterval(function () {
+//            $('#op-alert').alert('close');
+//        }, 8000);*/
+//    }
+//};
 function AddLoadingNontifier(elementId) {
 
-    if (document.getElementById(elementId) != null) {
-        $('#' + elementId).html(`
-					            <div id="op-alert" class="alert alert-success" role="success">
-		                		Loading...
-			                    </div>`);
-       /* setInterval(function () {
-            $('#op-alert').alert('close');
-        }, 8000);*/
+    let $target = null;
+
+    // If modal is open → floating notifier
+    if ($('.modal.show').length > 0) {
+        $target = $('#global-notifier');
     }
-};
+    // Else → normal top notifier
+    else if ($('#op-notifier').length > 0) {
+        $target = $('#op-notifier');
+    }
+
+    if (!$target || $target.length === 0) return;
+
+    const alertHtml = `
+        <div class="alert alert-success" role="success">
+            Loading...
+        </div>`;
+
+    $target.html(alertHtml);
+    // Optional auto-close after 2 sec
+    setTimeout(() => {
+        $target.find('.alert').alert('close');
+    }, 2000);
+}
+
 
 function CloseOpAlert() {
     if ($('#op-alert').length) {
         $('#op-alert').alert('close');
     }
 }
-function AddSuccessNotifier(elementId) {
+//function AddSuccessNotifier(elementId) {
     
-    if (document.getElementById(elementId) != null) {
-        $('#' + elementId).html(`
-					            <div id="op-alert" class="alert alert-success" role="success">
-		                		Success
-			                    </div>`);
-        setInterval(function () {
-            $('#op-alert').alert('close');
-        }, 6000);
+//    if (document.getElementById(elementId) != null) {
+//        $('#' + elementId).html(`
+//					            <div id="op-alert" class="alert alert-success" role="success">
+//		                		Success
+//			                    </div>`);
+//        setInterval(function () {
+//            $('#op-alert').alert('close');
+//        }, 6000);
+//    }
+//};
+function AddSuccessNotifier(elementId) {
+
+    let $target = null;
+
+    // If modal is open → use floating notifier
+    if ($('.modal.show').length > 0) {
+        $target = $('#global-notifier');
     }
-};
+    // Else → use normal top notifier
+    else if ($('#op-notifier').length > 0) {
+        $target = $('#op-notifier');
+    }
+
+    if (!$target || $target.length === 0) return;
+
+    const alertHtml = `
+        <div class="alert alert-success" role="success">
+            Success
+        </div>`;
+
+    $target.html(alertHtml);
+
+    setTimeout(() => {
+        $target.find('.alert').alert('close');
+    }, 6000);
+}
+
+//function AddFailureNotifier(elementId) {
+//    if (document.getElementById(elementId) != null) {
+//        $('#' + elementId).html(`
+//					            <div id="op-alert" class="alert alert-success" role="success">
+//		                		Failure
+//			                    </div>`);
+//        setInterval(function () {
+//            $('#op-alert').alert('close');
+//        }, 10000);
+//    }
+//};
 function AddFailureNotifier(elementId) {
-    if (document.getElementById(elementId) != null) {
-        $('#' + elementId).html(`
-					            <div id="op-alert" class="alert alert-success" role="success">
-		                		Failure
-			                    </div>`);
-        setInterval(function () {
-            $('#op-alert').alert('close');
-        }, 10000);
+
+    let $target = null;
+
+    // If modal is open → use floating notifier
+    if ($('.modal.show').length > 0) {
+        $target = $('#global-notifier');
     }
-};
+    // Else → use normal top notifier
+    else if ($('#op-notifier').length > 0) {
+        $target = $('#op-notifier');
+    }
+
+    if (!$target || $target.length === 0) return;
+
+    const alertHtml = `
+        <div class="alert alert-success" role="success">
+            Failure
+        </div>`;
+
+    $target.html(alertHtml);
+
+    setTimeout(() => {
+        $target.find('.alert').alert('close');
+    }, 10000);
+}
+
 
 
 var api = {
@@ -186,8 +295,24 @@ var api = {
                    // logger.logIt("Saved...", "", null, null, true, "info", 'toast-top-center');
                     ShowSuccessNotifiers();
                 },
-                error: function (error) {
-                    reject(error)
+                error: function (xhr) {
+                    reject(xhr)
+                    let errMsg = "Unknown error";
+
+                    if (xhr.responseJSON?.message)
+                        errMsg = xhr.responseJSON.message;
+                    else if (xhr.responseText)
+                        errMsg = xhr.responseText;
+
+                    // Store failure
+                    $.ajax({
+                        url: "/masters/postfailures",
+                        type: "POST",
+                        data: {
+                            message: errMsg,
+                            tenantId: 0
+                        }
+                    });
                     //logger.logIt("Failure...", "", null, null, true, "info", 'toast-top-center');
                     ShowFailureNotifiers();
                 }
@@ -204,9 +329,26 @@ var api = {
                     reslove(data);
                     CloseOpAlert();
                 },
-                error: function (error) {
+                error: function (xhr) {
                     ShowFailureNotifiers();
-                    reject(error)
+
+                    let errMsg = "Unknown error";
+
+                    if (xhr.responseJSON?.message)
+                        errMsg = xhr.responseJSON.message;
+                    else if (xhr.responseText)
+                        errMsg = xhr.responseText;
+
+                    // Store failure
+                    $.ajax({
+                        url: "/masters/postfailures",
+                        type: "POST",
+                        data: {
+                            message: errMsg,
+                            tenantId: 0
+                        }
+                    });
+                    reject(xhr)
                 }
             });
         });
@@ -219,8 +361,25 @@ var api = {
                 success: function (data) {
                     reslove(data);
                 },
-                error: function (error) {
-                    reject(error)
+                error: function (xhr) {
+                    reject(xhr)
+
+                    let errMsg = "Unknown error";
+
+                    if (xhr.responseJSON?.message)
+                        errMsg = xhr.responseJSON.message;
+                    else if (xhr.responseText)
+                        errMsg = xhr.responseText;
+
+                    // Store failure
+                    $.ajax({
+                        url: "/masters/postfailures",
+                        type: "POST",
+                        data: {
+                            message: errMsg,
+                            tenantId: 0
+                        }
+                    });
                 }
             });
         });

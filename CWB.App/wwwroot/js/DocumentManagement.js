@@ -1029,17 +1029,22 @@ function DeleteCustRetData(custRetId) {
 function DeleteDocType(doctypeId) {
     api.get("/masters/CheckDocTypeInDocList?docTypeid=" + doctypeId).then((data) => {
         // loadDocType(); 
-        if (data) {
+        if (data.length == 0) {
             let confirmval = confirm("Are your sure you want to delete this ?", "Yes", "No");
             if (confirmval) {
                 api.get("/DocumentManagement/DeleteDocType?doctypeId=" + doctypeId).then((data) => {
+                    if (data == false || data == true) {
+
+                    } else {
+                        alert(data);
+                    }
                     loadDocType();
                 }).catch((error) => {
 
                 });
             }
         } else {
-            alert("Deletion of File Extn can be done after files with the Extn are deleted from the System");
+            alert("This Document Type is used in the Document List. Please The Document To Delete This DocumentType");
         }
     }).catch((error) => {
 
