@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   cwb.apigateway:
-    image: shankar84lk/cwbapigateway:dev
+    image: shankar84kl/cwbapigateway:dev
     container_name: CWB.ApiGateway
     build:
       target: base
@@ -29,7 +29,7 @@ services:
       com.microsoft.visualstudio.debuggee.killprogram: "/bin/sh -c \"if PID=$$(pidof dotnet); then kill $$PID; fi\""
     tty: true
   cwb.app:
-    image: shankar84lk/cwbapp:dev
+    image: shankar84kl/cwbapp:dev
     container_name: CWB.App
     build:
       target: base
@@ -57,7 +57,7 @@ services:
     tty: true
 
   cwb.businessaquisition:
-    image: shankar84lk/cwbbusinessprocesses:dev
+    image: shankar84kl/cwbbusinessprocesses:dev
     container_name: CWB.BusinessAquisition
     build:
       target: base
@@ -85,7 +85,7 @@ services:
     tty: true
 
   cwb.companysettings:
-    image: shankar84lk/cwbcompanysettings:dev
+    image: shankar84kl/cwbcompanysettings:dev
     container_name: CWB.CompanySettings
     build:
       target: base
@@ -113,7 +113,7 @@ services:
     tty: true
 
   cwb.email:
-    image: shankar84lk/cwbemail:dev
+    image: shankar84kl/cwbemail:dev
     container_name: CWB.Email
     build:
       target: base
@@ -135,7 +135,7 @@ services:
     tty: true
 
   cwb.identity:
-    image: shankar84lk/cwbidentity:dev
+    image: shankar84kl/cwbidentity:dev
     container_name: CWB.Identity
     build:
       target: base
@@ -163,7 +163,7 @@ services:
     tty: true
 
   cwb.masters:
-    image: shankar84lk/cwbmasters:dev
+    image: shankar84kl/cwbmasters:dev
     container_name: CWB.Masters
     build:
       target: base
@@ -191,7 +191,7 @@ services:
     tty: true
 
   cwb.modules:
-    image: shankar84lk/cwbmodules:dev
+    image: shankar84kl/cwbmodules:dev
     container_name: CWB.Modules
     build:
       target: base
@@ -219,7 +219,7 @@ services:
     tty: true
 
   cwb.productionplanwo:
-    image: shankar84lk/cwbproductionplanwo:dev
+    image: shankar84kl/cwbproductionplanwo:dev
     container_name: CWB.ProductionPlanWO
     build:
       target: base
@@ -247,7 +247,7 @@ services:
     tty: true
 
   cwb.simulation:
-    image: shankar84lk/cwbsimulation:dev
+    image: shankar84kl/cwbsimulation:dev
     container_name: CWB.Simulation
     build:
       target: base
@@ -275,7 +275,7 @@ services:
     tty: true
 
   cwb.tenant:
-    image: shankar84lk/cwbtenant:dev
+    image: shankar84kl/cwbtenant:dev
     container_name: CWB.Tenant
     build:
       target: base

@@ -440,7 +440,20 @@ namespace CWB.Masters.Services.Routings
                         routing.PreferredRouting = 1;
                     }
 
+                   
                     await _routingRepository.AddAsync(routing);
+                    await _unitOfWork.CommitAsync();
+
+                    RoutingStatusLog routingStatusLog = new RoutingStatusLog();
+                    routingStatusLog.UpdatedBy = routing.TenantId;
+                    routingStatusLog.RoutingId = routing.Id;
+                    routingStatusLog.TenantId = routing.TenantId;
+                    routingStatusLog.PrevStatus = "-";
+                    routingStatusLog.ChangedStatus = routing.Status;
+                    routingStatusLog.UpdatedDate = DateTime.Now;
+                    routingStatusLog.Reason = routing.StatusChangeReason;
+                    await _routingStatusLogRepository.AddAsync(routingStatusLog);
+                    await _unitOfWork.CommitAsync();
                 }
                 catch (Exception ex)
                 {

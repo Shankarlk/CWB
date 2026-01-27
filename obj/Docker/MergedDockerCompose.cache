@@ -7,7 +7,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
-    image: shankar84lk/cwbapigateway
+    image: shankar84kl/cwbapigateway
     networks:
       cwb-network: null
     ports:
@@ -44,7 +44,7 @@ services:
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
       KAFKA_BOOTSTRAP: kafka:9092
       KAFKA_TOPIC: email-events
-    image: shankar84lk/cwbapp
+    image: shankar84kl/cwbapp
     networks:
       cwb-network: null
     ports:
@@ -94,7 +94,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84lk/cwbbusinessprocesses
+    image: shankar84kl/cwbbusinessprocesses
     links:
       - db
     networks:
@@ -138,7 +138,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84lk/cwbcompanysettings
+    image: shankar84kl/cwbcompanysettings
     links:
       - db
     networks:
@@ -188,7 +188,7 @@ services:
       SMTP_USE_TLS: "true"
       SMTP_USER: rajugoudah2003@gmail.com
       SmtpSettings__AllowInvalidSsl: "false"
-    image: shankar84lk/cwbemail
+    image: shankar84kl/cwbemail
     networks:
       cwb-network: null
     restart: always
@@ -204,7 +204,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84lk/cwbidentity
+    image: shankar84kl/cwbidentity
     links:
       - db
     networks:
@@ -248,7 +248,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84lk/cwbmasters
+    image: shankar84kl/cwbmasters
     links:
       - db
     networks:
@@ -292,7 +292,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84lk/cwbmodules
+    image: shankar84kl/cwbmodules
     links:
       - db
     networks:
@@ -336,7 +336,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84lk/cwbproductionplanwo
+    image: shankar84kl/cwbproductionplanwo
     links:
       - db
     networks:
@@ -380,7 +380,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84lk/cwbsimulation
+    image: shankar84kl/cwbsimulation
     links:
       - db
     networks:
@@ -424,7 +424,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84lk/cwbtenant
+    image: shankar84kl/cwbtenant
     links:
       - db
     networks:
