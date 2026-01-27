@@ -8,7 +8,7 @@ services:
         com.microsoft.created-by: "visual-studio"
         com.microsoft.visual-studio.project-name: "CWB.ApiGateway"
     volumes:
-      - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
@@ -27,7 +27,7 @@ services:
         com.microsoft.created-by: "visual-studio"
         com.microsoft.visual-studio.project-name: "CWB.App"
     volumes:
-      - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
@@ -47,7 +47,7 @@ services:
         com.microsoft.created-by: "visual-studio"
         com.microsoft.visual-studio.project-name: "CWB.BusinessAquisition"
     volumes:
-      - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
@@ -67,7 +67,7 @@ services:
         com.microsoft.created-by: "visual-studio"
         com.microsoft.visual-studio.project-name: "CWB.CompanySettings"
     volumes:
-      - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
@@ -87,7 +87,7 @@ services:
         com.microsoft.created-by: "visual-studio"
         com.microsoft.visual-studio.project-name: "CWB.Email"
     volumes:
-      - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
     entrypoint: tail -f /dev/null
     labels:
       com.microsoft.visualstudio.debuggee.program: "dotnet"
@@ -104,7 +104,7 @@ services:
         com.microsoft.created-by: "visual-studio"
         com.microsoft.visual-studio.project-name: "CWB.Identity"
     volumes:
-      - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
@@ -124,7 +124,7 @@ services:
         com.microsoft.created-by: "visual-studio"
         com.microsoft.visual-studio.project-name: "CWB.Masters"
     volumes:
-      - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
@@ -144,7 +144,7 @@ services:
         com.microsoft.created-by: "visual-studio"
         com.microsoft.visual-studio.project-name: "CWB.Modules"
     volumes:
-      - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
@@ -164,7 +164,7 @@ services:
         com.microsoft.created-by: "visual-studio"
         com.microsoft.visual-studio.project-name: "CWB.ProductionPlanWO"
     volumes:
-      - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
@@ -184,7 +184,7 @@ services:
         com.microsoft.created-by: "visual-studio"
         com.microsoft.visual-studio.project-name: "CWB.Simulation"
     volumes:
-      - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 
@@ -204,7 +204,7 @@ services:
         com.microsoft.created-by: "visual-studio"
         com.microsoft.visual-studio.project-name: "CWB.Tenant"
     volumes:
-      - C:\Users\MicroApt\vsdbg\vs2017u5:/remote_debugger:rw
+      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
 

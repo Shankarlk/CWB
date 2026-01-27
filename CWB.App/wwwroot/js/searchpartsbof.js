@@ -83,6 +83,7 @@ function downloadParts() {
     $(tablebody2).html("");//empty tbody
     array = new Array();
     if (bofParts.length > 0) {
+        var partNo = $("#PartNo").val();
         for (i = 0; i < bofParts.length; i++) {
             if (bofParts[i]['masterPartType'] == "Child") {
                 $(tablebody1).append(AppUtil.ProcessTemplateDataNew("ChildPartTemplate", bofParts[i],i));
@@ -93,6 +94,11 @@ function downloadParts() {
                 array.push(bofParts[i]);
             }
             if (bofParts[i]['masterPartType'] == "Assembly") {
+
+                if (bofParts[i]['partNo'] == partNo) {
+                    continue;
+                }
+
                 $(tablebody2).append(AppUtil.ProcessTemplateDataNew("AssemblyPartTemplate", bofParts[i],i));
                 array.push(bofParts[i]);
             }

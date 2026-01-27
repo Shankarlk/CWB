@@ -1071,11 +1071,22 @@ namespace CWB.App.Controllers
             var result = await _routingService.DeleteStepPart(stepId, stepPartId);
             return Ok(result);
         }
+        [HttpPost]
+        public long DecodePartId(string partId)
+        {
+            long decodepartID = 0;
+            if (partId != null && partId != "0")
+            {
+                decodepartID = CWBAppUtils.DecodeString(partId);
+            }
+            return decodepartID;
+        }
 
         [HttpGet]
         public async Task<IActionResult> RoutingPerformance(string manufPartId,int batchSize)
         {
-            int decodedManufPartId = (int)CWBAppUtils.DecodeString(manufPartId.ToString());
+            int decodedManufPartId = Convert.ToInt32(manufPartId.ToString());
+           
             var resultList = await _routingService.Routings(decodedManufPartId);
 
             foreach (var item in resultList)
@@ -1099,7 +1110,18 @@ namespace CWB.App.Controllers
                     }
                     var totalnoofmc = oprnos.Sum(op => op.NumberOfSimMachines);
                     var totalCycleTime = oprnos.Where(op => !string.IsNullOrEmpty(op.CycleTime)).Sum(op => int.Parse(op.CycleTime));
-                    var avgCycleTime = totalCycleTime / oprnos.Count;
+
+                    int noofoperations = 0;
+
+                    if(oprnos.Count==0)
+                    {
+                        noofoperations = 1;
+                    }
+                    else
+                    {
+                        noofoperations = oprnos.Count;
+                    }
+                    var avgCycleTime = totalCycleTime / noofoperations;
                     var countAboveAvg = oprnos.Where(op => !string.IsNullOrEmpty(op.CycleTime)).Count(op => int.Parse(op.CycleTime) > avgCycleTime);
                     var totalSetupTime = oprnos.Where(op => !string.IsNullOrEmpty(op.SetupTime)).Sum(op => int.Parse(op.SetupTime));
                     var maxSetupTime = oprnos.Where(op => !string.IsNullOrEmpty(op.SetupTime))

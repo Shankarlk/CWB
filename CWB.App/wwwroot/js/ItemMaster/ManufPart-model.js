@@ -1373,7 +1373,7 @@ $(document).ready(function () {
         var formData = AppUtil.GetFormData("ManufPartForm");
         api.post("/Masters/ManufacturedPartNoDetail", formData).then((data) => {
             alert("Status changed successfully!");
-            window.location.reload();
+           // window.location.reload();
             $("#status-info").modal("hide");
         }).catch((error) => {
             AppUtil.HandleError("ManufPartForm", error);
@@ -2182,6 +2182,9 @@ function loadExistingParts(data) {
                 continue;
             }
         }
+        var partNo = $("#lblInpPartNumber").text();
+        if (data[i].partNo== partNo)
+        { continue; }
         //todo:soption is a search string
         var val = "<tr><td><input type='radio' name='caselect' value='" + i + "'></td>" +
             "<td>" + data[i].partNo + "</td>" +

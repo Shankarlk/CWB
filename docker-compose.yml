@@ -28,7 +28,7 @@ services:
       - cwb-network
 
   cwb.apigateway:
-    image: shankar84kl/cwbapigateway
+    image: shankar84lk/cwbapigateway
     build:
       context: .
       dockerfile: CWB.ApiGateway/Dockerfile
@@ -42,7 +42,7 @@ services:
     restart: always
 
   cwb.identity:
-    image: shankar84kl/cwbidentity
+    image: shankar84lk/cwbidentity
     build:
       context: .
       dockerfile: CWB.Identity/Dockerfile
@@ -59,7 +59,7 @@ services:
     restart: always
 
   cwb.app:
-    image: shankar84kl/cwbapp
+    image: shankar84lk/cwbapp
     build:
       context: .
       dockerfile: CWB.App/Dockerfile
@@ -71,7 +71,7 @@ services:
     restart: always
 
   cwb.tenant:
-    image: shankar84kl/cwbtenant
+    image: shankar84lk/cwbtenant
     build:
       context: .
       dockerfile: CWB.Tenant/Dockerfile
@@ -137,7 +137,7 @@ services:
 
 
   #cwb.tenantbroker:
-  #  image: shankar84kl/cwbtenantbroker
+  #  image: shankar84lk/cwbtenantbroker
   #  build:
   #    context: .
   #    dockerfile: CWB.TenantBroker/Dockerfile
@@ -146,7 +146,7 @@ services:
   #  networks:
   #    - cwb-network
   cwb.email:
-    image: shankar84kl/cwbemail
+    image: shankar84lk/cwbemail
     build:
       context: .
       dockerfile: CWB.Email/Dockerfile
@@ -168,7 +168,7 @@ services:
 
 
   cwb.modules:
-    image: shankar84kl/cwbmodules
+    image: shankar84lk/cwbmodules
     build:
       context: .
       dockerfile: CWB.Modules/Dockerfile
@@ -185,7 +185,7 @@ services:
     restart: always
 
   cwb.simulation:
-    image: shankar84kl/cwbsimulation
+    image: shankar84lk/cwbsimulation
     build:
       context: .
       dockerfile: CWB.Simulation/Dockerfile
@@ -202,7 +202,7 @@ services:
     restart: always
 
   cwb.companysettings:
-    image: shankar84kl/cwbcompanysettings
+    image: shankar84lk/cwbcompanysettings
     build:
       context: .
       dockerfile: CWB.CompanySettings/Dockerfile
@@ -219,7 +219,7 @@ services:
     restart: always
 
   cwb.masters:
-    image: shankar84kl/cwbmasters
+    image: shankar84lk/cwbmasters
     build:
       context: .
       dockerfile: CWB.Masters/Dockerfile
@@ -236,7 +236,7 @@ services:
     restart: always
 
   cwb.productionplanwo:
-    image: shankar84kl/cwbproductionplanwo
+    image: shankar84lk/cwbproductionplanwo
     build:
       context: .
       dockerfile: CWB.ProductionPlanWO/Dockerfile
@@ -253,7 +253,7 @@ services:
     restart: always
   
   cwb.businessaquisition:
-    image: shankar84kl/cwbbusinessprocesses
+    image: shankar84lk/cwbbusinessprocesses
     build:
       context: .
       dockerfile: CWB.BusinessAquisition/Dockerfile

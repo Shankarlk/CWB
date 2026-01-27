@@ -29,18 +29,25 @@ function RoutingPerformance() {
     });
     let manufId = params.manufPartId;
     var batch = $("#BacthSize").val();
-    api.getbulk("/routings/RoutingPerformance?manufPartId=" +manufId +"&batchSize=" + batch).then((data) => {
-        //console.log(data);
-        var tablebody = $("#PerformanceGrid tbody");
-        tablebody.html('');
-        for (i = 0; i < data.length; i++) {
-            let rowData = data[i];
-            if (rowData.deleted == 1)
-                continue;
-            rowData.checked = rowData.preferredRouting === 1 ? 'checked' : '';
-            $(tablebody).append(AppUtil.ProcessTemplateData("PerformanceRow", rowData));
+    $.ajax({
+        type: "POST",
+        url: "/Routings/DecodePartId",
+        data: { partId: manufId },
+        success: function (decodepartid) {
+            api.getbulk("/routings/RoutingPerformance?manufPartId=" + decodepartid + "&batchSize=" + batch).then((data) => {
+                //console.log(data);
+                var tablebody = $("#PerformanceGrid tbody");
+                tablebody.html('');
+                for (i = 0; i < data.length; i++) {
+                    let rowData = data[i];
+                    if (rowData.deleted == 1)
+                        continue;
+                    rowData.checked = rowData.preferredRouting === 1 ? 'checked' : '';
+                    $(tablebody).append(AppUtil.ProcessTemplateData("PerformanceRow", rowData));
+                }
+            }).catch((error) => {
+            });
         }
-    }).catch((error) => {
     });
 }
 
@@ -51,7 +58,7 @@ function RoutingPerformance() {
 ////SubConWSSubConDetailsId//SubConWSRoutingStepId//SubConWSDetailsId
 //WorkStepDesc//MachineType//FloorToFloorTime//SetupTime//NoOfPartsPerLoading
 function AssignWorkStepVals(workStepDesc, machineType, floorToFloorTime,
-    setupTime, noOfPartsPerLoading, routingStepId , subConDetailsId, subConWSDetailsId) {
+    setupTime, noOfPartsPerLoading, routingStepId, subConDetailsId, subConWSDetailsId) {
     $("#WorkStepDesc").val(workStepDesc);
     $("#SubConWSSubConDetailsId").val(subConDetailsId);
     $("#SubConWSRoutingStepId").val(routingStepId);
@@ -62,8 +69,7 @@ function AssignWorkStepVals(workStepDesc, machineType, floorToFloorTime,
     $("#MachineType").val(machineType).trigger('change');
 }
 
-function DeleteWS(subConWSDetailsId)
-{
+function DeleteWS(subConWSDetailsId) {
     //alert(subConWSDetailsId);
     let confirmval = confirm("Are your sure you want to delete this work step?", "Yes", "No");
     if (confirmval) {
@@ -194,11 +200,11 @@ function ShowAddSubConJob(event) {
             }
         }
         LoadSubConWSS();
-     //   console.log("stepsubcon_" + selectedSupplierId);
-     //   document.getElementById("stepsubcon_" + selectedSupplierId).checked = true;
+        //   console.log("stepsubcon_" + selectedSupplierId);
+        //   document.getElementById("stepsubcon_" + selectedSupplierId).checked = true;
         //stepsubcon_selectedSupplierId
     }
-    
+
 }
 function LoadSubCons() {
     //debugger;
@@ -233,8 +239,7 @@ function LoadSubCons() {
     });
 };
 
-function ClearWSTable()
-{
+function ClearWSTable() {
     var tablebody = $("#WSTable tbody");
     $(tablebody).html("");//empty tbody
 }
@@ -242,10 +247,10 @@ function ClearWSTable()
 function LoadSubConWSS() {
     var tablebody = $("#WSTable tbody");
     $(tablebody).html("");//empty tbody
-    
+
     let subConDetailsId = RoutingDetails["subConDetailsId"];
     let stepId = RoutingDetails["stepId"];
-  //  alert(subConDetailsId + "/" + stepId);
+    //  alert(subConDetailsId + "/" + stepId);
     //masters/subconwss
     api.get("/routings/subconwss?stepId=" + stepId + "&subConDetailsId=" + subConDetailsId).then((data) => {
         if (data.length === 0) {
@@ -273,12 +278,12 @@ function LoadSubConWSS() {
 
 };
 function McTypeUploadDocList(content) {
-        //var content = parseInt($("#StepOperation").val());
-        var StepRoutingId = $("#StepRoutingId").val();
-        var partid = $("#StepId").val();
+    //var content = parseInt($("#StepOperation").val());
+    var StepRoutingId = $("#StepRoutingId").val();
+    var partid = $("#StepId").val();
 
     api.getbulk("/Routings/GetMcTypeDocList?mcTypeId=" + content + "&routingId=" + StepRoutingId + "&stepId=" + partid).then((data) => {
-            //data = data.filter(item => item.status == 1 || item.status == 0);
+        //data = data.filter(item => item.status == 1 || item.status == 0);
         var tablebody = $("#SubConDocGrid tbody");
         $(tablebody).html("");//empty tbody
         if (data.length === 0) {
@@ -292,32 +297,32 @@ function McTypeUploadDocList(content) {
                 </tr>`;
             $(tablebody).append(noRecordsRow);
         }
-            //console.log(data);
-            for (i = 0; i < data.length; i++) {
-                var rowHtml = AppUtil.ProcessTemplateData("maufDocUploadRow", data[i]);
+        //console.log(data);
+        for (i = 0; i < data.length; i++) {
+            var rowHtml = AppUtil.ProcessTemplateData("maufDocUploadRow", data[i]);
 
-                // Check if mandatory is 'Y', if so, hide the Delete option
-                if (data[i].docListId === 0) {
-                    // Simplified regex to match the Upload link
-                    rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*> *Edit *<\/a>/i, '');
-                    rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*data-doclistid="[^"]*"[^>]*onclick="DeleteDocList\(this\)"[^>]*>Delete<\/a>/, '');
-                }
-                if (data[i].docListId != 0) {
-                    // Remove the Edit link from the generated row
-                    rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*> *Upload *<\/a>/i, '');
-                }
-
-                if (data[i].mandatory === 'Y') {
-                    // Remove the Delete link from the generated row
-                    rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*data-doclistid="[^"]*"[^>]*onclick="DeleteDocList\(this\)"[^>]*>Delete<\/a>/, '');
-                }
-
-                // Append the processed row to the table body
-                $(tablebody).append(rowHtml);
+            // Check if mandatory is 'Y', if so, hide the Delete option
+            if (data[i].docListId === 0) {
+                // Simplified regex to match the Upload link
+                rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*> *Edit *<\/a>/i, '');
+                rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*data-doclistid="[^"]*"[^>]*onclick="DeleteDocList\(this\)"[^>]*>Delete<\/a>/, '');
             }
-        }).catch((error) => {
-            console.log(error);
-        });
+            if (data[i].docListId != 0) {
+                // Remove the Edit link from the generated row
+                rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*> *Upload *<\/a>/i, '');
+            }
+
+            if (data[i].mandatory === 'Y') {
+                // Remove the Delete link from the generated row
+                rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*data-doclistid="[^"]*"[^>]*onclick="DeleteDocList\(this\)"[^>]*>Delete<\/a>/, '');
+            }
+
+            // Append the processed row to the table body
+            $(tablebody).append(rowHtml);
+        }
+    }).catch((error) => {
+        console.log(error);
+    });
 
 }
 function McIdUploadDocList(content) {
@@ -368,7 +373,7 @@ function McIdUploadDocList(content) {
     });
 
 }
-function DeleteSubCon(stepId,subConDetailsId) {
+function DeleteSubCon(stepId, subConDetailsId) {
     //routings/deletesubcondetails
     var routingId = $("#DelRoutingId").val();
     alert(routingId);
@@ -389,7 +394,7 @@ function AddSubCon() {
     //masters/addsubcon
     //console.log("....AddSubCon....");
     var formData = AppUtil.GetFormData("FormSubCon");
-  //  console.log(formData);
+    //  console.log(formData);
     api.post("/routings/addsubcon", formData).then((data) => {
         //console.log("****AddSubCon****");
         //console.log(data);
@@ -403,7 +408,7 @@ function AddSubCon() {
     }).catch((error) => {
         AppUtil.HandleError("FormSubCon", error);
     });
-    
+
 };
 
 function AddSubConWS() {
@@ -468,7 +473,7 @@ function LoadLocations() {
         }
         return;
     }
-    
+
     api.get("/routings/locations").then((data) => {
         locations = data;
         for (i = 0; i < data.length; i++) {
@@ -625,7 +630,7 @@ function DowlonadPartsRoutings() {
                 if ((data[i]['mandocAvl'] == "No")) {
                     noOfWithoutDoc = noOfWithoutDoc + 1;
                 }
-               // $(tablebody).append(AppUtil.ProcessTemplateDataNew("Parts-Routing-Template", data[i], i));
+                // $(tablebody).append(AppUtil.ProcessTemplateDataNew("Parts-Routing-Template", data[i], i));
                 var rowHtml = AppUtil.ProcessTemplateData("Parts-Routing-Template", data[i]);
                 if ((data[i]['noOfRoutes'] == 0)) {
                     noOfRoutePart = noOfRoutePart + 1;
@@ -741,7 +746,7 @@ function DoRoutingDetailsJob() {
     $('#StepRoutingId').val(RoutingDetails.routingId);
     LoadRoutingSteps(RoutingDetails.routingId);
 
-   // DisplayBomMessage();
+    // DisplayBomMessage();
 }
 
 function DisplayBomMessage() {
@@ -788,10 +793,10 @@ function loadStepMachinesForAdd() {
                 data[i].routingStepMachineId + "'>" +
                 data[i].name +
                 "</option>";
-           // console.log(div_data);
+            // console.log(div_data);
             selElem.append(div_data);
         }
-        if (data.length > 1) {
+        if (data.length >= 1) {
             $("#COPYDIV").show();
         } else {
             $("#COPYDIV").hide();
@@ -819,7 +824,7 @@ function LoadStepPartsFromData(rData) {
             }
         }
     }
-   // console.log(rData);
+    // console.log(rData);
 }
 
 function LoadStepParts(partId, stepId) {
@@ -865,7 +870,7 @@ function DeleteStepPart(partId, stepId) {
     //alert(partId + "/" + stepId);
     let confirmval = confirm("Are your sure you want to delete this BOM?", "Yes", "No");
     if (confirmval) {
-        api.get("/routings/deletesteppart?stepId=" + stepId+"&stepPartId="+partId).then((data) => {
+        api.get("/routings/deletesteppart?stepId=" + stepId + "&stepPartId=" + partId).then((data) => {
             //console.log(data);
 
             var tablebody = $("#BomUsedGridDisplay tbody");
@@ -916,7 +921,7 @@ function LoadRoutingSteps(routingId) {
     if (rdpartType == "ManufacturedPart") {
         $("RdMakeName").text("made from");
     }
-    api.get("/routings/routingsteps?routingId=" + routingId ).then((rData) => {
+    api.get("/routings/routingsteps?routingId=" + routingId).then((rData) => {
         rData.sort((a, b) => a.stepSequence - b.stepSequence);
         for (i = 0; i < rData.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateData("RoutingStepTemplate", rData[i]));
@@ -1002,7 +1007,7 @@ function getAndShowStep(stepId, stepNumber) {
     }
     document.getElementById("FormRoutingStep").reset();
     $('a[href="#rsd"]').tab("show");
-   
+
     LoadOperations();
     LoadLocations();
     $("#Status").val(step.status);
@@ -1012,7 +1017,7 @@ function getAndShowStep(stepId, stepNumber) {
     $("#NumberOfSimMachines").val(step.numberOfSimMachines);
     RoutingDetails["stepId"] = step.stepId;
     RoutingDetails["stepNumber"] = step.stepNumber;
-    
+
     $("#RSDOpNor").text(step.stepNumber);
     $("#StepNumber").val(step.stepNumber);
     $("#StepDescription").val(step.stepDescription);
@@ -1056,7 +1061,7 @@ function getAndShowStep(stepId, stepNumber) {
             for (i = 0; i < rData.length; i++) {
                 if (rData[i].quantityUsed != "0") {
                     $(tablebody).append(AppUtil.ProcessTemplateData("BomGridLandingRow", rData[i]));
-                    
+
                 }
             }
         }).catch((error) => {
@@ -1156,7 +1161,7 @@ function SetPreferredMachine(event, routingStepId, routingStepMachineId) {
     }).catch((error) => {
     });
 }
-function EditRoute(routingId,routingName,manufPartId) {
+function EditRoute(routingId, routingName, manufPartId) {
     //alert("Todo..");
     var SpanPartName = $("#SpanPartName").text();
     var SpanPartDesc = $("#SpanPartDesc").text();
@@ -1191,21 +1196,25 @@ function ViewRoute() {
 }
 
 function EditRoutes(event, noOfRoutes, manufacturedPartId) {
+    selectedManuPartId = manufacturedPartId;
     if (noOfRoutes <= 0) {
         $("#BtnCreateAlRouting").hide();
+        $("#routing-new").modal("show");
+        $("#ManufacturedPartId").val(manufacturedPartId);
     } else {
         $("#BtnCreateNewRouting").hide();
+        $.ajax({
+            type: "POST",
+            url: "/routings/EncodeManufacturedPartId",
+            data: { manufacturedPartId: manufacturedPartId },
+            success: function (encodedManufPartId) {
+                window.location.href = "/routings/routingdetails?manufPartId=" + encodedManufPartId + "&partType=" + partType;
+            }
+        });
     }
-       // return;
-    selectedManuPartId = manufacturedPartId;
-    $.ajax({
-        type: "POST",
-        url: "/routings/EncodeManufacturedPartId",
-        data: { manufacturedPartId: manufacturedPartId },
-        success: function (encodedManufPartId) {
-            window.location.href = "/routings/routingdetails?manufPartId=" + encodedManufPartId + "&partType=" + partType;
-        }
-    });
+    // return;
+
+
     //window.location.href = "/routings/routingdetails?manufPartId=" + selectedManuPartId + "&partType=" + partType;
 }
 
@@ -1241,14 +1250,14 @@ function updateSequenceInDB() {
         }
     });
 }
-function RouteloadMachinesToTable(tableName, rowTemplate, addEdit,machineid) {
+function RouteloadMachinesToTable(tableName, rowTemplate, addEdit, machineid) {
     var machinelist = {};
     var tablebody = $("#" + tableName + " tbody");
     $(tablebody).html("");//empty tbody
     api.get("/machine/getmachines").then((data) => {
         //console.log(data);
         var opid = $("#StepOperation").val();
-        data = data.filter(item=> item.machineOperationListId == parseInt(opid));
+        data = data.filter(item => item.machineOperationListId == parseInt(opid));
         machinelist = data;
         if (data.length === 0) {
             // 2. Insert the "No Records Found" row
@@ -1323,7 +1332,7 @@ $(function () {
         }
     });
 
-   // console.log("Ready");
+    // console.log("Ready");
     const table = document.querySelector('#RoutingGrid');
     if (table != null) {
         const rows = table.tBodies[0].rows;
@@ -1333,6 +1342,30 @@ $(function () {
             $("#BtnCreateNewRouting").hide();
         }
         RoutingPerformance();
+    }
+    const savedFilters = sessionStorage.getItem("SesRoutDetails");
+
+    if (savedFilters) {
+        const filters = JSON.parse(savedFilters);
+        $('#StepRoutingId').val(filters.RoutingId);
+        RoutingDetails["routingId"] = filters.RoutingId;
+        RoutingDetails["routingName"] = filters.RoutName;
+        RoutingDetails["manufacturedPartId"] = filters.ManuftId;
+        var apartName = $("#SpanPartName").text();
+        var apDesc = $("#SpanPartDesc").text();
+        var aComp = $("#SpanComp").text();
+        RoutingDetails["partNo"] = apartName;
+        RoutingDetails["partDescription"] = apDesc;
+        RoutingDetails["companyName"] = aComp;
+        $('a[href="#rsd"]').tab("show");
+        $('#Div_RouteMachines').hide();
+        $('#Div_RouteSubCons').hide();
+        $('#Div_BomGrid').hide();
+        $('#tab-step-parts').hide();
+        $("#RSDPartName").text(apartName + " / " + apDesc);
+        $("#RSDComp").text(aComp);
+        $("#DivRoutingName1").html("Routing Selected : " + RoutingDetails.routingName + " ");
+        sessionStorage.removeItem("SesRoutDetails");
     }
     if (RoutingDetails) {
         partType = RoutingDetails['masterPartType'];
@@ -1351,7 +1384,7 @@ $(function () {
     //======
 
 
-   
+
 
     $("#CancelDelSubCon").click(function (event) {
         //routings/addnewrouting
@@ -1369,7 +1402,7 @@ $(function () {
         var subcondetailsid = $("#DelSubConDetailsId").val();
         var stepid = $("#DelSubConStepId").val();
         api.get("/routings/deletesubcondetails?stepId=" + stepid + "&subConDetailsId=" + subcondetailsid).then((data) => {
-           // console.log(data);
+            // console.log(data);
             subcondeleted = true;
             document.getElementById("BtnDelSubConClose").click();
         }).catch((error) => {
@@ -1385,7 +1418,7 @@ $(function () {
         var elm = document.getElementById("SubConToDelete");
         elm.innerText = company;
     });
-    
+
     $('#add-subcon').on('hide.bs.modal', function (event) {
         //editSubCon = false;
         LoadSubCons();
@@ -1397,13 +1430,13 @@ $(function () {
     $('#add-subcon').on('shown.bs.modal', function (event) {
         ShowAddSubConJob(event);
     });
- 
+
     $('#WithoutRouting').change(function () {
         if (this.checked) {
             hasRouting = false;
         }
         hasRouting = true;
-     //   DowlonadPartsRoutings();
+        //   DowlonadPartsRoutings();
     });
 
     $('#StepMachine').change(function () {
@@ -1412,18 +1445,18 @@ $(function () {
         var val = $('input[name=mod-12]:checked').val();
         //alert(selVal + "/" + val);
         //if (val == "2") {
-            let data = stepMachines;
-            //console.log(data);
-            for (i = 0; i < data.length; i++) {
-                if (parseInt(selVal) == data[i].routingStepMachineId) {
-                    $("#SetupTime").val(data[i].setupTime);
-                    $("#FloorToFloorTime").val(data[i].floorToFloorTime);
-                    $("#FirstPieceProcessingTime").val(data[i].firstPieceProcessingTime);
-                    $("#NoOfPartsPerLoading").val(data[i].noOfPartsPerLoading);
-                    McIdUploadDocList(data[i].machineId);
-                    break;
-                }
+        let data = stepMachines;
+        //console.log(data);
+        for (i = 0; i < data.length; i++) {
+            if (parseInt(selVal) == data[i].routingStepMachineId) {
+                $("#SetupTime").val(data[i].setupTime);
+                $("#FloorToFloorTime").val(data[i].floorToFloorTime);
+                $("#FirstPieceProcessingTime").val(data[i].firstPieceProcessingTime);
+                $("#NoOfPartsPerLoading").val(data[i].noOfPartsPerLoading);
+                McIdUploadDocList(data[i].machineId);
+                break;
             }
+        }
         //}
     });
 
@@ -1468,7 +1501,7 @@ $(function () {
             var tablebody = $("#BomUsedGridDisplay tbody");
             tablebody.html("");
         }
-        
+
         if (selVal == "1")//Inhouse
         {
             showElement(machs);
@@ -1478,7 +1511,7 @@ $(function () {
             if (isNaN(stepid) || stepid === "0") {
                 $("#RouteMachinesTable tbody").html("");
             } else {
-                loadStepMachines()
+               // loadStepMachines()
             }
             $("#NumberOfSimMachines").show();
             $("#lblNumberOfSimMachines").show();
@@ -1489,14 +1522,14 @@ $(function () {
             hideElem(machs);
             showElement(suplrs);
             //loadSetSuppliers();
-            LoadSubCons();
+           // LoadSubCons();
         }
         else {
             hideElem(machs);
             hideElem(suplrs);
         }
         $("#addSubCon").prop("disabled", true);
-        $("#addMachine").prop("disabled", true); 
+        $("#addMachine").prop("disabled", true);
     });
 
     /*const checkbox = document.getElementById('WithoutRouting')
@@ -1545,7 +1578,7 @@ $(function () {
 
     });
 
-   
+
 
     $("#RoutingDetails").click(function (event) {
         //DoRoutingDetailsJob(event);
@@ -1562,24 +1595,24 @@ $(function () {
         /* RoutingDetails["stepId"] = -1;
          RoutingDetails["stepNumber"] = -1;*/
         emptyTables();
-      //  getRoutingInfoFromTable();
+        //  getRoutingInfoFromTable();
         $("#BOMManufacturedPartId").val(RoutingDetails.manufacturedPartId);
         $('#StepRoutingId').val(RoutingDetails.routingId);
     });
 
-   
+
 
     function setDialogTitles() {
         //stepModel
         //RoutingDetails
     };
-    
+
     $("#tab-step-info").click(function (event) {
-       /* document.getElementById("FormRoutingStep").reset();
-        emptyTables();
-        var routingid = $('input[name=RoutingChk]:checked').val();
-        $('#StepRoutingId').val(routingid);
-        hideMachinesSuppliersTable();*/
+        /* document.getElementById("FormRoutingStep").reset();
+         emptyTables();
+         var routingid = $('input[name=RoutingChk]:checked').val();
+         $('#StepRoutingId').val(routingid);
+         hideMachinesSuppliersTable();*/
     });
 
     $("#BtnBomPartsClose").click(function (event) {
@@ -1597,9 +1630,9 @@ $(function () {
             LoadBOMList($("#StepId").val());
         }
     });
-    
-    
-    
+
+
+
     $("#SearchSubConName").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#SubConNamesTable tbody tr").filter(function () {
@@ -1655,8 +1688,8 @@ $(function () {
         } else {
             $tableBody.find(".norecordsfound").remove();
         }
-    }); 
-    
+    });
+
     $("#master_co").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#PartsRoutingsTable tbody tr").filter(function () {
@@ -1723,10 +1756,10 @@ $(function () {
             $("#PartsRoutingsTable tbody tr").show(); // show all rows when checkbox is unchecked
         }
     });
-    
+
     $("#CalcBatchSize").on("click", function () {
         var bs = $("#BacthSize").val();
-        if (isNaN(bs)|| bs==0) {
+        if (isNaN(bs) || bs == 0) {
             var newNamevalidate = document.getElementById('BacthSize');
             newNamevalidate.style.border = '2px solid red';
             return false;
@@ -1774,7 +1807,7 @@ $(function () {
         }
 
     });
-    
+
 
     $('#preferred-rout').on('show.bs.modal', function (event) {   // Propdsdosd
         var relatedTarget = $(event.relatedTarget);
@@ -1814,11 +1847,11 @@ $(function () {
     //data - status="@routing.Status" data - toggle="modal"
     //data - target="#delete-rout" class="dropdown-item" > Delete</a >
     //<input hidden class="form-control form-control-sm" id="DelRoutingName" name="RoutingName" type="text" title="Enter the Routing Name ... It has to be Unique" data-plugin="tippy" data-tippy-placement="top">
-        //<input type="text" hidden id="DelManufacturedPartId" name="ManufacturedPartId" value="0" />
-        //<input type="text" hidden id="DelOrigRoutingId" name="OrigRoutingId" value="0" />
-        //<input type="text" hidden id="DelStatus" name="Status" value="Active" />
-        //<input type="text" hidden id="DelPreferredRouting" name="PreferredRouting" value="0" />
-        //<input type="text" hidden id="DelRoutingId" name="RoutingId" value="0" />
+    //<input type="text" hidden id="DelManufacturedPartId" name="ManufacturedPartId" value="0" />
+    //<input type="text" hidden id="DelOrigRoutingId" name="OrigRoutingId" value="0" />
+    //<input type="text" hidden id="DelStatus" name="Status" value="Active" />
+    //<input type="text" hidden id="DelPreferredRouting" name="PreferredRouting" value="0" />
+    //<input type="text" hidden id="DelRoutingId" name="RoutingId" value="0" />
     $('#delete-rout').on('show.bs.modal', function (event) {
         var relatedTarget = $(event.relatedTarget);
         var routingName = relatedTarget.data("routingname");
@@ -1856,13 +1889,13 @@ $(function () {
         //});
     });
     let routdeleted = false;
-    $("#BtnDelRoutingSave").on("click",function (event) {
+    $("#BtnDelRoutingSave").on("click", function (event) {
         //routings/addnewrouting
         var formData = AppUtil.GetFormData("FormDelRoutingName");
         var routingId = $("#DelRoutingId").val();
         //alert(routingId);
-        api.get("/routings/deleterouting?routingId="+routingId).then((data) => {
-           // console.log(data);
+        api.get("/routings/deleterouting?routingId=" + routingId).then((data) => {
+            // console.log(data);
             routdeleted = true;
             document.getElementById("BtnDelRoutingClose").click();
             location.reload();
@@ -1874,7 +1907,7 @@ $(function () {
         //routings/addnewrouting
         document.getElementById("BtnDelRoutingClose").click();
     });
-    
+
 
     $('#delete-step').on('show.bs.modal', function (event) {
         var relatedTarget = $(event.relatedTarget);
@@ -1958,7 +1991,7 @@ $(function () {
         }
         var formData = AppUtil.GetFormData("FormEdRoutingName");
         api.post("/routings/addnewrouting", formData).then((data) => {
-           // console.log(data);
+            // console.log(data);
             routeEdited = true;
             document.getElementById("BtnEdRoutingNameClose").click();
         }).catch((error) => {
@@ -2018,7 +2051,7 @@ $(function () {
     //$('#alt-rout').on('hide.bs.modal', function (event) {
     //    window.location.href = "/routings/routingdetails?manufPartId=" + selectedManuPartId;
     //});
-    
+
     //$('#routing-new').on('hide.bs.modal', function (event) {
     //    document.getElementById("BtnNewRoutingClose").click();
     //});
@@ -2059,7 +2092,7 @@ $(function () {
     });
 
     $("#BtnCRoutingSave").click(function (event) {
-        
+
         //routings/addnewrouting
         var formData = AppUtil.GetFormData("FormChangeMakeFrom");
         //PreferredRouting  preferred-rout
@@ -2165,12 +2198,12 @@ $(function () {
     $('#routing-new').on('show.bs.modal', function (event) {
         var relatedTarget = $(event.relatedTarget);
         var manufacturedPartId = relatedTarget.data("manufacturedpartid");
-        $("#ManufacturedPartId").val(manufacturedPartId);
-        selectedManuPartId = manufacturedPartId;
+        //$("#ManufacturedPartId").val();
+        //selectedManuPartId = $("#ManufacturedPartId").val();
         const params = new Proxy(new URLSearchParams(window.location.search), {
             get: (searchParams, prop) => searchParams.get(prop),
         });
-        spartType = params.partType;
+        spartType = partType;
         //makefrom --
         if (spartType === "ManufacturedPart") {
             api.get("/masters/SortedMPMakeFromList?partId=" + selectedManuPartId).then((data) => {
@@ -2190,17 +2223,20 @@ $(function () {
         else {
             $("#MakefromDiv").hide();
         }
-     /* var partNo = relatedTarget.data("partno");
-        var coName = relatedTarget.data("companyname");
-        var partDesc = var partNo = relatedTarget.data("partdescription");
-        $("#NRPartNo").val(partNo);
-        $("#NRCompanyName").val(coName);
-        $("#NRPartDescription").val(partDesc);*/
+        /* var partNo = relatedTarget.data("partno");
+           var coName = relatedTarget.data("companyname");
+           var partDesc = var partNo = relatedTarget.data("partdescription");
+           $("#NRPartNo").val(partNo);
+           $("#NRCompanyName").val(coName);
+           $("#NRPartDescription").val(partDesc);*/
         //<a href="javascript:void(0);" data-manufacturedPartId="{manufacturedPartId}" 
         //data - partno="{partNo}" data - companyname="{companyName}" data - partdescription="{partDescription}" data - toggle="modal" 
         //data - target="#routing-new" class="dropdown-item" > Create New Routing</a >
     });
 
+    $("#BtnNewRoutingClose").click(function (event) {
+        $("#routing-new").modal("hide");
+    });
     $("#BtnNewRouting").click(function (event) {
         //FormNewRoutingName
         //FormAltRoutingName
@@ -2214,10 +2250,18 @@ $(function () {
                 url: "/routings/EncodeManufacturedPartId",
                 data: { manufacturedPartId: selectedManuPartId },
                 success: function (encodedManufPartId) {
-                    //window.location.href = "/routings/routingdetails?manufPartId=" + encodedManufPartId + "&partType=" + partType;
+                    window.location.href = "/routings/routingdetails?manufPartId=" + encodedManufPartId + "&partType=" + partType;
                     //$('a[href="#rsd"]').tab("show");
                     $("#BtnNewRoutingClose").trigger("click");
                     $("#BtnAddNextStep").trigger("click");
+
+                    const filters = {
+                        RoutingId: data.routingId,
+                        RoutName: data.routingName,
+                        ManuftId: data.manufacturedPartId
+                    };
+
+                    sessionStorage.setItem("SesRoutDetails", JSON.stringify(filters));
                     $('#StepRoutingId').val(data.routingId);
                     RoutingDetails["routingId"] = data.routingId;
                     RoutingDetails["routingName"] = data.routingName;
@@ -2235,7 +2279,7 @@ $(function () {
             AppUtil.HandleError("FormNewRoutingName", error);
         });
     });
-    
+
     $("#BtnPRoutingSave").click(function (event) {
         var checkbox = $("#CheckPPreferredRouting");
 
@@ -2257,7 +2301,7 @@ $(function () {
 
     function handleCheckboxChange() {
         var checkboxes = $("#RoutingGrid tbody input[type='checkbox']:checked"); // Select checked checkboxes
-        
+
         if (checkboxes.length === 1) {
             $('#BtnCreateAlRouting').prop('disabled', false);
         }
@@ -2266,7 +2310,7 @@ $(function () {
         }
     }
 
-     //Attach the handleCheckboxChange function to the change event of the checkboxes using event delegation
+    //Attach the handleCheckboxChange function to the change event of the checkboxes using event delegation
     $('#RoutingGrid tbody').on('change', 'input[type="checkbox"]', handleCheckboxChange);
 
     // Optionally, trigger the event handler once to set the initial state of the button
@@ -2314,7 +2358,7 @@ $(function () {
         $("#RoutingDetailsClose").click();
         //$("#RoutingAvailableClose").click();
     });
-    
+
     ////SubConWSSubConDetailsId//SubConWSRoutingStepId//SubConWSDetailsId //WorkStepDesc//MachineType//FloorToFloorTime//SetupTime//NoOfPartsPerLoading
     $('#add-machine').on('shown.bs.modal', function (event) {
         let SetupTimeEr = document.getElementById("SetupTimeEr");
@@ -2327,7 +2371,7 @@ $(function () {
             alert("Save routing step before adding machine.");
             document.getElementById("Add-Machine-Close").click();
         }
-        $.ajax({           
+        $.ajax({
             success: function (data) {
                 AddMacOptions();
             }
@@ -2374,7 +2418,7 @@ $(function () {
             if (rTgt.data("preferredmachine") == 1) {
                 $("#SetPreferred").prop("checked", true);
             } else {
-                $("#SetPreferred").prop("checked",false);
+                $("#SetPreferred").prop("checked", false);
             }
 
             $("#MachineId").val(rTgt.data("machineid"));
@@ -2504,7 +2548,7 @@ $(function () {
         elm.innerText = machinename;
         //$("#DelRoutingId").val();
     });
-    $("#BtnDelStepMachine").on("click",function (event) {
+    $("#BtnDelStepMachine").on("click", function (event) {
         var machineId = $("#DelMachineId").val();
         var stepId = $("#DelMachineStepId").val();
         //alert(machineId + "/" + stepId);
@@ -2518,7 +2562,7 @@ $(function () {
         }).catch((error) => {
         });
     });
-    $("#CancelDelStepMachine").on("click",function (event) {
+    $("#CancelDelStepMachine").on("click", function (event) {
         //BtnDelMachineClose
         document.getElementById("BtnDelMachineClose").click();
     });
@@ -2532,9 +2576,9 @@ $(function () {
         //BtnDelMachineClose
         $('a[href="#rou-det"]').tab("show");
         $("#StepId").val("0");
-        var routingName =RoutingDetails["routingName"];
-        var manufPartId =RoutingDetails["manufacturedPartId"];
-        var routingId =RoutingDetails["routingId"];
+        var routingName = RoutingDetails["routingName"];
+        var manufPartId = RoutingDetails["manufacturedPartId"];
+        var routingId = RoutingDetails["routingId"];
         EditRoute(routingId, routingName, manufPartId);
         DisplayBomMessage();
     });
@@ -2558,7 +2602,7 @@ $(function () {
         //Status
     });
 
-    
+
 
     $("#BtnDelStepSupplier").click(function (event) {
 
@@ -2575,10 +2619,10 @@ $(function () {
         // Get the value of the selected option (supplier ID)
         var supplierId = selectedOption.val();
         $("#SubConSupplierId").val(supplierId);
-        
+
         //$("#SubConSupplier").val(supplierName);
     });
-    
+
     $('input[type=radio][name=stepsupplierselect]').change(function () {
         var chkdelm = $('input[name=stepsupplierselect]:checked');
         var currentrow = chkdelm.closest('tr');
@@ -2606,7 +2650,7 @@ $(function () {
             // Update the target elements with the retrieved values
             $("#MachineId").val(machineId);
             McIdUploadDocList(machineId);
-            $("#MPopupMcNameSpan").text(slno+" / "+machinename);
+            $("#MPopupMcNameSpan").text(slno + " / " + machinename);
             $("#MPopupMcPlantSpan").text(plantName);
             //$("#MPopupMcShopSpan").text(shopName);
             //McIdUploadDocList(parseInt(machineId));
@@ -2746,7 +2790,7 @@ $(function () {
         //stepsupplierselect
         //alert("Save route supplier");
         //routings/addnewrouting
-        
+
 
         var formData = AppUtil.GetFormData("FormRoutingSupplier");
         api.post("/routings/savestepsupplier", formData).then((data) => {
@@ -2801,7 +2845,7 @@ $(function () {
             //alert("Valid time format");
         }
         let timeInput = document.getElementById("FloorToFloorTime");
-       // let timePattern = /^(\d{1,3}):[0-5]\d:[0-5]\d$/;   // HH:MM:SS format validation
+        // let timePattern = /^(\d{1,3}):[0-5]\d:[0-5]\d$/;   // HH:MM:SS format validation
         let errorSpan = document.getElementById("FloorToFloorTimeEr");
 
         if (!timePattern.test(timeInput.value.trim())) {
@@ -2854,24 +2898,24 @@ $(function () {
             } else {
                 formData.PreferredMachine = 0;
             }
-                api.post("/routings/savestepmachine", formData).then((data) => {
-                    //console.log(data);
-                    var mcid = data["routingStepMachineId"];
-                    $("#RoutingStepMachineId").val(mcid);
-                    loadStepMachines();
-                    McIdUploadDocList(machineId);
-                    //document.getElementById("Add-Machine-Close").click();
-                    const params = new Proxy(new URLSearchParams(window.location.search), {
-                        get: (searchParams, prop) => searchParams.get(prop),
-                    });
-                    alert("Machine Added Successfully!");
-                    //var encodedManufPartId = params.manufPartId;
-                    //var parttypeurl = params.partType;
-                    //window.location.href = "/routings/routingdetails?manufPartId=" + encodedManufPartId + "&partType=" + parttypeurl;
-                    //EditRoute();
-                }).catch((error) => {
-                    AppUtil.HandleError("FormRoutingMachine", error);
+            api.post("/routings/savestepmachine", formData).then((data) => {
+                //console.log(data);
+                var mcid = data["routingStepMachineId"];
+                $("#RoutingStepMachineId").val(mcid);
+                loadStepMachines();
+                McIdUploadDocList(machineId);
+                //document.getElementById("Add-Machine-Close").click();
+                const params = new Proxy(new URLSearchParams(window.location.search), {
+                    get: (searchParams, prop) => searchParams.get(prop),
                 });
+                alert("Machine Added Successfully!");
+                //var encodedManufPartId = params.manufPartId;
+                //var parttypeurl = params.partType;
+                //window.location.href = "/routings/routingdetails?manufPartId=" + encodedManufPartId + "&partType=" + parttypeurl;
+                //EditRoute();
+            }).catch((error) => {
+                AppUtil.HandleError("FormRoutingMachine", error);
+            });
             //} else {
             //    alert("This Machine Already Exisits in The List. Please Select The Different Machine.");
             //}
@@ -2986,7 +3030,7 @@ $(function () {
         //});
     });
 
-    $("#BtnAddToStepList").on('click',function (event) {
+    $("#BtnAddToStepList").on('click', function (event) {
         var qtyEntered = parseInt($("#QuantityAssembly").val());
         if ($("#QuantityAssembly").val() == "") {
             var QuantityAssembly = document.getElementById('QuantityAssembly');
@@ -3050,7 +3094,7 @@ $(function () {
         $(Machinetablebody).html("");
         //"#rou-det"
         const params = new Proxy(new URLSearchParams(window.location.search), {
-        get: (searchParams, prop) => searchParams.get(prop),
+            get: (searchParams, prop) => searchParams.get(prop),
         });
         nspartType = params.partType;
         if (nspartType == "ManufacturedPart") {
@@ -3074,8 +3118,8 @@ $(function () {
                 //stepLocationSelect.value = locationMapping[firstRowLocation];
                 $("#StepLocation").val(locationMapping[firstRowLocation]).trigger('change');
             }
-            var selectStepLoc = document.getElementById('StepLocation');
-            selectStepLoc.style.pointerEvents = 'none';
+            //var selectStepLoc = document.getElementById('StepLocation');
+            //selectStepLoc.style.pointerEvents = 'none';
         } else {
             var selectStepLoc = document.getElementById('StepLocation');
             selectStepLoc.style.pointerEvents = 'auto';
@@ -3291,6 +3335,28 @@ $(function () {
     loadDocUploadList();
     $("#StepOperation").change(function () {
         loadDocUploadList();
+        var operationId = $(this).val();
+        api.get("/operationlist/Operation/" + operationId).then((data) => {
+            if (data.inhouse == 1 && data.subcon==0) {
+                $("#StepLocation").val("1").trigger("change");
+                var selectStepLoc = document.getElementById('StepLocation');
+                selectStepLoc.style.pointerEvents = 'none';
+                loadStepMachines();
+            }
+            else if (data.subcon == 1 && data.inhouse==0) {
+                $("#StepLocation").val("2").trigger("change");
+                var selectStepLoc = document.getElementById('StepLocation');
+                selectStepLoc.style.pointerEvents = 'none';
+                LoadSubCons();
+            } else {
+                var selectStepLoc = document.getElementById('StepLocation');
+                selectStepLoc.style.pointerEvents = 'auto';
+            }
+                        
+
+        }).catch((error) => {
+
+        });
     });
     $('#RefLogPopup').on('shown.bs.modal', function (event) {
 
@@ -3447,9 +3513,9 @@ function viewFile(element) {
     var customername = relatedTarget.data("customername");
     var uploadby = relatedTarget.data("uploadby");
     var uploadon = relatedTarget.data("uploadon");
-    var partno = RoutingDetails["partNo"] ;
+    var partno = RoutingDetails["partNo"];
     var partdesc = RoutingDetails["partDescription"];
-    var routingname = RoutingDetails["routingName"] ;
+    var routingname = RoutingDetails["routingName"];
     var oprno = relatedTarget.data("oprno");
     var retdate = relatedTarget.data("retdate");
     if (file == null) {
@@ -3525,36 +3591,36 @@ function loadDocUploadList() {
     var content = parseInt($("#StepOperation").val());
     var StepRoutingId = $("#StepRoutingId").val();
     var partid = $("#StepId").val();
-    
-        api.getbulk("/Routings/GetOpertaionDocList?opId=" + content + "&routingId=" + StepRoutingId + "&stepId=" + partid).then((data) => {
-            //data = data.filter(item => item.status == 1 || item.status == 0);
-            var tablebody = $("#RoutingDocgrid tbody");
-            $(tablebody).html("");//empty tbody
-            //console.log(data);
-            for (i = 0; i < data.length; i++) {
-                var rowHtml = AppUtil.ProcessTemplateData("maufDocUploadRow", data[i]);
 
-                // Check if mandatory is 'Y', if so, hide the Delete option
-                if (data[i].docListId === 0) {
-                    // Simplified regex to match the Upload link
-                    rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*> *Edit *<\/a>/i, '');
-                    rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*data-doclistid="[^"]*"[^>]*onclick="DeleteDocList\(this\)"[^>]*>Delete<\/a>/, '');
-                }
-                if (data[i].docListId != 0) {
-                    // Remove the Edit link from the generated row
-                    rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*> *Upload *<\/a>/i, '');
-                }
+    api.getbulk("/Routings/GetOpertaionDocList?opId=" + content + "&routingId=" + StepRoutingId + "&stepId=" + partid).then((data) => {
+        //data = data.filter(item => item.status == 1 || item.status == 0);
+        var tablebody = $("#RoutingDocgrid tbody");
+        $(tablebody).html("");//empty tbody
+        //console.log(data);
+        for (i = 0; i < data.length; i++) {
+            var rowHtml = AppUtil.ProcessTemplateData("maufDocUploadRow", data[i]);
 
-                if (data[i].mandatory === 'Y') {
-                    // Remove the Delete link from the generated row
-                    rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*data-doclistid="[^"]*"[^>]*onclick="DeleteDocList\(this\)"[^>]*>Delete<\/a>/, '');
-                }
-
-                // Append the processed row to the table body
-                $(tablebody).append(rowHtml);
+            // Check if mandatory is 'Y', if so, hide the Delete option
+            if (data[i].docListId === 0) {
+                // Simplified regex to match the Upload link
+                rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*> *Edit *<\/a>/i, '');
+                rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*data-doclistid="[^"]*"[^>]*onclick="DeleteDocList\(this\)"[^>]*>Delete<\/a>/, '');
             }
-        }).catch((error) => {
-            console.log(error);
-        });
+            if (data[i].docListId != 0) {
+                // Remove the Edit link from the generated row
+                rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*> *Upload *<\/a>/i, '');
+            }
+
+            if (data[i].mandatory === 'Y') {
+                // Remove the Delete link from the generated row
+                rowHtml = rowHtml.replace(/<a href="javascript:void\(0\);" class="dropdown-item"[^>]*data-doclistid="[^"]*"[^>]*onclick="DeleteDocList\(this\)"[^>]*>Delete<\/a>/, '');
+            }
+
+            // Append the processed row to the table body
+            $(tablebody).append(rowHtml);
+        }
+    }).catch((error) => {
+        console.log(error);
+    });
 
 }

@@ -51,11 +51,18 @@ function calculateTotals() {
 
     // Loop through table rows and sum up the values
     document.querySelectorAll("#popupInwardSupplierGrid tbody tr").forEach(row => {
-        let ourCount = parseFloat(row.children[1].innerText) || 0;  // Assuming "Our Count" is in the 2nd column
-        let dcCount = parseFloat(row.children[2].innerText) || 0;   // Assuming "Supplier DC Count" is in the 3rd column
+        const tds = row.querySelectorAll("td");
+        if (tds.length >= 3) {
+           
+                let ourText = tds[1].innerText.trim();
+            let dcText = tds[2].innerText.trim();
 
-        ourCountTotal += ourCount;
-        dcCountTotal += dcCount;
+            let ourCount = isNaN(parseFloat(ourText)) ? 0 : parseFloat(ourText);// Assuming "Our Count" is in the 2nd column
+            let dcCount = isNaN(parseFloat(dcText)) ? 0 : parseFloat(dcText);// Assuming "Supplier DC Count" is in the 3rd column
+          
+            ourCountTotal += ourCount;
+            dcCountTotal += dcCount;
+        }
     });
 
     // Display totals in footer
@@ -551,6 +558,7 @@ $(document).ready(function () {
         //const [month, day, year] = currentDate.split('-');
         const rstDt = new Date();
         const restrictDt = new Date();
+        restrictDt.setHours(0, 0, 0, 0);
         var formattedDate;
         var formattedDate2;
         if (popupInwardDcref.length === 0) {
@@ -570,7 +578,7 @@ $(document).ready(function () {
         } else if (popupInwardDcDate <= restrictDt) {
             var newNamevalidate = document.getElementById('popupInward2DcDate');
             newNamevalidate.style.border = '2px solid red';
-            alert("New Date Retained Should Be Greater Than Current Date Retained");
+            alert("Supplier DC Date should be less than Today's Date");
             return false;
             // or display an error message to the user
         }
@@ -596,7 +604,7 @@ $(document).ready(function () {
         } else if (popupInvDate <= restrictDt) {
             var newNamevalidate = document.getElementById('popupInvDate');
             newNamevalidate.style.border = '2px solid red';
-            alert("New Date Retained Should Be Greater Than Current Date Retained");
+            alert("Supplier Inv Date should be less than or Equal to Today's Date");
             return false;
             // or display an error message to the user
         }
@@ -650,6 +658,7 @@ $(document).ready(function () {
         //const [month, day, year] = currentDate.split('-');
         const rstDt = new Date();
         const restrictDt = new Date();
+        restrictDt.setHours(0, 0, 0, 0);
         var formattedDate;
         var formattedDate2;
         if (popupInwardDcref.length === 0) {
@@ -669,7 +678,7 @@ $(document).ready(function () {
         } else if (popupInwardDcDate <= restrictDt) {
             var newNamevalidate = document.getElementById('popupInwardDcDate');
             newNamevalidate.style.border = '2px solid red';
-            alert("Supplier DC Date Should Be Greater Than Supplier Inv Date");
+            alert("Supplier DC Date should be less than or Equal to Today's Date");
             return false;
             // or display an error message to the user
         }
@@ -695,7 +704,7 @@ $(document).ready(function () {
         } else if (popupInvDate <= restrictDt) {
             var newNamevalidate = document.getElementById('popupInwardDcDate');
             newNamevalidate.style.border = '2px solid red';
-            alert("New Date Retained Should Be Greater Than Current Date Retained");
+            alert("Supplier Inv Date should be less than or Equal to Today's Date");
             return false;
             // or display an error message to the user
         }
@@ -1690,7 +1699,7 @@ function OpenPopup4(element) {
             //$("#popupInwardPlanRecpt").val(porcptdate.split('T')[0]);
             //$("#P4SubConPlanDate").val(porcptdate.split('T')[0]);
             //$("#popupInwardActlDate").val(formattedDate);
-            $("#P4SubConActDate").val(formattedDate);
+            $("#P4SubConActDate").val(0);
             var balitems = $("#popupInwardBalVM").val() || $("#popupInward2BalVM").val();
             $("#popupInwardBalToRecVM").val(balnqnty || 0);
             $("#P4SubConBalToRc").val(balnqnty || 0);
@@ -1780,7 +1789,7 @@ function OpenPopup4(element) {
         //$("#popupInwardPlanRecpt").val(porcptdate.split('T')[0]);
         //$("#P4SubConPlanDate").val(porcptdate.split('T')[0]);
         //$("#popupInwardActlDate").val(formattedDate);
-        $("#P4SubConActDate").val(formattedDate);
+        $("#P4SubConActDate").val(0);
         var balitems = $("#popupInwardBalVM").val() || $("#popupInward2BalVM").val();
         $("#popupInwardBalToRecVM").val(balnqnty || 0);
         $("#P4SubConBalToRc").val(balnqnty || 0);

@@ -74,7 +74,7 @@ namespace CWB.Masters.Services.ItemMaster
                 if (id == 0)
                 {
                     masterPart.Id = 0;
-                    masterPart.Status = "Not Released";
+                   //masterPart.Status = "Not Released";
                     masterPart.Inv_Trans = 'N';
                     masterPart.Linked_to_BOM = 'N';
 

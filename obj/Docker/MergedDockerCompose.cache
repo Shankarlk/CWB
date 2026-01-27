@@ -1,13 +1,13 @@
-name: dockercompose12161421433046508295
+name: dockercompose8775946507736149664
 services:
   cwb.apigateway:
     build:
-      context: D:\DockerTestCWB\CWB-Latest\CWB
+      context: F:\CWBworking
       dockerfile: CWB.ApiGateway/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:80
-    image: shankar84kl/cwbapigateway
+    image: shankar84lk/cwbapigateway
     networks:
       cwb-network: null
     ports:
@@ -25,20 +25,18 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
   cwb.app:
     build:
-      context: D:\DockerTestCWB\CWB-Latest\CWB
+      context: F:\CWBworking
       dockerfile: CWB.App/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
@@ -46,7 +44,7 @@ services:
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
       KAFKA_BOOTSTRAP: kafka:9092
       KAFKA_TOPIC: email-events
-    image: shankar84kl/cwbapp
+    image: shankar84lk/cwbapp
     networks:
       cwb-network: null
     ports:
@@ -67,30 +65,26 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: D:\DockerTestCWB\CWB-Latest\CWB\filestorage\Active
+        source: F:\CWBworking\filestorage\Active
         target: /filestorage/Active
-        bind:
-          create_host_path: true
+        bind: {}
       - type: bind
-        source: D:\DockerTestCWB\CWB-Latest\CWB\filestorage\Archive
+        source: F:\CWBworking\filestorage\Archive
         target: /filestorage/Archive
-        bind:
-          create_host_path: true
+        bind: {}
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
   cwb.businessaquisition:
     build:
-      context: D:\DockerTestCWB\CWB-Latest\CWB
+      context: F:\CWBworking
       dockerfile: CWB.BusinessAquisition/Dockerfile
     depends_on:
       db:
@@ -100,7 +94,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbbusinessprocesses
+    image: shankar84lk/cwbbusinessprocesses
     links:
       - db
     networks:
@@ -123,20 +117,18 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
   cwb.companysettings:
     build:
-      context: D:\DockerTestCWB\CWB-Latest\CWB
+      context: F:\CWBworking
       dockerfile: CWB.CompanySettings/Dockerfile
     depends_on:
       db:
@@ -146,7 +138,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbcompanysettings
+    image: shankar84lk/cwbcompanysettings
     links:
       - db
     networks:
@@ -169,20 +161,18 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
   cwb.email:
     build:
-      context: D:\DockerTestCWB\CWB-Latest\CWB
+      context: F:\CWBworking
       dockerfile: CWB.Email/Dockerfile
     depends_on:
       kafka:
@@ -198,13 +188,13 @@ services:
       SMTP_USE_TLS: "true"
       SMTP_USER: rajugoudah2003@gmail.com
       SmtpSettings__AllowInvalidSsl: "false"
-    image: shankar84kl/cwbemail
+    image: shankar84lk/cwbemail
     networks:
       cwb-network: null
     restart: always
   cwb.identity:
     build:
-      context: D:\DockerTestCWB\CWB-Latest\CWB
+      context: F:\CWBworking
       dockerfile: CWB.Identity/Dockerfile
     depends_on:
       db:
@@ -214,7 +204,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbidentity
+    image: shankar84lk/cwbidentity
     links:
       - db
     networks:
@@ -237,20 +227,18 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
   cwb.masters:
     build:
-      context: D:\DockerTestCWB\CWB-Latest\CWB
+      context: F:\CWBworking
       dockerfile: CWB.Masters/Dockerfile
     depends_on:
       db:
@@ -260,7 +248,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbmasters
+    image: shankar84lk/cwbmasters
     links:
       - db
     networks:
@@ -283,20 +271,18 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
   cwb.modules:
     build:
-      context: D:\DockerTestCWB\CWB-Latest\CWB
+      context: F:\CWBworking
       dockerfile: CWB.Modules/Dockerfile
     depends_on:
       db:
@@ -306,7 +292,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbmodules
+    image: shankar84lk/cwbmodules
     links:
       - db
     networks:
@@ -329,20 +315,18 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
   cwb.productionplanwo:
     build:
-      context: D:\DockerTestCWB\CWB-Latest\CWB
+      context: F:\CWBworking
       dockerfile: CWB.ProductionPlanWO/Dockerfile
     depends_on:
       db:
@@ -352,7 +336,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbproductionplanwo
+    image: shankar84lk/cwbproductionplanwo
     links:
       - db
     networks:
@@ -375,20 +359,18 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
   cwb.simulation:
     build:
-      context: D:\DockerTestCWB\CWB-Latest\CWB
+      context: F:\CWBworking
       dockerfile: CWB.Simulation/Dockerfile
     depends_on:
       db:
@@ -398,7 +380,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbsimulation
+    image: shankar84lk/cwbsimulation
     links:
       - db
     networks:
@@ -421,20 +403,18 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
   cwb.tenant:
     build:
-      context: D:\DockerTestCWB\CWB-Latest\CWB
+      context: F:\CWBworking
       dockerfile: CWB.Tenant/Dockerfile
     depends_on:
       db:
@@ -444,7 +424,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: https://+:443;http://+:80
       HOST_DEFAULT_SWITCH_IP: 10.70.30.75
-    image: shankar84kl/cwbtenant
+    image: shankar84lk/cwbtenant
     links:
       - db
     networks:
@@ -467,17 +447,15 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
       - type: bind
-        source: C:\Users\MicroApt\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind:
-          create_host_path: true
+        bind: {}
   db:
     environment:
       MYSQL_DATABASE: db
@@ -567,4 +545,4 @@ networks:
     driver: bridge
 volumes:
   my-db:
-    name: dockercompose12161421433046508295_my-db
+    name: dockercompose8775946507736149664_my-db

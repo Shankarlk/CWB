@@ -214,6 +214,7 @@ function loadMcLoads() {
     $(tablebody).html(""); // empty tbody
     document.getElementById('preloader').style.display = 'block';
     document.getElementById('status').style.display = 'block';
+    $('#preloaderblurred').show();
     api.getbulk("/workOrder/GetAllMc_Wait_List").then((data) => {
         var waitList = data;
 
@@ -301,7 +302,9 @@ function loadMcLoads() {
 
             tbody.append(tr);
         });
+        $('#preloaderblurred').hide();
     }).catch((error) => {
+        $('#preloaderblurred').hide();
         console.error("Failed to load WOs", error);
     });
 }
@@ -370,7 +373,7 @@ function loadMcSeq(mcid) {
 
     var tablebody = $("#P22Grid tbody");
     $(tablebody).html("");//empty tbody
-
+    $('#preloaderblurred').show();
     api.getbulk("/workOrder/GetAllMcWos?mcId="+ mcid).then((data) => {
         for (i = 0; i < data.length; i++) {
             let row = AppUtil.ProcessTemplateData("P22GridRow", data[i]);
@@ -388,6 +391,8 @@ function loadMcSeq(mcid) {
             $(tablebody).append($row);
             $("#P22Grid td").css("white-space", "nowrap");
         }
+        $('#preloaderblurred').hide();
     }).catch((error) => {
+        $('#preloaderblurred').hide();
     });
 }

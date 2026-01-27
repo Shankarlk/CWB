@@ -400,7 +400,7 @@ $(document).ready(function () {
                     let userChoice = confirm("Select PO Approved successfully. Do you want to go to the PO List page?");
 
                     if (userChoice) {
-                        window.location.href = "/WorkOrder/POLineList"; 
+                        window.location.href = "/P0!L!@T%2";
                     }
                 }
             });

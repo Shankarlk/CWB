@@ -423,7 +423,30 @@ namespace CWB.Masters.Services.Routings
             var routing = _mapper.Map<CWB.Masters.Domain.Routings.Routing>(routingVM);
             if (routing.Id == 0)
             {
-                await _routingRepository.AddAsync(routing);
+                try
+                {
+                    List<RoutingVM> lst = GetRoutingsForManufId((int)routing.ManufacturedPartId).ToList();
+                    if(routing.PreferredRouting==1)
+                    {
+                        foreach(RoutingVM pf  in lst)
+                        {
+                            var route = _mapper.Map<Routing>(pf);
+                            route.PreferredRouting = 0;
+                            await _routingRepository.UpdateAsync(route.Id, route);
+                        }
+                    }
+                    if (lst.Count() == 0)
+                    {
+                        routing.PreferredRouting = 1;
+                    }
+
+                    await _routingRepository.AddAsync(routing);
+                }
+                catch (Exception ex)
+                {
+                    string str = ex.InnerException.Message;
+                    string str1 = ex.StackTrace;
+                }
             }
             else
             {
@@ -777,8 +800,32 @@ namespace CWB.Masters.Services.Routings
                 var routingStepMachine = _mapper.Map<RoutingStepMachine>(routingStepMachineVM);
                 if (routingStepMachine.Id == 0)
                 {
-                      await _routingStepMachineRepository.AddAsync(routingStepMachine);
-                  //  await PreferredStepMachine(routingStepMachine.RoutingStepId.ToString(),routingStepMachine.MachineId.ToString(), GetMaxMachinCount((int)routingStepMachine.RoutingStepId));
+                    try
+                    {
+                        List<RoutingStepMachineVM> lst = StepMachines((int)routingStepMachine.RoutingStepId).Result.ToList();
+                        if (routingStepMachine.PreferredMachine == 1)
+                        {
+                            foreach (RoutingStepMachineVM sm in lst)
+                            {
+                                var ma = _mapper.Map<RoutingStepMachine>(sm);
+                                ma.PreferredMachine = 0;
+                                await _routingStepMachineRepository.UpdateAsync(ma.Id, ma);
+                            }
+                            await _unitOfWork.CommitAsync();
+                        }
+                        if(lst.Count()==0)
+                        {
+                            routingStepMachine.PreferredMachine = 1;
+                        }
+
+                        await _routingStepMachineRepository.AddAsync(routingStepMachine);
+                        //  await PreferredStepMachine(routingStepMachine.RoutingStepId.ToString(),routingStepMachine.MachineId.ToString(), GetMaxMachinCount((int)routingStepMachine.RoutingStepId));
+                    }
+                    catch (Exception ex)
+                    {
+                        string str = ex.InnerException.Message;
+                        string str1 = ex.StackTrace;
+                    }
                 }
                 else
                 {
@@ -1136,10 +1183,17 @@ namespace CWB.Masters.Services.Routings
                 rs.StepId = 0;
                 rs.OrigStepId = origStepId;
                 var routingStep = _mapper.Map<RoutingStep>(rs);
+                routingStep.RoutingStepOperationId = Convert.ToInt64(routingStep.RoutingStepOperation);
                 if (routingStep.Id == 0)
                 {
-                    await _routingStepRepository.AddAsync(routingStep);
-                    await _unitOfWork.CommitAsync();
+                    try {
+                        await _routingStepRepository.AddAsync(routingStep);
+                        await _unitOfWork.CommitAsync();
+                    }
+                    catch(Exception ex)
+                    {
+                       
+                    }
                     //     await CopyStepMachines(origStepId,(int)routingStep.Id);
                     //     await CopySubCons(origStepId,(int)routingStep.Id);
                 }

@@ -473,6 +473,7 @@ function PostDeliverySchedule() {
             LoadSalesOrders(cuoid);
             document.getElementById("BtnEditSalesOrderClose").click();
             LoadDeliverySchedules(cuoid);
+            LoadPOLines(cuoid);
         }
         else {
             //console.log("****DeliverySchedule****");
@@ -1089,7 +1090,7 @@ $(function () {
         }
         const currentDate = new Date();
         const userDate = new Date(redate);
-        if (userDate < currentDate) {
+        if (userDate >= currentDate) {
             alert('Please Enter A Date Greater Than Or Equal To Today\'s Date');
             $("#POReqdDate").val('');
             return false;

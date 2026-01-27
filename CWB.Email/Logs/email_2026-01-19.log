@@ -1,0 +1,30 @@
+2026-01-19 09:01:28.9302 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-01-19 09:01:30.0743 INFO Application started. Press Ctrl+C to shut down.
+2026-01-19 09:01:30.7540 INFO Hosting environment: Production
+2026-01-19 09:01:31.2069 INFO Content root path: /app
+2026-01-19 09:01:44.5134 ERROR Consume exception
+2026-01-19 10:20:54.9933 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-01-19 10:20:55.1377 INFO Application started. Press Ctrl+C to shut down.
+2026-01-19 10:20:55.5184 INFO Hosting environment: Production
+2026-01-19 10:20:55.6006 INFO Content root path: /app
+2026-01-19 10:20:55.8528 ERROR Consume exception
+2026-01-19 10:29:41.2734 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-01-19 10:29:41.4974 INFO Application started. Press Ctrl+C to shut down.
+2026-01-19 10:29:41.5379 INFO Hosting environment: Production
+2026-01-19 10:29:41.7167 INFO Content root path: /app
+2026-01-19 10:29:41.8666 ERROR Consume exception
+2026-01-19 10:36:09.8034 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-01-19 10:36:09.9614 INFO Application started. Press Ctrl+C to shut down.
+2026-01-19 10:36:10.0783 INFO Hosting environment: Production
+2026-01-19 10:36:10.2109 INFO Content root path: /app
+2026-01-19 10:36:10.2988 ERROR Consume exception
+2026-01-19 10:42:14.7204 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-01-19 10:42:15.1519 INFO Application started. Press Ctrl+C to shut down.
+2026-01-19 10:42:15.3724 INFO Hosting environment: Production
+2026-01-19 10:42:15.6374 INFO Content root path: /app
+2026-01-19 10:42:29.4031 ERROR Consume exception
+2026-01-19 10:49:49.4314 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-01-19 10:49:49.7401 INFO Application started. Press Ctrl+C to shut down.
+2026-01-19 10:49:50.2114 INFO Hosting environment: Production
+2026-01-19 10:49:50.4710 INFO Content root path: /app
+2026-01-19 10:49:50.8202 ERROR Consume exception

@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CompanySettings\\CWB.CompanySettings.csproj": {}
+    "F:\\CWBworking\\CWB.CompanySettings\\CWB.CompanySettings.csproj": {}
   },
   "projects": {
-    "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
+    "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj",
         "projectName": "CWB.CommonUtils",
-        "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj",
-        "packagesPath": "C:\\Users\\MicroApt\\.nuget\\packages\\",
-        "outputPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CommonUtils\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.CommonUtils\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\MicroApt\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,6 +26,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -92,20 +93,20 @@
         }
       }
     },
-    "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CompanySettings\\CWB.CompanySettings.csproj": {
+    "F:\\CWBworking\\CWB.CompanySettings\\CWB.CompanySettings.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CompanySettings\\CWB.CompanySettings.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.CompanySettings\\CWB.CompanySettings.csproj",
         "projectName": "CWB.CompanySettings",
-        "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CompanySettings\\CWB.CompanySettings.csproj",
-        "packagesPath": "C:\\Users\\MicroApt\\.nuget\\packages\\",
-        "outputPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CompanySettings\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.CompanySettings\\CWB.CompanySettings.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.CompanySettings\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\MicroApt\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -114,26 +115,27 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
-                "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj"
+              "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj"
               },
-              "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Constants\\CWB.Constants.csproj": {
-                "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Constants\\CWB.Constants.csproj"
+              "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj"
               },
-              "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
-                "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj"
+              "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj"
               },
-              "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Extensions\\CWB.Extensions.csproj": {
-                "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Extensions\\CWB.Extensions.csproj"
+              "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj"
               },
-              "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Logging\\CWB.Logging.csproj": {
-                "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Logging\\CWB.Logging.csproj"
+              "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj"
               }
             }
           }
@@ -199,20 +201,20 @@
         }
       }
     },
-    "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Constants\\CWB.Constants.csproj": {
+    "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Constants\\CWB.Constants.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj",
         "projectName": "CWB.Constants",
-        "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Constants\\CWB.Constants.csproj",
-        "packagesPath": "C:\\Users\\MicroApt\\.nuget\\packages\\",
-        "outputPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Constants\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.Constants\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\MicroApt\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -221,6 +223,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -267,20 +270,20 @@
         }
       }
     },
-    "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
+    "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj",
         "projectName": "CWB.ExceptionHandling",
-        "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj",
-        "packagesPath": "C:\\Users\\MicroApt\\.nuget\\packages\\",
-        "outputPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.ExceptionHandling\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.ExceptionHandling\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\MicroApt\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -289,17 +292,18 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Constants\\CWB.Constants.csproj": {
-                "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Constants\\CWB.Constants.csproj"
+              "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj"
               },
-              "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Logging\\CWB.Logging.csproj": {
-                "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Logging\\CWB.Logging.csproj"
+              "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj"
               }
             }
           }
@@ -346,20 +350,20 @@
         }
       }
     },
-    "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Extensions\\CWB.Extensions.csproj": {
+    "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Extensions\\CWB.Extensions.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj",
         "projectName": "CWB.Extensions",
-        "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Extensions\\CWB.Extensions.csproj",
-        "packagesPath": "C:\\Users\\MicroApt\\.nuget\\packages\\",
-        "outputPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Extensions\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.Extensions\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\MicroApt\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -368,17 +372,18 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
-                "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj"
+              "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj"
               },
-              "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Logging\\CWB.Logging.csproj": {
-                "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Logging\\CWB.Logging.csproj"
+              "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj"
               }
             }
           }
@@ -445,20 +450,20 @@
         }
       }
     },
-    "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Logging\\CWB.Logging.csproj": {
+    "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Logging\\CWB.Logging.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj",
         "projectName": "CWB.Logging",
-        "projectPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Logging\\CWB.Logging.csproj",
-        "packagesPath": "C:\\Users\\MicroApt\\.nuget\\packages\\",
-        "outputPath": "D:\\DockerTestCWB\\CWB-Latest\\CWB\\CWB.Logging\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.Logging\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\MicroApt\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -467,6 +472,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {

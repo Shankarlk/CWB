@@ -109,7 +109,7 @@ namespace CWB.Masters.Services.ItemMaster
                 {
                     // NEW MASTER PART
                     masterPart.Id = 0;
-                    masterPart.Status = "Not Released";
+                    //masterPart.Status = "Not Released";
                     masterPart.Inv_Trans = 'N';
                     masterPart.Linked_to_BOM = 'N';
 
