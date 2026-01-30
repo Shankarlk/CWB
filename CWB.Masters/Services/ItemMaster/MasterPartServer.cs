@@ -31,7 +31,9 @@ namespace CWB.Masters.Services.ItemMaster
         private readonly IItemMasterDocListRepository _itemMasterDocListRepository;
         private readonly IItemMasterContentRepository _itemMasterContentRepository;
         private readonly IPartsStatusRepository _PartsStatusRepository;
-
+        private readonly IMPBOMRepository _mpBomRepository;
+        private readonly IMPMakeFromRepository _makeFromRepository;
+        private readonly IPartPurchaseDetailRepository _purchaseDetailRepository;
         public MasterPartService(ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork
             , IRawMaterialDetailService rawMaterialDetailService
             , IManufacturedPartNoDetailRepository manufacturedPartNoDetailRepository
@@ -40,7 +42,8 @@ namespace CWB.Masters.Services.ItemMaster
             , IManufacturedPartNoDetailService manufacturedPartNoDetailService
             , IBoughtOutFinishDetailService boughtOutFinishDetailService,IMasterPartRepository masterPartRepository
             , IItemMasterDocListRepository itemMasterDocListRepository, IItemMasterContentRepository itemMasterContentRepository
-            , IPartsStatusRepository PartsStatusRepository)
+            , IPartsStatusRepository PartsStatusRepository,IMPBOMRepository mPBOMRepository,IMPMakeFromRepository MakeFroMRepository
+            ,IPartPurchaseDetailRepository PartPurchaseDetailRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -55,6 +58,9 @@ namespace CWB.Masters.Services.ItemMaster
             _manufacturedPartNoDetailRepository = manufacturedPartNoDetailRepository;
             _IRawMaterialDetailRepository = IRawMaterialDetailRepository;
             _BoughtOutFinishDetails = BoughtOutFinishDetails;
+            _mpBomRepository = mPBOMRepository;
+            _makeFromRepository = MakeFroMRepository;
+            _purchaseDetailRepository = PartPurchaseDetailRepository;
         }
 
         public IEnumerable<ItemMasterPartVM> GetMasterPartView()
@@ -272,6 +278,7 @@ namespace CWB.Masters.Services.ItemMaster
             var mf = await _manufacturedPartNoDetailRepository.SingleOrDefaultAsync(m => m.PartId == itemMasterDocListId && m.TenantId == tenantId);
             var rm = await _IRawMaterialDetailRepository.SingleOrDefaultAsync(m => m.PartId == itemMasterDocListId && m.TenantId == tenantId);
             var bof = await _BoughtOutFinishDetails.SingleOrDefaultAsync(m => m.PartId == itemMasterDocListId && m.TenantId == tenantId);
+
             if (co != null)
             {
                 try
@@ -282,6 +289,31 @@ namespace CWB.Masters.Services.ItemMaster
                     {
                         try
                         {
+                            if(mf.ManufacturedPartType==2)
+                            {
+                                var bomlist =await  _mpBomRepository.AwaitGetRangeAsync(bom => bom.ManufPartId == mf.Id);
+
+                                if(bomlist.Count()>0)
+                                {
+                                    _mpBomRepository.RemoveRange(bomlist);
+                                    await _unitOfWork.CommitAsync();
+
+
+                                }
+                            }
+                            else if (mf.ManufacturedPartType==1)
+                            {
+                                 
+                                var makefromlist = await _makeFromRepository.AwaitGetRangeAsync(mk => mk.ManufPartId == mf.Id );
+                                if (makefromlist.Count() > 0)
+                                {
+                                    _makeFromRepository.RemoveRange(makefromlist);
+                                    await _unitOfWork.CommitAsync();
+                                }
+                            }
+                            //var bomlist =await _
+
+
                             _manufacturedPartNoDetailRepository.Remove(mf);
                             await _unitOfWork.CommitAsync();
                             return true;
@@ -295,6 +327,13 @@ namespace CWB.Masters.Services.ItemMaster
                     {
                         try
                         {
+
+                            var parchasedetail = await _purchaseDetailRepository.AwaitGetRangeAsync(pr => pr.RMId == rm.Id);
+                            if (parchasedetail.Count() > 0)
+                            {
+                                _purchaseDetailRepository.RemoveRange(parchasedetail);
+                                await _unitOfWork.CommitAsync();
+                            }
                             _IRawMaterialDetailRepository.Remove(rm);
                             await _unitOfWork.CommitAsync();
                             return true;
@@ -308,6 +347,12 @@ namespace CWB.Masters.Services.ItemMaster
                     {
                         try
                         {
+                            var bofpurchasedetail = await _purchaseDetailRepository.AwaitGetRangeAsync(b => b.BOFId == bof.Id );
+                            if (bofpurchasedetail.Count() > 0)
+                            {
+                                _purchaseDetailRepository.RemoveRange(bofpurchasedetail);
+                                await _unitOfWork.CommitAsync();
+                            }
                             _BoughtOutFinishDetails.Remove(bof);
                             await _unitOfWork.CommitAsync();
                             return true;

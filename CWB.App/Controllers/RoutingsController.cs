@@ -6,6 +6,7 @@ using CWB.App.Models.Machine;
 using CWB.App.Models.OperationList;
 using CWB.App.Models.Routing;
 using CWB.App.Models.Routings;
+using CWB.App.Services.BusinessProcesses;
 using CWB.App.Services.DocumentMagement;
 using CWB.App.Services.EmployeeMaster;
 using CWB.App.Services.Masters;
@@ -37,10 +38,11 @@ namespace CWB.App.Controllers
         private readonly IOperationService _operationService;
         private readonly IDocMangService _docMangService;
         private readonly IWOService _woService;
+        private readonly IBAService _baService;
 
         public RoutingsController(ILoggerManager logger, IMachineService machineService, IRoutingService routingService, IEmployeeService employeeService,
             IMastersServices mastersServices, IOperationService operationService, IDocMangService docMangService
-            , IWOService woService)
+            , IWOService woService, IBAService baService)
         {
             _logger = logger;
             _routingService = routingService;
@@ -50,6 +52,7 @@ namespace CWB.App.Controllers
             _docMangService = docMangService;
             _employeeService = employeeService;
             _woService = woService;
+            _baService = baService;
         }
 
         public async Task<IActionResult> Index()
@@ -317,11 +320,18 @@ namespace CWB.App.Controllers
             {
                 return Ok("This Step is already used in the SubCon. Please delete them first.");
             }
+            var workOrders = await _baService.AllWorkOrders();
+            var workOrder = workOrders.FirstOrDefault(p => p.StartingOpNo == stepId || p.EndingOpNo == stepId);
+            if (workOrder != null)
+            {
+                string msg = "This Subcon is already used in the WO: " + workOrder.WONumber + " .";
+                return Ok(msg);
+            }
             var prodns = await _woService.AllProductionPlan_Wo();
             var prodrt = prodns.FirstOrDefault(p => p.StartingOpNo == stepId || p.EndingOpNo == stepId);
             if (prodrt != null)
             {
-                string msg = "This Routing is already used in the WO: " + prodrt.WONumber + " .";
+                string msg = "This Step is already used in the WO: " + prodrt.WONumber + " .";
                 return Ok(msg);
             }
             var result = await _routingService.DeleteStep(stepId);
@@ -938,6 +948,20 @@ namespace CWB.App.Controllers
 
         public async Task<IActionResult> DeleteMachine(int stepId,int machineId)
         {
+            var workOrders = await _baService.AllWorkOrders();
+            var workOrder = workOrders.FirstOrDefault(p => p.StartingOpNo == stepId || p.EndingOpNo == stepId);
+            if (workOrder != null)
+            {
+                string msg = "This Machine is already used in the WO: " + workOrder.WONumber + " .";
+                return Ok(msg);
+            }
+            var prodns = await _woService.AllProductionPlan_Wo();
+            var prodrt = prodns.FirstOrDefault(p => p.StartingOpNo == stepId || p.EndingOpNo == stepId);
+            if (prodrt != null)
+            {
+                string msg = "This Machine is already used in the WO: " + prodrt.WONumber + " .";
+                return Ok(msg);
+            }
             var result = await _routingService.DeleteMachine(stepId,machineId);
             return Ok(result);
         }
@@ -1038,6 +1062,20 @@ namespace CWB.App.Controllers
         
         public async Task<IActionResult> DeleteSubConDetails(int stepId, int subConDetailsId)
         {
+            var workOrders = await _baService.AllWorkOrders();
+            var workOrder = workOrders.FirstOrDefault(p => p.StartingOpNo == stepId || p.EndingOpNo == stepId);
+            if (workOrder != null)
+            {
+                string msg = "This Subcon is already used in the WO: " + workOrder.WONumber + " .";
+                return Ok(msg);
+            }
+            var prodns = await _woService.AllProductionPlan_Wo();
+            var prodrt = prodns.FirstOrDefault(p => p.StartingOpNo == stepId || p.EndingOpNo == stepId);
+            if (prodrt != null)
+            {
+                string msg = "This Subcon is already used in the WO: " + prodrt.WONumber + " .";
+                return Ok(msg);
+            }
             var result = await _routingService.DeleteSubCon(stepId, subConDetailsId);
             return Ok(result);
         }
@@ -1074,11 +1112,25 @@ namespace CWB.App.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> DeleteWS(int subConWSId)
+        public async Task<IActionResult> DeleteWS(int subConWSId,int stepId)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+            var workOrders = await _baService.AllWorkOrders();
+            var workOrder = workOrders.FirstOrDefault(p => p.StartingOpNo == stepId || p.EndingOpNo == stepId);
+            if (workOrder != null)
+            {
+                string msg = "This Subcon Work Step Details is already used in the WO : " + workOrder.WONumber + " .";
+                return Ok(msg);
+            }
+            var prodns = await _woService.AllProductionPlan_Wo();
+             var prodrt = prodns.FirstOrDefault(p => p.StartingOpNo == stepId || p.EndingOpNo == stepId);
+            if (prodrt != null)
+            {
+                string msg = "This Subcon Work Step Details is already used in the Detailed Production Plan WO : " + prodrt.WONumber + " .";
+                return Ok(msg);
             }
             var result = await _routingService.DeleteWS(subConWSId);
             return Ok(result);

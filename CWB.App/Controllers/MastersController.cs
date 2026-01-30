@@ -717,25 +717,25 @@ namespace CWB.App.Controllers
             return Ok(result);
         }
         [HttpGet]
-        public async Task<IActionResult> DeleteItemMasterPart(long itemMasterDocListId,string partno)
+        public async Task<IActionResult> DeleteItemMasterPart(long itemMasterId,string partno)
         {
             var allRoute = await _routingService.GetRoutingListItems();
-            ManufacturedPartNoDetailVM manuf = await _mastersService.GetManufPart((int)itemMasterDocListId);
+            ManufacturedPartNoDetailVM manuf = await _mastersService.GetManufPart((int)itemMasterId);
 
-            if (allRoute.Any(x => x.ManufacturedPartId == manuf.ManufacturedPartNoDetailId))
+            if (allRoute.Any(x => x.ManufacturedPartId == manuf.ManufacturedPartNoDetailId && x.RoutingId > 0))
             {
                 string msg =
                     $"This Part No has Routing. Delete Routings Of This Part No : " + partno +".";
                 return Ok(msg);
             }
             var salesOrders = await _baService.AllSalesOrders();
-            var usedSo = salesOrders.FirstOrDefault(s => s.PartId == manuf.ManufacturedPartNoDetailId);
+            var usedSo = salesOrders.FirstOrDefault(s => s.PartId == itemMasterId);
             if (usedSo != null)
             {
                 string msg = "This Part is already used in Sales Order: " + usedSo.SONumber + ".";
                 return Ok(msg);
             }
-            var result = await _mastersService.DeleteItemMasterPart(itemMasterDocListId);
+            var result = await _mastersService.DeleteItemMasterPart(itemMasterId);
             return Ok(result);
         }
 

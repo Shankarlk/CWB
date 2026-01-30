@@ -3372,7 +3372,19 @@ function DeleteWo(element) {
     if (result) {
         api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
             data = data.filter(item => item.status === 1 && item.woId === workOrderId);
-            if (data.length > 0) {
+            if (data.length === 0) {
+
+                api.getbulk("/WorkOrder/DeleteWo?id=" + workOrderId + "&productionPlanId=" + 0).then((data) => {
+
+                    if (data == false || data == true) {
+
+                    } else {
+                        alert(data);
+                    }
+                    loadWO();
+                });
+            }
+           else if (data.length > 0) {
                 api.getbulk("/WorkOrder/DeleteWo?id=" + workOrderId + "&productionPlanId=" + data[0].productionPlanId).then((data) => {
 
                     if (data == false || data == true) {

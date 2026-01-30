@@ -71,10 +71,14 @@ function AssignWorkStepVals(workStepDesc, machineType, floorToFloorTime,
 
 function DeleteWS(subConWSDetailsId) {
     //alert(subConWSDetailsId);
+    var stepid = $("#StepId").val();
     let confirmval = confirm("Are your sure you want to delete this work step?", "Yes", "No");
     if (confirmval) {
-        api.get("/routings/deletews?subConWSId=" + subConWSDetailsId).then((data) => {
+        api.get("/routings/deletews?subConWSId=" + subConWSDetailsId + "&stepId=" + stepid).then((data) => {
             //console.log(data);
+            if (data != null && typeof data === 'string') {
+                alert(data);
+            }
             LoadSubConWSS();
         }).catch((error) => {
             AppUtil.HandleError("FormDelRoutingName", error);
@@ -733,7 +737,7 @@ function DoRoutingDetailsJob() {
     var apDesc = $("#SpanPartDesc").text();
     var aComp = $("#SpanComp").text();
     $("#RDSpanPartName").text(apartName);
-    $("#RSDPartName").text(apartName);
+    $("#RSDPartName").text(apartName + " / " + apDesc);
     $("#RDSpanPartDesc").text(apDesc);
     $("#RSDPartDesc").text(apDesc);
     //$("#RDSpanPartName").text(apartName);
@@ -872,7 +876,7 @@ function DeleteStepPart(partId, stepId) {
     if (confirmval) {
         api.get("/routings/deletesteppart?stepId=" + stepId + "&stepPartId=" + partId).then((data) => {
             //console.log(data);
-
+         
             var tablebody = $("#BomUsedGridDisplay tbody");
             tablebody.html("");
             const params = new Proxy(new URLSearchParams(window.location.search), {
@@ -1409,6 +1413,9 @@ $(function () {
         var stepid = $("#DelSubConStepId").val();
         api.get("/routings/deletesubcondetails?stepId=" + stepid + "&subConDetailsId=" + subcondetailsid).then((data) => {
             // console.log(data);
+            if (data != null && typeof data === 'string') {
+                alert(data);
+            }
             subcondeleted = true;
             document.getElementById("BtnDelSubConClose").click();
         }).catch((error) => {
@@ -2562,6 +2569,9 @@ $(function () {
         var stepId = $("#DelMachineStepId").val();
         //alert(machineId + "/" + stepId);
         api.get("/routings/deletemachine?stepId=" + stepId + "&machineId=" + machineId).then((data) => {
+            if (data != null && typeof data === 'string') {
+                alert(data);
+            }
             //console.log(data);
             //console.log(tablebody.html());
             //RouteSuppliersTable

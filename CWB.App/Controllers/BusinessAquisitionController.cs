@@ -181,7 +181,7 @@ namespace CWB.App.Controllers
 
             }
             var postbom = await _baService.BOMTempPOst(bompost);
-            return Ok(postWO);
+            return Ok(selected_Sales_OrderVMs1);
             }
             
                 else
@@ -263,7 +263,7 @@ namespace CWB.App.Controllers
                                 missingFields.Add("FloorToFloorTime");
 
                             if (machinetime.FirstPieceProcessingTime == "00:00:00")
-                                missingFields.Add("FirstPieceProcessingTime");
+                                missingFields.Add("FirstPartProcessingTime");
 
                             if (machinetime.SetupTime == "00:00:00")
                                 missingFields.Add("SetupTime");
