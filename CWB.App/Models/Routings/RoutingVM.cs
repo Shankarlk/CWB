@@ -26,10 +26,10 @@
         public string MandocAvl { get; set; } = string.Empty;
         public int InhouseNo { get; set; } = 0;
         public int SubconNo { get; set; }  = 0;
-        public int AvgCycleTime { get; set; }  = 0;
+        public string AvgCycleTime { get; set; }  = string.Empty;
         public int OprnGreaterAvgCycleTime { get; set; }  = 0;
-        public int TotalSetupTime { get; set; }  = 0;
-        public int MaxSetupTime { get; set; }  = 0;
+        public string TotalSetupTime { get; set; }  = string.Empty;
+        public string MaxSetupTime { get; set; }  = string.Empty;
         public double BacthManufTime { get; set; }  = 0;
         public int NoOprns { get; set; } 
     }

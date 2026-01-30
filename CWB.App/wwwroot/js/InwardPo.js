@@ -453,10 +453,14 @@ $(document).ready(function () {
                     success: function (result) {
                         if (parseInt(suppCountVM) < parseInt(totalPOQnty)) {
                             $("#popupInwardPoStatusVM").val("Patically Recived");
+                            $("#tdpostatusid").text("Patically Recived");
                         } else {
                             $("#popupInwardPoStatusVM").val("Complete");
+                            $("#tdpostatusid").text("Complete");
                         }
                         $("#P4MessageBox").text("Inwarding Complete");
+
+                        loadPO();
                     }
                 });
             } else {
@@ -611,6 +615,17 @@ $(document).ready(function () {
         else {
             formattedDate2 = popupInvDate.toISOString();
         }
+        var popupInw2NoLine = parseInt($("#popupInw2NoLine").val());
+        if (popupInw2NoLine.length == 0 || isNaN(popupInw2NoLine) || popupInw2NoLine == 0) {
+            var popupInwNoLinevalidate = document.getElementById('popupInw2NoLine');
+
+            popupInwNoLinevalidate.style.border = '2px solid red';
+
+            return false;
+        } else {
+            var popupInwNoLinevalidate = document.getElementById('popupInw2NoLine');
+            popupInwNoLinevalidate.style.border = '';
+        }
         if (popupInwNoLine < popupBalLine) {
             alert("Please check the No of Line Items");
             return false;
@@ -649,7 +664,7 @@ $(document).ready(function () {
         var popupInwardHeaderId = parseInt($("#popupInwardHeaderId").val());
         var popupPoHeaderId = parseInt($("#popupPoHeaderId").val());
         var popupBalLine = parseInt($("#popupBalLine").val());
-        var popupInwNoLine = parseInt($("#popupInwNoLine").val());
+       
         var popupInwardDcDate = new Date(Date.parse($("#popupInwardDcDate").val()));
         var popupInwardDcref = $("#popupInwardDcref").val();
         var popupInwardInvRef = $("#popupInwardInvRef").val();
@@ -661,6 +676,19 @@ $(document).ready(function () {
         restrictDt.setHours(0, 0, 0, 0);
         var formattedDate;
         var formattedDate2;
+
+        var popupInwNoLine = parseInt($("#popupInwNoLine").val());
+        if (popupInwNoLine.length == 0 || isNaN(popupInwNoLine) || popupInwNoLine == 0 ) {
+            var popupInwNoLinevalidate = document.getElementById('popupInwNoLine');
+
+            popupInwNoLinevalidate.style.border = '2px solid red';
+            
+            return false;
+        } else {
+            var popupInwNoLinevalidate = document.getElementById('popupInwNoLine');
+            popupInwNoLinevalidate.style.border = '';
+        }
+
         if (popupInwardDcref.length === 0) {
             var newNamevalidate = document.getElementById('popupInwardDcref');
             newNamevalidate.style.border = '2px solid red';
@@ -779,6 +807,9 @@ $(document).ready(function () {
         $("#popupInwardDcDate").val('');
         $("#popupInwardDcref").val('');
         $("#popupInwardInvRef").val('');
+        $("#popupInvDate").val('');
+        var popupInwNoLinevalidate = document.getElementById('popupInwNoLine');
+        popupInwNoLinevalidate.style.border = '';
     });
     $('#popupInward2').on('show.bs.modal', function (event) {
         poQnty = 0;
@@ -925,7 +956,7 @@ $(document).ready(function () {
                         <td>${baltorec || '0'}</td>
                         <td>${units || ''}</td>
                         <td>${docavl || ''}</td>
-                        <td>${postatus}</td>
+                        <td id="tdpostatusid">${postatus}</td>
                         <td>${mismatch_Resolved}</td>
                         <td>
                             ${mismatch_Resolved === 'N'
@@ -975,12 +1006,12 @@ $(document).ready(function () {
         } else {
             loadInwardDetails(0);
             $("#popupInwardHeaderId").val();
-            $("#popupPoHeaderId").val();
-            $("#popupInwNoLine").val();
-            $("#popupInwardDcDate").val();
-            $("#popupInwardDcref").val();
-            $("#popupInwardInvRef").val();
-            $("#popupInvDate").val();
+            $("#popupPoHeaderId2").val();
+            $("#popupInw2NoLine").val();
+            $("#popupInward2DcDate").val();
+            $("#popupInward2Dcref").val();
+            $("#popupInward2InvRef").val();
+            $("#popupInward2InvDate").val();
             loadDocUploadList();
             baltorec = Math.max(0, poQnty - poqntytodayrecd);
             var tablebody = $("#popup2BalanceItemGrid tbody");
@@ -1073,7 +1104,7 @@ $(document).ready(function () {
                         <td>${baltorec || '0'}</td>
                         <td>${units || ''}</td>
                         <td>${docavl || ''}</td>
-                        <td>${postatus}</td>
+                        <td id="tdpostatusid">${postatus}</td>
                         <td>${mismatch_Resolved}</td>
                         <td>
                             ${mismatch_Resolved === 'N'
@@ -1130,6 +1161,8 @@ $(document).ready(function () {
         popupInward2DcDate.style.border = '';
         var popupInward2Dcref = document.getElementById('popupInward2Dcref');
         popupInward2Dcref.style.border = '';
+        var popupInwNoLinevalidate = document.getElementById('popupInw2NoLine');
+        popupInwNoLinevalidate.style.border = '';
     });
     $('#popupInward').on('show.bs.modal', function (event) {
         poqntytodayrecd = 0;
@@ -1255,7 +1288,7 @@ $(document).ready(function () {
                         <td>${baltorec || '0'}</td>
                         <td>${units || ''}</td>
                         <td>${docavl || ''}</td>
-                        <td>${postatus}</td>
+                        <td id="tdpostatusid">${postatus}</td>
                         <td>
                             <div class="dropdown float-center">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
@@ -1371,7 +1404,7 @@ $(document).ready(function () {
                         <td>${baltorec || '0'}</td>
                         <td>${units || ''}</td>
                         <td>${docavl || ''}</td>
-                        <td>${postatus}</td>
+                        <td id="tdpostatusid">${postatus}</td>
                         <td>
                             <div class="dropdown float-center">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
@@ -1658,7 +1691,11 @@ function EditCaptureDetails(element) {
 }
 function OpenPopup4(element) {
     var relatedTarget = $(element);
-
+    var inwheaderid = parseInt($("#popupInwardHeaderId").val());
+    if (isNaN(inwheaderid) || inwheaderid == 0) {
+        alert("Please Save the Supplier Header Details");
+        return false;
+    }
     $("#P4MessageBox").text("");
     var row = $("#popupInwardDocGrid tbody tr");
     var mandatory = row.find("td:nth-child(2)").text().trim();

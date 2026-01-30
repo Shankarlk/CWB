@@ -1,3 +1,5 @@
+const { error } = require("jquery");
+
 let RoutingDetails = {};//contains page model
 
 
@@ -1166,6 +1168,7 @@ function EditRoute(routingId, routingName, manufPartId) {
     var SpanPartName = $("#SpanPartName").text();
     var SpanPartDesc = $("#SpanPartDesc").text();
     var SpanComp = $("#SpanComp").text();
+    $("#preloaderblurred").show();
     api.getbulk("/WorkOrder/GetAllInvMaster").then((data) => {
         data = data.filter(i => i.routing_Id == parseInt(routingId));
         var tablebody = $("#P24Grid tbody");
@@ -1188,6 +1191,10 @@ function EditRoute(routingId, routingName, manufPartId) {
             DoRoutingDetailsJob();
             $('a[href="#rou-det"]').tab("show");
         }
+        $("#preloaderblurred").hide();
+
+    }).catch((error) => {
+        $("#preloaderblurred").hide();
     });
     //"#rou-det"
 }
@@ -1202,7 +1209,7 @@ function EditRoutes(event, noOfRoutes, manufacturedPartId) {
         $("#routing-new").modal("show");
         $("#ManufacturedPartId").val(manufacturedPartId);
     } else {
-        $("#BtnCreateNewRouting").hide();
+        //$("#BtnCreateNewRouting").hide();
         $.ajax({
             type: "POST",
             url: "/routings/EncodeManufacturedPartId",
@@ -1338,8 +1345,9 @@ $(function () {
         const rows = table.tBodies[0].rows;
         if (rows.length <= 0) {
             $("#BtnCreateAlRouting").hide();
+            //$("#BtnCreateNewRouting").hide();
         } else {
-            $("#BtnCreateNewRouting").hide();
+            //$("#BtnCreateNewRouting").hide();
         }
         RoutingPerformance();
     }

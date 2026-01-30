@@ -14,6 +14,7 @@ namespace CWB.App.Models.BusinessProcesses
         public long SalesOrderId { get; set; }
         public long ParentWoId { get; set; }
         public string? WONumber { get; set; }
+        public string? SaleOrderNo { get; set; }
         public DateTime? WODate { get
             {
                 return woDateStr;

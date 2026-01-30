@@ -12016,6 +12016,195 @@ namespace CWB.App.Controllers
 
             return Ok(result);
         }
+    //    [HttpPost]
+    //    public async Task<IActionResult> ProcessSelectedSalesOrders(
+    //[FromBody] Selected_Sales_OrderVM orders)
+    //    {
+    //        if (orders == null )
+    //            return BadRequest("No rows selected");
+
+    //        var timeslotList = await _woService.GetAllTimeslot_List();
+    //        var machineList = await _machineService.GetMachinesList();
+    //        var item = orders;
+
+
+
+    //        ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart(item.PartId);
+    //        var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+    //            if (!routingList.Any())
+    //                return Ok(new { message = "For PartNO : " + item.PartNo + " There is no Routings" });
+
+    //            var routing = routingList.FirstOrDefault(r => r.PreferredRouting == 1)
+    //                          ?? routingList.First();
+
+    //            var routingSteps = await _routingService.RoutingSteps(routing.RoutingId);
+    //            if (!routingSteps.Any())
+    //                return Ok(new
+    //                {
+    //                    message = "For PartNO : " + item.PartNo +
+    //                              " For Routing : " + routing.RoutingName +
+    //                              " There are no Steps"
+    //                });
+
+    //            foreach (var step in routingSteps)
+    //            {
+    //                // ================= MACHINE STEP =================
+    //                if (step.StepLocation == "1")
+    //                {
+    //                    var machines = await _routingService.StepMachines((int)step.StepId);
+    //                    if (!machines.Any())
+    //                        return Ok(new
+    //                        {
+    //                            message = "For PartNO : " + item.PartNo +
+    //                                      " For Routing : " + routing.RoutingName +
+    //                                      " For Step : " + step.StepNumber +
+    //                                      " There are no machines"
+    //                        });
+
+    //                    foreach (var machinetime in machines)
+    //                    {
+    //                        var mc = await _machineService.GetMachine(machinetime.MachineId);
+
+    //                        if (machinetime.FirstPieceProcessingTime == "00:00:00" ||
+    //                            machinetime.FloorToFloorTime == "00:00:00" ||
+    //                            machinetime.SetupTime == "00:00:00" ||
+    //                            machinetime.NoOfPartsPerLoading == 0)
+    //                        {
+    //                        var fieldname = machinetime.FloorToFloorTime == "00:00:00" ? "FloorToFloorTime" : "";
+    //                        fieldname = machinetime.FirstPieceProcessingTime == "00:00:00" ? "FirstPieceProcessingtime" : "";
+    //                        fieldname = machinetime.SetupTime == "00:00:00" ? "SetupTime" : "";
+    //                        fieldname = machinetime.NoOfPartsPerLoading == 0 ? "NoOfPartsPerLoading" : "";
+    //                            return Ok(new
+    //                            {
+    //                                message = "For PartNO : " + item.PartNo +
+    //                                          " For Routing : " + routing.RoutingName +
+    //                                          " For Step : " + step.StepNumber +
+    //                                          " For machine SLno  : "  + mc.MachineMachineSlNo + " "+
+    //                                          fieldname + "  is not set"
+    //                            });
+    //                        }
+
+    //                        var plantWd = await _plantService.GetPlantWD(mc.MachinePlantId);
+    //                        if (plantWd == null)
+    //                            return Ok(new
+    //                            {
+    //                                message = "For PartNO : " + item.PartNo +
+    //                                          " For Routing : " + routing.RoutingName +
+    //                                          " For Step : " + step.StepNumber +
+    //                                          " For machine SLno  : " + mc.MachineMachineSlNo +
+    //                                          " Plant working Details is not set"
+    //                            });
+
+    //                        if (!timeslotList.Any(t => t.PlantId == mc.MachinePlantId))
+    //                        {
+    //                            var plant = await _plantService.GetPlant(mc.MachinePlantId);
+    //                            return Ok(new
+    //                            {
+    //                                message = "For PartNO : " + item.PartNo +
+    //                                          " For Routing : " + routing.RoutingName +
+    //                                          " For Step  : " + step.StepNumber +
+    //                                          " For machine SLno  : " + mc.MachineMachineSlNo +
+    //                                          " For Plant : " + plant.Name +
+    //                                          " Timeslotlist is not set"
+    //                            });
+    //                        }
+    //                    }
+    //                }
+
+    //            // ================= SUBCON STEP =================
+    //            else if (step.StepLocation == "2")
+    //            {
+    //                var subCons = await _routingService.SubCons((int)step.StepId);
+    //                if (!subCons.Any())
+    //                    return Ok(new
+    //                    {
+    //                        message = "For PartNO  : " + item.PartNo +
+    //                                  " For Routing  : " + routing.RoutingName +
+    //                                  " For Step : " + step.StepNumber +
+    //                                  " There are no Subcons"
+    //                    });
+
+    //                foreach (var sub in subCons)
+    //                {
+    //                    var contacts = await _masterService.GetDivisionsByCompanyId(sub.SupplierId);
+    //                    var subDetails = await _routingService.SubConWSS(
+    //                        (int)step.StepId, (int)sub.SubConDetailsId);
+
+    //                    if (Convert.ToInt32(sub.TransportTime) == 0)
+    //                        return Ok(new
+    //                        {
+    //                            message = "For PartNO : " + item.PartNo +
+    //                                      " For Routing : " + routing.RoutingName +
+    //                                      " For Step : " + step.StepNumber +
+    //                                      " For Subcon : " + contacts.First().CompanyName +
+    //                                      " Transport time is not setup"
+    //                        });
+    //                    var desc = subDetails.FirstOrDefault();
+    //                    if (desc == null)
+    //                    {
+    //                        return Ok(new
+    //                        {
+    //                            message = "For PartNO : " + item.PartNo +
+    //                                         " For Routing : " + routing.RoutingName +
+    //                                         " For Step : " + step.StepNumber +
+    //                                         " For Subcon : " + contacts.First().CompanyName +
+    //                                         " There are no Subcon step work details"
+    //                        });
+    //                    }
+    //                    if (desc.FloorToFloorTime == "00:00:00" ||
+    //                            desc.SetupTime == "00:00:00" ||
+    //                            desc.NoOfPartsPerLoading == 0)
+    //                    {
+    //                        var fieldname = desc.FloorToFloorTime == "00:00:00" ? "FloorToFloorTime" : "";
+    //                        fieldname = desc.SetupTime == "00:00:00" ? "SetupTime" : "";
+    //                        fieldname = desc.NoOfPartsPerLoading == 0 ? "NoOfPartsPerLoading" : "";
+    //                        return Ok(new
+    //                        {
+    //                            message = "For PartNO : " + item.PartNo +
+    //                                      " For Routing : " + routing.RoutingName +
+    //                                      " For Step : " + step.StepNumber +
+    //                                      " For Subcon : " + contacts.First().CompanyName +
+    //                                      " Subcon step work details "+
+    //                                          fieldname+" is not setup"
+    //                        });
+    //                    }
+
+    //                    var machine = machineList
+    //                        .FirstOrDefault(m => m.MachineTypeId == desc.MachineType);
+
+    //                    var plantWd = await _plantService.GetPlantWD(machine.PlantId);
+    //                    if (plantWd == null)
+    //                        return Ok(new
+    //                        {
+    //                            message = "For PartNO :" + item.PartNo +
+    //                                      " For Routing :" + routing.RoutingName +
+    //                                      " For Step :" + step.StepNumber +
+    //                                      " For Subcon SLno : " + machine.SlNo +
+    //                                      " Plant working Details is not set"
+    //                        });
+
+    //                    if (!timeslotList.Any(t => t.PlantId == machine.PlantId))
+    //                    {
+    //                        var plant = await _plantService.GetPlant(machine.PlantId);
+    //                        return Ok(new
+    //                        {
+    //                            message = "For PartNO : " + item.PartNo +
+    //                                      " For Routing : " + routing.RoutingName +
+    //                                      " For Step : " + step.StepNumber +
+    //                                      " For Subcon SLno : " + machine.SlNo +
+    //                                      " For Plant : " + plant.Name +
+    //                                      " Timeslotlist is not set"
+    //                        });
+    //                    }
+    //                }
+    //            }
+    //        }
+            
+
+    //        return Ok(new { message = "Processed successfully"});
+    //    }
+
+
         string GetShiftName(DateTime currentStart, PlantWorkingDetailsVM plantwd)
         {
             var currentTime = currentStart.TimeOfDay;

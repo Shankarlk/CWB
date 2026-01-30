@@ -606,8 +606,10 @@ namespace CWB.Masters.Services.Routings
                 if (routingStep.Id == 0)
                 {
                     routingStep.RoutingStepOperationId = Convert.ToInt64(routingStep.RoutingStepOperation);
-                    var rtstep = _routingStepRepository.GetRangeAsync(r => r.RoutingId == routingStepVM.RoutingId);
-                    int seq = rtstep.Select(r=>r.RoutingStepSequence).Max();
+                    var rtsteps = _routingStepRepository.GetRangeAsync(r => r.RoutingId == routingStepVM.RoutingId);
+                    int seq = rtsteps?.Any() == true
+                    ? rtsteps.Max(r => r.RoutingStepSequence)
+                    : 0;
                     routingStep.RoutingStepSequence = seq + 1;
                     await _routingStepRepository.AddAsync(routingStep);
                 }

@@ -120,6 +120,24 @@ function reloadWO(reloadOption, partid) {
     }).catch((error) => {
     });
 }
+function loadmissingdetails(data) {
+    $("#missing-details").modal("show");
+
+    var tablebody = $("#tblmissingdetails tbody");
+    tablebody.html(""); // empty tbody
+
+    // 🔥 Normalize: if single object, convert to array
+    if (!Array.isArray(data)) {
+        data = [data];
+    }
+
+    for (var i = 0; i < data.length; i++) {
+        tablebody.append(
+            AppUtil.ProcessTemplateData("tblmissingdetailsrow", data[i])
+        );
+    }
+}
+
 
 $(document).ready(function () {
 
@@ -192,6 +210,8 @@ $(document).ready(function () {
                 salesOrderId: parseInt($(row).find("td:eq(1)").text()),
                 wonumber: "",
                 partId: parseInt($(row).find("td:eq(3)").text()),
+                saleOrderNo: $(row).find("td:eq(4)").text(),
+                partNo: $(row).find("td:eq(7)").text(),
                 partType: 0,
                 partlevel: ' ',
                 calcWOQty: parseInt($(row).find("td:eq(8)").text()),
@@ -224,8 +244,10 @@ $(document).ready(function () {
 
         if (selectedRowsData.length === 1) {
             // Single checkbox selected, post to WOpost
+            $("#preloaderblurred").show();
             return api.post("/businessaquisition/WOpost", selectedRowsData[0]).then((data) => {
                 // Handle success if needed
+                loadmissingdetails(data);
                 loadWO();
                 SalesorderId.forEach(function (arr, outerIndex) {
                     arr.forEach(function (ele, i) {
@@ -248,18 +270,21 @@ $(document).ready(function () {
                     data: JSON.stringify(WoSOMethod),
                     dataType: "json",
                     success: function (result) {
+
                         window.locationre = result.url;
                     }
                 });
+                $("#preloaderblurred").hide();
                 //console.log(WoSOMethod);
             }).catch((error) => {
                 AppUtil.HandleError("WOForm", error);
+                $("#preloaderblurred").hide();
             });
 
         } else if (selectedRowsData.length > 1) {
             // Multiple checkboxes selected, post to MultiWOpost
             //console.log("-- multiplepostwo");
-
+            $("#preloaderblurred").show();
             return $.ajax({
                 type: "POST",
                 url: '/BusinessAquisition/MultipleWOPost',
@@ -269,6 +294,7 @@ $(document).ready(function () {
                 dataType: "json",
                 success: function (result) {
                     //alert(result);
+                    loadmissingdetails(result);
                     result.forEach(function (a,i) {
                         SalesorderId.forEach(function (arr, outerIndex) {
                             arr.forEach(function (ele, ind) {
@@ -295,9 +321,12 @@ $(document).ready(function () {
                             window.locationre = result.url;
                         }
                     });
+                    $("#preloaderblurred").hide();
                     //--
                     window.locationre = result.url;
                     loadWO();
+                }, error: function (result) {
+                    $("#preloaderblurred").hide();
                 }
             });
 
@@ -326,6 +355,8 @@ $(document).ready(function () {
                 salesOrderId: parseInt($(row).find("td:eq(1)").text()),
                 wonumber: "",
                 partId: parseInt($(row).find("td:eq(3)").text()),
+                saleOrderNo: $(row).find("td:eq(4)").text(),
+                partNo: $(row).find("td:eq(7)").text(),
                 partType: 0,
                 partlevel: ' ',
                 calcWOQty: parseInt($(row).find("td:eq(8)").text()),
@@ -358,8 +389,10 @@ $(document).ready(function () {
 
         if (selectedRowsData.length === 1) {
             // Single checkbox selected, post to WOpost
+            $("#preloaderblurred").show();
             return api.post("/businessaquisition/WOpost", selectedRowsData[0]).then((data) => {
                 // Handle success if needed
+                loadmissingdetails(data);
                 loadWO();
                 SalesorderId.forEach(function (arr, outerIndex) {
                     arr.forEach(function (ele, i) {
@@ -383,11 +416,14 @@ $(document).ready(function () {
                     dataType: "json",
                     success: function (result) {
                         window.locationre = result.url;
+
                     }
                 });
+                $("#preloaderblurred").hide();
                 //console.log(WoSOMethod);
             }).catch((error) => {
                 AppUtil.HandleError("WOForm", error);
+                $("#preloaderblurred").hide();
             });
 
         }

@@ -6,6 +6,7 @@ using CWB.App.Services.BusinessProcesses;
 using CWB.App.Services.Masters;
 using CWB.App.Services.ProductionPlanWo;
 using CWB.App.Services.Routings;
+using CWB.App.Services.CompanySettings;
 using CWB.Constants.UserIdentity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +16,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using System;
+using CWB.App.Models.WorkOrder;
 
 namespace CWB.App.Controllers
 {
@@ -46,15 +49,20 @@ namespace CWB.App.Controllers
         private readonly IMastersServices _masterService;
         private readonly IRoutingService _routingService;
         private readonly IWOService _woService;
+        private readonly IMachineService _machineService;
+        private readonly IPlantService _plantService;
         public BusinessAquisitionController(ILogger<BusinessAquisitionController> logger
             , IWOService woService,
-            IBAService baService,IMastersServices masterServices, IRoutingService routingService)
+            IBAService baService,IMastersServices masterServices, IRoutingService routingService, IPlantService plantService
+            , IMachineService machineService)
         {
             _logger = logger;
             _baService = baService;
             _masterService = masterServices;
             _routingService = routingService;
             _woService = woService;
+            _plantService = plantService;
+            _machineService = machineService;
         }
         public IActionResult Index()
         {
@@ -71,6 +79,16 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> WOpost(WorkOrdersVM workOrdersVM)
         {
+            List<WorkOrdersVM> workOrdersVMs = new List<WorkOrdersVM>();
+
+            var message = await checkmissing(workOrdersVM);
+            Selected_Sales_OrderVM selected_Sales_OrderVMs1 = (Selected_Sales_OrderVM)((OkObjectResult)message).Value;
+            
+            if (selected_Sales_OrderVMs1.PartNo == "WorkOrder Created")
+            {
+                
+            
+
             ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)workOrdersVM.PartId);
             workOrdersVM.PartType = (int)manuf.ManufacturedPartType;
             RoutingVM rout = new RoutingVM();
@@ -164,13 +182,288 @@ namespace CWB.App.Controllers
             }
             var postbom = await _baService.BOMTempPOst(bompost);
             return Ok(postWO);
+            }
+            
+                else
+                {
+                    // return missing details to UI popup
+                    return Ok(selected_Sales_OrderVMs1);
+                }
+
+            
         }
+
+
+        public async Task<IActionResult> checkmissing(WorkOrdersVM workorder)
+        {
+           
+
+            var timeslotList = await _woService.GetAllTimeslot_List();
+            var machineList = await _machineService.GetMachinesList();
+
+            ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart((int)workorder.PartId);
+            var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+            if (!routingList.Any())
+            {
+
+                Selected_Sales_OrderVM somisss = new Selected_Sales_OrderVM();
+                somisss.SoNumber = workorder.SaleOrderNo;
+                somisss.PartNo = workorder.PartNo;
+                somisss.RoutingName = "There is no Routings";
+                 
+                return Ok(somisss);
+            }
+
+            var routing = routingList.FirstOrDefault(r => r.PreferredRouting == 1)
+                          ?? routingList.First();
+
+            var routingSteps = await _routingService.RoutingSteps(routing.RoutingId);
+            if (!routingSteps.Any())
+            {
+
+                Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
+                somiss.SoNumber = workorder.SaleOrderNo; ;
+                somiss.PartNo = workorder.PartNo;
+                somiss.RoutingName = routing.RoutingName;
+                somiss.StepNo = "There are no Steps";
+                return Ok(somiss);
+            }
+            List<Selected_Sales_OrderVM> steps = new List<Selected_Sales_OrderVM>();
+
+            foreach (var step in routingSteps)
+            {
+                // ================= MACHINE STEP =================
+                if (step.StepLocation == "1")
+                {
+                    var machines = await _routingService.StepMachines((int)step.StepId);
+                    if (!machines.Any())
+                    {
+                        Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
+                        somiss.SoNumber = workorder.SaleOrderNo; 
+                        somiss.PartNo = workorder.PartNo;
+                        somiss.RoutingName = routing.RoutingName;
+                        somiss.StepNo = step.StepNumber;
+                        somiss.Machines = "There are no machines";
+                        steps.Add(somiss);
+                        continue;
+                        //return Ok(somiss);
+                    }
+                    foreach (var machinetime in machines)
+                    {
+                        var mc = await _machineService.GetMachine(machinetime.MachineId);
+
+                        if (machinetime.FirstPieceProcessingTime == "00:00:00" ||
+                            machinetime.FloorToFloorTime == "00:00:00" ||
+                            machinetime.SetupTime == "00:00:00" ||
+                            machinetime.NoOfPartsPerLoading == 0)
+                        {
+                            var missingFields = new List<string>();
+
+                            if (machinetime.FloorToFloorTime == "00:00:00")
+                                missingFields.Add("FloorToFloorTime");
+
+                            if (machinetime.FirstPieceProcessingTime == "00:00:00")
+                                missingFields.Add("FirstPieceProcessingTime");
+
+                            if (machinetime.SetupTime == "00:00:00")
+                                missingFields.Add("SetupTime");
+
+                            if (machinetime.NoOfPartsPerLoading == 0)
+                                missingFields.Add("NoOfPartsPerLoading");
+                            Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
+                            somiss.SoNumber = workorder.SaleOrderNo; 
+                            somiss.PartNo = workorder.PartNo;
+                            somiss.RoutingName = routing.RoutingName;
+                            somiss.StepNo = step.StepNumber;
+                            somiss.Machines = mc.MachineMachineSlNo + " " + string.Join(", ", missingFields) + "  is not set";
+                            steps.Add(somiss);
+                            continue;
+                            // return Ok(somiss);
+                        }
+
+                        var plantWd = await _plantService.GetPlantWD(mc.MachinePlantId);
+                        if (plantWd == null || plantWd.PlantId==0)
+                        {
+
+                            Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
+                            somiss.SoNumber = workorder.SaleOrderNo;
+                            somiss.PartNo = workorder.PartNo;
+                            somiss.RoutingName = routing.RoutingName;
+                            somiss.StepNo = step.StepNumber;
+                            somiss.Machines = mc.MachineMachineSlNo + " Plant working Details is not set";
+                            steps.Add(somiss);
+                            continue;
+                            //return Ok(somiss);
+                        }
+
+                        if (!timeslotList.Any(t => t.PlantId == mc.MachinePlantId))
+                        {
+                            var plant = await _plantService.GetPlant(mc.MachinePlantId);
+
+                            Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
+                            somiss.SoNumber = workorder.SaleOrderNo;
+                            somiss.PartNo = workorder.PartNo;
+                            somiss.RoutingName = routing.RoutingName;
+                            somiss.StepNo = step.StepNumber;
+                            somiss.Machines = mc.MachineMachineSlNo + " For Plant : " + plant.Name + " Timeslotlist is not set";
+                            steps.Add(somiss);
+                            continue;
+
+                            // return Ok(somiss);
+                        }
+                    }
+                }
+
+                // ================= SUBCON STEP =================
+                else if (step.StepLocation == "2")
+                {
+                    var subCons = await _routingService.SubCons((int)step.StepId);
+                    if (!subCons.Any())
+                    {
+
+                        Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
+                        somiss.SoNumber = workorder.SaleOrderNo;
+                        somiss.PartNo = workorder.PartNo;
+                        somiss.RoutingName = routing.RoutingName;
+                        somiss.StepNo = step.StepNumber;
+                        somiss.Subcons = "There are no Subcons";
+                        steps.Add(somiss);
+                        continue;
+                        //return Ok(somiss);
+                    }
+
+                    foreach (var sub in subCons)
+                    {
+                        var contacts = await _masterService.GetDivisionsByCompanyId(sub.SupplierId);
+                        var subDetails = await _routingService.SubConWSS(
+                            (int)step.StepId, (int)sub.SubConDetailsId);
+
+                        if (Convert.ToInt32(sub.TransportTime) == 0)
+                        {
+                            
+                            Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
+                            somiss.SoNumber = workorder.SaleOrderNo;
+                            somiss.PartNo = workorder.PartNo;
+                            somiss.RoutingName = routing.RoutingName;
+                            somiss.StepNo = step.StepNumber;
+                            somiss.Subcons = "Transport time is not setup";
+                            steps.Add(somiss);
+                            continue;
+                            //return Ok(somiss);
+                        }
+                        var subdesc = subDetails.FirstOrDefault();
+                        if (subdesc == null)
+                        {
+                            Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
+                            somiss.SoNumber = workorder.SaleOrderNo;
+                            somiss.PartNo = workorder.PartNo;
+                            somiss.RoutingName = routing.RoutingName;
+                            somiss.StepNo = step.StepNumber;
+                            somiss.Subcons = "There are no Subcon step work details";
+                            steps.Add(somiss);
+                            continue;
+                            //return Ok(somiss);
+                        }
+                        if (subdesc.FloorToFloorTime == "00:00:00" || subdesc.SetupTime == "00:00:00" || subdesc.NoOfPartsPerLoading == 0)
+                        {
+                            var fieldname = subdesc.FloorToFloorTime == "00:00:00" ? "FloorToFloorTime" : "";
+                            fieldname = subdesc.SetupTime == "00:00:00" ? "SetupTime" : "";
+                            fieldname = subdesc.NoOfPartsPerLoading == 0 ? "NoOfPartsPerLoading" : "";
+                            var missingFields = new List<string>();
+
+                            if (subdesc.FloorToFloorTime == "00:00:00")
+                                missingFields.Add("FloorToFloorTime");
+
+                            if (subdesc.SetupTime == "00:00:00")
+                                missingFields.Add("SetupTime");
+
+                            if (subdesc.NoOfPartsPerLoading == 0)
+                                missingFields.Add("NoOfPartsPerLoading");
+                            Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
+                            somiss.SoNumber = workorder.SaleOrderNo;
+                            somiss.PartNo = workorder.PartNo;
+                            somiss.RoutingName = routing.RoutingName;
+                            somiss.StepNo = step.StepNumber;
+                            somiss.Subcons = " Subcon step work details " + string.Join(',', missingFields) + " is not setup";
+                            steps.Add(somiss);
+                            continue;
+                            //return Ok(somiss);
+                        }
+
+                        var machine = machineList
+                            .FirstOrDefault(m => m.MachineTypeId == subdesc.MachineType);
+
+                        var plantWd = await _plantService.GetPlantWD(machine.PlantId);
+                        if (plantWd == null)
+                        {
+
+                            Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
+                            somiss.SoNumber = workorder.SaleOrderNo;
+                            somiss.PartNo = workorder.PartNo;
+                            somiss.RoutingName = routing.RoutingName;
+                            somiss.StepNo = step.StepNumber;
+                            somiss.Subcons = " For Subcon SLno : " + machine.SlNo + " Plant working Details is not set";
+                            steps.Add(somiss);
+                            continue;
+                            //return Ok(somiss);
+                        }
+                        if (!timeslotList.Any(t => t.PlantId == machine.PlantId))
+                        {
+                            var plant = await _plantService.GetPlant(machine.PlantId);
+
+                            Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
+                            somiss.SoNumber = workorder.SaleOrderNo;
+                            somiss.PartNo = workorder.PartNo;
+                            somiss.RoutingName = routing.RoutingName;
+                            somiss.StepNo = step.StepNumber;
+                            somiss.Subcons = plant.Name + " Timeslotlist is not set";
+                            steps.Add(somiss);
+                            continue;
+                            //return Ok(somiss);
+                        }
+                    }
+                }
+            }
+            if(steps.Count()>0)
+            {
+                var result = new Selected_Sales_OrderVM
+                {
+                    SoNumber = steps.First().SoNumber,
+                    PartNo = steps.First().PartNo,
+                    RoutingName = steps.First().RoutingName,
+                    StepNo = string.Join(", ", steps.Where(s => s.StepNo != null).Select(s => s.StepNo).Distinct()),
+                    Machines = string.Join(", ", steps.Where(s => !string.IsNullOrWhiteSpace(s.Machines)).Select(s => s.Machines).Distinct()),
+                    Subcons = string.Join(", ", steps.Where(s => !string.IsNullOrWhiteSpace(s.Subcons)).Select(s => s.Subcons) .Distinct()
+       )
+                };
+
+                return Ok(result);
+            }
+
+            Selected_Sales_OrderVM somis = new Selected_Sales_OrderVM();
+            somis.SoNumber = workorder.SaleOrderNo;
+            somis.PartNo = "WorkOrder Created";
+
+            return Ok(somis);
+
+
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> MultipleWOPost([FromBody] IEnumerable<WorkOrdersVM> listworkOrdersVM)
         {
+            List<Selected_Sales_OrderVM> selected_Sales_OrderVMs = new List<Selected_Sales_OrderVM>();
+            List<WorkOrdersVM> workOrdersVMs = new List<WorkOrdersVM>();
             foreach (var workOrdersVM in listworkOrdersVM)
-            {
+            { 
+                var message = await checkmissing(workOrdersVM);
+                Selected_Sales_OrderVM selected_Sales_OrderVMs1 = (Selected_Sales_OrderVM)((OkObjectResult)message).Value;
+                selected_Sales_OrderVMs.Add(selected_Sales_OrderVMs1);
+                if(selected_Sales_OrderVMs1.PartNo != "WorkOrder Created")
+                {
+                    continue;
+                }
                 ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)workOrdersVM.PartId);
                 workOrdersVM.PartType = (int)manuf.ManufacturedPartType;
                 RoutingVM rout = new RoutingVM();
@@ -223,8 +516,9 @@ namespace CWB.App.Controllers
                         workOrdersVM.Parentlevel = 'Y';
                     }
                 }
+                workOrdersVMs.Add(workOrdersVM);
             }
-            var postWO = await _baService.MultiplePostWO(listworkOrdersVM);
+            var postWO = await _baService.MultiplePostWO(workOrdersVMs);
            
             List<BOMTempVM> bompost = new List<BOMTempVM>();
             foreach (var item in postWO)
@@ -265,7 +559,7 @@ namespace CWB.App.Controllers
                 }
             }
             var postbom = await _baService.BOMTempPOst(bompost);
-            return Ok(postWO);
+            return Ok(selected_Sales_OrderVMs);
             //return Ok(listworkOrdersVM);
         }
         

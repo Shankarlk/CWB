@@ -1132,7 +1132,7 @@ namespace CWB.App.Controllers
                         }
                     }
                     var totalnoofmc = oprnos.Sum(op => op.NumberOfSimMachines);
-                    var totalCycleTime = oprnos.Where(op => !string.IsNullOrEmpty(op.CycleTime)).Sum(op => int.Parse(op.CycleTime));
+                    var totalCycleTime = oprnos.Where(op => !string.IsNullOrEmpty(op.CycleTime)).Sum(op => float.Parse(op.CycleTime));
 
                     int noofoperations = 0;
 
@@ -1145,8 +1145,8 @@ namespace CWB.App.Controllers
                         noofoperations = oprnos.Count;
                     }
                     var avgCycleTime = totalCycleTime / noofoperations;
-                    var countAboveAvg = oprnos.Where(op => !string.IsNullOrEmpty(op.CycleTime)).Count(op => int.Parse(op.CycleTime) > avgCycleTime);
-                    var totalSetupTime = oprnos.Where(op => !string.IsNullOrEmpty(op.SetupTime)).Sum(op => int.Parse(op.SetupTime));
+                    var countAboveAvg = oprnos.Where(op => !string.IsNullOrEmpty(op.CycleTime)).Count(op => float.Parse(op.CycleTime) > avgCycleTime);
+                    var totalSetupTime = oprnos.Where(op => !string.IsNullOrEmpty(op.SetupTime)).Sum(op => float.Parse(op.SetupTime));
                     var maxSetupTime = oprnos.Where(op => !string.IsNullOrEmpty(op.SetupTime))
         .Select(op => int.Parse(op.SetupTime))
         .DefaultIfEmpty(0)
@@ -1176,9 +1176,9 @@ namespace CWB.App.Controllers
                         batchSizeManfTimeMinutes += perMachineTime;
                     }
 
-                    item.MaxSetupTime = maxSetupTime;
-                    item.TotalSetupTime = totalSetupTime;
-                    item.AvgCycleTime = avgCycleTime;
+                    item.MaxSetupTime = maxSetupTime.ToString();
+                    item.TotalSetupTime = totalSetupTime.ToString();
+                    item.AvgCycleTime = avgCycleTime.ToString();
                     item.OprnGreaterAvgCycleTime = countAboveAvg;
                     item.InhouseNo = inhousecount;
                     item.SubconNo = subconcount;

@@ -1,0 +1,833 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "F:\\CWBworking\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{86AFB9FE-B8B1-49CA-895D-B9875D071AEA}|CWB.Masters\\CWB.Masters.csproj|f:\\cwbworking\\cwb.masters\\mastersutils\\apiroutes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86AFB9FE-B8B1-49CA-895D-B9875D071AEA}|CWB.Masters\\CWB.Masters.csproj|solutionrelative:cwb.masters\\mastersutils\\apiroutes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86AFB9FE-B8B1-49CA-895D-B9875D071AEA}|CWB.Masters\\CWB.Masters.csproj|f:\\cwbworking\\cwb.masters\\controllers\\companycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86AFB9FE-B8B1-49CA-895D-B9875D071AEA}|CWB.Masters\\CWB.Masters.csproj|solutionrelative:cwb.masters\\controllers\\companycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86AFB9FE-B8B1-49CA-895D-B9875D071AEA}|CWB.Masters\\CWB.Masters.csproj|f:\\cwbworking\\cwb.masters\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{86AFB9FE-B8B1-49CA-895D-B9875D071AEA}|CWB.Masters\\CWB.Masters.csproj|solutionrelative:cwb.masters\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6DF9D0AF-1D07-4EFC-9725-9622607BF888}|CWB.CompanySettings\\CWB.CompanySettings.csproj|f:\\cwbworking\\cwb.companysettings\\controllers\\departmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6DF9D0AF-1D07-4EFC-9725-9622607BF888}|CWB.CompanySettings\\CWB.CompanySettings.csproj|solutionrelative:cwb.companysettings\\controllers\\departmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\wwwroot\\js\\routing\\routing-model.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\wwwroot\\js\\routing\\routing-model.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\wwwroot\\js\\businessaquisition\\customerorders.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\wwwroot\\js\\businessaquisition\\customerorders.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\views\\shared\\_ba_neworderentry.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\views\\shared\\_ba_neworderentry.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\controllers\\businessaquisitioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\controllers\\businessaquisitioncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\controllers\\designationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\controllers\\designationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{81CB16C6-42F3-444A-80B2-48A31A176369}|docker-compose.dcproj|f:\\cwbworking\\docker-compose.yml||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{81CB16C6-42F3-444A-80B2-48A31A176369}|docker-compose.dcproj|solutionrelative:docker-compose.yml||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6DF9D0AF-1D07-4EFC-9725-9622607BF888}|CWB.CompanySettings\\CWB.CompanySettings.csproj|f:\\cwbworking\\cwb.companysettings\\controllers\\designationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6DF9D0AF-1D07-4EFC-9725-9622607BF888}|CWB.CompanySettings\\CWB.CompanySettings.csproj|solutionrelative:cwb.companysettings\\controllers\\designationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6DF9D0AF-1D07-4EFC-9725-9622607BF888}|CWB.CompanySettings\\CWB.CompanySettings.csproj|f:\\cwbworking\\cwb.companysettings\\companysettingsutils\\apiroutes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6DF9D0AF-1D07-4EFC-9725-9622607BF888}|CWB.CompanySettings\\CWB.CompanySettings.csproj|solutionrelative:cwb.companysettings\\companysettingsutils\\apiroutes.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\services\\companysettings\\designationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\services\\companysettings\\designationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\wwwroot\\js\\contact-model.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\wwwroot\\js\\contact-model.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\wwwroot\\js\\itemmaster\\supplier.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\wwwroot\\js\\itemmaster\\supplier.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\wwwroot\\js\\itemmaster\\companies.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\wwwroot\\js\\itemmaster\\companies.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\controllers\\contactscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\controllers\\contactscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\wwwroot\\js\\itemmaster\\manufpart-model.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\wwwroot\\js\\itemmaster\\manufpart-model.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\views\\shared\\_editpurchasedetails.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\views\\shared\\_editpurchasedetails.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\models\\businessprocesses\\salesordervm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\models\\businessprocesses\\salesordervm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\controllers\\masterscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\controllers\\masterscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\views\\masters\\editmanufpart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\views\\masters\\editmanufpart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\views\\shared\\_editmakefrom.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\views\\shared\\_editmakefrom.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\models\\businessprocesses\\customerordervm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\models\\businessprocesses\\customerordervm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\models\\businessprocesses\\customerorderstatusvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\models\\businessprocesses\\customerorderstatusvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\models\\businessprocesses\\customerorderrowvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\models\\businessprocesses\\customerorderrowvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\models\\businessprocesses\\deliveryschedulevm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\models\\businessprocesses\\deliveryschedulevm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\views\\shared\\_ba_existingpart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\views\\shared\\_ba_existingpart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\models\\businessprocesses\\polinevm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\models\\businessprocesses\\polinevm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\models\\businessprocesses\\pologvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\models\\businessprocesses\\pologvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\views\\businessaquisition\\orderentry.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\views\\businessaquisition\\orderentry.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\services\\companysettings\\plantservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\services\\companysettings\\plantservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\controllers\\plantcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\controllers\\plantcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6DF9D0AF-1D07-4EFC-9725-9622607BF888}|CWB.CompanySettings\\CWB.CompanySettings.csproj|f:\\cwbworking\\cwb.companysettings\\controllers\\plantcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6DF9D0AF-1D07-4EFC-9725-9622607BF888}|CWB.CompanySettings\\CWB.CompanySettings.csproj|solutionrelative:cwb.companysettings\\controllers\\plantcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\services\\companysettings\\iplantservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\services\\companysettings\\iplantservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\wwwroot\\js\\plant.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}|",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\wwwroot\\js\\plant.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\views\\plant\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\views\\plant\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\models\\plants\\holidayvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\models\\plants\\holidayvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\models\\routings\\routingstepvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\models\\routings\\routingstepvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\models\\plants\\plantworkingdetailsvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\models\\plants\\plantworkingdetailsvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\models\\routings\\subconworkstepdetailsvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\models\\routings\\subconworkstepdetailsvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\models\\routings\\subcondetailsvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\models\\routings\\subcondetailsvm.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|f:\\cwbworking\\cwb.app\\views\\routings\\routingdetails.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F05B5BE9-F845-4D52-8432-CF93218141FB}|CWB.App\\CWB.App.csproj|solutionrelative:cwb.app\\views\\routings\\routingdetails.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6DF9D0AF-1D07-4EFC-9725-9622607BF888}|CWB.CompanySettings\\CWB.CompanySettings.csproj|f:\\cwbworking\\cwb.companysettings\\services\\location\\iplantservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6DF9D0AF-1D07-4EFC-9725-9622607BF888}|CWB.CompanySettings\\CWB.CompanySettings.csproj|solutionrelative:cwb.companysettings\\services\\location\\iplantservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6DF9D0AF-1D07-4EFC-9725-9622607BF888}|CWB.CompanySettings\\CWB.CompanySettings.csproj|f:\\cwbworking\\cwb.companysettings\\companysettingsutils\\automapping.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6DF9D0AF-1D07-4EFC-9725-9622607BF888}|CWB.CompanySettings\\CWB.CompanySettings.csproj|solutionrelative:cwb.companysettings\\companysettingsutils\\automapping.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86AFB9FE-B8B1-49CA-895D-B9875D071AEA}|CWB.Masters\\CWB.Masters.csproj|f:\\cwbworking\\cwb.masters\\mastersutils\\automapping.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86AFB9FE-B8B1-49CA-895D-B9875D071AEA}|CWB.Masters\\CWB.Masters.csproj|solutionrelative:cwb.masters\\mastersutils\\automapping.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86AFB9FE-B8B1-49CA-895D-B9875D071AEA}|CWB.Masters\\CWB.Masters.csproj|f:\\cwbworking\\cwb.masters\\mastersutils\\mritemtype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86AFB9FE-B8B1-49CA-895D-B9875D071AEA}|CWB.Masters\\CWB.Masters.csproj|solutionrelative:cwb.masters\\mastersutils\\mritemtype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{86AFB9FE-B8B1-49CA-895D-B9875D071AEA}|CWB.Masters\\CWB.Masters.csproj|f:\\cwbworking\\cwb.masters\\mastersutils\\apiurls.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{86AFB9FE-B8B1-49CA-895D-B9875D071AEA}|CWB.Masters\\CWB.Masters.csproj|solutionrelative:cwb.masters\\mastersutils\\apiurls.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\projects\\working_copy\\CWB\\CWB.CompanySettings\\Controllers\\BAController.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\projects\\working_copy\\CWB\\CWB.CompanySettings\\Services\\BusinessAquisition\\BAService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 445,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:1369561992:0:{83107a3e-496a-485e-b455-16ddb978e55e}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "CompanyController.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.Masters\\Controllers\\CompanyController.cs",
+              "RelativeDocumentMoniker": "CWB.Masters\\Controllers\\CompanyController.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.Masters\\Controllers\\CompanyController.cs",
+              "RelativeToolTip": "CWB.Masters\\Controllers\\CompanyController.cs",
+              "ViewState": "AQIAABoAAAAAAAAAAAAiwCIAAAAwAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.352Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Routing-Model.js",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\wwwroot\\js\\routing\\Routing-Model.js",
+              "RelativeDocumentMoniker": "CWB.App\\wwwroot\\js\\routing\\Routing-Model.js",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\wwwroot\\js\\routing\\Routing-Model.js",
+              "RelativeToolTip": "CWB.App\\wwwroot\\js\\routing\\Routing-Model.js",
+              "ViewState": "AQIAAOMDAAAAAAAAAABiwOgDAAAyAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-01-28T04:04:18.505Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ApiRoutes.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.Masters\\MastersUtils\\ApiRoutes.cs",
+              "RelativeDocumentMoniker": "CWB.Masters\\MastersUtils\\ApiRoutes.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.Masters\\MastersUtils\\ApiRoutes.cs",
+              "RelativeToolTip": "CWB.Masters\\MastersUtils\\ApiRoutes.cs",
+              "ViewState": "AgIAAE0AAAAAAAAAAAAiwFkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.508Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DepartmentController.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.CompanySettings\\Controllers\\DepartmentController.cs",
+              "RelativeDocumentMoniker": "CWB.CompanySettings\\Controllers\\DepartmentController.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.CompanySettings\\Controllers\\DepartmentController.cs",
+              "RelativeToolTip": "CWB.CompanySettings\\Controllers\\DepartmentController.cs",
+              "ViewState": "AQIAAGkAAAAAAAAAAADwv2wAAAAnAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.511Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.Masters\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "CWB.Masters\\appsettings.Development.json",
+              "ToolTip": "F:\\CWBworking\\CWB.Masters\\appsettings.Development.json",
+              "RelativeToolTip": "CWB.Masters\\appsettings.Development.json",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAAAUAAAARAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-01-28T04:04:18.514Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "customerorders.js",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\wwwroot\\js\\businessaquisition\\customerorders.js",
+              "RelativeDocumentMoniker": "CWB.App\\wwwroot\\js\\businessaquisition\\customerorders.js",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\wwwroot\\js\\businessaquisition\\customerorders.js",
+              "RelativeToolTip": "CWB.App\\wwwroot\\js\\businessaquisition\\customerorders.js",
+              "ViewState": "AQIAAGQAAAAAAAAAAABiwGkAAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-01-28T04:04:18.516Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "_BA_NewOrderEntry.cshtml",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Views\\Shared\\_BA_NewOrderEntry.cshtml",
+              "RelativeDocumentMoniker": "CWB.App\\Views\\Shared\\_BA_NewOrderEntry.cshtml",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Views\\Shared\\_BA_NewOrderEntry.cshtml",
+              "RelativeToolTip": "CWB.App\\Views\\Shared\\_BA_NewOrderEntry.cshtml",
+              "ViewState": "AQIAAGsAAAAAAAAAAAAIwHUAAAA6AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-28T04:04:18.518Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "BusinessAquisitionController.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Controllers\\BusinessAquisitionController.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Controllers\\BusinessAquisitionController.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Controllers\\BusinessAquisitionController.cs",
+              "RelativeToolTip": "CWB.App\\Controllers\\BusinessAquisitionController.cs",
+              "ViewState": "AQIAAJAAAAAAAAAAAAArwJUAAAA2AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.521Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "DesignationService.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Services\\CompanySettings\\DesignationService.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Services\\CompanySettings\\DesignationService.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Services\\CompanySettings\\DesignationService.cs",
+              "RelativeToolTip": "CWB.App\\Services\\CompanySettings\\DesignationService.cs",
+              "ViewState": "AQIAABQAAAAAAAAAAAASwBwAAABGAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.523Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "DesignationController.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.CompanySettings\\Controllers\\DesignationController.cs",
+              "RelativeDocumentMoniker": "CWB.CompanySettings\\Controllers\\DesignationController.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.CompanySettings\\Controllers\\DesignationController.cs",
+              "RelativeToolTip": "CWB.CompanySettings\\Controllers\\DesignationController.cs",
+              "ViewState": "AQIAABoAAAAAAAAAAAAlwCUAAAA6AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.525Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "docker-compose.yml",
+              "DocumentMoniker": "F:\\CWBworking\\docker-compose.yml",
+              "RelativeDocumentMoniker": "docker-compose.yml",
+              "ToolTip": "F:\\CWBworking\\docker-compose.yml",
+              "RelativeToolTip": "docker-compose.yml",
+              "ViewState": "AQIAAJwAAAAAAAAAAABiwCEAAAARAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003775|",
+              "WhenOpened": "2026-01-28T04:04:18.528Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "DesignationController.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Controllers\\DesignationController.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Controllers\\DesignationController.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Controllers\\DesignationController.cs",
+              "RelativeToolTip": "CWB.App\\Controllers\\DesignationController.cs",
+              "ViewState": "AQIAABkAAAAAAAAAAAAYwCAAAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.531Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ApiRoutes.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.CompanySettings\\CompanySettingsUtils\\ApiRoutes.cs",
+              "RelativeDocumentMoniker": "CWB.CompanySettings\\CompanySettingsUtils\\ApiRoutes.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.CompanySettings\\CompanySettingsUtils\\ApiRoutes.cs",
+              "RelativeToolTip": "CWB.CompanySettings\\CompanySettingsUtils\\ApiRoutes.cs",
+              "ViewState": "AQIAAEAAAAAAAAAAAAD4v0cAAAAvAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.533Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "contact-model.js",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\wwwroot\\js\\contact-model.js",
+              "RelativeDocumentMoniker": "CWB.App\\wwwroot\\js\\contact-model.js",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\wwwroot\\js\\contact-model.js",
+              "RelativeToolTip": "CWB.App\\wwwroot\\js\\contact-model.js",
+              "ViewState": "AQIAAK0AAAAAAAAAAAD4v7UAAAAWAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-01-28T04:04:18.536Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "supplier.js",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\wwwroot\\js\\ItemMaster\\supplier.js",
+              "RelativeDocumentMoniker": "CWB.App\\wwwroot\\js\\ItemMaster\\supplier.js",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\wwwroot\\js\\ItemMaster\\supplier.js",
+              "RelativeToolTip": "CWB.App\\wwwroot\\js\\ItemMaster\\supplier.js",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAMAAAAZAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-01-28T04:04:18.538Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Companies.js",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\wwwroot\\js\\ItemMaster\\Companies.js",
+              "RelativeDocumentMoniker": "CWB.App\\wwwroot\\js\\ItemMaster\\Companies.js",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\wwwroot\\js\\ItemMaster\\Companies.js",
+              "RelativeToolTip": "CWB.App\\wwwroot\\js\\ItemMaster\\Companies.js",
+              "ViewState": "AQIAAFgAAAAAAAAAAAAIwB4AAAArAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-01-28T04:04:18.54Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "ContactsController.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Controllers\\ContactsController.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Controllers\\ContactsController.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Controllers\\ContactsController.cs",
+              "RelativeToolTip": "CWB.App\\Controllers\\ContactsController.cs",
+              "ViewState": "AQIAABYAAAAAAAAAAIBAwCAAAAA+AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.542Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "SalesOrderVM.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Models\\BusinessProcesses\\SalesOrderVM.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Models\\BusinessProcesses\\SalesOrderVM.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Models\\BusinessProcesses\\SalesOrderVM.cs",
+              "RelativeToolTip": "CWB.App\\Models\\BusinessProcesses\\SalesOrderVM.cs",
+              "ViewState": "AQIAADYAAAAAAAAAAAA1wDwAAAAnAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.545Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 48,
+              "Title": "BAController.cs",
+              "DocumentMoniker": "D:\\projects\\working_copy\\CWB\\CWB.CompanySettings\\Controllers\\BAController.cs",
+              "ToolTip": "D:\\projects\\working_copy\\CWB\\CWB.CompanySettings\\Controllers\\BAController.cs",
+              "ViewState": "AQIAAJIAAAAAAAAAAAAewJwAAAA5AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.605Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "_EditPurchaseDetails.cshtml",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Views\\Shared\\_EditPurchaseDetails.cshtml",
+              "RelativeDocumentMoniker": "CWB.App\\Views\\Shared\\_EditPurchaseDetails.cshtml",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Views\\Shared\\_EditPurchaseDetails.cshtml",
+              "RelativeToolTip": "CWB.App\\Views\\Shared\\_EditPurchaseDetails.cshtml",
+              "ViewState": "AQIAACcAAAAAAAAAAAAkwDEAAAAmAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-28T04:04:18.609Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "ManufPart-model.js",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\wwwroot\\js\\ItemMaster\\ManufPart-model.js",
+              "RelativeDocumentMoniker": "CWB.App\\wwwroot\\js\\ItemMaster\\ManufPart-model.js",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\wwwroot\\js\\ItemMaster\\ManufPart-model.js",
+              "RelativeToolTip": "CWB.App\\wwwroot\\js\\ItemMaster\\ManufPart-model.js",
+              "ViewState": "AQIAALABAAAAAAAAAABiwAoCAAAgAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-01-28T04:04:18.613Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 49,
+              "Title": "BAService.cs",
+              "DocumentMoniker": "D:\\projects\\working_copy\\CWB\\CWB.CompanySettings\\Services\\BusinessAquisition\\BAService.cs",
+              "ToolTip": "D:\\projects\\working_copy\\CWB\\CWB.CompanySettings\\Services\\BusinessAquisition\\BAService.cs",
+              "ViewState": "AQIAAEcBAAAAAAAAAABSwFkBAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.616Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "MastersController.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Controllers\\MastersController.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Controllers\\MastersController.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Controllers\\MastersController.cs",
+              "RelativeToolTip": "CWB.App\\Controllers\\MastersController.cs",
+              "ViewState": "AQIAANcAAAAAAAAAAAAowN0AAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.619Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "EditManufPart.cshtml",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Views\\Masters\\EditManufPart.cshtml",
+              "RelativeDocumentMoniker": "CWB.App\\Views\\Masters\\EditManufPart.cshtml",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Views\\Masters\\EditManufPart.cshtml",
+              "RelativeToolTip": "CWB.App\\Views\\Masters\\EditManufPart.cshtml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-28T04:04:18.621Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "_EditMakeFrom.cshtml",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Views\\Shared\\_EditMakeFrom.cshtml",
+              "RelativeDocumentMoniker": "CWB.App\\Views\\Shared\\_EditMakeFrom.cshtml",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Views\\Shared\\_EditMakeFrom.cshtml",
+              "RelativeToolTip": "CWB.App\\Views\\Shared\\_EditMakeFrom.cshtml",
+              "ViewState": "AQIAAA4AAAAAAAAAAAA0wBkAAABQAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-28T04:04:18.624Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "CustomerOrderStatusVM.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Models\\BusinessProcesses\\CustomerOrderStatusVM.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Models\\BusinessProcesses\\CustomerOrderStatusVM.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Models\\BusinessProcesses\\CustomerOrderStatusVM.cs",
+              "RelativeToolTip": "CWB.App\\Models\\BusinessProcesses\\CustomerOrderStatusVM.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.627Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "CustomerOrderVM.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Models\\BusinessProcesses\\CustomerOrderVM.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Models\\BusinessProcesses\\CustomerOrderVM.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Models\\BusinessProcesses\\CustomerOrderVM.cs",
+              "RelativeToolTip": "CWB.App\\Models\\BusinessProcesses\\CustomerOrderVM.cs",
+              "ViewState": "AQIAABkAAAAAAAAAAABSwCQAAAAdAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.631Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "CustomerOrderRowVM.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Models\\BusinessProcesses\\CustomerOrderRowVM.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Models\\BusinessProcesses\\CustomerOrderRowVM.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Models\\BusinessProcesses\\CustomerOrderRowVM.cs",
+              "RelativeToolTip": "CWB.App\\Models\\BusinessProcesses\\CustomerOrderRowVM.cs",
+              "ViewState": "AQIAAAMAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.633Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "_BA_ExistingPart.cshtml",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Views\\Shared\\_BA_ExistingPart.cshtml",
+              "RelativeDocumentMoniker": "CWB.App\\Views\\Shared\\_BA_ExistingPart.cshtml",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Views\\Shared\\_BA_ExistingPart.cshtml",
+              "RelativeToolTip": "CWB.App\\Views\\Shared\\_BA_ExistingPart.cshtml",
+              "ViewState": "AQIAACAAAAAAAAAAAAAkwC8AAABTAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-28T04:04:18.636Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "DeliveryScheduleVM.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Models\\BusinessProcesses\\DeliveryScheduleVM.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Models\\BusinessProcesses\\DeliveryScheduleVM.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Models\\BusinessProcesses\\DeliveryScheduleVM.cs",
+              "RelativeToolTip": "CWB.App\\Models\\BusinessProcesses\\DeliveryScheduleVM.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAuwAsAAAAcAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.639Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "POLineVM.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Models\\BusinessProcesses\\POLineVM.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Models\\BusinessProcesses\\POLineVM.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Models\\BusinessProcesses\\POLineVM.cs",
+              "RelativeToolTip": "CWB.App\\Models\\BusinessProcesses\\POLineVM.cs",
+              "ViewState": "AQIAACYAAAAAAAAAAAAuwEwAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.642Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "POLogVM.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Models\\BusinessProcesses\\POLogVM.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Models\\BusinessProcesses\\POLogVM.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Models\\BusinessProcesses\\POLogVM.cs",
+              "RelativeToolTip": "CWB.App\\Models\\BusinessProcesses\\POLogVM.cs",
+              "ViewState": "AQIAAAwAAAAAAAAAAAAzwBwAAAAJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.645Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "OrderEntry.cshtml",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Views\\BusinessAquisition\\OrderEntry.cshtml",
+              "RelativeDocumentMoniker": "CWB.App\\Views\\BusinessAquisition\\OrderEntry.cshtml",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Views\\BusinessAquisition\\OrderEntry.cshtml",
+              "RelativeToolTip": "CWB.App\\Views\\BusinessAquisition\\OrderEntry.cshtml",
+              "ViewState": "AQIAAFYBAAAAAAAAAAAAAGQBAAAfAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-28T04:04:18.648Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "PlantController.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Controllers\\PlantController.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Controllers\\PlantController.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Controllers\\PlantController.cs",
+              "RelativeToolTip": "CWB.App\\Controllers\\PlantController.cs",
+              "ViewState": "AQIAAFUAAAAAAAAAAAAAwGMAAAA3AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.65Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "PlantService.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Services\\CompanySettings\\PlantService.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Services\\CompanySettings\\PlantService.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Services\\CompanySettings\\PlantService.cs",
+              "RelativeToolTip": "CWB.App\\Services\\CompanySettings\\PlantService.cs",
+              "ViewState": "AQIAAEgAAAAAAAAAAAAnwFMAAABEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.652Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "PlantController.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.CompanySettings\\Controllers\\PlantController.cs",
+              "RelativeDocumentMoniker": "CWB.CompanySettings\\Controllers\\PlantController.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.CompanySettings\\Controllers\\PlantController.cs",
+              "RelativeToolTip": "CWB.CompanySettings\\Controllers\\PlantController.cs",
+              "ViewState": "AQIAAG4AAAAAAAAAAAAswHgAAAApAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.655Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "IPlantService.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Services\\CompanySettings\\IPlantService.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Services\\CompanySettings\\IPlantService.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Services\\CompanySettings\\IPlantService.cs",
+              "RelativeToolTip": "CWB.App\\Services\\CompanySettings\\IPlantService.cs",
+              "ViewState": "AQIAAAwAAAAAAAAAAIA3wBQAAAAdAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.657Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
+              "Title": "HolidayVM.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Models\\Plants\\HolidayVM.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Models\\Plants\\HolidayVM.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Models\\Plants\\HolidayVM.cs",
+              "RelativeToolTip": "CWB.App\\Models\\Plants\\HolidayVM.cs",
+              "ViewState": "AQIAAAUAAAAAAAAAAAAiwAYAAAAdAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.66Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "plant.js",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\wwwroot\\js\\plant.js",
+              "RelativeDocumentMoniker": "CWB.App\\wwwroot\\js\\plant.js",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\wwwroot\\js\\plant.js",
+              "RelativeToolTip": "CWB.App\\wwwroot\\js\\plant.js",
+              "ViewState": "AQIAAA8AAAAAAAAAAAAxwCAAAAArAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-01-28T04:04:18.663Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 36,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Views\\Plant\\Index.cshtml",
+              "RelativeDocumentMoniker": "CWB.App\\Views\\Plant\\Index.cshtml",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Views\\Plant\\Index.cshtml",
+              "RelativeToolTip": "CWB.App\\Views\\Plant\\Index.cshtml",
+              "ViewState": "AQIAANwAAAAAAAAAAAAywOcAAABJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-28T04:04:18.666Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 38,
+              "Title": "RoutingStepVM.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Models\\Routings\\RoutingStepVM.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Models\\Routings\\RoutingStepVM.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Models\\Routings\\RoutingStepVM.cs",
+              "RelativeToolTip": "CWB.App\\Models\\Routings\\RoutingStepVM.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.668Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 40,
+              "Title": "SubConWorkStepDetailsVM.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Models\\Routings\\SubConWorkStepDetailsVM.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Models\\Routings\\SubConWorkStepDetailsVM.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Models\\Routings\\SubConWorkStepDetailsVM.cs",
+              "RelativeToolTip": "CWB.App\\Models\\Routings\\SubConWorkStepDetailsVM.cs",
+              "ViewState": "AQIAAAwAAAAAAAAAAAA4wAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.671Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 41,
+              "Title": "SubConDetailsVM.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Models\\Routings\\SubConDetailsVM.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Models\\Routings\\SubConDetailsVM.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Models\\Routings\\SubConDetailsVM.cs",
+              "RelativeToolTip": "CWB.App\\Models\\Routings\\SubConDetailsVM.cs",
+              "ViewState": "AQIAAAwAAAAAAAAAAAAiwAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.673Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 39,
+              "Title": "PlantWorkingDetailsVM.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Models\\Plants\\PlantWorkingDetailsVM.cs",
+              "RelativeDocumentMoniker": "CWB.App\\Models\\Plants\\PlantWorkingDetailsVM.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Models\\Plants\\PlantWorkingDetailsVM.cs",
+              "RelativeToolTip": "CWB.App\\Models\\Plants\\PlantWorkingDetailsVM.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAArAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.676Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 42,
+              "Title": "RoutingDetails.cshtml",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.App\\Views\\Routings\\RoutingDetails.cshtml",
+              "RelativeDocumentMoniker": "CWB.App\\Views\\Routings\\RoutingDetails.cshtml",
+              "ToolTip": "F:\\CWBworking\\CWB.App\\Views\\Routings\\RoutingDetails.cshtml",
+              "RelativeToolTip": "CWB.App\\Views\\Routings\\RoutingDetails.cshtml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-01-28T04:04:18.68Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 43,
+              "Title": "IPlantService.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.CompanySettings\\Services\\Location\\IPlantService.cs",
+              "RelativeDocumentMoniker": "CWB.CompanySettings\\Services\\Location\\IPlantService.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.CompanySettings\\Services\\Location\\IPlantService.cs",
+              "RelativeToolTip": "CWB.CompanySettings\\Services\\Location\\IPlantService.cs",
+              "ViewState": "AQIAAAgAAAAAAAAAAAAzwBEAAAAvAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.683Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 44,
+              "Title": "AutoMapping.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.CompanySettings\\CompanySettingsUtils\\AutoMapping.cs",
+              "RelativeDocumentMoniker": "CWB.CompanySettings\\CompanySettingsUtils\\AutoMapping.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.CompanySettings\\CompanySettingsUtils\\AutoMapping.cs",
+              "RelativeToolTip": "CWB.CompanySettings\\CompanySettingsUtils\\AutoMapping.cs",
+              "ViewState": "AQIAAN0AAAAAAAAAAAAgwOUAAAA4AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.686Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 45,
+              "Title": "AutoMapping.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.Masters\\MastersUtils\\AutoMapping.cs",
+              "RelativeDocumentMoniker": "CWB.Masters\\MastersUtils\\AutoMapping.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.Masters\\MastersUtils\\AutoMapping.cs",
+              "RelativeToolTip": "CWB.Masters\\MastersUtils\\AutoMapping.cs",
+              "ViewState": "AQIAAOkBAAAAAAAAAAAgwPkBAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.688Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 46,
+              "Title": "MRItemType.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.Masters\\MastersUtils\\MRItemType.cs",
+              "RelativeDocumentMoniker": "CWB.Masters\\MastersUtils\\MRItemType.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.Masters\\MastersUtils\\MRItemType.cs",
+              "RelativeToolTip": "CWB.Masters\\MastersUtils\\MRItemType.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.691Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 47,
+              "Title": "ApiUrls.cs",
+              "DocumentMoniker": "F:\\CWBworking\\CWB.Masters\\MastersUtils\\ApiUrls.cs",
+              "RelativeDocumentMoniker": "CWB.Masters\\MastersUtils\\ApiUrls.cs",
+              "ToolTip": "F:\\CWBworking\\CWB.Masters\\MastersUtils\\ApiUrls.cs",
+              "RelativeToolTip": "CWB.Masters\\MastersUtils\\ApiUrls.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-28T04:04:18.695Z"
+            }
+          ]
+        },
+        {
+          "DockedHeight": 141,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{6324226f-61b6-4f28-92ee-18d4b5fe1e48}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

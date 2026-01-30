@@ -1,0 +1,3 @@
+is_global = true
+build_property.RootNamespace = CWB.Tenant.Tests
+build_property.ProjectDir = F:\CWBworking\CWB.Tenant.Tests\

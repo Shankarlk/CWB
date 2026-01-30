@@ -98,9 +98,9 @@ namespace CWB.CompanySettings.Controllers
         [Route(ApiRoutes.Plant.GetPlant)]
         [Produces(AppContentTypes.ContentType, Type = typeof(PlantVM))]
         [Authorize(Roles = Roles.ADMIN)]
-        public IActionResult GetPlant(long plantId)
+        public async Task<IActionResult> GetPlant(long plantId)
         {
-            var docTypes = _plantService.GetPlant(plantId);
+            var docTypes = await _plantService.GetPlant(plantId);
             return Ok(docTypes);
         }
 
