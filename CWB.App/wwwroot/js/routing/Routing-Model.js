@@ -1,5 +1,3 @@
-const { error } = require("jquery");
-
 let RoutingDetails = {};//contains page model
 
 
