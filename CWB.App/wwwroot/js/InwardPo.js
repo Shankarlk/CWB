@@ -810,6 +810,7 @@ $(document).ready(function () {
         $("#popupInvDate").val('');
         var popupInwNoLinevalidate = document.getElementById('popupInwNoLine');
         popupInwNoLinevalidate.style.border = '';
+        poqntytodayrecd = 0;
     });
     $('#popupInward2').on('show.bs.modal', function (event) {
         poQnty = 0;
@@ -838,7 +839,7 @@ $(document).ready(function () {
             mismatch_Resolved = "-";
         }
         var inwardDate = new Date();
-        calculateTotals();
+        //calculateTotals();
         poQnty = poqnty;
         partNo = partno;
         var baltorec = 0;

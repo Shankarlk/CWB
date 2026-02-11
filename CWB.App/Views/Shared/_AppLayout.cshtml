@@ -32,6 +32,8 @@
     <script src="https://unpkg.com/dagre@0.8.5/dist/dagre.min.js"></script>
     <script src="https://unpkg.com/cytoscape-dagre@2.4.0/cytoscape-dagre.js"></script>
 
+
+
     <style>
         @@media (min-width: 768px) {
             .modal-xl-custom {
@@ -70,6 +72,7 @@
             align-items: center;
             z-index: 9999;
         }
+
         #global-notifier {
             position: fixed;
             top: 80px; /* below topbar */
@@ -79,6 +82,15 @@
             pointer-events: auto;
         }
     </style>
+    <style>
+        @@media (min-width: 990px) {
+            .desktop-overflow {
+                overflow: visible !important;
+            }
+        }
+    </style>
+
+
 </head>
 <body>
     <!-- Pre-loader -->

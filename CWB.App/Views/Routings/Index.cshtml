@@ -21,43 +21,67 @@
 
                 }
             }
-            <div class="row mt-2">
-                <label class="form-label col-md-1 mb-2">Company</label>
-                <div class="col-md-3 mb-2">
-                    <input class="form-control form-control-sm" type="text" id="master_co" name="master_co" placeholder="enter here">
-                </div>
-                <!-- -------------------------------------  -->
-                <div class="col-md-4 mb-2">
-                    <table class="w-100" style="border: 1px solid rgb(162, 149, 149); border-radius: 15px;">
-                        <tbody>
-                            <tr>
-                                <td style="padding-left: 20px;">
-                                    <label class="form-check-label" for="cars">Manufactured Part </label>
-                                    <input class="form-check-input mt-1" type="radio" name="MasterPartType" value="1" checked="">
-                                </td>
-                                <td>
-                                    <label class="form-check-label" for="cars">Assembly </label>
-                                    <input class="form-check-input mt-1" type="radio" name="MasterPartType" value="2">
-                                </td>
-
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <!-- -------------------------------------  -->
-                <label class="form-label col-md-1 mb-2">Part Number </label>
-                <div class="col-md-3 mb-2">
-                    <div class="input-group">
-                        <input class="form-control form-control-sm" type="text" id="master_partno" name="master_partno" placeholder="enter here">
-                        @*<button class="btn btn-sm btn-outline-purple" data-plugin="tippy" data-tippy-placement="top" type="button" data-bs-toggle="modal" data-bs-target="#existing-part" data-tippy="" data-original-title="Search Part number"><i class="ri-search-2-line"></i></button>*@
-                    </div>
-                </div>
-                <!-- =============== -->
+        <div class="row mt-2">
+            <label class="form-label col-md-1 mb-2">Company</label>
+            <div class="col-md-3 mb-2">
+                <input class="form-control form-control-sm" type="text" id="master_co" name="master_co" placeholder="enter here">
             </div>
+            <!-- -------------------------------------  -->
+            <div class="col-md-4 mb-2">
+                <table class="w-100" style="border: 1px solid rgb(162, 149, 149); border-radius: 15px;">
+                    <tbody>
+                        <tr>
+                            <td style="padding-left: 20px;">
+                                <label class="form-check-label" for="cars">Manufactured Part </label>
+                                <input class="form-check-input mt-1" type="radio" name="MasterPartType" value="1" checked="">
+                            </td>
+                            <td>
+                                <label class="form-check-label" for="cars">Assembly </label>
+                                <input class="form-check-input mt-1" type="radio" name="MasterPartType" value="2">
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- -------------------------------------  -->
+            <!--<label class="form-label col-md-1 mb-2">Part Number </label>
+    <div class="col-md-3 mb-2">
+        <div class="input-group">
+            <input class="form-control form-control-sm" type="text" id="master_partno" name="master_partno" placeholder="enter here">-->
+            @*<button class="btn btn-sm btn-outline-purple" data-plugin="tippy" data-tippy-placement="top" type="button" data-bs-toggle="modal" data-bs-target="#existing-part" data-tippy="" data-original-title="Search Part number"><i class="ri-search-2-line"></i></button>*@
+            <!--</div>
+    </div>-->
+            <div class="col-md-4 mb-2 order-md-1">
+                <table class="w-100">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <label class="form-check-label">
+                                    Part Nos without Routing
+                                </label>
+                                <input class="form-check-input mt-1 m-l-10"
+                                       type="checkbox"
+                                       id="ChkprWithOutRoute">
+                            </td>
+                            <td>
+                                <input class="form-control form-control-sm"
+                                       id="prWithOutRoute"
+                                       type="text"
+                                       value="0"
+                                       readonly>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- =============== -->
+        </div>
             <!-- ===================== -->
             <!-- ================= -->
             <div class="row mb-3">
-                <div class="col-md-4">
+                @*<div class="col-md-4">
                     <table class="w-100">
                         <tbody>
                             <tr>
@@ -71,41 +95,55 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>*@
+                    <div class="col-md-1 mb-2">
+                        <label class="form-label">Part Number </label>
+                    </div>
+                        <div class="col-md-3 mb-2 ">
+                            <div class="input-group">
+                                <input class="form-control form-control-sm"
+                                       type="text"
+                                       id="master_partno"
+                                       name="master_partno"
+                                       placeholder="enter here">
+                            </div>
+                        </div>
+
+                    
+                    <!-- -----------------  -->
+                    <div class="col-md-4">
+                        <table class="w-100">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <label class="form-check-label" for="cars">Part Nos without all Mandatory Docs </label>
+                                        <input class="form-check-input mt-1 m-l-10" id="ChkprWithOutDoc" type="checkbox">
+                                    </td>
+                                    <td width="30%">
+                                        <input class="form-control form-control-sm" id="prWithOutDoc" type="text" value="0" readonly>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- -----------------  -->
+                    <div class="col-md-4">
+                        <table class="w-100">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <label class="form-check-label" for="cars">Part Nos that required Routing Update </label>
+                                        <input class="form-check-input mt-1 m-l-10" type="checkbox" id="ChkprUpdate">
+                                    </td>
+                                    <td width="30%">
+                                        <input class="form-control form-control-sm" type="text" id="prUpdate" value="0" readonly>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- -----------------  -->
                 </div>
-                <!-- -----------------  -->
-                <div class="col-md-4">
-                    <table class="w-100">
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <label class="form-check-label" for="cars">Part Nos without all Mandatory Docs </label>
-                                    <input class="form-check-input mt-1 m-l-10" id="ChkprWithOutDoc" type="checkbox">
-                                </td>
-                                <td width="30%">
-                                    <input class="form-control form-control-sm" id="prWithOutDoc" type="text" value="0" readonly>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <!-- -----------------  -->
-                <div class="col-md-4">
-                    <table class="w-100">
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <label class="form-check-label" for="cars">Part Nos that required Routing Update </label>
-                                    <input class="form-check-input mt-1 m-l-10" type="checkbox" id="ChkprUpdate">
-                                </td>
-                                <td width="30%">
-                                    <input class="form-control form-control-sm" type="text" id="prUpdate" value="0" readonly>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <!-- -----------------  -->
-            </div>
             <!-- ---- end row ----  -->
             <div class="row mb-3">
                 <div class="col-md-4">

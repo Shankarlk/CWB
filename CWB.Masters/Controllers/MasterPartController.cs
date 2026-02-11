@@ -70,7 +70,7 @@ namespace CWB.Masters.Controllers
             // 1b. Fetch Enrichment Data (Docs & Statuses)
             var docmand = (await _masterPartService.GetAllItemMasterDocList(tenantId)).ToList();
             var docListVMs = (await _documentManagementService.GetAllDocList(tenantId)).ToList(); 
-            var makeFromList = _manufacturedPartNoDetailService.GetAllMPMakeFromList(tenantId).ToList();
+            var makeFromList = _manufacturedPartNoDetailService.GetAllMPMakeFromList(0).ToList();
             var allBOMs = _manufacturedPartNoDetailService.GetAllMPBOMList(tenantId).ToList();
             var companyLookup = companies
             .Select(c => new { c.CompanyId, c.CompanyName })

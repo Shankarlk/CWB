@@ -55,5 +55,7 @@ namespace CWB.App.Models.WorkOrder
         public string? Location { get; set; } = string.Empty;
         public string? OprationNo { get; set; } = string.Empty;
         public string? Inhouse { get; set; } = string.Empty;
+        public string WoType { get; set; }
+        public char CriticalPart { get; set; }
     }
 }

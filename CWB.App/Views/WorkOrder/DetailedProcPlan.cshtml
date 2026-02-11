@@ -378,7 +378,7 @@
                                     <div class="row">
                                         <div class="col-md-6 mb-2">
                                             <label class="form-label">Critical Part</label>
-                                            <input id="select-all-checkbox" class="form-check-input"
+                                            <input id="CheckCriticalPart" class="form-check-input"
                                                    type="checkbox" title="Select" data-plugin="tippy"
                                                    data-tippy-placement="top">
                                         </div>
@@ -758,7 +758,7 @@
                     <!-- -----------------  -->
                     <div class="col-md-3 mb-2 mt-3">
                         <label class="form-label">Critical Part</label>
-                        <input id="select-all-checkbox" class="form-check-input"
+                        <input id="checkboxmcutilization" class="form-check-input"
                                type="checkbox" title="Select" data-plugin="tippy"
                                data-tippy-placement="top">
                     </div>
@@ -920,7 +920,7 @@
                     <!-- -----------------  -->
                     <div class="col-md-2 mb-2 mt-3">
                         <label class="form-label">Critical Part</label>
-                        <input id="select-all-checkbox" class="form-check-input"
+                        <input id="checkcritcalpartpopup" class="form-check-input"
                                type="checkbox" title="Select" data-plugin="tippy"
                                data-tippy-placement="top">
                     </div>
@@ -2581,6 +2581,7 @@
             </div>
         </td>
         <td hidden>{productionPlanId}</td>
+        <td hidden>{buildToStock}</td>
     </tr>
 </template>
 
@@ -2657,8 +2658,8 @@
         <td></td>
         <td></td>
         <td></td>
-        <td></td>
-        <td></td>
+        <td>{criticalPart}</td>
+        <td>{woType}</td>
         <td hidden>{plan_Compl_Dt}</td>
         <td hidden>{calcReceiptDate}</td>
         <td>
@@ -2692,6 +2693,7 @@
                 </div>
             </div>
         </td>
+       
     </tr>
 </template>
 
@@ -2826,8 +2828,8 @@
         <td>{mcPlanEndTimeStr}</td>
         <td>{totalPlanTime}</td>
         <td></td>
-        <td></td>
-        <td></td>
+        <td>{criticalPart}</td>
+        <td>{woType}</td>
     </tr>
 </template>
 

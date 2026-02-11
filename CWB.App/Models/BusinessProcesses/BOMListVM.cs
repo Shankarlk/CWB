@@ -75,7 +75,7 @@ namespace CWB.App.Models.BusinessProcesses
         public long SaNestLevel { get; set; }
         public long TenantId { get; set; }
 
-
+        public string WoType { get; set; }
 
         public string? PartNo { get; set; } = string.Empty;
         public string? PartDesc { get; set; } = string.Empty;

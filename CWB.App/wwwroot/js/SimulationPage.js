@@ -2710,9 +2710,12 @@ function loadSimulationWos() {
             $(tablebody).append(noRecordsRow);
         }
         for (let i = 0; i < data.length; i++) {
+            data[i].psStartDate = data[i].psStartDate ?? "";
+            data[i].psEndDate = data[i].psEndDate ?? "";
+            data[i].actStartDateStr = data[i].actStartDateStr ?? "";
             let row = AppUtil.ProcessTemplateData("SimWoGridRow", data[i]);
             let $row = $(row);
-
+           
             const partType = data[i].partType; // assume numeric or string like "Assy"
             const partTypeName = data[i].partTypeName?.toLowerCase() || "";
             const NoOfRoutes = data[i].noOfRoutes;

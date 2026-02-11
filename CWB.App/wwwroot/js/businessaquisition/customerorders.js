@@ -1089,8 +1089,11 @@ $(function () {
             newNamevalidate.style.border = '';
         }
         const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0);
         const userDate = new Date(redate);
-        if (userDate >= currentDate) {
+        userDate.setHours(0, 0, 0, 0);
+
+        if (userDate < currentDate) {
             alert('Please Enter A Date Greater Than Or Equal To Today\'s Date');
             $("#POReqdDate").val('');
             return false;

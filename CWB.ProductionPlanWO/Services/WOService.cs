@@ -1035,8 +1035,15 @@ namespace CWB.ProductionPlanWO.Services
 
                     POLogVM poLog = new POLogVM();
                     poLog.SalesOrderId = po.Id;
-                    poLog.OldValue = "Not Aprroved";
-                    poLog.NewValue = "PO Aprroved";
+                    if(po.Status == 2)
+                    {
+                        poLog.OldValue = "Not Aprroved";
+                        poLog.NewValue = "PO Aprroved";
+                    }else if(po.Status == 3)
+                    {
+                        poLog.OldValue = "PO Aprroved";
+                        poLog.NewValue = "Compeleted";
+                    }
                     poLog.Event = "Status Change";
                     poLog.User = "Kgk1 Admin";
                     poLog.Comment = po.POReference + "/" + po.Id + "/" + po.PlanPoReceiptDate;

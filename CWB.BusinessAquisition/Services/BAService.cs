@@ -201,7 +201,9 @@ namespace CWB.BusinessAquisition.Services
                 try
                 {
                     await _salesOrderRepository.AddAsync(salesOrder);
-                }catch(Exception ex)
+                    await POLog(LogSOEntry(salesOrder));
+                }
+                catch(Exception ex)
                 {
                     Exception exa = ex.InnerException;
                     string msg = ex.Message;

@@ -139,7 +139,7 @@ namespace CWB.Masters.Services.Routings
                     MasterPartType = m.ManufacturedPartType == 1 ? "ManufacturedPart" : "Assembly",
                     NoOfRoutes = hasRouting ? routingInfo.Count : 0,
                     RoutingId = hasRouting ? (int)routingInfo.First.Id : 0,
-                    Status = hasRouting ? part?.Status : "---",
+                    Status = string.IsNullOrWhiteSpace(part?.Status) ? "---" : part.Status,
                     HasRouting = hasRouting
                 };
             }).ToList();

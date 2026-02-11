@@ -4,25 +4,25 @@ var butcount = 0;
 function loadWO() {
     api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
         data = data.filter(item => item.active !== 2);
-        const groupedData = data.reduce((acc, row) => {
-            const key = `${row.parentWoId}_${row.partId}`;
-            if (!acc[key]) {
-                acc[key] = {
-                    ...row,
-                    planCompletionDateStr: row.planCompletionDateStr,
-                    calcWOQty: row.calcWOQty, 
-                };
-            } else {
-                acc[key].planCompletionDateStr =
-                    new Date(row.planCompletionDateStr) < new Date(acc[key].planCompletionDateStr)
-                        ? row.planCompletionDateStr
-                        : acc[key].planCompletionDateStr;
-                acc[key].calcWOQty += row.calcWOQty;
-            }
-            return acc;
-        }, {});
+        //const groupedData = data.reduce((acc, row) => {
+        //    const key = `${row.parentWoId}_${row.partId}`;
+        //    if (!acc[key]) {
+        //        acc[key] = {
+        //            ...row,
+        //            planCompletionDateStr: row.planCompletionDateStr,
+        //            calcWOQty: row.calcWOQty, 
+        //        };
+        //    } else {
+        //        acc[key].planCompletionDateStr =
+        //            new Date(row.planCompletionDateStr) < new Date(acc[key].planCompletionDateStr)
+        //                ? row.planCompletionDateStr
+        //                : acc[key].planCompletionDateStr;
+        //        acc[key].calcWOQty += row.calcWOQty;
+        //    }
+        //    return acc;
+        //}, {});
 
-        data = Object.values(groupedData);
+        //data = Object.values(groupedData);
         var tablebody = $("#detailedPlanWo tbody");
         $(tablebody).html("");//empty tbody
         if (butcount == 0) {
@@ -2008,7 +2008,7 @@ $(document).ready(function () {
     $("#searchWoPartNo").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#detailedPlanWo tbody tr").filter(function () {
-            $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
+            $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
         });
         var $tableBody = $("#detailedPlanWo tbody");
         if ($tableBody.find("tr:visible").length === 0) {
@@ -2024,34 +2024,274 @@ $(document).ready(function () {
         }
     });
 
-    $('#checkparentlevel').on('click', function () {
+    $("#searchBomWoType").on("change", function () {
+        var selectedValue = $(this).val(); // 0, 1, 2 etc
+        var $tableBody = $("#BomListGrid tbody");
+
+        // Remove old "No Records"
+        $tableBody.find(".norecordsfound").remove();
+
+        // Show all
+        if (selectedValue === "0") {
+            $tableBody.find("tr").show();
+            return;
+        }
+
+        $("#BomListGrid tbody tr").each(function () {
+
+            let woType =
+                $(this).children().eq(12).text().trim().toLowerCase();
+
+            let showRow = false;
+
+            if (selectedValue === "1") {
+                showRow = woType === "prodn";
+            }
+            else if (selectedValue === "2") {
+                showRow = woType === "build to stock";
+            }
+
+
+            $(this).toggle(showRow);
+        });
+
+        // No records
+        if ($tableBody.find("tr:visible").length === 0) {
+            $tableBody.append(`
+            <tr class="norecordsfound">
+                <td colspan="20" style="text-align:center; color:#888;">
+                    <strong>No Records Found</strong>
+                </td>
+            </tr>
+        `);
+        }
+    });
+
+
+
+
+
+    $('#checkcritcalpartpopup').on('click', function () {
+        var $tableBody = $("#BomListGrid tbody");
+
+        // Remove old "No Records"
+        $tableBody.find(".norecordsfound").remove();
+
         if ($(this).is(':checked')) {
-            // Show only rows where data-parentlevel="Y"
-            $("#detailedPlanWo tbody tr").filter(function () {
-                $(this).toggle($(this.children[17]).text().toLowerCase().indexOf(Y) > -1);
+
+            $("#BomListGrid tbody tr").each(function () {
+
+                let criticalPart =
+                    $(this).children().eq(11).text().trim().toUpperCase();
+
+                // show only Y
+                $(this).toggle(criticalPart === "Y");
             });
-            var $tableBody = $("#detailedPlanWo tbody");
+
+            // No records check
             if ($tableBody.find("tr:visible").length === 0) {
-                const noRecordsRow = `
+                $tableBody.append(`
                 <tr class="norecordsfound">
-                    <td colspan="20" style="text-align: center; color: #888;">
+                    <td colspan="20" style="text-align:center; color:#888;">
                         <strong>No Records Found</strong>
                     </td>
-                </tr>`;
-                $tableBody.append(noRecordsRow);
-            } else {
-                $tableBody.find(".norecordsfound").remove();
+                </tr>
+            `);
             }
+
         } else {
-            // Show all rows when the checkbox is unchecked
+            // Show all rows
+            $("#BomListGrid tbody tr").show();
+        }
+    });
+
+
+
+
+    $("#searchMcDWoType").on("change", function () {
+        var selectedValue = $(this).val(); // 0, 1, 2 etc
+        var $tableBody = $("#MachineTimeListDetail tbody");
+
+        // Remove old "No Records"
+        $tableBody.find(".norecordsfound").remove();
+
+        // Show all
+        if (selectedValue === "0") {
+            $tableBody.find("tr").show();
+            return;
+        }
+
+        $("#MachineTimeListDetail tbody tr").each(function () {
+
+            let woType =
+                $(this).children().eq(13).text().trim().toLowerCase();
+
+            let showRow = false;
+
+            if (selectedValue === "1") {
+                showRow = woType === "prodn";
+            }
+            else if (selectedValue === "2") {
+                showRow = woType === "build to stock";
+            }
+
+
+            $(this).toggle(showRow);
+        });
+
+        // No records
+        if ($tableBody.find("tr:visible").length === 0) {
+            $tableBody.append(`
+            <tr class="norecordsfound">
+                <td colspan="20" style="text-align:center; color:#888;">
+                    <strong>No Records Found</strong>
+                </td>
+            </tr>
+        `);
+        }
+    });
+
+
+
+
+
+    $('#checkboxmcutilization').on('click', function () {
+        var $tableBody = $("#MachineTimeListDetail tbody");
+
+        // Remove old "No Records"
+        $tableBody.find(".norecordsfound").remove();
+
+        if ($(this).is(':checked')) {
+
+            $("#MachineTimeListDetail tbody tr").each(function () {
+
+                let criticalPart =
+                    $(this).children().eq(14).text().trim().toUpperCase();
+
+                // show only Y
+                $(this).toggle(criticalPart === "Y");
+            });
+
+            // No records check
+            if ($tableBody.find("tr:visible").length === 0) {
+                $tableBody.append(`
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align:center; color:#888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>
+            `);
+            }
+
+        } else {
+            // Show all rows
+            $("#MachineTimeListDetail tbody tr").show();
+        }
+    });
+
+
+    function parseDDMMYYYY(dateStr) {
+        if (!dateStr) return null;
+
+        let parts = dateStr.split("-");
+        if (parts.length !== 3) return null;
+
+        return new Date(
+            parseInt(parts[2], 10),      // year
+            parseInt(parts[1], 10) - 1,  // month (0-based)
+            parseInt(parts[0], 10)       // day
+        );
+    }
+
+    $('#CheckCriticalPart').on('click', function () {
+        var $tableBody = $("#detailedPlanWo tbody");
+
+        // Remove old "No Records"
+        $tableBody.find(".norecordsfound").remove();
+
+        if ($(this).is(':checked')) {
+
+            $("#detailedPlanWo tbody tr").each(function () {
+
+                let date1Text = $(this).children().eq(12).text().trim();
+                let date2Text = $(this).children().eq(13).text().trim();
+
+                // If either date missing → hide row
+                if (!date1Text || !date2Text) {
+                    $(this).hide();
+                    return;
+                }
+
+                // Convert to Date objects
+                let date1 = parseDDMMYYYY(date1Text);
+                let date2 = parseDDMMYYYY(date2Text);
+
+                if (!date1 || !date2 || isNaN(date1) || isNaN(date2)) {
+                    $(this).hide();
+                    return;
+                }
+
+              
+
+                // Show only when date1 > date2
+                $(this).toggle(date1 > date2);
+            });
+
+            // No records check
+            if ($tableBody.find("tr:visible").length === 0) {
+                $tableBody.append(`
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align:center; color:#888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>
+            `);
+            }
+
+        } else {
+            // Show all rows
             $("#detailedPlanWo tbody tr").show();
         }
     });
 
+    $('#checkparentlevel').on('click', function () {
+        var $tableBody = $("#detailedPlanWo tbody");
+
+        // Remove old "No Records"
+        $tableBody.find(".norecordsfound").remove();
+
+        if ($(this).is(':checked')) {
+
+            $("#detailedPlanWo tbody tr").each(function () {
+                let parentLevel =
+                    $(this).children().eq(19).text().trim().toUpperCase();
+
+                // show only Y
+                $(this).toggle(parentLevel === "Y");
+            });
+
+            // No records check
+            if ($tableBody.find("tr:visible").length === 0) {
+                $tableBody.append(`
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align:center; color:#888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>
+            `);
+            }
+
+        } else {
+            // Show all rows
+            $("#detailedPlanWo tbody tr").show();
+        }
+    });
+
+
     $("#searchWoPartDesc").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#detailedPlanWo tbody tr").filter(function () {
-            $(this).toggle($(this.children[6]).text().toLowerCase().indexOf(value) > -1)
+            $(this).toggle($(this.children[5]).text().toLowerCase().indexOf(value) > -1)
         });
         var $tableBody = $("#detailedPlanWo tbody");
         if ($tableBody.find("tr:visible").length === 0) {
@@ -2093,7 +2333,7 @@ $(document).ready(function () {
             return;
         }
         $("#detailedPlanWo tbody tr").filter(function () {
-            $(this).toggle($(this.children[14]).text().toLowerCase().indexOf(selectedValue) > -1)
+            $(this).toggle($(this.children[16]).text().toLowerCase().indexOf(selectedValue) > -1)
         });// show only the filtered rows
         var $tableBody = $("#detailedPlanWo tbody");
         if ($tableBody.find("tr:visible").length === 0) {
@@ -2106,6 +2346,46 @@ $(document).ready(function () {
             $tableBody.append(noRecordsRow);
         } else {
             $tableBody.find(".norecordsfound").remove();
+        }
+    });
+    $("#searchWoType").on("change", function () {
+        var selectedValue = $(this).val();
+        var $tableBody = $("#detailedPlanWo tbody");
+
+        // Remove old "No Records"
+        $tableBody.find(".norecordsfound").remove();
+
+        // Show all if "All" selected
+        if (selectedValue === "0") {
+            $tableBody.find("tr").show();
+            return;
+        }
+
+        $("#detailedPlanWo tbody tr").each(function () {
+            let showRow = false;
+
+            // Build to Stock
+            if (selectedValue == "2") {
+                showRow = $(this).children().eq(22).text().trim().toLowerCase() === "y";
+            }
+
+            // Production
+            else if (selectedValue == "1") {
+                showRow = $(this).children().eq(14).text().trim().toLowerCase() === "prodn";
+            }
+
+            $(this).toggle(showRow);
+        });
+
+        // No records check
+        if ($tableBody.find("tr:visible").length === 0) {
+            $tableBody.append(`
+            <tr class="norecordsfound">
+                <td colspan="20" style="text-align:center; color:#888;">
+                    <strong>No Records Found</strong>
+                </td>
+            </tr>
+        `);
         }
     });
 

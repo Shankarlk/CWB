@@ -1,9 +1,25 @@
 ﻿let PendingSos = {};
 let HoldSos = {};
 let TotalSos = {};
+let pendingApiCalls = 0;
 
+function showLoader() {
+    if (pendingApiCalls === 0) {
+        $("#preloaderblurred").show();
+    }
+    pendingApiCalls++;
+}
+
+function hideLoader() {
+    pendingApiCalls--;
+    if (pendingApiCalls <= 0) {
+        pendingApiCalls = 0;
+        $("#preloaderblurred").hide();
+    }
+}
 function landingPage() {
-    $("#preloaderblurred").show(); // ⬅️ SHOW loading screen
+   // $("#preloaderblurred").show(); // ⬅️ SHOW loading screen
+    showLoader();
     const today = new Date();
     Promise.all([
         api.getbulk("/WorkOrder/AllSalesOrders"),
@@ -56,7 +72,7 @@ function landingPage() {
         $('#SoOntrack').text(0);
 
         // --- Sequential API Calls within landingPage ---
-
+        showLoader();
         // Second API call in landingPage
         api.getbulk("/WorkOrder/AllWorkOrders").then((data) => {
             const workOrdersWithStatus1 = data.filter((workOrder) => workOrder.status >= 1);
@@ -75,8 +91,12 @@ function landingPage() {
             $('#NoOfReorderItem').text(0);
         }).catch((error) => {
             console.error("Error loading WOs in second call:", error);
+            // $("#preloaderblurred").hide();
+           
+        }).finally(() => {
+            hideLoader();
         });
-
+        showLoader();
         // Third API call in landingPage
         api.getbulk("/workOrder/AllProductionWo").then((data) => {
             const workOrdersWithStatus1 = data.filter(item => item.readyForProd === "Y" && item.woRelease != "Y");  //
@@ -85,8 +105,12 @@ function landingPage() {
             $("#openWOPs").text(woproduction.length);
         }).catch((error) => {
             console.error("Error loading Production WOs:", error);
-        });
+            // $("#preloaderblurred").hide();
 
+        }).finally(() => {
+            hideLoader();
+        });
+        showLoader();
         // Fourth API call in landingPage
         api.getbulk("/WorkOrder/GetAllPodetails").then((data) => {
             data = data.filter(item => item.status === 1);
@@ -104,13 +128,20 @@ function landingPage() {
             }
         }).catch((error) => {
             console.error("Error loading PO details:", error);
+            // $("#preloaderblurred").hide();
+
+        }).finally(() => {
+            hideLoader();
         });
 
-        $("#preloaderblurred").hide(); // ⬅️ HIDE loading screen after all primary data is fetched
+       // $("#preloaderblurred").hide(); // ⬅️ HIDE loading screen after all primary data is fetched
 
     }).catch((error) => {
         console.error("Error loading SO or WO:", error);
-        $("#preloaderblurred").hide(); // ⬅️ HIDE loading screen on error
+        // $("#preloaderblurred").hide();
+       
+    }).finally(() => {
+        hideLoader();
     });
 }
 
@@ -118,8 +149,8 @@ function landingPage() {
 function SoWoPending() {
     var tablebody = $("#SoPendingGrid tbody");
     $(tablebody).html(""); // clear tbody
-    $("#preloaderblurred").show(); // ⬅️ SHOW loading screen
-
+    // $("#preloaderblurred").show(); // ⬅️ SHOW loading screen
+    showLoader();
     Promise.all([
         api.getbulk("/WorkOrder/AllSalesOrders"),
         api.getbulk("/WorkOrder/AllWorkOrders")
@@ -154,12 +185,15 @@ function SoWoPending() {
             } else {
                 $(tablebody).append("<tr><td colspan='8'>No Pending SOs</td></tr>");
             }
-            $("#preloaderblurred").hide(); // ⬅️ HIDE loading screen on success
+         //   $("#preloaderblurred").hide(); // ⬅️ HIDE loading screen on success
         })
         .catch((error) => {
             console.error("Error loading pending SOs:", error);
             $(tablebody).append("<tr><td colspan='8'>Error loading data</td></tr>");
-            $("#preloaderblurred").hide(); // ⬅️ HIDE loading screen on error
+            // $("#preloaderblurred").hide();
+           
+        }).finally(() => {
+            hideLoader();
         });
 }
 
@@ -226,7 +260,8 @@ function WoTotal() {
 function CustomerMisLoad() {
     var tablebody = $("#CustomerMis tbody");
     $(tablebody).html("");//empty tbody
-    $("#preloaderblurred").show(); // ⬅️ SHOW loading screen
+    // $("#preloaderblurred").show(); // ⬅️ SHOW loading screen
+    showLoader();
     api.getbulk("/WorkOrder/CustomerMis").then((data) => {
         let tbody = $("#CustomerMis tbody");
         tbody.empty();
@@ -260,10 +295,13 @@ function CustomerMisLoad() {
                         <td>${totalWipCount} / ${totalWipValue} INR</td>
                     </tr>
                 `);
-        $("#preloaderblurred").hide(); // ⬅️ HIDE loading screen on success
+      //  $("#preloaderblurred").hide(); // ⬅️ HIDE loading screen on success
     }).catch((error) => {
         console.error("Error loading sales orders", error);
-        $("#preloaderblurred").hide(); // ⬅️ HIDE loading screen on error
+        // $("#preloaderblurred").hide();
+       
+    }).finally(() => {
+        hideLoader();
     });
 }
 
@@ -324,7 +362,8 @@ function woWait() {
 function WoStartLoad() {
     var tablebody = $("#WoStartGrid tbody");
     $(tablebody).html("");//empty tbody
-    $("#preloaderblurred").show(); // ⬅️ SHOW loading screen
+    //$("#preloaderblurred").show(); // ⬅️ SHOW loading screen
+    showLoader();
     Promise.all([
         api.getbulk("/workOrder/AllProductionWo"),
         api.getbulk("/WorkOrder/AllWorkOrders")
@@ -364,7 +403,10 @@ function WoStartLoad() {
         })
         .catch((error) => {
             console.error("Error fetching work orders", error);
-            $("#preloaderblurred").hide(); // ⬅️ HIDE loading screen on error
+            // $("#preloaderblurred").hide();
+           
+        }).finally(() => {
+            hideLoader();
         });
 }
 
@@ -372,7 +414,8 @@ function WoStartLoad() {
 function WOAwait() {
     var tablebody = $("#WoMatlStartGrid tbody");
     $(tablebody).html("");//empty tbody
-    $("#preloaderblurred").show(); // ⬅️ SHOW loading screen
+    // $("#preloaderblurred").show(); // ⬅️ SHOW loading screen
+    showLoader();
     api.getbulk("/WorkOrder/GetAllReadyforProductionWo").then((data) => {
         const today = new Date();
         const filteredWorkOrders = data.filter(wo => {
@@ -388,10 +431,13 @@ function WOAwait() {
         for (i = 0; i < filteredWorkOrders.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateDataNew("WoSimRow", filteredWorkOrders[i], i));
         }
-        $("#preloaderblurred").hide(); // ⬅️ HIDE loading screen on success
+        //$("#preloaderblurred").hide(); // ⬅️ HIDE loading screen on success
     }).catch((error) => {
         console.error("Error loading WO Await:", error);
-        $("#preloaderblurred").hide(); // ⬅️ HIDE loading screen on error
+        // $("#preloaderblurred").hide();
+       
+    }).finally(() => {
+        hideLoader();
     });
 }
 
@@ -399,7 +445,8 @@ function WOAwait() {
 function WOMatlload() {
     var tablebody = $("#WoPastDateGrid tbody");
     $(tablebody).html("");//empty tbody
-    $("#preloaderblurred").show(); // ⬅️ SHOW loading screen
+    //$("#preloaderblurred").show(); // ⬅️ SHOW loading screen
+    showLoader();
     api.getbulk("/WorkOrder/GetAllReadyforProductionWo").then((data) => {
         const today = new Date();
         const filteredWorkOrders = data.filter(wo => {
@@ -415,10 +462,13 @@ function WOMatlload() {
         for (i = 0; i < filteredWorkOrders.length; i++) {
             $(tablebody).append(AppUtil.ProcessTemplateDataNew("WoSimRow", filteredWorkOrders[i], i));
         }
-        $("#preloaderblurred").hide(); // ⬅️ HIDE loading screen on success
+        //$("#preloaderblurred").hide(); // ⬅️ HIDE loading screen on success
     }).catch((error) => {
         console.error("Error loading WO Matl Load:", error);
-        $("#preloaderblurred").hide(); // ⬅️ HIDE loading screen on error
+        // $("#preloaderblurred").hide();
+        
+    }).finally(() => {
+        hideLoader();
     });
 }
 

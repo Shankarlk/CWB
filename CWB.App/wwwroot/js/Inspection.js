@@ -601,7 +601,7 @@ $(document).ready(function () {
         } else {
             var partType = $("#P6Ncparttype").val();
             if (partType === "RawMaterial" || partType === "BOF") {
-                var qnty = parseInt($("#P6TotalInsp").val());
+                var qnty = parseInt($("#P6TbInspTotal").val());
                 var P6PartId = parseInt($("#P6PartId").val());
                 var P6PoId = parseInt($("#P6PoId").val());
 

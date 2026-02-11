@@ -1,9 +1,26 @@
 ﻿
 var ba_masterparts = {};
 var allfilteredpodatas = {};
+let pendingApiCalls = 0;
+
+function showLoader() {
+    if (pendingApiCalls === 0) {
+        $("#preloaderblurred").show();
+    }
+    pendingApiCalls++;
+}
+
+function hideLoader() {
+    pendingApiCalls--;
+    if (pendingApiCalls <= 0) {
+        pendingApiCalls = 0;
+        $("#preloaderblurred").hide();
+    }
+}
 
 function loadPO() {
-    $("#preloaderblurred").show();
+   // $("#preloaderblurred").show();
+    showLoader();
     api.getbulk("/WorkOrder/GetAllInw_Recpt_HeaderInsp").then((data) => {
         data = data.filter(item => item.status >= 3);
         let totalSubCon = 0;
@@ -20,23 +37,27 @@ function loadPO() {
             }
         }
 
-        console.log("Total SubCon:", totalSubCon);
-        console.log("Total RawMaterial:", totalRawMaterial);
-        console.log("Total BOF:", totalBOF);
+        //console.log("Total SubCon:", totalSubCon);
+        //console.log("Total RawMaterial:", totalRawMaterial);
+        //console.log("Total BOF:", totalBOF);
 
         // Optionally, display these totals in the UI
         $("#subconInsp").text(totalSubCon);
         $("#rmInsp").text(totalRawMaterial);
         $("#bofInsp").text(totalBOF);
-        $("#preloaderblurred").hide();
+        //  $("#preloaderblurred").hide();
+       
     }).catch((error) => {
-        $("#preloaderblurred").hide();
+       // $("#preloaderblurred").hide();
         console.error("Error fetching data:", error);
+    }).finally(() => {
+        hideLoader();
     });
 }
 
 function InwardPo() {
-    $("#preloaderblurred").show();
+    showLoader();
+  //  $("#preloaderblurred").show();
     api.getbulk("/WorkOrder/GetAllPodetails").then((data) => {
         data = data.filter(item => item.status >= 2);
         let totalSubCon = 0;
@@ -53,21 +74,27 @@ function InwardPo() {
             }
 
         }
+        //console.log("Total SubCon:", totalSubCon);
+        //console.log("Total RawMaterial:", totalRawMaterial);
+        //console.log("Total BOF:", totalBOF);
         $("#subconInw").text(totalSubCon);
         $("#rmInw").text(totalRawMaterial);
         $("#bofInw").text(totalBOF);
-        $("#preloaderblurred").hide();
+     // $("#preloaderblurred").hide();
 
     }).catch((error) => {
-        $("#preloaderblurred").hide();
+         // $("#preloaderblurred").hide();
+        console.error("Error fetching data:", error);
+    }).finally(() => {
+        hideLoader();
     });
 }
 
 function loadNCLog() {
     var tablebody = $("#NcGrid tbody");
     $(tablebody).html("");//empty tbody
-
-    $("#preloaderblurred").show();
+    showLoader();
+    //$("#preloaderblurred").show();
     api.getbulk("/workOrder/GetAllNcLog").then((data) => {
         let totalInhouse = 0;
         let totalSubCon = 0;
@@ -87,9 +114,12 @@ function loadNCLog() {
         $("#ncSubCon").text(totalSubCon);
         $("#ncRm").text(totalRawMaterial);
         $("#ncBof").text(totalBOF);
-        $("#preloaderblurred").hide();
+        //$("#preloaderblurred").hide();
     }).catch((error) => {
-        $("#preloaderblurred").hide();
+        // $("#preloaderblurred").hide();
+        console.error("Error fetching data:", error);
+    }).finally(() => {
+        hideLoader();
     });
 }
 function LoadPartsExist() {
@@ -245,7 +275,7 @@ function LoadPOLines(customerOrderId) {
                 
 }
 $(document).ready(function () {
-    InwardPo();
+   InwardPo();
     loadNCLog();
     loadPO();
     $("#CustomerSel").on("change", function () {

@@ -1065,32 +1065,32 @@ namespace CWB.App.Controllers
                                                         decimal intermediateResult = grouped.TotalQuantity * item.CalcWOQty;
                                                         if (groupedResults != null)
                                                         {
-                                                            ProcPlanVM subppdata = new ProcPlanVM
-                                                            {
-                                                                PartId = grouped.PartId,
-                                                                PartType = subptype.MasterPartType ?? "ManufacturedPart",
-                                                                Calc_Proc_Qnty = (int)intermediateResult,
-                                                                UOMId = manufchild.UOMId,
-                                                                PlanReceiptDate = item.PlanStartDate,
-                                                                CalcReceiptDate = subnextworkdingdate,
-                                                                WorkOrderId = item.WoId
-                                                            };
-                                                            listprocplan.Add(subppdata);
-                                                            BOMListVM subbomdata = new BOMListVM
-                                                            {
-                                                                ParentWoId = item.WoId,
-                                                                Child_Part_No_ID = grouped.PartId,
-                                                                Child_Part_No_Type = subptype.MasterPartType ?? "ManufacturedPart",
-                                                                Calc_Qnty = (int)intermediateResult,
-                                                                Plan_Qnty = item.CalcWOQty,
-                                                                Plan_Start_Dt = planstdt,
-                                                                Plan_Compl_Dt = item.PlanCompletionDate.GetValueOrDefault(),
-                                                                CalcReceiptDate = subnextworkdingdate,
-                                                                //Manf_Days_Avl = manfDays,
-                                                                ProcPlanId = item.ProductionPlanId,
-                                                                //SaNestLevel = Sa_Nest_level
-                                                            };
-                                                            listbom.Add(subbomdata);
+                                                            //ProcPlanVM subppdata = new ProcPlanVM
+                                                            //{
+                                                            //    PartId = grouped.PartId,
+                                                            //    PartType = subptype.MasterPartType ?? "ManufacturedPart",
+                                                            //    Calc_Proc_Qnty = (int)intermediateResult,
+                                                            //    UOMId = manufchild.UOMId,
+                                                            //    PlanReceiptDate = item.PlanStartDate,
+                                                            //    CalcReceiptDate = subnextworkdingdate,
+                                                            //    WorkOrderId = item.WoId
+                                                            //};
+                                                            //listprocplan.Add(subppdata);
+                                                            //BOMListVM subbomdata = new BOMListVM
+                                                            //{
+                                                            //    ParentWoId = item.WoId,
+                                                            //    Child_Part_No_ID = grouped.PartId,
+                                                            //    Child_Part_No_Type = subptype.MasterPartType ?? "ManufacturedPart",
+                                                            //    Calc_Qnty = (int)intermediateResult,
+                                                            //    Plan_Qnty = item.CalcWOQty,
+                                                            //    Plan_Start_Dt = planstdt,
+                                                            //    Plan_Compl_Dt = item.PlanCompletionDate.GetValueOrDefault(),
+                                                            //    CalcReceiptDate = subnextworkdingdate,
+                                                            //    //Manf_Days_Avl = manfDays,
+                                                            //    ProcPlanId = item.ProductionPlanId,
+                                                            //    //SaNestLevel = Sa_Nest_level
+                                                            //};
+                                                            //listbom.Add(subbomdata);
 
                                                         }
                                                     }
@@ -1263,13 +1263,17 @@ namespace CWB.App.Controllers
                             int mcassyTimeInDays = mcassyTime / 1440;
                             DateTime mcplanstartdt = item.PlanCompletionDate.Value.AddDays(-mcassyTimeInDays);
                             var routingstep = await _routingService.RoutingSteps((int)item.RoutingId);
-                            var oneroutingstep = routingstep.FirstOrDefault();
-                            if (oneroutingstep != null)
+                            foreach( var oneroutingstep in routingstep)
+                            //var oneroutingstep = routingstep.FirstOrDefault();
+                            //if (oneroutingstep != null)
                             {
-                                var stepmachine = await _routingService.StepMachines((int)oneroutingstep.StepId);
 
-                                var onestepmachine = stepmachine.FirstOrDefault();
-                                if (onestepmachine != null)
+                                var stepmachine = await _routingService.StepMachines((int)oneroutingstep.StepId);
+                                var prefferedmachine = stepmachine.OrderByDescending(s => s.PreferredMachine).Take(oneroutingstep.NumberOfSimMachines);
+                                
+                                foreach(var onestepmachine in prefferedmachine)
+                                //var onestepmachine = stepmachine.FirstOrDefault();
+                                //if (onestepmachine != null)
                                 {
                                     var machine = await _machineService.GetMachine((int)onestepmachine?.MachineId);
                                     // var result = await _departmentService.GetDepartments(1);
@@ -1308,8 +1312,8 @@ namespace CWB.App.Controllers
                                     };
                                     mcTimeListVMs.Add(mcTimeList);
                                 }
-                                else
-                                {
+                                //else
+                                if(oneroutingstep.StepLocation=="2"){
                                     var sub = await _routingService.SubCons((int)oneroutingstep.StepId);
                                     var subfirst = sub.FirstOrDefault();
                                     var subworks = await _routingService.SubConWSS((int)oneroutingstep.StepId, subfirst.SubConDetailsId);
@@ -1773,12 +1777,15 @@ namespace CWB.App.Controllers
                                 int mcassyTimeInDays = mcassyTime / 1440;
                                 DateTime mcplanstartdt = item.PlanCompletionDate.Value.AddDays(-mcassyTimeInDays);
                                 var routingstep = await _routingService.RoutingSteps((int)item.RoutingId);
-                                var oneroutingstep = routingstep.FirstOrDefault();
-                                if (oneroutingstep != null)
+                                foreach (var oneroutingstep in routingstep)
+                                //var oneroutingstep = routingstep.FirstOrDefault();
+                                //if (oneroutingstep != null)
                                 {
                                     var stepmachine = await _routingService.StepMachines((int)oneroutingstep.StepId);
-                                    var onestepmachine = stepmachine.FirstOrDefault();
-                                    if (onestepmachine != null)
+                                    var prefferedmachine = stepmachine.OrderByDescending(s => s.PreferredMachine).Take(oneroutingstep.NumberOfSimMachines);
+                                    foreach (var onestepmachine in prefferedmachine)
+                                    //    var onestepmachine = stepmachine.FirstOrDefault();
+                                    //if (onestepmachine != null)
                                     {
                                         var machine = await _machineService.GetMachine((int)onestepmachine?.MachineId);
 
@@ -1814,7 +1821,7 @@ namespace CWB.App.Controllers
                                         };
                                         submcTimeListVMs.Add(mcTimeList);
                                     }
-                                    else
+                                     if(oneroutingstep.StepLocation=="2")//else
                                     {
                                         var sub = await _routingService.SubCons((int)oneroutingstep.StepId);
                                         var subfirst = sub.FirstOrDefault();
@@ -2289,12 +2296,16 @@ namespace CWB.App.Controllers
                                     int mcassyTimeInDays = mcassyTime / 1440;
                                     DateTime mcplanstartdt = item.PlanCompletionDate.Value.AddDays(-mcassyTimeInDays);
                                     var routingstep = await _routingService.RoutingSteps((int)item.RoutingId);
-                                    var oneroutingstep = routingstep.FirstOrDefault();
-                                    if (oneroutingstep != null)
+                                    foreach (var oneroutingstep in routingstep)
+                                    //    var oneroutingstep = routingstep.FirstOrDefault();
+                                    //if (oneroutingstep != null)
                                     {
                                         var stepmachine = await _routingService.StepMachines((int)oneroutingstep.StepId);
-                                        var onestepmachine = stepmachine.FirstOrDefault();
-                                        if (onestepmachine != null)
+                                        var prefferedmachine = stepmachine.OrderByDescending(s => s.PreferredMachine).Take(oneroutingstep.NumberOfSimMachines);
+
+                                        foreach (var onestepmachine in prefferedmachine)
+                                        //    var onestepmachine = stepmachine.FirstOrDefault();
+                                        //if (onestepmachine != null)
                                         {
                                             var machine = await _machineService.GetMachine((int)onestepmachine?.MachineId);
 
@@ -2330,7 +2341,8 @@ namespace CWB.App.Controllers
                                             };
                                             submcTimeListVMs2.Add(mcTimeList);
                                         }
-                                        else
+                                        //else
+                                        if(oneroutingstep.StepLocation=="2")
                                         {
                                             var sub = await _routingService.SubCons((int)oneroutingstep.StepId);
                                             var subfirst = sub.FirstOrDefault();
@@ -2988,7 +3000,7 @@ namespace CWB.App.Controllers
 
             // Prepare a dictionary for fast lookup of Work Orders by ID
             var workOrdersDict = workOrders.ToDictionary(wo => wo.WOID, wo => wo.WONumber);
-
+            var woCompletionDatesDict = workOrders.ToDictionary(wo => wo.WOID, wo => (SoCompletionDate: wo.SoComplDate, PlanCompletionDate: wo.PlanCompletionDate,Wotype: wo.BuildToStock));
             var prodnWosStatusDict = prodnWos
       .GroupBy(p => p.WoId) // or appropriate key matching ParentWoId
       .ToDictionary(
@@ -3031,6 +3043,47 @@ namespace CWB.App.Controllers
                     // Optional: default/fallback if no matching prodnwos entry
                     item.StatusStr ??= "Unknown";
                 }
+
+
+                if (woCompletionDatesDict.TryGetValue(item.ParentWoId, out var dates))
+                {
+                    var soDate = dates.SoCompletionDate;
+                    var planDate = dates.PlanCompletionDate;
+
+                    if (soDate.HasValue && planDate.HasValue)
+                    {
+                        if (planDate > soDate)
+                        {
+                            item.CriticalPart = 'Y';
+                        }
+
+                        else
+                        {
+                            item.CriticalPart = 'N';
+                        }
+                    }
+
+                }
+                else
+                {
+                    item.CriticalPart = 'N';
+                }
+                if (woCompletionDatesDict.TryGetValue(item.ParentWoId, out var type))
+                {
+                    var buildtostock = dates.Wotype;
+                    if (buildtostock == 1)
+                    {
+                        item.WoType = "Build To Stock or Reorder";
+                    }
+                    else
+                    {
+                        item.WoType = "Prodn";
+                    }
+                }
+                else
+                {
+                    item.WoType = " ";
+                }
             }
 
             return Ok(resultList);
@@ -3042,7 +3095,11 @@ namespace CWB.App.Controllers
         {
             var mctimelist = await _woService.GetAllMcTimeList();
             var productions = await _woService.AllProductionPlan_Wo();
+            var wos = await _baService.AllWorkOrders();
             var masterparts = await _masterService.MasterPartList();
+            var workOrdersDict = wos.ToDictionary(wo => wo.WOID, wo => wo.WONumber);
+            var woCompletionDatesDict = wos.ToDictionary(wo => wo.WOID, wo => (SoCompletionDate: wo.SoComplDate, PlanCompletionDate: wo.PlanCompletionDate, Wotype: wo.BuildToStock));
+
             foreach (var mctime in mctimelist)
             {
                 var machineTypes = await _machineService.GetMachineTypes();
@@ -3062,6 +3119,7 @@ namespace CWB.App.Controllers
                         }
                     }
                 }
+
                 var machine = await _machineService.GetMachine(mctime.MachineId);
                 if (mctime.MachineId == machine.MachineMachineId)
                 {
@@ -3087,8 +3145,49 @@ namespace CWB.App.Controllers
                             mctime.MachineTypeName = machinetype.MachineTypeName;
                         }
                     }
+
                 }
-            }
+                if (woCompletionDatesDict.TryGetValue(mctime.WoId, out var dates))
+                {
+                    var soDate = dates.SoCompletionDate;
+                    var planDate = dates.PlanCompletionDate;
+
+                    if (soDate.HasValue && planDate.HasValue)
+                    {
+                        if (planDate > soDate)
+                        {
+                            mctime.CriticalPart = 'Y';
+                        }
+
+                        else
+                        {
+                            mctime.CriticalPart = 'N';
+                        }
+                    }
+
+                }
+                else
+                {
+                    mctime.CriticalPart = 'N';
+                }
+                if (woCompletionDatesDict.TryGetValue(mctime.WoId, out var type))
+                {
+                    var buildtostock = dates.Wotype;
+                    if (buildtostock == 1)
+                    {
+                        mctime.WoType = "Build To Stock or Reorder";
+                    }
+                    else
+                    {
+                        mctime.WoType = "Prodn";
+                    }
+                }
+                else
+                {
+                    mctime.WoType = " ";
+                }
+            
+        }
             return Ok(mctimelist);
         }
 
@@ -3239,7 +3338,7 @@ namespace CWB.App.Controllers
                 {
                     item.StatusStr = "Completed";
                 }
-                item.PoType = "Prodn";
+                item.PoType = "Prodn" ;
                 foreach (ItemMasterPartVM imp in masterparts)
                 {
                     if (item.PartId == imp.PartId)
@@ -9301,7 +9400,7 @@ namespace CWB.App.Controllers
                                 startFromTimeslotId = existingMcSlots.First().EndTimeslot_List_Id;
                             }
                             var availableTimeslots = plantSlots
-                                .Where(t => t.Timeslot_ListId > startFromTimeslotId || t.Start_time > DateTime.Now)
+                                .Where(t => t.Timeslot_ListId > startFromTimeslotId && t.Start_time > DateTime.Now)//t.Timeslot_ListId > startFromTimeslotId 
                                 .Take(slotsRequired)
                                 .ToList();
 
@@ -11794,7 +11893,7 @@ namespace CWB.App.Controllers
                                 startFromTimeslotId = existingMcSlots.First().EndTimeslot_List_Id;
                             }
                             var availableTimeslots = plantSlots
-                                .Where(t => t.Timeslot_ListId > startFromTimeslotId && t.Start_time > DateTime.Now)
+                                .Where(t =>  t.Start_time > DateTime.Now)
                                 .Take(slotsRequired)
                                 .ToList();
 
