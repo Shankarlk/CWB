@@ -1490,3 +1490,183 @@
 2026-02-11 04:12:15 | ConfigureServices started
 2026-02-11 04:12:23 | ConfigureServices completed successfully
 2026-02-11 04:12:24 | Configure pipeline started
+2026-02-11 06:15:52 | Program.Main started
+2026-02-11 06:15:52 | Building host
+2026-02-11 06:15:54 | Configuring WebHost
+2026-02-11 06:16:09 | Startup constructor started
+2026-02-11 06:16:12 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-11 06:16:12 | Startup constructor completed successfully
+2026-02-11 06:16:14 | ConfigureServices started
+2026-02-11 06:16:21 | ConfigureServices completed successfully
+2026-02-11 06:16:24 | Configure pipeline started
+2026-02-11 06:42:26 | Program.Main started
+2026-02-11 06:42:26 | Building host
+2026-02-11 06:42:27 | Configuring WebHost
+2026-02-11 06:42:32 | Startup constructor started
+2026-02-11 06:42:34 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-11 06:42:34 | Startup constructor completed successfully
+2026-02-11 06:42:34 | ConfigureServices started
+2026-02-11 06:42:37 | ConfigureServices completed successfully
+2026-02-11 06:42:39 | Configure pipeline started
+2026-02-11 11:13:19 | Program.Main started
+2026-02-11 11:13:19 | Building host
+2026-02-11 11:13:20 | Configuring WebHost
+2026-02-11 11:13:26 | Startup constructor started
+2026-02-11 11:13:28 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-11 11:13:28 | Startup constructor completed successfully
+2026-02-11 11:13:28 | ConfigureServices started
+2026-02-11 11:13:30 | ConfigureServices completed successfully
+2026-02-11 11:13:31 | Configure pipeline started
+2026-02-12 04:47:40 | Program.Main started
+2026-02-12 04:47:40 | Building host
+2026-02-12 04:47:43 | Configuring WebHost
+2026-02-12 04:48:06 | Startup constructor started
+2026-02-12 04:48:13 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-12 04:48:13 | Startup constructor completed successfully
+2026-02-12 04:48:16 | ConfigureServices started
+2026-02-12 04:48:23 | ConfigureServices completed successfully
+2026-02-12 04:48:25 | Configure pipeline started
+2026-02-12 10:02:43 | Program.Main started
+2026-02-12 10:02:43 | Building host
+2026-02-12 10:02:45 | Configuring WebHost
+2026-02-12 10:03:13 | Startup constructor started
+2026-02-12 10:03:17 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-12 10:03:17 | Startup constructor completed successfully
+2026-02-12 10:03:18 | ConfigureServices started
+2026-02-12 10:03:21 | ConfigureServices completed successfully
+2026-02-12 10:03:22 | Configure pipeline started
+2026-02-12 10:14:26 | Program.Main started
+2026-02-12 10:14:26 | Building host
+2026-02-12 10:14:28 | Configuring WebHost
+2026-02-12 10:14:36 | Startup constructor started
+2026-02-12 10:14:39 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-12 10:14:39 | Startup constructor completed successfully
+2026-02-12 10:14:40 | ConfigureServices started
+2026-02-12 10:14:44 | ConfigureServices completed successfully
+2026-02-12 10:14:46 | Configure pipeline started
+2026-02-12 10:36:29 | Program.Main started
+2026-02-12 10:36:29 | Building host
+2026-02-12 10:36:31 | Configuring WebHost
+2026-02-12 10:36:38 | Startup constructor started
+2026-02-12 10:36:41 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-12 10:36:41 | Startup constructor completed successfully
+2026-02-12 10:36:41 | ConfigureServices started
+2026-02-12 10:36:46 | ConfigureServices completed successfully
+2026-02-12 10:36:49 | Configure pipeline started
+2026-02-12 10:46:16 | Program.Main started
+2026-02-12 10:46:16 | Building host
+2026-02-12 10:46:19 | Configuring WebHost
+2026-02-12 10:46:28 | Startup constructor started
+2026-02-12 10:46:31 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-12 10:46:31 | Startup constructor completed successfully
+2026-02-12 10:46:32 | ConfigureServices started
+2026-02-12 10:46:39 | ConfigureServices completed successfully
+2026-02-12 10:46:42 | Configure pipeline started
+2026-02-12 11:08:33 | Program.Main started
+2026-02-12 11:08:34 | Building host
+2026-02-12 11:08:36 | Configuring WebHost
+2026-02-12 11:08:42 | Startup constructor started
+2026-02-12 11:08:46 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-12 11:08:46 | Startup constructor completed successfully
+2026-02-12 11:08:46 | ConfigureServices started
+2026-02-12 11:08:51 | ConfigureServices completed successfully
+2026-02-12 11:08:53 | Configure pipeline started
+2026-02-12 11:54:07 | Program.Main started
+2026-02-12 11:54:08 | Building host
+2026-02-12 11:54:11 | Configuring WebHost
+2026-02-12 11:54:33 | Startup constructor started
+2026-02-12 11:54:38 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-12 11:54:38 | Startup constructor completed successfully
+2026-02-12 11:54:39 | ConfigureServices started
+2026-02-12 11:54:45 | ConfigureServices completed successfully
+2026-02-12 11:54:46 | Configure pipeline started
+2026-02-12 12:11:15 | Program.Main started
+2026-02-12 12:11:16 | Building host
+2026-02-12 12:11:19 | Configuring WebHost
+2026-02-12 12:11:28 | Startup constructor started
+2026-02-12 12:11:31 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-12 12:11:31 | Startup constructor completed successfully
+2026-02-12 12:11:32 | ConfigureServices started
+2026-02-12 12:11:39 | ConfigureServices completed successfully
+2026-02-12 12:11:42 | Configure pipeline started
+2026-02-12 12:29:29 | Program.Main started
+2026-02-12 12:29:29 | Building host
+2026-02-12 12:29:31 | Configuring WebHost
+2026-02-12 12:29:38 | Startup constructor started
+2026-02-12 12:29:42 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-12 12:29:42 | Startup constructor completed successfully
+2026-02-12 12:29:44 | ConfigureServices started
+2026-02-12 12:29:52 | ConfigureServices completed successfully
+2026-02-12 12:29:55 | Configure pipeline started
+2026-02-12 13:12:38 | Program.Main started
+2026-02-12 13:12:38 | Building host
+2026-02-12 13:12:43 | Configuring WebHost
+2026-02-12 13:13:06 | Startup constructor started
+2026-02-12 13:13:09 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-12 13:13:09 | Startup constructor completed successfully
+2026-02-12 13:13:10 | ConfigureServices started
+2026-02-12 13:13:17 | ConfigureServices completed successfully
+2026-02-12 13:13:18 | Configure pipeline started
+2026-02-12 13:18:25 | Program.Main started
+2026-02-12 13:18:26 | Building host
+2026-02-12 13:18:27 | Configuring WebHost
+2026-02-12 13:18:40 | Startup constructor started
+2026-02-12 13:18:42 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-12 13:18:43 | Startup constructor completed successfully
+2026-02-12 13:18:43 | ConfigureServices started
+2026-02-12 13:18:48 | ConfigureServices completed successfully
+2026-02-12 13:18:52 | Configure pipeline started
+2026-02-12 13:31:57 | Program.Main started
+2026-02-12 13:31:57 | Building host
+2026-02-12 13:32:01 | Configuring WebHost
+2026-02-12 13:32:16 | Startup constructor started
+2026-02-12 13:32:19 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-12 13:32:19 | Startup constructor completed successfully
+2026-02-12 13:32:21 | ConfigureServices started
+2026-02-12 13:32:25 | ConfigureServices completed successfully
+2026-02-12 13:32:27 | Configure pipeline started
+2026-02-12 13:42:51 | Program.Main started
+2026-02-12 13:42:52 | Building host
+2026-02-12 13:42:56 | Configuring WebHost
+2026-02-12 13:43:19 | Startup constructor started
+2026-02-12 13:43:25 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-12 13:43:25 | Startup constructor completed successfully
+2026-02-12 13:43:26 | ConfigureServices started
+2026-02-12 13:43:29 | ConfigureServices completed successfully
+2026-02-12 13:43:30 | Configure pipeline started
+2026-02-13 04:32:16 | Program.Main started
+2026-02-13 04:32:16 | Building host
+2026-02-13 04:32:20 | Configuring WebHost
+2026-02-13 04:32:34 | Startup constructor started
+2026-02-13 04:32:37 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-13 04:32:38 | Startup constructor completed successfully
+2026-02-13 04:32:39 | ConfigureServices started
+2026-02-13 04:32:43 | ConfigureServices completed successfully
+2026-02-13 04:32:46 | Configure pipeline started
+2026-02-13 04:39:04 | Program.Main started
+2026-02-13 04:39:04 | Building host
+2026-02-13 04:39:06 | Configuring WebHost
+2026-02-13 04:39:15 | Startup constructor started
+2026-02-13 04:39:18 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-13 04:39:18 | Startup constructor completed successfully
+2026-02-13 04:39:20 | ConfigureServices started
+2026-02-13 04:39:23 | ConfigureServices completed successfully
+2026-02-13 04:39:26 | Configure pipeline started
+2026-02-13 04:49:40 | Program.Main started
+2026-02-13 04:49:40 | Building host
+2026-02-13 04:49:42 | Configuring WebHost
+2026-02-13 04:49:59 | Startup constructor started
+2026-02-13 04:50:00 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-13 04:50:00 | Startup constructor completed successfully
+2026-02-13 04:50:02 | ConfigureServices started
+2026-02-13 04:50:09 | ConfigureServices completed successfully
+2026-02-13 04:50:11 | Configure pipeline started
+2026-02-13 05:14:42 | Program.Main started
+2026-02-13 05:14:42 | Building host
+2026-02-13 05:14:45 | Configuring WebHost
+2026-02-13 05:14:56 | Startup constructor started
+2026-02-13 05:14:59 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-02-13 05:14:59 | Startup constructor completed successfully
+2026-02-13 05:15:00 | ConfigureServices started
+2026-02-13 05:15:09 | ConfigureServices completed successfully
+2026-02-13 05:15:11 | Configure pipeline started

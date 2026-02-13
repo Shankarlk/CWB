@@ -18,6 +18,7 @@ namespace CWB.Masters.ViewModels.ItemMaster
         public long? MPMakeFromId { get; set; }
         public string MFDescription { get; set; }
         public string InputPartNo { get; set; }
+        public long TenantId { get; set; }
 
     }
 }

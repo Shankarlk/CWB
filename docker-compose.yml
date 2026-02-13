@@ -3,7 +3,7 @@ version: '3.8'
 networks:
   cwb-network:
     name: cwb-network
-    driver: bridge
+    driver: bridge 
 
 services:
   db:
