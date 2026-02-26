@@ -18,6 +18,7 @@ using NLog;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace CWB.App
 {
@@ -87,6 +88,19 @@ namespace CWB.App
                 }).AddCookie(options =>
                 {
                     options.Cookie.Name = "cwbmvc";
+                    //options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // 9 hours idle
+                    //options.SlidingExpiration = true;                   // refresh on activity
+                    //options.Cookie.HttpOnly = true;
+                    //options.Cookie.IsEssential = true;
+
+                    //options.Events = new CookieAuthenticationEvents
+                    //{
+                    //    OnValidatePrincipal = context =>
+                    //    {
+                    //        // Optional: extra validation logic
+                    //        return Task.CompletedTask;
+                    //    }
+                    //};
                 })
                     .AddOpenIdConnect("oidc", options =>
                     {
@@ -180,9 +194,10 @@ namespace CWB.App
 
                 if (_enableAuth)
                 {
+                    app.UseSession();
                     app.UseAuthentication();
                     app.UseAuthorization();
-                    app.UseSession();
+                    
                     app.UseEndpoints(endpoints =>
                     {
                         endpoints.MapDefaultControllerRoute()

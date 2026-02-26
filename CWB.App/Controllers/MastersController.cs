@@ -2,6 +2,7 @@
 using CWB.App.Models.Contacts;
 using CWB.App.Models.DocumentManagement;
 using CWB.App.Models.ItemMaster;
+using CWB.App.Models.Routings;
 using CWB.App.Models.WorkOrder;
 using CWB.App.Services.BusinessProcesses;
 using CWB.App.Services.DocumentMagement;
@@ -2117,7 +2118,78 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> MasterParts()
         {
             var mfpdList = await _mastersService.MasterPartList();
+    //        var manufacturedDetails = await _mastersService.GetAllManufacturedPartNoDetailList();
+    //        var makeFromList = await _mastersService.GetAllMPMakeFromList();
+    //        var rmparts = await _mastersService.GetAllRMPart();
+
+
+    //        // 1️⃣ Raw Material lookup (HashSet for fast Contains)
+    //        var rawMaterialIds = new HashSet<long>(
+    //    rmparts.Select(rm => rm.PartId)
+    //);
+
+    //        // Manufactured Details
+    //        var mdLookup = manufacturedDetails
+    //            .Where(md => md.ManufacturedPartType == 1)
+    //            .GroupBy(md => md.PartId)
+    //            .ToDictionary(
+    //                g => g.Key,
+    //                g => g.Select(x => x.ManufacturedPartNoDetailId).ToList()
+    //            );
+
+    //        // MakeFrom (NULL SAFE)
+    //        var makeFromLookup = makeFromList
+    //            .Where(mf => mf.MPPartId>0)
+    //            .GroupBy(mf => mf.ManufPartId)
+    //            .ToDictionary(
+    //                g => g.Key,
+    //                g => g.Select(x => x.MPPartId).ToList()
+    //            );
+
+    //        // Processing
+    //        foreach (var mp in mfpdList
+    //                 .Where(x => x.MasterPartType == "ManufacturedPart" && x.PartId.HasValue))
+    //        {
+    //            long masterPartId = mp.PartId.Value;
+
+    //            if (!mdLookup.TryGetValue((int)masterPartId, out var mdIds))
+    //            {
+    //                mp.RmLink = "No";
+    //                continue;
+    //            }
+
+    //            bool hasRawMaterial = false;
+
+    //            foreach (var mdId in mdIds)
+    //            {
+    //                if (!makeFromLookup.TryGetValue(mdId, out var partIds))
+    //                    continue;
+
+    //                if (partIds.Any(p => rawMaterialIds.Contains(p)))
+    //                {
+    //                    hasRawMaterial = true;
+    //                    break;
+    //                }
+    //            }
+
+    //            mp.RmLink = hasRawMaterial ? "Yes" : "No";
+    //        }
             return Json(mfpdList);
+
+        }
+        [HttpGet]
+        public async Task<IActionResult> PartLook()
+        {
+            var mfpdList = await _mastersService.MasterPartList();
+            var list = mfpdList.Where(x => x.Status == "Released" &&( x.MasterPartType== "ManufacturedPart" || x.MasterPartType== "Assembly")).Select(x => new PartVM
+            {
+                PartId = x.PartId,
+                PartNo=x.PartNo,
+                MasterPartType=x.MasterPartType
+            }).ToList();
+
+            return Json(list);
+
         }
         [HttpGet]
         public async Task<IActionResult> MasterPartsss()

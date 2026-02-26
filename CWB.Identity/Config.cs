@@ -47,7 +47,7 @@ namespace CWB.Identity
                 {
                     ClientId = "cwbmvc",
                     ClientSecrets = { new Secret("cwbsecret".Sha256()) },
-
+                    AccessTokenLifetime= 5 * 60 * 60,
                     AllowedGrantTypes = GrantTypes.Code,
                     RequirePkce = true,
                     RequireClientSecret = true,

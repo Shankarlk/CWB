@@ -65,6 +65,42 @@ namespace CWB.App.Controllers
             var result = (await _routingService.OptimizedRoutingListItems()).ToList();
             return Json(result);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetRoutingByPartId(long partId)
+        {
+            // 1. Get ManufacturedPartId from PartId
+            var manufacturedPart = await _mastersServices.GetManufPart((int)partId);
+
+            if (manufacturedPart.ManufacturedPartNoDetailId == 0)
+            {
+                return Json(new RoutingLookupVM
+                {
+                    ManufacturedPartId = 0,
+                    Routings = new List<RoutingSelectVM>()
+                });
+            }
+
+            //// 2. Get Routings
+            var routings = (await _routingService.Routings(manufacturedPart.ManufacturedPartNoDetailId)).ToList();
+
+
+            var selectedroutings = routings.Where(m => m.ManufacturedPartId == manufacturedPart.ManufacturedPartNoDetailId)
+        .Select(r => new RoutingSelectVM
+        {
+            RoutingId = r.RoutingId,
+            RoutingName = r.RoutingName
+        })
+        .ToList();
+
+            var result = new RoutingLookupVM
+            {
+                ManufacturedPartId = manufacturedPart.ManufacturedPartNoDetailId,
+                Routings = selectedroutings
+            };
+
+            return Json(result);
+        }
+
         public async Task<IActionResult> RoutingListItemss()
         {
             var result = (await _routingService.GetRoutingListItems()).ToList();
@@ -163,7 +199,16 @@ namespace CWB.App.Controllers
             var result = await _routingService.Routing(model);
             return Ok(result);
         }
-
+        [HttpPost]
+        public async Task<IActionResult> CopyRouting(RoutingVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _routingService.Routing(model);
+            return Ok(result);
+        }
         [HttpPost]
         public async Task<IActionResult> AltRouting(RoutingVM model)
         {
@@ -378,10 +423,21 @@ namespace CWB.App.Controllers
 
                 if (preferredMcs.Any())
                 {
-                    item.CycleTime = preferredMcs
-                        .Sum(m => ToMinutes(m.FloorToFloorTime))
-                        .ToString();
 
+                    //item.CycleTime = preferredMcs
+                    //    .Sum(m => ToMinutes(m.FloorToFloorTime))
+                    //    .ToString();
+                    item.CycleTime = preferredMcs
+                   .Where(m => !string.IsNullOrWhiteSpace(m.FloorToFloorTime))
+                      .Sum(m =>
+                         {
+                               double minutes = ToMinutes(m.FloorToFloorTime); // double
+
+                                 int partsPerLoading = m.NoOfPartsPerLoading > 0  ? m.NoOfPartsPerLoading  : 1;
+
+                                 return minutes / partsPerLoading; // double division
+                         })
+                  .ToString();
                     item.SetupTime = preferredMcs
                         .Sum(m => ToMinutes(m.SetupTime))
                         .ToString();
@@ -409,9 +465,18 @@ namespace CWB.App.Controllers
                                 foreach (var mc in subworkdetails)
                                 {
                                     TimeSpan time = TimeSpan.Parse(mc.FloorToFloorTime);
-                                    subminutes = (int)time.TotalMinutes;
+                                int partperloading = 0;
+                                    if(mc.NoOfPartsPerLoading==0)
+                                    {
+                                    partperloading = 1;
+                                     }
+                                    else
+                                   {
+                                    partperloading = mc.NoOfPartsPerLoading;
+                                   }
+                                    subminutes += ((int)time.TotalMinutes/ partperloading);
                                     TimeSpan Settime = TimeSpan.Parse(mc.SetupTime);
-                                    subsetminutes = (int)Settime.TotalMinutes;
+                                    subsetminutes += (int)Settime.TotalMinutes;
                                 }
                             }
                         //}
@@ -1196,7 +1261,7 @@ namespace CWB.App.Controllers
                     {
                         noofoperations = oprnos.Count;
                     }
-                    var avgCycleTime = totalCycleTime / noofoperations;
+                    var avgCycleTime = Math.Round((totalCycleTime / noofoperations),1);
                     var countAboveAvg = oprnos.Where(op => !string.IsNullOrEmpty(op.CycleTime)).Count(op => float.Parse(op.CycleTime) > avgCycleTime);
                     var totalSetupTime = oprnos.Where(op => !string.IsNullOrEmpty(op.SetupTime)).Sum(op => float.Parse(op.SetupTime));
                     var maxSetupTime = oprnos.Where(op => !string.IsNullOrEmpty(op.SetupTime))
@@ -1205,29 +1270,70 @@ namespace CWB.App.Controllers
         .Max();
                     double batchSizeManfTimeMinutes = 0;
 
+                    //foreach (var op in oprnos)
+                    //{
+
+
+
+                    //    if (string.IsNullOrWhiteSpace(op.CycleTime) ||
+                    //        string.IsNullOrWhiteSpace(op.SetupTime) ||
+                    //        string.IsNullOrWhiteSpace(op.FirstPieceTime) ||
+                    //        op.NumberOfSimMachines <= 0)
+                    //        continue;
+
+                    //    double cycleMin = double.Parse(op.CycleTime);
+                    //    double firstPieceMin = double.Parse(op.FirstPieceTime);
+                    //    double setupMin = double.Parse(op.SetupTime);
+                    //    int simMc = op.NumberOfSimMachines;
+
+                    //    double batchPerMachine = (double)batchSize / simMc;
+
+                    //    double perMachineTime =
+                    //        setupMin +
+                    //        firstPieceMin +
+                    //        (batchPerMachine - 1) * cycleMin;
+
+                    //    batchSizeManfTimeMinutes += perMachineTime;
+                    //}
                     foreach (var op in oprnos)
                     {
                         if (string.IsNullOrWhiteSpace(op.CycleTime) ||
-                            string.IsNullOrWhiteSpace(op.SetupTime) ||
-                            string.IsNullOrWhiteSpace(op.FirstPieceTime) ||
-                            op.NumberOfSimMachines <= 0)
+                            string.IsNullOrWhiteSpace(op.SetupTime))
                             continue;
 
                         double cycleMin = double.Parse(op.CycleTime);
-                        double firstPieceMin = double.Parse(op.FirstPieceTime);
                         double setupMin = double.Parse(op.SetupTime);
-                        int simMc = op.NumberOfSimMachines;
 
-                        double batchPerMachine = (double)batchSize / simMc;
+                        // INHOUSE
+                        if (op.StepLocation == "1")
+                        {
+                            if (string.IsNullOrWhiteSpace(op.FirstPieceTime) ||
+                                op.NumberOfSimMachines <= 0)
+                                continue;
 
-                        double perMachineTime =
-                            setupMin +
-                            firstPieceMin +
-                            (batchPerMachine - 1) * cycleMin;
+                            double firstPieceMin = double.Parse(op.FirstPieceTime);
+                            int simMc = op.NumberOfSimMachines;
 
-                        batchSizeManfTimeMinutes += perMachineTime;
+                            double batchPerMachine = (double)batchSize / simMc;
+
+                            double perMachineTime =
+                                setupMin +
+                                firstPieceMin +
+                                (batchPerMachine - 1) * cycleMin;
+
+                            batchSizeManfTimeMinutes += perMachineTime;
+                        }
+                        // SUBCON
+                        else if (op.StepLocation == "2")
+                        {
+                            // Only setup + cycle time
+                            double perOpTime =
+                                setupMin +
+                                (batchSize * cycleMin);
+
+                            batchSizeManfTimeMinutes += perOpTime;
+                        }
                     }
-
                     item.MaxSetupTime = maxSetupTime.ToString();
                     item.TotalSetupTime = totalSetupTime.ToString();
                     item.AvgCycleTime = avgCycleTime.ToString();

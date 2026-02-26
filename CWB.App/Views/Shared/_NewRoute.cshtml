@@ -15,7 +15,7 @@
                             <input type="text" hidden id="OrigRoutingId" name="OrigRoutingId" value="0" />
                             <input type="text" hidden id="RoutingId" name="RoutingId" value="0" />
                             <input type="text" hidden id="Status" name="Status" value="Active" />
-                            <input type="text" hidden id="PreferredRouting" name="PreferredRouting" value="0" />
+                            <input type="text" hidden id="PreferredRouting" name="PreferredRouting" value="1" />
                         </div>
                         <div id="MakefromDiv" style="display: flex; align-items: center;">
                             <label class="form-label col-md-5 mb-2"> MakeFrom <span class="text-danger"> *</span> </label>
@@ -24,6 +24,79 @@
                                 </select>
                             </div>
                         </div>
+                        <div id="CopyLabelDIv" style="display: flex; align-items: center; margin-top: 5px;">
+                            <label class="form-label col-md-5 mb-2">
+                                Copy Routing from other Part
+                            </label>
+                            <div class="col-md-7 mb-1">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="chkcopy" name="chkcopy">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div id="SearchpartnoDiv" style="display: flex; align-items: center; margin-top: 5px;">
+                            <label class="form-label col-md-5 mb-2">
+                                Part No
+                            </label>
+                            <div class="col-md-7 mb-1">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control" id="SearchpartnoText" placeholder="Search...">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2 mb-4" id="PartSelectSection">
+                            <div class="col-md-12">
+                                <div class="table-responsive border rounded p-2" style="max-height: 220px; overflow-y: auto;">
+                                    <table class="table table-sm table-bordered mb-0" id="PartSelectTable">
+                                        <thead class="thead-light text-center">
+                                            <tr>
+                                                <th style="width:5%">Select</th>
+                                                <th>Part No</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- rows will be appended here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Routing Section -->
+                        <div id="RoutingSection" style="display:none; margin-top: 10px;">
+
+                            <!-- Routing Label Row -->
+                            <div style="display: flex; align-items: center;">
+                                <label class="form-label col-md-5 mb-2">
+                                    Routing Name 
+                                </label>
+                              
+                                <div class="col-md-5 mb-1">
+
+                                    <!-- No Routing -->
+                                    <div id="NoRoutingMessage" class="text-muted" style="display:none;">
+                                        <em>No Routings Available</em>
+                                    </div>
+
+                                    <!-- Single Routing -->
+                                    <div id="SingleRoutingDisplay" style="display:none;">
+                                        <span id="SingleRoutingName" class="text-primary font-weight-bold"></span>
+                                        <input type="hidden" id="SingleRoutingId" />
+                                    </div>
+
+                                    <!-- Multiple Routing -->
+                                    <div id="MultipleRoutingDisplay" style="display:none;">
+                                        <select id="RoutingDropdown" class="form-select form-select-sm">
+                                            <!-- options added dynamically -->
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
                         <!-- =========  -->
                         <div class="col text-end mt-2">
                             <button id="BtnNewRouting" type="button" class="btn btn-sm btn-primary">Save</button>
@@ -37,3 +110,16 @@
     </div>
     <!-- /.modal-dialog -->
 </div>
+<template id="PartSelectRowTemplate">
+    <tr>
+        <td class="text-center">
+            <input type="radio" name="SelectedPart" class="part-radio"
+                   data-partid="{partId}">
+        </td>
+        <td>
+            {partNo}
+           
+        </td>
+    </tr>
+</template>
+

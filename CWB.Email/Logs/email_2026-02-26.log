@@ -1,0 +1,38 @@
+2026-02-26 04:05:27.5738 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-02-26 04:05:28.4230 INFO Application started. Press Ctrl+C to shut down.
+2026-02-26 04:05:28.7578 INFO Hosting environment: Production
+2026-02-26 04:05:29.0342 INFO Content root path: /app
+2026-02-26 04:05:47.0303 ERROR Consume exception
+2026-02-26 04:10:38.8687 INFO Consumed message at email-events [[0]] @0: {"RecipientEmail":"kgk@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi KGK,\n\nYour Account has been Created successfully!\nYou Username: kgk@gmail.com\nYou Password: CfTGtz$0*9\n\nThanks,\nKGK-Engineers"}
+2026-02-26 04:10:39.0511 INFO Attempt 1 to send email to kgk@gmail.com
+2026-02-26 04:10:39.6135 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-26 04:10:41.8376 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-26 04:10:43.6723 ERROR Send attempt 1 failed for kgk@gmail.com
+2026-02-26 04:10:45.6791 INFO Attempt 2 to send email to kgk@gmail.com
+2026-02-26 04:10:45.6895 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-26 04:10:47.0766 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-26 04:10:48.7210 ERROR Send attempt 2 failed for kgk@gmail.com
+2026-02-26 04:10:52.7349 INFO Attempt 3 to send email to kgk@gmail.com
+2026-02-26 04:10:52.7461 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-26 04:10:53.8993 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-26 04:10:55.4964 ERROR Send attempt 3 failed for kgk@gmail.com
+2026-02-26 04:10:55.5167 ERROR Failed to send email to kgk@gmail.com after 3 attempts
+2026-02-26 04:14:04.3025 INFO Consumed message at email-events [[0]] @1: {"RecipientEmail":"kgk@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi KGK,\n\nYour Account has been Created successfully!\nYou Username: kgk@gmail.com\nYou Password: CfTGtz$0*9\n\nThanks,\nKGK-Engineers"}
+2026-02-26 04:14:04.3290 INFO Attempt 1 to send email to kgk@gmail.com
+2026-02-26 04:14:04.3917 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-26 04:14:05.9018 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-26 04:14:07.5286 ERROR Send attempt 1 failed for kgk@gmail.com
+2026-02-26 04:14:09.5419 INFO Attempt 2 to send email to kgk@gmail.com
+2026-02-26 04:14:09.5518 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-26 04:14:10.6808 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-26 04:14:12.4343 ERROR Send attempt 2 failed for kgk@gmail.com
+2026-02-26 04:14:16.4538 INFO Attempt 3 to send email to kgk@gmail.com
+2026-02-26 04:14:16.5007 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-26 04:14:17.6347 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-26 04:14:19.3045 ERROR Send attempt 3 failed for kgk@gmail.com
+2026-02-26 04:14:19.3145 ERROR Failed to send email to kgk@gmail.com after 3 attempts
+2026-02-26 07:40:12.9604 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-02-26 07:40:13.3913 INFO Application started. Press Ctrl+C to shut down.
+2026-02-26 07:40:13.4962 INFO Hosting environment: Production
+2026-02-26 07:40:13.5110 INFO Content root path: /app
+2026-02-26 07:40:33.5861 ERROR Consume exception

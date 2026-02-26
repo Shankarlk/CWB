@@ -1035,14 +1035,14 @@ namespace CWB.App.Controllers
                                                     var mpmakefromlist = await _masterService.GetMPMakeFromListByPartId(manufchild.ManufacturedPartNoDetailId.ToString());
                                                     foreach (var mpmakefrom in mpmakefromlist)
                                                     {
-                                                        ChildWoRelVM subcwo = new ChildWoRelVM()
-                                                        {
-                                                            WoId = item.WoId,
-                                                            PartId = mpmakefrom.MPPartId,
-                                                            Qnty = decimal.TryParse(mpmakefrom.InputWeight, out decimal quantity) ? quantity : 0,
-                                                            CameFrom = "BOM"
-                                                        };
-                                                        childWoRels.Add(subcwo);
+                                                        //ChildWoRelVM subcwo = new ChildWoRelVM()
+                                                        //{
+                                                        //    WoId = item.WoId,
+                                                        //    PartId = mpmakefrom.MPPartId,
+                                                        //    Qnty = decimal.TryParse(mpmakefrom.InputWeight, out decimal quantity) ? quantity : 0,
+                                                        //    CameFrom = "BOM"
+                                                        //};
+                                                        //childWoRels.Add(subcwo);
                                                     }
                                                     var groupedResults = mpmakefromlist.GroupBy(x => x.MPPartId)
                                                         .Select(g => new
@@ -1188,7 +1188,7 @@ namespace CWB.App.Controllers
                                                 totalLeadTime = mfpdList.Sum(x => x.LeadTimeInDays);
                                                 DateTime nextworkdingdate = DateTime.Now;
                                                 nextworkdingdate = nextworkdingdate.AddDays(totalLeadTime);
-
+                                                
                                                 BOMListVM rmbomdata = new BOMListVM
                                                 {
                                                     ParentWoId = item.WoId,
@@ -1733,6 +1733,7 @@ namespace CWB.App.Controllers
                                 string mcweekOff1 = mcworkdetails.WeeklyOff1;
                                 string mcweekOff2 = mcworkdetails.WeeklyOff2;
                                 var mcresultList = await _routingService.Routings(mcmf.ManufacturedPartNoDetailId);
+                                var preferredrouting = mcresultList.Where(x => x.PreferredRouting == 1).FirstOrDefault();
                                 int mcminutes = 0;
                                 foreach (var rote in mcresultList)
                                 {
@@ -1773,10 +1774,11 @@ namespace CWB.App.Controllers
                                         }
                                     }
                                 }
+                                
                                 int mcassyTime = (mcminutes * item.CalcWOQty) / ((mcworkdetails?.NoOfShifts ?? 0) > 0 ? mcworkdetails.NoOfShifts : 1);
                                 int mcassyTimeInDays = mcassyTime / 1440;
                                 DateTime mcplanstartdt = item.PlanCompletionDate.Value.AddDays(-mcassyTimeInDays);
-                                var routingstep = await _routingService.RoutingSteps((int)item.RoutingId);
+                                var routingstep = await _routingService.RoutingSteps((int)preferredrouting.RoutingId);
                                 foreach (var oneroutingstep in routingstep)
                                 //var oneroutingstep = routingstep.FirstOrDefault();
                                 //if (oneroutingstep != null)
@@ -2252,6 +2254,7 @@ namespace CWB.App.Controllers
                                     string mcweekOff1 = mcworkdetails.WeeklyOff1;
                                     string mcweekOff2 = mcworkdetails.WeeklyOff2;
                                     var mcresultList = await _routingService.Routings(mcmf.ManufacturedPartNoDetailId);
+                                    var preferredrouting = mcresultList.Where(x => x.PreferredRouting == 1).FirstOrDefault();
                                     int mcminutes = 0;
                                     foreach (var rote in mcresultList)
                                     {
@@ -2295,7 +2298,7 @@ namespace CWB.App.Controllers
                                     int mcassyTime = (mcminutes * item.CalcWOQty) / ((mcworkdetails?.NoOfShifts ?? 0) > 0 ? mcworkdetails.NoOfShifts : 1);
                                     int mcassyTimeInDays = mcassyTime / 1440;
                                     DateTime mcplanstartdt = item.PlanCompletionDate.Value.AddDays(-mcassyTimeInDays);
-                                    var routingstep = await _routingService.RoutingSteps((int)item.RoutingId);
+                                    var routingstep = await _routingService.RoutingSteps((int)preferredrouting.RoutingId);
                                     foreach (var oneroutingstep in routingstep)
                                     //    var oneroutingstep = routingstep.FirstOrDefault();
                                     //if (oneroutingstep != null)
@@ -3397,68 +3400,175 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllInvMaster()
         {
+            //var result = await _woService.GetAllInventory_Master();
+            //var masterparts = await _masterService.MasterPartList();
+            //var companies = await _masterService.GetCompanies();
+            //var inv_Trans = await _woService.GetAllInv_Trans_Log();
+            //foreach (var item in result)
+            //{
+            //    foreach (ItemMasterPartVM imp in masterparts)
+            //    {
+            //        if (item.Part_NoId == imp.PartId)
+            //        {
+            //            item.PartNoStr = imp.PartNo;
+            //            item.PartDescStr = imp.Description;
+            //            item.PartTypeStr = imp.MasterPartType;
+            //            item.CompanyStr = imp.Company;
+            //        }
+            //    }
+            //    ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart(Convert.ToInt32(item.Part_NoId));
+            //    var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+            //    var sortedList = resultList.Where(x => x.RoutingId == item.Routing_Id).FirstOrDefault();
+            //    item.LocationStr = "Inhouse";
+            //    if (sortedList != null)
+            //    {
+            //        item.RoutName = sortedList.RoutingName + " / ";
+            //        var routingSteps = await _routingService.RoutingSteps(sortedList.RoutingId);
+            //        var steps = routingSteps.Where(s=>s.StepId== item.Opr_No_Id).FirstOrDefault();
+            //        if(steps != null)
+            //        {
+            //            item.OpName = steps.StepNumber;
+            //            if (steps.StepLocation == 1.ToString())
+            //            {
+            //                item.LocationStr = "Inhouse";
+            //            }
+            //            else if (steps.StepLocation == 2.ToString())
+            //            {
+            //                item.LocationStr = "SubCon";
+            //            }
+            //            else
+            //            {
+            //                item.LocationStr = "Company";
+            //            }
+            //        }
+            //    }
+            //    var inv_Tran = inv_Trans.Where(i => i.Input_Part_NoId == item.Part_NoId || i.Output_Part_No == item.Part_NoId).FirstOrDefault();
+            //    if(inv_Tran != null)
+            //    {
+            //        if (inv_Tran.Part_Status == 1)
+            //        {
+            //            item.PartStatus = "Accepted";
+            //        }
+            //        else if (inv_Tran.Part_Status == 2)
+            //        {
+            //            item.PartStatus = "Rework";
+            //        }
+            //        else
+            //        {
+            //            item.PartStatus = "Rejected";
+            //        }
+            //    }
+            //    item.DateStr = item.Dt_time.ToString("dd-MM-yyyy");
+            //    item.Qnty = Convert.ToInt64(item.Current_QntOnHand);
+            //}
+            //return Ok(result);
+           
             var result = await _woService.GetAllInventory_Master();
             var masterparts = await _masterService.MasterPartList();
-            var companies = await _masterService.GetCompanies();
             var inv_Trans = await _woService.GetAllInv_Trans_Log();
+
+            /* -------- Lookups -------- */
+
+            var masterPartDict = masterparts.ToDictionary(x => x.PartId);
+
+            var invTranDict = inv_Trans
+                .GroupBy(x => x.Input_Part_NoId != 0
+                    ? x.Input_Part_NoId
+                    : x.Output_Part_No)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            /* -------- Caches -------- */
+
+            var manufPartCache = new Dictionary<long, ManufacturedPartNoDetailVM>();
+            var routingCache = new Dictionary<int, List<RoutingVM>>();
+            var routingStepCache = new Dictionary<int, List<RoutingStepVM>>();
+
+            /* -------- Main Loop -------- */
+
             foreach (var item in result)
             {
-                foreach (ItemMasterPartVM imp in masterparts)
+                long partId = item.Part_NoId;
+
+                /* -------- Master Part -------- */
+                if (masterPartDict.TryGetValue(partId, out var imp))
                 {
-                    if (item.Part_NoId == imp.PartId)
-                    {
-                        item.PartNoStr = imp.PartNo;
-                        item.PartDescStr = imp.Description;
-                        item.PartTypeStr = imp.MasterPartType;
-                        item.CompanyStr = imp.Company;
-                    }
+                    item.PartNoStr = imp.PartNo;
+                    item.PartDescStr = imp.Description;
+                    item.PartTypeStr = imp.MasterPartType;
+                    item.CompanyStr = imp.Company;
                 }
-                ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart(Convert.ToInt32(item.Part_NoId));
-                var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
-                var sortedList = resultList.Where(x => x.RoutingId == item.Routing_Id).FirstOrDefault();
+
+                /* -------- Manufactured Part -------- */
+                if (!manufPartCache.TryGetValue(partId, out var mf))
+                {
+                    mf = await _masterService.GetManufPart((int)partId);
+                    manufPartCache.TryAdd(partId, mf);
+                }
+
                 item.LocationStr = "Inhouse";
-                if (sortedList != null)
+
+                if (mf != null)
                 {
-                    item.RoutName = sortedList.RoutingName + " / ";
-                    var routingSteps = await _routingService.RoutingSteps(sortedList.RoutingId);
-                    var steps = routingSteps.Where(s=>s.StepId== item.Opr_No_Id).FirstOrDefault();
-                    if(steps != null)
+                    /* -------- Routings -------- */
+                    if (!routingCache.TryGetValue(mf.ManufacturedPartNoDetailId, out var routings))
                     {
-                        item.OpName = steps.StepNumber;
-                        if (steps.StepLocation == 1.ToString())
+                        routings = (await _routingService
+                            .Routings(mf.ManufacturedPartNoDetailId))
+                            .ToList();
+
+                        routingCache.TryAdd(mf.ManufacturedPartNoDetailId, routings);
+                    }
+
+                    var selectedRouting = routings
+                        .FirstOrDefault(r => r.RoutingId == item.Routing_Id);
+
+                    if (selectedRouting != null)
+                    {
+                        item.RoutName = selectedRouting.RoutingName + " / ";
+
+                        /* -------- Routing Steps -------- */
+                        if (!routingStepCache.TryGetValue(selectedRouting.RoutingId, out var steps))
                         {
-                            item.LocationStr = "Inhouse";
+                            steps = (await _routingService
+                                .RoutingSteps(selectedRouting.RoutingId))
+                                .ToList();
+
+                            routingStepCache.TryAdd(selectedRouting.RoutingId, steps);
                         }
-                        else if (steps.StepLocation == 2.ToString())
+
+                        var step = steps.FirstOrDefault(s => s.StepId == item.Opr_No_Id);
+
+                        if (step != null)
                         {
-                            item.LocationStr = "SubCon";
-                        }
-                        else
-                        {
-                            item.LocationStr = "Company";
+                            item.OpName = step.StepNumber;
+                            item.LocationStr = step.StepLocation switch
+                            {
+                                "1" => "Inhouse",
+                                "2" => "SubCon",
+                                _ => "Company"
+                            };
                         }
                     }
                 }
-                var inv_Tran = inv_Trans.Where(i => i.Input_Part_NoId == item.Part_NoId || i.Output_Part_No == item.Part_NoId).FirstOrDefault();
-                if(inv_Tran != null)
+
+                /* -------- Inventory Status -------- */
+                if (invTranDict.TryGetValue(partId, out var invTran))
                 {
-                    if (inv_Tran.Part_Status == 1)
+                    item.PartStatus = invTran.Part_Status switch
                     {
-                        item.PartStatus = "Accepted";
-                    }
-                    else if (inv_Tran.Part_Status == 2)
-                    {
-                        item.PartStatus = "Rework";
-                    }
-                    else
-                    {
-                        item.PartStatus = "Rejected";
-                    }
+                        1 => "Accepted",
+                        2 => "Rework",
+                        _ => "Rejected"
+                    };
                 }
+
+                /* -------- Final -------- */
                 item.DateStr = item.Dt_time.ToString("dd-MM-yyyy");
                 item.Qnty = Convert.ToInt64(item.Current_QntOnHand);
             }
+
             return Ok(result);
+
         }
         [HttpPost]
         public async Task<IActionResult> UpdateInvMasterFirst(Inventory_MasterVM masterDocListVM)

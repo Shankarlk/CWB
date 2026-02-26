@@ -352,8 +352,24 @@ namespace CWB.Masters.Controllers
             try
             {
                 var result = await _routingService.Routing(routingVM);
+
+                // 2. Copy only if OrigRoutingId exists
+                if (routingVM.OrigRoutingId > 0 && result.RoutingId > 0)
+                {
+                    int originRoutingId = routingVM.OrigRoutingId;
+                    int newRoutingId = result.RoutingId;
+
+                    await _routingService.CopySteps(originRoutingId, newRoutingId);
+                    await _routingService.CopyStepParts(originRoutingId, newRoutingId);
+                    await _routingService.CopyStepMachines(originRoutingId, newRoutingId);
+                    await _routingService.CopySubCons(originRoutingId, newRoutingId);
+                    await _routingService.CopySubConsWSs(originRoutingId, newRoutingId);
+                }
+
+                // 3. Always return created routing
                 return Ok(result);
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 var msg = ex.InnerException.Message;
                 var src = ex.InnerException.Source;

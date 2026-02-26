@@ -894,7 +894,7 @@ namespace CWB.ProductionPlanWO.Services
 
         public async Task<IEnumerable<ProductionPlan_WOVM>> AllProductionWo(long tenantId)
         {
-            var allpp = _productionPlan_WORepository.GetRangeAsync(d => d.TenantId == tenantId);
+            var allpp =  _productionPlan_WORepository.GetRangeAsync(d => d.TenantId == tenantId);
             return _mapper.Map<IEnumerable<ProductionPlan_WOVM>>(allpp);
         }
 
@@ -1115,7 +1115,7 @@ namespace CWB.ProductionPlanWO.Services
         }
         public async Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_Master(long tenantId)
         {
-            var allwo = _IInventory_MasterRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            var allwo = await _IInventory_MasterRepository.AwaitGetRangeAsync(d => d.TenantId == tenantId);
             return _mapper.Map<IEnumerable<Inventory_MasterVM>>(allwo);
         }
         public async Task<IEnumerable<Inv_Trans_LogVM>> GetAllInvTransLog(long tenantId)
