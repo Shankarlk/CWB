@@ -1,0 +1,61 @@
+2026-02-27 09:56:46.3345 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-02-27 09:56:46.7156 INFO Application started. Press Ctrl+C to shut down.
+2026-02-27 09:56:46.8368 INFO Hosting environment: Production
+2026-02-27 09:56:46.8731 INFO Content root path: /app
+2026-02-27 09:57:03.6941 ERROR Consume exception
+2026-02-27 10:23:46.3354 INFO Consumed message at email-events [[0]] @0: {"RecipientEmail":"kgk@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi KGK,\n\nYour Account has been Created successfully!\nYou Username: kgk@gmail.com\nYou Password: CfTGtz$0*9\n\nThanks,\nKGK-Engineers"}
+2026-02-27 10:23:46.9032 INFO Attempt 1 to send email to kgk@gmail.com
+2026-02-27 10:23:47.7020 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-27 10:23:49.6212 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-27 10:23:51.5480 ERROR Send attempt 1 failed for kgk@gmail.com
+2026-02-27 10:23:53.5642 INFO Attempt 2 to send email to kgk@gmail.com
+2026-02-27 10:23:53.5869 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-27 10:23:54.8837 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-27 10:23:56.6142 ERROR Send attempt 2 failed for kgk@gmail.com
+2026-02-27 10:24:00.6253 INFO Attempt 3 to send email to kgk@gmail.com
+2026-02-27 10:24:00.6431 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-27 10:24:01.8904 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-27 10:24:03.6441 ERROR Send attempt 3 failed for kgk@gmail.com
+2026-02-27 10:24:03.6622 ERROR Failed to send email to kgk@gmail.com after 3 attempts
+2026-02-27 10:25:27.5619 INFO Consumed message at email-events [[0]] @1: {"RecipientEmail":"kgk2@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi kgk2,\n\nYour Account has been Created successfully!\nYou Username: kgk2@gmail.com\nYou Password: 3Ivg@2vhGo\n\nThanks,\nKGK-Engineers"}
+2026-02-27 10:25:27.6427 INFO Attempt 1 to send email to kgk2@gmail.com
+2026-02-27 10:25:27.7036 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-27 10:25:28.9590 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-27 10:25:30.7524 ERROR Send attempt 1 failed for kgk2@gmail.com
+2026-02-27 10:25:32.7623 INFO Attempt 2 to send email to kgk2@gmail.com
+2026-02-27 10:25:32.7769 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-27 10:25:33.9438 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-27 10:25:36.2081 ERROR Send attempt 2 failed for kgk2@gmail.com
+2026-02-27 10:25:40.2235 INFO Attempt 3 to send email to kgk2@gmail.com
+2026-02-27 10:25:40.2438 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-27 10:25:41.3583 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-27 10:25:43.0782 ERROR Send attempt 3 failed for kgk2@gmail.com
+2026-02-27 10:25:43.0943 ERROR Failed to send email to kgk2@gmail.com after 3 attempts
+2026-02-27 11:01:48.2853 INFO Consumed message at email-events [[0]] @2: {"RecipientEmail":"kgk3@gmail.com ","Subject":"Welcome to KGK-Engineers!","Body":"Hi kgk3,\n\nYour Account has been Created successfully!\nYou Username: kgk3@gmail.com \nYou Password: 2jW0V0Kb#2\n\nThanks,\nKGK-Engineers"}
+2026-02-27 11:01:48.3170 INFO Attempt 1 to send email to kgk3@gmail.com 
+2026-02-27 11:01:48.3568 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-27 11:01:49.5965 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-27 11:01:51.3403 ERROR Send attempt 1 failed for kgk3@gmail.com 
+2026-02-27 11:01:53.3523 INFO Attempt 2 to send email to kgk3@gmail.com 
+2026-02-27 11:01:53.3689 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-27 11:01:54.5199 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-27 11:01:56.1772 ERROR Send attempt 2 failed for kgk3@gmail.com 
+2026-02-27 11:02:00.1958 INFO Attempt 3 to send email to kgk3@gmail.com 
+2026-02-27 11:02:00.2064 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-27 11:02:01.3031 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-27 11:02:04.6299 ERROR Send attempt 3 failed for kgk3@gmail.com 
+2026-02-27 11:02:04.6399 ERROR Failed to send email to kgk3@gmail.com  after 3 attempts
+2026-02-27 11:15:39.2176 INFO Consumed message at email-events [[0]] @3: {"RecipientEmail":"admin@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi adminkgk,\n\nYour Account has been Created successfully!\nYou Username: admin@gmail.com\nYou Password: beUBqR#Rz6\n\nThanks,\nKGK-Engineers"}
+2026-02-27 11:15:39.2375 INFO Attempt 1 to send email to admin@gmail.com
+2026-02-27 11:15:39.2700 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-27 11:15:40.5181 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-27 11:15:42.2284 ERROR Send attempt 1 failed for admin@gmail.com
+2026-02-27 11:15:44.2359 INFO Attempt 2 to send email to admin@gmail.com
+2026-02-27 11:15:44.2459 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-27 11:15:45.3261 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-27 11:15:47.1001 ERROR Send attempt 2 failed for admin@gmail.com
+2026-02-27 11:15:51.1152 INFO Attempt 3 to send email to admin@gmail.com
+2026-02-27 11:15:51.1281 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-02-27 11:15:52.2480 INFO Authenticating SMTP user rajugoudah2003@gmail.com
+2026-02-27 11:15:53.8972 ERROR Send attempt 3 failed for admin@gmail.com
+2026-02-27 11:15:53.9072 ERROR Failed to send email to admin@gmail.com after 3 attempts

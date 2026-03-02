@@ -1016,6 +1016,7 @@ namespace CWB.App.Controllers
                                         int assyTime = (minutes * item.CalcWOQty) / noofhr;
                                         int assyTimeInDays = assyTime / 1440;
                                         DateTime planstartdt = item.PlanCompletionDate.Value.AddDays(-assyTimeInDays);
+                                        int? mainManufacturedpartid = null;
                                         switch (mp.MasterPartType)
                                         {
                                             case MasterPartType.ManufacturedPart:
@@ -1029,6 +1030,7 @@ namespace CWB.App.Controllers
                                                 }
                                                 if (manufchild.ManufacturedPartType == 1)
                                                 {
+                                                    mainManufacturedpartid = manufchild.ManufacturedPartNoDetailId;
                                                     DateTime planstdt = planstartdt;
                                                     DateTime plancpldt = item.PlanCompletionDate.GetValueOrDefault();
                                                     manfDays = Math.Max(0, (plancpldt - planstdt).Days);
@@ -1185,6 +1187,24 @@ namespace CWB.App.Controllers
                                             case MasterPartType.RawMaterial:
                                                 var mfpdList = await _masterService.PartPurchasesFor(bomgrp.PartId);
                                                 var ptype = await _masterService.GetRMPart(bomgrp.PartId);
+                                                var mpmakefromlistrawmaterial = await _masterService.GetMPMakeFromListByPartId(mainManufacturedpartid.ToString());
+                                                var rmQtyPerInput = mpmakefromlistrawmaterial.Where(x => x.MPPartId == ptype.PartId)
+                                                              .Select(x =>
+                                                               {
+                                                                   decimal qty;
+                                                                   return decimal.TryParse(x.QuantityPerInput, out qty) ? qty : 0;
+                                                               })
+                                                               .FirstOrDefault();
+                                                var uom = (await _masterService.GetUOMs()).FirstOrDefault(x => x.UOMId == ptype.UOMId);
+                                                var calculatedqnty = 0;
+                                                if(uom.Name== "Nos")
+                                                {
+                                                    calculatedqnty = (int)bomgrp.TotalQuantity * item.CalcWOQty;
+                                                }
+                                                else if(uom.Name=="Kgs")
+                                                {
+                                                    calculatedqnty= ((int)bomgrp.TotalQuantity * item.CalcWOQty)/ (int)rmQtyPerInput;
+                                                }
                                                 totalLeadTime = mfpdList.Sum(x => x.LeadTimeInDays);
                                                 DateTime nextworkdingdate = DateTime.Now;
                                                 nextworkdingdate = nextworkdingdate.AddDays(totalLeadTime);
@@ -1194,7 +1214,8 @@ namespace CWB.App.Controllers
                                                     ParentWoId = item.WoId,
                                                     Child_Part_No_ID = bomgrp.PartId,
                                                     Child_Part_No_Type = mp.MasterPartType.ToString(),
-                                                    Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
+                                                   // Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
+                                                    Calc_Qnty = calculatedqnty,
                                                     Plan_Qnty = item.CalcWOQty,
                                                     PlanReceiptDate = item.PlanStartDate,
                                                     CalcReceiptDate = nextworkdingdate,
@@ -1282,8 +1303,8 @@ namespace CWB.App.Controllers
 
                                     var departments = await _departmentService.GetDepartments(1);
                                     var department = departments.FirstOrDefault(d => d.DepartmentId == machine.MachineDepartmentId);
-                                    int setupTimeMinutes = (int)TimeSpan.Parse(onestepmachine.SetupTime).TotalMinutes;
-                                    int floorToFloorTimeMinutes = (int)TimeSpan.Parse(onestepmachine.FloorToFloorTime).TotalMinutes;
+                                    TimeSpan setupTimeMinutes = TimeSpan.Parse(onestepmachine.SetupTime);
+                                    TimeSpan floorToFloorTimeMinutes = TimeSpan.Parse(onestepmachine.FloorToFloorTime);
                                     int noOfShifts = department.NoOfShifts;
                                     int calcWOQty = item.CalcWOQty;
                                     int noOfPartsPerLoading = onestepmachine.NoOfPartsPerLoading;
@@ -1293,7 +1314,7 @@ namespace CWB.App.Controllers
                                         // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                         noOfPartsPerLoading = 1;
                                     }
-                                    int totalPlanTime = setupTimeMinutes + ((floorToFloorTimeMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                    double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
                                     int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                     Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                     Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
@@ -1325,8 +1346,8 @@ namespace CWB.App.Controllers
 
                                     var departments = await _departmentService.GetDepartments(1);
                                     var department = departments.FirstOrDefault();
-                                    int setupTimeMinutes = (int)TimeSpan.Parse(onestepmach.SetupTime).TotalMinutes;
-                                    int floorToFloorTimeMinutes = (int)TimeSpan.Parse(onestepmach.FloorToFloorTime).TotalMinutes;
+                                    TimeSpan setupTimeMinutes = TimeSpan.Parse(onestepmach.SetupTime);
+                                    TimeSpan floorToFloorTimeMinutes = TimeSpan.Parse(onestepmach.FloorToFloorTime);
                                     int noOfShifts = department.NoOfShifts;
                                     int calcWOQty = item.CalcWOQty;
                                     int noOfPartsPerLoading = onestepmach.NoOfPartsPerLoading;
@@ -1336,7 +1357,7 @@ namespace CWB.App.Controllers
                                         // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                         noOfPartsPerLoading = 1;
                                     }
-                                    int totalPlanTime = setupTimeMinutes + ((floorToFloorTimeMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                    double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
                                     int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                     Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                     Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
@@ -1529,6 +1550,7 @@ namespace CWB.App.Controllers
                                             int assyTime = (minutes * item.CalcWOQty) / nohr;
                                             int assyTimeInDays = assyTime / 1440;
                                             DateTime planstartdt = item.PlanCompletionDate.Value.AddDays(-assyTimeInDays);
+                                            int? childManufacturedpartid = null;
                                             switch (mp.MasterPartType)
                                             {
                                                 case MasterPartType.ManufacturedPart:
@@ -1543,6 +1565,7 @@ namespace CWB.App.Controllers
                                                     }
                                                     if (manufchild.ManufacturedPartType == 1)
                                                     {
+                                                        childManufacturedpartid= manufchild.ManufacturedPartNoDetailId;
                                                         DateTime planstdt = planstartdt;
                                                         DateTime plancpldt = item.PlanCompletionDate.GetValueOrDefault();
                                                         manfDays = Math.Max(0, (plancpldt - planstdt).Days);
@@ -1699,6 +1722,24 @@ namespace CWB.App.Controllers
                                                 case MasterPartType.RawMaterial:
                                                     var mfpdList = await _masterService.PartPurchasesFor(bomgrp.PartId);
                                                     var ptype = await _masterService.GetRMPart(bomgrp.PartId);
+                                                    var mpmakefromlistrawmaterial = await _masterService.GetMPMakeFromListByPartId(childManufacturedpartid.ToString());
+                                                    var rmQtyPerInput = mpmakefromlistrawmaterial.Where(x => x.MPPartId == ptype.PartId)
+                                                                  .Select(x =>
+                                                                  {
+                                                                      decimal qty;
+                                                                      return decimal.TryParse(x.QuantityPerInput, out qty) ? qty : 0;
+                                                                  })
+                                                                   .FirstOrDefault();
+                                                    var uom = (await _masterService.GetUOMs()).FirstOrDefault(x => x.UOMId == ptype.UOMId);
+                                                    var calculatedqnty = 0;
+                                                    if (uom.Name == "Nos")
+                                                    {
+                                                        calculatedqnty = (int)bomgrp.TotalQuantity * item.CalcWOQty;
+                                                    }
+                                                    else if (uom.Name == "Kgs")
+                                                    {
+                                                        calculatedqnty = ((int)bomgrp.TotalQuantity * item.CalcWOQty) / (int)rmQtyPerInput;
+                                                    }
                                                     subtotalLeadTime = mfpdList.Sum(x => x.LeadTimeInDays);
                                                     DateTime nextworkdingdate = (DateTime)item.PlanCompletionDate;
                                                     nextworkdingdate = nextworkdingdate.AddDays(subtotalLeadTime);
@@ -1708,7 +1749,8 @@ namespace CWB.App.Controllers
                                                         ParentWoId = item.WoId,
                                                         Child_Part_No_ID = bomgrp.PartId,
                                                         Child_Part_No_Type = mp.MasterPartType.ToString(),
-                                                        Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
+                                                       // Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
+                                                        Calc_Qnty = calculatedqnty,
                                                         Plan_Qnty = item.CalcWOQty,
                                                         Plan_Compl_Dt = planstartdt,
                                                         CalcReceiptDate = nextworkdingdate,
@@ -1793,8 +1835,8 @@ namespace CWB.App.Controllers
 
                                         var departments = await _departmentService.GetDepartments(1);
                                         var department = departments.FirstOrDefault(d => d.DepartmentId == machine.MachineDepartmentId);
-                                        int setupTimeMinutes = (int)TimeSpan.Parse(onestepmachine.SetupTime).TotalMinutes;
-                                        int floorToFloorTimeMinutes = (int)TimeSpan.Parse(onestepmachine.FloorToFloorTime).TotalMinutes;
+                                        TimeSpan setupTimeMinutes = TimeSpan.Parse(onestepmachine.SetupTime);
+                                        TimeSpan floorToFloorTimeMinutes =TimeSpan.Parse(onestepmachine.FloorToFloorTime);
                                         int noOfShifts = department.NoOfShifts;
                                         int calcWOQty = item.CalcWOQty;
                                         int noOfPartsPerLoading = onestepmachine.NoOfPartsPerLoading;
@@ -1804,7 +1846,7 @@ namespace CWB.App.Controllers
                                             // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                             noOfPartsPerLoading = 1;
                                         }
-                                        int totalPlanTime = setupTimeMinutes + ((floorToFloorTimeMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                        double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
                                         int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                         Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                         Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
@@ -1836,8 +1878,8 @@ namespace CWB.App.Controllers
 
                                         var departments = await _departmentService.GetDepartments(1);
                                         var department = departments.FirstOrDefault();
-                                        int setupTimeMinutes = (int)TimeSpan.Parse(onestepmach.SetupTime).TotalMinutes;
-                                        int floorToFloorTimeMinutes = (int)TimeSpan.Parse(onestepmach.FloorToFloorTime).TotalMinutes;
+                                        TimeSpan setupTimeMinutes = TimeSpan.Parse(onestepmach.SetupTime);
+                                        TimeSpan floorToFloorTimeMinutes = TimeSpan.Parse(onestepmach.FloorToFloorTime);
                                         int noOfShifts = department.NoOfShifts;
                                         int calcWOQty = item.CalcWOQty;
                                         int noOfPartsPerLoading = onestepmach.NoOfPartsPerLoading;
@@ -1847,7 +1889,7 @@ namespace CWB.App.Controllers
                                             // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                             noOfPartsPerLoading = 1;
                                         }
-                                        int totalPlanTime = setupTimeMinutes + ((floorToFloorTimeMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                        double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
                                         int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                         Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                         Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
@@ -2050,6 +2092,7 @@ namespace CWB.App.Controllers
                                                 int assyTime = (minutes * item.CalcWOQty) / nohr;
                                                 int assyTimeInDays = assyTime / 1440;
                                                 DateTime planstartdt = item.PlanCompletionDate.Value.AddDays(-assyTimeInDays);
+                                                int? subchildManufacturedPartId = null;
                                                 switch (mp.MasterPartType)
                                                 {
                                                     case MasterPartType.ManufacturedPart:
@@ -2064,6 +2107,7 @@ namespace CWB.App.Controllers
                                                         }
                                                         if (manufchild.ManufacturedPartType == 1)
                                                         {
+                                                            subchildManufacturedPartId= manufchild.ManufacturedPartNoDetailId;
                                                             DateTime planstdt = planstartdt;
                                                             DateTime plancpldt = item.PlanCompletionDate.GetValueOrDefault();
                                                             manfDays = Math.Max(0, (plancpldt - planstdt).Days);
@@ -2220,6 +2264,24 @@ namespace CWB.App.Controllers
                                                     case MasterPartType.RawMaterial:
                                                         var mfpdList = await _masterService.PartPurchasesFor(bomgrp.PartId);
                                                         var ptype = await _masterService.GetRMPart(bomgrp.PartId);
+                                                        var mpmakefromlistrawmaterial = await _masterService.GetMPMakeFromListByPartId(subchildManufacturedPartId.ToString());
+                                                        var rmQtyPerInput = mpmakefromlistrawmaterial.Where(x => x.MPPartId == ptype.PartId)
+                                                                      .Select(x =>
+                                                                      {
+                                                                          decimal qty;
+                                                                          return decimal.TryParse(x.QuantityPerInput, out qty) ? qty : 0;
+                                                                      })
+                                                                       .FirstOrDefault();
+                                                        var uom = (await _masterService.GetUOMs()).FirstOrDefault(x => x.UOMId == ptype.UOMId);
+                                                        var calculatedqnty = 0;
+                                                        if (uom.Name == "Nos")
+                                                        {
+                                                            calculatedqnty = (int)bomgrp.TotalQuantity * item.CalcWOQty;
+                                                        }
+                                                        else if (uom.Name == "Kgs")
+                                                        {
+                                                            calculatedqnty = ((int)bomgrp.TotalQuantity * item.CalcWOQty) / (int)rmQtyPerInput;
+                                                        }
                                                         subtotalLeadTime2 = mfpdList.Sum(x => x.LeadTimeInDays);
                                                         DateTime nextworkdingdate = (DateTime)item.PlanCompletionDate;
                                                         nextworkdingdate = nextworkdingdate.AddDays(subtotalLeadTime2);
@@ -2229,7 +2291,8 @@ namespace CWB.App.Controllers
                                                             ParentWoId = item.WoId,
                                                             Child_Part_No_ID = bomgrp.PartId,
                                                             Child_Part_No_Type = mp.MasterPartType.ToString(),
-                                                            Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
+                                                           // Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
+                                                            Calc_Qnty = calculatedqnty,
                                                             Plan_Qnty = item.CalcWOQty,
                                                             Plan_Compl_Dt = planstartdt,
                                                             CalcReceiptDate = nextworkdingdate,
@@ -2314,8 +2377,8 @@ namespace CWB.App.Controllers
 
                                             var departments = await _departmentService.GetDepartments(1);
                                             var department = departments.FirstOrDefault(d => d.DepartmentId == machine.MachineDepartmentId);
-                                            int setupTimeMinutes = (int)TimeSpan.Parse(onestepmachine.SetupTime).TotalMinutes;
-                                            int floorToFloorTimeMinutes = (int)TimeSpan.Parse(onestepmachine.FloorToFloorTime).TotalMinutes;
+                                            TimeSpan setupTimeMinutes = TimeSpan.Parse(onestepmachine.SetupTime);
+                                            TimeSpan floorToFloorTimeMinutes = TimeSpan.Parse(onestepmachine.FloorToFloorTime);
                                             int noOfShifts = department.NoOfShifts;
                                             int calcWOQty = item.CalcWOQty;
                                             int noOfPartsPerLoading = onestepmachine.NoOfPartsPerLoading;
@@ -2325,7 +2388,7 @@ namespace CWB.App.Controllers
                                                 // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                                 noOfPartsPerLoading = 1;
                                             }
-                                            int totalPlanTime = setupTimeMinutes + ((floorToFloorTimeMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                            double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
                                             int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                             Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                             Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
@@ -2353,8 +2416,8 @@ namespace CWB.App.Controllers
                                             var onestepmach = subworks.FirstOrDefault();
                                             var departments = await _departmentService.GetDepartments(1);
                                             var department = departments.FirstOrDefault();
-                                            int setupTimeMinutes = (int)TimeSpan.Parse(onestepmach.SetupTime).TotalMinutes;
-                                            int floorToFloorTimeMinutes = (int)TimeSpan.Parse(onestepmach.FloorToFloorTime).TotalMinutes;
+                                            TimeSpan setupTimeMinutes = TimeSpan.Parse(onestepmach.SetupTime);
+                                            TimeSpan floorToFloorTimeMinutes = TimeSpan.Parse(onestepmach.FloorToFloorTime);
                                             int noOfShifts = department.NoOfShifts;
                                             int calcWOQty = item.CalcWOQty;
                                             int noOfPartsPerLoading = onestepmach.NoOfPartsPerLoading;
@@ -2364,7 +2427,7 @@ namespace CWB.App.Controllers
                                                 // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                                 noOfPartsPerLoading = 1;
                                             }
-                                            int totalPlanTime = setupTimeMinutes + ((floorToFloorTimeMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                            double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
                                             int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                             Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                             Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
