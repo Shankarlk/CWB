@@ -14,8 +14,7 @@ namespace CWB.Masters.Services.Routings
         Task CopySubCons(int fromRoutingId, int toRoutingId);
         Task CopySubConsWSs(int fromRoutingId, int toRoutingId);
         Task CopyStepParts(int fromRoutingId, int toRoutingId);
-
-
+        Task<RoutingVM> GetRouting(int routingId);
 
         Task<RoutingVM> DeleteRouting(int routingId);
         

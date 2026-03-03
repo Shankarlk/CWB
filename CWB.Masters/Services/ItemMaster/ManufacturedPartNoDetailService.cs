@@ -457,5 +457,14 @@ namespace CWB.Masters.Services.ItemMaster
             }
             return new ManufacturedPartNoDetailVM { ManufacturedPartNoDetailId = -1 };
         }
+        public async Task<ManufacturedPartNoDetailVM> GetManuPartdetails(int partId, long tenantId)
+        {
+            var part = await _manufacturedPartNoDetailRepository.SingleOrDefaultAsync(m => m.Id == partId && m.TenantId == tenantId);
+            if (part != null)
+            {
+                return _mapper.Map<ManufacturedPartNoDetailVM>(part);
+            }
+            return new ManufacturedPartNoDetailVM { ManufacturedPartNoDetailId = -1 };
+        }
     }
 }

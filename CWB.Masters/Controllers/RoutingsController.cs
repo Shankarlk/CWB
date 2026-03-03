@@ -155,6 +155,14 @@ namespace CWB.Masters.Controllers
 
             return Ok(result);
         }
+        [HttpGet]
+        [Route(ApiRoutes.Routings.GetRouting)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(RoutingVM))]
+        public async Task<RoutingVM> GetRouting(int routingid)
+        {
+            return  await _routingService.GetRouting(routingid);
+        }
+
 
         [HttpGet]
         [Route(ApiRoutes.Routings.RoutingAllList)]

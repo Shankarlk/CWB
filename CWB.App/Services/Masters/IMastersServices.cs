@@ -112,5 +112,6 @@ namespace CWB.App.Services.Masters
 
         Task<bool> CheckDocumentTypeInItemMaster(long documentTypeId, long contentId);
         Task<bool> CheckDocTypeInDocList(long docTypeid);
+        Task<ManufacturedPartNoDetailVM> GetManuPartdetails(int partId);
     }
 }

@@ -282,6 +282,13 @@ namespace CWB.App.Services.Masters
             return await RestHelper<ManufacturedPartNoDetailVM>.GetAsync(uri, headers);
             //
         }
+        public async Task<ManufacturedPartNoDetailVM> GetManuPartdetails(int partId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getmanufpartdetails/{partId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<ManufacturedPartNoDetailVM>.GetAsync(uri, headers);
+            //
+        }
         public async Task<RawMaterialDetailVM> GetRMPart(int partId)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getrmpart/{partId}/{tenantId}");

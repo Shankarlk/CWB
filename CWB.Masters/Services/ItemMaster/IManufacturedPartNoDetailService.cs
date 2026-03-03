@@ -19,7 +19,7 @@ namespace CWB.Masters.Services.ItemMaster
         Task<MPMakeFromVM> GetMPMakeFrom(long Id);
         Task<MPMakeFromVM> RemMakeFrom(MPMakeFromVM mPMakeFromListVM);
 
-
+        Task<ManufacturedPartNoDetailVM> GetManuPartdetails(int partId, long tenantId);
 
         Task<MPBOMVM> MPBOM(MPBOMVM manufacturedPartNoDetailVM);
         IEnumerable<MPBOMVM> GetMPBOMList(string manufPartId, long tenantID);

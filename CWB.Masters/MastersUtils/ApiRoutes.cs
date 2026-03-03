@@ -78,8 +78,8 @@
             public const string PostStatusLog = Base + "/routingstatuslog";
             public const string GetStatusLog = Base + "/getstatuslog/{routingId}/{tenantId}";
             public const string ChangeRoutingStepSequence = Base + "/changeroutingstepsequence";
-            
-            
+            public const string GetRouting = Base + "/getrouting/{routingId}";
+
             public const string PostRoutingStepPart = Base + "/routingsteppart";
             public const string PostRoutingStepSupplier = Base + "/routingstepsupplier";
             public const string PostRoutingStepMachine = Base + "/routingstepmachine";
@@ -119,6 +119,7 @@
             public const string PostMPBOM = Base + "/mpbom";
             // Added for Listing ManufacturedPartNoDetails
             public const string GetManufPart = Base + "/getmanufpart/{partId}/{tenantId}";
+            public const string GetManufPartdetails = Base + "/getmanufpartdetails/{partId}/{tenantId}";
             public const string GetRMPart = Base + "/getrmpart/{partId}/{tenantId}";
             public const string GetAllRMPart = Base + "/getallrmpart/{tenantId}";
             public const string GetBOFPart = Base + "/getbofpart/{partId}/{tenantId}";

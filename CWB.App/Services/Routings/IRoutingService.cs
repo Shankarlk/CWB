@@ -15,7 +15,7 @@ namespace CWB.App.Services.Routings
         Task<List<RoutingListItemVM>> OptimizedRoutingListItems();
         Task<RoutingVM> Routing(RoutingVM routingVM);
         Task<RoutingVM> AltRouting(RoutingVM routingVM);
-        
+        Task<RoutingVM> GetRouting(int routingid);
         Task<RoutingVM> DeleteRouting (int routingId);
         Task<RoutingVM> DeleteWS(int subConWSId);
         Task<RoutingVM> PreferredRouting(RoutingVM routingVM);
@@ -25,7 +25,7 @@ namespace CWB.App.Services.Routings
         Task<bool> DeleteStep(int stepId);
         Task<bool> DeleteMachine(int stepId, int machineId);
         Task<bool> DeleteSupplier(int stepId, int supplierId);
-
+        Task<RoutingStepVM> GetStep(int stepId);
         Task<RoutingStepPartVM> RoutingStepPart(RoutingStepPartVM routingStepPartVM);
         Task<RoutingStepSupplierVM> RoutingStepSupplier(RoutingStepSupplierVM routingStepSupplierVM);
         Task<RoutingStepMachineVM> RoutingStepMachine(RoutingStepMachineVM routingStepMachineVM);

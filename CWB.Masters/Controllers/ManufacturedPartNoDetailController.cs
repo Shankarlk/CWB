@@ -42,7 +42,14 @@ namespace CWB.Masters.Controllers
             ManufacturedPartNoDetailVM manufP = await _masterPartService.GetManufPart(partId, tenantId);
             return Ok(manufP);   
         }
-
+        [HttpGet]
+        [Route(ApiRoutes.ManufacturedPartNoDetail.GetManufPartdetails)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(ManufacturedPartNoDetailVM))]
+        public async Task<IActionResult> GetManufPartdetails(int partId, long tenantId)
+        {
+            ManufacturedPartNoDetailVM manufP = await _manufacturedPartNoDetailService.GetManuPartdetails(partId, tenantId);
+            return Ok(manufP);
+        }
         /// <summary>
         /// Get All ManufacturedPartNoDetail by tenant
         /// </summary>

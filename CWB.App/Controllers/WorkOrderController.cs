@@ -3165,26 +3165,52 @@ namespace CWB.App.Controllers
             var masterparts = await _masterService.MasterPartList();
             var workOrdersDict = wos.ToDictionary(wo => wo.WOID, wo => wo.WONumber);
             var woCompletionDatesDict = wos.ToDictionary(wo => wo.WOID, wo => (SoCompletionDate: wo.SoComplDate, PlanCompletionDate: wo.PlanCompletionDate, Wotype: wo.BuildToStock));
-
+            var machineTypes = await _machineService.GetMachineTypes();
             foreach (var mctime in mctimelist)
             {
-                var machineTypes = await _machineService.GetMachineTypes();
-                foreach (ProductionPlan_WoVM item in productions)
+                var routingStep = await _routingService.GetStep((int)mctime.Routing_StepId);
+                if (routingStep == null) continue;
+
+                var routing = await _routingService.GetRouting((int)routingStep.RoutingId);
+                if (routing == null) continue;
+
+                var manufacturedpart = await _masterService.GetManuPartdetails((int)routing.ManufacturedPartId);
+                if (manufacturedpart == null) continue;
+
+                var master = masterparts
+                    .FirstOrDefault(x => x.PartId == manufacturedpart.PartId);
+
+                if (master != null)
                 {
-                    if (item.WoId == mctime.WoId && item.ParentWoId == 0)
-                    {
-                        foreach (ItemMasterPartVM imp in masterparts)
-                        {
-                            if (item.PartId == imp.PartId)
-                            {
-                                mctime.PartNo = imp.PartNo;
-                                mctime.PartDesc = imp.Description;
-                                mctime.PartType = imp.MasterPartType;
-                                mctime.WoNumber = item.WONumber;
-                            }
-                        }
-                    }
+                    mctime.PartNo = master.PartNo;
+                    mctime.PartDesc = master.Description;
+                    mctime.PartType = master.MasterPartType;
                 }
+
+                // 🔥 Get correct WONumber (only matching WoId)
+                var wo = productions.FirstOrDefault(x => x.WoId == mctime.WoId);
+                if (wo != null)
+                    mctime.WoNumber = wo.WONumber;
+
+                //var machineTypes = await _machineService.GetMachineTypes();
+                //foreach (ProductionPlan_WoVM item in productions)
+                //{
+                //    if (item.WoId == mctime.WoId && item.ParentWoId == 0 )
+                //    {
+                //        foreach (ItemMasterPartVM imp in masterparts)
+                //        {
+                //            if (item.PartId == imp.PartId)
+                //            {
+                //                mctime.PartNo = imp.PartNo;
+                //                mctime.PartDesc = imp.Description;
+                //                mctime.PartType = imp.MasterPartType;
+                //                mctime.WoNumber = item.WONumber;
+                //            }
+                //        }
+                //    }
+
+
+                //}
 
                 var machine = await _machineService.GetMachine(mctime.MachineId);
                 if (mctime.MachineId == machine.MachineMachineId)
@@ -9573,7 +9599,7 @@ namespace CWB.App.Controllers
                                 startFromTimeslotId = existingMcSlots.First().EndTimeslot_List_Id;
                             }
                             var availableTimeslots = plantSlots
-                                .Where(t => t.Timeslot_ListId > startFromTimeslotId && t.Start_time > DateTime.Now)//t.Timeslot_ListId > startFromTimeslotId 
+                                .Where(t => t.Timeslot_ListId > startFromTimeslotId)//t.Timeslot_ListId > startFromTimeslotId //&& t.Start_time > DateTime.Now
                                 .Take(slotsRequired)
                                 .ToList();
 

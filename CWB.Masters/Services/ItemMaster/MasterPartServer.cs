@@ -158,6 +158,27 @@ namespace CWB.Masters.Services.ItemMaster
             }
             return manufObj;
         }
+        public async Task<ManufacturedPartNoDetailVM> GetManuPartdetails(int partId, long tenantId)
+        {
+
+            ManufacturedPartNoDetailVM manufObj = await _manufacturedPartNoDetailService.GetManuPartdetails(partId, tenantId);
+            //if (manufObj.ManufacturedPartNoDetailId != -1)
+            //{
+            //    MasterPartVM mpVm = await GetMasterPart(partId);
+            //    if (mpVm.MasterPartId != -1)
+            //    {
+            //        manufObj.PartNo = mpVm.PartNo;
+            //        manufObj.PartDescription = mpVm.PartDescription;
+            //        manufObj.Status = mpVm.Status.ToString();
+            //        manufObj.StatusChangeReason = mpVm.StatusChangeReason;
+            //        manufObj.RevDate = mpVm.RevDate;
+            //        manufObj.RevNo = mpVm.RevNo;
+            //        manufObj.MasterPartType = mpVm.MasterPartType.ToString();
+
+            //    }
+            //}
+            return manufObj;
+        }
         public async Task<RawMaterialDetailVM> GetRMPart(int partId, long tenantId)
         {
 

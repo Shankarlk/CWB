@@ -388,7 +388,7 @@ namespace CWB.Masters.Services.Routings
 
         }
 
-        private async Task<RoutingVM> GetRouting(int routingId)
+        public async Task<RoutingVM> GetRouting(int routingId)
         {
             var routing =  await _routingRepository.SingleOrDefaultAsync(m=>m.Id== routingId);
             if(routing == null)

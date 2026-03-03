@@ -152,6 +152,12 @@ namespace CWB.App.Services.Routings
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<IEnumerable<RoutingVM>>.GetAsync(uri, headers);
         }
+        public async Task<RoutingVM> GetRouting(int routingid)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getrouting/{routingid}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<RoutingVM>.GetAsync(uri, headers);
+        }
         public async Task<IEnumerable<RoutingVM>> AllRoutings()
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbms/allroutings/{tenantId}");
