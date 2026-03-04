@@ -2932,26 +2932,49 @@ namespace CWB.App.Controllers
             var mctimelist = await _woService.GetAllMcTimeList();
             var productions = await _woService.AllProductionPlan_Wo();
             var masterparts = await _masterService.MasterPartList();
+            var machineTypes = await _machineService.GetMachineTypes();
             foreach (var mctime in mctimelist)
             {
                 var machine = await _machineService.GetMachine((int)mctime.MachineId);
-                var machineTypes = await _machineService.GetMachineTypes();
-                foreach (ProductionPlan_WoVM item in productions)
+                var routingStep = await _routingService.GetStep((int)mctime.Routing_StepId);
+                if (routingStep == null) continue;
+
+                var routing = await _routingService.GetRouting((int)routingStep.RoutingId);
+                if (routing == null) continue;
+
+                var manufacturedpart = await _masterService.GetManuPartdetails((int)routing.ManufacturedPartId);
+                if (manufacturedpart == null) continue;
+
+                var master = masterparts
+                    .FirstOrDefault(x => x.PartId == manufacturedpart.PartId);
+
+                if (master != null)
                 {
-                    if (item.WoId == mctime.WoId && item.ParentWoId == 0)
-                    {
-                        foreach (ItemMasterPartVM imp in masterparts)
-                        {
-                            if (item.PartId == imp.PartId)
-                            {
-                                mctime.PartNo = imp.PartNo;
-                                mctime.PartDesc = imp.Description;
-                                mctime.PartType = imp.MasterPartType;
-                                mctime.WoNumber = item.WONumber;
-                            }
-                        }
-                    }
+                    mctime.PartNo = master.PartNo;
+                    mctime.PartDesc = master.Description;
+                    mctime.PartType = master.MasterPartType;
                 }
+
+                // 🔥 Get correct WONumber (only matching WoId)
+                var wo = productions.FirstOrDefault(x => x.WoId == mctime.WoId);
+                if (wo != null)
+                    mctime.WoNumber = wo.WONumber;
+                //foreach (ProductionPlan_WoVM item in productions)
+                //{
+                //    if (item.WoId == mctime.WoId && item.ParentWoId == 0)
+                //    {
+                //        foreach (ItemMasterPartVM imp in masterparts)
+                //        {
+                //            if (item.PartId == imp.PartId)
+                //            {
+                //                mctime.PartNo = imp.PartNo;
+                //                mctime.PartDesc = imp.Description;
+                //                mctime.PartType = imp.MasterPartType;
+                //                mctime.WoNumber = item.WONumber;
+                //            }
+                //        }
+                //    }
+                //}
                 if (mctime.MachineId == machine.MachineMachineId)
                 {
                     mctime.MachineName = machine.MachineMachineName;
@@ -2960,7 +2983,7 @@ namespace CWB.App.Controllers
                     var department = departments.FirstOrDefault(d => d.DepartmentId == machine.MachineDepartmentId);
                     mctime.Location = department.PlantName;
                     var operation = await _operationService.Operation(machine.MachineOperationListId);
-                    mctime.OprationNo = operation.Operation;
+                    mctime.OprationNo = operation.Operation + "/" + routingStep.StepNumber; 
                     foreach (var machinetype in machineTypes)
                     {
                         if (mctime.MachineTypeId == machinetype.MachineTypeTypeId)
@@ -3221,7 +3244,7 @@ namespace CWB.App.Controllers
                     var department = departments.FirstOrDefault(d => d.DepartmentId == machine.MachineDepartmentId);
                     mctime.Location = department.PlantName;
                     var operation = await _operationService.Operation(machine.MachineOperationListId);
-                    mctime.OprationNo = operation.Operation;
+                    mctime.OprationNo = operation.Operation +"/"+ routingStep.StepNumber;
                     if (operation.Inhouse == 1)
                     {
                         mctime.Inhouse = "Y";
@@ -9888,7 +9911,8 @@ namespace CWB.App.Controllers
             }
 
             // Don't exceed original planQty
-            return Math.Min(totalQty, planQty);
+            //return Math.Min(totalQty, planQty);
+            return totalQty == 0    ? planQty    : Math.Min(totalQty, planQty);
         }
 
         [HttpPost]
