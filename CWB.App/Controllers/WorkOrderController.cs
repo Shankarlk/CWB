@@ -8718,6 +8718,7 @@ namespace CWB.App.Controllers
                     if (parts.TryGetValue(wo.PartId, out var part))
                     {
                         item.PartNo = $"{part.PartNo} / {part.Description}";
+                        item.PartId = (int)part.PartId;
                     }
 
                     // Routing Name & UOM

@@ -4,7 +4,7 @@ function loadSoDispatch() {
     $('#SelectAllMGrid').prop("checked", false);
     api.getbulk("/WorkOrder/AllSODispatch").then((data) => {
         data = data.filter(item => item.status === 1 || item.status === 2 );
-        data = data.filter(item => item.qntyOnHand > 0 );
+        data = data.filter(item => item.qntyOnHand >= 0 );
         data.sort((a, b) => {
             // Convert the date strings to Date objects for comparison
             const dateA = new Date(a.requiredByDate);

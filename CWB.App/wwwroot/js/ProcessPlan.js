@@ -120,7 +120,7 @@ function landingPage() {
         });
         api.getbulk("/WorkOrder/AllSODispatch").then((data) => {
             data = data.filter(item => item.status === 1 || item.status === 2);
-            data = data.filter(item => item.qntyOnHand > 0);
+            data = data.filter(item => item.qntyOnHand >= 0);
             $("#openSODs").text(data.length);
             if (data.length === 0) {
                 const anchorTag = document.getElementById('openSODsBtn');
