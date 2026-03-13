@@ -23,3 +23,11 @@
 2026-03-06 09:35:51.8698 INFO Hosting environment: Production
 2026-03-06 09:35:52.2032 INFO Content root path: /app
 2026-03-06 09:35:52.7229 ERROR Consume exception
+2026-03-06 10:24:51.3398 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-03-06 10:24:52.0197 INFO Application started. Press Ctrl+C to shut down.
+2026-03-06 10:24:52.1927 ERROR Kafka error: kafka:9092/bootstrap: Connect to ipv4#172.18.0.16:9092 failed: Connection refused (after 2ms in state CONNECT)
+2026-03-06 10:24:52.7454 INFO Hosting environment: Production
+2026-03-06 10:24:52.9866 ERROR Kafka error: 1/1 brokers are down
+2026-03-06 10:24:53.4096 INFO Content root path: /app
+2026-03-06 10:24:53.7463 ERROR Kafka error: kafka:9092/bootstrap: Connect to ipv4#172.18.0.16:9092 failed: Connection refused (after 41ms in state CONNECT, 1 identical error(s) suppressed)
+2026-03-06 10:25:28.7228 ERROR Consume exception
