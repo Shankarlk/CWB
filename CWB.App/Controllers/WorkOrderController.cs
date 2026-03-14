@@ -1395,7 +1395,7 @@ namespace CWB.App.Controllers
                                         // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                         noOfPartsPerLoading = 1;
                                     }
-                                    double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                    double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes ) * (calcWOQty - 1)) / noOfPartsPerLoading;//+ noOfShifts
                                     int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                     Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                     Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
@@ -1438,7 +1438,7 @@ namespace CWB.App.Controllers
                                         // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                         noOfPartsPerLoading = 1;
                                     }
-                                    double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                    double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes ) * (calcWOQty - 1)) / noOfPartsPerLoading;//+ noOfShifts
                                     int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                     Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                     Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
@@ -2040,7 +2040,7 @@ namespace CWB.App.Controllers
                                             // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                             noOfPartsPerLoading = 1;
                                         }
-                                        double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                        double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes) * (calcWOQty - 1)) / noOfPartsPerLoading;// +noOfShifts
                                         int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                         Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                         Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
@@ -2083,7 +2083,7 @@ namespace CWB.App.Controllers
                                             // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                             noOfPartsPerLoading = 1;
                                         }
-                                        double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                        double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes) * (calcWOQty - 1)) / noOfPartsPerLoading;// + noOfShifts
                                         int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                         Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                         Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
@@ -2698,7 +2698,7 @@ namespace CWB.App.Controllers
                                                 // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                                 noOfPartsPerLoading = 1;
                                             }
-                                            double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                            double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes ) * (calcWOQty - 1)) / noOfPartsPerLoading;//+ noOfShifts
                                             int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                             Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                             Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
@@ -2737,7 +2737,7 @@ namespace CWB.App.Controllers
                                                 // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                                 noOfPartsPerLoading = 1;
                                             }
-                                            double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                            double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes ) * (calcWOQty - 1)) / noOfPartsPerLoading;//+ noOfShifts
                                             int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                             Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                             Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
@@ -3351,7 +3351,7 @@ namespace CWB.App.Controllers
                                                     // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                                     noOfPartsPerLoading = 1;
                                                 }
-                                                double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                                double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes ) * (calcWOQty - 1)) / noOfPartsPerLoading;//+ noOfShifts
                                                 int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                                 Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                                 Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
@@ -3390,7 +3390,7 @@ namespace CWB.App.Controllers
                                                     // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                                     noOfPartsPerLoading = 1;
                                                 }
-                                                double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                                double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes) * (calcWOQty - 1)) / noOfPartsPerLoading;// + noOfShifts
                                                 int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                                 Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                                 Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
@@ -4004,8 +4004,8 @@ namespace CWB.App.Controllers
                                                     // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                                     noOfPartsPerLoading = 1;
                                                 }
-                                                double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
-                                                int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
+                                                double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes) * (calcWOQty - 1)) / noOfPartsPerLoading;// + noOfShifts
+                                                    int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                                 Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                                 Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
 
@@ -4043,7 +4043,7 @@ namespace CWB.App.Controllers
                                                     // throw new DivideByZeroException("NoOfPartsPerLoading cannot be zero.");
                                                     noOfPartsPerLoading = 1;
                                                 }
-                                                double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes + noOfShifts) * (calcWOQty - 1)) / noOfPartsPerLoading;
+                                                double totalPlanTime = setupTimeMinutes.TotalMinutes + ((floorToFloorTimeMinutes.TotalMinutes ) * (calcWOQty - 1)) / noOfPartsPerLoading;// +noOfShifts
                                                 int totalPlanTimeInHoursRounded = (int)Math.Round(totalPlanTime / 60.0, MidpointRounding.AwayFromZero);
                                                 Console.WriteLine($"Total Plan Time (Minutes): {totalPlanTime}");
                                                 Console.WriteLine($"Total Plan Time (Rounded Hours): {totalPlanTimeInHoursRounded}");
