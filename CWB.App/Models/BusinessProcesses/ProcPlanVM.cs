@@ -43,6 +43,7 @@ namespace CWB.App.Models.BusinessProcesses
             }
         }
         public int CriticalPart { get; set; }
+        public string CriticalParts { get; set; }
         public int Changed { get; set; }
         public long TenantId { get; set; }
 

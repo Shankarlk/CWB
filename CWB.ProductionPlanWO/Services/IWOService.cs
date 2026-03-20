@@ -30,6 +30,7 @@ namespace CWB.ProductionPlanWO.Services
         Task<IEnumerable<BOMListVM>> AllBomList(long tenantId);
         Task<List<ProductionPlan_WOVM>> PostProductionPlan_Wo(List<ProductionPlan_WOVM> productions);
         Task<ProductionPlan_WOVM> UpdateProductionPlan_Wo(ProductionPlan_WOVM productions);
+        Task<ProductionPlan_WOVM> UpdateProductionPlan_WoCriticalPart(ProductionPlan_WOVM productions);
         Task<ProductionPlan_WOVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WOVM productions);
         Task<IEnumerable<ProductionPlan_WOVM>> AllProductionWo(long tenantId);
         Task<WOStatusVM> GetWOStatus(long Id);

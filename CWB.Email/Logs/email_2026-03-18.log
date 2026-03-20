@@ -1,0 +1,60 @@
+2026-03-18 05:07:57.6893 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-03-18 05:07:58.0101 INFO Application started. Press Ctrl+C to shut down.
+2026-03-18 05:07:58.1603 INFO Hosting environment: Production
+2026-03-18 05:07:58.2260 INFO Content root path: /app
+2026-03-18 05:08:12.6368 ERROR Consume exception
+2026-03-18 06:06:51.7266 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-03-18 06:06:52.1947 INFO Application started. Press Ctrl+C to shut down.
+2026-03-18 06:06:52.5216 INFO Hosting environment: Production
+2026-03-18 06:06:52.5935 INFO Content root path: /app
+2026-03-18 06:06:52.7857 ERROR Consume exception
+2026-03-18 06:14:40.1411 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-03-18 06:14:40.9498 INFO Application started. Press Ctrl+C to shut down.
+2026-03-18 06:14:41.3886 INFO Hosting environment: Production
+2026-03-18 06:14:41.8091 INFO Content root path: /app
+2026-03-18 06:14:42.2862 ERROR Consume exception
+2026-03-18 07:08:09.6262 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-03-18 07:08:09.8800 INFO Application started. Press Ctrl+C to shut down.
+2026-03-18 07:08:09.9408 INFO Hosting environment: Production
+2026-03-18 07:08:10.0935 INFO Content root path: /app
+2026-03-18 07:08:10.2335 ERROR Consume exception
+2026-03-18 07:23:03.1867 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-03-18 07:23:03.4934 INFO Application started. Press Ctrl+C to shut down.
+2026-03-18 07:23:03.9944 INFO Hosting environment: Production
+2026-03-18 07:23:04.1387 INFO Content root path: /app
+2026-03-18 07:23:04.4277 ERROR Consume exception
+2026-03-18 09:24:35.0398 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-03-18 09:24:35.4639 INFO Application started. Press Ctrl+C to shut down.
+2026-03-18 09:24:36.1143 INFO Hosting environment: Production
+2026-03-18 09:24:36.4415 INFO Content root path: /app
+2026-03-18 09:24:36.8939 ERROR Consume exception
+2026-03-18 10:58:54.7107 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-03-18 10:58:55.1601 INFO Application started. Press Ctrl+C to shut down.
+2026-03-18 10:58:55.6849 INFO Hosting environment: Production
+2026-03-18 10:58:55.9798 INFO Content root path: /app
+2026-03-18 10:58:56.1459 ERROR Consume exception
+2026-03-18 11:08:03.4647 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-03-18 11:08:04.0492 INFO Application started. Press Ctrl+C to shut down.
+2026-03-18 11:08:04.4517 INFO Hosting environment: Production
+2026-03-18 11:08:04.9375 INFO Content root path: /app
+2026-03-18 11:08:17.6975 ERROR Consume exception
+2026-03-18 12:25:12.2656 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-03-18 12:25:12.4982 INFO Application started. Press Ctrl+C to shut down.
+2026-03-18 12:25:12.5942 INFO Hosting environment: Production
+2026-03-18 12:25:12.6779 INFO Content root path: /app
+2026-03-18 12:25:13.4915 ERROR Consume exception
+2026-03-18 12:49:22.6413 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-03-18 12:49:23.4057 INFO Application started. Press Ctrl+C to shut down.
+2026-03-18 12:49:23.4957 INFO Hosting environment: Production
+2026-03-18 12:49:23.5468 INFO Content root path: /app
+2026-03-18 12:49:24.8840 ERROR Consume exception
+2026-03-18 12:56:22.1286 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-03-18 12:56:23.2173 INFO Application started. Press Ctrl+C to shut down.
+2026-03-18 12:56:24.0291 INFO Hosting environment: Production
+2026-03-18 12:56:24.2510 ERROR Consume exception
+2026-03-18 12:56:24.3008 INFO Content root path: /app
+2026-03-18 13:02:33.7536 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-03-18 13:02:34.1095 INFO Application started. Press Ctrl+C to shut down.
+2026-03-18 13:02:34.2575 INFO Hosting environment: Production
+2026-03-18 13:02:34.3942 INFO Content root path: /app
+2026-03-18 13:02:35.1873 ERROR Consume exception

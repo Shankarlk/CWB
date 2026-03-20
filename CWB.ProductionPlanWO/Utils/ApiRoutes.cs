@@ -57,6 +57,7 @@ namespace CWB.ProductionPlanWO.Utils
             public const string AllBomList = Base + "/allbomlist/{tenantId}";
             public const string PostProductionPlan_Wo = Base + "/productionplan";
             public const string UpdateProductionPlan_Wo = Base + "/updateproductionplan";
+            public const string UpdateProductionPlan_WoCriticalPart = Base + "/updateproductionplancriticalpart";
             public const string UpdateHoldProductionPlan_Wo = Base + "/updateholdproductionplan";
             public const string AllProductionPlanWo = Base + "/allproductionplanwo/{tenantId}";
             public const string DeleteSubCon = Base + "/delwosubcon/{Id}";

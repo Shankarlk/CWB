@@ -869,6 +869,28 @@ namespace CWB.ProductionPlanWO.Services
             }
             return productions;
         }
+        public async Task<ProductionPlan_WOVM> UpdateProductionPlan_WoCriticalPart(ProductionPlan_WOVM productions)
+        {
+           var pp = _mapper.Map<ProductionPlan_WO>(productions);
+            var upp = await _productionPlan_WORepository.SingleOrDefaultAsync(x => x.Id == pp.Id);
+            if (upp == null)
+            {
+                return productions;
+            }
+            upp.CriticalPart = 1;
+           
+            pp = await _productionPlan_WORepository.UpdateAsync(pp.Id, upp);
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            return productions;
+        }
         public async Task<ProductionPlan_WOVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WOVM productions)
         {
             var pp = _mapper.Map<ProductionPlan_WO>(productions);

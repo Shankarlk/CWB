@@ -1,6 +1,7 @@
 ﻿var noofWOCreation = [];
 var subcontotal = 0;
 var butcount = 0;
+$("#misgrid1").hide();
 function loadWO() {
     api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
         data = data.filter(item => item.active !== 2);
@@ -362,6 +363,8 @@ $(window).on('load', function () {
     loadProcPlan();
     loadBomList();
     loadMcTimeListDetail();
+   // $("#misgrid2").hide();
+    $("#misgrid1").hide();
 });
 
 $(document).ready(function () {
@@ -1679,6 +1682,9 @@ $(document).ready(function () {
             // Ensure plan_Proc_Qnty is at least the MOQ
             if (rowData.plan_Proc_Qnty < rowData.moq) {
                 rowData.plan_Proc_Qnty = rowData.moq;
+            }
+            else if (rowData.plan_Proc_Qnty > rowData.moq) {
+                rowData.plan_Proc_Qnty = calc_Proc_Qnty;
             }
 
             selectedRowsData.push(rowData);

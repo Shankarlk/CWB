@@ -31,11 +31,11 @@
                         </div>
                         <!-- =============================  -->
                         <div class="col-md-12">
-                            <div class="row">
+                            <div id="misgrid1" class="row">
                                 <!-- ================================ -->
                                 <div class="col-md-4 col-sm-12 dott-bord-r" style="padding: 10px;">
                                     <div class="table-responsive table-he-250">
-                                        <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
+                                        <table  class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
                                             <thead class="  table-info th-sti">
 
                                             </thead>
@@ -216,8 +216,8 @@
                                     <div class="row ">
                                         <div class="col-md-12">
                                             <div class="table-responsive">
-                                                <table class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
-                                                    <thead class="  table-info th-sti">
+                                                <table id="misgrid2" class="table table-sm table-bordered  mb-3 text-center tableFixHead w-100">
+                                                    <thead  class="table-info th-sti">
                                                     </thead>
                                                     <tbody>
                                                         <tr>
@@ -418,6 +418,7 @@
                                                         <th>SO Compl Dt</th>
                                                         <th>WO Type</th>
                                                         <th>WO ready for Release</th>
+                                                        <th>Critical Part</th>
                                                         <th></th>
                                                     </tr>
                                                 </thead>
@@ -651,11 +652,12 @@
                                         <th>Qnty on Hand</th>
                                         <th>Planned Purchase Qnty</th>
                                         <th>MOQ</th>
-                                        <th>Unit</th>
+                                        <th>UoM (for ordering)</th>
                                         <th>Date Reqd</th>
                                         <th>Lead Time Days</th>
                                         <th>Calculated Receipt Date</th>
                                         <th>WO Type</th>
+                                        <th>Critical Part</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -2516,6 +2518,7 @@
         <td hidden>{productionPlanId}</td>
         <td hidden>{planCompletionDate}</td>
         <td hidden>{parentlevel}</td>
+        <td>{criticalParts}</td>
         <td>
             <div class="dropdown float-center">
                 <a href="#"
@@ -2619,6 +2622,7 @@
         <td>{woType}</td>
         <td hidden>{calcReceiptDate}</td>
         <td hidden>{supplierId}</td>
+        <td>{criticalParts}</td>
         <td>
             <div class="dropdown float-center">
                 <a href="#"
