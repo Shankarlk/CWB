@@ -14,9 +14,9 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.apigateway$
     volumes:
-      - F:\CWBworking\CWB.ApiGateway:/app
-      - F:\CWBworking:/src
-      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
+      - D:\CWB-Latest\latest\CWB.ApiGateway:/app
+      - D:\CWB-Latest\latest:/src
+      - C:\Users\admin\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.apigateway$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -41,9 +41,9 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.app$
     volumes:
-      - F:\CWBworking\CWB.App:/app
-      - F:\CWBworking:/src
-      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
+      - D:\CWB-Latest\latest\CWB.App:/app
+      - D:\CWB-Latest\latest:/src
+      - C:\Users\admin\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.app$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -69,9 +69,9 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.businessaquisition$
     volumes:
-      - F:\CWBworking\CWB.BusinessAquisition:/app
-      - F:\CWBworking:/src
-      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
+      - D:\CWB-Latest\latest\CWB.BusinessAquisition:/app
+      - D:\CWB-Latest\latest:/src
+      - C:\Users\admin\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.businessaquisition$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -97,9 +97,9 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.companysettings$
     volumes:
-      - F:\CWBworking\CWB.CompanySettings:/app
-      - F:\CWBworking:/src
-      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
+      - D:\CWB-Latest\latest\CWB.CompanySettings:/app
+      - D:\CWB-Latest\latest:/src
+      - C:\Users\admin\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.companysettings$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -123,8 +123,8 @@ services:
     #environment:
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.email$
     volumes:
-      - F:\CWBworking\CWB.Email:/app
-      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
+      - D:\CWB-Latest\latest\CWB.Email:/app
+      - C:\Users\admin\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.email$
     entrypoint: tail -f /dev/null
     labels:
@@ -147,9 +147,9 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.identity$
     volumes:
-      - F:\CWBworking\CWB.Identity:/app
-      - F:\CWBworking:/src
-      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
+      - D:\CWB-Latest\latest\CWB.Identity:/app
+      - D:\CWB-Latest\latest:/src
+      - C:\Users\admin\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.identity$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -175,9 +175,9 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.masters$
     volumes:
-      - F:\CWBworking\CWB.Masters:/app
-      - F:\CWBworking:/src
-      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
+      - D:\CWB-Latest\latest\CWB.Masters:/app
+      - D:\CWB-Latest\latest:/src
+      - C:\Users\admin\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.masters$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -203,9 +203,9 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.modules$
     volumes:
-      - F:\CWBworking\CWB.Modules:/app
-      - F:\CWBworking:/src
-      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
+      - D:\CWB-Latest\latest\CWB.Modules:/app
+      - D:\CWB-Latest\latest:/src
+      - C:\Users\admin\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.modules$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -231,9 +231,9 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.productionplanwo$
     volumes:
-      - F:\CWBworking\CWB.ProductionPlanWO:/app
-      - F:\CWBworking:/src
-      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
+      - D:\CWB-Latest\latest\CWB.ProductionPlanWO:/app
+      - D:\CWB-Latest\latest:/src
+      - C:\Users\admin\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.productionplanwo$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -259,9 +259,9 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.simulation$
     volumes:
-      - F:\CWBworking\CWB.Simulation:/app
-      - F:\CWBworking:/src
-      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
+      - D:\CWB-Latest\latest\CWB.Simulation:/app
+      - D:\CWB-Latest\latest:/src
+      - C:\Users\admin\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.simulation$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -287,9 +287,9 @@ services:
       - ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
       #- NUGET_FALLBACK_PACKAGES=$container_paths_to_fallback_packages_cwb.tenant$
     volumes:
-      - F:\CWBworking\CWB.Tenant:/app
-      - F:\CWBworking:/src
-      - C:\Users\PC\vsdbg\vs2017u5:/remote_debugger:rw
+      - D:\CWB-Latest\latest\CWB.Tenant:/app
+      - D:\CWB-Latest\latest:/src
+      - C:\Users\admin\vsdbg\vs2017u5:/remote_debugger:rw
 #$nuget_volume_mapping_cwb.tenant$
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro

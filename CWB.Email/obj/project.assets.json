@@ -3807,23 +3807,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\PC\\.nuget\\packages\\": {},
+    "C:\\Users\\admin\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\CWBworking\\CWB.Email\\CWB.Email.csproj",
+      "projectUniqueName": "D:\\CWB-Latest\\latest\\CWB.Email\\CWB.Email.csproj",
       "projectName": "CWB.Email",
-      "projectPath": "F:\\CWBworking\\CWB.Email\\CWB.Email.csproj",
-      "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
-      "outputPath": "F:\\CWBworking\\CWB.Email\\obj\\",
+      "projectPath": "D:\\CWB-Latest\\latest\\CWB.Email\\CWB.Email.csproj",
+      "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
+      "outputPath": "D:\\CWB-Latest\\latest\\CWB.Email\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -3832,21 +3832,20 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "projectReferences": {
-            "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj": {
-              "projectPath": "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj"
+            "D:\\CWB-Latest\\latest\\CWB.Extensions\\CWB.Extensions.csproj": {
+              "projectPath": "D:\\CWB-Latest\\latest\\CWB.Extensions\\CWB.Extensions.csproj"
             },
-            "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj": {
-              "projectPath": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj"
+            "D:\\CWB-Latest\\latest\\CWB.Logging\\CWB.Logging.csproj": {
+              "projectPath": "D:\\CWB-Latest\\latest\\CWB.Logging\\CWB.Logging.csproj"
             },
-            "F:\\CWBworking\\CWB.Notification\\CWB.Notification.csproj": {
-              "projectPath": "F:\\CWBworking\\CWB.Notification\\CWB.Notification.csproj"
+            "D:\\CWB-Latest\\latest\\CWB.Notification\\CWB.Notification.csproj": {
+              "projectPath": "D:\\CWB-Latest\\latest\\CWB.Notification\\CWB.Notification.csproj"
             }
           }
         }
@@ -3912,12 +3911,18 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.NETCore.App.Host.win-x64",
+            "version": "[3.1.25, 3.1.25]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
       }
     }
   }

@@ -2604,7 +2604,7 @@ function showLoadingScreen() {
     document.getElementById('status').style.display = 'block';
     $.ajax({
         type: "POST",
-        url: '/WorkOrder/ProcPlan',
+        url: '/WorkOrder/ProcPlan2',
         success: function (data) {
             document.getElementById('preloader').style.display = 'none';
             document.getElementById('status').style.display = 'none';

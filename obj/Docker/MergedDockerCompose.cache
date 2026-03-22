@@ -1,8 +1,8 @@
-name: dockercompose8775946507736149664
+name: dockercompose13304926653583709868
 services:
   cwb.apigateway:
     build:
-      context: F:\CWBworking
+      context: D:\CWB-Latest\latest
       dockerfile: CWB.ApiGateway/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
@@ -25,18 +25,20 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\admin\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\admin\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
   cwb.app:
     build:
-      context: F:\CWBworking
+      context: D:\CWB-Latest\latest
       dockerfile: CWB.App/Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
@@ -65,26 +67,30 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: F:\CWBworking\filestorage\Active
+        source: D:\CWB-Latest\latest\filestorage\Active
         target: /filestorage/Active
-        bind: {}
+        bind:
+          create_host_path: true
       - type: bind
-        source: F:\CWBworking\filestorage\Archive
+        source: D:\CWB-Latest\latest\filestorage\Archive
         target: /filestorage/Archive
-        bind: {}
+        bind:
+          create_host_path: true
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\admin\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\admin\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
   cwb.businessaquisition:
     build:
-      context: F:\CWBworking
+      context: D:\CWB-Latest\latest
       dockerfile: CWB.BusinessAquisition/Dockerfile
     depends_on:
       db:
@@ -117,18 +123,20 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\admin\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\admin\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
   cwb.companysettings:
     build:
-      context: F:\CWBworking
+      context: D:\CWB-Latest\latest
       dockerfile: CWB.CompanySettings/Dockerfile
     depends_on:
       db:
@@ -161,18 +169,20 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\admin\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\admin\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
   cwb.email:
     build:
-      context: F:\CWBworking
+      context: D:\CWB-Latest\latest
       dockerfile: CWB.Email/Dockerfile
     depends_on:
       kafka:
@@ -194,7 +204,7 @@ services:
     restart: always
   cwb.identity:
     build:
-      context: F:\CWBworking
+      context: D:\CWB-Latest\latest
       dockerfile: CWB.Identity/Dockerfile
     depends_on:
       db:
@@ -227,18 +237,20 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\admin\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\admin\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
   cwb.masters:
     build:
-      context: F:\CWBworking
+      context: D:\CWB-Latest\latest
       dockerfile: CWB.Masters/Dockerfile
     depends_on:
       db:
@@ -271,18 +283,20 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\admin\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\admin\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
   cwb.modules:
     build:
-      context: F:\CWBworking
+      context: D:\CWB-Latest\latest
       dockerfile: CWB.Modules/Dockerfile
     depends_on:
       db:
@@ -315,18 +329,20 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\admin\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\admin\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
   cwb.productionplanwo:
     build:
-      context: F:\CWBworking
+      context: D:\CWB-Latest\latest
       dockerfile: CWB.ProductionPlanWO/Dockerfile
     depends_on:
       db:
@@ -359,18 +375,20 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\admin\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\admin\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
   cwb.simulation:
     build:
-      context: F:\CWBworking
+      context: D:\CWB-Latest\latest
       dockerfile: CWB.Simulation/Dockerfile
     depends_on:
       db:
@@ -403,18 +421,20 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\admin\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\admin\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
   cwb.tenant:
     build:
-      context: F:\CWBworking
+      context: D:\CWB-Latest\latest
       dockerfile: CWB.Tenant/Dockerfile
     depends_on:
       db:
@@ -447,15 +467,17 @@ services:
     restart: always
     volumes:
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
+        source: C:\Users\admin\AppData\Roaming/Microsoft/UserSecrets
         target: /root/.microsoft/usersecrets
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
       - type: bind
-        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
+        source: C:\Users\admin\AppData\Roaming/ASP.NET/Https
         target: /root/.aspnet/https
         read_only: true
-        bind: {}
+        bind:
+          create_host_path: true
   db:
     environment:
       MYSQL_DATABASE: db
@@ -545,4 +567,4 @@ networks:
     driver: bridge
 volumes:
   my-db:
-    name: dockercompose8775946507736149664_my-db
+    name: dockercompose13304926653583709868_my-db
