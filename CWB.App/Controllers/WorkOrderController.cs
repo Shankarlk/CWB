@@ -7099,14 +7099,14 @@ namespace CWB.App.Controllers
                                             UOMId = ptype.UOMId,
                                             PlanReceiptDate = (DateTime)item.PlanCompletionDate,
                                             CalcReceiptDate = nextworkdingdate,
-                                            WorkOrderId = item.WoId,
+                                            WorkOrderId = item.ProductionPlanId,
                                             CriticalPart = criticalpart
                                         };
                                         listprocplan.Add(ppdata);
                                     }
                                     BOMListVM bomdata = new BOMListVM
                                     {
-                                        ParentWoId = item.WoId,
+                                        ParentWoId = item.ProductionPlanId,
                                         Child_Part_No_ID = grouped.PartId,
                                         Child_Part_No_Type = ptype.MasterPartType.ToString(),
                                         Calc_Qnty = (int)intermediateResult,
@@ -7123,7 +7123,7 @@ namespace CWB.App.Controllers
 
                                         ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
                                         {
-                                            WoId = item.WoId,
+                                            WoId = item.ProductionPlanId,
                                             ParentWoId = item.WoId,
                                             SalesOrderId = item.SalesOrderId,
                                             PartId = bomdata.Child_Part_No_ID,
@@ -7286,7 +7286,7 @@ namespace CWB.App.Controllers
                                         }
                                         BOMListVM bomdata = new BOMListVM
                                         {
-                                            ParentWoId = item.WoId,
+                                            ParentWoId = item.ProductionPlanId,
                                             Child_Part_No_ID = bomgrp.PartId,
                                             Child_Part_No_Type = mp.MasterPartType.ToString(),
                                             Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
@@ -7301,7 +7301,7 @@ namespace CWB.App.Controllers
                                         listbom.Add(bomdata);
                                         ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
                                         {
-                                            WoId = item.WoId,
+                                            WoId = item.ProductionPlanId,
                                             ParentWoId = item.WoId,
                                             SalesOrderId = item.SalesOrderId,
                                             PartId = bomdata.Child_Part_No_ID,
@@ -7345,7 +7345,7 @@ namespace CWB.App.Controllers
                                         }
                                         BOMListVM bofbomdata = new BOMListVM
                                         {
-                                            ParentWoId = item.WoId,
+                                            ParentWoId = item.ProductionPlanId,
                                             Child_Part_No_ID = bomgrp.PartId,
                                             Child_Part_No_Type = mp.MasterPartType.ToString(),
                                             Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
@@ -7363,7 +7363,7 @@ namespace CWB.App.Controllers
                                             UOMId = manuf.UOMId,
                                             PlanReceiptDate = item.PlanStartDate,
                                             CalcReceiptDate = bofnextworkdingdate,
-                                            WorkOrderId = item.WoId,
+                                            WorkOrderId = item.ProductionPlanId,
                                             CriticalPart = criticalpart
                                         };
                                         listprocplan.Add(ppdata);
@@ -7397,7 +7397,7 @@ namespace CWB.App.Controllers
 
                                         BOMListVM rmbomdata = new BOMListVM
                                         {
-                                            ParentWoId = item.WoId,
+                                            ParentWoId = item.ProductionPlanId,
                                             Child_Part_No_ID = bomgrp.PartId,
                                             Child_Part_No_Type = mp.MasterPartType.ToString(),
                                             // Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
@@ -7648,7 +7648,42 @@ namespace CWB.App.Controllers
             var result = await _woService.ProcPlanPost(procPlanVMs);
             return Ok(result);
         } 
-        
+        [HttpPost]
+        public async Task<IActionResult> UpdateProcPlanMOQ([FromBody] IEnumerable<ProcPlanVM> procPlanVMs)
+        {
+            var allprocplan = await _woService.GetAllProcPlan();
+            var finalList = new List<ProcPlanVM>();
+            foreach (var proc in procPlanVMs)
+            {
+                // 🔥 STEP 1: Check if Combined
+                if (!string.IsNullOrEmpty(proc.CombinedIds))
+                {
+                    var ids = proc.CombinedIds
+                                  .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                  .Select(id => Convert.ToInt64(id.Trim()))
+                                  .ToList();
+
+                    foreach (var item in allprocplan.Where(x => ids.Contains(x.ProcPlanId)))
+                    {
+                        item.Plan_Proc_Qnty = proc.Plan_Proc_Qnty;
+                        finalList.Add(item);
+                    }
+                }
+                else
+                {
+                    // 🔥 Normal case
+                    var item = allprocplan.FirstOrDefault(x => x.ProcPlanId == proc.ProcPlanId);
+                    if (item != null)
+                    {
+                        item.Plan_Proc_Qnty = proc.Plan_Proc_Qnty;
+                        finalList.Add(item);
+                    }
+                }
+            }
+
+            var result = await _woService.ProcPlanPost(finalList);
+            return Ok(result);
+        }
         [HttpGet]
         public async Task<IActionResult> AllProductionWos()  // AllProductionWoReadForProd
         {
@@ -7890,8 +7925,24 @@ namespace CWB.App.Controllers
             }
 
             return Ok(productions);
-        }
+        } 
         [HttpGet]
+        public async Task<IActionResult> GetCombinedWoDetails(long partId, long parentWoId)
+        {
+            // 1. Fetch same base data
+            var productions = (await _woService.AllProductionWoReadForProd()).ToList();
+
+            // 2. Filter only matching combined group
+            var combinedWos = productions
+                .Where(p => p.PartId == partId && p.ParentWoId == parentWoId)
+                .ToList();
+
+            if (!combinedWos.Any())
+                return NotFound("No combined WOs found");
+
+            return Ok(combinedWos);
+        }
+                [HttpGet]
         public async Task<IActionResult> AllRMWo(int rmpartids)
         {
             var productions = await _woService.AllProductionPlan_Wo();
@@ -8142,8 +8193,7 @@ namespace CWB.App.Controllers
             }
             return Ok(listwo);
         }
-
-        [HttpGet]
+                [HttpGet]
         public async Task<IActionResult> GetAllProcPlan()
         {
             var resultList = await _woService.GetAllProcPlan();
@@ -8200,10 +8250,102 @@ namespace CWB.App.Controllers
                     item.CriticalParts = "N";
                 }
             }
+            // Map: WoId → ParentWoId
+            var parentMap = new Dictionary<long, long>();
 
-            return Ok(resultList);
+            // ✅ from Production WO (same as BOM)
+            foreach (var p in workOrders)
+            {
+                if (!parentMap.ContainsKey(p.WoId))
+                    parentMap[p.WoId] = p.ParentWoId;
+            }
+
+            // ✅ from ProcPlan (like BOM logic 🔥)
+            foreach (var b in resultList)
+            {
+                if (!parentMap.ContainsKey(b.WorkOrderId))
+                {
+                    var guessParent = workOrders
+                        .Where(x => x.WoId < b.WorkOrderId)
+                        .OrderByDescending(x => x.WoId)
+                        .FirstOrDefault();
+
+                    if (guessParent != null)
+                        parentMap[b.WorkOrderId] = guessParent.WoId;
+                }
+                    }
+                    // 2. Root resolver
+            long GetRootParent(long woId)
+            {
+                var visited = new HashSet<long>();
+
+                while (parentMap.ContainsKey(woId) && parentMap[woId] != 0)
+                {
+                    if (!visited.Add(woId))
+                        break;
+
+                    woId = parentMap[woId];
+                }
+
+                return woId;
+            }
+            var consolidatedResult = resultList
+            .GroupBy(x => new
+            {
+                x.PartId,
+                x.SupplierId,
+                RootParentWoId = GetRootParent(x.WorkOrderId)
+            })
+            .Select(g =>
+            {
+                var first = g.First();
+
+                first.Calc_Proc_Qnty = g.Sum(x => x.Calc_Proc_Qnty);
+                first.Plan_Proc_Qnty = g.Sum(x => x.Plan_Proc_Qnty);
+                first.CombinedProcPlan = g.Count() > 1 ? "Y" : "N";
+                first.CriticalParts = g.Any(x => x.CriticalParts == "Y") ? "Y" : "N";
+                first.PlanReceiptDate = g.Min(x => x.PlanReceiptDate);
+                first.PlanStartDateStr = g.Min(x => x.PlanReceiptDate).ToString("dd-MM-yyyy");
+
+                first.ChildCount = g.Count();
+
+                first.CombinedIds = string.Join(",", g.Select(x => x.ProcPlanId));
+
+                first.WoIds = string.Join(",", g.Select(x => x.WorkOrderId).Distinct());
+
+                return first;
+            })
+            .ToList();
+
+            return Ok(consolidatedResult);
+            //return Ok(resultList);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetCombinedProcPlanDetails(string combinedIds)
+        {
+            if (string.IsNullOrEmpty(combinedIds))
+                return BadRequest("Invalid CombinedIds");
 
+            // 1. Convert string → List<long>
+            var ids = combinedIds
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(id => long.TryParse(id, out var val) ? val : 0)
+                .Where(id => id > 0)
+                .ToList();
+
+            // 2. Fetch all ProcPlan
+            var resultList = await _woService.GetAllProcPlan();
+
+            // 3. Filter matching records
+            var filtered = resultList
+                .Where(x => ids.Contains(x.ProcPlanId))
+                .ToList();
+
+            if (!filtered.Any())
+                return NotFound("No records found");
+
+            return Ok(filtered);
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllBomlist()
@@ -8221,6 +8363,7 @@ namespace CWB.App.Controllers
 
             // Prepare a dictionary for fast lookup of Work Orders by ID
             var workOrdersDict = workOrders.ToDictionary(wo => wo.WOID, wo => wo.WONumber);
+            var prodnwosDict = prodnWos.ToDictionary(wo => wo.ProductionPlanId, wo => wo.WONumber);
             var woCompletionDatesDict = workOrders.ToDictionary(wo => wo.WOID, wo => (SoCompletionDate: wo.SoComplDate, PlanCompletionDate: wo.PlanCompletionDate,Wotype: wo.BuildToStock));
             var prodnWosStatusDict = prodnWos
       .GroupBy(p => p.WoId) // or appropriate key matching ParentWoId
@@ -8254,7 +8397,14 @@ namespace CWB.App.Controllers
                 {
                     item.WoNumber = woNumber;
                 }
-
+else if (prodnwosDict.TryGetValue(item.ParentWoId, out var prodnInfo))
+                {
+                    item.WoNumber = prodnInfo; // ✅ FALLBACK
+                }
+                else
+                {
+                    item.WoNumber = ""; // optional default
+                }
                 if (prodnWosStatusDict.TryGetValue(item.ParentWoId, out var statusInfo))
                 {
                     item.Status = statusInfo.Status;
@@ -8291,23 +8441,140 @@ namespace CWB.App.Controllers
                 }
                 if (woCompletionDatesDict.TryGetValue(item.ParentWoId, out var type))
                 {
-                    var buildtostock = dates.Wotype;
+                    var buildtostock = type.Wotype;
                     if (buildtostock == 1)
-                    {
-                        item.WoType = "Build To Stock or Reorder";
-                    }
-                    else
-                    {
-                        item.WoType = "Prodn";
-                    }
+                    item.WoType = "Build To Stock or Reorder";
+                else
+                    item.WoType = "Prodn";
                 }
                 else
                 {
                     item.WoType = " ";
                 }
+        }
+          // Map: WoId → Root ParentWoId
+            var parentMap = new Dictionary<long, long>();
+
+            // ✅ from Production WO
+            foreach (var p in prodnWos)
+            {
+                if (!parentMap.ContainsKey(p.WoId))
+                    parentMap[p.WoId] = p.ParentWoId;
             }
 
-            return Ok(resultList);
+            // ✅ from BOM (THIS IS THE MISSING PIECE 🔥)
+            foreach (var b in resultList)
+            {
+                if (!parentMap.ContainsKey(b.ParentWoId))
+                {
+                    // assume it belongs to nearest known parent
+                    var guessParent = prodnWos
+                        .Where(x => x.WoId < b.ParentWoId)   // heuristic
+                        .OrderByDescending(x => x.WoId)
+                        .FirstOrDefault();
+
+                    if (guessParent != null)
+                        parentMap[b.ParentWoId] = guessParent.WoId;
+                }
+            }
+            var rootCache = new Dictionary<long, long>();
+
+            long GetRootParent(long woId)
+            {
+                var visited = new HashSet<long>();
+
+                while (parentMap.ContainsKey(woId) && parentMap[woId] != 0)
+                {
+                    if (!visited.Add(woId))
+                        break;
+
+                    woId = parentMap[woId];
+                }
+
+                return woId;
+            }
+            var resultListLocal = resultList.ToList();
+
+            var consolidatedResult = resultList
+    .GroupBy(x => new
+    {
+        x.Child_Part_No_ID,
+        RootParentWoId = GetRootParent(x.ParentWoId)
+    })
+    .Select(g =>
+    {
+        var first = g.First();
+
+        var root = GetRootParent(first.ParentWoId);
+        first.Calc_Qnty = g.Sum(x => x.Calc_Qnty);
+        first.Plan_Qnty = g.Sum(x => x.Plan_Qnty);
+        first.Plan_Compl_Dt = g.Min(x => x.Plan_Compl_Dt);
+        first.CombinedBom = g.Count() > 1 ? "Y" : "N";
+        return first;
+    })
+    .ToList();
+            return Ok(consolidatedResult);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetCombinedBomList(long childPartId, long parentWoId)
+        {
+            // 1. Fetch data
+            var resultList = (await _woService.GetAllBomlist()).ToList();
+            var prodnWos = (await _woService.AllProductionPlan_Wo()).ToList();
+
+            // 2. Build parent map (same as main API)
+            var parentMap = new Dictionary<long, long>();
+
+            foreach (var p in prodnWos)
+            {
+                if (!parentMap.ContainsKey(p.WoId))
+                    parentMap[p.WoId] = p.ParentWoId;
+            }
+
+            foreach (var b in resultList)
+            {
+                if (!parentMap.ContainsKey(b.ParentWoId))
+                {
+                    var guessParent = prodnWos
+                        .Where(x => x.WoId < b.ParentWoId)
+                        .OrderByDescending(x => x.WoId)
+                        .FirstOrDefault();
+
+                    if (guessParent != null)
+                        parentMap[b.ParentWoId] = guessParent.WoId;
+                }
+            }
+
+            // 3. Root resolver
+            long GetRootParent(long woId)
+            {
+                var visited = new HashSet<long>();
+
+                while (parentMap.ContainsKey(woId) && parentMap[woId] != 0)
+                {
+                    if (!visited.Add(woId))
+                        break;
+
+                    woId = parentMap[woId];
+                }
+
+                return woId;
+            }
+
+            // 🔥 4. Convert incoming ParentWoId → RootParentWoId
+            var rootParentWoId = GetRootParent(parentWoId);
+
+            // 🔥 5. Filter using ROOT (this is the fix)
+            var combinedRows = resultList
+                .Where(x =>
+                    x.Child_Part_No_ID == childPartId &&
+                    GetRootParent(x.ParentWoId) == rootParentWoId)
+                .ToList();
+
+            if (!combinedRows.Any())
+                return NotFound("No combined BOM records found");
+
+            return Ok(combinedRows);
         }
 
 
@@ -12520,6 +12787,8 @@ namespace CWB.App.Controllers
         }
 
         private HashSet<long> _allocatedTempSlotIds = new HashSet<long>();
+        private object prodnwosDict;
+
         public async Task<TempMc_Timeslot_ListVM?> GetEarliestFreeTempTimeslot(long machineId, HashSet<long> _allocatedTempSlotIds)
         {
             var allMachineSlots = await _woService.GetAllTempMc_Timeslot_List();

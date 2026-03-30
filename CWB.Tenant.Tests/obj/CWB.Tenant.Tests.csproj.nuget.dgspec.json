@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\CWB-Latest\\latest\\CWB.Tenant.Tests\\CWB.Tenant.Tests.csproj": {}
+    "F:\\CWBworking\\CWB.Tenant.Tests\\CWB.Tenant.Tests.csproj": {}
   },
   "projects": {
-    "D:\\CWB-Latest\\latest\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
+    "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CWB-Latest\\latest\\CWB.CommonUtils\\CWB.CommonUtils.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj",
         "projectName": "CWB.CommonUtils",
-        "projectPath": "D:\\CWB-Latest\\latest\\CWB.CommonUtils\\CWB.CommonUtils.csproj",
-        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "D:\\CWB-Latest\\latest\\CWB.CommonUtils\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.CommonUtils\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,6 +26,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -88,24 +89,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\CWB-Latest\\latest\\CWB.Constants\\CWB.Constants.csproj": {
+    "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CWB-Latest\\latest\\CWB.Constants\\CWB.Constants.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj",
         "projectName": "CWB.Constants",
-        "projectPath": "D:\\CWB-Latest\\latest\\CWB.Constants\\CWB.Constants.csproj",
-        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "D:\\CWB-Latest\\latest\\CWB.Constants\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.Constants\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -114,6 +115,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -156,24 +158,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\CWB-Latest\\latest\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
+    "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CWB-Latest\\latest\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj",
         "projectName": "CWB.ExceptionHandling",
-        "projectPath": "D:\\CWB-Latest\\latest\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj",
-        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "D:\\CWB-Latest\\latest\\CWB.ExceptionHandling\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.ExceptionHandling\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -182,17 +184,18 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "D:\\CWB-Latest\\latest\\CWB.Constants\\CWB.Constants.csproj": {
-                "projectPath": "D:\\CWB-Latest\\latest\\CWB.Constants\\CWB.Constants.csproj"
+              "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj"
               },
-              "D:\\CWB-Latest\\latest\\CWB.Logging\\CWB.Logging.csproj": {
-                "projectPath": "D:\\CWB-Latest\\latest\\CWB.Logging\\CWB.Logging.csproj"
+              "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj"
               }
             }
           }
@@ -235,24 +238,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\CWB-Latest\\latest\\CWB.Extensions\\CWB.Extensions.csproj": {
+    "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CWB-Latest\\latest\\CWB.Extensions\\CWB.Extensions.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj",
         "projectName": "CWB.Extensions",
-        "projectPath": "D:\\CWB-Latest\\latest\\CWB.Extensions\\CWB.Extensions.csproj",
-        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "D:\\CWB-Latest\\latest\\CWB.Extensions\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.Extensions\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -261,17 +264,18 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "D:\\CWB-Latest\\latest\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
-                "projectPath": "D:\\CWB-Latest\\latest\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj"
+              "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj"
               },
-              "D:\\CWB-Latest\\latest\\CWB.Logging\\CWB.Logging.csproj": {
-                "projectPath": "D:\\CWB-Latest\\latest\\CWB.Logging\\CWB.Logging.csproj"
+              "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj"
               }
             }
           }
@@ -334,24 +338,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\CWB-Latest\\latest\\CWB.Logging\\CWB.Logging.csproj": {
+    "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CWB-Latest\\latest\\CWB.Logging\\CWB.Logging.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj",
         "projectName": "CWB.Logging",
-        "projectPath": "D:\\CWB-Latest\\latest\\CWB.Logging\\CWB.Logging.csproj",
-        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "D:\\CWB-Latest\\latest\\CWB.Logging\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.Logging\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -360,6 +364,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -406,24 +411,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\CWB-Latest\\latest\\CWB.Tenant.Tests\\CWB.Tenant.Tests.csproj": {
+    "F:\\CWBworking\\CWB.Tenant.Tests\\CWB.Tenant.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CWB-Latest\\latest\\CWB.Tenant.Tests\\CWB.Tenant.Tests.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.Tenant.Tests\\CWB.Tenant.Tests.csproj",
         "projectName": "CWB.Tenant.Tests",
-        "projectPath": "D:\\CWB-Latest\\latest\\CWB.Tenant.Tests\\CWB.Tenant.Tests.csproj",
-        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "D:\\CWB-Latest\\latest\\CWB.Tenant.Tests\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.Tenant.Tests\\CWB.Tenant.Tests.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.Tenant.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -432,14 +437,15 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "D:\\CWB-Latest\\latest\\CWB.Tenant\\CWB.Tenant.csproj": {
-                "projectPath": "D:\\CWB-Latest\\latest\\CWB.Tenant\\CWB.Tenant.csproj"
+              "F:\\CWBworking\\CWB.Tenant\\CWB.Tenant.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Tenant\\CWB.Tenant.csproj"
               }
             }
           }
@@ -506,24 +512,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\CWB-Latest\\latest\\CWB.Tenant\\CWB.Tenant.csproj": {
+    "F:\\CWBworking\\CWB.Tenant\\CWB.Tenant.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\CWB-Latest\\latest\\CWB.Tenant\\CWB.Tenant.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.Tenant\\CWB.Tenant.csproj",
         "projectName": "CWB.Tenant",
-        "projectPath": "D:\\CWB-Latest\\latest\\CWB.Tenant\\CWB.Tenant.csproj",
-        "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "D:\\CWB-Latest\\latest\\CWB.Tenant\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.Tenant\\CWB.Tenant.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.Tenant\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -532,17 +538,18 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "D:\\CWB-Latest\\latest\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
-                "projectPath": "D:\\CWB-Latest\\latest\\CWB.CommonUtils\\CWB.CommonUtils.csproj"
+              "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj"
               },
-              "D:\\CWB-Latest\\latest\\CWB.Extensions\\CWB.Extensions.csproj": {
-                "projectPath": "D:\\CWB-Latest\\latest\\CWB.Extensions\\CWB.Extensions.csproj"
+              "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj"
               }
             }
           }
@@ -592,12 +599,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[3.1.25, 3.1.25]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -606,7 +607,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
         }
       }
     }

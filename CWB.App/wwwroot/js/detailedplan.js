@@ -1664,10 +1664,15 @@ $(document).ready(function () {
         });
 */
 
+
     $("#UpdateMOQ").on("click", function () {
         var selectedRowsData = [];
         $("#ProcPlanGrid tbody tr").each(function () {
-            var row = $(this);
+            var row = $(this); 
+            var combinedFlag = row.find("td:eq(23)").text(); // 🔥 CombinedProcPlan (adjust index) 
+            var childCount = parseInt(row.find("td:eq(22)").text()) || 1; // 🔥 ChildCount
+            var calcQty = parseInt(row.find("td:eq(8)").text()) || 0;
+            var moq = parseInt(row.find("td:eq(11)").text()) || 0;
             var rowData = {
                 procPlanId: parseInt(row.find("td:eq(1)").text()),
                 partId: parseInt(row.find("td:eq(3)").text()),
@@ -1676,17 +1681,19 @@ $(document).ready(function () {
                 plan_Proc_Qnty: parseInt(row.find("td:eq(10)").text()),
                 moq: parseInt(row.find("td:eq(11)").text()),
                 uomid: 0,
-                workOrderId: parseInt(row.find("td:eq(2)").text())
+                workOrderId: parseInt(row.find("td:eq(2)").text()),
+                combinedIds: row.find("td:eq(21)").text()
             };
 
             // Ensure plan_Proc_Qnty is at least the MOQ
-            if (rowData.plan_Proc_Qnty < rowData.moq) {
-                rowData.plan_Proc_Qnty = rowData.moq;
+            if (combinedFlag === "Y") {
+                moq = Math.ceil(moq / childCount); // split MOQ
+            } // 🔥 STEP 2: Apply your EXACT logic
+            if (calcQty < moq) {
+                rowData.plan_Proc_Qnty = moq;
+            } else {
+                rowData.plan_Proc_Qnty = calcQty;
             }
-            else if (rowData.plan_Proc_Qnty > rowData.moq) {
-                rowData.plan_Proc_Qnty = calc_Proc_Qnty;
-            }
-
             selectedRowsData.push(rowData);
         });
 
@@ -1694,7 +1701,7 @@ $(document).ready(function () {
         if (selectedRowsData.length > 0) {
         $.ajax({
             type: "POST",
-            url: '/WorkOrder/PostProcPlan',
+            url: '/WorkOrder/UpdateProcPlanMOQ',
             contentType: "application/json; charset=utf-8",
             headers: { 'Content-Type': 'application/json' },
             data: JSON.stringify(selectedRowsData),

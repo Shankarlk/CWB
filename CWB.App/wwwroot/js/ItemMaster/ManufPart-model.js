@@ -1667,6 +1667,10 @@ $(document).ready(function () {
         $("#MFPartType").val('');
         $("#inputpart").modal("hide");
         $("#Scrap-Error").text("");
+        $("#InputWeight").removeAttr("title");
+        $("#QuantityPerInput").val('');
+        $("#ScrapGenerated").val('');
+        $("#InputWeight").val('');
     });
     $('#inputpart').on('hidden.bs.modal', function (event) {
         document.getElementById('dialog-company').style.filter = 'none';
@@ -2225,6 +2229,17 @@ function calculateScrap() {
 
     // Update the ScrapGenerated field (fixed to 2 or 3 decimal places is usually safer)
     $("#ScrapGenerated").val(scrapWeight.toFixed(3));
+
+    if (quantityPerInput > 0 && scrapWeight >= 0 && finishedWeight>0) {
+        $("#Scrap-Error").text("");
+        $("#btnAddMPMakeFrom").prop("disabled", false);
+    }
+    else {
+      
+
+        $("#Scrap-Error").text("Please check input weight entered above or Quantity of Finished parts per input or Finished weight of the part");
+        $("#btnAddMPMakeFrom").prop("disabled", true);
+    }
 }
 
 function copyCustData() {
@@ -2239,11 +2254,20 @@ function copyCustData() {
     if (data[selval].multiplePartsMadeFrom1InputRM == 'N') {
         $("#InputWeight").val(data[selval].rawMaterialWeight);
         $("#InputWeight").prop('readonly', true);
+        $("#QuantityPerInput").prop('readonly', false);
+        $("#InputWeight").removeAttr("title");
+        $("#QuantityPerInput").val(1);
         calculateScrap();
     } else {
         $("#InputWeight").val(data[selval].rawMaterialWeight);
         $("#InputWeight").prop('readonly', false);
+        $("#InputWeight").attr("title",
+            "Input weight should include cutting losses and end bit losses when multiple finished parts are made from one input part");
+        $("#QuantityPerInput").prop('readonly', true);
+        originalRMWeight = parseFloat(data[selval].rawMaterialWeight) || 0;
+        calculateQuantityPerInput();
         calculateScrap();
+       
     }
     document.getElementById("btn-close-CustRM").click();
     ownRMSelected = false;
@@ -2258,18 +2282,73 @@ function copyOwnData() {
     $('#MFPartType').val("Raw Material");
     if (data[selval].multiplePartsMadeFrom1InputRM == 'N') {
         $("#InputWeight").val(data[selval].rawMaterialWeight);
+        $("#QuantityPerInput").val(1);
+        $("#InputWeight").removeAttr("title");
         $("#InputWeight").prop('readonly', true);
+        $("#QuantityPerInput").prop('readonly', false);
         calculateScrap();
     } else {
         $("#InputWeight").val(data[selval].rawMaterialWeight);
         $("#InputWeight").prop('readonly', false);
+        $("#QuantityPerInput").prop('readonly', true);
+        $("#InputWeight").attr("title",
+            "Input weight should include cutting losses and end bit losses when multiple finished parts are made from one input part");
+        originalRMWeight = parseFloat(data[selval].rawMaterialWeight) || 0;
+        calculateQuantityPerInput();
         calculateScrap();
+       
     }
     document.getElementById("btn-close-RMSelect").click();
     ownRMSelected = true;
 }
+var originalRMWeight = 0;
+$("#QuantityPerInput").on("keyup change", function () {
+    var qty = parseFloat($(this).val()) || 0;
 
+    if (qty <= 0) {
+        $("#QtyError")
+            .text("Quantity must be greater than 0")
+            .show();
+    } else {
+        $("#QtyError").hide();
+    }
+});
+function calculateQuantityPerInput() {
+    var inputWeight = parseFloat($("#InputWeight").val()) || 0;
+    var rmWeight = originalRMWeight || 0;
 
+    // If any invalid
+    if (inputWeight <= 0 || rmWeight <= 0) {
+        $("#QuantityPerInput").val(0);
+
+        $("#QtyError")
+            .text("Please Check Input Weight Entered above or RM Weight")
+            .show();
+
+        return;
+    }
+
+    var qty = rmWeight / inputWeight;
+
+    qty = Math.floor(qty);
+
+    $("#QuantityPerInput").val(qty);
+
+    // Final validation
+    if (qty <= 0) {
+        $("#QtyError")
+            .text("Please Check Input Weight Entered above or RM Weight")
+            .show();
+        $("#btnAddMPMakeFrom").prop("disabled", true);
+    } else {
+        $("#QtyError").hide();
+        $("#btnAddMPMakeFrom").prop("disabled", false);
+    }
+}
+$("#InputWeight").on("keyup change", function () {
+    //calculateQuantityPerInput();
+    calculateScrap();
+});
 function copyData() {
 
     if (existingpartdata.length == 0) {

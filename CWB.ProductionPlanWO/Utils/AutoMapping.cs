@@ -239,6 +239,7 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.StartingOpNo, m => m.MapFrom(src => src.StartingOpNo))
                .ForMember(m => m.EndingOpNo, m => m.MapFrom(src => src.EndingOpNo))
                .ForMember(m => m.For_Ref, m => m.MapFrom(src => src.For_Ref))
+               .ForMember(m => m.Combined_WO, m => m.MapFrom(src => src.Combined_WO))
                .ForMember(m => m.Active, m => m.MapFrom(src => src.Active))
                .ForMember(m => m.WODate, m => m.MapFrom(src => src.WODate));
 
@@ -262,6 +263,7 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.StartingOpNo, m => m.MapFrom(src => src.StartingOpNo))
                .ForMember(m => m.EndingOpNo, m => m.MapFrom(src => src.EndingOpNo))
                .ForMember(m => m.For_Ref, m => m.MapFrom(src => src.For_Ref))
+               .ForMember(m => m.Combined_WO, m => m.MapFrom(src => src.Combined_WO))
                .ForMember(m => m.Active, m => m.MapFrom(src => src.Active))
                .ForMember(m => m.WODate, m => m.MapFrom(src => src.WODate));
 

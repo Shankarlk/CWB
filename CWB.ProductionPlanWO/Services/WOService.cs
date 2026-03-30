@@ -582,6 +582,10 @@ namespace CWB.ProductionPlanWO.Services
                     {
                         return proc;
                     }
+                     if (wkord.Plan_Proc_Qnty != pp.Plan_Proc_Qnty)
+                    {
+                        wkord.Old_Plan_Proc_Qnty = wkord.Plan_Proc_Qnty;
+                    }
                     wkord.Plan_Proc_Qnty = pp.Plan_Proc_Qnty;
                 }
                 try
@@ -4402,6 +4406,11 @@ namespace CWB.ProductionPlanWO.Services
                 {
                     item.PlanStartDateStr = item.PlanStartDate.ToString("dd-MM-yyyy");
                     item.PartTypeName = "Assembly";
+                }
+                else if(item.PartType == 1)
+                {
+                    item.PlanStartDateStr = item.PlanStartDate.ToString("dd-MM-yyyy");
+                    item.PartTypeName = "Child Part";
                 }
                 else
                 {

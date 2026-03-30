@@ -35,6 +35,7 @@ namespace CWB.ProductionPlanWO.ViewModels
         public int Active { get; set; }
         public int Urgent { get; set; }
         public char For_Ref { get; set; }
+        public char Combined_WO { get; set; }
         public int ManufDaysAvailable { get; set; }
         public int ManufDaysRequired { get; set; }
         public int Changed { get; set; }

@@ -123,6 +123,10 @@ namespace CWB.ProductionPlanWO.Configurations
              .Property(t => t.For_Ref)
              .HasColumnName("For_Ref")
              .HasDefaultValue(0);
+              builder
+             .Property(t => t.Combined_WO)
+             .HasColumnName("Combined_WO")
+             .HasDefaultValue(0);
             builder
              .Property(t => t.ManufDaysAvailable)
              .HasColumnName("ManufDaysAvailable");

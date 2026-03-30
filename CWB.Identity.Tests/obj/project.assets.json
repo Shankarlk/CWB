@@ -10421,23 +10421,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\admin\\.nuget\\packages\\": {},
+    "C:\\Users\\PC\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\CWB-Latest\\latest\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj",
+      "projectUniqueName": "F:\\CWBworking\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj",
       "projectName": "CWB.Identity.Tests",
-      "projectPath": "D:\\CWB-Latest\\latest\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj",
-      "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-      "outputPath": "D:\\CWB-Latest\\latest\\CWB.Identity.Tests\\obj\\",
+      "projectPath": "F:\\CWBworking\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj",
+      "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+      "outputPath": "F:\\CWBworking\\CWB.Identity.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -10446,14 +10446,15 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "projectReferences": {
-            "D:\\CWB-Latest\\latest\\CWB.Identity\\CWB.Identity.csproj": {
-              "projectPath": "D:\\CWB-Latest\\latest\\CWB.Identity\\CWB.Identity.csproj"
+            "F:\\CWBworking\\CWB.Identity\\CWB.Identity.csproj": {
+              "projectPath": "F:\\CWBworking\\CWB.Identity\\CWB.Identity.csproj"
             }
           }
         }
@@ -10512,7 +10513,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.408\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.416\\RuntimeIdentifierGraph.json"
       }
     }
   }
