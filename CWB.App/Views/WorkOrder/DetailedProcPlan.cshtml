@@ -937,9 +937,7 @@
                                         <th>WO / PO Ref</th>
                                         <th>Plan Qnty</th>
                                         <th>Plan Compl / Rcpt Date</th>
-                                        <th>Act Qnty</th>
-                                        <th>Act Compl / Recpt Dt</th>
-                                        <th>Status</th>
+                                       
                                         <th>Critical Part</th>
                                         <th>WO Type</th>
                                         <th></th>
@@ -2492,7 +2490,40 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="CombinedWoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bxs-modal">
+           
+                <div class="modal-header">
+                    <h4 class="modal-title" id="standard-modalLabel">Combined WO Details </h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-250">
+                                <table  class="table table-sm table-bordered w-100 text-center" id="CombinedWoTable">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>WO Number</th>
+                                            <th>Part</th>
+                                            <th>Qty</th>
+                                            <th>Start Date</th>
+                                            <th>Completion Date</th>
+                                            <th>SO Compeletion Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                </div>
+                            </div>
 
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
 <template id="detailedPlanWoRow">
     <tr>
         <td>
@@ -2580,14 +2611,38 @@
                            data-calwoqty={calcWOQty}
                            data-wostatus={status}>Edit</a>
                     }
+                    <a href="javascript:void(0);"
+                       class="dropdown-item"
+                       onclick="ViewCombinedWo(this)"
+                       data-combinedwoids="{combinedWoIds}"
+                       data-partid="{partId}">
+                        Show Related WO
+                    </a>
                 </div>
             </div>
         </td>
         <td hidden>{productionPlanId}</td>
         <td hidden>{buildToStock}</td>
+        <td hidden>{combinedWoIds}</td>
     </tr>
 </template>
-
+<template id="CombinedWoRow">
+    <tr>
+      
+        <td hidden>{woId}</td>
+        <td hidden>{salesOrderId}</td>
+        <td hidden>{partId}</td>
+        <td>{woNumber}</td>
+        <td>{partNo} / {partDesc}</td>
+        <td>{calcWOQty}</td>
+        <td>{planStartDateStr}</td>
+        <td>{planCompletionDateStr}</td>
+        <td>{soComplDateStr}</td>
+        <td hidden>{productionPlanId}</td>
+        <td hidden>{buildToStock}</td>
+        <td hidden>{combinedWoIds}</td>
+    </tr>
+</template>
 <template id="MatlWhereGridRow">
     <tr>
         <td>{partNo} / {partDesc}</td>
@@ -2646,9 +2701,10 @@
                 </div>
             </div>
         </td>
-         <td hidden>{combinedIds}</td>
+        <td hidden class="combinedIds">{combinedIds}</td>
         <td hidden>{childCount}</td>
         <td hidden>{combinedProcPlan}</td>
+        
     </tr>
 </template>
 
@@ -2662,9 +2718,7 @@
         <td>{woNumber}</td>
         <td>{calc_Qnty}</td>
         <td>{calcReceiptDateStr}</td>
-        <td></td>
-        <td></td>
-        <td></td>
+       
         <td>{criticalPart}</td>
         <td>{woType}</td>
         <td hidden>{plan_Compl_Dt}</td>

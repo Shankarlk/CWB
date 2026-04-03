@@ -483,6 +483,14 @@ namespace CWB.Masters.Services.ItemMaster
             else
             {
                 rmType = await _rawMaterialTypeRepository.UpdateAsync(rmType.Id, rmType);
+                try
+                {
+                    await _unitOfWork.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    string str = ex.ToString();
+                }
             }
             rMTypeVm.RawMaterialTypeId = rmType.Id;
             return rMTypeVm;

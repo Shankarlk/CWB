@@ -61,5 +61,6 @@ namespace CWB.App.Models.BusinessProcesses
         public string CombinedIds { get; set; } = string.Empty;
         public string CombinedProcPlan { get; set; } = string.Empty;
         public string WoIds { get; set; } = string.Empty;
+       
     }
 }

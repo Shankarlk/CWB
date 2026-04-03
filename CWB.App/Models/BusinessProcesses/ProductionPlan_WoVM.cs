@@ -93,6 +93,8 @@ namespace CWB.App.Models.BusinessProcesses
         public int NoOfOpenNc { get; set; }
         public int NoOfDocWf { get; set; }
         public string Comment { get; set; }
+        public string CombinedWoIds { get; set; } = string.Empty;
+        public char Combined { get; set; }
         public long TenantId { get; set; }
     }
 }

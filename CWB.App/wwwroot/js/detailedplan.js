@@ -142,40 +142,51 @@ function getWorkOrderStatus(productionWoData, workOrderId) {
 function loadProcPlan() {
     $("#preloaderblurred").show();
     api.getbulk("/WorkOrder/GetAllProcPlan").then((data) => {
-        const transformedData = Object.values(
-            data.reduce((acc, row) => {
-                const key = `${row.workOrderId}_${row.partId}`;
+        
+        //const transformedData = Object.values(
+        //    data.reduce((acc, row) => {
 
-                if (!acc[key]) {
-                    acc[key] = {
-                        ...row,
-                        calc_Proc_Qnty: 0,
-                        plan_Proc_Qnty: 0
-                    };
-                }
+        //        const key = `${row.workOrderId}_${row.partId}`;
 
-                // Keep the earliest dates
-                acc[key].calcReceiptDateStr =
-                    row.calcReceiptDateStr < acc[key].calcReceiptDateStr
-                        ? row.calcReceiptDateStr
-                        : acc[key].calcReceiptDateStr;
+        //        if (!acc[key]) {
+        //            acc[key] = {
+        //                ...row,
+        //                calc_Proc_Qnty: 0,
+        //                plan_Proc_Qnty: 0,
 
-                acc[key].planStartDateStr =
-                    row.planStartDateStr < acc[key].planStartDateStr
-                        ? row.planStartDateStr
-                        : acc[key].planStartDateStr;
+        //                // ✅ NEW FIELDS
+        //                combinedIds: [row.procPlanId],
+        //                childCount: 1
+        //            };
+        //        } else {
+        //            // ✅ Track all IDs
+        //            acc[key].combinedIds.push(row.procPlanId);
+        //            acc[key].childCount++;    
+        //        }
 
-                // Sum up the quantities
-                acc[key].calc_Proc_Qnty += row.calc_Proc_Qnty;
-                acc[key].plan_Proc_Qnty += row.plan_Proc_Qnty;
+        //        // ✅ Earliest dates
+        //        acc[key].calcReceiptDateStr =
+        //            (!acc[key].calcReceiptDateStr || row.calcReceiptDateStr < acc[key].calcReceiptDateStr)
+        //                ? row.calcReceiptDateStr
+        //                : acc[key].calcReceiptDateStr;
 
-                return acc;
-            }, {})
-        );
+        //        acc[key].planStartDateStr =
+        //            (!acc[key].planStartDateStr || row.planStartDateStr < acc[key].planStartDateStr)
+        //                ? row.planStartDateStr
+        //                : acc[key].planStartDateStr;
 
-        console.log(transformedData);
+        //        // ✅ Sum quantities
+        //        acc[key].calc_Proc_Qnty += row.calc_Proc_Qnty || 0;
+        //        acc[key].plan_Proc_Qnty += row.plan_Proc_Qnty || 0;
 
-        data = Object.values(transformedData);
+        //        return acc;
+
+        //    }, {})
+        //);
+        console.log(data);
+       
+
+        //data = Object.values(transformedData);
         var tablebody = $("#ProcPlanGrid tbody");
         $(tablebody).html("");//empty tbody
         api.getbulk("/WorkOrder/AllProductionWo").then((productionWoData) => {
@@ -1673,6 +1684,9 @@ $(document).ready(function () {
             var childCount = parseInt(row.find("td:eq(22)").text()) || 1; // 🔥 ChildCount
             var calcQty = parseInt(row.find("td:eq(8)").text()) || 0;
             var moq = parseInt(row.find("td:eq(11)").text()) || 0;
+            console.log("RAW TD:", row.find("td:eq(21)").html());
+            console.log("TEXT:", row.find("td:eq(21)").text());
+            var combinedIds = row.find(".combinedIds").text().trim();
             var rowData = {
                 procPlanId: parseInt(row.find("td:eq(1)").text()),
                 partId: parseInt(row.find("td:eq(3)").text()),
@@ -1682,15 +1696,23 @@ $(document).ready(function () {
                 moq: parseInt(row.find("td:eq(11)").text()),
                 uomid: 0,
                 workOrderId: parseInt(row.find("td:eq(2)").text()),
-                combinedIds: row.find("td:eq(21)").text()
+              combinedIds: row.find("td:eq(21)").text()
+               
             };
 
             // Ensure plan_Proc_Qnty is at least the MOQ
-            if (combinedFlag === "Y") {
-                moq = Math.ceil(moq / childCount); // split MOQ
-            } // 🔥 STEP 2: Apply your EXACT logic
+            //if (combinedFlag === "Y") {
+            //    moq = Math.ceil(moq / childCount+1); // split MOQ
+            //} // 🔥 STEP 2: Apply your EXACT logic
             if (calcQty < moq) {
-                rowData.plan_Proc_Qnty = moq;
+                if (combinedFlag === "Y") {
+                    moq = Math.ceil(moq / childCount ); // split MOQ
+
+                    rowData.plan_Proc_Qnty = moq;
+                }
+                else {
+                    rowData.plan_Proc_Qnty = moq;
+                }
             } else {
                 rowData.plan_Proc_Qnty = calcQty;
             }
@@ -1714,6 +1736,7 @@ $(document).ready(function () {
             alert("No data found in the table.");
         }
     });
+ 
 
     $("#ReleaseWo").on("click", function () {
        
@@ -2095,7 +2118,7 @@ $(document).ready(function () {
             $("#BomListGrid tbody tr").each(function () {
 
                 let criticalPart =
-                    $(this).children().eq(11).text().trim().toUpperCase();
+                    $(this).children().eq(8).text().trim().toUpperCase();
 
                 // show only Y
                 $(this).toggle(criticalPart === "Y");
@@ -3460,5 +3483,46 @@ function DeleteSubSupplier(element) {
     api.getbulk("/WorkOrder/DeleteSubCon?id=" + subconid).then((data) => {
         GetAllSubCons(workOrderId);
         GetAllSubPOCons(workOrderId);
+    });
+}
+function ViewCombinedWo(el) {
+
+    var combinedIds = $(el).data("combinedwoids"); // "1,2,3"
+    var partId = $(el).data("partid");
+
+    if (!combinedIds || String(combinedIds).split(",").length <= 1) {
+        alert("No consolidation for this WO");
+        return;
+    }
+
+    $.ajax({
+        type: "GET",
+        url: "/WorkOrder/GetCombinedWoDetailsByIds",
+        data: { ids: combinedIds },
+        success: function (data) {
+
+            console.log("Combined WO Details:", data);
+
+            var tbody = $("#CombinedWoTable tbody");
+            tbody.empty();
+
+            if (data.length === 0) {
+                // 2. Insert the "No Records Found" row
+                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tbody).append(noRecordsRow);
+            }
+            for (i = 0; i < data.length; i++) {
+               
+                $(tbody).append(AppUtil.ProcessTemplateData("CombinedWoRow", data[i]));
+            }
+
+            $("#CombinedWoModal").modal("show");
+        }
     });
 }

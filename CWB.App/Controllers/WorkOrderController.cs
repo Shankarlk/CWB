@@ -6199,6 +6199,7 @@ namespace CWB.App.Controllers
                                                 };
                                                 listprocplan.Add(ppdata);
                                             }
+                                            long uniqwoid = long.Parse(DateTime.UtcNow.ToString("yyyyMMddHHmmssfffff"));
                                             BOMListVM bomdata = new BOMListVM
                                             {
                                                 ParentWoId = item.WoId,
@@ -6211,6 +6212,7 @@ namespace CWB.App.Controllers
                                                 CalcReceiptDate = nextworkdingdate,
                                                 //Manf_Days_Avl = manfDays,
                                                 ProcPlanId = item.ProductionPlanId,
+                                                ChildWoId=uniqwoid
                                                 //SaNestLevel = Sa_Nest_level
                                             };
                                             if (ptype.MasterPartType == "ManufacturedPart")
@@ -6218,7 +6220,7 @@ namespace CWB.App.Controllers
 
                                                 ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
                                                 {
-                                                    WoId = item.WoId,
+                                                    WoId = uniqwoid,//; item.ProductionPlanId ,
                                                     ParentWoId = item.WoId,
                                                     SalesOrderId = item.SalesOrderId,
                                                     PartId = bomdata.Child_Part_No_ID,
@@ -6285,6 +6287,7 @@ namespace CWB.App.Controllers
                              "N", noofweeklyoff);
                                         //DateTime planstartdt = item.PlanCompletionDate.Value.AddDays(-assyTimeInDays);
                                         int? mainManufacturedpartid = null;
+                                        
                                         switch (mp.MasterPartType)
                                         {
                                             case MasterPartType.ManufacturedPart:
@@ -6379,11 +6382,22 @@ namespace CWB.App.Controllers
                                                     }
 
                                                 }
+                                                string parttype = "";
+                                                if (manufchild.ManufacturedPartType == 1)
+                                                {
+                                                    parttype = "ManufacturedPart";
+                                                }
+                                                else
+                                                {
+                                                    parttype = "Assembly";
+                                                }
+                                                long uniqwoid = long.Parse(DateTime.UtcNow.ToString("yyyyMMddHHmmssfffff"));
+
                                                 BOMListVM bomdata = new BOMListVM
                                                 {
                                                     ParentWoId = item.WoId,
                                                     Child_Part_No_ID = bomgrp.PartId,
-                                                    Child_Part_No_Type = mp.MasterPartType.ToString(),
+                                                    Child_Part_No_Type = parttype,
                                                     Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
                                                     Plan_Qnty = item.CalcWOQty,
                                                     Plan_Start_Dt = planstartdt,
@@ -6391,12 +6405,13 @@ namespace CWB.App.Controllers
                                                     CalcReceiptDate = planstartdt,
                                                     Manf_Days_Avl = manfDays,
                                                     ProcPlanId = item.ProductionPlanId,
-                                                    SaNestLevel = Sa_Nest_level
+                                                    SaNestLevel = Sa_Nest_level,
+                                                    ChildWoId= uniqwoid
                                                 };
                                                 listbom.Add(bomdata);
                                                 ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
                                                 {
-                                                    WoId = item.WoId,
+                                                    WoId = uniqwoid,//procplanid
                                                     ParentWoId = item.WoId,
                                                     SalesOrderId = item.SalesOrderId,
                                                     PartId = bomdata.Child_Part_No_ID,
@@ -6447,7 +6462,8 @@ namespace CWB.App.Controllers
                                                     Plan_Qnty = item.CalcWOQty,
                                                     Plan_Compl_Dt = planstartdt,
                                                     CalcReceiptDate = bofnextworkdingdate,
-                                                    ProcPlanId = item.ProductionPlanId
+                                                    ProcPlanId = item.ProductionPlanId,
+                                                   
                                                 };
                                                 listbom.Add(bofbomdata);
                                                 ProcPlanVM ppdata = new ProcPlanVM
@@ -7099,14 +7115,15 @@ namespace CWB.App.Controllers
                                             UOMId = ptype.UOMId,
                                             PlanReceiptDate = (DateTime)item.PlanCompletionDate,
                                             CalcReceiptDate = nextworkdingdate,
-                                            WorkOrderId = item.ProductionPlanId,
+                                            WorkOrderId = item.WoId,
                                             CriticalPart = criticalpart
                                         };
                                         listprocplan.Add(ppdata);
                                     }
+                                    long uniquewo = long.Parse(DateTime.UtcNow.ToString("yyyyMMddHHmmssfffff"));
                                     BOMListVM bomdata = new BOMListVM
                                     {
-                                        ParentWoId = item.ProductionPlanId,
+                                        ParentWoId = item.ParentWoId,
                                         Child_Part_No_ID = grouped.PartId,
                                         Child_Part_No_Type = ptype.MasterPartType.ToString(),
                                         Calc_Qnty = (int)intermediateResult,
@@ -7116,6 +7133,7 @@ namespace CWB.App.Controllers
                                         CalcReceiptDate = nextworkdingdate,
                                         //Manf_Days_Avl = manfDays,
                                         ProcPlanId = item.ProductionPlanId,
+                                        ChildWoId=uniquewo
                                         //SaNestLevel = Sa_Nest_level
                                     };
                                     if (ptype.MasterPartType == "ManufacturedPart")
@@ -7123,8 +7141,8 @@ namespace CWB.App.Controllers
 
                                         ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
                                         {
-                                            WoId = item.ProductionPlanId,
-                                            ParentWoId = item.WoId,
+                                            WoId = uniquewo,//item.ProductionPlanId,
+                                            ParentWoId = item.ParentWoId,
                                             SalesOrderId = item.SalesOrderId,
                                             PartId = bomdata.Child_Part_No_ID,
                                             PartType = 1,
@@ -7284,11 +7302,21 @@ namespace CWB.App.Controllers
                                             }
 
                                         }
+                                        string parttype = "";
+                                        if (manufchild.ManufacturedPartType == 1)
+                                        {
+                                            parttype = "ManufacturedPart";
+                                        }
+                                        else
+                                        {
+                                            parttype = "Assembly";
+                                        }
+                                        long uniquewo = long.Parse(DateTime.UtcNow.ToString("yyyyMMddHHmmssfffff"));
                                         BOMListVM bomdata = new BOMListVM
                                         {
-                                            ParentWoId = item.ProductionPlanId,
+                                            ParentWoId = item.ParentWoId,
                                             Child_Part_No_ID = bomgrp.PartId,
-                                            Child_Part_No_Type = mp.MasterPartType.ToString(),
+                                            Child_Part_No_Type = parttype,
                                             Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
                                             Plan_Qnty = item.CalcWOQty,
                                             Plan_Start_Dt = planstartdt,
@@ -7296,13 +7324,15 @@ namespace CWB.App.Controllers
                                             CalcReceiptDate = planstartdt,
                                             Manf_Days_Avl = manfDays,
                                             ProcPlanId = item.ProductionPlanId,
-                                            SaNestLevel = Sa_Nest_level
+                                            SaNestLevel = Sa_Nest_level,
+                                            ChildWoId= uniquewo
+
                                         };
                                         listbom.Add(bomdata);
                                         ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
                                         {
-                                            WoId = item.ProductionPlanId,
-                                            ParentWoId = item.WoId,
+                                            WoId = uniquewo,//item.ProductionPlanId,
+                                            ParentWoId = item.ParentWoId,
                                             SalesOrderId = item.SalesOrderId,
                                             PartId = bomdata.Child_Part_No_ID,
                                             PartType = (int)manufchild.ManufacturedPartType,
@@ -7363,7 +7393,7 @@ namespace CWB.App.Controllers
                                             UOMId = manuf.UOMId,
                                             PlanReceiptDate = item.PlanStartDate,
                                             CalcReceiptDate = bofnextworkdingdate,
-                                            WorkOrderId = item.ProductionPlanId,
+                                            WorkOrderId = item.WoId,
                                             CriticalPart = criticalpart
                                         };
                                         listprocplan.Add(ppdata);
@@ -7662,11 +7692,22 @@ namespace CWB.App.Controllers
                                   .Split(',', StringSplitOptions.RemoveEmptyEntries)
                                   .Select(id => Convert.ToInt64(id.Trim()))
                                   .ToList();
-
-                    foreach (var item in allprocplan.Where(x => ids.Contains(x.ProcPlanId)))
+                    if (ids.Count() > 1)
                     {
-                        item.Plan_Proc_Qnty = proc.Plan_Proc_Qnty;
-                        finalList.Add(item);
+                        foreach (var item in allprocplan.Where(x => ids.Contains(x.ProcPlanId)))
+                        {
+                            item.Plan_Proc_Qnty = proc.Plan_Proc_Qnty;
+                            finalList.Add(item);
+                        }
+                    }
+                    else if (ids.Count()==1)
+                    {
+                        var item = allprocplan.FirstOrDefault(x => x.ProcPlanId == proc.ProcPlanId);
+                        if (item != null)
+                        {
+                            item.Plan_Proc_Qnty = proc.Plan_Proc_Qnty;
+                            finalList.Add(item);
+                        }
                     }
                 }
                 else
@@ -7923,8 +7964,47 @@ namespace CWB.App.Controllers
                 }
                 item.NoOfDocWf = docPendingApprovalCount;
             }
+            var consolidatedList = productions
+    .GroupBy(x => new
+    {
+        x.PartId,
+        x.ParentWoId
+    })
+    .Select(g =>
+    {
+        var first = g.First();
 
-            return Ok(productions);
+        // ✅ Combine logic
+        if (g.Count() > 1)
+        {
+            
+            first.CalcWOQty = g.Sum(x => x.CalcWOQty);
+            //first.PlanWOQty = g.Sum(x => x.PlanWOQty);
+
+            // 🔥 Earliest Start Date
+            first.PlanStartDate = g.Min(x => x.PlanStartDate);
+
+            // Optional: if string date exists
+            first.PlanStartDateStr = g.Min(x => x.PlanStartDate)
+                                        .ToString("dd-MM-yyyy");
+            
+            // 🔥 Combine WO IDs
+            first.CombinedWoIds = string.Join(",", g.Select(x => x.WoId));
+
+            first.Combined = 'Y';
+        }
+        else
+        {
+            first.CombinedWoIds = first.WoId.ToString();
+            first.Combined = 'N';
+        }
+
+        return first;
+    })
+    .ToList();
+
+            return Ok(consolidatedList);
+            // return Ok(productions);
         } 
         [HttpGet]
         public async Task<IActionResult> GetCombinedWoDetails(long partId, long parentWoId)
@@ -7942,7 +8022,30 @@ namespace CWB.App.Controllers
 
             return Ok(combinedWos);
         }
-                [HttpGet]
+        [HttpGet]
+        public async Task<IActionResult> GetCombinedWoDetailsByIds(string ids)
+        {
+            // 1. Fetch same base data
+            var woIds = ids.Split(',')
+                    .Select(x => Convert.ToInt64(x.Trim()))
+                    .ToList();
+            var masterPartsTask = _masterService.MasterPartList();
+            var masterparts = masterPartsTask.Result.ToDictionary(p => p.PartId);
+            var productions = await _woService.AllProductionWoReadForProd();
+            var result = productions
+        .Where(p => woIds.Contains(p.WoId) )
+        .ToList();
+            foreach(var item  in result)
+            {
+                if (masterparts.TryGetValue(item.PartId, out var imp))
+                {
+                    item.PartNo = imp.PartNo;
+                    item.PartDesc = imp.Description;
+                }
+            }
+            return Ok(result);
+        }
+        [HttpGet]
         public async Task<IActionResult> AllRMWo(int rmpartids)
         {
             var productions = await _woService.AllProductionPlan_Wo();
@@ -8363,7 +8466,7 @@ namespace CWB.App.Controllers
 
             // Prepare a dictionary for fast lookup of Work Orders by ID
             var workOrdersDict = workOrders.ToDictionary(wo => wo.WOID, wo => wo.WONumber);
-            var prodnwosDict = prodnWos.ToDictionary(wo => wo.ProductionPlanId, wo => wo.WONumber);
+            var prodnwosDict = prodnWos.ToDictionary(wo => wo.WoId, wo => wo.WONumber);
             var woCompletionDatesDict = workOrders.ToDictionary(wo => wo.WOID, wo => (SoCompletionDate: wo.SoComplDate, PlanCompletionDate: wo.PlanCompletionDate,Wotype: wo.BuildToStock));
             var prodnWosStatusDict = prodnWos
       .GroupBy(p => p.WoId) // or appropriate key matching ParentWoId
@@ -8393,11 +8496,11 @@ namespace CWB.App.Controllers
                 item.PartDesc = mp.PartDescription;
 
                 // Assign Work Order number if it exists in the dictionary
-                if (workOrdersDict.TryGetValue(item.ParentWoId, out var woNumber))
+                if (workOrdersDict.TryGetValue(item.ChildWoId, out var woNumber))
                 {
                     item.WoNumber = woNumber;
                 }
-else if (prodnwosDict.TryGetValue(item.ParentWoId, out var prodnInfo))
+else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
                 {
                     item.WoNumber = prodnInfo; // ✅ FALLBACK
                 }
@@ -8503,7 +8606,7 @@ else if (prodnwosDict.TryGetValue(item.ParentWoId, out var prodnInfo))
     })
     .Select(g =>
     {
-        var first = g.First();
+        var first = g.OrderBy(x => x.Plan_Compl_Dt).First();
 
         var root = GetRootParent(first.ParentWoId);
         first.Calc_Qnty = g.Sum(x => x.Calc_Qnty);

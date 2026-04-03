@@ -603,12 +603,14 @@ $(function () {
         var selectedText = $("#RawMaterialTypeId").find("option:selected").text();
         document.forms["TypeForm"]["Name"].value = selectedText;
         document.forms["TypeForm"]["RawMaterialTypeId"].value = selectedValue;
+        $("#HiddenRMTypeId").val(selectedValue);
         $("#TypeName").attr("data-old", selectedText);
         $("#ENameSP").text("Edit");
 
     });
     $('#dialog-AddRMType').on('hidden.bs.modal', function (event) {
         $("#ENameSP").text("Add");
+        $("#HiddenRMTypeId").val("0");
         $("#TypeName").attr("data-old", "");
         $("#TypeForm")[0].reset();  // Clears all input fields
     });
@@ -1207,99 +1209,7 @@ function AddRMType() {
     }
     //event.preventDefault();
 }
-//function AddRMType() {
 
-//    var name = $("#TypeName").val().trim();
-//    var id = $("#RawMaterialTypeId").val() || "0";
-//    var oldName = $("#TypeName").attr("data-old") || ""; // store while edit
-
-//    if (name.length == 0) {
-//        $('#TypeName').css('border', '2px solid red');
-//        return false;
-//    } else {
-//        $('#TypeName').css('border', '');
-//    }
-
-//    if ($("#TypeForm").valid()) {
-
-//        var formData = AppUtil.GetFormData("TypeForm");
-//        formData.MultiplePartsMadeFrom1InputRM = $('#TypeMulitpleInputRM').prop('checked') ? 'Y' : 'N';
-
-//        // 🔹 NEW RECORD
-//        if (id == "0") {
-
-//            api.getbulk("/masters/CheckRmType?uomName=" + name).then((isExists) => {
-
-//                if (isExists) {
-//                    alert("Raw Material Type Already Exists");
-//                    $('#TypeName').css('border', '2px solid red');
-//                    return;
-//                }
-
-//                // ✅ INSERT
-//                api.post("/masters/rmtype", formData).then((data) => {
-
-//                    addedId = "" + data.rawMaterialTypeId;
-//                    addedValue = data.name;
-
-//                    document.getElementById("btn-close-AddRMType").click();
-
-//                }).catch((error) => {
-//                    AppUtil.HandleError("TypeForm", error);
-//                });
-
-//            });
-
-//        }
-//        // 🔹 EDIT RECORD
-//        else {
-
-//            // ✅ If name not changed → directly update
-//            if (name == oldName) {
-
-//                api.post("/masters/rmtype", formData).then((data) => {
-
-//                    addedId = "" + data.rawMaterialTypeId;
-//                    addedValue = data.name;
-
-//                    document.getElementById("btn-close-AddRMType").click();
-
-//                }).catch((error) => {
-//                    AppUtil.HandleError("TypeForm", error);
-//                });
-
-//            }
-//            // ✅ If name changed → check duplicate
-//            else {
-
-//                api.getbulk("/masters/CheckRmType?uomName=" + name).then((isExists) => {
-
-//                    if (isExists) {
-//                        alert("Raw Material Type Already Exists");
-//                        $('#TypeName').css('border', '2px solid red');
-//                        return;
-//                    }
-
-//                    // ✅ UPDATE
-//                    api.post("/masters/rmtype", formData).then((data) => {
-
-//                        addedId = "" + data.rawMaterialTypeId;
-//                        addedValue = data.name;
-
-//                        document.getElementById("btn-close-AddRMType").click();
-
-//                    }).catch((error) => {
-//                        AppUtil.HandleError("TypeForm", error);
-//                    });
-
-//                });
-//            }
-//        }
-
-//    } else {
-//        alert("Invalid form...");
-//    }
-//}
 
 function AddRMStandard() {
     var name = $("#StandardName").val();
