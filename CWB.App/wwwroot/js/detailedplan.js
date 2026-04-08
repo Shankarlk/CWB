@@ -1815,6 +1815,7 @@ $(document).ready(function () {
                 poQnty: parseInt($(row).find("td:eq(8)").text()),
                 planPoReceiptDate: $(row).find("td:eq(17)").text(),
                 companyId: parseInt($(row).find("td:eq(18)").text()),
+                combinedIds: $(row).find("td:eq(21)").text()
             };
             //if (rowData.plan_Proc_Qnty < rowData.moq) {
             //    rowData.plan_Proc_Qnty = rowData.moq;

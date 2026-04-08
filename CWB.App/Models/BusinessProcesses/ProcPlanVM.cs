@@ -46,7 +46,7 @@ namespace CWB.App.Models.BusinessProcesses
         public string CriticalParts { get; set; }
         public int Changed { get; set; }
         public long TenantId { get; set; }
-
+        public int PO_Flag { get; set; }
 
         public string? PlanStartDateStr { get; set; } = string.Empty;
         public string? PartNo { get; set; } = string.Empty;

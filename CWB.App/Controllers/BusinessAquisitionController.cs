@@ -80,7 +80,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> WOpost(WorkOrdersVM workOrdersVM)
         {
             List<WorkOrdersVM> workOrdersVMs = new List<WorkOrdersVM>();
-
+            WorkOrdersVM postWO = null;
             var message = await checkmissing(workOrdersVM);
             Selected_Sales_OrderVM selected_Sales_OrderVMs1 = (Selected_Sales_OrderVM)((OkObjectResult)message).Value;
             
@@ -144,7 +144,7 @@ namespace CWB.App.Controllers
                     workOrdersVM.Parentlevel = 'Y';
                 }
             }
-            var postWO = await _baService.PostWO(workOrdersVM);
+             postWO = await _baService.PostWO(workOrdersVM);
             List<BOMTempVM> bompost = new List<BOMTempVM>();
             if (postWO.WOID > 0)
             {
@@ -175,22 +175,40 @@ namespace CWB.App.Controllers
                 SalesOrderVM salesOrderVM = new SalesOrderVM() {
                     SalesOrderId = postWO.SalesOrderId,
                     WorkOrderId =postWO.WOID,
-                    WorkOrderNo = postWO.WONumber
+                    WorkOrderNo = postWO.WONumber,
+                    Status=3
                 };
                 var salesOrder = await _baService.PostSalesOrder(salesOrderVM);
 
             }
             var postbom = await _baService.BOMTempPOst(bompost);
-            return Ok(selected_Sales_OrderVMs1);
+           // return Ok(selected_Sales_OrderVMs1);
             }
             
                 else
                 {
                     // return missing details to UI popup
-                    return Ok(selected_Sales_OrderVMs1);
+                   // return Ok(selected_Sales_OrderVMs1);
                 }
+            object created = null;
 
-            
+            if (selected_Sales_OrderVMs1.PartNo == "WorkOrder Created" && postWO != null && postWO.WOID > 0)
+            {
+                created = new
+                {
+                    woid = postWO.WOID,
+                    partId = postWO.PartId,
+                    salesOrderId = postWO.SalesOrderId,
+                    woNumber = postWO.WONumber
+                };
+            }
+
+            return Ok(new
+            {
+                missing = selected_Sales_OrderVMs1,
+                created = created
+            });
+
         }
 
 
@@ -559,7 +577,12 @@ namespace CWB.App.Controllers
                 }
             }
             var postbom = await _baService.BOMTempPOst(bompost);
-            return Ok(selected_Sales_OrderVMs);
+            //return Ok(selected_Sales_OrderVMs);
+            return Ok(new
+            {
+                missing = selected_Sales_OrderVMs,
+                created = postWO
+            });
             //return Ok(listworkOrdersVM);
         }
         

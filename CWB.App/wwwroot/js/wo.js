@@ -247,20 +247,36 @@ $(document).ready(function () {
             $("#preloaderblurred").show();
             return api.post("/businessaquisition/WOpost", selectedRowsData[0]).then((data) => {
                 // Handle success if needed
-                loadmissingdetails(data);
+                loadmissingdetails(data.missing);
+                if (!data.created) {
+                    $("#preloaderblurred").hide();
+                    return;
+                }
+
+                let wo = data.created;
                 loadWO();
-                SalesorderId.forEach(function (arr, outerIndex) {
-                    arr.forEach(function (ele, i) {
-                        if (ele === data.partId) {
-                            //WoSoRel.push([arr[i+1], data.woid]);
-                            WoSoRel.push({
-                                workOrderId: data.woid,
-                                salesOrderId: arr[i + 1]
-                            });
-                        }
-                    });
+                //SalesorderId.forEach(function (arr, outerIndex) {
+                //    arr.forEach(function (ele, i) {
+                //        if (ele === data.partId) {
+                //            //WoSoRel.push([arr[i+1], data.woid]);
+                //            WoSoRel.push({
+                //                workOrderId: data.woid,
+                //                salesOrderId: arr[i + 1]
+                //            });
+                //        }
+                //    });
+                //});
+                SalesorderId.forEach(function (arr) {
+
+                    if (arr[0] === wo.partId) {
+                        WoSoRel.push({
+                            workOrderId: wo.woid,
+                            salesOrderId: arr[1]
+                        });
+                    }
+
                 });
-                //console.log(WoSoRel);
+                console.log(WoSoRel);
                 WoSOMethod = Object.values(WoSoRel);
                 $.ajax({
                     type: "POST",
@@ -294,8 +310,8 @@ $(document).ready(function () {
                 dataType: "json",
                 success: function (result) {
                     //alert(result);
-                    loadmissingdetails(result);
-                    result.forEach(function (a,i) {
+                    loadmissingdetails(result.missing);
+                    result.created.forEach(function (a,i) {
                         SalesorderId.forEach(function (arr, outerIndex) {
                             arr.forEach(function (ele, ind) {
                                 if (ele === a.partId) {
@@ -307,7 +323,7 @@ $(document).ready(function () {
                             });
                         });
                     });
-                    //console.log(WoSoRel);
+                    console.log(WoSoRel);
                     WoSOMethod = Object.values(WoSoRel);
                     //--
                     $.ajax({
@@ -392,18 +408,34 @@ $(document).ready(function () {
             $("#preloaderblurred").show();
             return api.post("/businessaquisition/WOpost", selectedRowsData[0]).then((data) => {
                 // Handle success if needed
-                loadmissingdetails(data);
+                loadmissingdetails(data.missing);
+                if (!data.created) {
+                    $("#preloaderblurred").hide();
+                    return;
+                }
+
+                let wo = data.created;
                 loadWO();
-                SalesorderId.forEach(function (arr, outerIndex) {
-                    arr.forEach(function (ele, i) {
-                        if (ele === data.partId) {
-                            //WoSoRel.push([arr[i+1], data.woid]);
-                            WoSoRel.push({
-                                workOrderId: data.woid,
-                                salesOrderId: arr[i + 1]
-                            });
-                        }
-                    });
+                //SalesorderId.forEach(function (arr, outerIndex) {
+                //    arr.forEach(function (ele, i) {
+                //        if (ele === data.partId) {
+                //            //WoSoRel.push([arr[i+1], data.woid]);
+                //            WoSoRel.push({
+                //                workOrderId: data.woid,
+                //                salesOrderId: arr[i + 1]
+                //            });
+                //        }
+                //    });
+                //});
+                SalesorderId.forEach(function (arr) {
+
+                    if (arr[0] === wo.partId) {
+                        WoSoRel.push({
+                            workOrderId: wo.woid,
+                            salesOrderId: arr[1]
+                        });
+                    }
+
                 });
                 //console.log(WoSoRel);
                 WoSOMethod = Object.values(WoSoRel);

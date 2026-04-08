@@ -1741,7 +1741,7 @@ function OpenPopup4(element) {
             var balitems = $("#popupInwardBalVM").val() || $("#popupInward2BalVM").val();
             $("#popupInwardBalToRecVM").val(balnqnty || 0);
             $("#P4SubConBalToRc").val(balnqnty || 0);
-            $("#popupInwardActlDateUnit").text(units);
+           // $("#popupInwardActlDateUnit").text(units);
             $("#P4SubConBalToRcIUnit").text(units);
             $("#P4SubConActDateunit").text(units);
             $("#P4SubConPlanDateUnit").text(units);
@@ -1749,7 +1749,7 @@ function OpenPopup4(element) {
             $("#P5QurUnit").text(units);
             $("#unitsTbVM").text(units);
             $("#popupInwardBalToRecVMUnit").text(units);
-            $("#popupInwardPlanRecptUnit").text(units);
+            //$("#popupInwardPlanRecptUnit").text(units);
             if (parttype === "ManufacturedPart") {
                 loadCondition2();
                 $("#P5RoutingSpan").prop("hidden", false);
@@ -1839,7 +1839,8 @@ function OpenPopup4(element) {
         $("#P5QurUnit").text(units);
         $("#unitsTbVM").text(units);
         $("#popupInwardBalToRecVMUnit").text(units);
-        $("#popupInwardPlanRecptUnit").text(units);
+        $("#popupInwardPlanRecpt").val(0);
+        $("#popupInwardActlDate").val(0);
         if (parttype === "ManufacturedPart") {
             loadCondition2();
             $("#P5RoutingSpan").prop("hidden", false);

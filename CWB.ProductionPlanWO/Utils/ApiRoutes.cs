@@ -52,6 +52,7 @@ namespace CWB.ProductionPlanWO.Utils
             public const string PostProcPurchase = Base + "/postprocpurchase";
             public const string PostBOMTemp = Base + "/bomtemp";
             public const string PostProcPlan = Base + "/procplan";
+            public const string PostProcPlanPOFlag = Base + "/procplanpoflag";
             public const string PostBomList = Base + "/bomlistwo";
             public const string AllProcPlan = Base + "/allprocplan/{tenantId}";
             public const string AllBomList = Base + "/allbomlist/{tenantId}";

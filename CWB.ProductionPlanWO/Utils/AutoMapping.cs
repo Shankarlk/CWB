@@ -128,6 +128,7 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(m => m.PlanReceiptDate, m => m.MapFrom(src => src.PlanReceiptDate))
             .ForMember(m => m.CalcReceiptDate, m => m.MapFrom(src => src.CalcReceiptDate))
             .ForMember(m => m.CriticalPart, m => m.MapFrom(src => src.CriticalPart))
+            .ForMember(m => m.PO_Flag, m => m.MapFrom(src => src.PO_Flag))
             .ForMember(m => m.Changed, m => m.MapFrom(src => src.Changed))
             .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
@@ -146,6 +147,7 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(m => m.PlanReceiptDate, m => m.MapFrom(src => src.PlanReceiptDate))
             .ForMember(m => m.CalcReceiptDate, m => m.MapFrom(src => src.CalcReceiptDate))
             .ForMember(m => m.CriticalPart, m => m.MapFrom(src => src.CriticalPart))
+            .ForMember(m => m.PO_Flag, m => m.MapFrom(src => src.PO_Flag))
             .ForMember(m => m.Changed, m => m.MapFrom(src => src.Changed))
             .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 

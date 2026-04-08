@@ -132,7 +132,7 @@ $(document).ready(function () {
         let selectedWOs = [];
 
         $(".P1gridChk:checked").each(function () {
-            let ppid = $(this).data("ppid");  // you can also use data("workorderid") etc.
+            let ppid = $(this).data("workorderid");  // you can also use data("workorderid") etc.
             selectedWOs.push(ppid);
         });
 

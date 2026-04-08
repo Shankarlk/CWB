@@ -601,7 +601,36 @@ namespace CWB.ProductionPlanWO.Services
             }
             return proc;
         }
+        public async Task<List<ProcPlanVM>> PostProcPlanPOFlag(List<ProcPlanVM> proc)
+        {
+            foreach (ProcPlanVM item in proc)
+            {
+                var pp = _mapper.Map<ProcPlan>(item);
+                if (pp.Id> 0)
+                {
 
+                    var wkord = await _procPlanRepository.SingleOrDefaultAsync(x => x.Id == pp.Id);
+                    if (wkord == null)
+                    {
+                        return proc;
+                    }
+                    wkord.PO_Flag = pp.PO_Flag;
+                    pp = await _procPlanRepository.UpdateAsync(wkord.Id, wkord);
+                }
+                
+                try
+                {
+                    await _unitOfWork.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+                item.ProcPlanId = pp.Id;
+            }
+            return proc;
+        }
         public async Task<List<BOMListVM>> PostBomList(List<BOMListVM> bomlist)
         {
             foreach (BOMListVM item in bomlist)
@@ -667,60 +696,146 @@ namespace CWB.ProductionPlanWO.Services
                 try
                 {
                     _workOrderRepository.Remove(co);
-                    await _unitOfWork.CommitAsync();
-                    var pwo = await _productionPlan_WORepository.AwaitGetRangeAsync(p=>p.WoId == co.Id);
-                    foreach (var item in pwo)
+                   
+
+                    var rootWoId = co.Id;
+                    var allWos = await _productionPlan_WORepository.GetAllAsync();
+
+                    List<long> woIds = new List<long>();
+
+                    void Collect(long parent)
                     {
-                        _productionPlan_WORepository.Remove(item);
-                        await _unitOfWork.CommitAsync();
+                        var children = allWos.Where(x => x.ParentWoId == parent).ToList();
+
+                        foreach (var child in children)
+                        {
+                            woIds.Add(child.WoId);
+                           // Collect(child.WoId);
+                        }
                     }
-                    var cworel =await _childWoRelRepository.AwaitGetRangeAsync(p => p.WoId == co.Id);
-                    foreach (var item in cworel)
-                    {
-                        _childWoRelRepository.Remove(item);
-                        await _unitOfWork.CommitAsync();
-                    }
-                    var mcTime =await _mcTimeListRepository.AwaitGetRangeAsync(p => p.WoId == co.Id);
-                    foreach (var item in mcTime)
-                    {
-                        _mcTimeListRepository.Remove(item);
-                        await _unitOfWork.CommitAsync();
-                    }
-                    var bom =await _bOMListRepository.AwaitGetRangeAsync(p => p.ParentWoId == co.Id);
+
+                    // include root
+                    woIds.Add(rootWoId);
+                    Collect(rootWoId);
+
+
+                    //var pwo = await _productionPlan_WORepository.AwaitGetRangeAsync(p=>p.WoId == co.Id);
+                    //foreach (var item in pwo)
+                    //{
+                    //    _productionPlan_WORepository.Remove(item);
+                    //    await _unitOfWork.CommitAsync();
+                    //}
+                    //var cworel =await _childWoRelRepository.AwaitGetRangeAsync(p => p.WoId == co.Id);
+                    //foreach (var item in cworel)
+                    //{
+                    //    _childWoRelRepository.Remove(item);
+                    //    await _unitOfWork.CommitAsync();
+                    //}
+                    //var mcTime =await _mcTimeListRepository.AwaitGetRangeAsync(p => p.WoId == co.Id);
+                    //foreach (var item in mcTime)
+                    //{
+                    //    _mcTimeListRepository.Remove(item);
+                    //    await _unitOfWork.CommitAsync();
+                    //}
+                    //var bom =await _bOMListRepository.AwaitGetRangeAsync(p => p.ParentWoId == co.Id);
+                    //foreach (var item in bom)
+                    //{
+                    //    _bOMListRepository.Remove(item);
+                    //    await _unitOfWork.CommitAsync();
+                    //}
+                    var bom = await _bOMListRepository.AwaitGetRangeAsync(p => woIds.Contains(p.ParentWoId));
                     foreach (var item in bom)
                     {
                         _bOMListRepository.Remove(item);
-                        await _unitOfWork.CommitAsync();
                     }
+                       
+
+                    var mcTime = await _mcTimeListRepository.AwaitGetRangeAsync(p => woIds.Contains(p.WoId));
+                    foreach (var item in mcTime)
+                    {
+                        _mcTimeListRepository.Remove(item);
+                    }
+                       
+
+                    var childRel = await _childWoRelRepository.AwaitGetRangeAsync(p => woIds.Contains(p.WoId));
+                    foreach (var item in childRel)
+                    {
+                        _childWoRelRepository.Remove(item);
+                    }
+                        
+
+                    var prodWos = await _productionPlan_WORepository.AwaitGetRangeAsync(p => woIds.Contains(p.WoId));
+                    foreach (var item in prodWos)
+                    {
+                        _productionPlan_WORepository.Remove(item);
+                    }
+                       
                     var woso =await _wosoRepository.AwaitGetRangeAsync(p => p.WorkOrderId == co.Id);
                     foreach (var item in woso)
                     {
                         _wosoRepository.Remove(item);
-                        await _unitOfWork.CommitAsync();
+                      
                     }
-                    var procplan =await _procPlanRepository.AwaitGetRangeAsync(p => p.WorkOrderId == co.Id);
-                    foreach (var item in procplan)
+                    //var procplan =await _procPlanRepository.AwaitGetRangeAsync(p => p.WorkOrderId == co.Id);
+                    //foreach (var item in procplan)
+                    //{
+                    //    _procPlanRepository.Remove(item);
+                    //    var Podetails =await _poDetailsRepository.AwaitGetRangeAsync(p => p.ProcPlanId == item.Id);
+                    //    foreach (var pod in Podetails)
+                    //    {
+                    //        var Pohead =await _poHeaderRepository.AwaitGetRangeAsync(p => p.PoDetailsId == pod.Id);
+                    //        foreach (var pohead in Pohead)
+                    //        {
+                    //            _poHeaderRepository.Remove(pohead);
+                    //            await _unitOfWork.CommitAsync();
+                    //        }
+                    //        _poDetailsRepository.Remove(pod);
+                    //        await _unitOfWork.CommitAsync();
+                    //    }
+                    //    var purchaseRel = await _IProcPlanPartPurChaseRelRepository.AwaitGetRangeAsync(p => p.ProcPlanId == item.Id);
+                    //    foreach (var pprel in purchaseRel)
+                    //    {
+                    //        _IProcPlanPartPurChaseRelRepository.Remove(pprel);
+                    //        await _unitOfWork.CommitAsync();
+                    //    }
+                    //    await _unitOfWork.CommitAsync();
+                    //}
+                    var procPlans = await _procPlanRepository.AwaitGetRangeAsync(p => woIds.Contains(p.WorkOrderId));
+                    var procPlanIds = procPlans.Select(p => p.Id).ToList();
+
+                    var poDetails = await _poDetailsRepository.AwaitGetRangeAsync(p => procPlanIds.Contains(p.ProcPlanId));
+                    var poDetailIds = poDetails.Select(p => p.Id).ToList();
+
+                    var poHeaders = await _poHeaderRepository.AwaitGetRangeAsync(p => poDetailIds.Contains(p.PoDetailsId));
+
+                    foreach (var item in poHeaders)
+                    {
+                        _poHeaderRepository.Remove(item);
+                    }
+                       
+
+                    foreach (var item in poDetails)
+                    {
+                        _poDetailsRepository.Remove(item);
+                    }
+                        
+
+                    var purchaseRel = await _IProcPlanPartPurChaseRelRepository.AwaitGetRangeAsync(p => procPlanIds.Contains(p.ProcPlanId));
+
+                    foreach (var item in purchaseRel)
+                    {
+                        _IProcPlanPartPurChaseRelRepository.Remove(item);
+                    }
+                        
+
+                    foreach (var item in procPlans)
                     {
                         _procPlanRepository.Remove(item);
-                        var Podetails =await _poDetailsRepository.AwaitGetRangeAsync(p => p.ProcPlanId == item.Id);
-                        foreach (var pod in Podetails)
-                        {
-                            var Pohead =await _poHeaderRepository.AwaitGetRangeAsync(p => p.PoDetailsId == pod.Id);
-                            foreach (var pohead in Pohead)
-                            {
-                                _poHeaderRepository.Remove(pohead);
-                                await _unitOfWork.CommitAsync();
-                            }
-                            _poDetailsRepository.Remove(pod);
-                            await _unitOfWork.CommitAsync();
-                        }
-                        var purchaseRel = await _IProcPlanPartPurChaseRelRepository.AwaitGetRangeAsync(p => p.ProcPlanId == item.Id);
-                        foreach (var pprel in purchaseRel)
-                        {
-                            _IProcPlanPartPurChaseRelRepository.Remove(pprel);
-                            await _unitOfWork.CommitAsync();
-                        }
-                        await _unitOfWork.CommitAsync();
+                    }
+                    var bomtemp =await _bOMTempRepository.AwaitGetRangeAsync(p => p.WorkOrderId == co.Id);
+                    foreach(var item  in bomtemp)
+                    {
+                        _bOMTempRepository.Remove(item);
                     }
                     await _unitOfWork.CommitAsync();
                     return true;
@@ -4493,7 +4608,7 @@ namespace CWB.ProductionPlanWO.Services
             foreach (var item in productions)
             {
                 // FILTER: Item MUST exist in TempWO_Wait_List to be included
-                if (!tempWaitDict.TryGetValue(item.ProductionPlanId, out var wO_Wait_List))
+                if (!tempWaitDict.TryGetValue(item.WoId, out var wO_Wait_List))
                     continue;
 
                 // A. Plan Start Date Logic

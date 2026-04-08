@@ -18,6 +18,7 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<IEnumerable<ProductionPlan_WoVM>> AllProductionWoReadForProd();
         Task<IEnumerable<ProductionPlan_WoVM>> GetAllReadyforProductionWo();
         Task<List<ProcPlanVM>> ProcPlanPost(IEnumerable<ProcPlanVM> procPlans);
+        Task<List<ProcPlanVM>> ProcPlanPostPOFlag(IEnumerable<ProcPlanVM> procPlans);
         Task<List<WorkOrdersVM>> UpdateMultipleWorkOrder(IEnumerable<WorkOrdersVM> workOrders);
         Task<List<BOMListVM>> BomListPost(IEnumerable<BOMListVM> bomlist);
         Task<List<ProcPlanPartPurChaseRelVM>> ProcPurchasePost(IEnumerable<ProcPlanPartPurChaseRelVM> bomlist);

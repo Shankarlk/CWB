@@ -623,6 +623,7 @@ namespace CWB.BusinessAquisition.Services
                 so.BalanceSOQty = salesOrder.BalanceSOQty;
                 so.SuggestedDispQnty = salesOrder.SuggestedDispQnty;
                 so.FinalDispQnty = salesOrder.FinalDispQnty;
+                so.Status = salesOrder.Status;
                 salesOrder = await _salesOrderRepository.UpdateAsync(salesOrder.Id, so);
             }
             try

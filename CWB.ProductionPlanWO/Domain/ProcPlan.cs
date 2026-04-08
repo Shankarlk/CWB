@@ -17,6 +17,7 @@ namespace CWB.ProductionPlanWO.Domain
         public int AddnOtyUser { get; set; }
         public int Plan_Proc_Qnty { get; set; }
         public int Old_Plan_Proc_Qnty { get; set; }
+        public int PO_Flag { get; set; }
         public DateTime PlanReceiptDate { get; set; }
         public DateTime CalcReceiptDate { get; set; }
         public int CriticalPart { get; set; }

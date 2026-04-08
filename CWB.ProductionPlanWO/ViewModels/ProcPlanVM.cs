@@ -18,6 +18,7 @@ namespace CWB.ProductionPlanWO.ViewModels
         public long UOMId { get; set; }
         public int OtyOnHand { get; set; }
         public int AddnOtyUser { get; set; }
+        public int PO_Flag { get; set; }
         public int Plan_Proc_Qnty { get; set; }
         public DateTime PlanReceiptDate { get; set; }
         public DateTime CalcReceiptDate { get; set; }

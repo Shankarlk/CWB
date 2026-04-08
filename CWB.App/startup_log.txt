@@ -3842,3 +3842,399 @@
 2026-04-03 13:07:39 | ConfigureServices started
 2026-04-03 13:07:41 | ConfigureServices completed successfully
 2026-04-03 13:07:42 | Configure pipeline started
+2026-04-06 04:16:23 | Program.Main started
+2026-04-06 04:16:24 | Building host
+2026-04-06 04:16:27 | Configuring WebHost
+2026-04-06 04:16:43 | Startup constructor started
+2026-04-06 04:16:47 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-06 04:16:47 | Startup constructor completed successfully
+2026-04-06 04:16:49 | ConfigureServices started
+2026-04-06 04:16:55 | ConfigureServices completed successfully
+2026-04-06 04:16:58 | Configure pipeline started
+2026-04-06 05:39:23 | Program.Main started
+2026-04-06 05:39:24 | Building host
+2026-04-06 05:39:26 | Configuring WebHost
+2026-04-06 05:39:32 | Startup constructor started
+2026-04-06 05:39:34 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-06 05:39:34 | Startup constructor completed successfully
+2026-04-06 05:39:36 | ConfigureServices started
+2026-04-06 05:39:41 | ConfigureServices completed successfully
+2026-04-06 05:39:44 | Configure pipeline started
+2026-04-06 09:09:17 | Program.Main started
+2026-04-06 09:09:17 | Building host
+2026-04-06 09:09:20 | Configuring WebHost
+2026-04-06 09:09:30 | Startup constructor started
+2026-04-06 09:09:34 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-06 09:09:34 | Startup constructor completed successfully
+2026-04-06 09:09:36 | ConfigureServices started
+2026-04-06 09:09:41 | ConfigureServices completed successfully
+2026-04-06 09:09:44 | Configure pipeline started
+2026-04-06 10:45:52 | Program.Main started
+2026-04-06 10:45:52 | Building host
+2026-04-06 10:45:55 | Configuring WebHost
+2026-04-06 10:46:00 | Startup constructor started
+2026-04-06 10:46:02 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-06 10:46:02 | Startup constructor completed successfully
+2026-04-06 10:46:03 | ConfigureServices started
+2026-04-06 10:46:05 | ConfigureServices completed successfully
+2026-04-06 10:46:07 | Configure pipeline started
+2026-04-06 10:53:56 | Program.Main started
+2026-04-06 10:53:56 | Building host
+2026-04-06 10:53:58 | Configuring WebHost
+2026-04-06 10:54:04 | Startup constructor started
+2026-04-06 10:54:06 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-06 10:54:06 | Startup constructor completed successfully
+2026-04-06 10:54:07 | ConfigureServices started
+2026-04-06 10:54:09 | ConfigureServices completed successfully
+2026-04-06 10:54:11 | Configure pipeline started
+2026-04-06 10:59:17 | Program.Main started
+2026-04-06 10:59:17 | Building host
+2026-04-06 10:59:18 | Configuring WebHost
+2026-04-06 10:59:24 | Startup constructor started
+2026-04-06 10:59:26 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-06 10:59:26 | Startup constructor completed successfully
+2026-04-06 10:59:26 | ConfigureServices started
+2026-04-06 10:59:28 | ConfigureServices completed successfully
+2026-04-06 10:59:29 | Configure pipeline started
+2026-04-06 11:26:28 | Program.Main started
+2026-04-06 11:26:29 | Building host
+2026-04-06 11:26:31 | Configuring WebHost
+2026-04-06 11:26:42 | Startup constructor started
+2026-04-06 11:26:46 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-06 11:26:46 | Startup constructor completed successfully
+2026-04-06 11:26:48 | ConfigureServices started
+2026-04-06 11:26:54 | ConfigureServices completed successfully
+2026-04-06 11:26:58 | Configure pipeline started
+2026-04-06 11:46:50 | Program.Main started
+2026-04-06 11:46:51 | Building host
+2026-04-06 11:46:52 | Configuring WebHost
+2026-04-06 11:47:00 | Startup constructor started
+2026-04-06 11:47:03 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-06 11:47:03 | Startup constructor completed successfully
+2026-04-06 11:47:04 | ConfigureServices started
+2026-04-06 11:47:06 | ConfigureServices completed successfully
+2026-04-06 11:47:08 | Configure pipeline started
+2026-04-06 11:47:12 | Program.Main FAILED: System.IO.IOException: Failed to bind to address https://[::]:443: address already in use.
+ ---> Microsoft.AspNetCore.Connections.AddressInUseException: Address already in use
+ ---> System.Net.Sockets.SocketException (98): Address already in use
+   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, String callerName)
+   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.Sockets.Socket.Bind(EndPoint localEP)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportFactory.BindAsync(EndPoint endpoint, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServer.<>c__DisplayClass21_0`1.<<StartAsync>g__OnBind|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context)
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.ListenOptions.BindAsync(AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.AnyIPListenOptions.BindAsync(AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.AddressesStrategy.BindAsync(AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindAsync(IServerAddressesFeature addresses, KestrelServerOptions serverOptions, ILogger logger, Func`2 createBinding)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServer.StartAsync[TContext](IHttpApplication`1 application, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.Run(IHost host)
+   at CWB.App.Program.Main(String[] args)
+
+2026-04-06 12:09:39 | Program.Main started
+2026-04-06 12:09:39 | Building host
+2026-04-06 12:09:41 | Configuring WebHost
+2026-04-06 12:09:48 | Startup constructor started
+2026-04-06 12:09:50 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-06 12:09:50 | Startup constructor completed successfully
+2026-04-06 12:09:51 | ConfigureServices started
+2026-04-06 12:09:55 | ConfigureServices completed successfully
+2026-04-06 12:09:57 | Configure pipeline started
+2026-04-06 12:10:00 | Program.Main FAILED: System.IO.IOException: Failed to bind to address https://[::]:443: address already in use.
+ ---> Microsoft.AspNetCore.Connections.AddressInUseException: Address already in use
+ ---> System.Net.Sockets.SocketException (98): Address already in use
+   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, String callerName)
+   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.Sockets.Socket.Bind(EndPoint localEP)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportFactory.BindAsync(EndPoint endpoint, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServer.<>c__DisplayClass21_0`1.<<StartAsync>g__OnBind|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context)
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.ListenOptions.BindAsync(AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.AnyIPListenOptions.BindAsync(AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.AddressesStrategy.BindAsync(AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindAsync(IServerAddressesFeature addresses, KestrelServerOptions serverOptions, ILogger logger, Func`2 createBinding)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServer.StartAsync[TContext](IHttpApplication`1 application, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.Run(IHost host)
+   at CWB.App.Program.Main(String[] args)
+
+2026-04-06 12:14:56 | Program.Main started
+2026-04-06 12:14:57 | Building host
+2026-04-06 12:15:01 | Configuring WebHost
+2026-04-06 12:15:25 | Startup constructor started
+2026-04-06 12:15:28 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-06 12:15:28 | Startup constructor completed successfully
+2026-04-06 12:15:29 | ConfigureServices started
+2026-04-06 12:15:34 | ConfigureServices completed successfully
+2026-04-06 12:15:36 | Configure pipeline started
+2026-04-06 12:58:31 | Program.Main started
+2026-04-06 12:58:31 | Building host
+2026-04-06 12:58:33 | Configuring WebHost
+2026-04-06 12:58:46 | Startup constructor started
+2026-04-06 12:58:52 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-06 12:58:52 | Startup constructor completed successfully
+2026-04-06 12:58:56 | ConfigureServices started
+2026-04-06 12:59:00 | ConfigureServices completed successfully
+2026-04-06 12:59:02 | Configure pipeline started
+2026-04-07 04:16:06 | Program.Main started
+2026-04-07 04:16:06 | Building host
+2026-04-07 04:16:07 | Configuring WebHost
+2026-04-07 04:16:10 | Startup constructor started
+2026-04-07 04:16:11 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 04:16:11 | Startup constructor completed successfully
+2026-04-07 04:16:12 | ConfigureServices started
+2026-04-07 04:16:18 | ConfigureServices completed successfully
+2026-04-07 04:16:21 | Configure pipeline started
+2026-04-07 04:28:04 | Program.Main started
+2026-04-07 04:28:04 | Building host
+2026-04-07 04:28:05 | Configuring WebHost
+2026-04-07 04:28:11 | Startup constructor started
+2026-04-07 04:28:13 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 04:28:13 | Startup constructor completed successfully
+2026-04-07 04:28:14 | ConfigureServices started
+2026-04-07 04:28:16 | ConfigureServices completed successfully
+2026-04-07 04:28:17 | Configure pipeline started
+2026-04-07 06:10:19 | Program.Main started
+2026-04-07 06:10:19 | Building host
+2026-04-07 06:10:23 | Configuring WebHost
+2026-04-07 06:10:43 | Startup constructor started
+2026-04-07 06:10:46 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 06:10:46 | Startup constructor completed successfully
+2026-04-07 06:10:47 | ConfigureServices started
+2026-04-07 06:10:52 | ConfigureServices completed successfully
+2026-04-07 06:10:54 | Configure pipeline started
+2026-04-07 06:15:31 | Program.Main started
+2026-04-07 06:15:31 | Building host
+2026-04-07 06:15:32 | Configuring WebHost
+2026-04-07 06:15:38 | Startup constructor started
+2026-04-07 06:15:40 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 06:15:40 | Startup constructor completed successfully
+2026-04-07 06:15:41 | ConfigureServices started
+2026-04-07 06:15:44 | ConfigureServices completed successfully
+2026-04-07 06:15:45 | Configure pipeline started
+2026-04-07 06:42:53 | Program.Main started
+2026-04-07 06:42:53 | Building host
+2026-04-07 06:42:56 | Configuring WebHost
+2026-04-07 06:43:08 | Startup constructor started
+2026-04-07 06:43:11 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 06:43:11 | Startup constructor completed successfully
+2026-04-07 06:43:12 | ConfigureServices started
+2026-04-07 06:43:15 | ConfigureServices completed successfully
+2026-04-07 06:43:18 | Configure pipeline started
+2026-04-07 07:09:00 | Program.Main started
+2026-04-07 07:09:00 | Building host
+2026-04-07 07:09:03 | Configuring WebHost
+2026-04-07 07:09:16 | Startup constructor started
+2026-04-07 07:09:19 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 07:09:19 | Startup constructor completed successfully
+2026-04-07 07:09:21 | ConfigureServices started
+2026-04-07 07:09:26 | ConfigureServices completed successfully
+2026-04-07 07:09:28 | Configure pipeline started
+2026-04-07 07:49:27 | Program.Main started
+2026-04-07 07:49:28 | Building host
+2026-04-07 07:49:29 | Configuring WebHost
+2026-04-07 07:49:36 | Startup constructor started
+2026-04-07 07:49:37 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 07:49:37 | Startup constructor completed successfully
+2026-04-07 07:49:37 | ConfigureServices started
+2026-04-07 07:49:41 | ConfigureServices completed successfully
+2026-04-07 07:49:43 | Configure pipeline started
+2026-04-07 07:59:28 | Program.Main started
+2026-04-07 07:59:28 | Building host
+2026-04-07 07:59:32 | Configuring WebHost
+2026-04-07 08:00:02 | Startup constructor started
+2026-04-07 08:00:07 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 08:00:07 | Startup constructor completed successfully
+2026-04-07 08:00:09 | ConfigureServices started
+2026-04-07 08:00:12 | ConfigureServices completed successfully
+2026-04-07 08:00:14 | Configure pipeline started
+2026-04-07 08:05:55 | Program.Main started
+2026-04-07 08:05:56 | Building host
+2026-04-07 08:05:59 | Configuring WebHost
+2026-04-07 08:06:15 | Startup constructor started
+2026-04-07 08:06:18 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 08:06:18 | Startup constructor completed successfully
+2026-04-07 08:06:19 | ConfigureServices started
+2026-04-07 08:06:23 | ConfigureServices completed successfully
+2026-04-07 08:06:26 | Configure pipeline started
+2026-04-07 08:41:09 | Program.Main started
+2026-04-07 08:41:09 | Building host
+2026-04-07 08:41:12 | Configuring WebHost
+2026-04-07 08:41:39 | Startup constructor started
+2026-04-07 08:41:43 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 08:41:43 | Startup constructor completed successfully
+2026-04-07 08:41:45 | ConfigureServices started
+2026-04-07 08:41:55 | ConfigureServices completed successfully
+2026-04-07 08:41:57 | Configure pipeline started
+2026-04-07 09:21:45 | Program.Main started
+2026-04-07 09:21:45 | Building host
+2026-04-07 09:21:47 | Configuring WebHost
+2026-04-07 09:21:56 | Startup constructor started
+2026-04-07 09:22:00 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 09:22:00 | Startup constructor completed successfully
+2026-04-07 09:22:02 | ConfigureServices started
+2026-04-07 09:22:08 | ConfigureServices completed successfully
+2026-04-07 09:22:10 | Configure pipeline started
+2026-04-07 11:09:36 | Program.Main started
+2026-04-07 11:09:36 | Building host
+2026-04-07 11:09:40 | Configuring WebHost
+2026-04-07 11:09:49 | Startup constructor started
+2026-04-07 11:09:54 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 11:09:54 | Startup constructor completed successfully
+2026-04-07 11:09:55 | ConfigureServices started
+2026-04-07 11:10:00 | ConfigureServices completed successfully
+2026-04-07 11:10:03 | Configure pipeline started
+2026-04-07 12:03:02 | Program.Main started
+2026-04-07 12:03:02 | Building host
+2026-04-07 12:03:04 | Configuring WebHost
+2026-04-07 12:03:15 | Startup constructor started
+2026-04-07 12:03:19 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 12:03:19 | Startup constructor completed successfully
+2026-04-07 12:03:21 | ConfigureServices started
+2026-04-07 12:03:30 | ConfigureServices completed successfully
+2026-04-07 12:03:33 | Configure pipeline started
+2026-04-07 12:18:33 | Program.Main started
+2026-04-07 12:18:34 | Building host
+2026-04-07 12:18:36 | Configuring WebHost
+2026-04-07 12:18:42 | Startup constructor started
+2026-04-07 12:18:45 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 12:18:45 | Startup constructor completed successfully
+2026-04-07 12:18:48 | ConfigureServices started
+2026-04-07 12:18:52 | ConfigureServices completed successfully
+2026-04-07 12:18:55 | Configure pipeline started
+2026-04-07 12:25:03 | Program.Main started
+2026-04-07 12:25:03 | Building host
+2026-04-07 12:25:06 | Configuring WebHost
+2026-04-07 12:25:15 | Startup constructor started
+2026-04-07 12:25:19 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 12:25:19 | Startup constructor completed successfully
+2026-04-07 12:25:21 | ConfigureServices started
+2026-04-07 12:25:28 | ConfigureServices completed successfully
+2026-04-07 12:25:31 | Configure pipeline started
+2026-04-07 12:32:52 | Program.Main started
+2026-04-07 12:32:52 | Building host
+2026-04-07 12:32:54 | Configuring WebHost
+2026-04-07 12:33:06 | Startup constructor started
+2026-04-07 12:33:08 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 12:33:08 | Startup constructor completed successfully
+2026-04-07 12:33:11 | ConfigureServices started
+2026-04-07 12:33:18 | ConfigureServices completed successfully
+2026-04-07 12:33:20 | Configure pipeline started
+2026-04-07 12:38:44 | Program.Main started
+2026-04-07 12:38:44 | Building host
+2026-04-07 12:38:46 | Configuring WebHost
+2026-04-07 12:38:59 | Startup constructor started
+2026-04-07 12:39:03 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 12:39:03 | Startup constructor completed successfully
+2026-04-07 12:39:04 | ConfigureServices started
+2026-04-07 12:39:10 | ConfigureServices completed successfully
+2026-04-07 12:39:12 | Configure pipeline started
+2026-04-07 12:45:31 | Program.Main started
+2026-04-07 12:45:31 | Building host
+2026-04-07 12:45:33 | Configuring WebHost
+2026-04-07 12:45:40 | Startup constructor started
+2026-04-07 12:45:43 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 12:45:43 | Startup constructor completed successfully
+2026-04-07 12:45:44 | ConfigureServices started
+2026-04-07 12:45:49 | ConfigureServices completed successfully
+2026-04-07 12:45:51 | Configure pipeline started
+2026-04-07 12:49:36 | Program.Main started
+2026-04-07 12:49:36 | Building host
+2026-04-07 12:49:38 | Configuring WebHost
+2026-04-07 12:49:44 | Startup constructor started
+2026-04-07 12:49:48 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 12:49:48 | Startup constructor completed successfully
+2026-04-07 12:49:49 | ConfigureServices started
+2026-04-07 12:49:56 | ConfigureServices completed successfully
+2026-04-07 12:49:59 | Configure pipeline started
+2026-04-07 12:55:39 | Program.Main started
+2026-04-07 12:55:40 | Building host
+2026-04-07 12:55:42 | Configuring WebHost
+2026-04-07 12:55:54 | Startup constructor started
+2026-04-07 12:55:57 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-07 12:55:57 | Startup constructor completed successfully
+2026-04-07 12:55:58 | ConfigureServices started
+2026-04-07 12:56:02 | ConfigureServices completed successfully
+2026-04-07 12:56:04 | Configure pipeline started
+2026-04-08 04:19:21 | Program.Main started
+2026-04-08 04:19:21 | Building host
+2026-04-08 04:19:24 | Configuring WebHost
+2026-04-08 04:19:47 | Startup constructor started
+2026-04-08 04:19:52 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-08 04:19:52 | Startup constructor completed successfully
+2026-04-08 04:19:56 | ConfigureServices started
+2026-04-08 04:20:03 | ConfigureServices completed successfully
+2026-04-08 04:20:06 | Configure pipeline started
+2026-04-08 06:40:26 | Program.Main started
+2026-04-08 06:40:27 | Building host
+2026-04-08 06:40:30 | Configuring WebHost
+2026-04-08 06:40:40 | Startup constructor started
+2026-04-08 06:40:43 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-08 06:40:43 | Startup constructor completed successfully
+2026-04-08 06:40:44 | ConfigureServices started
+2026-04-08 06:40:51 | ConfigureServices completed successfully
+2026-04-08 06:40:53 | Configure pipeline started
+2026-04-08 06:41:01 | Program.Main FAILED: System.IO.IOException: Failed to bind to address https://[::]:443: address already in use.
+ ---> Microsoft.AspNetCore.Connections.AddressInUseException: Address already in use
+ ---> System.Net.Sockets.SocketException (98): Address already in use
+   at System.Net.Sockets.Socket.UpdateStatusAfterSocketErrorAndThrowException(SocketError error, String callerName)
+   at System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
+   at System.Net.Sockets.Socket.Bind(EndPoint localEP)
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketConnectionListener.Bind()
+   at Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets.SocketTransportFactory.BindAsync(EndPoint endpoint, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServer.<>c__DisplayClass21_0`1.<<StartAsync>g__OnBind|0>d.MoveNext()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context)
+   --- End of inner exception stack trace ---
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindEndpointAsync(ListenOptions endpoint, AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.ListenOptions.BindAsync(AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.AnyIPListenOptions.BindAsync(AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.AddressesStrategy.BindAsync(AddressBindContext context)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.Internal.AddressBinder.BindAsync(IServerAddressesFeature addresses, KestrelServerOptions serverOptions, ILogger logger, Func`2 createBinding)
+   at Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServer.StartAsync[TContext](IHttpApplication`1 application, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Hosting.GenericWebHostService.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.Internal.Host.StartAsync(CancellationToken cancellationToken)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.RunAsync(IHost host, CancellationToken token)
+   at Microsoft.Extensions.Hosting.HostingAbstractionsHostExtensions.Run(IHost host)
+   at CWB.App.Program.Main(String[] args)
+
+2026-04-08 06:55:27 | Program.Main started
+2026-04-08 06:55:28 | Building host
+2026-04-08 06:55:32 | Configuring WebHost
+2026-04-08 06:55:49 | Startup constructor started
+2026-04-08 06:55:52 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-08 06:55:52 | Startup constructor completed successfully
+2026-04-08 06:55:53 | ConfigureServices started
+2026-04-08 06:55:57 | ConfigureServices completed successfully
+2026-04-08 06:55:58 | Configure pipeline started
+2026-04-08 08:39:42 | Program.Main started
+2026-04-08 08:39:43 | Building host
+2026-04-08 08:39:45 | Configuring WebHost
+2026-04-08 08:40:05 | Startup constructor started
+2026-04-08 08:40:09 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-04-08 08:40:09 | Startup constructor completed successfully
+2026-04-08 08:40:11 | ConfigureServices started
+2026-04-08 08:40:19 | ConfigureServices completed successfully
+2026-04-08 08:40:21 | Configure pipeline started

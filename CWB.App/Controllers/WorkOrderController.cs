@@ -5806,7 +5806,7 @@ namespace CWB.App.Controllers
                             DateTime completionDate = item.PlanCompletionDate.Value;
 
                             planstartdt = GetPreviousWorkingDays(
-                             item.PlanCompletionDate.Value,
+                             completionDate,
                              holidaylist.ToList(),
                              weekOff1,
                              weekOff2,
@@ -6195,7 +6195,8 @@ namespace CWB.App.Controllers
                                                     PlanReceiptDate = (DateTime)item.PlanCompletionDate,
                                                     CalcReceiptDate = nextworkdingdate,
                                                     WorkOrderId = item.WoId,
-                                                    CriticalPart = criticalpart
+                                                    CriticalPart = criticalpart,
+                                                    PO_Flag = 0
                                                 };
                                                 listprocplan.Add(ppdata);
                                             }
@@ -6475,7 +6476,8 @@ namespace CWB.App.Controllers
                                                     PlanReceiptDate = item.PlanStartDate,
                                                     CalcReceiptDate = bofnextworkdingdate,
                                                     WorkOrderId = item.WoId,
-                                                    CriticalPart = criticalpart
+                                                    CriticalPart = criticalpart,
+                                                    PO_Flag = 0
                                                 };
                                                 listprocplan.Add(ppdata);
 
@@ -6583,7 +6585,7 @@ namespace CWB.App.Controllers
                             }
                             int mcassyTime = (mcminutes * item.CalcWOQty) / ((mcworkdetails?.NoOfShifts ?? 0) > 0 ? mcworkdetails.NoOfShifts : 1);
                             int mcassyTimeInDays = mcassyTime / 1440;
-                            DateTime mcplanstartdt = item.PlanCompletionDate.Value.AddDays(-mcassyTimeInDays);
+                            DateTime mcplanstartdt = item.PlanStartDate;
                             foreach (var rote in mcresultList)
                             {
                                 var routingstep = await _routingService.RoutingSteps((int)rote.RoutingId);
@@ -7116,7 +7118,8 @@ namespace CWB.App.Controllers
                                             PlanReceiptDate = (DateTime)item.PlanCompletionDate,
                                             CalcReceiptDate = nextworkdingdate,
                                             WorkOrderId = item.WoId,
-                                            CriticalPart = criticalpart
+                                            CriticalPart = criticalpart,
+                                            PO_Flag = 0
                                         };
                                         listprocplan.Add(ppdata);
                                     }
@@ -7394,7 +7397,8 @@ namespace CWB.App.Controllers
                                             PlanReceiptDate = item.PlanStartDate,
                                             CalcReceiptDate = bofnextworkdingdate,
                                             WorkOrderId = item.WoId,
-                                            CriticalPart = criticalpart
+                                            CriticalPart = criticalpart,
+                                            PO_Flag = 0
                                         };
                                         listprocplan.Add(ppdata);
 
@@ -7502,7 +7506,7 @@ namespace CWB.App.Controllers
                     }
                     int mcassyTime = (mcminutes * item.CalcWOQty) / ((mcworkdetails?.NoOfShifts ?? 0) > 0 ? mcworkdetails.NoOfShifts : 1);
                     int mcassyTimeInDays = mcassyTime / 1440;
-                    DateTime mcplanstartdt = item.PlanCompletionDate.Value.AddDays(-mcassyTimeInDays);
+                    DateTime mcplanstartdt = item.PlanStartDate;
                     foreach (var rote in mcresultList) { 
                         var routingstep = await _routingService.RoutingSteps((int)rote.RoutingId);
                     foreach (var oneroutingstep in routingstep)
@@ -8309,7 +8313,7 @@ namespace CWB.App.Controllers
                 .Select(wo => wo.WoId) // adjust if the ID property is named differently
                 .ToHashSet();
             resultList = resultList
-                .Where(item => !excludedWoIds.Contains(item.WorkOrderId))
+                .Where(item => !excludedWoIds.Contains(item.WorkOrderId) && item.PO_Flag == 0)
                 .ToList();
             var partIds = resultList.Select(item => (int)item.PartId).Distinct().ToList();
 
@@ -8322,36 +8326,38 @@ namespace CWB.App.Controllers
 
             foreach (var item in resultList)
             {
-                item.PlanStartDateStr = item.PlanReceiptDate.ToString("dd-MM-yyyy");
-                var mp = masterPartsTasks[(int)item.PartId].Result;
-                item.PartNo = mp.PartNo;
-                item.PartDesc = mp.PartDescription;
-                if (uomDict.TryGetValue(item.UOMId, out var uomName))
-                {
-                    item.UomName = uomName;
-                }
-                var mfpdList = partPurchasesTasks[(int)item.PartId].Result;
-                var relevantPurchases = mfpdList.Where(purs => item.PartId == purs.PPartId).ToList();
+                
+                    item.PlanStartDateStr = item.PlanReceiptDate.ToString("dd-MM-yyyy");
+                    var mp = masterPartsTasks[(int)item.PartId].Result;
+                    item.PartNo = mp.PartNo;
+                    item.PartDesc = mp.PartDescription;
+                    if (uomDict.TryGetValue(item.UOMId, out var uomName))
+                    {
+                        item.UomName = uomName;
+                    }
+                    var mfpdList = partPurchasesTasks[(int)item.PartId].Result;
+                    var relevantPurchases = mfpdList.Where(purs => item.PartId == purs.PPartId).ToList();
 
-                if (relevantPurchases.Any())
-                {
-                    item.Supplier = relevantPurchases.First().PSupplier;
-                    item.SupplierId = relevantPurchases.First().PSupplierId;
-                    item.LeadTimeInDays = relevantPurchases.Sum(x => x.LeadTimeInDays).ToString();
-                    item.Moq = relevantPurchases.Sum(x => x.MinimumOrderQuantity);
-                    item.Price = relevantPurchases
-                                .Where(x => long.TryParse(x.Price, out _)) 
-                                .Sum(x => Convert.ToInt64(x.Price ?? "0")) 
-                                .ToString();
-                }
-                if(item.CriticalPart==1)
-                {
-                    item.CriticalParts = "Y";
-                }
-                else
-                {
-                    item.CriticalParts = "N";
-                }
+                    if (relevantPurchases.Any())
+                    {
+                        item.Supplier = relevantPurchases.First().PSupplier;
+                        item.SupplierId = relevantPurchases.First().PSupplierId;
+                        item.LeadTimeInDays = relevantPurchases.Sum(x => x.LeadTimeInDays).ToString();
+                        item.Moq = relevantPurchases.Sum(x => x.MinimumOrderQuantity);
+                        item.Price = relevantPurchases
+                                    .Where(x => long.TryParse(x.Price, out _))
+                                    .Sum(x => Convert.ToInt64(x.Price ?? "0"))
+                                    .ToString();
+                    }
+                    if (item.CriticalPart == 1)
+                    {
+                        item.CriticalParts = "Y";
+                    }
+                    else
+                    {
+                        item.CriticalParts = "N";
+                    }
+               
             }
             // Map: WoId → ParentWoId
             var parentMap = new Dictionary<long, long>();
@@ -8907,8 +8913,40 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
         [HttpPost]
         public async Task<IActionResult> MulitplePOdetails([FromBody] IEnumerable<PODetailsVM> pODetails)
         {
+
+
             var postPODetails = await _woService.PODetails(pODetails);
-            if (postPODetails.Any())
+            var allprocplan = await _woService.GetAllProcPlan();
+            var finalList = new List<ProcPlanVM>();
+            foreach (var proc in pODetails)
+            {
+                // 🔥 STEP 1: Check if Combined
+                if (!string.IsNullOrEmpty(proc.CombinedIds))
+                {
+                    var ids = proc.CombinedIds
+                                  .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                  .Select(id => Convert.ToInt64(id.Trim()))
+                                  .ToList();
+                    if (ids.Count() > 1)
+                    {
+                        foreach (var item in allprocplan.Where(x => ids.Contains(x.ProcPlanId)))
+                        {
+                            item.PO_Flag=1;
+                            finalList.Add(item);
+                        }
+                    }
+                    else if (ids.Count() == 1)
+                    {
+                        var item = allprocplan.FirstOrDefault(x => x.ProcPlanId == proc.ProcPlanId);
+                        if (item != null)
+                        {
+                            item.PO_Flag = 1;
+                            finalList.Add(item);
+                        }
+                    }
+                }
+            }
+                if (postPODetails.Any())
             {
                 var groupedData = postPODetails.GroupBy(x => x.CompanyId)
                                 .Select(grp => new POHeaderVM
@@ -8921,7 +8959,15 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
                                 .ToList();
                 var postPOHeader = await _woService.POHeader(groupedData);
             }
-            return Ok(postPODetails);
+            if(finalList.Any())
+            {
+               var porcplpoflag= await _woService.ProcPlanPostPOFlag(finalList);
+            }
+           
+
+
+
+                return Ok(postPODetails);
         }
         [HttpPost]
         public async Task<IActionResult> UpdatePOdetails([FromBody] IEnumerable<PODetailsVM> pODetails)
@@ -11000,7 +11046,7 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
             var wowaitlists = await _woService.GetAllWO_Wait_List();
             if (productionPlanId != 0)
             {
-                var wowaitlist = wowaitlists.FirstOrDefault(w => w.Wo_Id == productionPlanId);
+                var wowaitlist = wowaitlists.FirstOrDefault(w => w.Wo_Id == id);
                 if (wowaitlist != null)
                 {
                     string msg = "This Workorder is already used in the Simulation.";
@@ -11283,6 +11329,27 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
         public async Task<IActionResult> PostInv_Trans_Log(Inv_Trans_LogVM masterDocListVM)
         {
             var result = await _woService.PostInv_Trans_Log(masterDocListVM);
+            if(result.Transaction_Id==7)
+            {
+                var saleorders =await  _baService.AllSalesOrders();
+                var matchedOrders = saleorders.Where(so =>
+       so.PartId == result.Input_Part_NoId ||
+       so.PartId == result.Output_Part_No
+   ).ToList();
+
+                foreach (var so in matchedOrders)
+                {
+                    SalesOrderVM salesOrderVM = new SalesOrderVM()
+                    {
+                        SalesOrderId = so.SalesOrderId,
+                        WorkOrderId = so.WorkOrderId,   // keep existing
+                        WorkOrderNo = so.WorkOrderNo,
+                        Status = 4
+                    };
+
+                    await _baService.PostSalesOrder(salesOrderVM);
+                }
+            }
             return Ok(result);
         }
         [HttpPost]
@@ -12270,7 +12337,7 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
             var nclogs = await _woService.GetAllNcLog();
             foreach (var item in result)
             {
-                var prodwo = prodnWos.Where(w => w.ProductionPlanId == item.Wo_Id).FirstOrDefault();
+                var prodwo = prodnWos.Where(w => w.WoId == item.Wo_Id).FirstOrDefault();
                 item.WoNumber = prodwo?.WONumber;
                 foreach (ItemMasterPartVM imp in masterparts)
                 {
@@ -13084,7 +13151,7 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
                     .Where(w => w.Wo_Id == item.Wo_Id)
                     .OrderByDescending(w => w.Plan_End_Date)
                     .FirstOrDefault()?.Plan_End_Date;
-                var pp = alProductionWOs.Where(p => p.ProductionPlanId == item.Wo_Id).FirstOrDefault();
+                var pp = alProductionWOs.Where(p => p.WoId == item.Wo_Id).FirstOrDefault();
                 if (lastWoEndSlotId != null)
                 {
                     item.DateMcNotLoaded = lastWoEndSlotId?.ToString("dd-MM-yyyy hh:mm tt");
@@ -14972,12 +15039,12 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
             {
                 await CheckPauseAsync();
 
-                var item = productions.FirstOrDefault(p => p.ProductionPlanId == woId);
+                var item = productions.FirstOrDefault(p => p.WoId == woId);
                 if (item == null) continue;
 
                 var addData = new TempWO_Wait_ListVM
                 {
-                    Wo_Id = item.ProductionPlanId,
+                    Wo_Id = item.WoId,
                     Mode = 1,
                     Allow_Routing_Chg = 'Y',
                     Total_TPT = 0,
@@ -15012,7 +15079,7 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
 
                     var opr = new TempOpr_ListVM
                     {
-                        Wo_Id = item.ProductionPlanId,
+                        Wo_Id = item.WoId,
                         Opr_No = step.StepId,
                         Mode = 1,
                         Rework_Wo = 'N',
@@ -15049,7 +15116,7 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
             {
                 await CheckPauseAsync();
                 var oprs = allOprs.Where(o => o.Wo_Id == wo.Wo_Id).OrderBy(o => o.Opr_No).ToList();
-                var prodwo = productions.First(p => p.ProductionPlanId == wo.Wo_Id);
+                var prodwo = productions.First(p => p.WoId == wo.Wo_Id);
                 var routingSteps = await _routingService.RoutingSteps((int)prodwo.RoutingId);
 
                 foreach (var opr in oprs)
@@ -17147,7 +17214,7 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
         {
             var wos = await _woService.AllProductionPlan_Wo();
             var allTransLogs = await _woService.GetAllInv_Trans_Log();
-            var wo = wos.Where(w => w.ProductionPlanId == woId).FirstOrDefault();
+            var wo = wos.Where(w => w.WoId  == woId).FirstOrDefault();
             if (wo == null) return NotFound("WO not found");
 
             var totalBookoutQty = allTransLogs
@@ -17206,7 +17273,7 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
             var allTimeslots = await _woService.GetAllTimeslot_List();
             foreach (var item in mcwaits)
             {
-                var pwo = productions.Where(p => p.ProductionPlanId == item.Wo_Id).FirstOrDefault();
+                var pwo = productions.Where(p => p.WoId == item.Wo_Id).FirstOrDefault();
                 item.WoNumber = pwo.WONumber;
                 item.DataChanged = (pwo.Changed == 0) ? "N" : "Y";
                 item.WoQnty = pwo.CalcWOQty.ToString();
@@ -17218,7 +17285,7 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
                 var routingStep = await _routingService.RoutingSteps((int)pwo.RoutingId);
                 item.RoutingName =routingList.First(r => r.RoutingId == pwo.RoutingId).RoutingName;
                 item.OprNoName = routingStep.First(r => r.StepId == item.Opr_No_Id).StepNumber;
-                var waitItem = wO_Wait_Lists.Where(w => w.Wo_Id == pwo.ProductionPlanId).FirstOrDefault();
+                var waitItem = wO_Wait_Lists.Where(w => w.Wo_Id == pwo.WoId).FirstOrDefault();
                 if(waitItem != null)
                 {
                 item.CsStartDate = waitItem.Plan_Start_Date.ToString("dd-MM-yyyy");
@@ -17319,7 +17386,7 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
             foreach (var item in tempsubconList)
             {
                 item.Supplier = compaines.FirstOrDefault(c => c.CompanyId == item.Supplier_Id).CompanyName;
-                item.PartCount = prodnwos.Count(p => p.ProductionPlanId == item.Wo_Id);
+                item.PartCount = prodnwos.Count(p => p.WoId == item.Wo_Id);
             }
             var groupedSubcons = tempsubconList
                 .GroupBy(s => new { s.Supplier_Id, s.Supplier })
@@ -17817,7 +17884,7 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
             foreach (var item in result)
             {
                 var tempopr = tempoprs.Where(o => o.TempOpr_ListId == item.Part_Ref).FirstOrDefault();
-                var pp = prodns.Where(p => p.ProductionPlanId == tempopr.Wo_Id).FirstOrDefault();
+                var pp = prodns.Where(p => p.WoId == tempopr.Wo_Id).FirstOrDefault();
                 var todept = depts.FirstOrDefault(d => d.DepartmentId == item.To_Location)?.Name ?? "Stores";
                 var fromdept = depts.FirstOrDefault(d => d.DepartmentId == item.From_Location)?.Name ?? "Stores";
                 item.To_LocationStr = todept;

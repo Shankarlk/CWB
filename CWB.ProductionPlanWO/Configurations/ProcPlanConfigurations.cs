@@ -68,7 +68,11 @@ namespace CWB.ProductionPlanWO.Configurations
             builder
                 .Property(p => p.Old_Plan_Proc_Qnty)
                 .HasColumnName("Old_Plan_Proc_Qnty")
-                .HasDefaultValue(0);                
+                .HasDefaultValue(0);
+            builder
+               .Property(p => p.PO_Flag)
+               .HasColumnName("PO_Flag")
+               .HasDefaultValue(0);
             builder
                 .Property(p => p.PlanReceiptDate)
                 .HasColumnName("PlanReceiptDate")

@@ -39,5 +39,6 @@ namespace CWB.App.Models.BusinessProcesses
         public string InwDate { get; set; } = string.Empty;
         public long? WoId { get; set; } = 0;
         public long InwHeaderId { get; set; } = 0;
+        public string CombinedIds { get; set; } = string.Empty;
     }
 }

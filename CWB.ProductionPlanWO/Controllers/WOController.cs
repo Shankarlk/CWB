@@ -171,7 +171,15 @@ namespace CWB.ProductionPlanWO.Controllers
             var proc = await _woSerivce.PostProcPlan(procplan);
             return Ok(proc);
         }
-
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostProcPlanPOFlag)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(ProcPlanVM))] //changed
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> PostProcPlanPOFlag([FromBody] List<ProcPlanVM> procplan)
+        {
+            var proc = await _woSerivce.PostProcPlanPOFlag(procplan);
+            return Ok(proc);
+        }
         [HttpPost]
         [Route(ApiRoutes.WO.PostBomList)]
         [Produces(AppContentTypes.ContentType, Type = typeof(BOMListVM))]   //changed
