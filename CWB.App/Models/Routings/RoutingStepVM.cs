@@ -26,5 +26,7 @@
         public string MachineName { get; set; }
         public string PreferredStr { get; set; }
         public string ResidenceTime { get; set; }
+        public string StepType { get; set; }
+        public int Subconhours { get; set; }
     }
 }

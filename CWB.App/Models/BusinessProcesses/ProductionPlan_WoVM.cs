@@ -96,5 +96,6 @@ namespace CWB.App.Models.BusinessProcesses
         public string CombinedWoIds { get; set; } = string.Empty;
         public char Combined { get; set; }
         public long TenantId { get; set; }
+        public int Consolidation_Flag { get; set; }
     }
 }

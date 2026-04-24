@@ -84,6 +84,9 @@ namespace CWB.ProductionPlanWO.Utils
             services.AddTransient<INon_Plan_Wk_type_ListRepository, Non_Plan_Wk_type_ListRepository>();
             services.AddTransient<IOpr_ListRepository, Opr_ListRepository>();
             services.AddTransient<ITempOpr_ListRepository, TempOpr_ListRepository>();
+            services.AddTransient<IConsolidatedWoMappingRepository, ConsolidatedWoMappingRepository>();
+            services.AddTransient<IInv_Trans_ListRepository, Inv_Trans_ListRepository>();
+           
             services.AddTransient<IWOService, WOService>();
         }
     }

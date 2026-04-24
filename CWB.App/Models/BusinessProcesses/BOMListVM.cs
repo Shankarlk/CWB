@@ -81,5 +81,7 @@ namespace CWB.App.Models.BusinessProcesses
         public string? PartDesc { get; set; } = string.Empty;
         public string? WoNumber { get; set; } = string.Empty;
         public string? CombinedBom { get; set; } = string.Empty;
-            }
+
+        public string? ProcPlanIds { get; set; } = string.Empty;
+    }
 }

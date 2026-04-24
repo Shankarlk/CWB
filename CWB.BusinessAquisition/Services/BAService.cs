@@ -53,14 +53,15 @@ namespace CWB.BusinessAquisition.Services
         private readonly ISOAggregateRepository _sOAggregateRepository;
         private readonly IDeliveryScheduleRepository _deliveryScheduleRepository;
         private readonly IBAStatusRepository _baStatusRepository;
-
+        private readonly ISO_Alloc_ListRepository _SO_AllocationRepository;
         public BAService(ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork
             ,IPOLogRepository pOLogRepository
             ,ICustomerOrderRepository customerOderRepository
             ,ISalesOrderRepository salesOrderRepository
             ,ISOAggregateRepository sOAggregateRepository
             ,IBAStatusRepository bAStatusRepository
-            , IDeliveryScheduleRepository deliveryScheduleRepository)
+            , IDeliveryScheduleRepository deliveryScheduleRepository
+            , ISO_Alloc_ListRepository SO_AllocationRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -71,6 +72,7 @@ namespace CWB.BusinessAquisition.Services
             _sOAggregateRepository = sOAggregateRepository;
             _baStatusRepository = bAStatusRepository;
             _deliveryScheduleRepository = deliveryScheduleRepository;
+            _SO_AllocationRepository = SO_AllocationRepository;
         }
 
         public async Task<CustomerOrderVM> CustomerOrder(CustomerOrderVM customerOrderVM)
@@ -196,6 +198,7 @@ namespace CWB.BusinessAquisition.Services
                 salesOrder.Status = (int)OrdStatus.NOTPlanned;//Scheduled
                 salesOrder.WorkOrderNo = "";
                 salesOrder.WorkOrderId = 0;
+                salesOrder.ActQuantity = 0;
                 salesOrder.SODate = DateTime.Now;
                 salesOrder.SONumber = "SO_"+salesOrder.SODate.Value.ToString("yyyyMMddHHmmss");
                 try
@@ -314,8 +317,54 @@ namespace CWB.BusinessAquisition.Services
             }
             return new List<DeliveryScheduleVM>();
         }
+        public async Task<IEnumerable<SO_Alloc_ListVM>> GetSoAllocationListbypartid(long tenantId, long Partid)
+        {
+            try
+            {
+                // var delSchedules = _deliveryScheduleRepository.GetRangeAsync(d => d.TenantId == tenantId && d.CustomerOrderId == customerOrderId);
+                var soalloclist = _SO_AllocationRepository.GetRangeAsync(d => d.TenantId == tenantId && d.PartId == Partid);
+                return _mapper.Map<IEnumerable<SO_Alloc_ListVM>>(soalloclist);
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            return new List<SO_Alloc_ListVM>();
+        }
+        public async Task<SO_Alloc_ListVM> PostSOAllocation(SO_Alloc_ListVM soallocationVM)
+        {
+            try
+            {
+                var soallocation = _mapper.Map<SO_Alloc_List>(soallocationVM);
+                if(soallocation.Id==0)
+                {
+                    soallocation.Allocation_Date = DateTime.Now;
+                    soallocation.Final_Dispatch_Qnty = 0;
+                    soallocation.Dispatch_Complete = 'N';
+                    await _SO_AllocationRepository.AddAsync(soallocation);
+                    await _unitOfWork.CommitAsync();
+                    soallocationVM.SO_Alloc_List_Id = soallocation.Id;
+                }
+               
+                else
+                {
+                    //update logic remaining
+                    soallocation = await _SO_AllocationRepository.SingleOrDefaultAsync(x => x.Id == soallocation.Id);
 
+                    soallocation = await _SO_AllocationRepository.UpdateAsync(soallocation.Id, soallocation);
+                    await _unitOfWork.CommitAsync();
+                    soallocationVM.SO_Alloc_List_Id = soallocation.Id;
+                  
+                }
+                return soallocationVM;
+            }
+            catch (Exception ex)
+            {
 
+                return soallocationVM;
+            }
+        }
         public string HelloWorld()
         {
             return "Hello World";

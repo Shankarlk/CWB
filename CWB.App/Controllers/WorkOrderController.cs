@@ -183,6 +183,43 @@ namespace CWB.App.Controllers
             var customer = await _baService.GetCustomerOrders();
             foreach (SalesOrderVM sovm in salesorders)
             {
+                var invpart = await _woService.GetAllInventory_MasterBypartid(sovm.PartId);
+                if(invpart.Any())
+                {
+                    var inventorypart = invpart.First();
+                    if (inventorypart != null)
+                    {
+                        var invcount = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                        var  varsoallocationbypartid = await _baService.GetSOAllocationlistbyPartid(sovm.PartId);
+                        if(varsoallocationbypartid.Any())
+                        {
+                            var totalAllocatedQty = varsoallocationbypartid.Where(x => x.Dispatch_Complete == 'N').Sum(x => x.Allocated_Qnty);
+                            if(totalAllocatedQty>0)
+                            {
+                                sovm.QntyOnHand = Convert.ToInt64(inventorypart.Current_QntOnHand) - totalAllocatedQty;
+                            }
+                            else
+                            {
+                                sovm.QntyOnHand = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                            }
+                        }
+                        else
+                        {
+                            sovm.QntyOnHand = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                        }
+                       
+                    }
+                    else
+                    {
+                        sovm.QntyOnHand = 0;
+                    }
+                }
+                else
+                {
+                    sovm.QntyOnHand = 0;
+                }
+               
+                sovm.BalanceSOQty = sovm.RequiredQuantity - sovm.ActQuantity;
                 foreach (ItemMasterPartVM impvm in masterparts)
                 {
                     if (sovm.PartId == impvm.PartId)
@@ -5831,8 +5868,10 @@ namespace CWB.App.Controllers
                             RoutingId = item.RoutingId,
                             StartingOpNo = item.StartingOpNo,
                             EndingOpNo = item.EndingOpNo,
+                            For_Ref = 'N',
                             ReloadOption = "",
                             TenantId = item.TenantId,
+                            Consolidation_Flag=0
                         };
                         productions.Add(production);
                     }
@@ -6240,6 +6279,7 @@ namespace CWB.App.Controllers
                                                     For_Ref = 'N',
                                                     ReloadOption = "",
                                                     TenantId = item.TenantId,
+                                                    Consolidation_Flag = 0
                                                 };
                                                 childwos.Add(cwo);
                                             }
@@ -6431,6 +6471,7 @@ namespace CWB.App.Controllers
                                                     For_Ref = 'N',
                                                     ReloadOption = "",
                                                     TenantId = item.TenantId,
+                                                    Consolidation_Flag = 0
                                                 };
                                                 childwos.Add(cwo);
                                                 break;
@@ -6742,7 +6783,7 @@ namespace CWB.App.Controllers
                 {
                     // throw;
                 }
-
+                await Consolidate();
             }
             catch (Exception ex)
             {
@@ -7163,6 +7204,7 @@ namespace CWB.App.Controllers
                                             For_Ref = 'N',
                                             ReloadOption = "",
                                             TenantId = item.TenantId,
+                                            Consolidation_Flag = 0
                                         };
                                         childwos.Add(cwo);
                                     }
@@ -7353,6 +7395,7 @@ namespace CWB.App.Controllers
                                             For_Ref = 'N',
                                             ReloadOption = "",
                                             TenantId = item.TenantId,
+                                            Consolidation_Flag = 0
                                         };
                                         childwos.Add(cwo);
                                         break;
@@ -7657,7 +7700,87 @@ namespace CWB.App.Controllers
 
         }
 
+        private async Task Consolidate()
+        {
+            var productionTask = _woService.AllProductionWoReadForProd();
+            await Task.WhenAll(productionTask);
+            var productions = productionTask.Result.Where(x => x.Consolidation_Flag == 0).ToList();
+            var updatedproductions = _woService.ProductionPlanWoPostConsolidation(productions);
+            var grouped = productions.GroupBy(x => new { x.PartId,x.PartType }).Where(g => g.Count() > 1) // 🔥 ONLY duplicates
+            .ToList();
 
+            foreach(var group in grouped)
+            {
+                var key = group.Key;
+                var first = group.First();
+                int totalQty = group.Sum(x => x.CalcWOQty);
+                
+                DateTime minStartDate = group.Min(x => x.PlanStartDate);
+                DateTime? minCompletionDate = group.Min(x => x.PlanCompletionDate);
+                DateTime? socompletiondate = group.Min(x => x.SoComplDate);
+                long uniqwoid = long.Parse(DateTime.UtcNow.ToString("yyyyMMddHHmmssfffff"));
+
+                List<ProductionPlan_WoVM> consolidatedproduction = new List<ProductionPlan_WoVM>();
+                ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
+                {
+                    WoId = uniqwoid,//; item.ProductionPlanId ,
+                    ParentWoId = 0,
+                    SalesOrderId =first.SalesOrderId,
+                    PartId = key.PartId,
+                    PartType = key.PartType,
+                    Parentlevel = 'N',
+                    TestData = 'Y',
+                    CalcWOQty = totalQty,
+                    //PlanStartDate = item.PlanCompletionDate.GetValueOrDefault(),
+                    PlanStartDate = minStartDate,
+                    PlanCompletionDate = minCompletionDate,
+                    SoComplDate = socompletiondate,
+                    RoutingId = first.RoutingId,
+                    StartingOpNo = first.StartingOpNo,
+                    EndingOpNo = first.EndingOpNo,
+                    For_Ref = 'N',
+                    ReloadOption = "",
+                    TenantId = 0,
+                    Consolidation_Flag = 1
+                };
+                consolidatedproduction.Add(cwo);
+                var procdutionpost = await _woService.ProductionPlanWoPost(consolidatedproduction);
+                var newWoId = procdutionpost.First().WoId;
+                List<ConsolidatedWoMappingVM> mapping = new List<ConsolidatedWoMappingVM>();
+                foreach (var item in group)
+                {
+
+                    ConsolidatedWoMappingVM map = new ConsolidatedWoMappingVM()
+                    {
+                        CombinedWoId = newWoId,
+                        WoId = item.WoId,
+                        ParentWoId = item.ParentWoId,
+                        TenantId=0
+                    };
+                    mapping.Add(map);
+
+                }
+                await _woService.PostConsolidatedWO(mapping);
+               
+            }
+
+            await forreferenceupdation();
+            ///PostConsolidatedWO
+        }
+        private async Task forreferenceupdation()
+        {
+          var   cwos =await  _woService.Getallconsolidationproductionwo();
+            var productionTask = _woService.AllProductionWoReadForProd();
+            await Task.WhenAll(productionTask);
+            var filterdpoductiontask = productionTask.Result.Where(x => x.Parentlevel!='Y' && x.For_Ref!='Y').ToList();
+            //List<ProductionPlan_WoVM> referencelist = new List<ProductionPlan_WoVM>();
+                var cwoWoIds = cwos.Select(x => x.WoId).ToHashSet();
+            var referencelist = filterdpoductiontask
+    .Where(x => cwoWoIds.Contains(x.WoId))
+    .ToList();
+            await _woService.UpdateProduction_WoForReference(referencelist);
+
+        }
         public async Task<IActionResult> UpdateInwardPOdetails([FromBody] IEnumerable<PODetailsVM> pODetails)
         {
             List<PODetailsVM> pODetailsVMs = new List<PODetailsVM>();
@@ -7850,7 +7973,7 @@ namespace CWB.App.Controllers
             await Task.WhenAll(productionTask, masterPartsTask, customerTask, allDocsTask, allSalesOrdersTask, allRoutingStepsTask);
 
             // 2. Prepare Data Structures (Dictionaries & Lookups for O(1) access)
-            var productions = productionTask.Result.ToList();
+            var productions = productionTask.Result.Where(x => x.For_Ref == 'N').ToList();
             var masterparts = masterPartsTask.Result.ToDictionary(p => p.PartId);
             var customers = customerTask.Result.ToList();
 
@@ -8027,19 +8150,25 @@ namespace CWB.App.Controllers
             return Ok(combinedWos);
         }
         [HttpGet]
-        public async Task<IActionResult> GetCombinedWoDetailsByIds(string ids)
+        public async Task<IActionResult> GetCombinedWoDetailsByIds(long ids)
         {
-            // 1. Fetch same base data
-            var woIds = ids.Split(',')
-                    .Select(x => Convert.ToInt64(x.Trim()))
-                    .ToList();
-            var masterPartsTask = _masterService.MasterPartList();
-            var masterparts = masterPartsTask.Result.ToDictionary(p => p.PartId);
-            var productions = await _woService.AllProductionWoReadForProd();
+
+            
+            var consolidated = await _woService.Getallconsolidationproductionwo();
+            var productions =  await _woService.AllProductionWoReadForProd();
+            var consolidatedwwo = consolidated.Where(x => x.CombinedWoId == ids).ToList();
+            var woIds = consolidatedwwo
+    .Select(x => x.WoId)
+    .ToList();
+
             var result = productions
-        .Where(p => woIds.Contains(p.WoId) )
-        .ToList();
-            foreach(var item  in result)
+    .Where(p => woIds.Contains(p.WoId))
+    .ToList();
+         
+           var masterPartsTask = _masterService.MasterPartList();
+           var masterparts = masterPartsTask.Result.ToDictionary(p => p.PartId);
+
+            foreach (var item in result)
             {
                 if (masterparts.TryGetValue(item.PartId, out var imp))
                 {
@@ -8049,6 +8178,54 @@ namespace CWB.App.Controllers
             }
             return Ok(result);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetMaterialwhereused(string ids)
+        {
+            var woIds = ids.Split(',')
+                    .Select(x => Convert.ToInt64(x.Trim()))
+                    .ToList();
+            var masterPartsTask = _masterService.MasterPartList();
+            var masterparts = masterPartsTask.Result.ToDictionary(p => p.PartId);
+            var productions = await _woService.AllProductionWoReadForProd();
+            var result = productions
+        .Where(p => woIds.Contains(p.WoId))
+        .ToList();
+
+            foreach (var item in result)
+            {
+                if (masterparts.TryGetValue(item.PartId, out var imp))
+                {
+                    item.PartNo = imp.PartNo;
+                    item.PartDesc = imp.Description;
+                }
+            }
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetBOMwhereused(string ids)
+        {
+            var ppids = ids.Split(',')
+                    .Select(x => Convert.ToInt64(x.Trim()))
+                    .ToList();
+            var masterPartsTask = _masterService.MasterPartList();
+            var masterparts = masterPartsTask.Result.ToDictionary(p => p.PartId);
+            var productions = await _woService.AllProductionWoReadForProd();
+            var result = productions
+        .Where(p => ppids.Contains(p.ProductionPlanId))
+        .ToList();
+
+            foreach (var item in result)
+            {
+                if (masterparts.TryGetValue(item.PartId, out var imp))
+                {
+                    item.PartNo = imp.PartNo;
+                    item.PartDesc = imp.Description;
+                }
+            }
+            return Ok(result);
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> AllRMWo(int rmpartids)
         {
@@ -8403,7 +8580,7 @@ namespace CWB.App.Controllers
             {
                 x.PartId,
                 x.SupplierId,
-                RootParentWoId = GetRootParent(x.WorkOrderId)
+                //RootParentWoId = GetRootParent(x.WorkOrderId)
             })
             .Select(g =>
             {
@@ -8608,17 +8785,18 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
     .GroupBy(x => new
     {
         x.Child_Part_No_ID,
-        RootParentWoId = GetRootParent(x.ParentWoId)
+        //RootParentWoId = GetRootParent(x.ParentWoId)
     })
     .Select(g =>
     {
         var first = g.OrderBy(x => x.Plan_Compl_Dt).First();
 
-        var root = GetRootParent(first.ParentWoId);
+       // var root = GetRootParent(first.ParentWoId);
         first.Calc_Qnty = g.Sum(x => x.Calc_Qnty);
         first.Plan_Qnty = g.Sum(x => x.Plan_Qnty);
         first.Plan_Compl_Dt = g.Min(x => x.Plan_Compl_Dt);
         first.CombinedBom = g.Count() > 1 ? "Y" : "N";
+   first.ProcPlanIds= string.Join(",", g.Select(x => x.ProcPlanId));
         return first;
     })
     .ToList();
@@ -8913,6 +9091,10 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
         [HttpPost]
         public async Task<IActionResult> MulitplePOdetails([FromBody] IEnumerable<PODetailsVM> pODetails)
         {
+            foreach(var po in pODetails)
+            {
+                po.Inspection = 'N';
+            }
 
 
             var postPODetails = await _woService.PODetails(pODetails);
@@ -8948,15 +9130,17 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
             }
                 if (postPODetails.Any())
             {
-                var groupedData = postPODetails.GroupBy(x => x.CompanyId)
+
+                var groupedData = postPODetails.GroupBy(x => x.PoDetailsId)
                                 .Select(grp => new POHeaderVM
                                 {
-                                    SupplierId = grp.Key,
+                                    SupplierId = grp.Select(x => x.CompanyId).FirstOrDefault(),
                                     PoHeaderId = 0,
-                                    PoDetailsId = grp.Select(x => x.PoDetailsId).FirstOrDefault(),
+                                    PoDetailsId = grp.Key,
                                     PartId = grp.Select(x => x.PartId).FirstOrDefault(),
                                 })
                                 .ToList();
+
                 var postPOHeader = await _woService.POHeader(groupedData);
             }
             if(finalList.Any())
@@ -9439,42 +9623,45 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
                 {
                     item.WoNumber = prodwo.WONumber;
                 }
-                switch (item.Transaction_Id)
-                {
-                    case 1:
-                        item.TransactionName = "Inward RM / BOF";
-                        break;
-                    case 2:
-                        item.TransactionName = "Inward SubCon (Fin Part)";
-                        break;
-                    case 3:
-                        item.TransactionName = "Return Unprocessed Parts to Stores from Subcon";
-                        break;
-                    case 4:
-                        item.TransactionName = "Return Unprocessed Parts to Stores from Shop";
-                        break;
-                    case 5:
-                        item.TransactionName = "Issue Shop";
-                        break;
-                    case 6:
-                        item.TransactionName = "Issue SubCon";
-                        break;
-                    case 7:
-                        item.TransactionName = "Within Shop Bookout";
-                        break;
-                    case 8:
-                        item.TransactionName = "Bookout from Shop";
-                        break;
-                    case 9:
-                        item.TransactionName = "Dispatch";
-                        break;
-                    case 10:
-                        item.TransactionName = "Move to Scrap";
-                        break;
-                    default:
-                        item.TransactionName = "-";
-                        break;
-                }
+                var trns = await _woService.GetInv_trans_Desc(item.Transaction_Id);
+
+                item.TransactionName = trns.Inv_Trans_Desc;
+                //switch (item.Transaction_Id)
+                //{
+                //    case 1:
+                //        item.TransactionName = "Inward RM / BOF";
+                //        break;
+                //    case 2:
+                //        item.TransactionName = "Inward SubCon (Fin Part)";
+                //        break;
+                //    case 3:
+                //        item.TransactionName = "Return Unprocessed Parts to Stores from Subcon";
+                //        break;
+                //    case 4:
+                //        item.TransactionName = "Return Unprocessed Parts to Stores from Shop";
+                //        break;
+                //    case 5:
+                //        item.TransactionName = "Issue Shop";
+                //        break;
+                //    case 6:
+                //        item.TransactionName = "Issue SubCon";
+                //        break;
+                //    case 7:
+                //        item.TransactionName = "Within Shop Bookout";
+                //        break;
+                //    case 8:
+                //        item.TransactionName = "Bookout from Shop";
+                //        break;
+                //    case 9:
+                //        item.TransactionName = "Dispatch";
+                //        break;
+                //    case 10:
+                //        item.TransactionName = "Move to Scrap";
+                //        break;
+                //    default:
+                //        item.TransactionName = "-";
+                //        break;
+                //}
             }
             return Ok(result);
         }
@@ -11053,8 +11240,24 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
                     return Ok(msg);
                 }
             }
+            var consolidated = await _woService.Getallconsolidationproductionwo();
+            var filtered = consolidated.Where(x => x.ParentWoId == id).ToList();
+            var filteredcombined = filtered.First();
+            if(filtered.Any())
+            {
+                var parentwoids = consolidated.Where(x => x.CombinedWoId == filteredcombined.CombinedWoId).ToList();
+                var sowoids = parentwoids.Select(x => x.ParentWoId).ToHashSet();
+                var workOrders = await _baService.AllWorkOrders();
+                var woNumbers = workOrders.Where(x => sowoids.Contains(x.WOID)).ToList();
+                string wostring="";
+                foreach(var wono in woNumbers)
+                {
+                    wostring = wostring + wono.WONumber; 
+                }
 
-
+                string msg = "This work order  is consolidated for wo numbers " + wostring + "cannot be deleted";
+                return Ok(msg);
+            }
             var result = await _woService.DeleteWo(id);
             return Ok(result);
         }
@@ -11350,6 +11553,13 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
                     await _baService.PostSalesOrder(salesOrderVM);
                 }
             }
+            if(result.PO_No_Id>0)
+            {
+               var   podetailtask = await _woService.GetAllPodetails();
+                var filtertask = podetailtask.Where(x => x.PoDetailsId == result.PO_No_Id);
+                await _woService.UpdateInspection(filtertask);
+            }
+           
             return Ok(result);
         }
         [HttpPost]
@@ -11452,8 +11662,34 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
         [HttpPost]
         public async Task<IActionResult> PostInventory_Master(Inventory_MasterVM masterDocListVM)
         {
-            var result = await _woService.PostInventory_Master(masterDocListVM);
-            return Ok(result);
+            var inventorymaster = await _woService.GetAllInventory_MasterBypartid(masterDocListVM.Part_NoId);
+            if (inventorymaster.Any())
+            {
+                var record = inventorymaster.First();
+                var existingqnty = record.Current_QntOnHand;
+                decimal finalquanity=0;
+                var translogs = await _woService.GetAllInv_Trans_Log();
+                var currentranslog = translogs.FirstOrDefault(x => x.Inv_Trans_LogId == masterDocListVM.Inv_Trans_Log_Id);
+                if((currentranslog.Transaction_Id==1 || currentranslog.Transaction_Id==2) && currentranslog.Output_Part_No==record.Part_NoId)
+                {
+                    finalquanity = existingqnty + Convert.ToDecimal(currentranslog.Qnty);
+                    record.Current_QntOnHand = finalquanity;
+                    await _woService.PostInventory_Master(record);
+                }
+                else if (currentranslog.Transaction_Id == 7 && currentranslog.Input_Part_NoId == record.Part_NoId)
+                {
+                    finalquanity = existingqnty + Convert.ToDecimal(currentranslog.Qnty);
+                    record.Current_QntOnHand = finalquanity;
+                    await _woService.PostInventory_Master(record);
+                }
+
+            }
+            else
+            {
+                var result = await _woService.PostInventory_Master(masterDocListVM);
+            }
+           
+            return Ok();
         }
         [HttpGet]
         public async Task<IActionResult> GetAllInventory_Master()
@@ -11606,7 +11842,8 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
             await Task.WhenAll(podetailsTask, procPlanTask, inwHeaderTask,
                                companiesTask, masterPartsTask, uomsTask, wosTask);
 
-            var podetails = podetailsTask.Result;
+            var podetails = podetailsTask.Result.Where(x => x.Inspection == 'N')
+    .ToList();  
             var procPlans = procPlanTask.Result;
             var inwHeaders = inwHeaderTask.Result;
             var companies = companiesTask.Result;
@@ -13579,7 +13816,7 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
                     var invdata = new Inv_Trans_LogVM();
                     var matl_Issue_List = matl_Issue_Lists.Where(m => m.Matl_Issue_ListId == item).FirstOrDefault();
                     var tempopr = tempoprs.Where(o => o.TempOpr_ListId == matl_Issue_List.Part_Ref).FirstOrDefault();
-                    var pp = prodns.Where(p => p.ProductionPlanId == tempopr.Wo_Id).FirstOrDefault();
+                    var pp = prodns.Where(p => p.WoId == tempopr.Wo_Id).FirstOrDefault();
                     invdata.Wo_Id = pp.WoId;
                     invdata.Qnty = tempopr.Plan_Qnty; //matl_Issue_List.Issue_Qnty
                     invdata.Part_Status = 1;
@@ -13592,13 +13829,34 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
                     invdata.Movement_Compl = 'Y';
                     invdata.Transaction_Id = 5;
                     var result = await _woService.PostInv_Trans_Log(invdata);
-                    var invMaster = new Inventory_MasterVM();
-                    invMaster.Part_NoId = result.Input_Part_NoId;
-                    invMaster.Routing_Id = result.Input_Routing_Id;
-                    invMaster.Opr_No_Id = result.Input_Opr_No;
-                    invMaster.Current_QntOnHand = result.Qnty;
-                    invMaster.Location_Id = result.To_Location_Id;
-                    var inmaster = await _woService.PostInventory_Master(invMaster);
+
+                    var inventorymaster = await _woService.GetAllInventory_MasterBypartid(result.Input_Part_NoId);
+                    if (inventorymaster.Any())
+                    {
+                        var record = inventorymaster.First();
+                        var existingqnty = record.Current_QntOnHand;
+                        decimal finalquanity = 0;
+                        var translogs = await _woService.GetAllInv_Trans_Log();
+                        var currentranslog = translogs.FirstOrDefault(x => x.Inv_Trans_LogId == result.Inv_Trans_LogId);
+                        if (currentranslog.Transaction_Id == 5  && currentranslog.Input_Part_NoId == record.Part_NoId)
+                        {
+                            finalquanity = existingqnty + Convert.ToDecimal(currentranslog.Qnty);
+                            record.Current_QntOnHand = finalquanity;
+                            await _woService.PostInventory_Master(record);
+                        }
+
+                    }
+                    else
+                    {
+                        var invMaster = new Inventory_MasterVM();
+                        invMaster.Part_NoId = result.Input_Part_NoId;
+                        invMaster.Routing_Id = result.Input_Routing_Id;
+                        invMaster.Opr_No_Id = result.Input_Opr_No;
+                        invMaster.Current_QntOnHand = result.Qnty;
+                        invMaster.Location_Id = result.To_Location_Id;
+                        var inmaster = await _woService.PostInventory_Master(invMaster);
+                    }
+                   
                 }
                 return Json(new { message = "Material Issued." });
             }
@@ -13667,14 +13925,41 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
                     invdata.To_Location_Id = tempSubCon_List.Supplier_Id;
                     invdata.Movement_Started = 'Y';
                     invdata.Movement_Compl = 'Y';
+                    invdata.Transaction_Id = 6;
                     var result = await _woService.PostInv_Trans_Log(invdata);
-                    var invMaster = new Inventory_MasterVM();
-                    invMaster.Part_NoId = result.Input_Part_NoId;
-                    invMaster.Routing_Id = result.Input_Routing_Id;
-                    invMaster.Opr_No_Id = result.Input_Opr_No;
-                    invMaster.Current_QntOnHand = result.Qnty;
-                    invMaster.Location_Id = result.To_Location_Id;
-                    var inmaster = await _woService.PostInventory_Master(invMaster);
+                    var inventorymaster = await _woService.GetAllInventory_MasterBypartid(result.Input_Part_NoId);
+                    if (inventorymaster.Any())
+                    {
+                        var record = inventorymaster.First();
+                        var existingqnty = record.Current_QntOnHand;
+                        decimal finalquanity = 0;
+                        var translogs = await _woService.GetAllInv_Trans_Log();
+                        var currentranslog = translogs.FirstOrDefault(x => x.Inv_Trans_LogId == result.Inv_Trans_LogId);
+                        if (currentranslog.Transaction_Id == 6 && currentranslog.Input_Part_NoId == record.Part_NoId)
+                        {
+                            finalquanity = existingqnty + Convert.ToDecimal(currentranslog.Qnty);
+                            record.Current_QntOnHand = finalquanity;
+                            await _woService.PostInventory_Master(record);
+                        }
+
+                    }
+                    else
+                    {
+                        var invMaster = new Inventory_MasterVM();
+                        invMaster.Part_NoId = result.Input_Part_NoId;
+                        invMaster.Routing_Id = result.Input_Routing_Id;
+                        invMaster.Opr_No_Id = result.Input_Opr_No;
+                        invMaster.Current_QntOnHand = result.Qnty;
+                        invMaster.Location_Id = result.To_Location_Id;
+                        var inmaster = await _woService.PostInventory_Master(invMaster);
+                    }
+                    //var invMaster = new Inventory_MasterVM();
+                    //invMaster.Part_NoId = result.Input_Part_NoId;
+                    //invMaster.Routing_Id = result.Input_Routing_Id;
+                    //invMaster.Opr_No_Id = result.Input_Opr_No;
+                    //invMaster.Current_QntOnHand = result.Qnty;
+                    //invMaster.Location_Id = result.To_Location_Id;
+                    //var inmaster = await _woService.PostInventory_Master(invMaster);
                 }
                 return Json(new { message = "SubCon Issued." });
             }
@@ -17884,6 +18169,7 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
             foreach (var item in result)
             {
                 var tempopr = tempoprs.Where(o => o.TempOpr_ListId == item.Part_Ref).FirstOrDefault();
+                if (tempopr == null) { continue; }
                 var pp = prodns.Where(p => p.WoId == tempopr.Wo_Id).FirstOrDefault();
                 var todept = depts.FirstOrDefault(d => d.DepartmentId == item.To_Location)?.Name ?? "Stores";
                 var fromdept = depts.FirstOrDefault(d => d.DepartmentId == item.From_Location)?.Name ?? "Stores";

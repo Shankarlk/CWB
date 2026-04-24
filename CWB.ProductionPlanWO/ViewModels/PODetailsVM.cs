@@ -21,5 +21,6 @@ namespace CWB.ProductionPlanWO.ViewModels
         public int PoQntyRecd { get; set; }
         public int Status { get; set; }
         public long TenantId { get; set; }
+        public char Inspection { get; set; }
     }
 }

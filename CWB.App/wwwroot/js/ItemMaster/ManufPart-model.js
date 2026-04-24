@@ -1034,12 +1034,51 @@ $(document).ready(function () {
             masterPartNo = eData[key];
             key = "preferedRawMaterial";
             $("#EditPreferedRawMaterial").val(eData[key]);
-            
+            var mpPartId = eData["mpPartId"];
             key = "mpPartMadeFrom";
             if (eData[key] === 1 || eData[key] === 2) {
                 $("#EditMFPartType").val("Raw Material");
+                api.get("/masters/GetRMPart?partId=" + mpPartId)
+                    .then((rm) => {
+
+                        var rmTypeId = rm.rawMaterialTypeId;
+
+                        // Step 2: Use existing RMTypes API
+                        $.ajax({
+                            url: "/masters/RMTypes", // 🔁 replace controller
+                            type: "GET",
+                            success: function (data) {
+
+                                // 🔹 Find matching RM Type
+                                var selectedItem = data.find(x => x.rawMaterialTypeId == rmTypeId);
+
+                                if (selectedItem) {
+
+                                    if (selectedItem.multiplePartsMadeFrom1InputRM === "Y") {
+
+                                        // ✅ Multiple allowed
+                                        $("#EditInputWeight").prop('readonly', false);
+                                        $("#EditQuantityPerInput").prop('readonly', true);
+                                    } else {
+
+                                        // ❌ Single only
+                                        $("#EditInputWeight").prop('readonly', true);
+                                        $("#EditQuantityPerInput").prop('readonly', false);
+                                    }
+                                }
+                            },
+                            error: function () {
+                                console.error("Error fetching RM Types");
+                            }
+                        });
+                    })
+                    .catch((err) => {
+                        console.error("RM Part fetch error:", err);
+                    });
             } else {
                 $("#EditMFPartType").val(eData["masterPartType"]);
+                $("#EditQuantityPerInput").prop('readonly', false);
+                $("#EditInputWeight").prop('readonly', true);
             }
             $("#EditPartMadeFrom").val(eData[key]);
             key = "scrapGenerated";
@@ -2377,6 +2416,9 @@ function copyData() {
         $('#MFDescription').val(data[selval].partNo+" / "+data[selval].partDescription);
         $('#MFPartType').val(data[selval].masterPartType);
         $('#InputWeight').val(data[selval].finishedWeight ?? 0);
+        $("#QuantityPerInput").prop('readonly', false);
+        $("#InputWeight").prop('readonly', true);
+        $("#QuantityPerInput").val(1);
         calculateScrap();
        // $('#FnshWeightSpan').text(data[selval].finishedWeight ?? 0);
     }

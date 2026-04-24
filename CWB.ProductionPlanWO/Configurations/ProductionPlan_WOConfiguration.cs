@@ -128,6 +128,10 @@ namespace CWB.ProductionPlanWO.Configurations
              .HasColumnName("Combined_WO")
              .HasDefaultValue(0);
             builder
+           .Property(t => t.Consolidation_Flag)
+           .HasColumnName("Consolidation_Flag")
+           .HasDefaultValue(0);
+            builder
              .Property(t => t.ManufDaysAvailable)
              .HasColumnName("ManufDaysAvailable");
             //.IsRequired();

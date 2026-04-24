@@ -200,6 +200,42 @@ namespace CWB.ProductionPlanWO.Controllers
             return Ok(productionPlan);
         }
         [HttpPost]
+        [Route(ApiRoutes.WO.PostProductionPlan_WoConsolidation)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(ProductionPlan_WOVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> PostProductionPlan_WoConsolidation([FromBody] List<ProductionPlan_WOVM> productions)
+        {
+            var productionPlan = await _woSerivce.PostProductionPlan_WoConsolidation(productions);
+            return Ok(productionPlan);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.UpdateProductionPlan_WoForReference)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(ProductionPlan_WOVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> UpdateProductionPlan_WoForReference([FromBody] List<ProductionPlan_WOVM> productions)
+        {
+            var productionPlan = await _woSerivce.UpdateProductionPlan_WoForReference(productions);
+            return Ok(productionPlan);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostConsolidationWo)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(ConsolidatedWoMappingVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> PostConsolidationWo([FromBody] List<ConsolidatedWoMappingVM> productions)
+        {
+            var productionPlan = await _woSerivce.PostConsolidationWo(productions);
+            return Ok(productionPlan);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllConsolidationwo)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<ConsolidatedWoMappingVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> Getallconsolidationwo(long tenantId)
+        {
+            var allwo = await _woSerivce.Getallconsolidationwo(tenantId);
+            return Ok(allwo);
+        }
+        [HttpPost]
         [Route(ApiRoutes.WO.UpdateProductionPlan_Wo)]
         [Produces(AppContentTypes.ContentType, Type =typeof(ProductionPlan_WOVM))]
         [Authorize(Roles = Roles.ADMIN)]
@@ -314,6 +350,14 @@ namespace CWB.ProductionPlanWO.Controllers
             var result = await _woSerivce.MultiplePODetails(pODetailsVMs);
             return Ok(result);
         }
+        [HttpPost]
+        [Route(ApiRoutes.WO.UpdateInspection)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(PODetailsVM))]
+        public async Task<IActionResult> UpdateInspection([FromBody] List<PODetailsVM> pODetailsVMs)
+        {
+            var result = await _woSerivce.UpdateInspection(pODetailsVMs);
+            return Ok(result);
+        }
 
         [HttpPost]
         [Route(ApiRoutes.WO.PostMultiplePOHeaders)]
@@ -333,6 +377,15 @@ namespace CWB.ProductionPlanWO.Controllers
         {
             var pOStatus = await _woSerivce.GetPOStatus(Id);
             return Ok(pOStatus);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetInvTransDescName)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Inv_Trans_ListVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetInvTransDescName(long Id)
+        {
+            var Inventorydescname = await _woSerivce.GetInvTransDescName(Id);
+            return Ok(Inventorydescname);
         }
 
 
@@ -502,6 +555,15 @@ namespace CWB.ProductionPlanWO.Controllers
         public async Task<IActionResult> GetAllInventory_Master(long tenantId)
         {
             var allwo = await _woSerivce.GetAllInventory_Master(tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllInventory_MasterBypartid)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Inventory_MasterVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllInventory_MasterBypartid(long partid,long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllInventory_MasterBypartid(partid,tenantId);
             return Ok(allwo);
         }
         [HttpGet]

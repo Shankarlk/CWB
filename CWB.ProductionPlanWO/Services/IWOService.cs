@@ -32,6 +32,8 @@ namespace CWB.ProductionPlanWO.Services
         Task<List<ProductionPlan_WOVM>> PostProductionPlan_Wo(List<ProductionPlan_WOVM> productions);
         Task<ProductionPlan_WOVM> UpdateProductionPlan_Wo(ProductionPlan_WOVM productions);
         Task<ProductionPlan_WOVM> UpdateProductionPlan_WoCriticalPart(ProductionPlan_WOVM productions);
+        Task<List<ProductionPlan_WOVM>> PostProductionPlan_WoConsolidation(List<ProductionPlan_WOVM> productions);
+        Task<List<ProductionPlan_WOVM>> UpdateProductionPlan_WoForReference(List<ProductionPlan_WOVM> productions);
         Task<ProductionPlan_WOVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WOVM productions);
         Task<IEnumerable<ProductionPlan_WOVM>> AllProductionWo(long tenantId);
         Task<WOStatusVM> GetWOStatus(long Id);
@@ -42,7 +44,9 @@ namespace CWB.ProductionPlanWO.Services
         Task<IEnumerable<McTimeListVM>> GetAllMcTimeListVMs(long tenantId);
         Task<IEnumerable<PODetailsVM>> GetAllPodetails(long tenantId);
         Task<POStatusVM> GetPOStatus(long Id);
+        Task<Inv_Trans_ListVM> GetInvTransDescName(long Id);
         Task<List<PODetailsVM>> MultiplePODetails(List<PODetailsVM> pODetailsVM);
+        Task<List<PODetailsVM>> UpdateInspection(List<PODetailsVM> pODetailsVM);
         Task<List<POHeaderVM>> MultiplePOHeaders(List<POHeaderVM> pOHeaderVMs);
         Task<IEnumerable<Inward_Condn_listVM>> GetAllInward_Condn_list();
         Task<IEnumerable<SetupVariationReasonVM>> GetAllSetupVariationReason();
@@ -50,6 +54,7 @@ namespace CWB.ProductionPlanWO.Services
         Task<IEnumerable<Insp_Outcome_DetailsVM>> GetAllInsp_Outcome_Details(long tenantId);
         Task<IEnumerable<Insp_Outcome_ListVM>> GetAllInsp_Outcome_List();
         Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_Master(long tenantId);
+        Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartid(long Partid, long tenantId);
         Task<IEnumerable<Inv_Trans_LogVM>> GetAllInvTransLog(long tenantId);
         Task<IEnumerable<Inw_Recpt_DetailsVM>> GetAllInw_Recpt_Details(long tenantId);
         Task<IEnumerable<Inw_Recpt_HeaderVM>> GetAlInw_Recpt_Header(long tenantId);
@@ -209,7 +214,8 @@ namespace CWB.ProductionPlanWO.Services
         Task<IEnumerable<ProductionPlan_WOVM>> AllProductionWoReadForProd(long tenantId);
         Task<IEnumerable<ProductionPlan_WOVM>> GetAllReadyforProductionWo(long tenantId);
         Task<IEnumerable<Matl_Issue_ListVM>> GetAllMatlIssueListForShop(long tenantId);
-
+        Task<List<ConsolidatedWoMappingVM>> PostConsolidationWo(List<ConsolidatedWoMappingVM> productions);
+        Task<IEnumerable<ConsolidatedWoMappingVM>> Getallconsolidationwo(long tenantId);
         string HelloWorld();
     }
 }

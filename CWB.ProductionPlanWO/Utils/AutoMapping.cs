@@ -242,6 +242,7 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.EndingOpNo, m => m.MapFrom(src => src.EndingOpNo))
                .ForMember(m => m.For_Ref, m => m.MapFrom(src => src.For_Ref))
                .ForMember(m => m.Combined_WO, m => m.MapFrom(src => src.Combined_WO))
+               .ForMember(m => m.Consolidation_Flag, m => m.MapFrom(src => src.Consolidation_Flag))
                .ForMember(m => m.Active, m => m.MapFrom(src => src.Active))
                .ForMember(m => m.WODate, m => m.MapFrom(src => src.WODate));
 
@@ -266,6 +267,7 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.EndingOpNo, m => m.MapFrom(src => src.EndingOpNo))
                .ForMember(m => m.For_Ref, m => m.MapFrom(src => src.For_Ref))
                .ForMember(m => m.Combined_WO, m => m.MapFrom(src => src.Combined_WO))
+               .ForMember(m => m.Consolidation_Flag, m => m.MapFrom(src => src.Consolidation_Flag))
                .ForMember(m => m.Active, m => m.MapFrom(src => src.Active))
                .ForMember(m => m.WODate, m => m.MapFrom(src => src.WODate));
 
@@ -343,6 +345,8 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.StatusId, m => m.MapFrom(src => src.Id))
                .ForMember(m => m.Status, m => m.MapFrom(src => src.Status));
 
+
+
             CreateMap<PODetailsVM, PODetails>()
           .ForMember(m => m.Id, m => m.MapFrom(src => src.PoDetailsId))
           .ForMember(m => m.POReference, m => m.MapFrom(src => src.POReference))
@@ -357,6 +361,7 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Mismatch_Resolved, m => m.MapFrom(src => src.Mismatch_Resolved))
           .ForMember(m => m.PoQntyRecd, m => m.MapFrom(src => src.PoQntyRecd))
           .ForMember(m => m.Status, m => m.MapFrom(src => src.Status))
+          .ForMember(m => m.Inspection, m => m.MapFrom(src => src.Inspection))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
             CreateMap<PODetails, PODetailsVM>()
@@ -373,6 +378,7 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Mismatch_Resolved, m => m.MapFrom(src => src.Mismatch_Resolved))
           .ForMember(m => m.PoQntyRecd, m => m.MapFrom(src => src.PoQntyRecd))
           .ForMember(m => m.Status, m => m.MapFrom(src => src.Status))
+          .ForMember(m => m.Inspection, m => m.MapFrom(src => src.Inspection))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
 
@@ -463,6 +469,16 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Inward_Condition, m => m.MapFrom(src => src.Inward_Condition))
           .ForMember(m => m.Comment, m => m.MapFrom(src => src.Comment))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+
+            CreateMap<Inv_Trans_ListVM, Inv_Trans_List>()
+             .ForMember(m => m.Id, m => m.MapFrom(src => src.TransactionId))
+             .ForMember(m => m.Inv_Trans_Desc, m => m.MapFrom(src => src.Inv_Trans_Desc));
+
+            CreateMap<Inv_Trans_List, Inv_Trans_ListVM>()
+               .ForMember(m => m.TransactionId, m => m.MapFrom(src => src.Id))
+               .ForMember(m => m.Inv_Trans_Desc, m => m.MapFrom(src => src.Inv_Trans_Desc));
+
+
             CreateMap<Inv_Trans_LogVM, Inv_Trans_Log>()
           .ForMember(m => m.Id, m => m.MapFrom(src => src.Inv_Trans_LogId))
           .ForMember(m => m.Dt_time, m => m.MapFrom(src => src.Dt_time))
@@ -1499,6 +1515,19 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(s => s.No_days_coverage, s => s.MapFrom(src => src.No_days_coverage))
             .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
 
+
+            CreateMap<ConsolidatedWoMappingVM, ConsolidatedWoMapping>()
+                .ForMember(s => s.Id, s => s.MapFrom(src => src.ConsolidatedWoId))
+                .ForMember(s => s.CombinedWoId, s => s.MapFrom(src => src.CombinedWoId))
+                .ForMember(s => s.WoId, s => s.MapFrom(src => src.WoId))
+                .ForMember(s => s.ParentWoId, s => s.MapFrom(src => src.ParentWoId))
+                .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
+            CreateMap<ConsolidatedWoMapping, ConsolidatedWoMappingVM>()
+                  .ForMember(s => s.ConsolidatedWoId, s => s.MapFrom(src => src.Id))
+                .ForMember(s => s.CombinedWoId, s => s.MapFrom(src => src.CombinedWoId))
+                .ForMember(s => s.WoId, s => s.MapFrom(src => src.WoId))
+                .ForMember(s => s.ParentWoId, s => s.MapFrom(src => src.ParentWoId))
+                .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
 
             CreateMap<DispatchDetailsVM, DispatchDetails>()
                .ForMember(m => m.Id, m => m.MapFrom(src => src.DispatchDetailsId))

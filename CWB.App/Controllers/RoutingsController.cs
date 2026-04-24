@@ -403,6 +403,7 @@ namespace CWB.App.Controllers
                 int subminutes = 0;
                 int mcsetminutes = 0;
                 int subsetminutes = 0;
+                int subcontransporthours = 0;
                 if (item.StepLocation == "1")
                 {
                     item.LocationName = "Inhouse";
@@ -413,6 +414,21 @@ namespace CWB.App.Controllers
                 else
                 {
                     item.LocationName = "Company";
+                }
+                if (item.StepLocation == "2")
+                {
+                    item.StepType = "Subcon";
+                }
+                else
+                {
+                    if (item.StepNextSequence == 1)
+                    {
+                        item.StepType = "Sequential";
+                    }
+                    else
+                    {
+                        item.StepType = "Parallel";
+                    }
                 }
                 var stepmc = await _routingService.StepMachines((int)item.StepId);
 
@@ -459,7 +475,8 @@ namespace CWB.App.Controllers
                     {
                         //if (sub.PreferredSubcon == 1)
                         //{
-                            var subworkdetails = await _routingService.SubConWSS((int)item.StepId, sub.SubConDetailsId);
+                        subcontransporthours += Convert.ToInt32(sub.TransportTime);
+                        var subworkdetails = await _routingService.SubConWSS((int)item.StepId, sub.SubConDetailsId);
                             if(subworkdetails.Count() !=0)
                             {
                                 foreach (var mc in subworkdetails)
@@ -477,12 +494,14 @@ namespace CWB.App.Controllers
                                     subminutes += ((int)time.TotalMinutes/ partperloading);
                                     TimeSpan Settime = TimeSpan.Parse(mc.SetupTime);
                                     subsetminutes += (int)Settime.TotalMinutes;
+                               // subcontransporthours+=mc. 
                                 }
                             }
                         //}
                     }
                     item.CycleTime = subminutes.ToString();
                     item.SetupTime = subsetminutes.ToString();
+                    item.Subconhours = subcontransporthours;
                 }
                 if(item.SetupTime == null)
                 {
@@ -1237,6 +1256,10 @@ namespace CWB.App.Controllers
                     int subconcount = 0;
                     var result = await RoutingSteps(item.RoutingId);
                     var oprnos = (List<RoutingStepVM>)((OkObjectResult)result).Value;
+                    var subconSteps = oprnos.Where(x => x.StepType == "Subcon").ToList();
+                    var sequentialSteps = oprnos.Where(x => x.StepType == "Sequential").ToList();
+                    var parallelSteps = oprnos.Where(x => x.StepType == "Parallel").ToList();
+
                     foreach (var op in oprnos)
                     {
                         if (op.StepLocation == "1")
@@ -1295,7 +1318,10 @@ namespace CWB.App.Controllers
 
                     //    batchSizeManfTimeMinutes += perMachineTime;
                     //}
-                    foreach (var op in oprnos)
+
+                    double sequentialTime = 0;
+
+                    foreach (var op in sequentialSteps)
                     {
                         if (string.IsNullOrWhiteSpace(op.CycleTime) ||
                             string.IsNullOrWhiteSpace(op.SetupTime))
@@ -1304,43 +1330,123 @@ namespace CWB.App.Controllers
                         double cycleMin = double.Parse(op.CycleTime);
                         double setupMin = double.Parse(op.SetupTime);
 
-                        // INHOUSE
-                        if (op.StepLocation == "1")
-                        {
-                            if (string.IsNullOrWhiteSpace(op.FirstPieceTime) ||
-                                op.NumberOfSimMachines <= 0)
-                                continue;
+                        if (string.IsNullOrWhiteSpace(op.FirstPieceTime) ||
+                            op.NumberOfSimMachines <= 0)
+                            continue;
 
-                            double firstPieceMin = double.Parse(op.FirstPieceTime);
-                            int simMc = op.NumberOfSimMachines;
+                        double firstPieceMin = double.Parse(op.FirstPieceTime);
+                        int simMc = op.NumberOfSimMachines;
 
-                            double batchPerMachine = (double)batchSize / simMc;
+                        double batchPerMachine = (double)batchSize / simMc;
 
-                            double perMachineTime =
-                                setupMin +
-                                firstPieceMin +
-                                (batchPerMachine - 1) * cycleMin;
-
-                            batchSizeManfTimeMinutes += perMachineTime;
-                        }
-                        // SUBCON
-                        else if (op.StepLocation == "2")
-                        {
-                            // Only setup + cycle time
-                            double perOpTime =
-                                setupMin +
-                                (batchSize * cycleMin);
-
-                            batchSizeManfTimeMinutes += perOpTime;
-                        }
+                        sequentialTime +=
+                            setupMin +
+                            firstPieceMin +
+                            (batchPerMachine - 1) * cycleMin;
                     }
+                    double parallelTime = 0;
+                    var maxparalleCycleTime = parallelSteps
+                    .Where(x => !string.IsNullOrWhiteSpace(x.CycleTime))
+                    .Select(x => double.Parse(x.CycleTime))
+                    .DefaultIfEmpty(0)
+                    .Max();
+                    var maxparallelSetupTime = parallelSteps
+                        .Where(x => !string.IsNullOrWhiteSpace(x.SetupTime))
+                        .Select(x => double.Parse(x.SetupTime))
+                        .DefaultIfEmpty(0)
+                        .Max();
+                    foreach (var op in parallelSteps)
+                    {
+                        if (string.IsNullOrWhiteSpace(op.CycleTime) ||
+                            string.IsNullOrWhiteSpace(op.SetupTime))
+                            continue;
+
+                        double cycleMin = double.Parse(op.CycleTime);
+                        double setupMin = double.Parse(op.SetupTime);
+                        if (string.IsNullOrWhiteSpace(op.FirstPieceTime) ||
+                           op.NumberOfSimMachines <= 0)
+                            continue;
+
+                        double firstPieceMin = double.Parse(op.FirstPieceTime);
+                        int simMc = op.NumberOfSimMachines;
+
+                        double batchPerMachine = (double)batchSize / simMc;
+                        double opTime =
+                           setupMin +
+                            firstPieceMin +
+                            (batchPerMachine - 1) * cycleMin;
+
+                        if (opTime > parallelTime)
+                            parallelTime = opTime;
+                    }
+                    parallelTime = parallelTime + maxparalleCycleTime + maxparallelSetupTime;
+                    double subconTime = 0;
+                    var totalSubconHours = subconSteps.Sum(x => x.Subconhours);
+                    foreach (var op in subconSteps)
+                    {
+                        if (string.IsNullOrWhiteSpace(op.CycleTime) ||
+                            string.IsNullOrWhiteSpace(op.SetupTime))
+                            continue;
+
+                        double cycleMin = double.Parse(op.CycleTime);
+                        double setupMin = double.Parse(op.SetupTime);
+
+                        subconTime +=
+                            setupMin +
+                            (batchSize * cycleMin);
+                    }
+                    subconTime = subconTime + (totalSubconHours * 60);
+                    //foreach (var op in oprnos)
+                    //{
+                    //    if (string.IsNullOrWhiteSpace(op.CycleTime) ||
+                    //        string.IsNullOrWhiteSpace(op.SetupTime))
+                    //        continue;
+
+                    //    double cycleMin = double.Parse(op.CycleTime);
+                    //    double setupMin = double.Parse(op.SetupTime);
+
+                    //    // INHOUSE
+                    //    if (op.StepLocation == "1")
+                    //    {
+                    //        if (string.IsNullOrWhiteSpace(op.FirstPieceTime) ||
+                    //            op.NumberOfSimMachines <= 0)
+                    //            continue;
+
+                    //        double firstPieceMin = double.Parse(op.FirstPieceTime);
+                    //        int simMc = op.NumberOfSimMachines;
+
+                    //        double batchPerMachine = (double)batchSize / simMc;
+
+                    //        double perMachineTime =
+                    //            setupMin +
+                    //            firstPieceMin +
+                    //            (batchPerMachine - 1) * cycleMin;
+
+                    //        batchSizeManfTimeMinutes += perMachineTime;
+                    //    }
+                    //    // SUBCON
+                    //    else if (op.StepLocation == "2")
+                    //    {
+                    //        // Only setup + cycle time
+                    //        double perOpTime =
+                    //            setupMin +
+                    //            (batchSize * cycleMin);
+
+                    //        batchSizeManfTimeMinutes += perOpTime;
+                    //    }
+                    //}
                     item.MaxSetupTime = maxSetupTime.ToString();
                     item.TotalSetupTime = totalSetupTime.ToString();
                     item.AvgCycleTime = avgCycleTime.ToString();
                     item.OprnGreaterAvgCycleTime = countAboveAvg;
                     item.InhouseNo = inhousecount;
                     item.SubconNo = subconcount;
-                    item.BacthManufTime = Math.Round(batchSizeManfTimeMinutes / 60, 2);
+                    // item.BacthManufTime = Math.Round(batchSizeManfTimeMinutes / 60, 2);
+                    double totalMinutes =
+     sequentialTime +
+     parallelTime +
+     subconTime;
+                    item.BacthManufTime = Math.Round(totalMinutes / 60, 2);
                 }
             }
             return Ok(resultList);

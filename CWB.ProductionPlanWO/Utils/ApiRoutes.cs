@@ -36,6 +36,7 @@ namespace CWB.ProductionPlanWO.Utils
             public const string AllSubCon = Base + "/allwosubcon/{tenantId}";
             public const string GetAllInsp_Outcome_Details = Base + "/allinspoutcomedetails/{tenantId}";
             public const string GetAllInventory_Master = Base + "/allinvmastery/{tenantId}";
+            public const string GetAllInventory_MasterBypartid = Base + "/allinvmasterybypartid/{partid}/{tenantId}";
             public const string GetAllInvTransLog = Base + "/allinvtranslog/{tenantId}";
             public const string GetAllInw_Recpt_Details = Base + "/allinwrecptdetails/{tenantId}";
             public const string GetAlInw_Recpt_Header = Base + "/allinwrecptheader/{tenantId}";
@@ -59,6 +60,7 @@ namespace CWB.ProductionPlanWO.Utils
             public const string PostProductionPlan_Wo = Base + "/productionplan";
             public const string UpdateProductionPlan_Wo = Base + "/updateproductionplan";
             public const string UpdateProductionPlan_WoCriticalPart = Base + "/updateproductionplancriticalpart";
+            public const string PostProductionPlan_WoConsolidation = Base + "/postproductionplanconsolidation";
             public const string UpdateHoldProductionPlan_Wo = Base + "/updateholdproductionplan";
             public const string AllProductionPlanWo = Base + "/allproductionplanwo/{tenantId}";
             public const string DeleteSubCon = Base + "/delwosubcon/{Id}";
@@ -69,7 +71,9 @@ namespace CWB.ProductionPlanWO.Utils
             public const string GetAllMctimeList = Base + "/allmctimelist/{tenantId}";
             public const string GetAllPodetails = Base + "/allpodetails/{tenantId}";
             public const string GetPoStatus = Base + "/getpostatus/{Id}";
+            public const string GetInvTransDescName = Base + "/getinventorytransdescname/{Id}";
             public const string PostMultiplePODetails = Base + "/multiplepodetails";
+            public const string UpdateInspection = Base + "/updateinspection";
             public const string PostMultiplePOHeaders = Base + "/multiplepoheaders";
             public const string DeleteInsp_OutcomeDetails = Base + "/deleteinspoutcomedetails/{Id}";
             public const string DeleteInventory_Master = Base + "/deleteinvmaster/{Id}";
@@ -212,6 +216,9 @@ namespace CWB.ProductionPlanWO.Utils
             public const string AllProductionWoReadForProd = Base + "/allproductionworeadforprod/{tenantId}";
             public const string GetAllReadyforProductionWo = Base + "/getallreadyforproductionwo/{tenantId}";
             public const string GetAllMatlIssueListForShop = Base + "/getallmatlissuelistforshop/{tenantId}";
+            public const string PostConsolidationWo = Base + "/postconsolidationwo";
+            public const string GetAllConsolidationwo = Base + "/getallconsolidationwo/{tenantId}";
+            public const string UpdateProductionPlan_WoForReference = Base + "/updateproductionwoforreference";
         }
     }
 }

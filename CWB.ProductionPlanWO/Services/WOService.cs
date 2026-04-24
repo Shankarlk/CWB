@@ -86,6 +86,8 @@ namespace CWB.ProductionPlanWO.Services
         private readonly ITempMc_Wait_ListRepository _TempMc_Wait_ListRepository;
         private readonly IInspectDocTypeRepository _IInspectDocTypeRepository;
         private readonly INcLogStatusRepository _INcLogStatusRepository;
+        private readonly IConsolidatedWoMappingRepository _COnsolidatedWomappingRepository;
+        private readonly IInv_Trans_ListRepository _Inv_Trans_ListRepository;
 
         public WOService(
             ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork
@@ -106,7 +108,7 @@ namespace CWB.ProductionPlanWO.Services
             ,INC_work_StatusRepository NC_work_StatusRepository, IMc_Not_Avl_ReasonRepository Mc_Not_Avl_ReasonRepository, IMode_ListRepository Mode_ListRepository,
             IMc_Timeslot_ListRepository Mc_Timeslot_ListRepository,ITempMc_Timeslot_ListRepository TempMc_Timeslot_ListRepository,
             INon_Plan_Wk_ListRepository Non_Plan_Wk_ListRepository,IWO_Wait_ListRepository WO_Wait_ListRepository,ITempWO_Wait_ListRepository TempWO_Wait_ListRepository,IWO_Bookout_LogRepository WO_Bookout_LogRepository,ITimeslot_SettingRepository Timeslot_SettingRepository,ITimeslot_ListRepository Timeslot_ListRepository,IRwk_ListRepository Rwk_ListRepository,IOpr_ListRepository Opr_ListRepository,ITempOpr_ListRepository TempOpr_ListRepository,IShop_Insp_LogRepository Shop_Insp_LogRepository,ISubCon_ListRepository SubCon_ListRepository,ITempSubCon_ListRepository TempSubCon_ListRepository, IMc_Wait_ListRepository Mc_Wait_ListRepository,IMatl_Issue_SettingsRepository Matl_Issue_SettingsRepository,IMatl_Issue_ListRepository Matl_Issue_ListRepository,
-            ITempMc_Wait_ListRepository TempMc_Wait_ListRepository, INon_Plan_Wk_type_ListRepository Non_Plan_Wk_type_ListRepository, ITime_Slot_AllocationRepository Time_Slot_AllocationRepository)
+            ITempMc_Wait_ListRepository TempMc_Wait_ListRepository, INon_Plan_Wk_type_ListRepository Non_Plan_Wk_type_ListRepository, ITime_Slot_AllocationRepository Time_Slot_AllocationRepository,IConsolidatedWoMappingRepository consolidatedWoMappingRepository, IInv_Trans_ListRepository Inv_Trans_ListRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -181,6 +183,8 @@ namespace CWB.ProductionPlanWO.Services
             _Inv_Mismatch_ListRepository = Inv_Mismatch_ListRepository;
             _Inv_Master_LogRepository = Inv_Master_LogRepository;
             _TempMc_Wait_ListRepository = TempMc_Wait_ListRepository;
+            _COnsolidatedWomappingRepository = consolidatedWoMappingRepository;
+            _Inv_Trans_ListRepository = Inv_Trans_ListRepository;
         }
 
         public string HelloWorld()
@@ -961,6 +965,106 @@ namespace CWB.ProductionPlanWO.Services
             }
             return productions;
         }
+        public async Task<List<ProductionPlan_WOVM>> PostProductionPlan_WoConsolidation(List<ProductionPlan_WOVM> productions)
+        {
+            foreach (ProductionPlan_WOVM item in productions)
+            {
+                var pp = _mapper.Map<ProductionPlan_WO>(item);
+                if (pp.SalesOrderId > 0)
+                {
+                    if (pp.Id > 0)
+                    {
+                        
+                        var upp = await _productionPlan_WORepository.SingleOrDefaultAsync(x => x.Id == pp.Id);
+                        upp.Consolidation_Flag = 1;
+                        pp = await _productionPlan_WORepository.UpdateAsync(pp.Id, upp);
+                    }
+                    try
+                    {
+                        await _unitOfWork.CommitAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Exception exa = ex.InnerException;
+                        string msg = ex.Message;
+                    }
+                }
+                item.ProductionPlanId = pp.Id;
+                item.PPNumber = pp.PPNumber;
+                item.WONumber = pp.WONumber;
+                item.TestData = pp.TestData;
+            }
+            return productions;
+        }
+        public async Task<List<ProductionPlan_WOVM>> UpdateProductionPlan_WoForReference(List<ProductionPlan_WOVM> productions)
+        {
+            foreach (ProductionPlan_WOVM item in productions)
+            {
+                var pp = _mapper.Map<ProductionPlan_WO>(item);
+                if (pp.SalesOrderId > 0)
+                {
+                    if (pp.Id > 0)
+                    {
+
+                        var upp = await _productionPlan_WORepository.SingleOrDefaultAsync(x => x.Id == pp.Id);
+                        upp.For_Ref = 'Y';
+                        pp = await _productionPlan_WORepository.UpdateAsync(pp.Id, upp);
+                    }
+                    try
+                    {
+                        await _unitOfWork.CommitAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Exception exa = ex.InnerException;
+                        string msg = ex.Message;
+                    }
+                }
+                item.ProductionPlanId = pp.Id;
+                item.PPNumber = pp.PPNumber;
+                item.WONumber = pp.WONumber;
+                item.TestData = pp.TestData;
+            }
+            return productions;
+        }
+        public async Task<List<ConsolidatedWoMappingVM>> PostConsolidationWo(List<ConsolidatedWoMappingVM> productions)
+        {
+            foreach (ConsolidatedWoMappingVM item in productions)
+            {
+                var pp = _mapper.Map<ConsolidatedWoMapping>(item);
+                
+                    if (pp.Id == 0)
+                    {
+
+                        try
+                        {
+                            await _COnsolidatedWomappingRepository.AddAsync(pp);
+                        }
+                        catch (Exception ex)
+                        {
+                            Exception exa = ex.InnerException;
+                            string msg = ex.Message;
+                        }
+                    }
+                    try
+                    {
+                        await _unitOfWork.CommitAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Exception exa = ex.InnerException;
+                        string msg = ex.Message;
+                    }
+                }
+               
+            
+            return productions;
+        }
+        public async Task<IEnumerable<ConsolidatedWoMappingVM>> Getallconsolidationwo(long tenantId)
+        {
+            var allpp = _COnsolidatedWomappingRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<ConsolidatedWoMappingVM>>(allpp);
+        }
         public async Task<ProductionPlan_WOVM> UpdateProductionPlan_Wo(ProductionPlan_WOVM productions)
         {
             var pp = _mapper.Map<ProductionPlan_WO>(productions);
@@ -1137,7 +1241,15 @@ namespace CWB.ProductionPlanWO.Services
             }
             return new POStatusVM { StatusId = -1 };
         }
-
+        public async Task<Inv_Trans_ListVM> GetInvTransDescName(long Id)
+        {
+            var allpp = await _Inv_Trans_ListRepository.SingleOrDefaultAsync(d => d.Id == Id);
+            if (allpp != null)
+            {
+                return _mapper.Map<Inv_Trans_ListVM>(allpp);
+            }
+            return new Inv_Trans_ListVM { TransactionId = -1 };
+        }
         public async Task<List<PODetailsVM>> MultiplePODetails(List<PODetailsVM> pODetailsVM)
         {
             foreach (PODetailsVM item in pODetailsVM)
@@ -1208,7 +1320,33 @@ namespace CWB.ProductionPlanWO.Services
             }
             return pODetailsVM;
         }
-
+        public async Task<List<PODetailsVM>> UpdateInspection(List<PODetailsVM> pODetailsVM)
+        {
+            foreach (PODetailsVM item in pODetailsVM)
+            {
+                var po = _mapper.Map<PODetails>(item);
+                if (po.Id >0 )
+                {
+                    
+                    var upp = await _poDetailsRepository.SingleOrDefaultAsync(x => x.Id == po.Id);
+                    upp.Inspection = 'Y';
+                    await _poDetailsRepository.UpdateAsync(po.Id, upp);
+                }
+                try
+                {
+                    await _unitOfWork.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+                item.PoDetailsId = po.Id;
+                item.POReference = po.POReference;
+                item.Status = po.Status;
+            }
+            return pODetailsVM;
+        }
         public async Task<List<POHeaderVM>> MultiplePOHeaders(List<POHeaderVM> pOHeaderVMs)
         {
             foreach (POHeaderVM item in pOHeaderVMs)
@@ -1257,6 +1395,11 @@ namespace CWB.ProductionPlanWO.Services
         public async Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_Master(long tenantId)
         {
             var allwo = await _IInventory_MasterRepository.AwaitGetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Inventory_MasterVM>>(allwo);
+        }
+        public async Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartid(long Partid,long tenantId )
+        {
+            var allwo = await _IInventory_MasterRepository.AwaitGetRangeAsync(d => d.TenantId == tenantId && d.Part_NoId==Partid);
             return _mapper.Map<IEnumerable<Inventory_MasterVM>>(allwo);
         }
         public async Task<IEnumerable<Inv_Trans_LogVM>> GetAllInvTransLog(long tenantId)
@@ -1425,7 +1568,7 @@ namespace CWB.ProductionPlanWO.Services
                     }
                     if (workOrdersVM.ReasonDesc == null)
                     {
-                        wo.Current_QntOnHand = wkord.Current_QntOnHand + wo.Current_QntOnHand;
+                       // wo.Current_QntOnHand = wkord.Current_QntOnHand + wo.Current_QntOnHand;
                     }
                     if (wkord == null)
                     {

@@ -20,7 +20,7 @@ namespace CWB.BusinessAquisition.Domain
         public DateTime? RequiredByDate { get; set; }
         public string? Comment { get; set; } = string.Empty;
         public long PartId { get; set; }
-
+        public int ActQuantity { get; set; }
         public long TenantId { get; set; }
 
     }

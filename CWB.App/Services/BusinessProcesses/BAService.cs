@@ -134,7 +134,12 @@ namespace CWB.App.Services.BusinessProcesses
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<DeliveryScheduleVM>>.GetAsync(uri, headers);
         }
-
+        public async Task<IEnumerable<SO_Alloc_ListVM>> GetSOAllocationlistbyPartid(long partId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbba/getsoallocationbypartid/{tenantId}/{partId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<SO_Alloc_ListVM>>.GetAsync(uri, headers);
+        }
         public async Task<SOAggregateVM> GetSOAggregate(long customerOrderId)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbba/getsoaggregate/{tenantId}/{customerOrderId}");
@@ -189,7 +194,13 @@ namespace CWB.App.Services.BusinessProcesses
             salesOrderVM.TenantId = tenantId;
             return await RestHelper<SalesOrderVM>.PostAsync(uri, salesOrderVM, headers);
         }
-
+        public async Task<SO_Alloc_ListVM> PostSOAllocation(SO_Alloc_ListVM soallocvm)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbba/postsoallocation");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            soallocvm.TenantId = tenantId;
+            return await RestHelper<SO_Alloc_ListVM>.PostAsync(uri, soallocvm, headers);
+        }
         public async Task<SOAggregateVM> PostSOAggregate(SOAggregateVM sOAggregateVM)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbba/soaggregate");

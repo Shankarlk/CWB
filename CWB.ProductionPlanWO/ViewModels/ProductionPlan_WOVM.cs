@@ -61,5 +61,6 @@ namespace CWB.ProductionPlanWO.ViewModels
         public string PsStartDate { get; internal set; }
         public string PsEndDate { get; internal set; }
         public string CriticalParts { get; internal set; }
+        public int Consolidation_Flag { get; set; }
     }
 }

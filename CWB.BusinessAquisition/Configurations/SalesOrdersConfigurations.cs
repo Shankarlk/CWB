@@ -91,6 +91,9 @@ namespace CWB.BusinessAquisition.Configurations
               .Property(c => c.Comment)
               .HasColumnName("Comment");
             builder
+             .Property(t => t.Reorder)
+             .HasColumnName("Reorder");
+            builder
               .Property(c => c.FinalDispQnty)
               .HasColumnName("FinalDispQnty");
             builder

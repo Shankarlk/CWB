@@ -1201,7 +1201,11 @@ namespace CWB.App.Controllers
                 }
             }
             return Json(result);*/
-
+        public async Task<IActionResult> GetRMPart(int partId)
+        {
+            var rm = await _mastersService.GetRMPart(partId);
+            return Json(rm);
+        }
         [HttpGet]
         public async Task<IActionResult> RMList()
         {

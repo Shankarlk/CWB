@@ -11,6 +11,7 @@ namespace CWB.BusinessAquisition.ViewModels
         public long CustomerOrderId { get; set; }
         public int RequiredQuantity { get; set; }
         public DateTime? RequiredByDate { get; set; }
+        public int ActQuantity { get; set; }
         public string? Comment { get; set; } = string.Empty;
         public long DSPartId { get; set; }
         public long TenantId { get; set; }

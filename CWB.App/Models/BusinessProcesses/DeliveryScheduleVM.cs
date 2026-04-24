@@ -40,7 +40,7 @@ namespace CWB.App.Models.BusinessProcesses
             }
             set { }
         }
-
+        public int ActQuantity { get; set; } = 0;
         public string? Comment { get; set; }
         public int Status { get; set; }
         public long TenantId { get; set; }

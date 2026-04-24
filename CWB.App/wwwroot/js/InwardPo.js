@@ -6,7 +6,7 @@ let partNo = "";
 function loadPO() {
     $("#preloaderblurred").show();
     api.getbulk("/WorkOrder/GetAllPodetails").then((data) => {
-        data = data.filter(item => item.status >= 2);
+        data = data.filter(item => item.status == 2);
         var tablebody = $("#PoGrid1 tbody");
         $(tablebody).html("");
         if (data.length === 0) {

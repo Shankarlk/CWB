@@ -62,6 +62,44 @@ namespace CWB.App.Services.ProductionPlanWo
             }
             return await RestHelper<List<ProductionPlan_WoVM>>.PostAsync(uri, productions, headers);
         }
+        public async Task<List<ProductionPlan_WoVM>> ProductionPlanWoPostConsolidation(IEnumerable<ProductionPlan_WoVM> productions)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postproductionplanconsolidation");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            foreach (var item in productions)
+            {
+                item.TenantId = tenantId;
+            }
+            return await RestHelper<List<ProductionPlan_WoVM>>.PostAsync(uri, productions, headers);
+        }
+        public async Task<List<ProductionPlan_WoVM>> UpdateProduction_WoForReference(IEnumerable<ProductionPlan_WoVM> productions)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/updateproductionwoforreference");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            foreach (var item in productions)
+            {
+                item.TenantId = tenantId;
+            }
+            return await RestHelper<List<ProductionPlan_WoVM>>.PostAsync(uri, productions, headers);
+        }
+
+        public async Task<List<ConsolidatedWoMappingVM>> PostConsolidatedWO(IEnumerable<ConsolidatedWoMappingVM> productions)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postconsolidationwo");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            foreach (var item in productions)
+            {
+                item.TenantId = tenantId;
+            }
+            return await RestHelper<List<ConsolidatedWoMappingVM>>.PostAsync(uri, productions, headers);
+        }
+        public async Task<IEnumerable<ConsolidatedWoMappingVM>> Getallconsolidationproductionwo()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getallconsolidationwo/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<IEnumerable<ConsolidatedWoMappingVM>>.GetAsync(uri, headers);
+        }
+
         public async Task<ProductionPlan_WoVM> UpdateProductionPlan_Wo(ProductionPlan_WoVM productions)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/updateproductionplan");
@@ -163,7 +201,12 @@ namespace CWB.App.Services.ProductionPlanWo
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<WOStatusVM>.GetAsync(uri, headers);
         }
-
+        public async Task<Inv_Trans_ListVM> GetInv_trans_Desc(long Id)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getinventorytransdescname/{Id}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<Inv_Trans_ListVM>.GetAsync(uri, headers);
+        }
         public async Task<List<ChildWoRelVM>> PostChildWoRel(IEnumerable<ChildWoRelVM> childWoRels)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/childworel");
@@ -218,6 +261,16 @@ namespace CWB.App.Services.ProductionPlanWo
         public async Task<List<PODetailsVM>> PODetails(IEnumerable<PODetailsVM> pODetails)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/multiplepodetails");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            foreach (var item in pODetails)
+            {
+                item.TenantId = tenantId;
+            }
+            return await RestHelper<List<PODetailsVM>>.PostAsync(uri, pODetails, headers);
+        }
+        public async Task<List<PODetailsVM>> UpdateInspection(IEnumerable<PODetailsVM> pODetails)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/updateinspection");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             foreach (var item in pODetails)
             {
@@ -430,6 +483,12 @@ namespace CWB.App.Services.ProductionPlanWo
         public async Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_Master()
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/allinvmastery/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Inventory_MasterVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartid(long partid)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/allinvmasterybypartid/{partid}/{tenantId}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<Inventory_MasterVM>>.GetAsync(uri, headers);
         }

@@ -1851,9 +1851,10 @@ $(document).ready(function () {
         var customername = relatedTarget.data("customername");
         var partno = relatedTarget.data("partno");
         var partdesc = relatedTarget.data("partdesc");
+        var ppids = relatedTarget.data("ppid");
         $("#P8partNoSpan").text(partno);
         $("#P8partDescSpan").text(partdesc);
-        LoadWhereBomWo(wono);
+        LoadWhereBomWo(ppids);
     });
 
     $('#popup8').on('hidden.bs.modal', function (event) {
@@ -3068,45 +3069,113 @@ $(document).ready(function () {
 });
 
 function LoadWhereBomWo(partid) {
-    api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
-        data = data.filter(item => item.active !== 2);
-        data = data.filter(item => item.parentWoId === 0);
-        data = data.filter(item => item.woNumber === partid);
-        var tablebody = $("#BomListWhereGrid tbody");
-        $(tablebody).html("");//empty tbody
-        //console.log(data);
-        for (i = 0; i < data.length; i++) {
 
-            data[i].calc_Qnty = data[i].calcWOQty;
-            data[i].calcReceiptDateStr = data[i].planCompletionDateStr;
-            if (data[i].partType == 1) {
-                data[i].child_Part_No_Type = "Manf";
-            } else if (data[i].partType == 2) {
-                data[i].child_Part_No_Type = "Assy";
-            } else if (data[i].partType == 0 || data[i].partType == 3) {
-                data[i].child_Part_No_Type = "BOF";
-            }else if (data[i].partType == 4) {
-                data[i].child_Part_No_Type = "RM";
+    var combinedIds = partid;
+    $.ajax({
+        type: "GET",
+        url: "/WorkOrder/GetBOMwhereused",
+        data: { ids: combinedIds },
+
+        success: function (data) {
+
+            data = data.filter(item => item.active !== 2);
+            console.log("BOM Where used WO Details:", data);
+
+            var tablebody = $("#BomListWhereGrid tbody");
+            $(tablebody).html(""); // empty tbody
+
+            if (data.length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
             }
-            $(tablebody).append(AppUtil.ProcessTemplateData("BomListWhereRow", data[i]));
+
+            for (i = 0; i < data.length; i++) {
+
+                data[i].calc_Qnty = data[i].calcWOQty;
+                data[i].calcReceiptDateStr = data[i].planCompletionDateStr;
+                if (data[i].partType == 1) {
+                    data[i].child_Part_No_Type = "Manf";
+                } else if (data[i].partType == 2) {
+                    data[i].child_Part_No_Type = "Assy";
+                } else if (data[i].partType == 0 || data[i].partType == 3) {
+                    data[i].child_Part_No_Type = "BOF";
+                } else if (data[i].partType == 4) {
+                    data[i].child_Part_No_Type = "RM";
+                }
+                $(tablebody).append(AppUtil.ProcessTemplateData("BomListWhereRow", data[i]));
+            }
+        },
+
+        error: function (xhr, status, error) {
+            console.error("Error loading RM Where Used:", error);
         }
-    }).catch((error) => {
     });
+    //api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
+    //    data = data.filter(item => item.active !== 2);
+    //    data = data.filter(item => item.parentWoId === 0);
+    //    data = data.filter(item => item.woNumber === partid);
+    //    var tablebody = $("#BomListWhereGrid tbody");
+    //    $(tablebody).html("");//empty tbody
+    //    //console.log(data);
+    //    for (i = 0; i < data.length; i++) {
+
+    //        data[i].calc_Qnty = data[i].calcWOQty;
+    //        data[i].calcReceiptDateStr = data[i].planCompletionDateStr;
+    //        if (data[i].partType == 1) {
+    //            data[i].child_Part_No_Type = "Manf";
+    //        } else if (data[i].partType == 2) {
+    //            data[i].child_Part_No_Type = "Assy";
+    //        } else if (data[i].partType == 0 || data[i].partType == 3) {
+    //            data[i].child_Part_No_Type = "BOF";
+    //        }else if (data[i].partType == 4) {
+    //            data[i].child_Part_No_Type = "RM";
+    //        }
+    //        $(tablebody).append(AppUtil.ProcessTemplateData("BomListWhereRow", data[i]));
+    //    }
+    //}).catch((error) => {
+   // });
 }
 
 
 function LoadWhereRMWo(partid) {
-    api.getbulk("/WorkOrder/AllProductionWo").then((data) => {
-        data = data.filter(item => item.active !== 2);
-        data = data.filter(item => item.parentWoId === 0);
-        var tablebody = $("#MatlWhereGrid tbody");
-        $(tablebody).html("");//empty tbody
-        //console.log(data);
-        for (i = 0; i < data.length; i++) {
+    var combinedIds = partid;
 
-            $(tablebody).append(AppUtil.ProcessTemplateData("MatlWhereGridRow", data[i]));
+    $.ajax({
+        type: "GET",
+        url: "/WorkOrder/GetMaterialwhereused",
+        data: { ids: combinedIds },
+
+        success: function (data) {
+
+            data = data.filter(item => item.active !== 2);
+            console.log("RM Where used WO Details:", data);
+
+            var tablebody = $("#MatlWhereGrid tbody");
+            $(tablebody).html(""); // empty tbody
+
+            if (data.length === 0) {
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+                $(tablebody).append(noRecordsRow);
+            }
+
+            for (let i = 0; i < data.length; i++) {
+                $(tablebody).append(AppUtil.ProcessTemplateData("MatlWhereGridRow", data[i]));
+            }
+        },
+
+        error: function (xhr, status, error) {
+            console.error("Error loading RM Where Used:", error);
         }
-    }).catch((error) => {
     });
 }
 function LoadSupplierRM(partid) {
@@ -3491,10 +3560,10 @@ function ViewCombinedWo(el) {
     var combinedIds = $(el).data("combinedwoids"); // "1,2,3"
     var partId = $(el).data("partid");
 
-    if (!combinedIds || String(combinedIds).split(",").length <= 1) {
-        alert("No consolidation for this WO");
-        return;
-    }
+    //if (!combinedIds || String(combinedIds).split(",").length <= 1) {
+    //    alert("No consolidation for this WO");
+    //    return;
+    //}
 
     $.ajax({
         type: "GET",

@@ -45,7 +45,7 @@ namespace CWB.App.Models.BusinessProcesses
         public int SuggestedDispQnty { get; set; }
         public int FinalDispQnty { get; set; }
         public long QntyOnHand { get; set; }
-
+        public int ActQuantity { get; set; }
         public DateTime? RequiredByDate
         {
             get { return requiredByDate; }
@@ -77,6 +77,7 @@ namespace CWB.App.Models.BusinessProcesses
         public string InvoiceNo { get; set; } = string.Empty;
         public string InvoiceDate { get; set; }= string.Empty;
         public string DispatchDetail { get; set; }= string.Empty;
+        public char Reorder { get; set; }
 
     }
 }

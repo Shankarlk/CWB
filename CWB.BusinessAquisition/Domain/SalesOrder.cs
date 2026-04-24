@@ -52,6 +52,8 @@ namespace CWB.BusinessAquisition.Domain
         public int WIP { get; set; }
         public bool Hold { get; set; }
         public bool Done { get; set; }
+
+        public char Reorder { get; set; }
         public long TenantId { get; set; }  
     }
 }

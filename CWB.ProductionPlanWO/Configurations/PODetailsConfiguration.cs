@@ -64,6 +64,9 @@ namespace CWB.ProductionPlanWO.Configurations
                .HasColumnName("Status")
                .IsRequired();
             builder
+              .Property(t => t.Inspection)
+              .HasColumnName("Inspection");
+            builder
                .Property(t => t.TenantId)
                .HasColumnName("TenantId")
                .IsRequired();

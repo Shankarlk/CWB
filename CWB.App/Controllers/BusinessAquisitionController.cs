@@ -144,10 +144,80 @@ namespace CWB.App.Controllers
                     workOrdersVM.Parentlevel = 'Y';
                 }
             }
-             postWO = await _baService.PostWO(workOrdersVM);
+                long quantitynotallocated = 0;
+                var invpart = await _woService.GetAllInventory_MasterBypartid(workOrdersVM.PartId);
+                if (invpart.Any())
+                {
+                    var inventorypart = invpart.First();
+                    if (inventorypart != null)
+                    {
+                        var invcount = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                        var varsoallocationbypartid = await _baService.GetSOAllocationlistbyPartid(workOrdersVM.PartId);
+                        if (varsoallocationbypartid.Any())
+                        {
+                            var totalAllocatedQty = varsoallocationbypartid.Where(x => x.Dispatch_Complete == 'N').Sum(x => x.Allocated_Qnty);
+                            if (totalAllocatedQty > 0)
+                            {
+                                quantitynotallocated = Convert.ToInt64(inventorypart.Current_QntOnHand) - totalAllocatedQty;
+                            }
+                            else
+                            {
+                                quantitynotallocated = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                            }
+                        }
+                        else
+                        {
+                            quantitynotallocated = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                        }
+
+                    }
+                    else
+                    {
+                        quantitynotallocated = 0;
+                    }
+
+                    if (quantitynotallocated < 0)
+                        quantitynotallocated = 0;
+                }
+                else
+                {
+                    quantitynotallocated = 0;
+                }
+                if (quantitynotallocated == 0)
+                {
+                    postWO = await _baService.PostWO(workOrdersVM);
+                }
+                else if(quantitynotallocated<workOrdersVM.CalcWOQty)
+                {
+
+                    workOrdersVM.CalcWOQty = workOrdersVM.CalcWOQty - Convert.ToInt32(quantitynotallocated);
+                    postWO = await _baService.PostWO(workOrdersVM);
+                }
+                else if(quantitynotallocated>=workOrdersVM.CalcWOQty)
+                {
+                    SO_Alloc_ListVM co = new SO_Alloc_ListVM()
+                    {
+                        PartId = workOrdersVM.PartId,
+                       SO_ID = workOrdersVM.SalesOrderId,
+                       Allocated_Qnty=workOrdersVM.CalcWOQty
+
+                    };
+                    var postsoallocation = await _baService.PostSOAllocation(co);
+                    //directpostsoallocation
+                    postWO = null;
+                }
+
+
+
+
+
+
+
+
+                //postWO = await _baService.PostWO(workOrdersVM);
             List<BOMTempVM> bompost = new List<BOMTempVM>();
-            if (postWO.WOID > 0)
-            {
+                if (postWO != null && postWO.WOID > 0)
+                {
 
                 ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart((int)postWO.PartId);
                 string partype = "";
@@ -473,6 +543,8 @@ namespace CWB.App.Controllers
         {
             List<Selected_Sales_OrderVM> selected_Sales_OrderVMs = new List<Selected_Sales_OrderVM>();
             List<WorkOrdersVM> workOrdersVMs = new List<WorkOrdersVM>();
+            List<WorkOrdersVM> finalWOList = new List<WorkOrdersVM>();
+           
             foreach (var workOrdersVM in listworkOrdersVM)
             { 
                 var message = await checkmissing(workOrdersVM);
@@ -536,7 +608,79 @@ namespace CWB.App.Controllers
                 }
                 workOrdersVMs.Add(workOrdersVM);
             }
-            var postWO = await _baService.MultiplePostWO(workOrdersVMs);
+            foreach(var item in workOrdersVMs)
+            {
+                long quantitynotallocated = 0;
+                var invpart = await _woService.GetAllInventory_MasterBypartid(item.PartId);
+                if (invpart.Any())
+                {
+                    var inventorypart = invpart.First();
+                    if (inventorypart != null)
+                    {
+                        var invcount = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                        var varsoallocationbypartid = await _baService.GetSOAllocationlistbyPartid(item.PartId);
+                        if (varsoallocationbypartid.Any())
+                        {
+                            var totalAllocatedQty = varsoallocationbypartid.Where(x => x.Dispatch_Complete == 'N').Sum(x => x.Allocated_Qnty);
+                            if (totalAllocatedQty > 0)
+                            {
+                                quantitynotallocated = Convert.ToInt64(inventorypart.Current_QntOnHand) - totalAllocatedQty;
+                            }
+                            else
+                            {
+                                quantitynotallocated = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                            }
+                        }
+                        else
+                        {
+                            quantitynotallocated = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                        }
+
+                    }
+                    else
+                    {
+                        quantitynotallocated = 0;
+                    }
+
+                    if (quantitynotallocated < 0)
+                        quantitynotallocated = 0;
+                }
+                else
+                {
+                    quantitynotallocated = 0;
+                }
+                if (quantitynotallocated == 0)
+                {
+                    // postWO = await _baService.PostWO(workOrdersVM);
+                    finalWOList.Add(item);
+                }
+                else if (quantitynotallocated < item.CalcWOQty)
+                {
+
+                    item.CalcWOQty = item.CalcWOQty - Convert.ToInt32(quantitynotallocated);
+                    finalWOList.Add(item);
+                    //postWO = await _baService.PostWO(workOrdersVM);
+                }
+                else if (quantitynotallocated >= item.CalcWOQty)
+                {
+                    SO_Alloc_ListVM co = new SO_Alloc_ListVM()
+                    {
+                        PartId=item.PartId,
+                        SO_ID = item.SalesOrderId,
+                        Allocated_Qnty = item.CalcWOQty
+
+                    };
+                    var postsoallocation = await _baService.PostSOAllocation(co);
+                    //directpostsoallocation
+                  //  postWO = null;
+                }
+
+            }
+
+
+
+
+            var postWO = await _baService.MultiplePostWO(finalWOList);
            
             List<BOMTempVM> bompost = new List<BOMTempVM>();
             foreach (var item in postWO)
@@ -664,8 +808,20 @@ namespace CWB.App.Controllers
             var salesorders = await _baService.AllSalesOrders();
             var masterparts = await _masterService.MasterPartList();
             var customer= await _baService.GetCustomerOrders();
+           
             foreach (SalesOrderVM sovm in salesorders)
             {
+                var invpart = await _woService.GetAllInventory_MasterBypartid(sovm.PartId);
+                var inventorypart = invpart.First();
+                if (inventorypart != null)
+                {
+                    sovm.QntyOnHand = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                }
+                else
+                {
+                    sovm.QntyOnHand = 0;
+                }
+                sovm.BalanceSOQty = sovm.RequiredQuantity - sovm.ActQuantity;
                 foreach (ItemMasterPartVM impvm in masterparts)
                 {
                     if (sovm.PartId == impvm.PartId)

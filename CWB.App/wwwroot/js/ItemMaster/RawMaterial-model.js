@@ -606,7 +606,28 @@ $(function () {
         $("#HiddenRMTypeId").val(selectedValue);
         $("#TypeName").attr("data-old", selectedText);
         $("#ENameSP").text("Edit");
+        $.ajax({
+            url: "/masters/RMTypes", // ⚠️ replace with actual controller name
+            type: "GET",
+            success: function (data) {
 
+                // Find selected RM Type
+                var selectedItem = data.find(x => x.rawMaterialTypeId == selectedValue);
+
+                if (selectedItem) {
+
+                    // 🔹 Check based on Y/N
+                    if (selectedItem.multiplePartsMadeFrom1InputRM === "Y") {
+                        $("#TypeMulitpleInputRM").prop("checked", true);
+                    } else {
+                        $("#TypeMulitpleInputRM").prop("checked", false);
+                    }
+                }
+            },
+            error: function () {
+                console.log("Error fetching RM Types");
+            }
+        });
     });
     $('#dialog-AddRMType').on('hidden.bs.modal', function (event) {
         $("#ENameSP").text("Add");

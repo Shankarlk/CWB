@@ -11,6 +11,10 @@ namespace CWB.App.Services.ProductionPlanWo
     {
         Task<IEnumerable<WOSOVM>> GetSoWoRel(long workOrderId);
         Task<List<ProductionPlan_WoVM>> ProductionPlanWoPost(IEnumerable<ProductionPlan_WoVM> productions);
+        Task<List<ProductionPlan_WoVM>> ProductionPlanWoPostConsolidation(IEnumerable<ProductionPlan_WoVM> productions);
+        Task<List<ProductionPlan_WoVM>> UpdateProduction_WoForReference(IEnumerable<ProductionPlan_WoVM> productions);
+        Task<List<ConsolidatedWoMappingVM>> PostConsolidatedWO(IEnumerable<ConsolidatedWoMappingVM> productions);
+        Task<IEnumerable<ConsolidatedWoMappingVM>> Getallconsolidationproductionwo();
         Task<ProductionPlan_WoVM> UpdateProductionPlan_Wo(ProductionPlan_WoVM productions);
         Task<ProductionPlan_WoVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WoVM productions);
         Task<ProductionPlan_WoVM> UpdateProductionPlan_WoCritcalPart(ProductionPlan_WoVM productions);
@@ -27,6 +31,7 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<IEnumerable<WoSubConSupplierVM>> GetAllSubCOnSupp();
         Task<IEnumerable<PODetailsVM>> GetAllPodetails();
         Task<WOStatusVM> GetWOStatus(long Id);
+        Task<Inv_Trans_ListVM> GetInv_trans_Desc(long Id);
         Task<List<ChildWoRelVM>> PostChildWoRel(IEnumerable<ChildWoRelVM> childWoRels);
         Task<List<McTimeListVM>> PostMcTimeList(IEnumerable<McTimeListVM> mcTimeListVMs);
         Task<IEnumerable<McTimeListVM>> GetAllMcTimeList();
@@ -36,6 +41,7 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<bool> DeleteSubCon(long doctypeId);
         Task<bool> DeleteWo(long doctypeId);
         Task<List<PODetailsVM>> PODetails(IEnumerable<PODetailsVM> pODetails);
+        Task<List<PODetailsVM>> UpdateInspection(IEnumerable<PODetailsVM> pODetails);
         Task<List<POHeaderVM>> POHeader(IEnumerable<POHeaderVM> pOHeaderVMs);
         Task<Inw_Recpt_HeaderVM> PostInw_Recpt_Header(Inw_Recpt_HeaderVM childWoRels);
         Task<SetupVariationReasonVM> PostSetupVariationReason(SetupVariationReasonVM childWoRels);
@@ -72,6 +78,7 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<IEnumerable<Inv_Master_LogVM>> GetAllInv_Master_Log();
         Task<IEnumerable<Inv_Trans_LogVM>> GetAllInv_Trans_Log();
         Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_Master();
+        Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartid(long partid);
         Task<IEnumerable<NC_Decision_LogVM>> GetAllNC_Decision_Log();
         Task<IEnumerable<NC_Disp_Decision_ListVM>> GetAllNC_Disp_Decision_List();
         Task<IEnumerable<NC_Disp_Decs_Appl_ListVM>> GetAllNC_Disp_Decs_Appl_List();

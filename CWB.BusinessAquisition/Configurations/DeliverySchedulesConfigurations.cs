@@ -26,6 +26,10 @@ namespace CWB.BusinessAquisition.Configurations
                 .HasColumnName("RequiredQuantity")
                 .IsRequired();
             builder
+                .Property(t => t.ActQuantity)
+                .HasColumnName("ActQuantity")
+                .HasDefaultValue(0);
+            builder
                 .Property(t => t.RequiredByDate)
                 .HasColumnName("RequiredByDate")
                 .IsRequired();

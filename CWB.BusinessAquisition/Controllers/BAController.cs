@@ -131,6 +131,23 @@ namespace BAapi.Controllers
             return Ok(pologs);
         }
 
+        [HttpGet]
+        [Route(ApiRoutes.Aquisition.GetSoAllocationListbypartid)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<SO_Alloc_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetSoAllocationListbypartid(long tenantId, long partId)
+        {
+            var pologs = await _baService.GetSoAllocationListbypartid(tenantId, partId);
+            return Ok(pologs);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Aquisition.PostSOAllocation)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(SO_Alloc_ListVM))]
+        public async Task<SO_Alloc_ListVM> PostSOAllocation(SO_Alloc_ListVM soallocationvm)
+        {
+            var pologs = await _baService.PostSOAllocation(soallocationvm);
+            return pologs;
+        }
 
         [HttpGet]
         [Route(ApiRoutes.Aquisition.HelloWorld)]
