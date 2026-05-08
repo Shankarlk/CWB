@@ -11,6 +11,7 @@
                         <label class="form-label col-md-5 mb-2">Routing name <span class="text-danger">*</span></label>
                         <div class="col-md-7 mb-1">
                             <input class="form-control form-control-sm" id="AltRoutingName" name="RoutingName" type="text" title="Enter the Routing Name ... It has to be Unique" data-plugin="tippy" data-tippy-placement="top">
+                            <span id="error-routingname"></span>
                             <input type="text" hidden id="AltManufacturedPartId" name="ManufacturedPartId" value="0" />
                             <input type="text" hidden id="AltOrigRoutingId" name="OrigRoutingId" value="0" />
                             <input type="text" hidden id="AltStatus" name="Status" value="Active" />
@@ -27,8 +28,8 @@
                         </div>
                         <!-- =========  -->
                         <div class="col text-end mt-2">
-                            <button id="BtnCreateEmptyRouting"   type="button"  class="btn btn-sm btn-secondary me-2"> Create New Routing</button>
-                            <button id="BtnAltRoutingSave" type="button" class="btn btn-sm btn-primary">Save</button>
+                            <button id="BtnCreateEmptyRouting"   type="button"  class="btn btn-sm btn-secondary me-2"> Create New Empty alternate Routing</button>
+                            <button id="BtnAltRoutingSave" type="button" class="btn btn-sm btn-primary">Create New Alternate  Routing With Data</button>
                         </div>
                         <!-- =========  -->
                     </div>

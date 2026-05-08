@@ -25,5 +25,6 @@ namespace CWB.ProductionPlanWO.Domain
         public DateTime Resolution_date { get; set; }
         public string Resolution_Comments { get; set; }
         public long TenantId { get; set; }
+        public string Loc_Flag { get; set; }
     }
 }

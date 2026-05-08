@@ -40,6 +40,8 @@
                                     <th>Level 3</th>
                                     <th>Level 4 </th>
                                     <th>Level 5</th>
+                                    <th>Prodn</th>
+                                    <th>Stores</th>
                                     <th>Role</th>
                                     <th width="5%"></th>
                                 </tr>
@@ -115,40 +117,86 @@
             <input class="form-control form-control-sm" type="text" name="Section" id="Section" value="-">
         </div>*@
                         <!-- ----- -->
-                        <label class="form-label col-md-4 mb-2">Location</label>
+                        <label class="form-label col-md-4 mb-2">Location  <span class="text-danger">*</span></label>
                         <div class="col-md-8 mb-2">
                             <select name="PlantId" id="PlantId" class="form-select form-select-sm">
                             </select>
                         </div>
                         <!-- ----- -->
-                        <label class="form-label col-md-4 mb-2" id="lblActfun">Activity / Function</label>
-                        <div class="col-md-8 mb-2" id="ActFunDiv">
-                            <textarea name="Activity" id="Activity" class="form-control form-control-sm">....</textarea>
-                        </div>
                         <!-- ----- -->
-                        <div class="col-md-12 mb-2">
-                            <label class="form-label  mb-2">Production Department / Shop</label>
-                            <input class="form-check-input m-l-5" name="ProdDept" id="ProdDept" type="checkbox" value="false">
-                        </div>
-                        <!-- ----- -->
-                        <!-- ----- -->
-                        <label class="form-label col-md-4 mb-2" id="lblNoOfShift">No of Shifts of Operation</label>
-                        <div class="col-md-8 mb-2" id="NoOfShiftsDiv">
-                            <select id="NoOfShifts" name="NoOfShifts" class="form-select form-select-sm" aria-label="form-select-sm">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
+                        @*<div class="col-md-12 mb-2">
+            <label class="form-label  mb-2">Production Department / Shop</label>
+            <input class="form-check-input m-l-5" name="ProdDept" id="ProdDept" type="checkbox" value="false">
+        </div>*@
+                        <label class="form-label col-md-4 mb-2">Department Type <span class="text-danger">*</span></label>
+                        <div class="col-md-8 mb-2">
+                            <select name="ProdDept" id="ProdDept" class="form-select form-select-sm" required>
+                                <option value="">Select</option>
+                                <option value="0">General</option>
+                                <option value="1">Production Dept / Shop</option>
+                                <option value="2">Stores</option>
                             </select>
                         </div>
-                        <!-- ----- -->
-                        <div class="col-md-12 mt-2 text-end">
-                            <input type="text" name="DepartmentId" id="DepartmentId" value="0" hidden required />
-                            <input type="text" name="Part_Of" id="Part_Of" value="0" hidden required />
-                            <input type="text" name="Level_No" id="Level_No" value="0" hidden required />
-                            <input type="submit" id="SaveDept" class="btn btn-sm btn-primary" value="Save" />
+                        <div id="StoresSection">
+                            <div class="col-md-12 mb-2 d-flex align-items-center gap-4 ">
+
+                                <label class="form-label m-0 ">
+                                    Stores : Direct Material RM, BOF,
+                                    SubCon, Final Dispatch
+                                </label>
+
+                                <div class="form-check m-0 store-row">
+                                    <label class="form-check-label" for="Inward">Inward</label>
+                                    <input class="form-check-input" type="checkbox" id="Inward" name="Inward">
+
+                                </div>
+
+                                <div class="form-check m-0  store-row">
+                                    <label class="form-check-label" for="CustomerDispatch">Customer Dispatch</label>
+                                    <input class="form-check-input" type="checkbox" id="CustomerDispatch" name="CustomerDispatch">
+
+                                </div>
+
+                            </div>
+                            <div class="col-md-12 mb-2 d-flex align-items-center gap-4 store-row">
+                                <!-- Row 2 -->
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="form-check-label m-0">Stores : Tools</label>
+                                    <input class="form-check-input m-0" type="checkbox" id="Tools" name="Tools">
+                                    </div>
+                                </div>
+                                <!-- Row 3 -->
+                            <div class="col-md-12 mb-2 d-flex align-items-center gap-4 store-row">
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="form-check-label m-0">Stores : Consumables</label>
+                                    <input class="form-check-input m-0" type="checkbox" id="Consumables" name="Consumables">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- ----- -->
+                            <!-- ----- -->
+                            <label class="form-label col-md-4 mb-2" id="lblNoOfShift">No of Shifts of Operation</label>
+                            <div class="col-md-8 mb-2" id="NoOfShiftsDiv">
+                                <select id="NoOfShifts" name="NoOfShifts" class="form-select form-select-sm" aria-label="form-select-sm">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                            <label class="form-label col-md-4 mb-2" id="lblActfun">Activity / Function</label>
+                            <div class="col-md-8 mb-2" id="ActFunDiv">
+                                <textarea name="Activity" id="Activity" class="form-control form-control-sm">....</textarea>
+                            </div>
+                            <!-- ----- -->
+                            <div class="col-md-12 mt-2 text-end">
+                                <input type="text" name="DepartmentId" id="DepartmentId" value="0" hidden required />
+                                <input type="text" name="Part_Of" id="Part_Of" value="0" hidden required />
+                                <input type="text" name="Level_No" id="Level_No" value="0" hidden required />
+                                <input type="submit" id="SaveDept" class="btn btn-sm btn-primary" value="Save" />
+                            </div>
                         </div>
-                    </div>
-                </form>
+</form>
                 <div class="row mt-1">
                     <h5>Role List for Department Position</h5>
                     <div class="col-md-12">
@@ -681,7 +729,10 @@
         <td>{level3}</td>
         <td>{level4}</td>
         <td>{level5}</td>
+        <td>{prodn}</td>
+        <td>{stores}</td>
         <td>{roleName}</td>
+        <td hidden>{prodDept}</td>
         @*<td>{activity}</td>*@
         <!--activity: null
         departmentId: 1
@@ -701,13 +752,15 @@
                             if (pr.PermissionId >= 3)
                             {
                                 <a href="javascript:void(0);" onclick="SetOp('edit');"
-                                   data-deptid="{departmentId}" data-name="{name}"
+                                   data-deptid="{departmentId}" data-name="{name}" data-op="edit"
                                    data-activity="{activity}" data-noOfShifts="{noOfShifts}"
                                    data-plantId="{plantId}" data-plantName="{plantName}"
                                    data-proddept="{prodDept}" data-section="{section}" data-partof="{part_Of}"
+                                   data-stores-directmatl="{stores_DirectMatl}" data-stores-cust-dispatch="{stores_Cust_Dispatch}"
+                                   data-stores-tools="{stores_Tools}" data-stores-consumables="{stores_Consumables}"
                                    class="dropdown-item" data-bs-toggle="modal"
                                    data-bs-target="#add-dept">Edit</a>
-                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#add-dept" data-deptid="{departmentId}" data-levelno="{level_No}">Add Level Below</a>
+                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-op="addChild" data-bs-target="#add-dept" data-deptid="{departmentId}" data-levelno="{level_No}">Add Level Below</a>
                             }
                             else
                             {
@@ -723,10 +776,12 @@
                     else
                     {
                         <a href="javascript:void(0);" onclick="SetOp('edit');"
-                           data-deptid="{departmentId}" data-name="{name}"
+                           data-deptid="{departmentId}" data-name="{name}" data-op="edit"
                            data-activity="{activity}" data-noOfShifts="{noOfShifts}"
                            data-plantId="{plantId}" data-plantName="{plantName}"
                            data-proddept="{prodDept}" data-section="{section}" data-partof="{part_Of}"
+                          data-stores-directmatl="{stores_DirectMatl}" data-stores-cust-dispatch="{stores_Cust_Dispatch}"
+                                   data-stores-tools="{stores_Tools}" data-stores-consumables="{stores_Consumables}"
                            class="dropdown-item" data-bs-toggle="modal"
                            data-bs-target="#add-dept">Edit</a>
                         <!-- item-->
@@ -735,7 +790,7 @@
                             data-deptid="{departmentId}"
                             data-bs-target="#Addsection"
                             >Add Section</a>*@
-                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#add-dept" data-deptid="{departmentId}" data-levelno="{level_No}">Add Level Below</a>
+                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-op="addChild"  data-bs-target="#add-dept" data-deptid="{departmentId}" data-levelno="{level_No}">Add Level Below</a>
                         <a href="javascript:void(0);" onclick="DelDept('{name}',{departmentId});" class="dropdown-item">Delete</a>
                         <!-- item-->
                         <!-- item-->

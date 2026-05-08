@@ -25,5 +25,6 @@ namespace CWB.App.Services.CompanySettings
         Task<Employee_PwdVM> PostEmployee_Pwd(Employee_PwdVM shop);
         Task<IEnumerable<Employee_PwdVM>> GetEmployee_Pwd();
         Task<bool> DelEmployee_Pwd(long designationId);
+        Task<Stores_Dept_IDListVM> GetAllStoresIDs();
     }
 }

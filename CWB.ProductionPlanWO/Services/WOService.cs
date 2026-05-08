@@ -1397,11 +1397,23 @@ namespace CWB.ProductionPlanWO.Services
             var allwo = await _IInventory_MasterRepository.AwaitGetRangeAsync(d => d.TenantId == tenantId);
             return _mapper.Map<IEnumerable<Inventory_MasterVM>>(allwo);
         }
-        public async Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartid(long Partid,long tenantId )
+        public async Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartid(long LocationId,long OprnoId, long RoutingId,long Partid,long tenantId )
         {
-            var allwo = await _IInventory_MasterRepository.AwaitGetRangeAsync(d => d.TenantId == tenantId && d.Part_NoId==Partid);
+            var allwo = await _IInventory_MasterRepository.AwaitGetRangeAsync(d => d.TenantId == tenantId && d.Part_NoId==Partid && d.Location_Id==LocationId 
+            && d.Opr_No_Id==OprnoId && d.Routing_Id==RoutingId );
             return _mapper.Map<IEnumerable<Inventory_MasterVM>>(allwo);
         }
+        public async Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartidWithFlag(string Flag,long LocationId, long OprnoId, long RoutingId, long Partid, long tenantId)
+        {
+            var allwo = await _IInventory_MasterRepository.AwaitGetRangeAsync(d => d.TenantId == tenantId && d.Part_NoId == Partid && d.Location_Id == LocationId
+            && d.Opr_No_Id == OprnoId && d.Routing_Id == RoutingId && d.Loc_Flag==Flag);
+            return _mapper.Map<IEnumerable<Inventory_MasterVM>>(allwo);
+        }
+
+
+
+
+
         public async Task<IEnumerable<Inv_Trans_LogVM>> GetAllInvTransLog(long tenantId)
         {
             var allwo = _IInv_Trans_LogRepository.GetRangeAsync(d => d.TenantId == tenantId);

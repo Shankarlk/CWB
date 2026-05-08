@@ -50,11 +50,27 @@ namespace CWB.CompanySettings.Configurations
             builder
                .Property(t => t.ProdDept)
                .HasColumnName("ProdDept")
-               .HasMaxLength(1);
+               .IsRequired(); 
             builder
               .Property(t => t.Section)
               .HasColumnName("Section")
               .HasMaxLength(255);
+            builder
+             .Property(t => t.Stores_DirectMatl)
+             .HasColumnName("Stores_DirectMatl")
+             .HasDefaultValue(0);
+            builder
+            .Property(t => t.Stores_Cust_Dispatch)
+            .HasColumnName("Stores_Cust_Dispatch")
+            .HasDefaultValue(0);
+            builder
+            .Property(t => t.Stores_Tools)
+            .HasColumnName("Stores_Tools")
+            .HasDefaultValue(0);
+            builder
+            .Property(t => t.Stores_Consumables)
+            .HasColumnName("Stores_Consumables")
+            .HasDefaultValue(0);
             builder.HasIndex(m => m.PlantId).HasDatabaseName("ShopDepartment_PlantId");
             builder.HasIndex(m => m.TenantId).HasDatabaseName("ShopDepartment_TenantId");
         }

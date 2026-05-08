@@ -2658,99 +2658,99 @@ function copyPartData() {
     var data = ba_masterparts;
     //$('#SalesCustomerOrderId').val();
     var partId = data[selval].partId;
-    $.ajax({
-        type: "GET",
-        url: "/masters/CheckPartNoInDocList",
-        data: { partId: partId },
-        success: function (response) {
-            if (!response) {
-                alert("This Part Doesnot Have Required Document.");
-                return;
-            }
-            else {
-                $("#popup7PartNoField").val(data[selval].partNo + "/" + data[selval].description);
-                $("#Popup7partId").val(data[selval].partId);
-                api.getbulk("/WorkOrder/AllSalesOrders").then((sodata) => {
-                    sodata = sodata.filter(item => item.partId === partId && item.status !== 6);
-                    $("#popup7SoQnty").val(sodata[0].requiredQuantity);
-                    $("#Popup7soid").val(sodata[0].salesOrderId);
-                    api.getbulk("/WorkOrder/AllWorkOrders").then((wodata) => {
-                        wodata = wodata.filter(item => item.partId === partId);
-                        $("#popup7WoQnty").val(wodata[0].calcWOQty);
-                        if (data[selval].masterPartType == "Assembly") {
-                            $("#Popup7partType").val(2);
+    //$.ajax({
+    //    type: "GET",
+    //    url: "/masters/CheckPartNoInDocList",
+    //    data: { partId: partId },
+    //    success: function (response) {
+    //        if (!response) {
+    //            alert("This Part Doesnot Have Required Document.");
+    //            return;
+    //        }
+    //        else {
+              
+    //        }
+    //    }
+    //});
+    $("#popup7PartNoField").val(data[selval].partNo + "/" + data[selval].description);
+    $("#Popup7partId").val(data[selval].partId);
+    api.getbulk("/WorkOrder/AllSalesOrders").then((sodata) => {
+        sodata = sodata.filter(item => item.partId === partId && item.status !== 6);
+        $("#popup7SoQnty").val(sodata[0].requiredQuantity);
+        $("#Popup7soid").val(sodata[0].salesOrderId);
+        api.getbulk("/WorkOrder/AllWorkOrders").then((wodata) => {
+            wodata = wodata.filter(item => item.partId === partId);
+            $("#popup7WoQnty").val(wodata[0].calcWOQty);
+            if (data[selval].masterPartType == "Assembly") {
+                $("#Popup7partType").val(2);
 
-                            $("#SubConGridDivP7").hide();
-                            $("#popup7divRouting").hide();
-                            const selectElement = $('#popup7Routing');
-                            selectElement.html("");
-                            selectElement.prop("disabled", true);
-                            $('#popup7StartingOpNo').html("").prop("disabled", true);
-                            $('#popup7EndingOpNo').html("").prop("disabled", true);
-                        } else {
-                            $("#Popup7partType").val(1);
-                            $("#popup7divRouting").show().addClass("row");
-                            $("#SubConGridDivP7").show();
-                            api.getbulk("/WorkOrder/GetRoutings?manufPartId=" + parseInt(partId)).then((data) => {
-                                //console.log(data);
-                                const selectElement = $('#popup7Routing');
-                                selectElement.prop("disabled", false);
-                                selectElement.html("");
-                                if (data.length === 1) {
-                                    $('#popup7Routing').prop('readonly', true);
-                                    $('#popup7Routing').css('pointer-events', 'none');
-                                    $.each(data, (index, item) => {
-                                        selectElement.append(`<option value="${item.routingId}">${item.routingName}</option>`);
+                $("#SubConGridDivP7").hide();
+                $("#popup7divRouting").hide();
+                const selectElement = $('#popup7Routing');
+                selectElement.html("");
+                selectElement.prop("disabled", true);
+                $('#popup7StartingOpNo').html("").prop("disabled", true);
+                $('#popup7EndingOpNo').html("").prop("disabled", true);
+            } else {
+                $("#Popup7partType").val(1);
+                $("#popup7divRouting").show().addClass("row");
+                $("#SubConGridDivP7").show();
+                api.getbulk("/WorkOrder/GetRoutings?manufPartId=" + parseInt(partId)).then((data) => {
+                    //console.log(data);
+                    const selectElement = $('#popup7Routing');
+                    selectElement.prop("disabled", false);
+                    selectElement.html("");
+                    if (data.length === 1) {
+                        $('#popup7Routing').prop('readonly', true);
+                        $('#popup7Routing').css('pointer-events', 'none');
+                        $.each(data, (index, item) => {
+                            selectElement.append(`<option value="${item.routingId}">${item.routingName}</option>`);
 
-                                    });
-                                    var routeId = $('#popup7Routing').val();
-                                    $('#popup7StartingOpNo').prop('readonly', true);
-                                    $('#popup7StartingOpNo').css('pointer-events', 'none');
-                                    $('#popup7EndingOpNo').prop('readonly', true);
-                                    $('#popup7EndingOpNo').css('pointer-events', 'none');
-                                    api.getbulk("/WorkOrder/RoutingSteps?routingId=" + routeId).then((data) => {
-                                        //console.log(data);
-                                        const selectstartElement = $('#popup7StartingOpNo');
-                                        const selectEndOpNo = $('#popup7EndingOpNo');
-                                        selectstartElement.html("");
-                                        $.each(data, (index, item) => {
-                                            selectstartElement.append(`<option value="${item.stepId}">${item.stepNumber}</option>`);
-                                        });
-                                        const reversedData = data.slice().reverse();
-                                        selectEndOpNo.html('');
-                                        $.each(reversedData, (index, item) => {
-                                            selectEndOpNo.append(`<option value="${item.stepId}">${item.stepNumber}</option>`);
-                                        });
-                                        loadWoP7SubCon();
-                                    }).catch((error) => {
-                                        console.error(error);
-                                    });
-                                } else {
-
-                                    selectElement.append(`<option value="0">--Select--</option>`);
-                                    $.each(data, (index, item) => {
-                                        selectElement.append(`<option value="${item.routingId}">${item.routingName}</option>`);
-
-                                    });
-                                }
-
-                            }).catch((error) => {
+                        });
+                        var routeId = $('#popup7Routing').val();
+                        $('#popup7StartingOpNo').prop('readonly', true);
+                        $('#popup7StartingOpNo').css('pointer-events', 'none');
+                        $('#popup7EndingOpNo').prop('readonly', true);
+                        $('#popup7EndingOpNo').css('pointer-events', 'none');
+                        api.getbulk("/WorkOrder/RoutingSteps?routingId=" + routeId).then((data) => {
+                            //console.log(data);
+                            const selectstartElement = $('#popup7StartingOpNo');
+                            const selectEndOpNo = $('#popup7EndingOpNo');
+                            selectstartElement.html("");
+                            $.each(data, (index, item) => {
+                                selectstartElement.append(`<option value="${item.stepId}">${item.stepNumber}</option>`);
                             });
-                            $('#popup7EndingOpNo').prop("disabled", false);
-                            $('#popup7StartingOpNo').prop("disabled", false);
-                            $('#ManualEndOpNo').prop("disabled", false);
+                            const reversedData = data.slice().reverse();
+                            selectEndOpNo.html('');
+                            $.each(reversedData, (index, item) => {
+                                selectEndOpNo.append(`<option value="${item.stepId}">${item.stepNumber}</option>`);
+                            });
+                            loadWoP7SubCon();
+                        }).catch((error) => {
+                            console.error(error);
+                        });
+                    } else {
 
-                        }
-                    }).catch((error) => {
-                    });
+                        selectElement.append(`<option value="0">--Select--</option>`);
+                        $.each(data, (index, item) => {
+                            selectElement.append(`<option value="${item.routingId}">${item.routingName}</option>`);
+
+                        });
+                    }
+
                 }).catch((error) => {
                 });
+                $('#popup7EndingOpNo').prop("disabled", false);
+                $('#popup7StartingOpNo').prop("disabled", false);
+                $('#ManualEndOpNo').prop("disabled", false);
 
-                document.getElementById("btn-close-ba-ExistingParts").click();
             }
-        }
+        }).catch((error) => {
+        });
+    }).catch((error) => {
     });
 
+    document.getElementById("btn-close-ba-ExistingParts").click();
 
 
 }

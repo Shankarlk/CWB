@@ -13,8 +13,9 @@ var MachineGeneralFormUtil = {
             var departmentSelect = $("#MachineDepartmentId");
             $(departmentSelect).html("");
             $(departmentSelect).append('<option value="">--Select Shop--</option>');
-            for (i = 0; i < data.length; i++) {
-                $(departmentSelect).append('<option value="' + data[i].departmentId + '">' + data[i].name + '</option>');
+            var filteredData = data.filter(x => x.prodDept === 1);
+            for (i = 0; i < filteredData.length; i++) {
+                $(departmentSelect).append('<option value="' + filteredData[i].departmentId + '">' + filteredData[i].name + '</option>');
             }
             if (MachineGeneralConstants.DepartmentId != 0) {
                 $(departmentSelect).val(MachineGeneralConstants.DepartmentId);

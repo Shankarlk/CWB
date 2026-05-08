@@ -23,6 +23,7 @@ namespace CWB.CompanySettings.Services.Location
         IEnumerable<Employee_UI_ListVM> GetEmployee_UI_List(long TenantId);
         Task<Employee_UI_ListVM> PostEmployee_UI_List(Employee_UI_ListVM plantWdVM);
         Task<bool> DelEmployee_UI_List(long designationId);
+        Task<Stores_Dept_IDListVM> GetStoresIDs();
 
     }
 }

@@ -69,6 +69,9 @@ namespace CWB.ProductionPlanWO.Configurations
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();
+            builder
+               .Property(b => b.Loc_Flag)
+               .HasColumnName("Loc_Flag");
             builder.ConfigureBase();
             builder.HasIndex(c => c.TenantId).HasDatabaseName("Inv_Mismatch_List_TenantId");
         }

@@ -1,7 +1,7 @@
 
 let RoutingDetails = {};//contains page model
 
-
+$("#BtnCreateAlRouting").hide();
 let dataPartsRoutings = {};
 let partType = "ManufacturedPart";
 let spartType = "ManufacturedPart";
@@ -1018,7 +1018,7 @@ function getAndShowStep(stepId, stepNumber) {
     $("#Status").val(step.status);
     $("#StepId").val(step.stepId);
     $("#StepRoutingId").val(step.routingId);
-    $("#StepSequence").val(step.stepSequence);
+    $("#StepSequence").val(step.stepNextSequence);
     $("#NumberOfSimMachines").val(step.numberOfSimMachines);
     RoutingDetails["stepId"] = step.stepId;
     RoutingDetails["stepNumber"] = step.stepNumber;
@@ -2038,6 +2038,9 @@ $(function () {
         selectedManuPartId = manufacturedPartId;
         $("#AltManufacturedPartId").val(manufacturedPartId);
         $("#AltOrigRoutingId").val(routingid);
+        $("#AltRoutingName").val("");
+        $("#error-routingname").text("");
+        document.getElementById('AltRoutingName').style.border = '';
         if (routingName) {
             $("#AltRoutingName")
                 .attr(
@@ -2459,6 +2462,12 @@ $(function () {
             newNamevalidate.style.border = '';
         }
         var formData = AppUtil.GetFormData("FormAltRoutingName");
+        api.get("/routings/routingnamecheck?manufPartId=" + parseInt(formData.ManufacturedPartId)).then((rData) => {
+            var dataexist = rData.filter(a => a.routingName === formData.RoutingName);
+            if (dataexist.length > 0 && parseInt(formData.RoutingId) === 0) {
+                $("#error-routingname").text("Routing Name already exists for the Part No.").css("color", "red");
+            } else {
+                $("#error-routingname").text("");
         api.post("/routings/altrouting", formData).then((data) => {
             //console.log(data);
             document.getElementById("BtnAltRoutingClose").click();
@@ -2471,6 +2480,10 @@ $(function () {
         }).catch((error) => {
             AppUtil.HandleError("FormAltRoutingName", error);
         });
+            }
+        }).catch((error) => {
+        });
+        event.preventDefault();
     });
     $("#BtnCreateEmptyRouting").click(function (event) {
         //routings/addnewrouting
@@ -2485,6 +2498,12 @@ $(function () {
         }
         $("#AltOrigRoutingId").val(0);
         var formData = AppUtil.GetFormData("FormAltRoutingName");
+        api.get("/routings/routingnamecheck?manufPartId=" + parseInt(formData.ManufacturedPartId)).then((rData) => {
+            var dataexist = rData.filter(a => a.routingName === formData.RoutingName);
+            if (dataexist.length > 0 && parseInt(formData.RoutingId) === 0) {
+                $("#error-routingname").text("Routing Name already exists for the Part NO.").css("color", "red");
+            } else {
+                $("#error-routingname").text("");
         api.post("/routings/addnewrouting", formData).then((data) => {
             //console.log(data);
             document.getElementById("BtnAltRoutingClose").click();
@@ -2497,6 +2516,10 @@ $(function () {
         }).catch((error) => {
             AppUtil.HandleError("FormAltRoutingName", error);
         });
+            }
+        }).catch((error) => {
+        });
+        event.preventDefault();
     });
 
     $('#add-subcon').on('hidden.bs.modal', function (event) {

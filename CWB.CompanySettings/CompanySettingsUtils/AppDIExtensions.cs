@@ -45,6 +45,7 @@ namespace CWB.CompanySettings.CompanySettingsUtils
 			services.AddTransient<IEmpl_Role_ListRepository, Empl_Role_ListRepository>();
 			services.AddTransient<IPermission_ListRepository, Permission_ListRepository>();
 			services.AddTransient<IEmployeeMasterRepository, EmployeeMasterRepository>();
+			services.AddTransient<IStores_Dept_IDListRepository, Stores_Dept_IDListRepository>();
 
         }
     }

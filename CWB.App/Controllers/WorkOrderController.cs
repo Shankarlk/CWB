@@ -183,41 +183,41 @@ namespace CWB.App.Controllers
             var customer = await _baService.GetCustomerOrders();
             foreach (SalesOrderVM sovm in salesorders)
             {
-                var invpart = await _woService.GetAllInventory_MasterBypartid(sovm.PartId);
-                if(invpart.Any())
-                {
-                    var inventorypart = invpart.First();
-                    if (inventorypart != null)
-                    {
-                        var invcount = Convert.ToInt64(inventorypart.Current_QntOnHand);
-                        var  varsoallocationbypartid = await _baService.GetSOAllocationlistbyPartid(sovm.PartId);
-                        if(varsoallocationbypartid.Any())
-                        {
-                            var totalAllocatedQty = varsoallocationbypartid.Where(x => x.Dispatch_Complete == 'N').Sum(x => x.Allocated_Qnty);
-                            if(totalAllocatedQty>0)
-                            {
-                                sovm.QntyOnHand = Convert.ToInt64(inventorypart.Current_QntOnHand) - totalAllocatedQty;
-                            }
-                            else
-                            {
-                                sovm.QntyOnHand = Convert.ToInt64(inventorypart.Current_QntOnHand);
-                            }
-                        }
-                        else
-                        {
-                            sovm.QntyOnHand = Convert.ToInt64(inventorypart.Current_QntOnHand);
-                        }
+                //var invpart = await _woService.GetAllInventory_MasterBypartid(sovm.PartId);
+                //if(invpart.Any())
+                //{
+                //    var inventorypart = invpart.First();
+                //    if (inventorypart != null)
+                //    {
+                //        var invcount = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                //        var  varsoallocationbypartid = await _baService.GetSOAllocationlistbyPartid(sovm.PartId);
+                //        if(varsoallocationbypartid.Any())
+                //        {
+                //            var totalAllocatedQty = varsoallocationbypartid.Where(x => x.Dispatch_Complete == 'N').Sum(x => x.Allocated_Qnty);
+                //            if(totalAllocatedQty>0)
+                //            {
+                //                sovm.QntyOnHand = Convert.ToInt64(inventorypart.Current_QntOnHand) - totalAllocatedQty;
+                //            }
+                //            else
+                //            {
+                //                sovm.QntyOnHand = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                //            }
+                //        }
+                //        else
+                //        {
+                //            sovm.QntyOnHand = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                //        }
                        
-                    }
-                    else
-                    {
-                        sovm.QntyOnHand = 0;
-                    }
-                }
-                else
-                {
-                    sovm.QntyOnHand = 0;
-                }
+                //    }
+                //    else
+                //    {
+                //        sovm.QntyOnHand = 0;
+                //    }
+                //}
+                //else
+                //{
+                //    sovm.QntyOnHand = 0;
+                //}
                
                 sovm.BalanceSOQty = sovm.RequiredQuantity - sovm.ActQuantity;
                 foreach (ItemMasterPartVM impvm in masterparts)
@@ -5759,7 +5759,7 @@ namespace CWB.App.Controllers
                                     Machines = g.Count()
                                 });
                                 var productionDepartments = machineDeptGroups.Select(g => g.DepartmentId).Distinct().Select(id => departments
-                                        .FirstOrDefault(d => d.DepartmentId == id && d.ProdDept == true))
+                                        .FirstOrDefault(d => d.DepartmentId == id && d.ProdDept == 1))
                                     .Where(d => d != null)
                                     .ToList();
                                 var shiftList = productionDepartments.Select(d => d.NoOfShifts).Distinct().ToList();
@@ -6063,7 +6063,7 @@ namespace CWB.App.Controllers
                                         Machines = g.Count()
                                     });
                                     var productionDepartments = machineDeptGroups.Select(g => g.DepartmentId).Distinct()
-                                        .Select(id => departments.FirstOrDefault(d => d.DepartmentId == id && d.ProdDept == true))
+                                        .Select(id => departments.FirstOrDefault(d => d.DepartmentId == id && d.ProdDept == 1))
                                         .Where(d => d != null).ToList();
                                     var shiftList = productionDepartments.Select(d => d.NoOfShifts).Distinct().ToList();
                                     if (shiftList != null)
@@ -6988,7 +6988,7 @@ namespace CWB.App.Controllers
                                 Machines = g.Count()
                             });
                             var productionDepartments = machineDeptGroups.Select(g => g.DepartmentId).Distinct()
-                                .Select(id => departments.FirstOrDefault(d => d.DepartmentId == id && d.ProdDept == true))
+                                .Select(id => departments.FirstOrDefault(d => d.DepartmentId == id && d.ProdDept == 1))
                                 .Where(d => d != null).ToList();
                             var shiftList = productionDepartments.Select(d => d.NoOfShifts).Distinct().ToList();
                             if (shiftList != null)
@@ -11531,8 +11531,55 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
         [HttpPost]
         public async Task<IActionResult> PostInv_Trans_Log(Inv_Trans_LogVM masterDocListVM)
         {
+           
+            if (masterDocListVM.Transaction_Id == 1)
+            {
+                var deptstoresid = await _departmentService.GetAllStoresIDs();
+
+                masterDocListVM.From_Loc_Flag = "N/A";
+                masterDocListVM.To_Loc_Flag = "Internal";
+                masterDocListVM.To_Location_Id = deptstoresid.Stores_DirMatl_ID;
+            }
+
+            // INSERT ONLY ONCE
             var result = await _woService.PostInv_Trans_Log(masterDocListVM);
-            if(result.Transaction_Id==7)
+
+            // Inventory handling
+            if (result.Transaction_Id == 1)
+            {
+                var inv = await _woService.GetAllInventory_MasterBypartid(
+                    result.To_Location_Id,
+                    0,
+                    0,
+                    result.Output_Part_No
+                );
+
+                if (inv.Any())
+                {
+                    var invbypartid = inv.First();
+
+                    invbypartid.Current_QntOnHand =
+                        invbypartid.Current_QntOnHand + result.Qnty;
+
+                    await _woService.PostInventory_Master(invbypartid);
+                }
+                else
+                {
+                    Inventory_MasterVM newentry = new Inventory_MasterVM()
+                    {
+                        Part_NoId = result.Output_Part_No,
+                        Routing_Id = 0,
+                        Inv_Trans_Log_Id = result.Inv_Trans_LogId,
+                        Opr_No_Id = 0,
+                        Current_QntOnHand = result.Qnty,
+                        Location_Id = result.To_Location_Id,
+                        Loc_Flag="Internal"
+                    };
+
+                    await _woService.PostInventory_Master(newentry);
+                }
+            }
+            if (result.Transaction_Id==7)
             {
                 var saleorders =await  _baService.AllSalesOrders();
                 var matchedOrders = saleorders.Where(so =>
@@ -11662,32 +11709,32 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
         [HttpPost]
         public async Task<IActionResult> PostInventory_Master(Inventory_MasterVM masterDocListVM)
         {
-            var inventorymaster = await _woService.GetAllInventory_MasterBypartid(masterDocListVM.Part_NoId);
-            if (inventorymaster.Any())
-            {
-                var record = inventorymaster.First();
-                var existingqnty = record.Current_QntOnHand;
-                decimal finalquanity=0;
-                var translogs = await _woService.GetAllInv_Trans_Log();
-                var currentranslog = translogs.FirstOrDefault(x => x.Inv_Trans_LogId == masterDocListVM.Inv_Trans_Log_Id);
-                if((currentranslog.Transaction_Id==1 || currentranslog.Transaction_Id==2) && currentranslog.Output_Part_No==record.Part_NoId)
-                {
-                    finalquanity = existingqnty + Convert.ToDecimal(currentranslog.Qnty);
-                    record.Current_QntOnHand = finalquanity;
-                    await _woService.PostInventory_Master(record);
-                }
-                else if (currentranslog.Transaction_Id == 7 && currentranslog.Input_Part_NoId == record.Part_NoId)
-                {
-                    finalquanity = existingqnty + Convert.ToDecimal(currentranslog.Qnty);
-                    record.Current_QntOnHand = finalquanity;
-                    await _woService.PostInventory_Master(record);
-                }
+            //var inventorymaster = await _woService.GetAllInventory_MasterBypartid(masterDocListVM.Part_NoId);
+            //if (inventorymaster.Any())
+            //{
+            //    var record = inventorymaster.First();
+            //    var existingqnty = record.Current_QntOnHand;
+            //    decimal finalquanity=0;
+            //    var translogs = await _woService.GetAllInv_Trans_Log();
+            //    var currentranslog = translogs.FirstOrDefault(x => x.Inv_Trans_LogId == masterDocListVM.Inv_Trans_Log_Id);
+            //    if((currentranslog.Transaction_Id==1 || currentranslog.Transaction_Id==2) && currentranslog.Output_Part_No==record.Part_NoId)
+            //    {
+            //        finalquanity = existingqnty + Convert.ToDecimal(currentranslog.Qnty);
+            //        record.Current_QntOnHand = finalquanity;
+            //        await _woService.PostInventory_Master(record);
+            //    }
+            //    else if (currentranslog.Transaction_Id == 7 && currentranslog.Input_Part_NoId == record.Part_NoId)
+            //    {
+            //        finalquanity = existingqnty + Convert.ToDecimal(currentranslog.Qnty);
+            //        record.Current_QntOnHand = finalquanity;
+            //        await _woService.PostInventory_Master(record);
+            //    }
 
-            }
-            else
-            {
-                var result = await _woService.PostInventory_Master(masterDocListVM);
-            }
+            //}
+            //else
+            //{
+            //    var result = await _woService.PostInventory_Master(masterDocListVM);
+            //}
            
             return Ok();
         }
@@ -13830,24 +13877,24 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
                     invdata.Transaction_Id = 5;
                     var result = await _woService.PostInv_Trans_Log(invdata);
 
-                    var inventorymaster = await _woService.GetAllInventory_MasterBypartid(result.Input_Part_NoId);
-                    if (inventorymaster.Any())
-                    {
-                        var record = inventorymaster.First();
-                        var existingqnty = record.Current_QntOnHand;
-                        decimal finalquanity = 0;
-                        var translogs = await _woService.GetAllInv_Trans_Log();
-                        var currentranslog = translogs.FirstOrDefault(x => x.Inv_Trans_LogId == result.Inv_Trans_LogId);
-                        if (currentranslog.Transaction_Id == 5  && currentranslog.Input_Part_NoId == record.Part_NoId)
-                        {
-                            finalquanity = existingqnty + Convert.ToDecimal(currentranslog.Qnty);
-                            record.Current_QntOnHand = finalquanity;
-                            await _woService.PostInventory_Master(record);
-                        }
+                    //var inventorymaster = await _woService.GetAllInventory_MasterBypartid(result.Input_Part_NoId);
+                    //if (inventorymaster.Any())
+                    //{
+                    //    var record = inventorymaster.First();
+                    //    var existingqnty = record.Current_QntOnHand;
+                    //    decimal finalquanity = 0;
+                    //    var translogs = await _woService.GetAllInv_Trans_Log();
+                    //    var currentranslog = translogs.FirstOrDefault(x => x.Inv_Trans_LogId == result.Inv_Trans_LogId);
+                    //    if (currentranslog.Transaction_Id == 5  && currentranslog.Input_Part_NoId == record.Part_NoId)
+                    //    {
+                    //        finalquanity = existingqnty + Convert.ToDecimal(currentranslog.Qnty);
+                    //        record.Current_QntOnHand = finalquanity;
+                    //        await _woService.PostInventory_Master(record);
+                    //    }
 
-                    }
-                    else
-                    {
+                    //}
+                    //else
+                    //{
                         var invMaster = new Inventory_MasterVM();
                         invMaster.Part_NoId = result.Input_Part_NoId;
                         invMaster.Routing_Id = result.Input_Routing_Id;
@@ -13855,7 +13902,7 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
                         invMaster.Current_QntOnHand = result.Qnty;
                         invMaster.Location_Id = result.To_Location_Id;
                         var inmaster = await _woService.PostInventory_Master(invMaster);
-                    }
+                   // }
                    
                 }
                 return Json(new { message = "Material Issued." });
@@ -13927,24 +13974,24 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
                     invdata.Movement_Compl = 'Y';
                     invdata.Transaction_Id = 6;
                     var result = await _woService.PostInv_Trans_Log(invdata);
-                    var inventorymaster = await _woService.GetAllInventory_MasterBypartid(result.Input_Part_NoId);
-                    if (inventorymaster.Any())
-                    {
-                        var record = inventorymaster.First();
-                        var existingqnty = record.Current_QntOnHand;
-                        decimal finalquanity = 0;
-                        var translogs = await _woService.GetAllInv_Trans_Log();
-                        var currentranslog = translogs.FirstOrDefault(x => x.Inv_Trans_LogId == result.Inv_Trans_LogId);
-                        if (currentranslog.Transaction_Id == 6 && currentranslog.Input_Part_NoId == record.Part_NoId)
-                        {
-                            finalquanity = existingqnty + Convert.ToDecimal(currentranslog.Qnty);
-                            record.Current_QntOnHand = finalquanity;
-                            await _woService.PostInventory_Master(record);
-                        }
+                    //var inventorymaster = await _woService.GetAllInventory_MasterBypartid(result.Input_Part_NoId);
+                    //if (inventorymaster.Any())
+                    //{
+                    //    var record = inventorymaster.First();
+                    //    var existingqnty = record.Current_QntOnHand;
+                    //    decimal finalquanity = 0;
+                    //    var translogs = await _woService.GetAllInv_Trans_Log();
+                    //    var currentranslog = translogs.FirstOrDefault(x => x.Inv_Trans_LogId == result.Inv_Trans_LogId);
+                    //    if (currentranslog.Transaction_Id == 6 && currentranslog.Input_Part_NoId == record.Part_NoId)
+                    //    {
+                    //        finalquanity = existingqnty + Convert.ToDecimal(currentranslog.Qnty);
+                    //        record.Current_QntOnHand = finalquanity;
+                    //        await _woService.PostInventory_Master(record);
+                    //    }
 
-                    }
-                    else
-                    {
+                    //}
+                    //else
+                    //{
                         var invMaster = new Inventory_MasterVM();
                         invMaster.Part_NoId = result.Input_Part_NoId;
                         invMaster.Routing_Id = result.Input_Routing_Id;
@@ -13952,7 +13999,7 @@ else if (prodnwosDict.TryGetValue(item.ChildWoId, out var prodnInfo))
                         invMaster.Current_QntOnHand = result.Qnty;
                         invMaster.Location_Id = result.To_Location_Id;
                         var inmaster = await _woService.PostInventory_Master(invMaster);
-                    }
+                   // }
                     //var invMaster = new Inventory_MasterVM();
                     //invMaster.Part_NoId = result.Input_Part_NoId;
                     //invMaster.Routing_Id = result.Input_Routing_Id;

@@ -38,7 +38,12 @@ namespace CWB.App.Services.CompanySettings
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<ShopDepartmentVM>>.GetAsync(uri, headers);
         }
-
+        public async Task<Stores_Dept_IDListVM> GetAllStoresIDs()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/getallstoresid/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<Stores_Dept_IDListVM>.GetAsync(uri, headers);
+        }
         public async Task<ShopDepartmentVM> PostDepartment(ShopDepartmentVM shop)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbcs/department");

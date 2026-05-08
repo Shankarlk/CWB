@@ -151,7 +151,11 @@ namespace CWB.CompanySettings.CompanySettingsUtils
                 .ForMember(m => m.Activity, m => m.MapFrom(src => src.Activity))
                 .ForMember(m => m.PlantName, m => m.MapFrom(src => src.Plant.Name))
                 .ForMember(m => m.Section, m => m.MapFrom(src => src.Section))
-                .ForMember(m => m.ProdDept, m => m.MapFrom(src => src.ProdDept));
+                .ForMember(m => m.ProdDept, m => m.MapFrom(src => src.ProdDept))
+                .ForMember(m => m.Stores_DirectMatl, m => m.MapFrom(src => src.Stores_DirectMatl))
+                .ForMember(m => m.Stores_Cust_Dispatch, m => m.MapFrom(src => src.Stores_Cust_Dispatch))
+                .ForMember(m => m.Stores_Tools, m => m.MapFrom(src => src.Stores_Tools))
+                .ForMember(m => m.Stores_Consumables, m => m.MapFrom(src => src.Stores_Consumables));
             CreateMap<ShopDepartmentVM, ShopDepartment>()
                 .ForMember(m => m.Id, m => m.MapFrom(src => src.DepartmentId))
                 .ForMember(m => m.PlantId, m => m.MapFrom(src => src.PlantId))
@@ -161,7 +165,25 @@ namespace CWB.CompanySettings.CompanySettingsUtils
                 .ForMember(m => m.NoOfShifts, m => m.MapFrom(src => src.NoOfShifts))
                 .ForMember(m => m.Activity, m => m.MapFrom(src => src.Activity))
                 .ForMember(m => m.Section, m => m.MapFrom(src => src.Section))
-                .ForMember(m => m.ProdDept, m => m.MapFrom(src => src.ProdDept));
+                .ForMember(m => m.ProdDept, m => m.MapFrom(src => src.ProdDept))
+                .ForMember(m => m.Stores_DirectMatl, m => m.MapFrom(src => src.Stores_DirectMatl))
+                .ForMember(m => m.Stores_Cust_Dispatch, m => m.MapFrom(src => src.Stores_Cust_Dispatch))
+                .ForMember(m => m.Stores_Tools, m => m.MapFrom(src => src.Stores_Tools))
+                .ForMember(m => m.Stores_Consumables, m => m.MapFrom(src => src.Stores_Consumables));
+
+            CreateMap<Stores_Dept_IDList, Stores_Dept_IDListVM>()
+                .ForMember(m => m.Stores_Dept_IDList_ID, m => m.MapFrom(src => src.Id))
+                .ForMember(m => m.Stores_DirMatl_ID, m => m.MapFrom(src => src.Stores_DirMatl_ID))
+                .ForMember(m => m.Stores_Cust_Dispatch_ID, m => m.MapFrom(src => src.Stores_Cust_Dispatch_ID))
+                .ForMember(m => m.Stores_Tools_ID, m => m.MapFrom(src => src.Stores_Tools_ID))
+                .ForMember(m => m.Stores_Consumables_ID, m => m.MapFrom(src => src.Stores_Consumables_ID));
+            CreateMap<Stores_Dept_IDListVM, Stores_Dept_IDList>()
+                .ForMember(m => m.Id, m => m.MapFrom(src => src.Stores_Dept_IDList_ID))
+                 .ForMember(m => m.Stores_DirMatl_ID, m => m.MapFrom(src => src.Stores_DirMatl_ID))
+                .ForMember(m => m.Stores_Cust_Dispatch_ID, m => m.MapFrom(src => src.Stores_Cust_Dispatch_ID))
+                .ForMember(m => m.Stores_Tools_ID, m => m.MapFrom(src => src.Stores_Tools_ID))
+                .ForMember(m => m.Stores_Consumables_ID, m => m.MapFrom(src => src.Stores_Consumables_ID));
+
 
             CreateMap<HolidayVM, Holiday>()
                .ForMember(m => m.Id, m => m.MapFrom(src => src.HolidayId))

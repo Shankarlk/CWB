@@ -90,7 +90,7 @@
             public const string GetEmployee_UI_List = Base + "/getempuilist/{tenantId}";
             public const string DelEmployee_UI_List = Base + "/deleteempuilist/{sectionId}";
             public const string PostEmployee_UI_List = Base + "/postempuilist";
-
+            public const string GetStoresIDs = Base + "/getallstoresid/{tenantId}";
         }
 
         public static class Designation
@@ -122,6 +122,7 @@
             public const string DelEmplRoleList = Base + "/delemplrolelist/{designationId}";
             public const string DelPermissionList = Base + "/delpermissionlist/{designationId}";
             public const string DelEmployee = Base + "/delemployee/{designationId}";
+            
         }
     }
 }

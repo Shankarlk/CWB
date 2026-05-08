@@ -67,9 +67,23 @@ namespace CWB.App.Controllers
                 var roleNames = (from dr in deptRol
                                  join r in roles on dr.Role_Access_Id equals r.Role_ListId
                                  select r.Role_Desc).ToList();
+                var storesList = new List<string>();
+
+                if (dept.Stores_DirectMatl == 'Y')
+                    storesList.Add("DirectMatl");
+
+                if (dept.Stores_Cust_Dispatch == 'Y')
+                    storesList.Add("Customer Dispatch");
+
+                if (dept.Stores_Tools == 'Y')
+                    storesList.Add("Tools");
+
+                if (dept.Stores_Consumables == 'Y')
+                    storesList.Add("Consumables");
                 var vm = new ShopDepartmentVM
                 {
-                    DepartmentId = dept.DepartmentId,
+                    Prodn = dept.ProdDept == 1 ? 'Y' : '\0',
+                DepartmentId = dept.DepartmentId,
                     Name = dept.Name,
                     NoOfShifts = dept.NoOfShifts,
                     PlantId = dept.PlantId,
@@ -80,8 +94,15 @@ namespace CWB.App.Controllers
                     TenantId = dept.TenantId,
                     PlantName = dept.PlantName,
                     Section = dept.Section,
-                    RoleName = string.Join(", ", roleNames)
-                };
+                    RoleName = string.Join(", ", roleNames),
+
+                    Stores_DirectMatl = dept.Stores_DirectMatl,
+                    Stores_Cust_Dispatch = dept.Stores_Cust_Dispatch,
+                    Stores_Tools = dept.Stores_Tools,
+                    Stores_Consumables = dept.Stores_Consumables,
+                    Stores = storesList.Count > 0    ? string.Join(", ", storesList)
+    : ""
+            };
 
                 // Walk up the parent chain and fill levels
                 var chain = new List<string>();
@@ -116,10 +137,11 @@ namespace CWB.App.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if(model.ProdDept == null)
-            {
-                model.ProdDept = false;
-            }
+            
+            //if(model.ProdDept == null)
+            //{
+            //    model.ProdDept = false;
+            //}
             if (model.NoOfShifts == 0)
             {
                 model.NoOfShifts= 1;

@@ -234,6 +234,11 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetMachines()
         {
             var machinesList = await _machineService.GetMachinesList();
+            foreach (var item in machinesList)
+            { 
+            
+            
+            }
             return Ok(machinesList);
         }
 

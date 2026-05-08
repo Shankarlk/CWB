@@ -486,9 +486,15 @@ namespace CWB.App.Services.ProductionPlanWo
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<Inventory_MasterVM>>.GetAsync(uri, headers);
         }
-        public async Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartid(long partid)
+        public async Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartid(long locationId, long oprnoId, long routingId,long partid)
         {
-            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/allinvmasterybypartid/{partid}/{tenantId}");
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/allinvmasterybypartid/{locationId}/{oprnoId}/{routingId}/{partid}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Inventory_MasterVM>>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartidWithFlag(string flag,long locationId, long oprnoId, long routingId, long partid)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/allinvmasterybypartidwithflag/{flag}/{locationId}/{oprnoId}/{routingId}/{partid}/{tenantId}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<Inventory_MasterVM>>.GetAsync(uri, headers);
         }

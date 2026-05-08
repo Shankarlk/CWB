@@ -36,7 +36,8 @@ namespace CWB.ProductionPlanWO.Utils
             public const string AllSubCon = Base + "/allwosubcon/{tenantId}";
             public const string GetAllInsp_Outcome_Details = Base + "/allinspoutcomedetails/{tenantId}";
             public const string GetAllInventory_Master = Base + "/allinvmastery/{tenantId}";
-            public const string GetAllInventory_MasterBypartid = Base + "/allinvmasterybypartid/{partid}/{tenantId}";
+            public const string GetAllInventory_MasterBypartid = Base + "/allinvmasterybypartid/{locationId}/{oprnoId}/{routingId}/{partid}/{tenantId}";
+            public const string GetAllInventory_MasterBypartidWithFlag = Base + "/allinvmasterybypartidwithflag/{flag}/{locationId}/{oprnoId}/{routingId}/{partid}/{tenantId}";
             public const string GetAllInvTransLog = Base + "/allinvtranslog/{tenantId}";
             public const string GetAllInw_Recpt_Details = Base + "/allinwrecptdetails/{tenantId}";
             public const string GetAlInw_Recpt_Header = Base + "/allinwrecptheader/{tenantId}";

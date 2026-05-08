@@ -34,5 +34,7 @@ namespace CWB.ProductionPlanWO.ViewModels
         public long Our_DC_Ref { get; set; }
         public long Our_RGP_Ref { get; set; }
         public long TenantId { get; set; }
+        public string From_Loc_Flag { get; set; }
+        public string To_Loc_Flag { get; set; }
     }
 }

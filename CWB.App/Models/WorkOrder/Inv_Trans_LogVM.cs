@@ -60,5 +60,7 @@ namespace CWB.App.Models.WorkOrder
         public string CompanyName { get; set; } = string.Empty;
         public string WfInwdInsp { get; set; } = string.Empty;
         public string TransactionName { get; set; } = string.Empty;
+        public string From_Loc_Flag { get; set; }
+        public string To_Loc_Flag { get; set; }
     }
 }

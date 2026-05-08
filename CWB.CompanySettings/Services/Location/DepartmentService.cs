@@ -21,9 +21,9 @@ namespace CWB.CompanySettings.Services.Location
         private readonly IEmployee_PwdRepository _Employee_PwdRepository;
         private readonly IDept_EmployeeRepository _Dept_EmployeeRepository;
         private readonly IEmployee_UI_ListRepository _Employee_UI_ListRepository;
-
+        private readonly IStores_Dept_IDListRepository _stores_Dept_IDListRepository;
         public DepartmentService(ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork, IDepartmentRepository departmentRepository, IDept_Role_ListRepository Dept_Role_ListRepository,IEmployee_PwdRepository Employee_PwdRepository
-            , IDept_EmployeeRepository Dept_EmployeeRepository, IEmployee_UI_ListRepository Employee_UI_ListRepository)
+            , IDept_EmployeeRepository Dept_EmployeeRepository, IEmployee_UI_ListRepository Employee_UI_ListRepository, IStores_Dept_IDListRepository stores_Dept_IDListRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -33,7 +33,7 @@ namespace CWB.CompanySettings.Services.Location
             _Employee_UI_ListRepository = Employee_UI_ListRepository;
             _Dept_Role_ListRepository = Dept_Role_ListRepository;
             _Employee_PwdRepository = Employee_PwdRepository;
-
+            _stores_Dept_IDListRepository = stores_Dept_IDListRepository;
         }
 
         public bool CheckDepartmentExisit(CheckDepartmentVM checkDepartmentVM)
@@ -59,13 +59,78 @@ namespace CWB.CompanySettings.Services.Location
                 department = await _departmentRepository.UpdateAsync(department.Id, department);
             }
             await _unitOfWork.CommitAsync();
+            await RebuildStoresMapping();
+
+            await _unitOfWork.CommitAsync();
             shopDepartmentVM.DepartmentId = department.Id;
             return shopDepartmentVM;
         }
+        private async Task RebuildStoresMapping()
+        {
+            var storeMap = await _stores_Dept_IDListRepository
+                .SingleOrDefaultAsync(x => x.Id > 0);
 
+            bool isNew = false;
+
+            if (storeMap == null)
+            {
+                storeMap = new Stores_Dept_IDList
+                {
+                    CreationDate = DateTime.Now
+                };
+
+                isNew = true;
+            }
+
+            // 🔥 RESET
+            storeMap.Stores_DirMatl_ID = 0;
+            storeMap.Stores_Cust_Dispatch_ID = 0;
+            storeMap.Stores_Tools_ID = 0;
+            storeMap.Stores_Consumables_ID = 0;
+
+            // 🔥 Fetch all departments
+            var allDepts = await _departmentRepository
+                .GetAllDepartmentsByTenantAsync(1); //  ideally pass tenantId
+
+            var storeDepts = allDepts
+                .Where(x => x.ProdDept == 2)
+                .ToList();
+
+            foreach (var dept in storeDepts)
+            {
+                if (dept.Stores_DirectMatl == 'Y')
+                    storeMap.Stores_DirMatl_ID = dept.Id;
+
+                if (dept.Stores_Cust_Dispatch == 'Y')
+                    storeMap.Stores_Cust_Dispatch_ID = dept.Id;
+
+                if (dept.Stores_Tools == 'Y')
+                    storeMap.Stores_Tools_ID = dept.Id;
+
+                if (dept.Stores_Consumables == 'Y')
+                    storeMap.Stores_Consumables_ID = dept.Id;
+            }
+
+            storeMap.LastModifiedDate = DateTime.Now;
+
+            if (isNew)
+                await _stores_Dept_IDListRepository.AddAsync(storeMap);
+            else
+                await _stores_Dept_IDListRepository.UpdateAsync(storeMap.Id, storeMap);
+        }
+        public async Task<Stores_Dept_IDListVM> GetStoresIDs()
+        {
+            var Stores = await _stores_Dept_IDListRepository.SingleOrDefaultAsync(x => x.Id > 0);
+            return _mapper.Map<Stores_Dept_IDListVM>(Stores);
+            //if (bastatus != null)
+            //{
+            //    
+            //}
+            //return new BAStatusVM { StatusId = -1 };
+        }
         public async Task<IEnumerable<ShopDepartmentVM>> GetAllDepartments(long PlantId, long TenantId)
         {
-            var departments = await _departmentRepository.GetAllDepartmentsByTenantAsync(TenantId);
+            var departments =  _departmentRepository.GetRangeAsync(p => p.TenantId == TenantId);
             return _mapper.Map<IEnumerable<ShopDepartmentVM>>(departments);
         }
 

@@ -640,20 +640,7 @@ $(document).ready(function () {
                     };
                     api.post("/WorkOrder/PostInv_Trans_Log", rowData).then((Insdata) => {
                         $("#P6MessageBox").text("Inspection Complete");
-                        var InvMasterrowData = {
-                            Part_NoId: P6PartId,
-                            Routing_Id: 0,
-                            Inv_Trans_Log_Id: Insdata.inv_Trans_LogId,
-                            Opr_No_Id: 0,
-                            Current_QntOnHand: qnty,
-                            Location_Id: 1
-                        };
-                        api.post("/WorkOrder/PostInventory_Master", InvMasterrowData).then((data) => {
-
-
-                        }).catch((error) => {
-                            console.log(error);
-                        }); loadPO();
+                        loadPO();
                     }).catch((error) => {
                         console.log(error);
                     });

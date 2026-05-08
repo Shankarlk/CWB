@@ -16,5 +16,7 @@
         public string SectionName { get; set; }
         public string MachineType { get; set; }
         public string NextOprTime { get; set; }
+
+        public string ProdDept { get; set; }
     }
 }

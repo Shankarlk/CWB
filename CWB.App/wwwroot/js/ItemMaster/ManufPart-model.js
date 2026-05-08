@@ -1101,7 +1101,84 @@ $(document).ready(function () {
         });
      //   alert(makefromid);
     });
+    $("#EditQuantityPerInput").on("keyup change", function () {
+        var qty = parseFloat($(this).val()) || 0;
 
+        if (qty <= 0) {
+            $("#EditQtyError")
+                .text("Quantity must be greater than 0")
+                .show();
+            $("#EditMakeFrom").prop("disabled", true);
+        } else {
+            $("#EditQtyError").hide();
+        }
+        validateInputWeightwhennoconditionwhenedit();
+    });
+    function validateInputWeightwhennoconditionwhenedit() {
+        var inputWt = parseFloat($("#EditInputWeight").val()) || 0;
+        var quantityperinput = parseFloat($("#EditQuantityPerInput").val()) || 0;
+        var finishedWeight = parseFloat($("#EFnshWeightSpan").text()) || 0;
+        var div = inputWt / quantityperinput;
+        if (div < finishedWeight) {
+            $("#EditCalcError").text("Input Wt has to be greater than or equal to Finished Wt ... Pl Check No of Qnty of Finished Parts per Input Part");
+            $("#EditMakeFrom").prop("disabled", true);
+            return false;
+        } else {
+            $("#EditCalcError").text("");
+            $("#EditMakeFrom").prop("disabled", false);
+            return true;
+        }
+    }
+    $("#EditQuantityPerInput").on("input", function () {
+        calculateScrapwhenedit();
+    });
+    function calculateScrapwhenedit() {
+        // Get values (default to 0 if empty or invalid)
+        var inputWeight = parseFloat($("#EditInputWeight").val()) || 0;
+        var finishedWeight = parseFloat($("#EFnshWeightSpan").text()) || 0;
+        var quantityPerInput = parseFloat($("#EditQuantityPerInput").val()) || 0;
+
+        // Formula: Scrap = Input Weight - (Finished Weight * Qnty per Input)
+        var scrapWeight = inputWeight - (finishedWeight * quantityPerInput);
+
+        // Optional: Handle negative results if logic dictates scrap can't be negative
+        if (scrapWeight < 0) scrapWeight = 0;
+
+        // Update the ScrapGenerated field (fixed to 2 or 3 decimal places is usually safer)
+        $("#EditScrapgenerated").val(scrapWeight.toFixed(3));
+
+        if (quantityPerInput > 0 && scrapWeight >= 0 && finishedWeight > 0) {
+            $("#EditScrap-Error").text("");
+            // $("#EditMakeFrom").prop("disabled", false);
+        }
+        else {
+
+
+            $("#EditScrap-Error").text("Please check input weight entered above or Quantity of Finished parts per input or Finished weight of the part");
+            $("#EditMakeFrom").prop("disabled", true);
+        }
+    }
+    $("#EditInputWeight").on("keyup change", function () {
+
+        calculateScrapwhenedit();
+        validateInputWeightwhenedit();
+    });
+    function validateInputWeightwhenedit() {
+        var inputWt = parseFloat($("#EditInputWeight").val()) || 0;
+        var finishedWeight = parseFloat($("#EFnshWeightSpan").text()) || 0;
+
+        if (inputWt < finishedWeight) {
+            $("#EditInputWeight-Error").text("Input weight cannot be less than finished weight");
+            $("#EditMakeFrom").prop("disabled", true);
+
+            return false;
+        } else {
+            $("#EditInputWeight-Error").text("");
+            $("#EditMakeFrom").prop("disabled", false);
+
+            return true;
+        }
+    }
     $("#checkboxFinalPart").change(function () {
         if ($("#checkboxFinalPart").prop("checked")) {
             $("#FinalPartNosoldtoCustomer").val('1');
@@ -2271,7 +2348,7 @@ function calculateScrap() {
 
     if (quantityPerInput > 0 && scrapWeight >= 0 && finishedWeight>0) {
         $("#Scrap-Error").text("");
-        $("#btnAddMPMakeFrom").prop("disabled", false);
+       // $("#btnAddMPMakeFrom").prop("disabled", false);
     }
     else {
       
@@ -2285,7 +2362,7 @@ function copyCustData() {
     var data = custRM;
     var radiochkd = $('input[name=CSRM]:checked');
     var selval = radiochkd.val();
-
+    var finishedWeight = parseFloat($("#EFnshWeightSpan").text()) || 0;
     $('#InputPartNo').val(data[selval].partNo);
     $('#MFDescription').val(data[selval].partNo+" / "+data[selval].partDescription);
     $('#MPPartId').val(data[selval].partId);
@@ -2297,8 +2374,9 @@ function copyCustData() {
         $("#InputWeight").removeAttr("title");
         $("#QuantityPerInput").val(1);
         calculateScrap();
+        validateInputWeightwhennocondition();
     } else {
-        $("#InputWeight").val(data[selval].rawMaterialWeight);
+        $("#InputWeight").val(finishedWeight);
         $("#InputWeight").prop('readonly', false);
         $("#InputWeight").attr("title",
             "Input weight should include cutting losses and end bit losses when multiple finished parts are made from one input part");
@@ -2306,7 +2384,7 @@ function copyCustData() {
         originalRMWeight = parseFloat(data[selval].rawMaterialWeight) || 0;
         calculateQuantityPerInput();
         calculateScrap();
-       
+        validateInputWeight();
     }
     document.getElementById("btn-close-CustRM").click();
     ownRMSelected = false;
@@ -2315,6 +2393,7 @@ function copyOwnData() {
     var data = ownRM;
     var radiochkd = $('input[name=OSRM]:checked');
     var selval = radiochkd.val();
+    var finishedWeight = parseFloat($("#EFnshWeightSpan").text()) || 0;
     $('#InputPartNo').val(data[selval].partNo);
     $('#MFDescription').val(data[selval].partNo +" / "+data[selval].partDescription);
     $('#MPPartId').val(data[selval].partId);
@@ -2326,8 +2405,10 @@ function copyOwnData() {
         $("#InputWeight").prop('readonly', true);
         $("#QuantityPerInput").prop('readonly', false);
         calculateScrap();
+        validateInputWeightwhennocondition();
+        
     } else {
-        $("#InputWeight").val(data[selval].rawMaterialWeight);
+        $("#InputWeight").val(finishedWeight);
         $("#InputWeight").prop('readonly', false);
         $("#QuantityPerInput").prop('readonly', true);
         $("#InputWeight").attr("title",
@@ -2335,7 +2416,7 @@ function copyOwnData() {
         originalRMWeight = parseFloat(data[selval].rawMaterialWeight) || 0;
         calculateQuantityPerInput();
         calculateScrap();
-       
+        validateInputWeight();
     }
     document.getElementById("btn-close-RMSelect").click();
     ownRMSelected = true;
@@ -2348,9 +2429,11 @@ $("#QuantityPerInput").on("keyup change", function () {
         $("#QtyError")
             .text("Quantity must be greater than 0")
             .show();
+        $("#btnAddMPMakeFrom").prop("disabled", true);
     } else {
         $("#QtyError").hide();
     }
+    validateInputWeightwhennocondition();
 });
 function calculateQuantityPerInput() {
     var inputWeight = parseFloat($("#InputWeight").val()) || 0;
@@ -2384,10 +2467,48 @@ function calculateQuantityPerInput() {
         $("#btnAddMPMakeFrom").prop("disabled", false);
     }
 }
-$("#InputWeight").on("keyup change", function () {
-    //calculateQuantityPerInput();
-    calculateScrap();
+$("#InputWeight").on("input", function () {
+    validateInputWeight();
 });
+$("#QuantityPerInput").on("keyup change", function () {
+ 
+});
+$("#InputWeight").on("keyup change", function () {
+    calculateQuantityPerInput();
+    calculateScrap();
+    validateInputWeight();
+});
+function validateInputWeight() {
+    var inputWt = parseFloat($("#InputWeight").val()) || 0;
+    var finishedWeight = parseFloat($("#EFnshWeightSpan").text()) || 0;
+
+    if (inputWt < finishedWeight) {
+        $("#InputWeight-Error").text("Input weight cannot be less than finished weight");
+        $("#btnAddMPMakeFrom").prop("disabled", true);
+        console.log("SETTING ERROR");
+        return false;
+    } else {
+        $("#InputWeight-Error").text("");
+        $("#btnAddMPMakeFrom").prop("disabled", false);
+        console.log("CLEARING ERROR");
+        return true;
+    }
+}
+function validateInputWeightwhennocondition() {
+    var inputWt = parseFloat($("#InputWeight").val()) || 0;
+    var quantityperinput = parseFloat($("#QuantityPerInput").val()) || 0;
+    var finishedWeight = parseFloat($("#EFnshWeightSpan").text()) || 0;
+    var div = inputWt / quantityperinput;
+    if (div < finishedWeight) {
+        $("#CalcError").text("Input Wt has to be greater than or equal to Finished Wt ... Pl Check No of Qnty of Finished Parts per Input Part");
+        $("#btnAddMPMakeFrom").prop("disabled", true);
+        return false;
+    } else {
+        $("#CalcError").text("");
+        $("#btnAddMPMakeFrom").prop("disabled", false);
+        return true;
+    }
+}
 function copyData() {
 
     if (existingpartdata.length == 0) {

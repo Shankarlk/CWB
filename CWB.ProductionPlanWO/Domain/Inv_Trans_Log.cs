@@ -30,9 +30,13 @@ namespace CWB.ProductionPlanWO.Domain
         public long Qnty_mismatch_status { get; set; }
         public string Qnty_Mismatch_Comment { get; set; }
         public string Qnty_Mismatch_Resolution { get; set; }
+
         public long NC_Log_Id { get; set; }
         public long Our_DC_Ref { get; set; }
         public long Our_RGP_Ref { get; set; }
         public long TenantId { get; set; }
+
+        public string From_Loc_Flag { get; set; }
+        public string To_Loc_Flag { get; set; }
     }
 }

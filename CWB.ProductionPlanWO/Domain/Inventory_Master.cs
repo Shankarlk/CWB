@@ -16,5 +16,6 @@ namespace CWB.ProductionPlanWO.Domain
         public long Location_Id { get; set; }
         public long Inv_Trans_Log_Id { get; set; }
         public long TenantId { get; set; }
+        public string Loc_Flag { get; set; }
     }
 }

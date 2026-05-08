@@ -561,9 +561,18 @@ namespace CWB.ProductionPlanWO.Controllers
         [Route(ApiRoutes.WO.GetAllInventory_MasterBypartid)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<Inventory_MasterVM>))]
         [Authorize(Roles = Roles.ADMIN)]
-        public async Task<IActionResult> GetAllInventory_MasterBypartid(long partid,long tenantId)
+        public async Task<IActionResult> GetAllInventory_MasterBypartid(long locationId, long oprnoId, long routingId,long partid,long tenantId)
         {
-            var allwo = await _woSerivce.GetAllInventory_MasterBypartid(partid,tenantId);
+            var allwo = await _woSerivce.GetAllInventory_MasterBypartid(locationId, oprnoId, routingId,partid, tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllInventory_MasterBypartidWithFlag)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Inventory_MasterVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllInventory_MasterBypartid(string flag,long locationId, long oprnoId, long routingId, long partid, long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllInventory_MasterBypartidWithFlag(flag,locationId, oprnoId, routingId, partid, tenantId);
             return Ok(allwo);
         }
         [HttpGet]

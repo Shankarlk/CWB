@@ -175,15 +175,16 @@
                         <!-- -------------------------------------  -->
                         <label class="form-label col-md-3 mb-2"> Input Wt (Kgs) * </label>
                         <div class="col-md-4 mb-2">
-                            <input class="form-control form-control-sm" type="text" id="InputWeight" asp-for="InputWeight" name="inputWeight" placeholder="enter here" readonly
-                                  >
+                            <input class="form-control form-control-sm" type="text" id="InputWeight" asp-for="InputWeight" name="inputWeight" placeholder="enter here" readonly>
+                            <span id="InputWeight-Error" style="color: red"></span>
                         </div>
                         <div class="col-md-5 mb-2"></div>
                         <!-- -------------------------------------  -->
                         <label class="form-label col-md-3 mb-2"> Qnty of Finished Parts per Input Part * </label>
                         <div class="col-md-4 mb-2">
-                            <input class="form-control form-control-sm" type="text" id="QuantityPerInput" asp-for="QuantityPerInput" name="quantityPerInput" placeholder="enter here" >
+                            <input class="form-control form-control-sm" type="text" id="QuantityPerInput" asp-for="QuantityPerInput" name="quantityPerInput" placeholder="enter here">
                             <span id="QtyError" style="color:red; display:none;"></span>
+                            <span id="CalcError" style="color:red;"></span>
                         </div>
                         <div class="col-md-5 mb-2"></div>
                         <!-- -------------------------------------  -->

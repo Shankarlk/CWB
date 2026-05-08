@@ -506,6 +506,8 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Our_DC_Ref, m => m.MapFrom(src => src.Our_DC_Ref))
           .ForMember(m => m.Our_RGP_Ref, m => m.MapFrom(src => src.Our_RGP_Ref))
           .ForMember(m => m.NC_Log_Id, m => m.MapFrom(src => src.NC_Log_Id))
+          .ForMember(m => m.From_Loc_Flag, m => m.MapFrom(src => src.From_Loc_Flag))
+          .ForMember(m => m.To_Loc_Flag, m => m.MapFrom(src => src.To_Loc_Flag))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
             CreateMap<Inv_Trans_Log, Inv_Trans_LogVM>()
@@ -535,6 +537,8 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Our_DC_Ref, m => m.MapFrom(src => src.Our_DC_Ref))
           .ForMember(m => m.Our_RGP_Ref, m => m.MapFrom(src => src.Our_RGP_Ref))
           .ForMember(m => m.NC_Log_Id, m => m.MapFrom(src => src.NC_Log_Id))
+          .ForMember(m => m.From_Loc_Flag, m => m.MapFrom(src => src.From_Loc_Flag))
+          .ForMember(m => m.To_Loc_Flag, m => m.MapFrom(src => src.To_Loc_Flag))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
             CreateMap<Inventory_MasterVM, Inventory_Master>()
           .ForMember(m => m.Id, m => m.MapFrom(src => src.Inventory_MasterId))
@@ -545,6 +549,7 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Current_QntOnHand, m => m.MapFrom(src => src.Current_QntOnHand))
           .ForMember(m => m.Location_Id, m => m.MapFrom(src => src.Location_Id))
           .ForMember(m => m.Inv_Trans_Log_Id, m => m.MapFrom(src => src.Inv_Trans_Log_Id))
+          .ForMember(m => m.Loc_Flag, m => m.MapFrom(src => src.Loc_Flag))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
             CreateMap<Inventory_Master, Inventory_MasterVM>()
@@ -556,6 +561,7 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Current_QntOnHand, m => m.MapFrom(src => src.Current_QntOnHand))
           .ForMember(m => m.Location_Id, m => m.MapFrom(src => src.Location_Id))
           .ForMember(m => m.Inv_Trans_Log_Id, m => m.MapFrom(src => src.Inv_Trans_Log_Id))
+          .ForMember(m => m.Loc_Flag, m => m.MapFrom(src => src.Loc_Flag))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
             CreateMap<Part_StatusVM, Part_Status>()
           .ForMember(m => m.Id, m => m.MapFrom(src => src.Part_Status_Id))
@@ -726,6 +732,7 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Resolved_by, m => m.MapFrom(src => src.Resolved_by))
           .ForMember(m => m.Resolution_date, m => m.MapFrom(src => src.Resolution_date))
           .ForMember(m => m.Resolution_Comments, m => m.MapFrom(src => src.Resolution_Comments))
+          .ForMember(m => m.Loc_Flag, m => m.MapFrom(src => src.Loc_Flag))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
             CreateMap<Inv_Mismatch_List, Inv_Mismatch_ListVM>()
           .ForMember(m => m.Inv_Mismatch_ListId, m => m.MapFrom(src => src.Id))
@@ -744,6 +751,7 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Resolved_by, m => m.MapFrom(src => src.Resolved_by))
           .ForMember(m => m.Resolution_date, m => m.MapFrom(src => src.Resolution_date))
           .ForMember(m => m.Resolution_Comments, m => m.MapFrom(src => src.Resolution_Comments))
+           .ForMember(m => m.Loc_Flag, m => m.MapFrom(src => src.Loc_Flag))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
             CreateMap<NC_Decision_LogVM, NC_Decision_Log>()
           .ForMember(m => m.Id, m => m.MapFrom(src => src.NC_Decision_LogId))

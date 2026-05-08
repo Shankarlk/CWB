@@ -78,7 +78,8 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<IEnumerable<Inv_Master_LogVM>> GetAllInv_Master_Log();
         Task<IEnumerable<Inv_Trans_LogVM>> GetAllInv_Trans_Log();
         Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_Master();
-        Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartid(long partid);
+        Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartid(long locationId, long oprnoId, long routingId, long partid);
+        Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartidWithFlag(string flag, long locationId, long oprnoId, long routingId, long partid);
         Task<IEnumerable<NC_Decision_LogVM>> GetAllNC_Decision_Log();
         Task<IEnumerable<NC_Disp_Decision_ListVM>> GetAllNC_Disp_Decision_List();
         Task<IEnumerable<NC_Disp_Decs_Appl_ListVM>> GetAllNC_Disp_Decs_Appl_List();

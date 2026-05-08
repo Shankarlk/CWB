@@ -320,7 +320,13 @@ namespace CWB.Masters.Services.Routings
             }
             catch (Exception ex)
             {
-                string msg = ex.InnerException.Message;
+                //string msg = ex.InnerException.Message;
+                string msg = ex.Message;
+
+                if (ex.InnerException != null)
+                {
+                    msg += " | Inner: " + ex.InnerException.Message;
+                }
                 return false;
             }
         }

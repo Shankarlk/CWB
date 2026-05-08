@@ -96,6 +96,12 @@ namespace CWB.ProductionPlanWO.Configurations
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();
+            builder
+                .Property(b => b.From_Loc_Flag)
+                .HasColumnName("From_Loc_Flag");
+            builder
+               .Property(b => b.To_Loc_Flag)
+               .HasColumnName("To_Loc_Flag");
             builder.ConfigureBase();
             builder.HasIndex(c => c.TenantId).HasDatabaseName("Inv_Trans_Log_TenantId");
         }

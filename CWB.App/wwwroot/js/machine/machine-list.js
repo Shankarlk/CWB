@@ -23,8 +23,17 @@
             var plantSelect = $("#search-machine-shop");
             $(plantSelect).html("");
             $(plantSelect).append('<option value="">--All Shop--</option>');
-            for (i = 0; i < data.length; i++) {
-                $(plantSelect).append('<option value="' + data[i].departmentId + '">' + data[i].name + '</option>');
+            var filteredData = data.filter(x => x.prodDept === 1);
+
+            for (i = 0; i < filteredData.length; i++) {
+
+                $(plantSelect).append(
+                    '<option value="' +
+                    filteredData[i].departmentId +
+                    '">' +
+                    filteredData[i].name +
+                    '</option>'
+                );
             }
 
         }).catch((error) => {

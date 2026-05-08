@@ -12,9 +12,15 @@ namespace CWB.CompanySettings.Domain
         public long Level_No { get; set; }
         public long Part_Of { get; set; }
         public string Activity { get; set; }
-        public bool ProdDept { get; set; }
+        public int ProdDept { get; set; }
         public string Section { get; set; }
         public Plant Plant { get; set; }
+
+        public char Stores_DirectMatl { get; set; }
+
+        public char Stores_Cust_Dispatch {get;set;}
+        public char Stores_Tools { get; set; }
+        public char Stores_Consumables { get; set; }
         public ICollection<Section> Sections { get; set; }
         //public ICollection<DocumentType> DocumentTypes { get; set; }
     }

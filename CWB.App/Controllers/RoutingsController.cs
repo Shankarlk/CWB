@@ -315,7 +315,14 @@ namespace CWB.App.Controllers
             }
             return View(routingListItemVM);
         }
-
+        public async Task<IActionResult> RoutingNamecheck(long manufPartId)
+        {
+            //int decodedManufPartId = (int)CWBAppUtils.DecodeString(manufPartId.ToString());
+            var result = await _routingService.Routings((int)manufPartId);
+            
+           
+            return Ok(result);
+        }
         [HttpPost]
         public async Task<IActionResult> CreateAltRouting(RoutingVM model)
         {
@@ -1025,7 +1032,7 @@ namespace CWB.App.Controllers
 
         public async Task<IActionResult> DeleteStep(int stepId)
         {
-            var machines = await _machineService.GetMachinesList();
+            //var machines = await _machineService.GetMachinesList();
             var result = await _routingService.DeleteStep(stepId);
             return Ok(result);
         }

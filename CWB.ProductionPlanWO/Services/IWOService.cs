@@ -54,7 +54,8 @@ namespace CWB.ProductionPlanWO.Services
         Task<IEnumerable<Insp_Outcome_DetailsVM>> GetAllInsp_Outcome_Details(long tenantId);
         Task<IEnumerable<Insp_Outcome_ListVM>> GetAllInsp_Outcome_List();
         Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_Master(long tenantId);
-        Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartid(long Partid, long tenantId);
+        Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartid(long LocationId, long OprnoId, long RoutingId, long Partid, long tenantId);
+        Task<IEnumerable<Inventory_MasterVM>> GetAllInventory_MasterBypartidWithFlag(string Flag, long LocationId, long OprnoId, long RoutingId, long Partid, long tenantId);
         Task<IEnumerable<Inv_Trans_LogVM>> GetAllInvTransLog(long tenantId);
         Task<IEnumerable<Inw_Recpt_DetailsVM>> GetAllInw_Recpt_Details(long tenantId);
         Task<IEnumerable<Inw_Recpt_HeaderVM>> GetAlInw_Recpt_Header(long tenantId);

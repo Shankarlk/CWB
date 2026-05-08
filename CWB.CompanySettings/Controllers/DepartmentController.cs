@@ -88,7 +88,16 @@ namespace CWB.CompanySettings.Controllers
             var result = await _departmentService.Department(shopDepartmentVM);
             return Ok(result);
         }
-
+        [HttpGet]
+        [Route(ApiRoutes.Department.GetStoresIDs)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Stores_Dept_IDListVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetStoresIDs()
+        {
+            // var companyTypes = _plantService.GetPlants(tenantId);
+            var storesid =await  _departmentService.GetStoresIDs();
+            return Ok(storesid);
+        }
         /// <summary>
         /// Check if Department Exist
         /// </summary>

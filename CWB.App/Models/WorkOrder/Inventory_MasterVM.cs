@@ -27,5 +27,6 @@ namespace CWB.App.Models.WorkOrder
         public string RoutName { get; set; } = "-";
         public string OpName { get; set; } = string.Empty;
         public string LocationStr { get; set; } = "-";
+        public string Loc_Flag { get; set; }
     }
 }
