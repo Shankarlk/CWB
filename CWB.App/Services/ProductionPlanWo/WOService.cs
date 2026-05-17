@@ -1091,6 +1091,12 @@ namespace CWB.App.Services.ProductionPlanWo
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<TempOpr_ListVM>>.GetAsync(uri, headers);
         }
+        public async Task<IEnumerable<TempOpr_ListVM>> GetAllTempOpr_Listwithroutingidandwoid(long routingId,long woId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/gettempoprwklistwithroutingidandwoid/{routingId}/{woId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<TempOpr_ListVM>>.GetAsync(uri, headers);
+        }
         public async Task<TempOpr_ListVM> PostTempOpr_List(TempOpr_ListVM purchaseDetailVM)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/posttempoprwklist");

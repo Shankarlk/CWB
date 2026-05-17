@@ -1416,6 +1416,15 @@ namespace CWB.ProductionPlanWO.Controllers
             return Ok(allwo);
         }
         [HttpGet]
+        [Route(ApiRoutes.WO.GetAllTempOpr_ListWithWoidandRoutingId)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<TempOpr_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllTempOpr_ListWithWoidandRoutingId(long routingId, long woId,long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllTempOpr_ListWithWoidandRoutingId(routingId, woId, tenantId);
+            return Ok(allwo);
+        }
+        [HttpGet]
         [Route(ApiRoutes.WO.DeleteTempOpr_List)]
         [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
         public async Task<IActionResult> DeleteTempOpr_List(long Id, long tenantId)

@@ -11,6 +11,9 @@ namespace CWB.ProductionPlanWO.ViewModels
         public long ActiveId { get; set; }
         public long Wo_Id { get; set; }
         public long Opr_No { get; set; }
+        public long RoutingId { get; set; }
+        public long RoutingStepSequence { get; set; }
+        public long RoutingStepLocation { get; set; }
         public long Mode { get; set; }
         public long Initial_Opr_TPT { get; set; }
         public long Rolledup_Opr_TPT { get; set; }

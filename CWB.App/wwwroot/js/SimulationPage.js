@@ -2577,7 +2577,7 @@ function loadWoWaitlist() {
     api.getbulk("/workOrder/AllProductionWo").then((data) => {
         var tablebody = $("#P1Grid tbody");
         $(tablebody).html(""); // empty tbody
-        data = data.filter(item => item.readyForProd === "Y" && item.woRelease === "Y");  //
+       // data = data.filter(item => item.readyForProd === "Y" && item.woRelease === "Y");  //
         if (data.length === 0) {
             // 2. Insert the "No Records Found" row
             // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)

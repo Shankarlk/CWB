@@ -174,6 +174,7 @@ namespace CWB.ProductionPlanWO.Utils
             public const string PostOpr_List = Base + "/postoprwklist";
             public const string DeleteOpr_List = Base + "/deleteoprwklist/{Id}/{tenantId}";
             public const string GetAllTempOpr_List = Base + "/gettempoprwklist/{tenantId}";
+            public const string GetAllTempOpr_ListWithWoidandRoutingId = Base + "/gettempoprwklistwithroutingidandwoid/{routingId}/{woId}/{tenantId}";
             public const string PostTempOpr_List = Base + "/posttempoprwklist";
             public const string DeleteTempOpr_List = Base + "/deletetempoprwklist/{Id}/{tenantId}";
             public const string GetAllShop_Insp_Log = Base + "/getshopinsplog/{tenantId}";

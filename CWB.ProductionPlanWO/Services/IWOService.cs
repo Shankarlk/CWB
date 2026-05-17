@@ -172,6 +172,7 @@ namespace CWB.ProductionPlanWO.Services
         Task<Opr_ListVM> PostOpr_List(Opr_ListVM itemMasterDocList);
         Task<bool> DeleteOpr_List(long itemMasterDocListId, long tenantId);
         Task<IEnumerable<TempOpr_ListVM>> GetAllTempOpr_List(long tenantId);
+        Task<IEnumerable<TempOpr_ListVM>> GetAllTempOpr_ListWithWoidandRoutingId(long routingId, long woId, long tenantId);
         Task<TempOpr_ListVM> PostTempOpr_List(TempOpr_ListVM itemMasterDocList);
         Task<bool> DeleteTempOpr_List(long itemMasterDocListId, long tenantId);
         Task<IEnumerable<Shop_Insp_LogVM>> GetAllShop_Insp_Log(long tenantId);

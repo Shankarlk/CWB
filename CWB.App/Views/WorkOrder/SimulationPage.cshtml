@@ -3335,9 +3335,10 @@
 </template>
 <template id="P1GridRow">
     <tr>
+        <td hidden>{woIdStr}</td>
         <td>
             <input class="form-check-input mt-2 P1gridChk" type="checkbox" title="" data-plugin="tippy"
-                   data-tippy-placement="top" placeholder="" data-ppid="{productionPlanId}" data-workorderid="{woId}" >
+                   data-tippy-placement="top" placeholder="" data-ppid="{productionPlanId}" data-workorderid="{woIdStr}" >
         </td>
         <td>{woNumber}</td>
         <td>{customer}</td>

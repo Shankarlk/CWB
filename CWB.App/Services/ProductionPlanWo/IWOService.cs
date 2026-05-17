@@ -171,6 +171,7 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<Opr_ListVM> PostOpr_List(Opr_ListVM FinalDocTypeVM);
         Task<bool> DeleteOpr_List(long itemMasterDocListId);
         Task<IEnumerable<TempOpr_ListVM>> GetAllTempOpr_List();
+        Task<IEnumerable<TempOpr_ListVM>> GetAllTempOpr_Listwithroutingidandwoid(long routingId, long woId);
         Task<TempOpr_ListVM> PostTempOpr_List(TempOpr_ListVM FinalDocTypeVM);
         Task<bool> DeleteTempOpr_List(long itemMasterDocListId);
 

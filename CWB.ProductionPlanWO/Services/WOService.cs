@@ -3678,6 +3678,11 @@ namespace CWB.ProductionPlanWO.Services
             var allDocuType = _TempOpr_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
             return _mapper.Map<IEnumerable<TempOpr_ListVM>>(allDocuType);
         }
+        public async Task<IEnumerable<TempOpr_ListVM>> GetAllTempOpr_ListWithWoidandRoutingId(long routingId, long woId,long tenantId)
+        {
+            var allDocuType = _TempOpr_ListRepository.GetRangeAsync(c => c.TenantId == tenantId && c.RoutingId==routingId && c.Wo_Id== woId);
+            return _mapper.Map<IEnumerable<TempOpr_ListVM>>(allDocuType);
+        }
         public async Task<TempOpr_ListVM> PostTempOpr_List(TempOpr_ListVM itemMasterDocList)
         {
             var itemMaster = _mapper.Map<TempOpr_List>(itemMasterDocList);
@@ -4855,7 +4860,7 @@ namespace CWB.ProductionPlanWO.Services
 
             // 2. Lookups
             var tempOprDict = tempOprList.ToDictionary(t => t.TempOpr_ListId);
-            var woDict = woList.ToDictionary(w => w.ProductionPlanId);
+            var woDict = woList.ToDictionary(w => w.WoId);
 
             // --- CRITICAL FIX HERE ---
             // Only identify operations where Movement is NOT Complete ('N')
