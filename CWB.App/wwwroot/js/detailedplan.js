@@ -1381,9 +1381,41 @@ $(document).ready(function () {
         selectEndOpNo.html('');
 
     });
+    function showFreezeLoadingScreen() {
+        // Show preloader
+        document.getElementById('preloader').style.display = 'block';
+        document.getElementById('status').style.display = 'block';
+
+        $.ajax({
+            type: "POST",
+            url: '/WorkOrder/FreezeWorkOrder', // Your controller method
+            success: function (data) {
+
+                // Keep existing logic
+                $("#CalculateMatlReq").prop("disabled", false);
+
+                // Hide preloader
+                document.getElementById('preloader').style.display = 'none';
+                document.getElementById('status').style.display = 'none';
+
+                // Show alert after freezing
+                alert("Allocation is done. No more changes to Workorder Quantity since workorders are Freezed.");
+            },
+            error: function () {
+
+                // Hide preloader on error also
+                document.getElementById('preloader').style.display = 'none';
+                document.getElementById('status').style.display = 'none';
+
+                alert("Error while freezing Work Order.");
+            }
+        });
+    }
 
     $("#FreezeWo").on("click", function () {
-
+        showFreezeLoadingScreen();
+        loadWO();
+        loadProcPlan();
         $("#CalculateMatlReq").prop("disabled", false);
     });
     $("#CalculateMatlReq").on("click", function () {

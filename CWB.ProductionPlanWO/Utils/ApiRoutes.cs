@@ -59,6 +59,8 @@ namespace CWB.ProductionPlanWO.Utils
             public const string AllProcPlan = Base + "/allprocplan/{tenantId}";
             public const string AllBomList = Base + "/allbomlist/{tenantId}";
             public const string PostProductionPlan_Wo = Base + "/productionplan";
+            public const string PostInputReservelist = Base + "/postinputreservelist";
+            public const string PostProductionPlan_WoFreeze = Base + "/productionplanfreeeze";
             public const string UpdateProductionPlan_Wo = Base + "/updateproductionplan";
             public const string UpdateProductionPlan_WoCriticalPart = Base + "/updateproductionplancriticalpart";
             public const string PostProductionPlan_WoConsolidation = Base + "/postproductionplanconsolidation";
@@ -89,6 +91,9 @@ namespace CWB.ProductionPlanWO.Utils
             public const string DeleteCont_RCA_CA_Log = Base + "/deletecontrcacalog/{Id}/{tenantId}";
             public const string DeleteFinalInspectDoc = Base + "/deletefinalinspectdoc/{Id}/{tenantId}";
             public const string GetAllInwardDocList = Base + "/allinwarddoc/{tenantId}";
+            public const string GetAllInputReservelistwithpartidandwoid = Base + "/allinputreservelistwithpartidandwoid/{tenantId}/{partId}/{woId}";
+            public const string GetAllInputReservelistwithpartidwoidandponoid = Base + "/allinputreservelistwithpartidwoidandponoid/{tenantId}/{partId}/{woId}/{ponoId}";
+            public const string GetAllInputReservelistwithpartid = Base + "/allinputreservelistwithpartid/{tenantId}/{partId}";
             public const string GetAllRcCaDocList = Base + "/allrccadoc/{tenantId}";
             public const string GetAllInspectDocList = Base + "/allinspectdoc/{tenantId}";
             public const string GetAllNcLogStatusList = Base + "/allnclogstatus";

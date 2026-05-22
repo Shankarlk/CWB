@@ -30,6 +30,8 @@ namespace CWB.ProductionPlanWO.Services
         Task<IEnumerable<ProcPlanVM>> AllProcPlan(long tenantId);
         Task<IEnumerable<BOMListVM>> AllBomList(long tenantId);
         Task<List<ProductionPlan_WOVM>> PostProductionPlan_Wo(List<ProductionPlan_WOVM> productions);
+        Task<List<Input_Resrv_ListVM>> PostInputReservelist(List<Input_Resrv_ListVM> allocations);
+        Task<List<ProductionPlan_WOVM>> PostProductionPlan_WoFreeze(List<ProductionPlan_WOVM> productions);
         Task<ProductionPlan_WOVM> UpdateProductionPlan_Wo(ProductionPlan_WOVM productions);
         Task<ProductionPlan_WOVM> UpdateProductionPlan_WoCriticalPart(ProductionPlan_WOVM productions);
         Task<List<ProductionPlan_WOVM>> PostProductionPlan_WoConsolidation(List<ProductionPlan_WOVM> productions);
@@ -77,6 +79,9 @@ namespace CWB.ProductionPlanWO.Services
         Task<bool> DeleteInw_Recpt_Header(long Id);
         Task<bool> DeleteInw_Recpt_Part_No(long Id);
         Task<IEnumerable<InwardDocTypeVM>> GetAllInwardDocList(long tenantId);
+        Task<IEnumerable<Input_Resrv_ListVM>> GetAllInputReservelistwithpartidandwoid(long tenantId, long partId, long woId);
+        Task<IEnumerable<Input_Resrv_ListVM>> GetAllInputReservelistwithpartidwoidandponoid(long tenantId, long partId, long woId, long ponoId);
+        Task<IEnumerable<Input_Resrv_ListVM>> GetAllInputReservelistwithpartid(long tenantId, long partId);
         Task<InwardDocTypeVM> PostInwardDocList(InwardDocTypeVM itemMasterDocList);
         Task<bool> DeleteInwardDoc(long itemMasterDocListId, long tenantId);
         Task<IEnumerable<LineInspectDocTypeVM>> GetAllLineInspectDocList(long tenantId);

@@ -11,6 +11,8 @@ namespace CWB.App.Services.ProductionPlanWo
     {
         Task<IEnumerable<WOSOVM>> GetSoWoRel(long workOrderId);
         Task<List<ProductionPlan_WoVM>> ProductionPlanWoPost(IEnumerable<ProductionPlan_WoVM> productions);
+        Task<List<Input_Resrv_ListVM>> PostInputReservelist(IEnumerable<Input_Resrv_ListVM> allocations);
+        Task<List<ProductionPlan_WoVM>> ProductionPlanWoPostFreeze(IEnumerable<ProductionPlan_WoVM> productions);
         Task<List<ProductionPlan_WoVM>> ProductionPlanWoPostConsolidation(IEnumerable<ProductionPlan_WoVM> productions);
         Task<List<ProductionPlan_WoVM>> UpdateProduction_WoForReference(IEnumerable<ProductionPlan_WoVM> productions);
         Task<List<ConsolidatedWoMappingVM>> PostConsolidatedWO(IEnumerable<ConsolidatedWoMappingVM> productions);
@@ -20,6 +22,8 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<ProductionPlan_WoVM> UpdateProductionPlan_WoCritcalPart(ProductionPlan_WoVM productions);
         Task<IEnumerable<ProductionPlan_WoVM>> AllProductionPlan_Wo();
         Task<IEnumerable<ProductionPlan_WoVM>> AllProductionWoReadForProd();
+
+        Task<List<Input_Resrv_ListVM>> GetallInputreservelistbypartid(long partId);
         Task<IEnumerable<ProductionPlan_WoVM>> GetAllReadyforProductionWo();
         Task<List<ProcPlanVM>> ProcPlanPost(IEnumerable<ProcPlanVM> procPlans);
         Task<List<ProcPlanVM>> ProcPlanPostPOFlag(IEnumerable<ProcPlanVM> procPlans);

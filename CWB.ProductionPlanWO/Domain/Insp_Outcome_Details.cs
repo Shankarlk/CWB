@@ -32,7 +32,7 @@ namespace CWB.ProductionPlanWO.Domain
         public DateTime NC_Entry_date { get; set; }
         public long NC_Entry_User { get; set; }
         public long Cust_NC_date { get; set; }
-        public string Customer_NC_Ref { get; set; }
+        public string Customer_NC_Ref { get; set; } = string.Empty;
         public long NC_Cust_ID { get; set; }
         public long Other_Detail { get; set; }
         public long Verified_Cutoff_Dt { get; set; }

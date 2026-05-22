@@ -183,6 +183,10 @@ namespace CWB.ProductionPlanWO.Configurations
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();
+            builder
+          .Property(t => t.Freeze)
+          .HasColumnName("Freeze")
+          .HasDefaultValue(0);
             builder.ConfigureBase();
             builder.HasIndex(c => c.TenantId).HasDatabaseName("ProductionPlan_WO_TenantId");
         }

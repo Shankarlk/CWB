@@ -50,5 +50,6 @@ namespace CWB.ProductionPlanWO.Domain
         public string Comment { get; set; }
         public long TenantId { get; set; }
         public int Consolidation_Flag { get; set; }
+        public int Freeze { get; set; }
     }
 }

@@ -62,6 +62,39 @@ namespace CWB.App.Services.ProductionPlanWo
             }
             return await RestHelper<List<ProductionPlan_WoVM>>.PostAsync(uri, productions, headers);
         }
+
+
+
+
+
+        public async Task<List<Input_Resrv_ListVM>> PostInputReservelist(IEnumerable<Input_Resrv_ListVM> allocations)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postinputreservelist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            foreach (var item in allocations)
+            {
+                item.TenantId = tenantId;
+            }
+            return await RestHelper<List<Input_Resrv_ListVM>>.PostAsync(uri, allocations, headers);
+        }
+        public async Task<List<ProductionPlan_WoVM>> ProductionPlanWoPostFreeze(IEnumerable<ProductionPlan_WoVM> productions)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/productionplanfreeeze");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            foreach (var item in productions)
+            {
+                item.TenantId = tenantId;
+            }
+            return await RestHelper<List<ProductionPlan_WoVM>>.PostAsync(uri, productions, headers);
+        }
+
+
+        public async Task<List<Input_Resrv_ListVM>> GetallInputreservelistbypartid(long partId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/allinputreservelistwithpartid/{tenantId}/{partId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Input_Resrv_ListVM>>.GetAsync(uri, headers);
+        }
         public async Task<List<ProductionPlan_WoVM>> ProductionPlanWoPostConsolidation(IEnumerable<ProductionPlan_WoVM> productions)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postproductionplanconsolidation");

@@ -199,6 +199,32 @@ namespace CWB.ProductionPlanWO.Controllers
             var productionPlan = await _woSerivce.PostProductionPlan_Wo(productions);
             return Ok(productionPlan);
         }
+
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostProductionPlan_WoFreeze)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(ProductionPlan_WOVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> PostProductionPlan_WoFreeze([FromBody] List<ProductionPlan_WOVM> productions)
+        {
+            var productionPlan = await _woSerivce.PostProductionPlan_WoFreeze(productions);
+            return Ok(productionPlan);
+        }
+
+
+
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostInputReservelist)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Input_Resrv_ListVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> PostInputReservelist([FromBody] List<Input_Resrv_ListVM> allocation)
+        {
+            var allocations = await _woSerivce.PostInputReservelist(allocation);
+            return Ok(allocations);
+        }
+
+
+
+
         [HttpPost]
         [Route(ApiRoutes.WO.PostProductionPlan_WoConsolidation)]
         [Produces(AppContentTypes.ContentType, Type = typeof(ProductionPlan_WOVM))]
@@ -709,6 +735,36 @@ namespace CWB.ProductionPlanWO.Controllers
             var allwo = await _woSerivce.GetAllInwardDocList(tenantId);
             return Ok(allwo);
         }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllInputReservelistwithpartidandwoid)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Input_Resrv_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllInputReservelistwithpartidandwoid(long tenantId, long partId, long woId)
+        {
+            var allwo = await _woSerivce.GetAllInputReservelistwithpartidandwoid(tenantId,partId,woId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllInputReservelistwithpartidwoidandponoid)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Input_Resrv_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllInputReservelistwithpartidwoidandponoid(long tenantId, long partId, long woId,long ponoId)
+        {
+            var allwo = await _woSerivce.GetAllInputReservelistwithpartidwoidandponoid(tenantId, partId, woId, ponoId);
+            return Ok(allwo);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllInputReservelistwithpartid)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Input_Resrv_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllInputReservelistwithpartid(long tenantId, long partId)
+        {
+            var allwo = await _woSerivce.GetAllInputReservelistwithpartid(tenantId, partId);
+            return Ok(allwo);
+        }
+
+
+
         [HttpGet]
         [Route(ApiRoutes.WO.GetAllFinalInspectDocList)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<Inventory_MasterVM>))]

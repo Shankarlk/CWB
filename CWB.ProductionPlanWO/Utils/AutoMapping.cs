@@ -243,6 +243,7 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.For_Ref, m => m.MapFrom(src => src.For_Ref))
                .ForMember(m => m.Combined_WO, m => m.MapFrom(src => src.Combined_WO))
                .ForMember(m => m.Consolidation_Flag, m => m.MapFrom(src => src.Consolidation_Flag))
+               .ForMember(m => m.Freeze, m => m.MapFrom(src => src.Freeze))
                .ForMember(m => m.Active, m => m.MapFrom(src => src.Active))
                .ForMember(m => m.WODate, m => m.MapFrom(src => src.WODate));
 
@@ -268,6 +269,7 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.For_Ref, m => m.MapFrom(src => src.For_Ref))
                .ForMember(m => m.Combined_WO, m => m.MapFrom(src => src.Combined_WO))
                .ForMember(m => m.Consolidation_Flag, m => m.MapFrom(src => src.Consolidation_Flag))
+               .ForMember(m => m.Freeze, m => m.MapFrom(src => src.Freeze))
                .ForMember(m => m.Active, m => m.MapFrom(src => src.Active))
                .ForMember(m => m.WODate, m => m.MapFrom(src => src.WODate));
 
@@ -1548,7 +1550,26 @@ namespace CWB.ProductionPlanWO.Utils
                 .ForMember(s => s.WoId, s => s.MapFrom(src => src.WoId))
                 .ForMember(s => s.ParentWoId, s => s.MapFrom(src => src.ParentWoId))
                 .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
-
+            CreateMap<Input_Resrv_ListVM, Input_Resrv_List>()
+               .ForMember(s => s.Id, s => s.MapFrom(src => src.Input_Resrv_List_ID))
+               .ForMember(s => s.PO_NO_ID, s => s.MapFrom(src => src.PO_NO_ID))
+               .ForMember(s => s.WO_Id, s => s.MapFrom(src => src.WO_Id))
+               .ForMember(s => s.PartId, s => s.MapFrom(src => src.PartId))
+               .ForMember(s => s.Plan_Alloc_Qnty, s => s.MapFrom(src => src.Plan_Alloc_Qnty))
+               .ForMember(s => s.Allocation_done, s => s.MapFrom(src => src.Allocation_done))
+               .ForMember(s => s.Bal_to_Issue, s => s.MapFrom(src => src.Bal_to_Issue))
+               .ForMember(s => s.Qnty_Recd, s => s.MapFrom(src => src.Qnty_Recd))
+               .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
+            CreateMap<Input_Resrv_List, Input_Resrv_ListVM>()
+               .ForMember(s => s.Input_Resrv_List_ID, s => s.MapFrom(src => src.Id))
+               .ForMember(s => s.PO_NO_ID, s => s.MapFrom(src => src.PO_NO_ID))
+               .ForMember(s => s.WO_Id, s => s.MapFrom(src => src.WO_Id))
+               .ForMember(s => s.PartId, s => s.MapFrom(src => src.PartId))
+               .ForMember(s => s.Plan_Alloc_Qnty, s => s.MapFrom(src => src.Plan_Alloc_Qnty))
+               .ForMember(s => s.Allocation_done, s => s.MapFrom(src => src.Allocation_done))
+               .ForMember(s => s.Bal_to_Issue, s => s.MapFrom(src => src.Bal_to_Issue))
+               .ForMember(s => s.Qnty_Recd, s => s.MapFrom(src => src.Qnty_Recd))
+               .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
             CreateMap<DispatchDetailsVM, DispatchDetails>()
                .ForMember(m => m.Id, m => m.MapFrom(src => src.DispatchDetailsId))
                .ForMember(m => m.SaleOrderId, m => m.MapFrom(src => src.SaleOrderId))

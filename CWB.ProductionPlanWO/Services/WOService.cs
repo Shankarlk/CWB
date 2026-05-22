@@ -88,6 +88,7 @@ namespace CWB.ProductionPlanWO.Services
         private readonly INcLogStatusRepository _INcLogStatusRepository;
         private readonly IConsolidatedWoMappingRepository _COnsolidatedWomappingRepository;
         private readonly IInv_Trans_ListRepository _Inv_Trans_ListRepository;
+        private readonly IInput_Resrv_ListRepository _Input_Resrv_ListRepository;
 
         public WOService(
             ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork
@@ -108,7 +109,8 @@ namespace CWB.ProductionPlanWO.Services
             ,INC_work_StatusRepository NC_work_StatusRepository, IMc_Not_Avl_ReasonRepository Mc_Not_Avl_ReasonRepository, IMode_ListRepository Mode_ListRepository,
             IMc_Timeslot_ListRepository Mc_Timeslot_ListRepository,ITempMc_Timeslot_ListRepository TempMc_Timeslot_ListRepository,
             INon_Plan_Wk_ListRepository Non_Plan_Wk_ListRepository,IWO_Wait_ListRepository WO_Wait_ListRepository,ITempWO_Wait_ListRepository TempWO_Wait_ListRepository,IWO_Bookout_LogRepository WO_Bookout_LogRepository,ITimeslot_SettingRepository Timeslot_SettingRepository,ITimeslot_ListRepository Timeslot_ListRepository,IRwk_ListRepository Rwk_ListRepository,IOpr_ListRepository Opr_ListRepository,ITempOpr_ListRepository TempOpr_ListRepository,IShop_Insp_LogRepository Shop_Insp_LogRepository,ISubCon_ListRepository SubCon_ListRepository,ITempSubCon_ListRepository TempSubCon_ListRepository, IMc_Wait_ListRepository Mc_Wait_ListRepository,IMatl_Issue_SettingsRepository Matl_Issue_SettingsRepository,IMatl_Issue_ListRepository Matl_Issue_ListRepository,
-            ITempMc_Wait_ListRepository TempMc_Wait_ListRepository, INon_Plan_Wk_type_ListRepository Non_Plan_Wk_type_ListRepository, ITime_Slot_AllocationRepository Time_Slot_AllocationRepository,IConsolidatedWoMappingRepository consolidatedWoMappingRepository, IInv_Trans_ListRepository Inv_Trans_ListRepository)
+            ITempMc_Wait_ListRepository TempMc_Wait_ListRepository, INon_Plan_Wk_type_ListRepository Non_Plan_Wk_type_ListRepository, ITime_Slot_AllocationRepository Time_Slot_AllocationRepository,IConsolidatedWoMappingRepository consolidatedWoMappingRepository, IInv_Trans_ListRepository Inv_Trans_ListRepository,
+            IInput_Resrv_ListRepository Input_Resrv_ListRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -185,6 +187,7 @@ namespace CWB.ProductionPlanWO.Services
             _TempMc_Wait_ListRepository = TempMc_Wait_ListRepository;
             _COnsolidatedWomappingRepository = consolidatedWoMappingRepository;
             _Inv_Trans_ListRepository = Inv_Trans_ListRepository;
+            _Input_Resrv_ListRepository = Input_Resrv_ListRepository;
         }
 
         public string HelloWorld()
@@ -965,6 +968,90 @@ namespace CWB.ProductionPlanWO.Services
             }
             return productions;
         }
+
+        public async Task<List<Input_Resrv_ListVM>> PostInputReservelist(List<Input_Resrv_ListVM> allocations)
+        {
+            foreach (Input_Resrv_ListVM item in allocations)
+            {
+                     var pp = _mapper.Map<Input_Resrv_List>(item);
+                //if (pp.SalesOrderId > 0)
+                //{
+                    if (pp.Id == 0)
+                    {
+                        
+                        try
+                        {
+                            await _Input_Resrv_ListRepository.AddAsync(pp);
+                        }
+                        catch (Exception ex)
+                        {
+                            Exception exa = ex.InnerException;
+                            string msg = ex.Message;
+                        }
+                    }
+                    else
+                    {
+                        var upp = await _Input_Resrv_ListRepository.SingleOrDefaultAsync(x => x.Id == pp.Id);
+                        if (upp == null)
+                        {
+                            return allocations;
+                        }
+                    upp.Qnty_Recd = pp.Qnty_Recd;
+                    upp.Bal_to_Issue = pp.Bal_to_Issue;
+                        pp = await _Input_Resrv_ListRepository.UpdateAsync(pp.Id, upp);
+                    }
+                    try
+                    {
+                        await _unitOfWork.CommitAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Exception exa = ex.InnerException;
+                        string msg = ex.Message;
+                    }
+               // }
+                item.Input_Resrv_List_ID = pp.Id;
+                
+            }
+            return allocations;
+        }
+
+        public async Task<List<ProductionPlan_WOVM>> PostProductionPlan_WoFreeze(List<ProductionPlan_WOVM> productions)
+        {
+            foreach (ProductionPlan_WOVM item in productions)
+            {
+                var pp = _mapper.Map<ProductionPlan_WO>(item);
+                //if (pp.SalesOrderId > 0)
+                //{
+                    if (pp.Id > 0)
+                    {
+                        
+                        var upp = await _productionPlan_WORepository.SingleOrDefaultAsync(x => x.Id == pp.Id);
+                        if (upp == null)
+                        {
+                            return productions;
+                        }
+                    upp.Freeze = 1;
+                        pp = await _productionPlan_WORepository.UpdateAsync(pp.Id, upp);
+                    }
+                    try
+                    {
+                        await _unitOfWork.CommitAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Exception exa = ex.InnerException;
+                        string msg = ex.Message;
+                    }
+               // }
+                item.ProductionPlanId = pp.Id;
+                item.PPNumber = pp.PPNumber;
+                item.WONumber = pp.WONumber;
+                item.TestData = pp.TestData;
+            }
+            return productions;
+        }
+
         public async Task<List<ProductionPlan_WOVM>> PostProductionPlan_WoConsolidation(List<ProductionPlan_WOVM> productions)
         {
             foreach (ProductionPlan_WOVM item in productions)
@@ -1080,6 +1167,7 @@ namespace CWB.ProductionPlanWO.Services
             upp.ActWOQty = pp.ActWOQty;
             upp.Status = pp.Status;
             upp.Changed = 1;
+            upp.PlanWOQnty = pp.PlanWOQnty;
             pp = await _productionPlan_WORepository.UpdateAsync(pp.Id, upp);
             try
             {
@@ -1114,6 +1202,7 @@ namespace CWB.ProductionPlanWO.Services
             }
             return productions;
         }
+       
         public async Task<ProductionPlan_WOVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WOVM productions)
         {
             var pp = _mapper.Map<ProductionPlan_WO>(productions);
@@ -1992,6 +2081,22 @@ namespace CWB.ProductionPlanWO.Services
         {
             var allDocuType = _IInwardDocTypeRepository.GetRangeAsync(d => d.TenantId == tenantId);
             return _mapper.Map<IEnumerable<InwardDocTypeVM>>(allDocuType);
+        }
+        public async Task<IEnumerable<Input_Resrv_ListVM>> GetAllInputReservelistwithpartidandwoid(long tenantId,long partId,long woId)
+        {
+            var allDocuType = _Input_Resrv_ListRepository.GetRangeAsync(d => d.TenantId == tenantId && d.PartId == partId && d.WO_Id == woId); 
+            return _mapper.Map<IEnumerable<Input_Resrv_ListVM>>(allDocuType);
+        }
+
+        public async Task<IEnumerable<Input_Resrv_ListVM>> GetAllInputReservelistwithpartidwoidandponoid(long tenantId, long partId, long woId,long ponoId)
+        {
+            var allDocuType = _Input_Resrv_ListRepository.GetRangeAsync(d => d.TenantId == tenantId && d.PartId == partId && d.WO_Id == woId && d.PO_NO_ID==ponoId);
+            return _mapper.Map<IEnumerable<Input_Resrv_ListVM>>(allDocuType);
+        }
+        public async Task<IEnumerable<Input_Resrv_ListVM>> GetAllInputReservelistwithpartid(long tenantId, long partId)
+        {
+            var allDocuType = _Input_Resrv_ListRepository.GetRangeAsync(d => d.TenantId == tenantId && d.PartId == partId );
+            return _mapper.Map<IEnumerable<Input_Resrv_ListVM>>(allDocuType);
         }
         public async Task<InwardDocTypeVM> PostInwardDocList(InwardDocTypeVM itemMasterDocList)
         {
@@ -3909,6 +4014,7 @@ namespace CWB.ProductionPlanWO.Services
             var allDocuType = _Mc_Wait_ListRepository.GetRangeAsync(c => c.TenantId == tenantId);
             return _mapper.Map<IEnumerable<Mc_Wait_ListVM>>(allDocuType);
         }
+
         public async Task<Mc_Wait_ListVM> PostMc_Wait_List(Mc_Wait_ListVM itemMasterDocList)
         {
             var itemMaster = _mapper.Map<Mc_Wait_List>(itemMasterDocList);
@@ -4477,7 +4583,7 @@ namespace CWB.ProductionPlanWO.Services
 
             // 2. Convert Lists to Dictionaries/Lookups
             var allWO = allWOTask.Result
-                .GroupBy(x => x.ProductionPlanId)
+                .GroupBy(x => x.WoId)
                 .ToDictionary(g => g.Key, g => g.First());
 
             var timeSlots = timeslotsTask.Result
@@ -4565,7 +4671,7 @@ namespace CWB.ProductionPlanWO.Services
 
             // 3. Convert Lists to Dictionaries/Lookups
             var allWO = allWOTask.Result
-                .GroupBy(x => x.ProductionPlanId)
+                .GroupBy(x => x.WoId)
                 .ToDictionary(g => g.Key, g => g.First());
 
             var timeSlots = timeslotsTask.Result
