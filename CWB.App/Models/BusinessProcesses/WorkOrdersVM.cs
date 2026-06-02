@@ -91,5 +91,8 @@ namespace CWB.App.Models.BusinessProcesses
         public string? StrStatus { get; set; } = string.Empty;
         public string Comment { get; set; }
         public long TenantId { get; set; }
+        public long Input_Part_No { get; set; }
+        public int IsSplit { get; set; }
+        public long SplitParentWorkOrderId { get; set; }
     }
 }

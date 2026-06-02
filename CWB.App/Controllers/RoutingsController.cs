@@ -80,7 +80,7 @@ namespace CWB.App.Controllers
                 });
             }
 
-            //// 2. Get Routings
+            //// 2. Get Routings    
             var routings = (await _routingService.Routings(manufacturedPart.ManufacturedPartNoDetailId)).ToList();
 
 

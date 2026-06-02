@@ -99,5 +99,7 @@ namespace CWB.App.Models.BusinessProcesses
         public int Consolidation_Flag { get; set; }
         public string WoIdStr { get; set; }
         public int Freeze { get; set; }
+        public long Input_Part_No { get; set; }
+        public long SplitParentWoId { get; set; }
     }
 }

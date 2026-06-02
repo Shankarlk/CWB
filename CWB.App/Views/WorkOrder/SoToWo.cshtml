@@ -9,6 +9,7 @@
     <div class="row">
         <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
             <!-- ================= -->
+
             @{
                 List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM> permissionResult = null;
                 var permissionsJson = HttpContextAccessor.HttpContext.Session.GetString("Permissions");
@@ -204,7 +205,7 @@
                     <!-- =========== -->
                     <div class="row mt-3">
                         <div class="col-md-12">
-                            <div class="table-responsive table-he-250 desktop-overflow">
+                            <div class="table-responsive table-he-250">
                                 <table id="WorkOrder" class="table table-sm table-bordered w-100 text-center">
                                     <thead class="  table-info th-sti">
                                         <tr class="table-border-bottom">
@@ -379,38 +380,45 @@
                                 <option value="">==========</option>
                             </select>
                         </div>
-                        <!-- ===============  -->
-                        <div class="col-md-12 text-end">
-                            <button class="btn btn-primary btn-sm" id="updateWO">Save WO</button>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">Make From </label>
+                            <select id="ddlmakefrompopup1" class="form-select form-select-sm" aria-label="form-select-sm" title=""
+                                    data-plugin="tippy" data-tippy-placement="top">
+                                <option value="">==========</option>
+                            </select>
                         </div>
-                        <div class="col-md-12" id="SubConGridDiv">
-                            <h6>SubCon Operations</h6>
-                            <div class="col-md-8">
-                                <div class="table-responsive table-he-330">
-                                    <table id="subConGridP1" class="table table-sm table-bordered w-100 text-center">
-                                        <thead class="  table-info th-sti">
-                                            <tr class="table-border-bottom">
-                                                <th>Supplier</th>
-                                                <th>Qnty</th>
-                                                <th>Starting Opr No</th>
-                                                <th>Ending Opr No</th>
-                                                <th>Multiple Sources</th>
-                                                <th width="5%">
+                            <!-- ===============  -->
+                            <div class="col-md-12 text-end">
+                                <button class="btn btn-primary btn-sm" id="updateWO">Save WO</button>
+                            </div>
+                            <div class="col-md-12" id="SubConGridDiv">
+                                <h6>SubCon Operations</h6>
+                                <div class="col-md-8">
+                                    <div class="table-responsive table-he-330">
+                                        <table id="subConGridP1" class="table table-sm table-bordered w-100 text-center">
+                                            <thead class="  table-info th-sti">
+                                                <tr class="table-border-bottom">
+                                                    <th>Supplier</th>
+                                                    <th>Qnty</th>
+                                                    <th>Starting Opr No</th>
+                                                    <th>Ending Opr No</th>
+                                                    <th>Multiple Sources</th>
+                                                    <th width="5%">
 
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- -------------  -->
-                                        </tbody>
-                                    </table>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- -------------  -->
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
+                        </div>
+                        <!-- ===============  -->
                     </div>
-                    <!-- ===============  -->
-                </div>
             </div>
         </div>
     </div>
@@ -471,6 +479,23 @@
                         <input class="form-check-input mt-1" type="radio" title="" data-plugin="tippy"
                                id="manualWoradio" name="radioWO" value="3" data-tippy-placement="top">
                     </div>
+                    <div class="col-md-2 mb-2"
+                         style="margin-top:33px;display:none;"
+                         id="recombineDiv">
+
+                        <label class="form-label">
+                            Recombine to Single WO
+                        </label>
+
+                        <input class="form-check-input mt-1"
+                               type="radio"
+                               id="recombineWO"
+                               name="recombineOption"
+                               value="4">
+
+                    </div>
+
+                    <input id="p2ParentWOId" type="hidden">
                     <!-- ========================= -->
                     <div class="col-md-12 mb-2" style="border: 1px solid #dee2e6;padding-bottom: 10px; display:none" id="equaldiv">
                         <div class="row">
@@ -517,6 +542,28 @@
                     </div>
                     <!-- ========================= -->
                     <!-- ========================= -->
+                    <!-- ========================= -->
+                    @*<div class="col-md-12 mb-2 text-end"
+                         id="recombineSection"
+                         style="display:none;">
+
+                        <label class="form-label me-2 fw-bold">
+                            Recombine to Single WO
+                        </label>
+                        <input id="p2ParentWOId" type="hidden">
+                        <input class="form-check-input me-3"
+                               type="radio"
+                               id="recombineWO"
+                               name="recombinewo"
+                               value="4">
+
+                        <button class="btn btn-danger btn-sm"
+                                id="btnRecombineWO">
+                            Recombine
+                        </button>
+
+                    </div>*@
+                    <!-- ========================= -->
                     <div class="col-md-12 mb-2">
                         <div class="table-responsive table-he-250">
                             <table id="MulitpleWOs" class="table table-sm table-bordered w-100 text-center">
@@ -545,6 +592,29 @@
                     <div class="col-md-7 mb-2 text-end">
                         <button class="btn btn-primary btn-sm" id="NewWoPopupBtn">New WO</button>
                     </div>
+                    <!--<div class="col-md-12 mb-3"  id="makefromroutingpopup2">
+
+    <div class="row">-->
+                    <!-- Make From -->
+                    <!-- Routing -->
+                    <!--<div class="col-md-6">
+                <label class="form-label fw-bold">Routing</label>
+
+                <select class="form-select form-select-sm" id="ddlRoutingpopup2">
+
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-bold">Make From</label>
+
+                <select class="form-select form-select-sm" id="ddlMakeFrompopup2">
+
+
+                </select>
+            </div>
+        </div>
+
+    </div>-->
                     <!-- ========================= -->
                 </div>
             </div>
@@ -638,7 +708,7 @@
                             <label class="form-label"> Routing</label>
                             <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="singleRouting" disabled>
                                 @*<option value="">==========</option>
-                                    <option value="">==========</option>*@
+                                 <option value="">==========</option>*@
                             </select>
                         </div>
                         <!-- ========================= -->
@@ -646,7 +716,7 @@
                             <label class="form-label"> Starting Opr No</label>
                             <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="singleStartOpNo" disabled>
                                 @*<option value="">==========</option>
-                                    <option value="">==========</option>*@
+                                 <option value="">==========</option>*@
                             </select>
                         </div>
                         <!-- ========================= -->
@@ -654,7 +724,14 @@
                             <label class="form-label"> Ending Opr No</label>
                             <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="singleEndOpNo" disabled>
                                 @*<option value="">==========</option>
-                                    <option value="">==========</option>*@
+                                  <option value="">==========</option>*@
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label class="form-label"> Makefrom</label>
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="ddlmakefrompopup3">
+                                @*<option value="">==========</option>
+                                     <option value="">==========</option>*@
                             </select>
                         </div>
                     </div>
@@ -933,7 +1010,7 @@
                             <label class="form-label"> Routing</label>
                             <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="NewRouting" disabled>
                                 @*<option value="">==========</option>
-                                    <option value="">==========</option>*@
+                <option value="">==========</option>*@
                             </select>
                         </div>
                         <!-- ========================= -->
@@ -941,7 +1018,7 @@
                             <label class="form-label"> Starting Opr No</label>
                             <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="NewStartOpNo" disabled>
                                 @*<option value="">==========</option>
-                                    <option value="">==========</option>*@
+                <option value="">==========</option>*@
                             </select>
                         </div>
                         <!-- ========================= -->
@@ -949,7 +1026,14 @@
                             <label class="form-label"> Ending Opr No</label>
                             <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="NewEndOpNo" disabled>
                                 @*<option value="">==========</option>
-                                    <option value="">==========</option>*@
+                <option value="">==========</option>*@
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label class="form-label"> Makefrom</label>
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="ddlmakefrompopup3New">
+                                @*<option value="">==========</option>
+                <option value="">==========</option>*@
                             </select>
                         </div>
                     </div>
@@ -1057,24 +1141,31 @@
                     <hr>
                     <!-- ========================= -->
                     <div id="popup7divRouting" class="row">
-                        <div class="col-md-4 mb-2">
+                        <div class="col-md-3 mb-2">
                             <label class="form-label">Routing Selection</label>
                             <select class="form-select form-select-sm" aria-label="form-select-sm" title=""
                                     data-plugin="tippy" data-tippy-placement="top" id="popup7Routing">
                             </select>
                         </div>
                         <!-- ===============  -->
-                        <div class="col-md-4 mb-2">
+                        <div class="col-md-3 mb-2">
                             <label class="form-label">Starting Opr No</label>
                             <select class="form-select form-select-sm" aria-label="form-select-sm" title=""
                                     data-plugin="tippy" data-tippy-placement="top" id="popup7StartingOpNo">
                             </select>
                         </div>
                         <!-- ===============  -->
-                        <div class="col-md-4 mb-2">
+                        <div class="col-md-3 mb-2">
                             <label class="form-label">Ending Opr No</label>
                             <select class="form-select form-select-sm" aria-label="form-select-sm" title=""
                                     data-plugin="tippy" data-tippy-placement="top" id="popup7EndingOpNo">
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label class="form-label">Make From</label>
+                            <select class="form-select form-select-sm"aria-label="form-select-sm" title=""
+                                    data-plugin="tippy" data-tippy-placement="top"
+                                    id="ddlMakeFromPopup7">
                             </select>
                         </div>
                     </div>

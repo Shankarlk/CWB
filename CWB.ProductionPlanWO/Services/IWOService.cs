@@ -41,6 +41,8 @@ namespace CWB.ProductionPlanWO.Services
         Task<WOStatusVM> GetWOStatus(long Id);
         Task<bool> DeleteSubCon(long Id);
         Task<bool> DeleteWo(long Id);
+        Task<bool> DeleteSoWoRel(long Id);
+        Task<bool> DeleteProductionplansplitwo(long Id);
         Task<List<ChildWoRelVM>> PostChildWoRel(List<ChildWoRelVM> childWos);
         Task<List<McTimeListVM>> PostMcTimeList(List<McTimeListVM> mcTimeLists);
         Task<IEnumerable<McTimeListVM>> GetAllMcTimeListVMs(long tenantId);

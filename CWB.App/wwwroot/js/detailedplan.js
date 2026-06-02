@@ -1204,6 +1204,7 @@ $(document).ready(function () {
         var parttype = $('#popup4partType').val();
         var wostatus = $('#popup4Status').val();
         var WoComplDate = $('#popup4WoComplDt').val();
+        var SoComplDate = $('#popup4socompletiondate').val();
         //var Compldt = $('#p2PlanComplDate').text();
         var partNo = $('#popup4PartNo').text();
         //var formattedDate = WoComplDate.toISOString();  popup4BalQnty
@@ -1291,12 +1292,21 @@ $(document).ready(function () {
             else {
                 var qnty = parseInt(planwoqty);
                 var splitnumber = parseInt(document.getElementById("numbersplitwo").value);
-                var initialDt = WoComplDate.split("-").reverse().join("-")
-                api.get("/WorkOrder/SplitWo?woid=" + woid + "&initialDate=" + initialDt + "&numDays=" + splitnumber + "&quantity=" + qnty + "&salersorderId=" + soid + "&partId=" + partid + "&partType=" + parttype).then((data) => {
+                //var soDt = new Date(Date.parse(SoComplDate.split("-").reverse().join("/")));
+                //var initialDt = new Date(Date.parse(WoComplDate.split("-").reverse().join("/")));
+                var initialDt = new Date(WoComplDate);
+                var soDt = new Date(SoComplDate);
+                console.log("WoComplDate:", WoComplDate);
+                console.log("SoComplDate:", SoComplDate);
+
+                console.log("initialDt:", initialDt);
+                console.log("soDt:", soDt);
+                api.get("/WorkOrder/SplitWo?woidstr=" + woid + "&initialDate=" + initialDt.toISOString() + "&numDays=" + splitnumber + "&quantity=" + qnty + "&salersorderId=" + soid + "&partId=" + partid + "&partType=" + parttype + "&soDt=" + soDt.toISOString()).then((data) => {
                     //console.log(data);
                     splitwos.push(...data);
                     if (splitwos.length > 0) {
-                        var formattedDt = new Date(Date.parse(WoComplDate.split("-").reverse().join("/")));
+                        //var formattedDt = new Date(Date.parse(WoComplDate.split("-").reverse().join("/")));
+                        var formattedDt = new Date(WoComplDate);
                         var inactiveppwo = {
                             productionPlanId: parseInt(ppid),
                             //woId: parseInt(woid),
@@ -1307,12 +1317,14 @@ $(document).ready(function () {
                             parentlevel: '',
                             calcWOQty: parseInt(qnty),
                             planCompletionDate: formattedDt.toISOString(),
+                            soComplDate: soDt.toISOString(),
                             routingId: parseInt(0),
                             startingOpNo: parseInt(0),
                             endingOpNo: parseInt(0),
                             reloadOption: "inactive",
                             status: parseInt(0),
-                            active: 2
+                            active: 2,
+                            for_Ref : 'Y'
                         };
 
                         api.post("/WorkOrder/ProductionPlanPost", inactiveppwo).then((data) => {
@@ -1332,7 +1344,382 @@ $(document).ready(function () {
             }
         });
     });
+    $('#popup6').on('shown.bs.modal', function () {
 
+
+        var showpopup5 = false;
+        var planwoqty = $('#popup6CalcWoQnty').val();
+        var qntyOnhand = $('#popup6QntyOnHand').val();
+        var wonumber = $('#popup6WoNumber').text();
+        var ppid = $('#popup6ppid').val();
+        var woid = $('#popup6woid').val();
+        var soid = $('#popup6soid').val();
+        var partid = $('#popup6partId').val();
+        var parttype = $('#popup6partType').val();
+        if (parttype == "1") {
+            $('#popup6message').show();
+        }
+        else {
+            $('#popup6message').hide();
+        }
+        var wostatus = $('#popup6Status').val();
+        var WoComplDate = $('#popup6WoComplDt').val();
+        var SoComplDate = $('#popup6socompletiondate').val();
+        //var Compldt = $('#p2PlanComplDate').text();
+        var partNo = $('#popup6PartNo').text();
+        //var formattedDate = WoComplDate.toISOString();  popup4BalQnty
+        var balmaf = planwoqty - qntyOnhand;
+        $('#popup6BalQnty').val(balmaf);
+        $('#popup6PlanWoQnty').val(balmaf);
+        var splitwos = [];
+        $('input[type=radio][name=popup6Radiobtn]').change(function () {
+            if (this.value == "1") {
+                showpopup5 = true;
+            } else if (this.value == "2") {
+                showpopup5 = false;
+            } else {
+                showpopup5 = false;
+            }
+        });
+
+
+
+
+        var totalQty = parseFloat($('#popup6CalcWoQnty').val()) || 0;
+
+        $('#popup6SumWo').val(0);
+        $('#popup6SelectedBalQnty').val(totalQty);
+
+        $('#popup6SelectAll').prop('checked', false);
+
+        // Initially disable all checkboxes
+        $('.popup6wochk').prop('checked', false);
+        $('.popup6wochk').prop('disabled', true);
+
+        function calculatePopup6Totals() {
+
+            var selectedQty = 0;
+
+            $('.popup6wochk:checked').each(function () {
+
+                selectedQty += parseFloat($(this).data('qty')) || 0;
+
+            });
+
+            $('#popup6SumWo').val(selectedQty);
+            $('#popup6SelectedBalQnty').val(totalQty - selectedQty);
+        }
+
+        // Enable selection after Update WO
+        $('#popup6SaveWo').off('click.enableSelection');
+
+        $('#popup6SaveWo').on('click.enableSelection', function () {
+
+            $('.popup6wochk').prop('disabled', true);
+            $('.popup6wochk').prop('checked', false);
+
+            var firstChk = $('.popup6wochk').first();
+
+            if (firstChk.length > 0) {
+                firstChk.prop('disabled', false);
+            }
+
+            $('#popup6SumWo').val(0);
+            $('#popup6SelectedBalQnty').val(totalQty);
+        });
+
+        // Sequential selection
+        $(document).off('change.popup6', '.popup6wochk');
+
+        $(document).on('change.popup6', '.popup6wochk', function () {
+
+            var rows = $('.popup6wochk');
+
+            rows.each(function (index) {
+
+                if ($(this).is(':checked')) {
+
+                    if (index + 1 < rows.length) {
+
+                        $(rows[index + 1]).prop('disabled', false);
+
+                    }
+                }
+                else {
+
+                    for (var i = index + 1; i < rows.length; i++) {
+
+                        $(rows[i]).prop('checked', false);
+                        $(rows[i]).prop('disabled', true);
+                    }
+                }
+            });
+
+            calculatePopup6Totals();
+
+        });
+
+        // Select All
+        $('#popup6SelectAll').off('change');
+
+        $('#popup6SelectAll').on('change', function () {
+
+            var checked = $(this).is(':checked');
+
+            $('.popup6wochk').prop('disabled', false);
+            $('.popup6wochk').prop('checked', checked);
+
+            calculatePopup6Totals();
+
+        });
+
+        // Create WO validation
+        $('#popup6CreateWO').off('click');
+
+        $('#popup6CreateWO').on('click', function () {
+
+            var rows = $('.popup6wochk');
+
+            var foundUnchecked = false;
+            var invalidSequence = false;
+
+            rows.each(function () {
+
+                if (!$(this).is(':checked')) {
+
+                    foundUnchecked = true;
+
+                }
+                else if (foundUnchecked) {
+
+                    invalidSequence = true;
+                }
+            });
+
+            if (invalidSequence) {
+
+                alert('Work Orders must be selected sequentially.');
+
+                return;
+            }
+
+            var selectedIds = [];
+
+            $('.popup6wochk:checked').each(function () {
+
+                selectedIds.push($(this).data('woid'));
+
+            });
+
+            if (selectedIds.length === 0) {
+
+                alert('Please select at least one WO.');
+
+                return;
+            }
+
+            console.log(selectedIds);
+            if (showpopup5) {
+                $('#popup5').modal('show');
+                $("#pup5PatNo").text(partNo);
+                //$("#popup5WoComplDtField").val(WoComplDate);
+                $("#popup5CalcWoQnty").val(planwoqty);
+                $("#popup5PlanWoQntyField").val(planwoqty);
+                var formattedDate = WoComplDate.split("-").reverse().join("/");
+                document.getElementById('popup5WoComplDtField').value = formattedDate;
+                //$("#ManualPlanWoQty").val(planwoqty);
+                $('#P5DivRouting').show();
+                $("#popup5ppid").val(ppid);
+                $("#popup5woid").val(woid);
+                $("#popup5soid").val(soid);
+                $("#popup5partId").val(partid);
+                $("#popup5partType").val(parttype);
+                $("#popup5WoNumber").text(wonumber);
+                $("#popup5WoNumberField").val(wonumber);
+                $("#popup5WoComplDt").val(WoComplDate);
+                $("#popup5Status").val(wostatus);
+                $("#popup5QntyOnHand").val(qntyOnhand);
+                $("#popup5BalQnty").val(balmaf);
+                $("#popup5PlanWoQnty").val(balmaf);
+                if (parttype === "1") {
+                    api.getbulk("/WorkOrder/GetRoutings?manufPartId=" + partid).then((data) => {
+                        //console.log(data);
+                        const selectElement = $('#popup5Routing');
+                        selectElement.prop("disabled", false);
+                        $.each(data, (index, item) => {
+                            selectElement.html("");
+                            //selectElement.append(`<option value="0">--Select--</option>`);
+                            selectElement.append(`<option value="${item.routingId}">${item.routingName}</option>`);
+                        });
+                        if (data.length == 1) {
+                            api.getbulk("/WorkOrder/RoutingSteps?routingId=" + data[0].routingId).then((data) => {
+                                //console.log(data);
+                                const selectElement = $('#popup5StartingOp');
+                                const selectEndOpNo = $('#popup5EndingOp');
+                                $.each(data, (index, item) => {
+                                    selectElement.html("");
+                                    selectElement.append(`<option value="${item.stepId}">${item.stepOperation}</option>`);
+                                });
+                                const reversedData = data.slice().reverse();
+                                selectEndOpNo.html('');
+                                $.each(reversedData, (index, item) => {
+                                    selectEndOpNo.append(`<option value="${item.stepId}">${item.stepOperation}</option>`);
+                                });
+                            }).catch((error) => {
+                                console.error(error);
+                            });
+                            $('#SubConGridDivP5New').show();
+                            loadWoP5SubConNew();
+                        }
+                    }).catch((error) => {
+                    });
+                    $('#popup5StartingOp').prop("disabled", false);
+                    $('#popup5EndingOp').prop("disabled", false);
+                }
+                else {
+                    const selectElement = $('#popup5Routing');
+                    selectElement.html("");
+                    selectElement.prop("disabled", true);
+                    $('#SubConGridDivP5New').hide();
+                    $('#P5DivRouting').hide();
+                    $('#popup5StartingOp').html("").prop("disabled", true);
+                    $('#popup5EndingOp').html("").prop("disabled", true);
+                }
+            }
+            else {
+                var qnty = parseInt(planwoqty);
+                var splitnumber = parseInt(document.getElementById("numbersplitwopopup6").value);
+                //var soDt = new Date(Date.parse(SoComplDate.split("-").reverse().join("/")));
+                //var initialDt = new Date(Date.parse(WoComplDate.split("-").reverse().join("/")));
+                var initialDt = new Date(WoComplDate);
+                var soDt = new Date(SoComplDate);
+                console.log("WoComplDate:", WoComplDate);
+                console.log("SoComplDate:", SoComplDate);
+
+                console.log("initialDt:", initialDt);
+                console.log("soDt:", soDt);
+                api.get("/WorkOrder/SplitWo?woidstr=" + woid + "&initialDate=" + initialDt.toISOString() + "&numDays=" + splitnumber + "&quantity=" + qnty + "&salersorderId=" + soid + "&partId=" + partid + "&partType=" + parttype + "&soDt=" + soDt.toISOString()).then((data) => {
+                    //console.log(data);
+                    splitwos.push(...data);
+                    if (splitwos.length > 1) {
+
+                        $("#popup6SplitParentWOId").val(woid);
+
+                        $("#popup6RecombineDiv").show();
+
+                        $("#popup6RecombineWO").prop("checked", false);
+
+                    }
+                    else {
+
+                        $("#popup6RecombineDiv").hide();
+
+                    }
+                    if (splitwos.length > 0) {
+                        //var formattedDt = new Date(Date.parse(WoComplDate.split("-").reverse().join("/")));
+                        var formattedDt = new Date(WoComplDate);
+                        var inactiveppwo = {
+                            productionPlanId: parseInt(ppid),
+                            //woId: parseInt(woid),
+                            salesOrderId: parseInt(soid),
+                            wonumber: wonumber,
+                            partId: parseInt(partid),
+                            partType: parseInt(parttype),
+                            parentlevel: '',
+                            calcWOQty: parseInt(qnty),
+                            planCompletionDate: formattedDt.toISOString(),
+                            soComplDate: soDt.toISOString(),
+                            routingId: parseInt(0),
+                            startingOpNo: parseInt(0),
+                            endingOpNo: parseInt(0),
+                            reloadOption: "inactive",
+                            status: parseInt(0),
+                            active: 2,
+                            for_Ref: 'Y'
+                        };
+
+                        api.post("/WorkOrder/ProductionPlanPost", inactiveppwo).then((data) => {
+                            //console.log(data);
+                        }).catch((error) => {
+                        });
+                    }
+                    loadWO();
+                    var splitSumQty = 0;
+                    var tablebody = $("#Popup6Grid tbody");
+                    $(tablebody).html("");//empty tbody
+
+                    for (i = 0; i < splitwos.length; i++) {
+                        splitSumQty += Number(splitwos[i].calcWOQty || 0);
+                        $(tablebody).append(AppUtil.ProcessTemplateData("Popup6GridRow", splitwos[i]));
+                    }
+                    $("#popup6SplitSumQty").val(splitSumQty);
+                    $('input[name="popup6Radiobtn"]').prop('disabled', true);
+
+                    $('#numbersplitwopopup6').prop('disabled', true);
+
+                    $('#popup6SaveWo').prop('disabled', true);
+
+                    $('#popup6CreateWO').prop('disabled', true);
+
+                    $('.popup6wochk').prop('disabled', true);
+
+                    $('#popup6SelectAll').prop('disabled', true);
+                });
+                $('#popup6RecombineWO').off('change');
+
+                $('#popup6RecombineWO').on('change', function () {
+
+                    if ($(this).is(':checked')) {
+
+                        var parentWOId =
+                            $('#popup6SplitParentWOId').val();
+
+                        if (!confirm(
+                            'Recombine all split WOs into a single WO?'
+                        )) {
+                            $(this).prop('checked', false);
+                            return;
+                        }
+
+                        api.post('/WorkOrder/RecombineSplitWO?parentWOId='+ parentWOId)
+                            .then((data) => {
+
+                                alert('WO recombined successfully');
+                                var tablebody = $("#Popup6Grid tbody");
+                                $(tablebody).html("");//empty tbody
+                                $('#popup6RecombineDiv').hide();
+                                $('#popup6').modal('hide');
+                                $('input[name="popup6Radiobtn"]').prop('disabled', false);
+
+                                $('#numbersplitwopopup6').prop('disabled', false);
+
+                                $('#popup6SaveWo').prop('disabled', false);
+
+                                $('#popup6CreateWO').prop('disabled', false);
+
+                                $('.popup6wochk').prop('disabled', true);
+
+                                $('#popup6SelectAll').prop('disabled', false);
+                                loadWO();
+
+                            })
+                            .catch((error) => {
+
+                                console.error(error);
+
+                            });
+                    }
+
+                });
+
+            }
+
+
+
+            // Call API here
+        });
+
+    });
     //$('#popup5').on('hidden.bs.modal', function (event) {
     //    var $modal = $(this);
     //    $modal.find('button[id=popup5SaveWo]').unbind('click');
@@ -1573,6 +1960,60 @@ $(document).ready(function () {
             });
             $('#popup5EditStartingOp').prop("disabled", false);
             $('#popup5EditEndingOp').prop("disabled", false);
+            $('#ddlMakeFromPopup5Edit').empty();
+            var altmanufpartid = partId;
+            api.get("/masters/SortedMPMakeFromListeditwo?partId=" + altmanufpartid)
+                .then((data) => {
+                    console.log(data);
+                    var sortedMPF = data;
+
+                    // REMOVE DUPLICATES
+                    const uniqueMPF = [...new Set(sortedMPF.map(x => x.mpPartId))]
+                        .map(mpPartId => {
+                            return sortedMPF.find(x => x.mpPartId === mpPartId);
+                        });
+
+                    // DEFAULT OPTION
+                    $("#ddlMakeFromPopup5Edit").append(
+                        "<option value=''>-- Select Make From --</option>"
+                    );
+
+                    // BIND DATA
+                    uniqueMPF.forEach(function (mpm) {
+
+                        $("#ddlMakeFromPopup5Edit").append(
+                            "<option value='" + mpm.mpPartId + "'>" +
+                            mpm.inputPartNo + " / " + mpm.mfDescription +
+                            "</option>"
+                        );
+
+                    });
+
+                    // =========================================
+                    // IF ONLY ONE VALUE
+                    // AUTO SELECT + DISABLE
+                    // =========================================
+
+                    if (uniqueMPF.length === 1) {
+
+                        $("#ddlMakeFromPopup5Edit").val(uniqueMPF[0].mpPartId);
+
+                        $("#ddlMakeFromPopup5Edit").prop("disabled", true);
+
+                    }
+                    else {
+
+                        $("#ddlMakeFromPopup5Edit").prop("disabled", false);
+
+                    }
+
+                })
+                .catch((error) => {
+
+                    AppUtil.HandleError("", error);
+
+                });
+
         }
         else {
             const selectElement = $('#popup5EditRouting');
@@ -1624,6 +2065,7 @@ $(document).ready(function () {
         var endingOpNo = $("#popup5EditEndingOp").val();
         var reloadoption = $("#popup5Reloadoption").val();
         var maxAllowedDate = new Date(Date.parse($('#popup5EditWoComplDtField').text()));
+        var makeFromId = $("#ddlMakeFromPopup5Edit").val();
         var resultData = [];
         if (isNaN(WoComplDate.getTime())) {
             alert("Please Enter the WO Compl Date.");
@@ -1659,6 +2101,7 @@ $(document).ready(function () {
             endingOpNo: parseInt(endingOpNo),
             reloadOption: reloadoption,
             status: parseInt(wostatus),
+            input_Part_No: makeFromId
         };
 
         api.post("/WorkOrder/ProductionPlanPost", rowData).then((data) => {
@@ -3340,6 +3783,7 @@ function EditWo(element) {
     if (workOrderId === 0) {
         workOrderId = relatedTarget.data("parentwoid");
     }
+    var woidstr = relatedTarget.data("woidstr");
     var salesOrderId = relatedTarget.data("salesorderid");
     var woNumber = relatedTarget.data("wonumber");
     var partNo = relatedTarget.data("partno");
@@ -3351,7 +3795,8 @@ function EditWo(element) {
     var woNumber = relatedTarget.data("wonumber");
     var wostatus = relatedTarget.data("wostatus");
     var ppid = relatedTarget.data("ppid");
-
+    var soCompletionDateStr = relatedTarget.data("socompletiondatestr");
+    var combinedWO = relatedTarget.data("combinedwo");
     var WOSoTable = [];
     var temp = [];
     if (workOrderId > 0) {
@@ -3446,20 +3891,46 @@ function EditWo(element) {
                         //popup2show = true;
                     }
                     else {
-                        $('#popup4').modal('show');
-                        $('#popup4CalcWoQnty').val(planWOQty);
-                        $('#popup4ppid').val(ppid);
-                        $('#popup4QntyOnHanf').val(0);
-                        $('#popup4BalQnty').val(0);
-                        $('#popup4WoNumber').text(woNumber);
-                        $('#popup4StWoNumber').text(woNumber);
-                        $('#popup4PartNo').text(partNo);
-                        $('#popup4woid').val(workOrderId);
-                        $('#popup4soid').val(salesOrderId);
-                        $('#popup4partId').val(partId);
-                        $('#popup4partType').val(partType);
-                        $('#popup4Status').val(wostatus);
-                        $('#popup4WoComplDt').val(planCompletionDateStr);
+                        if (combinedWO === 'Y') {
+
+                            $('#popup6').modal('show');
+
+                            // popup6 assignments
+
+                            $('#popup6CalcWoQnty').val(planWOQty);
+                           // $('#popup6PlanWoQnty').val(planWOQty);
+                            $('#popup6ppid').val(ppid);
+                            $('#popup6QntyOnHand').val(0);
+                            $('#popup6BalQnty').val(0);
+                            $('#popup6WoNumber').text(woNumber);
+                            $('#popup6PartNo').text(partNo);
+                            $('#popup6woid').val(woidstr);
+                            $('#popup6soid').val(salesOrderId);
+                            $('#popup6partId').val(partId);
+                            $('#popup6partType').val(partType);
+                            $('#popup6Status').val(wostatus);
+                            $('#popup6WoComplDt').val(planCompletionDateStr.split("-").reverse().join("-"));
+                            $('#popup6socompletiondate').val(soCompletionDateStr.split("-").reverse().join("-"));
+                            LoadCombinedWOList(woidstr)
+                        }
+                        else {
+                            $('#popup4').modal('show');
+                            $('#popup4CalcWoQnty').val(planWOQty);
+                            $('#popup4ppid').val(ppid);
+                            $('#popup4QntyOnHanf').val(0);
+                            $('#popup4BalQnty').val(0);
+                            $('#popup4WoNumber').text(woNumber);
+                            $('#popup4StWoNumber').text(woNumber);
+                            $('#popup4PartNo').text(partNo);
+                            $('#popup4woid').val(woidstr);
+                            $('#popup4soid').val(salesOrderId);
+                            $('#popup4partId').val(partId);
+                            $('#popup4partType').val(partType);
+                            $('#popup4Status').val(wostatus);
+                            $('#popup4socompletiondate').val(soCompletionDateStr.split("-").reverse().join("-"));
+                            $('#popup4WoComplDt').val(planCompletionDateStr.split("-").reverse().join("-"));
+                        }
+
                     }
 
 
@@ -3472,7 +3943,35 @@ function EditWo(element) {
     }
 
 }
+function LoadCombinedWOList(woId) {
 
+    api.getbulk("/WorkOrder/GetCombinedWoDetailsByIds?ids=" + woId)
+        .then((data) => {
+
+            var tablebody = $("#popup6combinedwo tbody");
+            tablebody.html("");
+
+            var cumulative = 0;
+
+            $.each(data, function (index, item) {
+
+                cumulative += Number(item.calcWOQty);
+
+                item.cumulativeQty = cumulative;
+
+                tablebody.append(
+                    AppUtil.ProcessTemplateData(
+                        "Popup6CombinedWoRow",
+                        item
+                    )
+                );
+            });
+
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+}
 function ViewFile() {
     var filename = "ProcessInfo.png";
     var xhr = new XMLHttpRequest();

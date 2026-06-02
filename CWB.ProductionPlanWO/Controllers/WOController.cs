@@ -448,6 +448,23 @@ namespace CWB.ProductionPlanWO.Controllers
             var result = await _woSerivce.DeleteWo(Id);
             return Ok(result);
         }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteSoWoRel)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteSoWoRel(long Id)
+        {
+            var result = await _woSerivce.DeleteSoWoRel(Id);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.DeleteProductionplansplitwo)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteProductionplansplitwo(long Id)
+        {
+            var result = await _woSerivce.DeleteProductionplansplitwo(Id);
+            return Ok(result);
+        }
+
         [HttpPost]
         [Route(ApiRoutes.WO.PostInsp_Outcome_Details)]
         [Produces(AppContentTypes.ContentType, Type = typeof(Insp_Outcome_DetailsVM))]

@@ -80,6 +80,14 @@ namespace CWB.ProductionPlanWO.Configurations
              .HasColumnName("Status")
              .IsRequired();
             builder
+               .Property(t => t.Input_Part_No)
+               .HasColumnName("Input_Part_No")
+               .HasDefaultValue(0);
+            builder
+              .Property(t => t.SplitParentWoId)
+              .HasColumnName("SplitParentWoId")
+              .HasDefaultValue(0);
+            builder
              .Property(t => t.PlanWOQnty)
              .HasColumnName("PlanWOQnty")
              .HasDefaultValue(0);

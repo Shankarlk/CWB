@@ -5872,7 +5872,8 @@ namespace CWB.App.Controllers
                             For_Ref = 'N',
                             ReloadOption = "",
                             TenantId = item.TenantId,
-                            Consolidation_Flag = 0
+                            Consolidation_Flag = 0,
+                            Input_Part_No=item.Input_Part_No
                         };
                         productions.Add(production);
                     }
@@ -6135,6 +6136,9 @@ namespace CWB.App.Controllers
                                 if (mf.ManufacturedPartType == 1)
                                 {
                                     var mpmakefromlist = await _masterService.GetMPMakeFromListByPartId(mf.ManufacturedPartNoDetailId.ToString());
+                                  
+
+                                    
                                     foreach (var mpmakefrom in mpmakefromlist)
                                     {
                                         ChildWoRelVM cwo = new ChildWoRelVM()
@@ -6258,6 +6262,20 @@ namespace CWB.App.Controllers
                                             };
                                             if (ptype.MasterPartType == "ManufacturedPart")
                                             {
+                                                var input = 0;
+                                                ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)bomdata.Child_Part_No_ID);
+                                                if (manuf.ManufacturedPartType == 1)
+                                                {
+                                                    var mpmakefromlistinputs = await _masterService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
+
+                                                    var selectedMakeFrom = mpmakefromlistinputs.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
+                                                    input = selectedMakeFrom.MPPartId;
+
+                                                }
+                                                else
+                                                {
+                                                    input = 0;
+                                                }
 
                                                 ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
                                                 {
@@ -6280,7 +6298,9 @@ namespace CWB.App.Controllers
                                                     For_Ref = 'N',
                                                     ReloadOption = "",
                                                     TenantId = item.TenantId,
-                                                    Consolidation_Flag = 0
+                                                    Consolidation_Flag = 0,
+                                                    Input_Part_No= input
+
                                                 };
                                                 childwos.Add(cwo);
                                             }
@@ -6451,6 +6471,20 @@ namespace CWB.App.Controllers
                                                     ChildWoId = uniqwoid
                                                 };
                                                 listbom.Add(bomdata);
+                                                var input = 0;
+                                                ManufacturedPartNoDetailVM manuf1 = await _masterService.GetManufPart((int)bomdata.Child_Part_No_ID);
+                                                if (manuf1.ManufacturedPartType == 1)
+                                                {
+                                                    var mpmakefromlistinputs = await _masterService.GetMPMakeFromListByPartId(manuf1.ManufacturedPartNoDetailId.ToString());
+
+                                                    var selectedMakeFrom = mpmakefromlistinputs.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
+                                                    input = selectedMakeFrom.MPPartId;
+
+                                                }
+                                                else
+                                                {
+                                                    input = 0;
+                                                }
                                                 ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
                                                 {
                                                     WoId = uniqwoid,//procplanid
@@ -6472,7 +6506,8 @@ namespace CWB.App.Controllers
                                                     For_Ref = 'N',
                                                     ReloadOption = "",
                                                     TenantId = item.TenantId,
-                                                    Consolidation_Flag = 0
+                                                    Consolidation_Flag = 0,
+                                                    Input_Part_No=input
                                                 };
                                                 childwos.Add(cwo);
                                                 break;
@@ -7183,6 +7218,20 @@ namespace CWB.App.Controllers
                                     };
                                     if (ptype.MasterPartType == "ManufacturedPart")
                                     {
+                                        var input = 0;
+                                        ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)bomdata.Child_Part_No_ID);
+                                        if (manuf.ManufacturedPartType == 1)
+                                        {
+                                            var mpmakefromlistinputs = await _masterService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
+
+                                            var selectedMakeFrom = mpmakefromlistinputs.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
+                                            input = selectedMakeFrom.MPPartId;
+
+                                        }
+                                        else
+                                        {
+                                            input = 0;
+                                        }
 
                                         ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
                                         {
@@ -7205,7 +7254,8 @@ namespace CWB.App.Controllers
                                             For_Ref = 'N',
                                             ReloadOption = "",
                                             TenantId = item.TenantId,
-                                            Consolidation_Flag = 0
+                                            Consolidation_Flag = 0,
+                                            Input_Part_No=input
                                         };
                                         childwos.Add(cwo);
                                     }
@@ -7375,6 +7425,20 @@ namespace CWB.App.Controllers
 
                                         };
                                         listbom.Add(bomdata);
+                                        var input = 0;
+                                        ManufacturedPartNoDetailVM manuf1 = await _masterService.GetManufPart((int)bomdata.Child_Part_No_ID);
+                                        if (manuf1.ManufacturedPartType == 1)
+                                        {
+                                            var mpmakefromlistinputs = await _masterService.GetMPMakeFromListByPartId(manuf1.ManufacturedPartNoDetailId.ToString());
+
+                                            var selectedMakeFrom = mpmakefromlistinputs.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
+                                            input = selectedMakeFrom.MPPartId;
+
+                                        }
+                                        else
+                                        {
+                                            input = 0;
+                                        }
                                         ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
                                         {
                                             WoId = uniquewo,//item.ProductionPlanId,
@@ -7396,7 +7460,8 @@ namespace CWB.App.Controllers
                                             For_Ref = 'N',
                                             ReloadOption = "",
                                             TenantId = item.TenantId,
-                                            Consolidation_Flag = 0
+                                            Consolidation_Flag = 0,
+                                            Input_Part_No= input
                                         };
                                         childwos.Add(cwo);
                                         break;
@@ -7743,7 +7808,9 @@ namespace CWB.App.Controllers
                     For_Ref = 'N',
                     ReloadOption = "",
                     TenantId = 0,
-                    Consolidation_Flag = 1
+                    Consolidation_Flag = 1,
+                    Input_Part_No=first.Input_Part_No,
+                    Combined_WO='Y'
                 };
                 consolidatedproduction.Add(cwo);
                 var procdutionpost = await _woService.ProductionPlanWoPost(consolidatedproduction);
@@ -8431,7 +8498,7 @@ namespace CWB.App.Controllers
     .ToList();
 
             var result = productions
-    .Where(p => woIds.Contains(p.WoId))
+    .Where(p => woIds.Contains(p.WoId)).OrderBy(p => p.PlanCompletionDate)
     .ToList();
 
             var masterPartsTask = _masterService.MasterPartList();
@@ -11160,8 +11227,13 @@ namespace CWB.App.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SplitWo(long woid, string initialDate, int numDays, int quantity, long salersorderId, int partId, int partType)
+        public async Task<IActionResult> SplitWo(string  woidstr, string initialDate, int numDays, int quantity, long salersorderId, int partId, int partType,string soDt)
         {
+            
+            var productions = await _woService.AllProductionWoReadForProd();
+            var woid = long.Parse(woidstr);
+            var selectedwoid = productions.Where(x => x.WoId == woid).FirstOrDefault();
+            var socompletiondate = DateTime.Parse(soDt);
             var inltialDt = DateTime.Parse(initialDate);
             List<ProductionPlan_WoVM> previousWorkdays = new List<ProductionPlan_WoVM>();
             DateTime currentDate = inltialDt;
@@ -11173,6 +11245,7 @@ namespace CWB.App.Controllers
 
             for (int i = 0; i < numDays; i++)
             {
+                long uniqwoid = long.Parse(DateTime.UtcNow.ToString("yyyyMMddHHmmssfffff"));
                 do
                 {
                     currentDate = currentDate.AddDays(-1);
@@ -11180,14 +11253,21 @@ namespace CWB.App.Controllers
 
                 ProductionPlan_WoVM dailywo = new ProductionPlan_WoVM
                 {
-                    ParentWoId = woid,
+                    ParentWoId = 0,
+                    WoId= uniqwoid,
                     SalesOrderId = salersorderId,
                     CalcWOQty = quantityPerDay,
                     PlanCompletionDate = currentDate,
                     PartId = partId,
                     PartType = partType,
-                    //For_Ref = 'N',
-                    ReloadOption = "Split"
+                    For_Ref = 'N',
+                    ReloadOption = "Split",
+                    SoComplDate= socompletiondate,
+                    Input_Part_No=selectedwoid.Input_Part_No,
+                    RoutingId=selectedwoid.RoutingId,
+                    StartingOpNo=selectedwoid.StartingOpNo,
+                    EndingOpNo=selectedwoid.EndingOpNo,
+                    SplitParentWoId=woid
                 };
                 previousWorkdays.Add(dailywo);
             }
@@ -11195,7 +11275,38 @@ namespace CWB.App.Controllers
             var procdutionpost = await _woService.ProductionPlanWoPost(previousWorkdays);
             return Ok(procdutionpost);
         }
+        [HttpPost]
+        public async Task<IActionResult> RecombineSplitWO(string parentWOId)
+        {
 
+            var productions = await _woService.AllProductionWoReadForProd();
+            var woid = long.Parse(parentWOId);
+            var selectedwoid = productions.Where(x => x.WoId == woid).FirstOrDefault();
+            var splittedworkorders = productions.Where(x => x.SplitParentWoId == woid).ToList();
+            var splitttedfirstrecord = splittedworkorders.FirstOrDefault();
+
+            selectedwoid.RoutingId = splitttedfirstrecord.RoutingId;
+            selectedwoid.StartingOpNo = splitttedfirstrecord.StartingOpNo;
+            selectedwoid.EndingOpNo = splitttedfirstrecord.EndingOpNo;
+            selectedwoid.ReloadOption = "";
+            selectedwoid.Active = 0;
+            selectedwoid.For_Ref = 'N';
+            selectedwoid.Status = 1;
+            //foreach(var item in splittedworkorders)
+            //{
+                //delete production plan split wos
+                await _woService.Deleteproductionplansplitwo(woid);
+           // }
+
+
+
+
+             List < ProductionPlan_WoVM > previousWorkdays = new List<ProductionPlan_WoVM>();
+            previousWorkdays.Add(selectedwoid);
+            var procdutionpost = await _woService.ProductionPlanWoPost(previousWorkdays);
+           
+            return Ok();
+        }
         [HttpPost]
         public async Task<IActionResult> ProductionPlanPost(ProductionPlan_WoVM production)
         {
@@ -11273,7 +11384,8 @@ namespace CWB.App.Controllers
                             {
                                 WONumber = "",
                                 CalcWOQty = balanceToManufacture / workDays,
-                                PlanCompletionDate = tempDate
+                                PlanCompletionDate = tempDate,
+                                SoComplDate=DateTime.Parse(soCompletionDate)
                             };
                             woDetails.Add(dailywo);
                         }
@@ -11296,7 +11408,8 @@ namespace CWB.App.Controllers
                         {
                             WONumber = "",
                             CalcWOQty = weeklyWoQuantity,
-                            PlanCompletionDate = tempDate
+                            PlanCompletionDate = tempDate,
+                            SoComplDate = DateTime.Parse(soCompletionDate)
                         };
                         woDetails.Add(wo);
                         tempDate = tempDate.AddDays(7);
@@ -11325,7 +11438,8 @@ namespace CWB.App.Controllers
                             {
                                 WONumber = "",
                                 CalcWOQty = monthlyWoQuantity,
-                                PlanCompletionDate = tempDate
+                                PlanCompletionDate = tempDate,
+                                SoComplDate = DateTime.Parse(soCompletionDate)
                             };
                             woDetails.Add(monthlywo);
                             tempDate = tempDate.AddMonths(1);

@@ -2503,6 +2503,7 @@ namespace CWB.App.Controllers
             try
             {
                 //getmaterparts
+              
                 var mf = await _mastersService.GetMPMakeFromListByPartId(partId);
                 var mpart = await _mastersService.MasterPartList();
                 List<MPMakeFromVM> MFList = new List<MPMakeFromVM>();
@@ -2534,7 +2535,44 @@ namespace CWB.App.Controllers
                 return BadRequest();
             }
         }
-
+        [HttpGet]
+        public async Task<IActionResult> SortedMPMakeFromListeditwo(string partId)
+        {
+            try
+            {
+                //getmaterparts
+                var master = await _mastersService.GetManufPart(Convert.ToInt32(partId));
+                var mf = await _mastersService.GetMPMakeFromListByPartId(Convert.ToString(master.ManufacturedPartNoDetailId));
+                var mpart = await _mastersService.MasterPartList();
+                List<MPMakeFromVM> MFList = new List<MPMakeFromVM>();
+                var query = from mfl in mf
+                            join mp in mpart on mfl.MPPartId equals mp.PartId
+                            select new MPMakeFromVM
+                            {
+                                MPPartId = mfl.MPPartId,
+                                MPPartMadeFrom = mfl.MPPartMadeFrom,
+                                InputWeight = mfl.InputWeight,
+                                ScrapGenerated = mfl.ScrapGenerated,
+                                QuantityPerInput = mfl.QuantityPerInput,
+                                YieldNotes = mfl.YieldNotes,
+                                PreferedRawMaterial = mfl.PreferedRawMaterial,
+                                ManufPartId = mfl.ManufPartId,
+                                MPMakeFromId = mfl.MPMakeFromId,
+                                MFDescription = mfl.MFDescription,
+                                InputPartNo = mp.PartNo,
+                                UOM = mfl.UOM,
+                                TenantId = mfl.TenantId
+                            };
+                MFList = query
+                     .OrderBy(x => x.PreferedRawMaterial)
+                    .ToList();
+                return Ok(MFList);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RemMakeFrom(MPMakeFromVM model)

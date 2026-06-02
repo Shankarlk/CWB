@@ -27,6 +27,9 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.ReloadOption, m => m.MapFrom(src => src.ReloadOption))
                .ForMember(m => m.Active, m => m.MapFrom(src => src.Active))
                .ForMember(m => m.ParentWoId, m => m.MapFrom(src => src.ParentWoId))
+               .ForMember(m => m.Input_Part_No, m => m.MapFrom(src => src.Input_Part_No))
+               .ForMember(m => m.IsSplit, m => m.MapFrom(src => src.IsSplit))
+               .ForMember(m => m.SplitParentWorkOrderId, m => m.MapFrom(src => src.SplitParentWorkOrderId))
                .ForMember(m => m.WODate, m => m.MapFrom(src => src.WODate));
 
             CreateMap<WorkOrdersVM, WorkOrders>()
@@ -49,6 +52,9 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.ReloadOption, m => m.MapFrom(src => src.ReloadOption))
                .ForMember(m => m.Active, m => m.MapFrom(src => src.Active))
                .ForMember(m => m.ParentWoId, m => m.MapFrom(src => src.ParentWoId))
+                .ForMember(m => m.Input_Part_No, m => m.MapFrom(src => src.Input_Part_No))
+               .ForMember(m => m.IsSplit, m => m.MapFrom(src => src.IsSplit))
+               .ForMember(m => m.SplitParentWorkOrderId, m => m.MapFrom(src => src.SplitParentWorkOrderId))
                .ForMember(m => m.WODate, m => m.MapFrom(src => src.WODate));
 
             CreateMap<Cust_NC_Decs_MatrixVM, Cust_NC_Decs_Matrix>()
@@ -242,6 +248,8 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.EndingOpNo, m => m.MapFrom(src => src.EndingOpNo))
                .ForMember(m => m.For_Ref, m => m.MapFrom(src => src.For_Ref))
                .ForMember(m => m.Combined_WO, m => m.MapFrom(src => src.Combined_WO))
+               .ForMember(m => m.Input_Part_No, m => m.MapFrom(src => src.Input_Part_No))
+               .ForMember(m => m.SplitParentWoId, m => m.MapFrom(src => src.SplitParentWoId))
                .ForMember(m => m.Consolidation_Flag, m => m.MapFrom(src => src.Consolidation_Flag))
                .ForMember(m => m.Freeze, m => m.MapFrom(src => src.Freeze))
                .ForMember(m => m.Active, m => m.MapFrom(src => src.Active))
@@ -268,6 +276,8 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.EndingOpNo, m => m.MapFrom(src => src.EndingOpNo))
                .ForMember(m => m.For_Ref, m => m.MapFrom(src => src.For_Ref))
                .ForMember(m => m.Combined_WO, m => m.MapFrom(src => src.Combined_WO))
+                .ForMember(m => m.Input_Part_No, m => m.MapFrom(src => src.Input_Part_No))
+                .ForMember(m => m.SplitParentWoId, m => m.MapFrom(src => src.SplitParentWoId))
                .ForMember(m => m.Consolidation_Flag, m => m.MapFrom(src => src.Consolidation_Flag))
                .ForMember(m => m.Freeze, m => m.MapFrom(src => src.Freeze))
                .ForMember(m => m.Active, m => m.MapFrom(src => src.Active))

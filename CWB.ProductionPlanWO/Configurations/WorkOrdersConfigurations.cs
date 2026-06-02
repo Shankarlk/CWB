@@ -23,6 +23,18 @@ namespace CWB.ProductionPlanWO.Configurations
                .HasColumnName("ParentWoId")
                .HasDefaultValue(0);
             builder
+              .Property(t => t.Input_Part_No)
+              .HasColumnName("Input_Part_No")
+              .HasDefaultValue(0);
+            builder
+             .Property(t => t.IsSplit)
+             .HasColumnName("IsSplit")
+             .HasDefaultValue(0);
+            builder
+            .Property(t => t.SplitParentWorkOrderId)
+            .HasColumnName("SplitParentWorkOrderId")
+            .HasDefaultValue(0);
+            builder
                .Property(t => t.WONumber)
                .HasColumnName("WONumber")
                .IsRequired(); 

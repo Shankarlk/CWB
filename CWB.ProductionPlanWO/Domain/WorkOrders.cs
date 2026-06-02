@@ -47,5 +47,9 @@ namespace CWB.ProductionPlanWO.Domain
         public bool Done { get; set; }
         public string Comment { get; set; }
         public long TenantId { get; set; }
+        public long Input_Part_No { get; set; }
+
+        public int IsSplit { get; set; }
+        public long SplitParentWorkOrderId { get; set; }
     }
 }

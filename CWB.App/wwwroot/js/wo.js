@@ -626,7 +626,7 @@ $(document).ready(function () {
         var selectedData = {};
         var rstDt = new Date(Date.parse($('#p1planComplDate').val()));
         const restrictDt = new Date(rstDt); // Get today's date
-
+        var makeFromId = $("#ddlmakefrompopup1").val();
         // Check if WoComplDate is after today's date
         if (WoComplDate < restrictDt) {
             alert("Please Don't enter the previous completion date.");
@@ -653,7 +653,8 @@ $(document).ready(function () {
                     routingId: parseInt(routingid),
                     startingOpNo: parseInt(startingOpNo),
                     endingOpNo: parseInt(endingOpNo),
-                    status: parseInt(status)
+                    status: parseInt(status),
+                    input_Part_No: parseInt(makeFromId)
                 };
 
                 selectedData = rowData;
@@ -914,11 +915,22 @@ $(document).ready(function () {
                 </tr>`;
                     $(tablebody).append(noRecordsRow);
                 }
-
+                
                 for (i = 0; i < parentchildwo.length; i++) {
                     $(tablebody).append(AppUtil.ProcessTemplateData("MultipleWoRow", parentchildwo[i]));
                 }
+                var actualRows = parentchildwo.length;
 
+                if (actualRows > 0) {
+
+                    $("#recombineSection").show();
+
+                }
+                else {
+
+                    $("#recombineSection").hide();
+
+                }
             }
         });
         
@@ -1102,7 +1114,7 @@ $(document).ready(function () {
             if (noofWOCreation.length > 1) {
                 $.ajax({
                     type: "POST",
-                    url: '/BusinessAquisition/MultipleWOPost',
+                    url: '/BusinessAquisition/MultipleWOPostsplit',
                     contentType: "application/json; charset=utf-8",
                     headers: { 'Content-Type': 'application/json' },
                     data: JSON.stringify(noofWOCreation),
@@ -1123,7 +1135,11 @@ $(document).ready(function () {
                 </tr>`;
                             $(tablebody).append(noRecordsRow);
                         }
+                        $("#p2ParentWOId").val(woid);
 
+                        $("#recombineDiv").show();
+
+                        $("#recombineWO").prop("checked", false);
                         for (i = 0; i < tdata.length; i++) {
                             $(tablebody).append(AppUtil.ProcessTemplateData("MultipleWoRow", tdata[i]));
                         }
@@ -1160,6 +1176,8 @@ $(document).ready(function () {
                                 $('#popup2Sum').val(planwoqty);
                             }
                         });
+                        var completedDateElement = $('#p2PlanComplDate').text();
+                        var completedDate = new Date(completedDateElement.replace(/-/g, '/'));
                         var woinactive = {
                             woid: parseInt(woid),
                             salesOrderId: parseInt(soid),
@@ -1169,13 +1187,14 @@ $(document).ready(function () {
                             parentlevel: '',
                             calcWOQty: parseInt(planwoqty),
                             planCompletionDate: formattedDate,
+                            soComplDate: completedDate.toISOString(),
                             routingId: parseInt(0),
                             startingOpNo: parseInt(0),
                             endingOpNo: parseInt(0),
                             status: parseInt(1),
                             active: 2
                         };
-                        api.post("/businessaquisition/WOpost", woinactive).then((data) => {
+                        api.post("/businessaquisition/WOpostUpdate", woinactive).then((data) => {
                             //console.log(data);
                             //$('#popup3').modal('hide');
                             //reloadWO(reloadOption, partid);
@@ -1400,6 +1419,62 @@ $(document).ready(function () {
                     }).catch((error) => {
                         console.error(error);
                     });
+                    $('#ddlmakefrompopup3').empty();
+                    var altmanufpartid = partId;
+                    api.get("/masters/SortedMPMakeFromListeditwo?partId=" + altmanufpartid)
+                        .then((data) => {
+                            console.log(data);
+                            var sortedMPF = data;
+
+                            // REMOVE DUPLICATES
+                            const uniqueMPF = [...new Set(sortedMPF.map(x => x.mpPartId))]
+                                .map(mpPartId => {
+                                    return sortedMPF.find(x => x.mpPartId === mpPartId);
+                                });
+
+                            // DEFAULT OPTION
+                            $("#ddlmakefrompopup3").append(
+                                "<option value=''>-- Select Make From --</option>"
+                            );
+
+                            // BIND DATA
+                            uniqueMPF.forEach(function (mpm) {
+
+                                $("#ddlmakefrompopup3").append(
+                                    "<option value='" + mpm.mpPartId + "'>" +
+                                    mpm.inputPartNo + " / " + mpm.mfDescription +
+                                    "</option>"
+                                );
+
+                            });
+
+                            // =========================================
+                            // IF ONLY ONE VALUE
+                            // AUTO SELECT + DISABLE
+                            // =========================================
+
+                            if (uniqueMPF.length === 1) {
+
+                                $("#ddlmakefrompopup3").val(uniqueMPF[0].mpPartId);
+
+                                $("#ddlmakefrompopup3").prop("disabled", true);
+
+                            }
+                            else {
+
+                                $("#ddlmakefrompopup3").prop("disabled", false);
+
+                            }
+
+                        })
+                        .catch((error) => {
+
+                            AppUtil.HandleError("", error);
+
+                        });
+
+
+
                 } else {
 
                     selectElement.append(`<option value="0">--Select--</option>`);
@@ -1499,10 +1574,12 @@ $(document).ready(function () {
         var endingOpNo = $("#singleEndOpNo").val();
         var status = parseInt($("#p3Status").val());
         var reloadOption = $("#p3ReloadOption").val();
+        var makeFromId = $("#ddlmakefrompopup3").val();
         const woCompletedByText = $('#woCompletedBy').text();
         const rstDtParts = woCompletedByText.split('-');
         const rstDt = new Date(rstDtParts[2], rstDtParts[1] - 1, rstDtParts[0]);
         const restrictDt = new Date(rstDt);
+
         if (isNaN(WoComplDate.getTime())) {
             alert("Please Enter the WO Compl Date.");
             return false;
@@ -1534,10 +1611,11 @@ $(document).ready(function () {
             startingOpNo: parseInt(startingOpNo),
             endingOpNo: parseInt(endingOpNo),
             reloadOption: reloadOption,
-            status: parseInt(status)
+            status: parseInt(status),
+            input_Part_No: parseInt(makeFromId)
         };
 
-        api.post("/businessaquisition/WOpost", rowData).then((data) => {
+        api.post("/businessaquisition/WOpostUpdate", rowData).then((data) => {
             //console.log(data);
             //$('#popup3').modal('hide');
             loadWoP3SubConSIngle();
@@ -1851,6 +1929,7 @@ $(document).ready(function () {
         var reloadOpt = "New";
         var resultData = [];
         var rstDt = new Date(Date.parse($('#NewwoCompletedBy').text()));
+        var makeFromId = $("#ddlmakefrompopup3New").val();
         const restrictDt = new Date(rstDt);
         if (planWoQty < soqty) {
             alert("Plan Wo Qnty Should be Greater or Equal to So Total So Qnty.");
@@ -1879,7 +1958,8 @@ $(document).ready(function () {
             routingId: parseInt(routingid),
             startingOpNo: parseInt(startingOpNo),
             endingOpNo: parseInt(endingOpNo),
-            status: parseInt(wostatus)
+            status: parseInt(wostatus),
+            input_Part_No: parseInt(makeFromId)
         };
 
         api.post("/businessaquisition/WOpost", rowData).then((data) => {
@@ -2019,7 +2099,59 @@ $(document).ready(function () {
 
                     });
                 }
+                $("#ddlmakefrompopup3New").empty();
+                var altmanufpartid = partId;
+                api.get("/masters/SortedMPMakeFromListeditwo?partId=" + altmanufpartid)
+                    .then((data) => {
+                        console.log(data);
+                        var sortedMPF = data;
 
+                        // REMOVE DUPLICATES
+                        const uniqueMPF = [...new Set(sortedMPF.map(x => x.mpPartId))]
+                            .map(mpPartId => {
+                                return sortedMPF.find(x => x.mpPartId === mpPartId);
+                            });
+
+                        // DEFAULT OPTION
+                        $("#ddlmakefrompopup3New").append(
+                            "<option value=''>-- Select Make From --</option>"
+                        );
+
+                        // BIND DATA
+                        uniqueMPF.forEach(function (mpm) {
+
+                            $("#ddlmakefrompopup3New").append(
+                                "<option value='" + mpm.mpPartId + "'>" +
+                                mpm.inputPartNo + " / " + mpm.mfDescription +
+                                "</option>"
+                            );
+
+                        });
+
+                        // =========================================
+                        // IF ONLY ONE VALUE
+                        // AUTO SELECT + DISABLE
+                        // =========================================
+
+                        if (uniqueMPF.length === 1) {
+
+                            $("#ddlmakefrompopup3New").val(uniqueMPF[0].mpPartId);
+
+                            $("#ddlmakefrompopup3New").prop("disabled", true);
+
+                        }
+                        else {
+
+                            $("#ddlmakefrompopup3New").prop("disabled", false);
+
+                        }
+
+                    })
+                    .catch((error) => {
+
+                        AppUtil.HandleError("", error);
+
+                    });
             }).catch((error) => {
             });
             $('#NewStartOpNo').prop("disabled", false);
@@ -2112,6 +2244,7 @@ $(document).ready(function () {
         var routingid = $("#popup7Routing").val();
         var startingOpNo = $("#popup7StartingOpNo").val();
         var endingOpNo = $("#popup7EndingOpNo").val();
+        var makeFromId = $("#ddlMakeFromPopup7").val();
         var WoSoRel = [];
         var WoSOMethod = {};
 
@@ -2153,7 +2286,8 @@ $(document).ready(function () {
             startingOpNo: parseInt(startingOpNo),
             endingOpNo: parseInt(endingOpNo),
             status: parseInt(wostatus),
-            buildToStock:'Y'
+            buildToStock: 'Y',
+            input_Part_No: makeFromId
         };
 
         api.post("/businessaquisition/WOpost", rowData).then((data) => {
@@ -2696,7 +2830,7 @@ function copyPartData() {
                 $("#popup7divRouting").show().addClass("row");
                 $("#SubConGridDivP7").show();
                 api.getbulk("/WorkOrder/GetRoutings?manufPartId=" + parseInt(partId)).then((data) => {
-                    //console.log(data);
+                    console.log(data);
                     const selectElement = $('#popup7Routing');
                     selectElement.prop("disabled", false);
                     selectElement.html("");
@@ -2743,7 +2877,59 @@ function copyPartData() {
                 $('#popup7EndingOpNo').prop("disabled", false);
                 $('#popup7StartingOpNo').prop("disabled", false);
                 $('#ManualEndOpNo').prop("disabled", false);
+                $('#ddlMakeFromPopup7').empty();
+                var altmanufpartid = partId;
+                api.get("/masters/SortedMPMakeFromListeditwo?partId=" + altmanufpartid)
+                    .then((data) => {
+                        console.log(data);
+                        var sortedMPF = data;
 
+                        // REMOVE DUPLICATES
+                        const uniqueMPF = [...new Set(sortedMPF.map(x => x.mpPartId))]
+                            .map(mpPartId => {
+                                return sortedMPF.find(x => x.mpPartId === mpPartId);
+                            });
+
+                        // DEFAULT OPTION
+                        $("#ddlMakeFromPopup7").append(
+                            "<option value=''>-- Select Make From --</option>"
+                        );
+
+                        // BIND DATA
+                        uniqueMPF.forEach(function (mpm) {
+
+                            $("#ddlMakeFromPopup7").append(
+                                "<option value='" + mpm.mpPartId + "'>" +
+                                mpm.inputPartNo + " / " + mpm.mfDescription +
+                                "</option>"
+                            );
+
+                        });
+
+                        // =========================================
+                        // IF ONLY ONE VALUE
+                        // AUTO SELECT + DISABLE
+                        // =========================================
+
+                        if (uniqueMPF.length === 1) {
+
+                            $("#ddlMakeFromPopup7").val(uniqueMPF[0].mpPartId);
+
+                            $("#ddlMakeFromPopup7").prop("disabled", true);
+
+                        }
+                        else {
+
+                            $("#ddlMakeFromPopup7").prop("disabled", false);
+
+                        }
+
+                    })
+                    .catch((error) => {
+
+                        AppUtil.HandleError("", error);
+
+                    });
             }
         }).catch((error) => {
         });
@@ -2879,9 +3065,15 @@ function EditWo(element) {
                                             selectEndOpNo.append(`<option value="${item.stepOperation}">${item.stepOperation}</option>`);
                                         });
                                         loadWoSubCon();
+
+
+
+
                                     }).catch((error) => {
                                         console.error(error);
                                     });
+
+
                                 } else {
 
                                     selectElement.append(`<option value="0">--Select--</option>`);
@@ -2893,11 +3085,66 @@ function EditWo(element) {
                                     $('#StartingOpNo').val(startopno);
                                     $('#EndingOpNo').val(endopno);
                                 }
-
+                                
                             }).catch((error) => {
                             });
                             $('#StartingOpNo').prop("disabled", false);
                             $('#EndingOpNo').prop("disabled", false);
+                            $("#ddlmakefrompopup1").empty();
+                            var altmanufpartid = partId;
+                            api.get("/masters/SortedMPMakeFromListeditwo?partId=" + altmanufpartid)
+                                .then((data) => {
+                                    console.log(data);
+                                    var sortedMPF = data;
+
+                                    // REMOVE DUPLICATES
+                                    const uniqueMPF = [...new Set(sortedMPF.map(x => x.mpPartId))]
+                                        .map(mpPartId => {
+                                            return sortedMPF.find(x => x.mpPartId === mpPartId);
+                                        });
+
+                                    // DEFAULT OPTION
+                                    $("#ddlmakefrompopup1").append(
+                                        "<option value=''>-- Select Make From --</option>"
+                                    );
+
+                                    // BIND DATA
+                                    uniqueMPF.forEach(function (mpm) {
+
+                                        $("#ddlmakefrompopup1").append(
+                                            "<option value='" + mpm.mpPartId + "'>" +
+                                            mpm.inputPartNo + " / " + mpm.mfDescription +
+                                            "</option>"
+                                        );
+
+                                    });
+
+                                    // =========================================
+                                    // IF ONLY ONE VALUE
+                                    // AUTO SELECT + DISABLE
+                                    // =========================================
+
+                                    if (uniqueMPF.length === 1) {
+
+                                        $("#ddlmakefrompopup1").val(uniqueMPF[0].mpPartId);
+
+                                        $("#ddlmakefrompopup1").prop("disabled", true);
+
+                                    }
+                                    else {
+
+                                        $("#ddlmakefrompopup1").prop("disabled", false);
+
+                                    }
+
+                                })
+                                .catch((error) => {
+
+                                    AppUtil.HandleError("", error);
+
+                                });
+
+
                         }
                         else {
                             $("#popup1DivRouting").hide();
@@ -2944,13 +3191,18 @@ function EditWo(element) {
                         $('#p2WoNumber').text(woNumber);
                         $('#p2PartNo').text(partNo);
                         $('#P2partdesc').text(partDesc);
-                        $('#p2WOid').val(workOrderId);
+                         $('#p2WOid').val(workOrderId);
+
                         $('#p2SalesOrderId').val(salesOrderId);
                         $('#p2PartId').val(partId);
                         $('#p2PartType').val(partType);
                         $('#p2Status').val(wostatus);
                         $('#p2ReloadOption').val(reloadOption);
-                        $('#p2PlanComplDate').text(planCompletionDateStr.split("-").reverse().join("-"));
+                            $('#p2PlanComplDate').text(planCompletionDateStr.split("-").reverse().join("-"));
+                            $("#recombineDiv").hide();
+                            $("#recombineWO").prop("checked", false);
+                           // $('#p2ParentWOId').val(workOrderId);
+
                         //popup2show = true;
                         }
                     }
@@ -3396,6 +3648,74 @@ function DeleteSubSupplier(element) {
         return false;
     }
 }
+//$("#btnRecombineWO").on("click", function () {
+
+//    let result = confirm("Are you sure you want to recombine to single WO?");
+
+//    if (!result) {
+//        return false;
+//    }
+
+//    var parentWoId = parseInt($("#p2ParentWOId").val());
+
+//    api.post("/BusinessAquisition/RecombineWO?parentWoId=" + parentWoId)
+//        .then((data) => {
+
+//            alert("WO Recombined Successfully");
+
+//            $("#popup2").modal("hide");
+
+//            loadWO();
+
+//        })
+//        .catch((error) => {
+
+//            AppUtil.HandleError("", error);
+
+//        });
+
+//});
+$("#recombineWO").on("change", function () {
+
+    if (!this.checked) {
+        return;
+    }
+
+    let result = confirm("Are you sure you want to recombine to single WO?");
+
+    if (!result) {
+
+        $(this).prop("checked", false);
+
+        return false;
+    }
+
+    var parentWoId = parseInt($("#p2ParentWOId").val());
+
+    api.post("/BusinessAquisition/RecombineWO?parentWoId=" + parentWoId)
+        .then((data) => {
+
+            alert("WO Recombined Successfully");
+
+            $("#popup2").modal("hide");
+
+            loadWO();
+
+        })
+        .catch((error) => {
+
+            AppUtil.HandleError("", error);
+
+            $(this).prop("checked", false);
+
+        });
+
+});
+
+
+
+
+
 function DeleteWo(element) {
     var relatedTarget = $(element);
     var workOrderId = relatedTarget.data("workorderid");

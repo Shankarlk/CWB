@@ -68,6 +68,8 @@ namespace CWB.ProductionPlanWO.Utils
             public const string AllProductionPlanWo = Base + "/allproductionplanwo/{tenantId}";
             public const string DeleteSubCon = Base + "/delwosubcon/{Id}";
             public const string DeleteWo = Base + "/deletewo/{Id}";
+            public const string DeleteSoWoRel = Base + "/deletesoworel/{Id}";
+            public const string DeleteProductionplansplitwo = Base + "/deleteproductionplansplitwo/{Id}";
             public const string GetWoStatus = Base + "/getwostatus/{Id}";
             public const string PostChildWoRel = Base + "/childworel";
             public const string PostMcTimeList = Base + "/postmctimelist";

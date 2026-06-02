@@ -1545,6 +1545,8 @@
                         <input type="text" id="popup4partId" hidden />
                         <input type="text" id="popup4partType" hidden />
                         <input type="text" id="popup4Status" hidden />
+                        <input type="text" id="popup4socompletiondate" hidden />
+
                         @*<input type="text" id="popup4RelodOption" hidden />*@
                         <button class="btn btn-primary btn-sm w-100" id="popup4SaveWo">Update WO</button>
                     </div>
@@ -1585,7 +1587,7 @@
         <div class="modal-content bxs-modal">
             <div class="modal-header">
                 <h5 class="modal-title" id="staticBackdropLabel">
-                    Work Order Ref xxxx for Part No ./ Desc ...
+                    Work Order Ref <span id="popup6WoNumber"></span> for <span id="popup6PartNo"></span>
                     generated in Detailed Planning
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -1594,13 +1596,13 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="row">
-                            <div class="col-md-3 mb-2">
+                            <div class="col-md-2 mb-2">
                                 <label class="form-label"> Calc. WO Qnty </label>
                                 <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
                                        data-tippy-placement="top" id="popup6CalcWoQnty" readonly>
                             </div>
                             <!-- ========================= -->
-                            <div class="col-md-3 mb-2">
+                            <div class="col-md-2 mb-2">
                                 <label class="form-label"> Qnty on Hand</label>
                                 <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
                                        data-tippy-placement="top" id="popup6QntyOnHand" readonly>
@@ -1620,13 +1622,13 @@
                             </div>
                             <!-- ========================= -->
                             <!-- ========================= -->
-                            <div class="col-md-3 mb-2">
+                            <div class="col-md-2 mb-2">
                                 <label class="form-label"> WO Compl Dt</label>
                                 <input class=" form-control form-control-sm" type="text" title=""
                                        data-plugin="tippy" data-tippy-placement="top" id="popup6WoComplDt" readonly>
                             </div>
                             <!-- ========================= -->
-                            <div class="col-md-5 mb-2 mt-3">
+                            <div class="col-md-4 mb-2 mt-3">
                                 <label class="form-label"> Edit generated WO for Qnty / Date / Routing </label>
                                 <input class="form-check-input" type="radio" title="" data-plugin="tippy"
                                        name="popup6Radiobtn" value="1" data-tippy-placement="top">
@@ -1635,10 +1637,29 @@
                             <div class="col-md-3 mb-2 mt-3">
                                 <label class="form-label"> Split Work this Order </label>
                                 <input class="form-check-input" type="radio" title="" data-plugin="tippy"
-                                       name="popup6Radiobtn" value="1" data-tippy-placement="top">
+                                       name="popup6Radiobtn" value="2" data-tippy-placement="top">
+                            </div>
+                            <div class="col-md-2 mt-3">
+                                <select class="form-select form-select-sm" aria-label="form-select-sm" title=""
+                                        data-plugin="tippy" data-tippy-placement="top" id="numbersplitwopopup6">
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mt-3" id="popup6message">
+                                <label class="form-label">This Wo will be Executed using the Preffred Routing starting from 1st Opr to Last Opr </label>
                             </div>
                             <!-- ========================= -->
                             <div class="col-md-12 text-end">
+                                <input type="text" id="popup6ppid" hidden />
+                                <input type="text" id="popup6woid" hidden />
+                                <input type="text" id="popup6soid" hidden />
+                                <input type="text" id="popup6partId" hidden />
+                                <input type="text" id="popup6partType" hidden />
+                                <input type="text" id="popup6Status" hidden />
+                                <input type="text" id="popup6socompletiondate" hidden />
                                 <button class="btn btn-sm btn-primary " id="popup6SaveWo">Update WO</button>
                             </div>
                             <!-- ========================= -->
@@ -1650,7 +1671,7 @@
                     <div class="col-md-8">
                         <h6>List of WO combined to form WO Ref xxx</h6>
                         <div class="table-responsive table-he-180">
-                            <table class="table table-sm table-bordered w-100 text-center">
+                            <table class="table table-sm table-bordered w-100 text-center" id="popup6combinedwo">
                                 <thead class="  table-info th-sti">
                                     <tr class="table-border-bottom">
                                         <th>WO Ref</th>
@@ -1659,13 +1680,13 @@
                                         <th>Cumul. Sum</th>
                                         <th>
                                             <input class="form-check-input" type="checkbox" title="Select All"
-                                                   data-plugin="tippy" data-tippy-placement="top">
+                                                   data-plugin="tippy" data-tippy-placement="top" id="popup6SelectAll">
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <!-- -------------  -->
-                                    <tr>
+                                    @*<tr>
                                         <td></td>
                                         <td></td>
                                         <td></td>
@@ -1674,7 +1695,7 @@
                                             <input class="form-check-input" type="checkbox" title="Select"
                                                    data-plugin="tippy" data-tippy-placement="top">
                                         </td>
-                                    </tr>
+                                    </tr>*@
                                     <!-- -------------  -->
                                     <!-- -------------  -->
                                 </tbody>
@@ -1691,13 +1712,16 @@
                             </div>
                             <!-- ===============  -->
                             <div class="col-md-12">
-                                <button class="btn btn-primary btn-sm w-100">Create New WO from selected WO</button>
+                                <button class="btn btn-primary btn-sm w-100"  id="popup6CreateWO">Create New WO from selected WO</button>
                             </div>
                             <!-- ===============  -->
                             <div class="col-md-12 mb-2">
                                 <label class="form-label">Bal. WO Qnty to be selected</label>
                                 <input class=" form-control form-control-sm" type="text" title=""
                                        data-plugin="tippy" data-tippy-placement="top" id="popup6SelectedBalQnty" readonly>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">All WO to be covered in splitting</label>
                             </div>
                             <!-- ===============  -->
                         </div>
@@ -1707,7 +1731,7 @@
                     <!-- ========================= -->
                     <div class="col-md-8 mb-2">
                         <div class="table-responsive table-he-150">
-                            <table class="table table-sm table-bordered w-100 text-center">
+                            <table class="table table-sm table-bordered w-100 text-center" id="Popup6Grid">
                                 <thead class="  table-info th-sti">
                                     <tr class="table-border-bottom">
                                         <th>WO Ref</th>
@@ -1718,8 +1742,8 @@
                                 </thead>
                                 <tbody>
 
-                                    <!-- -------------  -->
-                                    <tr>
+                                    
+                                    @*<tr>
                                         <td></td>
                                         <td></td>
                                         <td></td>
@@ -1730,26 +1754,43 @@
                                                     <i class="mdi mdi-dots-vertical"></i>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end">
-                                                    <!-- item-->
+                                                     item
                                                     <a href="javascript:void(0);" class="dropdown-item">Edit</a>
-                                                    <!-- item-->
+                                                     item
                                                     <a href="javascript:void(0);" class="dropdown-item">Delete</a>
                                                 </div>
                                             </div>
                                         </td>
-                                    </tr>
-                                    <!-- -------------  -->
-                                    <!-- -------------  -->
+                                    </tr>*@
+                                     
                                 </tbody>
                             </table>
                         </div>
                     </div>
                     <!-- ========================= -->
-                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+
+                        <div id="popup6RecombineDiv" style="display:none;">
+
+                            <label class="form-label">
+                                Recombine to Single WO
+                            </label>
+
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="popup6RecombineWO"
+                                   name="popup6RecombineOption"
+                                   value="1">
+
+                            <input type="hidden" id="popup6SplitParentWOId" />
+
+                        </div>
+
+                    </div>
                     <!-- ========================= -->
                     <label class="form-label col-md-2 text-end"> Sum WO Qnty</label>
                     <div class="col-md-3 mb-2">
-                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"  id="popup6SplitSumQty"
                                data-tippy-placement="top" value="0" readonly>
                     </div>
                     <!-- ========================= -->
@@ -1977,6 +2018,12 @@
                         <div class="col-md-3 mb-2">
                             <label class="form-label"> Ending Opr No</label>
                             <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="popup5EditEndingOp">
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label class="form-label">Make From</label>
+                            <select class="form-select form-select-sm"
+                                    id="ddlMakeFromPopup5Edit">
                             </select>
                         </div>
                     </div>
@@ -2550,6 +2597,7 @@
         <td hidden>{planCompletionDate}</td>
         <td hidden>{parentlevel}</td>
         <td>{criticalParts}</td>
+        <td hidden>{combined_WO}</td>
         <td>
             <div class="dropdown float-center">
                 <a href="#"
@@ -2574,6 +2622,7 @@
                                    class="dropdown-item" onclick="EditWo(this)"
                                    data-ppid={productionPlanId}
                                    data-workorderid={woId}
+                                   data-woidstr={woIdStr}
                                    data-parentwoid={parentWoId}
                                    data-salesorderid={salesOrderId}
                                    data-wonumber={woNumber}
@@ -2582,8 +2631,10 @@
                                    data-parttype={partType}
                                    data-parentlevel={parentlevel}
                                    data-plancompletiondatestr='{planCompletionDateStr}'
+                                   data-socompletiondatestr='{soComplDateStr}'
                                    data-requiredquantity={requiredQuantity}
                                    data-calwoqty={calcWOQty}
+                                    data-combinedwo={combined_WO}
                                    data-wostatus={status}>Edit</a>
                             }
                             else
@@ -2599,6 +2650,7 @@
                            class="dropdown-item" onclick="EditWo(this)"
                            data-ppid={productionPlanId}
                            data-workorderid={woId}
+                            data-woidstr={woIdStr}
                            data-parentwoid={parentWoId}
                            data-salesorderid={salesOrderId}
                            data-wonumber={woNumber}
@@ -2607,8 +2659,10 @@
                            data-parttype={partType}
                            data-parentlevel={parentlevel}
                            data-plancompletiondatestr='{planCompletionDateStr}'
+                           data-socompletiondatestr='{soComplDateStr}'
                            data-requiredquantity={requiredQuantity}
                            data-calwoqty={calcWOQty}
+                           data-combinedwo={combined_WO}
                            data-wostatus={status}>Edit</a>
                     }
                     <a href="javascript:void(0);"
@@ -2641,6 +2695,26 @@
         <td hidden>{productionPlanId}</td>
         <td hidden>{buildToStock}</td>
         <td hidden>{combinedWoIds}</td>
+    </tr>
+</template>
+<template id="Popup6CombinedWoRow">
+    <tr>
+        <td hidden>{woId}</td>
+        <td hidden>{salesOrderId}</td>
+        <td hidden>{partId}</td>
+
+        <td>{woNumber}</td>
+        <td class="woqty">{calcWOQty}</td>
+        <td>{planCompletionDateStr}</td>
+        <td>{cumulativeQty}</td>
+        <td>
+            <input class="form-check-input popup6wochk"
+                   type="checkbox"
+                    disabled
+                   data-woid="{woId}"
+                   data-wonumber="{woNumber}"
+                   data-qty="{calcWOQty}">
+        </td>
     </tr>
 </template>
 <template id="MatlWhereGridRow">
@@ -2818,7 +2892,45 @@
         </td>
     </tr>
 </template>
-
+<template id="Popup6GridRow">
+    <tr>
+        <td hidden>{productionPlanId}</td>
+        <td hidden>{woId}</td>
+        <td hidden>{salesOrderId}</td>
+        <td hidden>{partId}</td>
+        <td>{woNumber}</td>
+        <td>{calcWOQty}</td>
+        <td>{planCompletionDateStr}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-productionplanid={productionPlanId}
+                       data-workorderid={woId}
+                       data-parentwoid={parentWoId}
+                       data-salesorderid={salesOrderId}
+                       data-wonumber={woNumber}
+                       data-partno={partNo}
+                       data-partid={partId}
+                       data-parttype={partType}
+                       data-parentlevel={parentlevel}
+                       data-plancompletiondatestr='{planCompletionDateStr}'
+                       data-calwoqty={calcWOQty}
+                       data-wostatus={status}
+                       data-pfreloadoption={reloadOption}
+                       data-bs-target="#popup5Edit">Edit</a>
+                    <!-- item-->
+                    @*<a href="javascript:void(0);" class="dropdown-item">Delete</a>*@
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
 <template id="MultipleSoRow">
     <tr>
         <td hidden>{salesOrderId}</td>

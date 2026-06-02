@@ -91,8 +91,20 @@ namespace CWB.App.Controllers
                 
             
 
-            ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)workOrdersVM.PartId);
-            workOrdersVM.PartType = (int)manuf.ManufacturedPartType;
+                  ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)workOrdersVM.PartId);
+                if (manuf.ManufacturedPartType == 1)
+                {
+                    var mpmakefromlist = await _masterService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
+
+                    var selectedMakeFrom = mpmakefromlist.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
+                    workOrdersVM.Input_Part_No = selectedMakeFrom.MPPartId;
+
+                }
+                else
+                {
+                    workOrdersVM.Input_Part_No = 0;
+                }
+                workOrdersVM.PartType = (int)manuf.ManufacturedPartType;
             RoutingVM rout = new RoutingVM();
             var resultList = await _routingService.Routings((int)manuf.ManufacturedPartNoDetailId);
             foreach (var item in resultList)
@@ -558,6 +570,18 @@ namespace CWB.App.Controllers
                     continue;
                 }
                 ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)workOrdersVM.PartId);
+                if(manuf.ManufacturedPartType==1)
+                {
+                    var mpmakefromlist = await _masterService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
+
+                    var selectedMakeFrom = mpmakefromlist.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
+                    workOrdersVM.Input_Part_No = selectedMakeFrom.MPPartId;
+
+                }
+                else
+                {
+                    workOrdersVM.Input_Part_No = 0;
+                }
                 workOrdersVM.PartType = (int)manuf.ManufacturedPartType;
                 RoutingVM rout = new RoutingVM();
                 var resultList = await _routingService.Routings((int)manuf.ManufacturedPartNoDetailId);
@@ -740,7 +764,225 @@ namespace CWB.App.Controllers
             var postwoso = await _baService.PostWoSoRel(wOSOVMs);
             return Ok(postwoso);
         }
+        [HttpPost]
+        public async Task<IActionResult> MultipleWOPostsplit([FromBody] IEnumerable<WorkOrdersVM> listworkOrdersVM)
+        {
+            List<Selected_Sales_OrderVM> selected_Sales_OrderVMs = new List<Selected_Sales_OrderVM>();
+            List<WorkOrdersVM> workOrdersVMs = new List<WorkOrdersVM>();
+            List<WorkOrdersVM> finalWOList = new List<WorkOrdersVM>();
 
+            foreach (var workOrdersVM in listworkOrdersVM)
+            {
+                workOrdersVM.IsSplit = 1;
+
+                ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)workOrdersVM.PartId);
+                if (manuf.ManufacturedPartType == 1)
+                {
+                    var mpmakefromlist = await _masterService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
+
+                    var selectedMakeFrom = mpmakefromlist.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
+                    workOrdersVM.Input_Part_No = selectedMakeFrom.MPPartId;
+
+                }
+                else
+                {
+                    workOrdersVM.Input_Part_No = 0;
+                }
+                workOrdersVM.PartType = (int)manuf.ManufacturedPartType;
+                RoutingVM rout = new RoutingVM();
+                var resultList = await _routingService.Routings((int)manuf.ManufacturedPartNoDetailId);
+                foreach (var item in resultList)
+                {
+                    if (item.PreferredRouting == 1)
+                    {
+                        rout = item;
+                    }
+                    else
+                    {
+                        rout = (resultList).Take(1).FirstOrDefault();
+                    }
+                }
+                var result = (await _routingService.RoutingSteps(rout.RoutingId)).Take(1).FirstOrDefault();
+                workOrdersVM.RoutingId = rout.RoutingId;
+                workOrdersVM.StartingOpNo = (int)(result?.StepId != null
+                    ? result.StepId
+                    : 0);
+
+                workOrdersVM.EndingOpNo = (int)(result?.StepId != null
+                    ? result.StepId
+                    : 0);
+                if (workOrdersVM.PartType == 1)
+                {
+                    workOrdersVM.Parentlevel = 'N';
+                }
+                else
+                {
+                    //workOrdersVM.Parentlevel = 'Y';
+                    var mpBOM = await _masterService.BOMS(workOrdersVM.PartId.ToString());
+                    if (mpBOM != null && mpBOM.Any())
+                    {
+                        foreach (var bom in mpBOM)
+                        {
+                            var assy = await _masterService.GetManufPart((int)bom.BOMPartId);
+                            if (assy != null)
+                            {
+                                workOrdersVM.Parentlevel = 'Y';
+                            }
+                            else
+                            {
+                                workOrdersVM.Parentlevel = 'N';
+                            }
+                        }
+                    }
+                    else
+                    {
+                        workOrdersVM.Parentlevel = 'Y';
+                    }
+                }
+                workOrdersVMs.Add(workOrdersVM);
+            }
+         
+
+
+
+
+            var postWO = await _baService.MultiplePostWO(workOrdersVMs);
+
+            
+            return Ok( postWO);
+            //return Ok(listworkOrdersVM);
+        }
+        [HttpPost]
+        public async Task<IActionResult> WOpostUpdate(WorkOrdersVM workOrdersVM)
+        {
+            List<WorkOrdersVM> workOrdersVMs = new List<WorkOrdersVM>();
+            WorkOrdersVM postWO = null;
+            
+            
+                ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)workOrdersVM.PartId);
+                if (manuf.ManufacturedPartType == 1)
+                {
+                    var mpmakefromlist = await _masterService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
+
+                    var selectedMakeFrom = mpmakefromlist.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
+                    workOrdersVM.Input_Part_No = selectedMakeFrom.MPPartId;
+
+                }
+                else
+                {
+                    workOrdersVM.Input_Part_No = 0;
+                }
+                workOrdersVM.PartType = (int)manuf.ManufacturedPartType;
+                RoutingVM rout = new RoutingVM();
+                var resultList = await _routingService.Routings((int)manuf.ManufacturedPartNoDetailId);
+                foreach (var item in resultList)
+                {
+                    if (item.PreferredRouting == 1)
+                    {
+                        rout = item;
+                    }
+                    else
+                    {
+                        rout = (resultList).Take(1).FirstOrDefault();
+                    }
+                }
+                if (workOrdersVM.WOID == 0)
+                {
+                    var result = (await _routingService.RoutingSteps(rout.RoutingId)).Take(1).FirstOrDefault();
+                    var reverse = (await _routingService.RoutingSteps(rout.RoutingId)).Take(1).LastOrDefault();
+                    workOrdersVM.RoutingId = rout.RoutingId;
+                    workOrdersVM.StartingOpNo = result?.StepId != null
+                                                ? int.TryParse(result.StepId.ToString(), out int opNo) ? opNo : 0
+                                                : 0;
+                    workOrdersVM.EndingOpNo = reverse?.StepId != null
+                                                ? int.TryParse(reverse.StepId.ToString(), out int eopNo) ? eopNo : 0
+                                                : 0;
+                }
+                if (workOrdersVM.PartType == 1)
+                {
+                    workOrdersVM.Parentlevel = 'N';
+
+                }
+                else
+                {
+                    var mpBOM = await _masterService.BOMS(workOrdersVM.PartId.ToString());
+                    if (mpBOM != null && mpBOM.Any())
+                    {
+                        foreach (var bom in mpBOM)
+                        {
+                            var assy = await _masterService.GetManufPart((int)bom.BOMPartId);
+                            if (assy != null)
+                            {
+                                workOrdersVM.Parentlevel = 'Y';
+                            }
+                            else
+                            {
+                                workOrdersVM.Parentlevel = 'N';
+                            }
+                        }
+                    }
+                    else
+                    {
+                        workOrdersVM.Parentlevel = 'Y';
+                    }
+                }
+                postWO = await _baService.PostWO(workOrdersVM);
+    
+                return Ok(postWO);
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> RecombineWO(long parentWoId)
+        {
+            try
+            {
+                // GET ALL CHILD WOs
+                var childWos = await _woService.AllParentChildWos(parentWoId);
+
+                if (childWos == null || !childWos.Any())
+                {
+                    return Json(false);
+                }
+                var firstchildwo = childWos.First();
+                // ==========================================
+                // REACTIVATE PARENT WO
+                // ==========================================
+
+                var parentWo = (await _baService.AllWorkOrders()).Where(x=>x.WOID==parentWoId).FirstOrDefault();
+
+                parentWo.Active = 1;
+                //parentWo.ReloadOption = null;
+                parentWo.RoutingId = firstchildwo.RoutingId;
+                parentWo.StartingOpNo = firstchildwo.StartingOpNo;
+                parentWo.EndingOpNo = firstchildwo.EndingOpNo;
+
+                var postWO = await _baService.PostWO(parentWo); 
+
+                // ==========================================
+                // DEACTIVATE CHILD WOs
+                // ==========================================
+                
+                foreach (var child in childWos)
+                {
+                    var resultList = await _woService.GetSoWoRel(child.WOID);
+                    var first = resultList.FirstOrDefault();
+                    var deletesowo = await _woService.DeleteWoSoRel(first.WOSOId);
+                    var deletesplitwo= await _woService.DeleteWo(child.WOID);
+                }
+
+                // ==========================================
+                // REMOVE SPLIT RELATIONS IF NEEDED
+                // ==========================================
+
+              
+
+                return Json(true);
+            }
+            catch (Exception ex)
+            {
+                return Json(false);
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> AllWorkOrders()
         {

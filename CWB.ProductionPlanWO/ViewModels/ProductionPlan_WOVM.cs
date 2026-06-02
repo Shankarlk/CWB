@@ -63,5 +63,7 @@ namespace CWB.ProductionPlanWO.ViewModels
         public string CriticalParts { get; internal set; }
         public int Consolidation_Flag { get; set; }
         public int Freeze { get; set; }
+        public long Input_Part_No { get; set; }
+        public long SplitParentWoId { get; set; }
     }
 }

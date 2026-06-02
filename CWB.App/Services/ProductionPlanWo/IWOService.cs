@@ -44,6 +44,8 @@ namespace CWB.App.Services.ProductionPlanWo
 
         Task<bool> DeleteSubCon(long doctypeId);
         Task<bool> DeleteWo(long doctypeId);
+        Task<bool> DeleteWoSoRel(long doctypeId);
+        Task<bool> Deleteproductionplansplitwo(long doctypeId);
         Task<List<PODetailsVM>> PODetails(IEnumerable<PODetailsVM> pODetails);
         Task<List<PODetailsVM>> UpdateInspection(IEnumerable<PODetailsVM> pODetails);
         Task<List<POHeaderVM>> POHeader(IEnumerable<POHeaderVM> pOHeaderVMs);

@@ -851,6 +851,39 @@ namespace CWB.ProductionPlanWO.Services
             }
             return false;
         }
+        public async Task<bool> DeleteSoWoRel(long Id)
+        {
+            var co = await _wosoRepository.SingleOrDefaultAsync(m => m.Id == Id);
+            if (co != null)
+            {
+                try
+                {
+                    _wosoRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<bool> DeleteProductionplansplitwo(long Id)
+        {
+            var co = await _productionPlan_WORepository.AwaitGetRangeAsync(m => m.SplitParentWoId == Id);
+            if (co != null)
+            {
+                try
+                {
+                    foreach (var item in co)
+                    {
+                        _productionPlan_WORepository.Remove(item);
+                    }
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
 
         public async Task<IEnumerable<WorkOrdersVM>> AllParentChildWo(long parentWoId, long tenantId)
         {
@@ -938,6 +971,9 @@ namespace CWB.ProductionPlanWO.Services
                         {
                             return productions;
                         }
+                        
+                        
+                        upp.For_Ref = pp.For_Ref;
                         upp.CalcWOQty = pp.CalcWOQty;
                         upp.PlanCompletionDate = pp.PlanCompletionDate;
                         upp.BuildToStock = pp.BuildToStock;

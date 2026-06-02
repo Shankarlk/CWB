@@ -51,5 +51,7 @@ namespace CWB.ProductionPlanWO.Domain
         public long TenantId { get; set; }
         public int Consolidation_Flag { get; set; }
         public int Freeze { get; set; }
+        public long Input_Part_No { get; set; }
+        public long SplitParentWoId { get; set; }
     }
 }
