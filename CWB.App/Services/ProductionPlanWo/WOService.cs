@@ -147,6 +147,15 @@ namespace CWB.App.Services.ProductionPlanWo
             productions.TenantId = tenantId;
             return await RestHelper<ProductionPlan_WoVM>.PostAsync(uri, productions, headers);
         }
+        public async Task<ProductionPlan_WoVM> UpdateProductionPlan_WoAllocatedqntyandstatus(ProductionPlan_WoVM productions)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/updateproductionplanstatusandallocatedqnty");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            productions.TenantId = tenantId;
+            return await RestHelper<ProductionPlan_WoVM>.PostAsync(uri, productions, headers);
+        }
+
+
         public async Task<ProductionPlan_WoVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WoVM productions)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/updateholdproductionplan");
@@ -271,6 +280,12 @@ namespace CWB.App.Services.ProductionPlanWo
         public async Task<bool> Deleteproductionplansplitwo(long doctypeId)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deleteproductionplansplitwo/{doctypeId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
+        public async Task<bool> Deleteforreryalloc(long doctypeId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/deleteforefyalloc/{doctypeId}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<bool>.GetAsync(uri, headers);
         }

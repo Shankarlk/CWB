@@ -15,6 +15,7 @@
         public string Country { get; set; }
         public string GstNo { get; set; }
         public string PanNo { get; set; }
+        public long TenantId { get; set; }
 
     }
 }

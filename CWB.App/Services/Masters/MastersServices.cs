@@ -34,7 +34,13 @@ namespace CWB.App.Services.Masters
             var data = new { CompanyId, CompanyName, TenantId = tenantId };
             return await RestHelper<bool>.PostAsync(uri, data, headers);
         }
-
+        public async Task<ContactsVM> GetCompanybyName( string CompanyName)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/getcompanybyname/{CompanyName}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+             
+            return await RestHelper<ContactsVM>.GetAsync(uri, headers);
+        }
         public async Task<bool> CheckIfDivisionExisit(long CompanyId, long DivisionId, string DivisionName)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbms/check-division");
@@ -50,7 +56,13 @@ namespace CWB.App.Services.Masters
             companyVM.TenantId = tenantId;
             return await RestHelper<CompanyVM>.PostAsync(uri, companyVM, headers);
         }
-
+        public async Task<ContactsVM> PostGroCompany(ContactsVM companyVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/postgrocompany");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            companyVM.TenantId = tenantId;
+            return await RestHelper<ContactsVM>.PostAsync(uri, companyVM, headers);
+        }
         public async Task<bool> DeleteCompany(long companyId)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbms/deletecompany/{companyId}/{tenantId}");
@@ -95,7 +107,12 @@ namespace CWB.App.Services.Masters
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<ContactsVM>>.GetAsync(uri, headers);
         }
-
+        public async Task<IEnumerable<ContactsVM>> GetCompaniesGro()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbms/companiesgro/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<ContactsVM>>.GetAsync(uri, headers);
+        }
         public async Task<IEnumerable<RawMateriaTypeVM>> GetRMTypes()
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbms/rmtypes");

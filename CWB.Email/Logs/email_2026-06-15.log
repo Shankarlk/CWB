@@ -1,0 +1,65 @@
+2026-06-15 04:24:49.6446 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-15 04:24:50.3247 INFO Application started. Press Ctrl+C to shut down.
+2026-06-15 04:24:50.5219 INFO Hosting environment: Production
+2026-06-15 04:24:50.8739 INFO Content root path: /app
+2026-06-15 04:25:06.6814 ERROR Consume exception
+2026-06-15 05:35:18.8650 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-15 05:35:19.7523 INFO Application started. Press Ctrl+C to shut down.
+2026-06-15 05:35:20.0662 INFO Hosting environment: Production
+2026-06-15 05:35:20.1426 INFO Content root path: /app
+2026-06-15 05:35:20.3433 ERROR Consume exception
+2026-06-15 05:43:02.4857 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-15 05:43:03.2881 INFO Application started. Press Ctrl+C to shut down.
+2026-06-15 05:43:03.7452 INFO Hosting environment: Production
+2026-06-15 05:43:03.8394 INFO Content root path: /app
+2026-06-15 05:43:04.2217 ERROR Consume exception
+2026-06-15 05:53:36.5887 INFO Consumed message at email-events [[0]] @0: {"RecipientEmail":"ashishjayram765@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Ashish,\n\nYour Account has been Created successfully!\nYou Username: ashishjayram765@gmail.com\nYou Password: N@vryJ2SG2\n\nThanks,\nKGK-Engineers"}
+2026-06-15 05:53:37.5382 INFO Attempt 1 to send email to ashishjayram765@gmail.com
+2026-06-15 05:53:38.5560 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-06-15 05:53:40.8277 INFO Authenticating SMTP user serviceemail803@gmail.com
+2026-06-15 05:53:41.3133 INFO Sending email to ashishjayram765@gmail.com
+2026-06-15 05:53:43.2400 INFO Email successfully sent to ashishjayram765@gmail.com
+2026-06-15 07:20:27.9808 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-15 07:20:28.4820 INFO Application started. Press Ctrl+C to shut down.
+2026-06-15 07:20:28.7497 INFO Hosting environment: Production
+2026-06-15 07:20:28.8596 INFO Content root path: /app
+2026-06-15 07:27:36.6428 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-15 07:27:36.8039 INFO Application started. Press Ctrl+C to shut down.
+2026-06-15 07:27:36.8212 INFO Hosting environment: Production
+2026-06-15 07:27:36.8433 INFO Content root path: /app
+2026-06-15 07:54:34.6537 INFO Consumed message at email-events [[0]] @1: {"RecipientEmail":"ashishjayram765@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Ashish,\n\nYour Account has been Created successfully!\nYou Username: ashishjayram765@gmail.com\nYou Password: N@vryJ2SG2\n\nThanks,\nKGK-Engineers"}
+2026-06-15 07:54:34.9916 INFO Attempt 1 to send email to ashishjayram765@gmail.com
+2026-06-15 07:54:35.3472 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-06-15 07:54:37.3917 INFO Authenticating SMTP user serviceemail803@gmail.com
+2026-06-15 07:54:38.0481 INFO Sending email to ashishjayram765@gmail.com
+2026-06-15 07:54:40.0366 INFO Email successfully sent to ashishjayram765@gmail.com
+2026-06-15 07:59:35.4810 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-15 07:59:36.1606 INFO Application started. Press Ctrl+C to shut down.
+2026-06-15 07:59:36.3461 INFO Hosting environment: Production
+2026-06-15 07:59:36.3958 INFO Content root path: /app
+2026-06-15 08:35:14.8886 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-15 08:35:15.3374 INFO Application started. Press Ctrl+C to shut down.
+2026-06-15 08:35:15.6848 INFO Hosting environment: Production
+2026-06-15 08:35:15.7640 INFO Content root path: /app
+2026-06-15 08:40:50.7102 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-15 08:40:50.8659 INFO Application started. Press Ctrl+C to shut down.
+2026-06-15 08:40:50.9105 INFO Hosting environment: Production
+2026-06-15 08:40:50.9479 INFO Content root path: /app
+2026-06-15 09:22:08.2521 INFO Consumed message at email-events [[0]] @2: {"RecipientEmail":"svr84511@gmail.com","Subject":"Welcome to KGK-Engineers!","Body":"Hi Sachin,\n\nYour Account has been Created successfully!\nYou Username: svr84511@gmail.com\nYou Password: AsK0bs7%fK\n\nThanks,\nKGK-Engineers"}
+2026-06-15 09:22:08.7176 INFO Attempt 1 to send email to svr84511@gmail.com
+2026-06-15 09:22:09.7818 INFO Connecting to SMTP server smtp.gmail.com:587 with StartTls
+2026-06-15 09:22:11.5805 INFO Authenticating SMTP user serviceemail803@gmail.com
+2026-06-15 09:22:12.0841 INFO Sending email to svr84511@gmail.com
+2026-06-15 09:22:14.0667 INFO Email successfully sent to svr84511@gmail.com
+2026-06-15 09:34:40.0383 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-15 09:34:40.4930 INFO Application started. Press Ctrl+C to shut down.
+2026-06-15 09:34:40.6601 INFO Hosting environment: Production
+2026-06-15 09:34:40.8481 INFO Content root path: /app
+2026-06-15 09:53:14.1271 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-15 09:53:14.3465 INFO Application started. Press Ctrl+C to shut down.
+2026-06-15 09:53:14.4966 INFO Hosting environment: Production
+2026-06-15 09:53:14.7101 INFO Content root path: /app
+2026-06-15 10:02:25.6032 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-15 10:02:25.9871 INFO Application started. Press Ctrl+C to shut down.
+2026-06-15 10:02:26.1489 INFO Hosting environment: Production
+2026-06-15 10:02:26.1852 INFO Content root path: /app

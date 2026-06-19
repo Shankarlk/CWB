@@ -409,16 +409,19 @@
                                                         @*<th>Build to Stock</th>*@
                                                         <th>Part No / Desc</th>
                                                         <th>Calc WO Qnty</th>
-                                                        <th>Qnty on Hand</th>
+                                                        <th>Allocated Qnty</th>
                                                         <th>Addn Qnty from User</th>
                                                         <th>Plan WO Qnty</th>
                                                         <th>Input Matl Rcpt Date</th>
-                                                        <th>WO Plan Start Date</th>
-                                                        <th>WO Plan Compl Dt</th>
-                                                        <th>SO Compl Dt</th>
+                                                        <th hidden>WO Plan Start Date</th>
+                                                        <th hidden>WO Plan Compl Dt</th>
+                                                        <th hidden>SO Compl Dt</th>
                                                         <th>WO Type</th>
-                                                        <th>WO ready for Release</th>
-                                                        <th>Critical Part</th>
+                                                        <th hidden>WO ready for Release</th>
+                                                        <th hidden>Critical Part</th>
+                                                        <th>Capacity Required(Hrs)</th>
+                                                        <th>Seq No</th>
+                                                        <th hidden>WO Status</th>
                                                         <th></th>
                                                     </tr>
                                                 </thead>
@@ -443,24 +446,32 @@
                                                 Mc Capacity Utilization  List (Inhouse -Subcon) Detailed
                                             </button>
                                         </div>
-                                        <div class="col-md-4 mt-3 text-end">
+                                        <!--<div class="col-md-4 mt-3 text-end">-->
                                             <!-- =============================  -->
-                                            <button class="btn btn-sm btn-primary" title="" id="FreezeWo">
+                                            <!--<button class="btn btn-sm btn-primary" title="" id="FreezeWo" style="display:none;">
                                                 Freeze Inhouse / Subcon Prodn Plan
                                             </button>
-                                            <button class="btn btn-sm btn-info" title="" id="ProcessInfo">
+                                            <button class="btn btn-sm btn-info" title="" id="ProcessInfo" style="display:none;">
                                                 Process Flow Info
+                                            </button>-->
+                                            <!-- =============================  -->
+                                        <!--</div>-->
+                                        <div class="col-md-4 mt-3 text-end">
+                                            <!-- =============================  -->
+                                            <button class="btn btn-sm btn-primary" title="" id="SimulationMenu">
+                                                Go to Simulation Menu
                                             </button>
+                                           
                                             <!-- =============================  -->
                                         </div>
                                         <div class="col-md-10 mt-2">
-                                            <button class="btn btn-sm" title="" id="DetailedProcPlanBtns">
+                                            <button class="btn btn-sm" title="" id="DetailedProcPlanBtns" style="display:none;">
                                                 Detailed Production Planning Status
                                             </button>
                                             <input class="form-control form-control-sm w-75" type="text" title=""
                                                    data-plugin="tippy" data-tippy-placement="top" id="DetailedStatusMsg" readonly>
                                         </div>
-                                        <div class="col-md-2 mt-3 text-end">
+                                        <div class="col-md-2 mt-3 text-end" style="display:none;">
                                             <!-- =============================  -->
                                             <button class="btn btn-sm btn-primary" title="" id="CalculateMatlReq">
                                                 Calculate Material Requirement
@@ -469,7 +480,7 @@
                                         </div>
                                         <div class="col-md-10 mt-2">
                                         </div>
-                                        <div class="col-md-2 mt-2 text-end">
+                                        <div class="col-md-2 mt-2 text-end" style="display:none;">
                                             <!-- =============================  -->
                                             <button class="btn btn-sm btn-primary" title="" id="ReleaseWo">
                                                 Release WO for Prodn
@@ -2583,20 +2594,23 @@
         @*<td>{buildToStock}</td>*@
         <td>{partNo} / {partDesc}</td>
         <td>{calcWOQty}</td>
-        <td>0</td>
+        <td>{qtyOnHand}</td>
         <td>0</td>
         <td>{planWOQnty}</td>
-        <td></td>
-        <td>{planStartDateStr}</td>
-        <td>{planCompletionDateStr}</td>
-        <td>{soComplDateStr}</td>
+        <td ></td>
+        <td hidden>{planStartDateStr}</td>
+        <td hidden>{planCompletionDateStr}</td>
+        <td hidden>{soComplDateStr}</td>
         <td>{woType}</td>
-        <td>{woRelease}</td>
+        <td>{calc_Capacity_Reqd}</td>
+        <td>{sim_Seq_No}</td>
+        <td hidden>{woStatus}</td>
+        <td hidden>{woRelease}</td>
         <td hidden>{partType}</td>
         <td hidden>{productionPlanId}</td>
         <td hidden>{planCompletionDate}</td>
         <td hidden>{parentlevel}</td>
-        <td>{criticalParts}</td>
+        <td hidden>{criticalParts}</td>
         <td hidden>{combined_WO}</td>
         <td>
             <div class="dropdown float-center">

@@ -34,6 +34,7 @@ namespace CWB.ProductionPlanWO.Services
         Task<List<ProductionPlan_WOVM>> PostProductionPlan_WoFreeze(List<ProductionPlan_WOVM> productions);
         Task<ProductionPlan_WOVM> UpdateProductionPlan_Wo(ProductionPlan_WOVM productions);
         Task<ProductionPlan_WOVM> UpdateProductionPlan_WoCriticalPart(ProductionPlan_WOVM productions);
+        Task<ProductionPlan_WOVM> UpdateProductionPlan_WoAllocatedqntyandstatus(ProductionPlan_WOVM productions);
         Task<List<ProductionPlan_WOVM>> PostProductionPlan_WoConsolidation(List<ProductionPlan_WOVM> productions);
         Task<List<ProductionPlan_WOVM>> UpdateProductionPlan_WoForReference(List<ProductionPlan_WOVM> productions);
         Task<ProductionPlan_WOVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WOVM productions);
@@ -43,6 +44,7 @@ namespace CWB.ProductionPlanWO.Services
         Task<bool> DeleteWo(long Id);
         Task<bool> DeleteSoWoRel(long Id);
         Task<bool> DeleteProductionplansplitwo(long Id);
+        Task<bool> Deleteforreryalloc(long Id);
         Task<List<ChildWoRelVM>> PostChildWoRel(List<ChildWoRelVM> childWos);
         Task<List<McTimeListVM>> PostMcTimeList(List<McTimeListVM> mcTimeLists);
         Task<IEnumerable<McTimeListVM>> GetAllMcTimeListVMs(long tenantId);

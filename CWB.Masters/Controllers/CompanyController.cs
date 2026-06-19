@@ -54,7 +54,14 @@ namespace CWB.Masters.Controllers
             var companies = await _companyService.GetCompaniesByTenant(Id);
             return Ok(companies);
         }
-
+        [HttpGet]
+        [Route(ApiRoutes.Company.GetCompaniesByTenantGro)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<CompanyVM>))]
+        public async Task<IActionResult> GetCompaniesByTenantGro(long Id)
+        {
+            var companies = await _companyService.GetCompaniesByTenantGro(Id);
+            return Ok(companies);
+        }
         /// <summary>
         /// Get All Companies by tenant
         /// </summary>
@@ -86,7 +93,18 @@ namespace CWB.Masters.Controllers
             var result = await _companyService.Company(companyVM);
             return Ok(result);
         }
-
+        [HttpPost]
+        [Route(ApiRoutes.Company.PostGroCompany)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(CompanyVM))]
+        public async Task<IActionResult> PostGroCompany([FromBody] CompanyVM companyVM)
+        {
+            //var validator = new CompanyVMValidator();
+            //var validationResult = await validator.ValidateAsync(companyVM);
+            //if (!validationResult.IsValid)
+            //    return BadRequest(validationResult.Errors);
+            var result = await _companyService.PostGroCompany(companyVM);
+            return Ok(result);
+        }
         [HttpGet]
         [Route(ApiRoutes.Company.DeleteCompany)]
         [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
@@ -141,6 +159,15 @@ namespace CWB.Masters.Controllers
 
             var result = _companyService.CheckIfDivisionExisit(checkDivisionVM);
             return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Company.GetCompanyByName)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(CompaniesVM))]
+        public async Task<IActionResult> GetCompanyByName( string companyName,  long tenantId)
+        {
+            var companyId =    await _companyService.GetCompanyByName(companyName, tenantId);
+
+            return Ok(companyId);
         }
     }
 }

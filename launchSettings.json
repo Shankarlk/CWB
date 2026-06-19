@@ -20,7 +20,8 @@
         "zookeeper": "StartWithoutDebugging",
         "cwb.masters": "StartDebugging",
         "cwb.businessaquisition": "StartDebugging",
-        "cwb.productionplanwo": "StartDebugging"
+        "cwb.productionplanwo": "StartDebugging",
+        "cwb.gro": "StartDebugging"
       }
     }
   }

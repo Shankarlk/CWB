@@ -63,6 +63,7 @@ namespace CWB.ProductionPlanWO.Utils
             public const string PostProductionPlan_WoFreeze = Base + "/productionplanfreeeze";
             public const string UpdateProductionPlan_Wo = Base + "/updateproductionplan";
             public const string UpdateProductionPlan_WoCriticalPart = Base + "/updateproductionplancriticalpart";
+            public const string UpdateProductionPlan_WoAllocatedqntyandstatus = Base + "/updateproductionplanstatusandallocatedqnty";
             public const string PostProductionPlan_WoConsolidation = Base + "/postproductionplanconsolidation";
             public const string UpdateHoldProductionPlan_Wo = Base + "/updateholdproductionplan";
             public const string AllProductionPlanWo = Base + "/allproductionplanwo/{tenantId}";
@@ -70,6 +71,7 @@ namespace CWB.ProductionPlanWO.Utils
             public const string DeleteWo = Base + "/deletewo/{Id}";
             public const string DeleteSoWoRel = Base + "/deletesoworel/{Id}";
             public const string DeleteProductionplansplitwo = Base + "/deleteproductionplansplitwo/{Id}";
+            public const string Deleteforreryalloc = Base + "/deleteforefyalloc/{Id}";
             public const string GetWoStatus = Base + "/getwostatus/{Id}";
             public const string PostChildWoRel = Base + "/childworel";
             public const string PostMcTimeList = Base + "/postmctimelist";

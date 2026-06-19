@@ -268,6 +268,23 @@ services:
       - "9018:443"
       - "9019:80"
     restart: always
+   
+  cwb.gro:
+    image: shankar84kl/cwbgro
+    build:
+      context: .
+      dockerfile: CWB.Gro/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    links:
+      - db
+    networks:
+      - cwb-network
+    ports:
+      - "9022:443"
+      - "9023:80"
+    restart: always
   #mailhog:
   #  image: mailhog/mailhog:latest
   #  container_name: mailhog

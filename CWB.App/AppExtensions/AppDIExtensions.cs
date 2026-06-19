@@ -6,6 +6,7 @@ using CWB.App.Services.EmployeeMaster;
 using CWB.App.Services.Masters;
 using CWB.App.Services.ProductionPlanWo;
 using CWB.App.Services.Routings;
+using CWB.App.Services.Gro;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,6 +28,7 @@ namespace CWB.App.AppExtensions
             services.AddTransient<IDocTypeService, DocTypeService>();
             services.AddTransient<IDocMangService, DocMangService>();
             services.AddTransient<IEmployeeService, EmployeeService>();
+            services.AddTransient<IGroService, GroService>();
             services.AddScoped<EmailService>(); 
             services.AddSingleton<KafkaEmailProducer>(sp =>
             {

@@ -106,6 +106,30 @@ namespace CWB.Masters.Services.Company
             return companyVM;
         }
 
+        public async Task<CompanyVM> PostGroCompany(CompanyVM companyVM)
+        {
+            var company = _mapper.Map<Domain.Company>(companyVM);
+            if (company.Id == 0)
+            {
+                await _companyRepository.AddAsync(company);
+            }
+            else
+            {
+                company = await _companyRepository.UpdateAsync(company.Id, company);
+            }
+            await _unitOfWork.CommitAsync();
+            
+            companyVM.CompanyId = company.Id;
+          
+            return companyVM;
+        }
+
+
+
+
+
+
+
 
         public async Task<bool> DeleteCompany(long companyID, long tenantId)
         {
@@ -157,7 +181,11 @@ namespace CWB.Masters.Services.Company
             var companies = await _divisionRepository.GetAllDivisionByTenantAsync(tenantID);
             return _mapper.Map<IEnumerable<CompaniesVM>>(companies);
         }
-
+        public async Task<IEnumerable<CompanyVM>> GetCompaniesByTenantGro(long tenantID)
+        {
+            var companies =   _companyRepository.GetRangeAsync(m => m.TenantId==tenantID);
+            return _mapper.Map<IEnumerable<CompanyVM>>(companies);
+        }
         public IEnumerable<CompanyTypeVM> GetCompanyTypes()
         {
             var companyTypes = Enum.GetValues(typeof(CompanyType))
@@ -174,6 +202,23 @@ namespace CWB.Masters.Services.Company
                 return co.Id;
             }
             return 0;
+        }
+        public async Task<CompaniesVM> GetCompanyByName( string companyName,  long tenantId)
+        {
+            var company =  await _companyRepository.SingleOrDefaultAsync(c => c.Name == companyName && c.TenantId == tenantId);
+
+            if (company == null)
+            {
+                return null;
+            }
+
+            return new CompaniesVM
+            {
+                CompanyId = company.Id,
+                CompanyName = company.Name
+                
+                // map other fields as required
+            };
         }
     }
 }

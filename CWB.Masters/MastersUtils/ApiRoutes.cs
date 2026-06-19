@@ -13,11 +13,14 @@
             public const string GetCompanyTypes = Base + "/company-types";
             public const string GetDivisionsById = Base + "/divisions/{Id}/{tenantId}";
             public const string GetCompanies = Base + "/companies/{Id}";
+            public const string GetCompaniesByTenantGro = Base + "/companiesgro/{Id}";
             public const string PostCompany = Base + "/company";
+            public const string PostGroCompany = Base + "/postgrocompany";
             public const string IsCompanyExist = Base + "/check-company";
             public const string IsDivisionExist = Base + "/check-division";
             public const string DeleteCompany = Base + "/deletecompany/{companyID}/{tenantId}";
             public const string DeleteDivision = Base + "/deletedivision/{divisionID}/{tenantId}";
+            public const string GetCompanyByName = Base + "/getcompanybyname/{companyName}/{tenantId}";
 
         }
 

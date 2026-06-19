@@ -29,7 +29,7 @@ function loadWO() {
         if (butcount == 0) {
             $("#ReleaseWo").prop("disabled", true);
             $("#CalculateMatlReq").prop("disabled", true);
-            $("#MatlBtn").prop("disabled", true);
+           // $("#MatlBtn").prop("disabled", true);
             $("#DetailedProcPlanBtns").hide();
             $("#DetailedStatusMsg").hide();
         }
@@ -48,7 +48,7 @@ function loadWO() {
         for (i = 0; i < data.length; i++) {
             butcount = 1;
             //data[i].strStatus = WoOrdStatus[data[i].status];
-            data[i].woType = "Prodn";
+            //data[i].woType = "";
             $(tablebody).append(AppUtil.ProcessTemplateData("detailedPlanWoRow", data[i]));
         }
         const customerChildParts = data.filter((workOrder) => workOrder.partType === 1);
@@ -1768,42 +1768,43 @@ $(document).ready(function () {
         selectEndOpNo.html('');
 
     });
-    function showFreezeLoadingScreen() {
-        // Show preloader
-        document.getElementById('preloader').style.display = 'block';
-        document.getElementById('status').style.display = 'block';
+    //function showFreezeLoadingScreen() {
+    //    // Show preloader
+    //    document.getElementById('preloader').style.display = 'block';
+    //    document.getElementById('status').style.display = 'block';
 
-        $.ajax({
-            type: "POST",
-            url: '/WorkOrder/FreezeWorkOrder', // Your controller method
-            success: function (data) {
+    //    $.ajax({
+    //        type: "POST",
+    //        url: '/WorkOrder/FreezeWorkOrder', // Your controller method
+    //        success: function (data) {
 
-                // Keep existing logic
-                $("#CalculateMatlReq").prop("disabled", false);
+    //            // Keep existing logic
+    //            $("#CalculateMatlReq").prop("disabled", false);
 
-                // Hide preloader
-                document.getElementById('preloader').style.display = 'none';
-                document.getElementById('status').style.display = 'none';
+    //            // Hide preloader
+    //            document.getElementById('preloader').style.display = 'none';
+    //            document.getElementById('status').style.display = 'none';
 
-                // Show alert after freezing
-                alert("Allocation is done. No more changes to Workorder Quantity since workorders are Freezed.");
-            },
-            error: function () {
+    //            // Show alert after freezing
+    //            alert("Allocation is done. No more changes to Workorder Quantity since workorders are Freezed.");
+    //        },
+    //        error: function () {
 
-                // Hide preloader on error also
-                document.getElementById('preloader').style.display = 'none';
-                document.getElementById('status').style.display = 'none';
+    //            // Hide preloader on error also
+    //            document.getElementById('preloader').style.display = 'none';
+    //            document.getElementById('status').style.display = 'none';
 
-                alert("Error while freezing Work Order.");
-            }
-        });
-    }
+    //            alert("Error while freezing Work Order.");
+    //        }
+    //    });
+    //}
 
-    $("#FreezeWo").on("click", function () {
-        showFreezeLoadingScreen();
-        loadWO();
-        loadProcPlan();
-        $("#CalculateMatlReq").prop("disabled", false);
+    $("#SimulationMenu").on("click", function () {
+        //showFreezeLoadingScreen();
+        //loadWO();
+        //loadProcPlan();
+        //$("#CalculateMatlReq").prop("disabled", false);
+        window.location.href = '/S!M@l@T!L';
     });
     $("#CalculateMatlReq").on("click", function () {
         $("#DetailedProcPlanBtns").show();
@@ -2777,7 +2778,7 @@ $(document).ready(function () {
 
             $("#detailedPlanWo tbody tr").each(function () {
                 let parentLevel =
-                    $(this).children().eq(19).text().trim().toUpperCase();
+                    $(this).children().eq(22).text().trim().toUpperCase();
 
                 // show only Y
                 $(this).toggle(parentLevel === "Y");
@@ -2846,7 +2847,7 @@ $(document).ready(function () {
             return;
         }
         $("#detailedPlanWo tbody tr").filter(function () {
-            $(this).toggle($(this.children[16]).text().toLowerCase().indexOf(selectedValue) > -1)
+            $(this).toggle($(this.children[19]).text().toLowerCase().indexOf(selectedValue) > -1)
         });// show only the filtered rows
         var $tableBody = $("#detailedPlanWo tbody");
         if ($tableBody.find("tr:visible").length === 0) {

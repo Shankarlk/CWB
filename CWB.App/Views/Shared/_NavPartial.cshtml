@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Http
+@using CWB.App.AppUtils;
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 <div class="h-100" data-simplebar>
     <!--- Sidemenu -->
@@ -20,8 +21,11 @@
 
                 }
             }
+           
             @if (User.Identity.IsAuthenticated && User.IsInRole(Roles.ADMIN))
             {
+                //    long tenantId = long.Parse(
+                //AppUtil.GetTenantId(HttpContextAccessor.HttpContext.User));
                 @if (permissionResult != null)
                 {
 
@@ -105,9 +109,9 @@
                                         <li><a asp-action="Index" asp-controller="Organization" data-navid="C-OR">Department Structure</a></li>
                                     }
                                     @*@if (permissionResult.Any(r => r.Menu2 == "Designation List"))
-        {
-            <li><a asp-action="Index" asp-controller="Designation" data-navid="C-DE">Designation</a></li>
-        }*@
+                                {
+                                    <li><a asp-action="Index" asp-controller="Designation" data-navid="C-DE">Designation</a></li>
+                                }*@
                                     @if (permissionResult.Any(r => r.Menu2 == "Roles"))
                                     {
                                         <li><a asp-action="Index" asp-controller="RolePage" data-navid="C-RO">Roles</a></li>
@@ -117,14 +121,31 @@
                                         <li><a asp-action="Index" asp-controller="Employee" data-navid="M-E">Employee</a></li>
                                     }
                                     @*@if (permissionResult.Any(r => r.Menu2 == "Employee Master"))
-        {
-            <li><a asp-action="Index" asp-controller="EmployeeMaster" data-navid="C-EM">Employee Master</a></li>
-        }*@ @* Add more conditions for additional submenus *@
+                                {
+                                    <li><a asp-action="Index" asp-controller="EmployeeMaster" data-navid="C-EM">Employee Master</a></li>
+                                }*@ @* Add more conditions for additional submenus *@
                                 </ul>
                             </div>
                         }
                     </li>
+                    <li>
+                        @if (permissionResult.Any(r => r.Menu1 == "Gro")) // Check for permission based on the RoleName property
+                        {
+                            <a href="#sidebarMAST-5" data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebarMAST-5">
+                                <i class="fas fa-cogs"></i> <span> Gro </span> <span class="menu-arrow"></span>
+                            </a>
+                            <div class="collapse" id="sidebarMAST-5">
+                                <ul class="nav-second-level">
+                                    @if (permissionResult.Any(r => r.Menu2 == "Gro Sales Data Management"))
+                                    {
+                                        <li><a asp-action="Index" asp-controller="Gro" data-navid="G-GS">Gro Sales Data Management</a></li>
+                                    }
 
+
+                                </ul>
+                            </div>
+                        }
+                    </li>
                     @if (permissionResult.Any(r => r.Menu1 == "Info-Queries")) // Check for permission based on the RoleName property
                     {
                         <li>
@@ -135,15 +156,16 @@
                         </li>
                     }
                     @*<li>
-                        <a asp-action="Index" asp-controller="ChangePassword" data-navid="I-IFQ">
-                            <i class="fa fa-key"></i>
-                            <span>Change Password</span>
-                        </a>
-                    </li>*@
+                    <a asp-action="Index" asp-controller="ChangePassword" data-navid="I-IFQ">
+                        <i class="fa fa-key"></i>
+                        <span>Change Password</span>
+                    </a>
+                </li>*@
                 }
                 else
                 {
-
+                    //if (tenantId == 1)
+                    //{
                     <li>
                         <a href="#sidebarMAST-2" data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebarMAST-2"> <i class="fas fa-cogs"></i> <span> Business Process </span> <span class="menu-arrow"></span> </a>
                         <div class="collapse" id="sidebarMAST-2">
@@ -155,35 +177,35 @@
                                         Process Planning
                                     </a>
                                     @*<a href="#sidebarPP" data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebarPP" class="ms-auto">
-                                            <span class="menu-arrow"></span>
-                                        </a>*@
+                                    <span class="menu-arrow"></span>
+                                </a>*@
                                 </li>
                                 @*<div class="collapse" id="sidebarPP">
-                                        <ul class="nav-third-level ms-3">
-                                            <li><a asp-action="Step1" asp-controller="WorkOrder" data-navid="PP-1">Step 1</a></li>
-                                            <li><a asp-action="Step2" asp-controller="WorkOrder" data-navid="PP-2">Step 2</a></li>
-                                            <li><a asp-action="Step3" asp-controller="WorkOrder" data-navid="PP-3">Step 3</a></li>
-                                        </ul>
-                                    </div>*@
+                                <ul class="nav-third-level ms-3">
+                                    <li><a asp-action="Step1" asp-controller="WorkOrder" data-navid="PP-1">Step 1</a></li>
+                                    <li><a asp-action="Step2" asp-controller="WorkOrder" data-navid="PP-2">Step 2</a></li>
+                                    <li><a asp-action="Step3" asp-controller="WorkOrder" data-navid="PP-3">Step 3</a></li>
+                                </ul>
+                            </div>*@
                                 <!--<li>
-                                <div class="d-flex justify-content-between align-items-center">-->
+                        <div class="d-flex justify-content-between align-items-center">-->
                                 <!-- Actual link -->
                                 <!--<a asp-action="Index" asp-controller="WorkOrder" data-navid="B-BP">
-                                    Process Planning
-                                </a>-->
+                            Process Planning
+                        </a>-->
                                 <!-- Arrow only for submenu toggle -->
                                 <!--<a href="#sidebarPP" data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebarPP">
-                                            <span class="menu-arrow"></span>
-                                        </a>
-                                    </div>
-                                    <div class="collapse" id="sidebarPP">
-                                        <ul class="nav-third-level">
-                                            <li><a asp-action="Step1" asp-controller="WorkOrder" data-navid="PP-1">Step 1</a></li>
-                                            <li><a asp-action="Step2" asp-controller="WorkOrder" data-navid="PP-2">Step 2</a></li>
-                                            <li><a asp-action="Step3" asp-controller="WorkOrder" data-navid="PP-3">Step 3</a></li>
-                                        </ul>
-                                    </div>
-                                </li>-->
+                                    <span class="menu-arrow"></span>
+                                </a>
+                            </div>
+                            <div class="collapse" id="sidebarPP">
+                                <ul class="nav-third-level">
+                                    <li><a asp-action="Step1" asp-controller="WorkOrder" data-navid="PP-1">Step 1</a></li>
+                                    <li><a asp-action="Step2" asp-controller="WorkOrder" data-navid="PP-2">Step 2</a></li>
+                                    <li><a asp-action="Step3" asp-controller="WorkOrder" data-navid="PP-3">Step 3</a></li>
+                                </ul>
+                            </div>
+                        </li>-->
                                 <li><a href="#" data-navid="B-PR">Production</a></li>
                                 <li><a href="#" data-navid="B-PD">Product Design</a></li>
                             </ul>
@@ -220,29 +242,46 @@
                         </div>
                     </li>
                     <li>
+                        <a href="#sidebarMAST-5" data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebarMAST-5"> <i class="fas fa-cogs"></i> <span>Gro </span> <span class="menu-arrow"></span> </a>
+                        <div class="collapse" id="sidebarMAST-5">
+                            <ul class="nav-second-level">
+                                <li><a asp-action="Index" asp-controller="Gro" data-navid="G-GS">Gro Sales Data Management</a></li>
+
+                            </ul>
+                        </div>
+                    </li>
+
+
+                    <li>
                         <a asp-action="Index" asp-controller="InfoQueries" data-navid="I-IFQ">
                             <i class="fa fa-info-circle"></i>
                             <span>Info-Queries</span>
                         </a>
                     </li>
                     @*<li>
-                            <a href="#sidebarMAST-5" data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebarMAST-5"> <i class="fa fa-info-circle"></i> <span> Info-Queries</span> <span class="menu-arrow"></span> </a>
-                            <div class="collapse" id="sidebarMAST-5">
-                                <ul class="nav-second-level">
-                                    <li><a asp-action="Index" asp-controller="ViewSoInfo" data-navid="I-VS">View SO List</a></li>
-                                    <li><a asp-action="Index" asp-controller="ViewWoInfo" data-navid="I-VW">View WO List</a></li>
-                                    <li><a asp-action="Index" asp-controller="ItemMasterInfo" data-navid="I-IM">View Item Master</a></li>
-                                    <li><a asp-action="Index" asp-controller="MaterialAvailability" data-navid="I-MA">Material Availability</a></li>
-                                    <li><a asp-action="Index" asp-controller="ViewRoutingInfo" data-navid="I-VR">View Routing</a></li>
-                                    <li><a asp-action="Index" asp-controller="ViewShopLoadInfo" data-navid="I-VSL">Shop Loading</a></li>
-                                    <li><a asp-action="Index" asp-controller="ViewSubConInfo" data-navid="I-VSC">SubCon Loading</a></li>
-                                    <li><a asp-action="Index" asp-controller="ViewInwInspInfo" data-navid="I-VII">Inward Inspection</a></li>
-                                    <li><a asp-action="Index" asp-controller="ViewPurchaseInfo" data-navid="I-VPL">Purchase List</a></li>
-                                    <li><a asp-action="Index" asp-controller="ViewNcWaitInfo" data-navid="I-VNC">NC Waiting for Disposal Decision</a></li>
-                                </ul>
-                            </div>
-                        </li>*@
+                    <a href="#sidebarMAST-5" data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebarMAST-5"> <i class="fa fa-info-circle"></i> <span> Info-Queries</span> <span class="menu-arrow"></span> </a>
+                    <div class="collapse" id="sidebarMAST-5">
+                        <ul class="nav-second-level">
+                            <li><a asp-action="Index" asp-controller="ViewSoInfo" data-navid="I-VS">View SO List</a></li>
+                            <li><a asp-action="Index" asp-controller="ViewWoInfo" data-navid="I-VW">View WO List</a></li>
+                            <li><a asp-action="Index" asp-controller="ItemMasterInfo" data-navid="I-IM">View Item Master</a></li>
+                            <li><a asp-action="Index" asp-controller="MaterialAvailability" data-navid="I-MA">Material Availability</a></li>
+                            <li><a asp-action="Index" asp-controller="ViewRoutingInfo" data-navid="I-VR">View Routing</a></li>
+                            <li><a asp-action="Index" asp-controller="ViewShopLoadInfo" data-navid="I-VSL">Shop Loading</a></li>
+                            <li><a asp-action="Index" asp-controller="ViewSubConInfo" data-navid="I-VSC">SubCon Loading</a></li>
+                            <li><a asp-action="Index" asp-controller="ViewInwInspInfo" data-navid="I-VII">Inward Inspection</a></li>
+                            <li><a asp-action="Index" asp-controller="ViewPurchaseInfo" data-navid="I-VPL">Purchase List</a></li>
+                            <li><a asp-action="Index" asp-controller="ViewNcWaitInfo" data-navid="I-VNC">NC Waiting for Disposal Decision</a></li>
+                        </ul>
+                    </div>
+                </li>*@
+                    @*}
+                if (tenantId == 3)
+                {
 
+
+
+                }*@
                 }
             }
 
@@ -252,6 +291,6 @@
     <div class="clearfix"></div>
     <div style="height: 275px;"></div>
     <div class="text-center p-2 mt-3" style="font-size: 12px; color: #6c757d;">
-        Version: 4.1 <br /> Date: 02-06-2026
+        Version: 4.1 <br /> Date: 19-06-2026
     </div>
 </div>

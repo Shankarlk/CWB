@@ -1,0 +1,55 @@
+2026-06-17 04:16:49.7378 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-17 04:16:50.2602 INFO Application started. Press Ctrl+C to shut down.
+2026-06-17 04:16:50.7034 INFO Hosting environment: Production
+2026-06-17 04:16:50.9128 INFO Content root path: /app
+2026-06-17 04:17:13.6960 ERROR Consume exception
+2026-06-17 05:45:01.1136 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-17 05:45:01.4634 INFO Application started. Press Ctrl+C to shut down.
+2026-06-17 05:45:01.5651 INFO Hosting environment: Production
+2026-06-17 05:45:01.9819 INFO Content root path: /app
+2026-06-17 05:45:02.1734 ERROR Consume exception
+2026-06-17 06:11:09.3470 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-17 06:11:09.8855 INFO Application started. Press Ctrl+C to shut down.
+2026-06-17 06:11:10.2715 INFO Hosting environment: Production
+2026-06-17 06:11:10.3927 INFO Content root path: /app
+2026-06-17 06:11:25.3530 ERROR Consume exception
+2026-06-17 06:35:33.2710 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-17 06:35:33.5983 INFO Application started. Press Ctrl+C to shut down.
+2026-06-17 06:35:34.6014 INFO Hosting environment: Production
+2026-06-17 06:35:35.0248 INFO Content root path: /app
+2026-06-17 06:35:35.2789 ERROR Consume exception
+2026-06-17 08:05:26.2701 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-17 08:05:26.6938 INFO Application started. Press Ctrl+C to shut down.
+2026-06-17 08:05:27.0416 INFO Hosting environment: Production
+2026-06-17 08:05:27.2649 INFO Content root path: /app
+2026-06-17 08:05:27.4880 ERROR Consume exception
+2026-06-17 08:27:42.4329 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-17 08:27:43.0610 INFO Application started. Press Ctrl+C to shut down.
+2026-06-17 08:27:43.6228 INFO Hosting environment: Production
+2026-06-17 08:27:44.0030 INFO Content root path: /app
+2026-06-17 08:27:44.0899 ERROR Consume exception
+2026-06-17 08:31:41.2647 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-17 08:31:41.5017 INFO Application started. Press Ctrl+C to shut down.
+2026-06-17 08:31:41.5274 INFO Hosting environment: Production
+2026-06-17 08:31:41.5530 INFO Content root path: /app
+2026-06-17 08:31:41.9134 ERROR Consume exception
+2026-06-17 08:36:36.1256 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-17 08:36:36.4757 INFO Application started. Press Ctrl+C to shut down.
+2026-06-17 08:36:36.5332 INFO Hosting environment: Production
+2026-06-17 08:36:36.7494 INFO Content root path: /app
+2026-06-17 08:36:37.0670 ERROR Consume exception
+2026-06-17 09:00:18.2639 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-17 09:00:18.8587 INFO Application started. Press Ctrl+C to shut down.
+2026-06-17 09:00:19.0623 INFO Hosting environment: Production
+2026-06-17 09:00:19.8469 INFO Content root path: /app
+2026-06-17 09:00:20.4080 ERROR Consume exception
+2026-06-17 10:08:55.4516 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-17 10:08:55.7743 INFO Application started. Press Ctrl+C to shut down.
+2026-06-17 10:08:55.8048 INFO Hosting environment: Production
+2026-06-17 10:08:55.9627 INFO Content root path: /app
+2026-06-17 10:08:56.5024 ERROR Consume exception
+2026-06-17 14:00:30.3823 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-06-17 14:00:30.5768 INFO Application started. Press Ctrl+C to shut down.
+2026-06-17 14:00:30.6858 INFO Hosting environment: Production
+2026-06-17 14:00:30.6986 INFO Content root path: /app
+2026-06-17 14:00:30.7523 ERROR Consume exception

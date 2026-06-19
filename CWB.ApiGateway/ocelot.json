@@ -90,6 +90,19 @@
       ],
       "UpstreamPathTemplate": "/cwbpwo/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    //Gro
+    {
+      "DownstreamPathTemplate": "/api/v1/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "cwb.gro",
+          "Port": "80"
+        }
+      ],
+      "UpstreamPathTemplate": "/cwbgro/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     }
   ],
   "GlobalConfiguration": {

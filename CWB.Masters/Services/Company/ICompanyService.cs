@@ -12,16 +12,17 @@ namespace CWB.Masters.Services.Company
        
 
         Task<IEnumerable<CompaniesVM>> GetCompaniesByTenant(long tenantID);
-
+        Task<IEnumerable<CompanyVM>> GetCompaniesByTenantGro(long tenantID);
         Task<IEnumerable<CompaniesVM>> GetCompaniesByCompanyNTenant(long companyID, long tenantID);
         Task<CompanyVM> Company(CompanyVM companyVM);
-
+        Task<CompanyVM> PostGroCompany(CompanyVM companyVM);
         Task<bool> DeleteCompany(long companyID, long tenantId);
         Task<bool> DeleteDivision(long divisionID, long tenantId);
         bool CheckIfCompanyExisit(CheckCompanyVM checkCompanyVM);
         bool CheckIfDivisionExisit(CheckDivisionVM checkDivisionVM);
         Task<CompanyVM> GetCompany(long companyID,long tenantId);
         Task<long> GetCompanyId(string co);
+        Task<CompaniesVM> GetCompanyByName(string companyName, long tenantId);
 
     }
 }

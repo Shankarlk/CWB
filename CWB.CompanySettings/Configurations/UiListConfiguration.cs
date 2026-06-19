@@ -249,9 +249,15 @@ namespace CWB.CompanySettings.Configurations
     new UiList { Id = 120, MenuLevelId = 2, TopLevel = 'N', UI_Type = "Tab", UI_Name_Label = "SubCon Loading", UI_Part_linked_to = 113, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 1 },
     new UiList { Id = 121, MenuLevelId = 2, TopLevel = 'N', UI_Type = "Tab", UI_Name_Label = "Inward Inspection", UI_Part_linked_to = 113, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 1 },
     new UiList { Id = 122, MenuLevelId = 2, TopLevel = 'N', UI_Type = "Tab", UI_Name_Label = "Purchase List", UI_Part_linked_to = 113, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 1 },
-    new UiList { Id = 123, MenuLevelId = 2, TopLevel = 'N', UI_Type = "Tab", UI_Name_Label = "NC Waiting for Disposal Decision", UI_Part_linked_to = 113, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 1 }
-
-
+    new UiList { Id = 123, MenuLevelId = 2, TopLevel = 'N', UI_Type = "Tab", UI_Name_Label = "NC Waiting for Disposal Decision", UI_Part_linked_to = 113, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 1 },
+    new UiList { Id = 124, MenuLevelId = 2, TopLevel = 'N', UI_Type = "Tab", UI_Name_Label = "Employee Master", UI_Part_linked_to = 55, Approval_Allowed = 'N', View_Allowed = 'Y',Add_Edit_Allowed = 'Y', Delete_Allowed = 'Y', TenantId = 1 },
+    new UiList { Id = 125, MenuLevelId = 3, TopLevel = 'N', UI_Type = "Tab", UI_Name_Label = "Add Employee", UI_Part_linked_to = 124, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'Y', Delete_Allowed = 'Y', TenantId = 1 },
+    new UiList { Id = 126, MenuLevelId = 3, TopLevel = 'N', UI_Type = "Tab", UI_Name_Label = "Show Department Linkage", UI_Part_linked_to = 124, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'Y', Delete_Allowed = 'Y', TenantId = 1 },
+    new UiList { Id = 127, MenuLevelId = 2, TopLevel = 'N', UI_Type = "Tab", UI_Name_Label = "Roles", UI_Part_linked_to = 55, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'Y', Delete_Allowed = 'Y', TenantId = 1 },
+    new UiList { Id = 128, MenuLevelId = 3, TopLevel = 'N', UI_Type = "Tab", UI_Name_Label = "Add Roles", UI_Part_linked_to = 127, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'Y', Delete_Allowed = 'Y', TenantId = 1 },
+    new UiList { Id = 129, MenuLevelId = 4, TopLevel = 'N', UI_Type = "Tab", UI_Name_Label = "Generate WO", UI_Part_linked_to = 66, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'Y', Delete_Allowed = 'Y', TenantId = 1 },
+    new UiList { Id = 130, MenuLevelId = 1, TopLevel = 'Y', UI_Type = "Landing Page", UI_Name_Label = "Gro", UI_Part_linked_to = 0, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 3 },
+    new UiList { Id = 131, MenuLevelId = 2, TopLevel = 'N', UI_Type = "Landing Page", UI_Name_Label = "Gro Sales Data Management", UI_Part_linked_to = 130, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 3 }
     );
             builder.HasIndex(c => c.TenantId).HasDatabaseName("UiList_TenantId");
         }

@@ -280,6 +280,15 @@ namespace CWB.ProductionPlanWO.Controllers
             return Ok(productionPlan);
         }
         [HttpPost]
+        [Route(ApiRoutes.WO.UpdateProductionPlan_WoAllocatedqntyandstatus)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(ProductionPlan_WOVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> UpdateProductionPlan_WoAllocatedqntyandstatus([FromBody] ProductionPlan_WOVM productions)
+        {
+            var productionPlan = await _woSerivce.UpdateProductionPlan_WoAllocatedqntyandstatus(productions);
+            return Ok(productionPlan);
+        }
+        [HttpPost]
         [Route(ApiRoutes.WO.UpdateHoldProductionPlan_Wo)]
         [Produces(AppContentTypes.ContentType, Type =typeof(ProductionPlan_WOVM))]
         [Authorize(Roles = Roles.ADMIN)]
@@ -464,7 +473,14 @@ namespace CWB.ProductionPlanWO.Controllers
             var result = await _woSerivce.DeleteProductionplansplitwo(Id);
             return Ok(result);
         }
-
+        [HttpGet]
+        [Route(ApiRoutes.WO.Deleteforreryalloc)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> Deleteforreryalloc(long Id)
+        {
+            var result = await _woSerivce.Deleteforreryalloc(Id);
+            return Ok(result);
+        }
         [HttpPost]
         [Route(ApiRoutes.WO.PostInsp_Outcome_Details)]
         [Produces(AppContentTypes.ContentType, Type = typeof(Insp_Outcome_DetailsVM))]

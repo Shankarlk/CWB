@@ -11,6 +11,7 @@ namespace CWB.App.Models.BusinessProcesses
         //DateTime? woDateStr = null;
         public long ProductionPlanId { get; set; }
         public string? PPNumber { get; set; }
+        public string WoType { get; set; }
         public long WoId { get; set; }
         public long ParentWoId { get; set; }
         public string? WONumber { get; set; }
@@ -101,5 +102,7 @@ namespace CWB.App.Models.BusinessProcesses
         public int Freeze { get; set; }
         public long Input_Part_No { get; set; }
         public long SplitParentWoId { get; set; }
+        public long Sim_Seq_No { get; set; }
+        public long Calc_Capacity_Reqd { get; set; }
     }
 }

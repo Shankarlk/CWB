@@ -12,7 +12,7 @@ namespace CWB.App.Services.Masters
         Task<IEnumerable<CompanyTypeVM>> GetCompanyTypes();
         Task<IEnumerable<PartStatusVM>> GetStatuses();
         Task<IEnumerable<ContactsVM>> GetCompanies();
-
+        Task<IEnumerable<ContactsVM>> GetCompaniesGro();
         Task<IEnumerable<RawMateriaTypeVM>> GetRMTypes();
 
         Task<IEnumerable<RawMaterialSpecVM>> GetRMSpecs();
@@ -36,12 +36,14 @@ namespace CWB.App.Services.Masters
 
         Task<IEnumerable<ContactsVM>> GetDivisionsByCompanyId(long Id);
         Task<CompanyVM> Company(CompanyVM companyVM);
+        Task<ContactsVM> PostGroCompany(ContactsVM companyVM);
 
         Task<bool> DeleteCompany(long companyId);
         Task<bool> DeleteDivision(long companyId);
         
 
         Task<bool> CheckIfCompanyExisit(long CompanyId, string CompanyName);
+        Task<ContactsVM> GetCompanybyName(string CompanyName);
         Task<bool> CheckIfDivisionExisit(long CompanyId, long DivisionId, string DivisionName);
         Task<ManufacturedPartNoDetailVM> ManufacturedPartNoDetail(ManufacturedPartNoDetailVM manufacturedPartNoDetailVM);
         Task<MPMakeFromVM> MPMakeFrom(MPMakeFromVM manufacturedPartNoDetailVM);

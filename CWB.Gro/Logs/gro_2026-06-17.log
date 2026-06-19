@@ -1,0 +1,220 @@
+2026-06-17 08:06:23.5589 ERROR Error: AutoMapper.AutoMapperMappingException: Error mapping types.
+
+Mapping types:
+EntityQueryable`1 -> IEnumerable`1
+Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable`1[[CWB.Gro.Domain.Gro_Data, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.IEnumerable`1[[CWB.Gro.ViewModels.Gro_DataVM, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+ ---> System.InvalidCastException: Unable to cast object of type 'System.Int64' to type 'System.String'.
+   at MySqlConnector.Core.Row.GetString(Int32 ordinal) in /_/src/MySqlConnector/Core/Row.cs:line 382
+   at MySqlConnector.MySqlDataReader.GetString(Int32 ordinal) in /_/src/MySqlConnector/MySqlDataReader.cs:line 282
+   at lambda_method(Closure , QueryContext , DbDataReader , ResultContext , SingleQueryResultCoordinator )
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   --- End of inner exception stack trace ---
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.Gro.Services.GroService.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Services\GroService.cs:line 50
+   at CWB.Gro.Controllers.GroController.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Controllers\GroController.cs:line 44
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-06-17 08:06:23.5589 ERROR Error: AutoMapper.AutoMapperMappingException: Error mapping types.
+
+Mapping types:
+EntityQueryable`1 -> IEnumerable`1
+Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable`1[[CWB.Gro.Domain.Gro_Data, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.IEnumerable`1[[CWB.Gro.ViewModels.Gro_DataVM, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+ ---> System.InvalidCastException: Unable to cast object of type 'System.Int64' to type 'System.String'.
+   at MySqlConnector.Core.Row.GetString(Int32 ordinal) in /_/src/MySqlConnector/Core/Row.cs:line 382
+   at MySqlConnector.MySqlDataReader.GetString(Int32 ordinal) in /_/src/MySqlConnector/MySqlDataReader.cs:line 282
+   at lambda_method(Closure , QueryContext , DbDataReader , ResultContext , SingleQueryResultCoordinator )
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   --- End of inner exception stack trace ---
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.Gro.Services.GroService.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Services\GroService.cs:line 50
+   at CWB.Gro.Controllers.GroController.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Controllers\GroController.cs:line 44
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-06-17 08:06:25.1471 ERROR Error: AutoMapper.AutoMapperMappingException: Error mapping types.
+
+Mapping types:
+EntityQueryable`1 -> IEnumerable`1
+Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable`1[[CWB.Gro.Domain.Gro_Data, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.IEnumerable`1[[CWB.Gro.ViewModels.Gro_DataVM, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+ ---> System.InvalidCastException: Unable to cast object of type 'System.Int64' to type 'System.String'.
+   at MySqlConnector.Core.Row.GetString(Int32 ordinal) in /_/src/MySqlConnector/Core/Row.cs:line 382
+   at MySqlConnector.MySqlDataReader.GetString(Int32 ordinal) in /_/src/MySqlConnector/MySqlDataReader.cs:line 282
+   at lambda_method(Closure , QueryContext , DbDataReader , ResultContext , SingleQueryResultCoordinator )
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   --- End of inner exception stack trace ---
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.Gro.Services.GroService.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Services\GroService.cs:line 50
+   at CWB.Gro.Controllers.GroController.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Controllers\GroController.cs:line 44
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-06-17 08:07:28.2540 ERROR Error: AutoMapper.AutoMapperMappingException: Error mapping types.
+
+Mapping types:
+EntityQueryable`1 -> IEnumerable`1
+Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable`1[[CWB.Gro.Domain.Gro_Data, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.IEnumerable`1[[CWB.Gro.ViewModels.Gro_DataVM, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+ ---> System.InvalidCastException: Unable to cast object of type 'System.Int64' to type 'System.String'.
+   at MySqlConnector.Core.Row.GetString(Int32 ordinal) in /_/src/MySqlConnector/Core/Row.cs:line 382
+   at MySqlConnector.MySqlDataReader.GetString(Int32 ordinal) in /_/src/MySqlConnector/MySqlDataReader.cs:line 282
+   at lambda_method(Closure , QueryContext , DbDataReader , ResultContext , SingleQueryResultCoordinator )
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   --- End of inner exception stack trace ---
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.Gro.Services.GroService.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Services\GroService.cs:line 50
+   at CWB.Gro.Controllers.GroController.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Controllers\GroController.cs:line 44
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-06-17 08:08:33.6963 ERROR Error: AutoMapper.AutoMapperMappingException: Error mapping types.
+
+Mapping types:
+EntityQueryable`1 -> IEnumerable`1
+Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable`1[[CWB.Gro.Domain.Gro_Data, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.IEnumerable`1[[CWB.Gro.ViewModels.Gro_DataVM, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+ ---> System.InvalidCastException: Unable to cast object of type 'System.Int64' to type 'System.String'.
+   at MySqlConnector.MySqlDataReader.GetString(Int32 ordinal) in /_/src/MySqlConnector/MySqlDataReader.cs:line 282
+   at lambda_method(Closure , QueryContext , DbDataReader , ResultContext , SingleQueryResultCoordinator )
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   --- End of inner exception stack trace ---
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.Gro.Services.GroService.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Services\GroService.cs:line 50
+   at CWB.Gro.Controllers.GroController.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Controllers\GroController.cs:line 44
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-06-17 08:14:57.9599 ERROR Error: AutoMapper.AutoMapperMappingException: Error mapping types.
+
+Mapping types:
+EntityQueryable`1 -> IEnumerable`1
+Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable`1[[CWB.Gro.Domain.Gro_Data, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.IEnumerable`1[[CWB.Gro.ViewModels.Gro_DataVM, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+ ---> System.InvalidCastException: Unable to cast object of type 'System.Int64' to type 'System.String'.
+   at MySqlConnector.MySqlDataReader.GetString(Int32 ordinal) in /_/src/MySqlConnector/MySqlDataReader.cs:line 282
+   at lambda_method(Closure , QueryContext , DbDataReader , ResultContext , SingleQueryResultCoordinator )
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   --- End of inner exception stack trace ---
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.Gro.Services.GroService.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Services\GroService.cs:line 50
+   at CWB.Gro.Controllers.GroController.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Controllers\GroController.cs:line 44
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-06-17 08:15:02.8654 ERROR Error: AutoMapper.AutoMapperMappingException: Error mapping types.
+
+Mapping types:
+EntityQueryable`1 -> IEnumerable`1
+Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable`1[[CWB.Gro.Domain.Gro_Data, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.IEnumerable`1[[CWB.Gro.ViewModels.Gro_DataVM, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+ ---> System.InvalidCastException: Unable to cast object of type 'System.Int64' to type 'System.String'.
+   at MySqlConnector.MySqlDataReader.GetString(Int32 ordinal) in /_/src/MySqlConnector/MySqlDataReader.cs:line 282
+   at lambda_method(Closure , QueryContext , DbDataReader , ResultContext , SingleQueryResultCoordinator )
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   --- End of inner exception stack trace ---
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.Gro.Services.GroService.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Services\GroService.cs:line 50
+   at CWB.Gro.Controllers.GroController.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Controllers\GroController.cs:line 44
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-06-17 08:15:53.0049 ERROR Error: AutoMapper.AutoMapperMappingException: Error mapping types.
+
+Mapping types:
+EntityQueryable`1 -> IEnumerable`1
+Microsoft.EntityFrameworkCore.Query.Internal.EntityQueryable`1[[CWB.Gro.Domain.Gro_Data, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]] -> System.Collections.Generic.IEnumerable`1[[CWB.Gro.ViewModels.Gro_DataVM, CWB.Gro, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]
+ ---> System.InvalidCastException: Unable to cast object of type 'System.Int64' to type 'System.String'.
+   at MySqlConnector.MySqlDataReader.GetString(Int32 ordinal) in /_/src/MySqlConnector/MySqlDataReader.cs:line 282
+   at lambda_method(Closure , QueryContext , DbDataReader , ResultContext , SingleQueryResultCoordinator )
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.Enumerator.MoveNext()
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   --- End of inner exception stack trace ---
+   at lambda_method(Closure , Object , IEnumerable`1 , ResolutionContext )
+   at CWB.Gro.Services.GroService.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Services\GroService.cs:line 50
+   at CWB.Gro.Controllers.GroController.AllGroData(Int64 tenantId) in F:\CWBworking\CWB.Gro\Controllers\GroController.cs:line 44
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ActionMethodExecutor.TaskOfIActionResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeActionMethodAsync>g__Awaited|12_0(ControllerActionInvoker invoker, ValueTask`1 actionResultValueTask)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.<InvokeNextActionFilterAsync>g__Awaited|10_0(ControllerActionInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Rethrow(ActionExecutedContextSealed context)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.Next(State& next, Scope& scope, Object& state, Boolean& isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ControllerActionInvoker.InvokeInnerFilterAsync()
+--- End of stack trace from previous location where exception was thrown ---
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeFilterPipelineAsync>g__Awaited|19_0(ResourceInvoker invoker, Task lastTask, State next, Scope scope, Object state, Boolean isCompleted)
+   at Microsoft.AspNetCore.Mvc.Infrastructure.ResourceInvoker.<InvokeAsync>g__Awaited|17_0(ResourceInvoker invoker, Task task, IDisposable scope)
+   at Microsoft.AspNetCore.Routing.EndpointMiddleware.<Invoke>g__AwaitRequestTask|6_0(Endpoint endpoint, Task requestTask, ILogger logger)
+   at Microsoft.AspNetCore.Authorization.AuthorizationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26

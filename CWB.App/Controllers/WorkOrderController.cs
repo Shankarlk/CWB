@@ -5558,12 +5558,52 @@ namespace CWB.App.Controllers
         //    //return RedirectToAction("DetailedProcPlan");
         //    return Ok();
         //}
+        private async Task<decimal> GetNetAvailableQty(long partId)
+        {
+            decimal stockQty = 0;
+            decimal allocatedQty = 0;
+
+            var depratmentstores = await _departmentService.GetAllStoresIDs();
+
+            var inventory = await _woService.GetAllInventory_MasterBypartidWithFlag(
+                "Internal",
+                depratmentstores.Stores_DirMatl_ID,
+                0,
+                0,
+                partId);
+
+            if (inventory.Any())
+            {
+                stockQty = inventory.Sum(x => x.Current_QntOnHand);
+            }
+
+            var allocations = await _woService.GetallInputreservelistbypartid(partId);
+
+            if (allocations.Any())
+            {
+                allocatedQty = allocations
+                    .Where(x => x.Allocation_done == 'N' || x.Allocation_done == 'Y')
+                    .Sum(x => x.Plan_Alloc_Qnty);
+            }
+
+            return stockQty - allocatedQty;
+        }
 
         [HttpPost]
         public async Task<IActionResult> ProcPlan2()
         {
             try
             {
+                var productionTask = _woService.AllProductionWoReadForProd();
+                await Task.WhenAll(productionTask);
+
+                var productionschecksequenceno = productionTask.Result.ToList();
+
+                long nextSequenceNo = productionschecksequenceno.Any()
+                    ? productionschecksequenceno.Max(x => x.Sim_Seq_No) + 1
+                    : 1;
+                var stores = await _departmentService.GetAllStoresIDs();
+                long currentseqno = nextSequenceNo;
                 var workdetails = await _plantService.GetPlantWD(13);
                 var holidaylist = await _plantService.GetHolidays(13);
                 string weekOff1 = workdetails.WeeklyOff1;
@@ -5575,19 +5615,23 @@ namespace CWB.App.Controllers
                 string mcweekOff2 = mcworkdetails.WeeklyOff2;
                 var departments = await _departmentService.GetDepartments(1);
                 var workOrders = await _baService.AllWorkOrders();
+                var workordersbydate = workOrders.OrderBy(x => x.PlanCompletionDate).ToList();
                 List<ProductionPlan_WoVM> productions = new List<ProductionPlan_WoVM>();
-                foreach (var item in workOrders)
+                foreach (var item in workordersbydate)
                 {
-
+                        
                     if (item.Active != 2 && item.PPStatus != "PP")
                     {
                         ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart((int)item.PartId);
                         //DateTime planstartdt = DateTime.Now;
+                        double stepCapacityMinutes = 0;
+                        long capacityrequired = 0;
                         DateTime planstartdt = item.PlanCompletionDate.Value;
                         if (mf.ManufacturedPartType == 2)
                         {
 
                             var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                            var prefferedrouting = resultList.OrderByDescending(x => x.PreferredRouting).FirstOrDefault();
                             int minutes = 0;
 
                             int noofhr = 0;
@@ -5603,43 +5647,97 @@ namespace CWB.App.Controllers
                             int totalparalelinhousedays = 0;
                             int parallelsubconminutes = 0;
                             int inHouseDaysFinal = 0;
+                           
                             // var department = departments.FirstOrDefault(d => d.DepartmentId == machine.MachineDepartmentId);
                             List<dynamic> machines = new List<dynamic>();
-                            foreach (var rote in resultList)
-                            {
-                                var result = await _routingService.RoutingSteps(rote.RoutingId);
-                                // var stepmachine = await _routingService.StepMachines((int)oneroutingstep.StepId);
-                                foreach (var step in result)
+                            //foreach (var rote in prefferedrouting)
+                            //{
+                                var result = await _routingService.RoutingSteps(prefferedrouting.RoutingId);
+                            // var stepmachine = await _routingService.StepMachines((int)oneroutingstep.StepId);
+                           
+                            foreach (var step in result)
                                 {
-                                    if (step.StepNextSequence == 1)
-                                    {
-                                        //if(step.ste)
-                                        var stepdetails = await _routingService.StepMachines((int)step.StepId);
+                                //if (step.StepNextSequence == 1)
+                                //{
+                                //if(step.ste)
+                               
+                                var stepdetails = await _routingService.StepMachines((int)step.StepId);
                                         if (stepdetails.Count() != 0)
                                         {
-                                            var processingTimeSum = stepdetails
-                                                            .GroupBy(sd => sd.RoutingStepId)
-                                                            .Select(g => new
-                                                            {
-                                                                RoutingStepId = g.Key,
-                                                                TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes / sd.NoOfPartsPerLoading)
-                                                            });
+                                    var processingTimeSum = stepdetails
+                                                    .GroupBy(sd => sd.RoutingStepId)
+                                                    .Select(g => new
+                                                    {
+                                                        RoutingStepId = g.Key,
+                                                        TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes / sd.NoOfPartsPerLoading)
+                                                    });
+                                    var setuptimeSum = stepdetails
+                                                   .GroupBy(sd => sd.RoutingStepId)
+                                                   .Select(g => new
+                                                   {
+                                                       RoutingStepId = g.Key,
+                                                       TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.SetupTime).TotalMinutes)
+                                                   });
+                                    var FirstPiecetimeSum = stepdetails
+                                                   .GroupBy(sd => sd.RoutingStepId)
+                                                   .Select(g => new
+                                                   {
+                                                       RoutingStepId = g.Key,
+                                                       TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FirstPieceProcessingTime).TotalMinutes)
+                                                   });
+                                    foreach (var Machines in stepdetails)
+                                    {
+                                        var machine = await _machineService.GetMachine((int)Machines?.MachineId);
+                                        machines.Add(new
+                                        {
+                                            MachineId = machine.MachineMachineId,
+                                            DepartmentId = machine.MachineDepartmentId
+                                        });
+                                    }
+                                    foreach (var min in processingTimeSum)
+                                    {
+                                        minutes += (int)min.TotalProcessingTime;
+                                    }
+                                    foreach (var min in setuptimeSum)
+                                    {
+                                        minutes += (int)min.TotalProcessingTime;
+                                    }
+                                    foreach (var min in FirstPiecetimeSum)
+                                    {
+                                        minutes += (int)min.TotalProcessingTime;
+                                    }
 
-                                            foreach (var Machines in stepdetails)
-                                            {
-                                                var machine = await _machineService.GetMachine((int)Machines?.MachineId);
-                                                machines.Add(new
-                                                {
-                                                    MachineId = machine.MachineMachineId,
-                                                    DepartmentId = machine.MachineDepartmentId
-                                                });
-                                            }
-                                            foreach (var min in processingTimeSum)
-                                            {
-                                                minutes += (int)min.TotalProcessingTime;
-                                            }
 
-                                        }
+                                    foreach (var machine in stepdetails)
+                                    {
+                                        double setup =
+                                            TimeSpan.Parse(machine.SetupTime).TotalMinutes;
+
+                                        double firstPiece =
+                                            TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
+
+                                        double cycle =
+                                            TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
+
+                                        int qtyPerLoad =
+                                            machine.NoOfPartsPerLoading <= 0
+                                                ? 1
+                                                : machine.NoOfPartsPerLoading;
+
+                                        int simultaneous =
+                                            step.NumberOfSimMachines <= 0
+                                                ? 1
+                                                : step.NumberOfSimMachines;
+
+                                        double capacityMinutes =
+                                            setup
+                                            + firstPiece
+                                            + ((double)item.CalcWOQty / simultaneous)
+                                                * (cycle / qtyPerLoad);
+
+                                        stepCapacityMinutes += capacityMinutes;
+                                    }
+                                }
                                         else
                                         {
                                             var sub = await _routingService.SubCons((int)step.StepId);
@@ -5654,103 +5752,32 @@ namespace CWB.App.Controllers
                                                         .Select(g => new
                                                         {
                                                             RoutingStepId = g.Key,
-                                                            TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes / sd.NoOfPartsPerLoading)
+                                                            TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes / sd.NoOfPartsPerLoading <= 0
+                                                ? 1
+                                                : sd.NoOfPartsPerLoading)
                                                         });
-
-                                            transporttime += Convert.ToInt32(subfirst.TransportTime);
+                                         var steptimesum = subworks
+                                                .GroupBy(sd => sd.RoutingStepId)
+                                                .Select(g => new
+                                                {
+                                                    RoutingStepId = g.Key,
+                                                    TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.SetupTime).TotalMinutes)
+                                                });
+                                           transporttime += Convert.ToInt32(subfirst.TransportTime);
                                             foreach (var min in processingTimeSum)
                                             {
                                                 subconminutes += (int)min.TotalProcessingTime;
                                             }
 
-                                        }
-                                    }
-                                    else if (step.StepNextSequence == 2 || step.StepNextSequence == 3)
-                                    {
-                                        var stepdetails = await _routingService.StepMachines((int)step.StepId);
-                                        if (stepdetails.Count() != 0)
-                                        {
-                                            var processingTimeSum = stepdetails
-                                                            .GroupBy(sd => sd.RoutingStepId)
-                                                            .Select(g => new
-                                                            {
-                                                                RoutingStepId = g.Key,
-                                                                TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes)
-                                                            });
-                                            var setupTimeSum = stepdetails
-                                                            .GroupBy(sd => sd.RoutingStepId)
-                                                            .Select(g => new
-                                                            {
-                                                                RoutingStepId = g.Key,
-                                                                TotalSetupTime = g.Sum(sd => TimeSpan.Parse(sd.SetupTime).TotalMinutes)
-                                                            });
-                                            var maxProcessingTime = stepdetails
-                                                            .GroupBy(sd => sd.RoutingStepId)
-                                                            .Select(g => g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes))
-                                                            .Max();
-                                            foreach (var Machines in stepdetails)
-                                            {
-                                                var machine = await _machineService.GetMachine((int)Machines?.MachineId);
-                                                machines.Add(new
-                                                {
-                                                    MachineId = machine.MachineMachineId,
-                                                    DepartmentId = machine.MachineDepartmentId
-                                                });
-                                            }
-                                            var setuptime = 0;
-                                            foreach (var min in setupTimeSum)
-                                            {
-                                                setuptime += (int)min.TotalSetupTime;
+                                               double cycleTime = processingTimeSum.Sum(x => x.TotalProcessingTime);
 
-                                            }
-                                            parallelinhousmaxoperationtime = (int)maxProcessingTime;
-                                            parallelinhousesetuptime += setuptime;
-
-                                            // parallelminutes += ((int)maxProcessingTime * item.CalcWOQty) + setuptime;
-
+                                              double setupTime =         steptimesum.Sum(x => x.TotalProcessingTime);
+                                            double capacityMinutes =setupTime +(transporttime * 60) +           (item.CalcWOQty * cycleTime);
+                                    stepCapacityMinutes += capacityMinutes;
                                         }
-                                        else
-                                        {
-                                            var sub = await _routingService.SubCons((int)step.StepId);
-                                            var subfirst = sub.FirstOrDefault();
-                                            if (subfirst == null)
-                                            {
-                                                continue; //  VERY IMPORTANT
-                                            }
-                                            var subworks = await _routingService.SubConWSS((int)step.StepId, subfirst.SubConDetailsId);
-                                            var processingTimeSum = subworks
-                                                        .GroupBy(sd => sd.RoutingStepId)
-                                                        .Select(g => new
-                                                        {
-                                                            RoutingStepId = g.Key,
-                                                            TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes / sd.NoOfPartsPerLoading)
-                                                        });
-                                            var setupTimeSum = subworks
-                                                       .GroupBy(sd => sd.RoutingStepId)
-                                                       .Select(g => new
-                                                       {
-                                                           RoutingStepId = g.Key,
-                                                           TotalSetupTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes)
-                                                       });
-                                            var cyletime = 0;
-                                            var setuptime = 0;
-                                            transporttime += Convert.ToInt32(subfirst.TransportTime);
-                                            foreach (var min in processingTimeSum)
-                                            {
-                                                cyletime += (int)min.TotalProcessingTime;
-                                            }
-                                            foreach (var min in setupTimeSum)
-                                            {
-                                                setuptime += (int)min.TotalSetupTime;
-                                            }
-                                            // parallelsubconminutes += (setuptime + (item.CalcWOQty * cyletime) + (transporttime * 60));
-                                            paralleltransporttime = transporttime * 60;
-                                            parallelsubconcycletime = cyletime;
-                                            parallelsubconsetuptime = setuptime;
-                                        }
-                                    }
+                                   
                                 }
-                            }
+                            //}
                             if (machines.Any())
                             {
                                 var machineDeptGroups = machines.GroupBy(m => m.DepartmentId).Select(g => new
@@ -5838,6 +5865,7 @@ namespace CWB.App.Controllers
                             // double requiredDays = (double)totalRequiredMinutes / noofhr;
                             //int assyTime = (minutes * item.CalcWOQty) / noofhr;
                             //int assyTimeInDays = assyTime / 1440;
+                             capacityrequired =   (long)Math.Ceiling((double)stepCapacityMinutes / 60);
                             int assyTimeInDays = inHouseDaysFinal + subconDaysFinal + totalparalelinhousedays + finalparallelsubcondays;
                             //  int assyTimeInDays = (int)Math.Ceiling(requiredDays);
                             DateTime completionDate = item.PlanCompletionDate.Value;
@@ -5855,6 +5883,7 @@ namespace CWB.App.Controllers
                         {
                             WONumber = item.WONumber,
                             WoId = item.WOID,
+                            Calc_Capacity_Reqd = capacityrequired,
                             SalesOrderId = item.SalesOrderId,
                             PartId = item.PartId,
                             PartType = item.PartType,
@@ -5862,7 +5891,7 @@ namespace CWB.App.Controllers
                             BuildToStock = item.BuildToStock,
                             TestData = item.TestData,
                             CalcWOQty = item.CalcWOQty,
-                            PlanWOQnty=item.CalcWOQty,
+                            PlanWOQnty = item.CalcWOQty,
                             PlanStartDate = planstartdt,
                             PlanCompletionDate = item.PlanCompletionDate,
                             SoComplDate = item.SoComplDate,
@@ -5873,11 +5902,12 @@ namespace CWB.App.Controllers
                             ReloadOption = "",
                             TenantId = item.TenantId,
                             Consolidation_Flag = 0,
-                            Input_Part_No=item.Input_Part_No
+                            Input_Part_No = item.Input_Part_No,
+                            Sim_Seq_No = currentseqno
                         };
                         productions.Add(production);
                     }
-
+                    currentseqno = currentseqno + 1;
                 }
                 var procdutionpost = await _woService.ProductionPlanWoPost(productions);
                 try
@@ -5889,7 +5919,7 @@ namespace CWB.App.Controllers
                         List<ProductionPlan_WoVM> childwos = new List<ProductionPlan_WoVM>();
                         List<ChildWoRelVM> childWoRels = new List<ChildWoRelVM>();
                         List<McTimeListVM> mcTimeListVMs = new List<McTimeListVM>();
-
+                        List<Input_Resrv_ListVM> inpputreservelist = new List<Input_Resrv_ListVM>();
                         var updatewo = await _woService.UpdateMultipleWorkOrder(workOrders);
                         int totalLeadTime = 0;
                         foreach (var item in procdutionpost)
@@ -5898,6 +5928,7 @@ namespace CWB.App.Controllers
                             {
                                 ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart((int)item.PartId);
                                 var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                                var prefferedrouting = resultList.OrderByDescending(x => x.PreferredRouting).FirstOrDefault();
                                 int noofhr = 0;
                                 int minutes = 0;
                                 int subconminutes = 0;
@@ -5912,13 +5943,12 @@ namespace CWB.App.Controllers
                                 int totalparalelinhousedays = 0;
                                 int inHouseDaysFinal = 0;
                                 List<dynamic> machines = new List<dynamic>();
-                                foreach (var rote in resultList)
-                                {
-                                    var result = await _routingService.RoutingSteps(rote.RoutingId);
+                                //foreach (var rote in resultList)
+                                //{
+                                    var result = await _routingService.RoutingSteps(prefferedrouting.RoutingId);
                                     foreach (var step in result)
                                     {
-                                        if (step.StepNextSequence == 1)
-                                        {
+                                       
                                             var stepdetails = await _routingService.StepMachines((int)step.StepId);
                                             if (stepdetails.Count() != 0)
                                             {
@@ -5929,8 +5959,21 @@ namespace CWB.App.Controllers
                                                                     RoutingStepId = g.Key,
                                                                     TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes / sd.NoOfPartsPerLoading)
                                                                 });
-
-                                                foreach (var Machines in stepdetails)
+                                                    var setuptimeSum = stepdetails
+                                                      .GroupBy(sd => sd.RoutingStepId)
+                                                      .Select(g => new
+                                                      {
+                                                          RoutingStepId = g.Key,
+                                                          TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.SetupTime).TotalMinutes)
+                                                      });
+                                                    var FirstPiecetimeSum = stepdetails
+                                                                   .GroupBy(sd => sd.RoutingStepId)
+                                                                   .Select(g => new
+                                                                   {
+                                                                       RoutingStepId = g.Key,
+                                                                       TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FirstPieceProcessingTime).TotalMinutes)
+                                                                   });
+                                        foreach (var Machines in stepdetails)
                                                 {
                                                     var machine = await _machineService.GetMachine((int)Machines?.MachineId);
                                                     machines.Add(new
@@ -5943,8 +5986,16 @@ namespace CWB.App.Controllers
                                                 {
                                                     minutes += (int)min.TotalProcessingTime;
                                                 }
+                                                foreach (var min in setuptimeSum)
+                                                {
+                                                    minutes += (int)min.TotalProcessingTime;
+                                                }
+                                                foreach (var min in FirstPiecetimeSum)
+                                                {
+                                                    minutes += (int)min.TotalProcessingTime;
+                                                }
 
-                                            }
+                                    }
                                             else
                                             {
                                                 var sub = await _routingService.SubCons((int)step.StepId);
@@ -5969,93 +6020,9 @@ namespace CWB.App.Controllers
                                                 }
 
                                             }
-                                        }
-                                        else if (step.StepNextSequence == 2 || step.StepNextSequence == 3)
-                                        {
-                                            var stepdetails = await _routingService.StepMachines((int)step.StepId);
-                                            if (stepdetails.Count() != 0)
-                                            {
-                                                var processingTimeSum = stepdetails
-                                                                .GroupBy(sd => sd.RoutingStepId)
-                                                                .Select(g => new
-                                                                {
-                                                                    RoutingStepId = g.Key,
-                                                                    TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes)
-                                                                });
-                                                var setupTimeSum = stepdetails
-                                                                .GroupBy(sd => sd.RoutingStepId)
-                                                                .Select(g => new
-                                                                {
-                                                                    RoutingStepId = g.Key,
-                                                                    TotalSetupTime = g.Sum(sd => TimeSpan.Parse(sd.SetupTime).TotalMinutes)
-                                                                });
-                                                var maxProcessingTime = stepdetails
-                                                                .GroupBy(sd => sd.RoutingStepId)
-                                                                .Select(g => g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes))
-                                                                .Max();
-                                                foreach (var Machines in stepdetails)
-                                                {
-                                                    var machine = await _machineService.GetMachine((int)Machines?.MachineId);
-                                                    machines.Add(new
-                                                    {
-                                                        MachineId = machine.MachineMachineId,
-                                                        DepartmentId = machine.MachineDepartmentId
-                                                    });
-                                                }
-                                                var setuptime = 0;
-                                                foreach (var min in setupTimeSum)
-                                                {
-                                                    setuptime += (int)min.TotalSetupTime;
-
-                                                }
-                                                parallelinhousmaxoperationtime = (int)maxProcessingTime;
-                                                parallelinhousesetuptime = setuptime;
-
-                                                // parallelminutes += ((int)maxProcessingTime * item.CalcWOQty) + setuptime;
-
-                                            }
-                                            else
-                                            {
-                                                var sub = await _routingService.SubCons((int)step.StepId);
-                                                var subfirst = sub.FirstOrDefault();
-                                                if (subfirst == null)
-                                                {
-                                                    continue; // 🔥 VERY IMPORTANT
-                                                }
-                                                var subworks = await _routingService.SubConWSS((int)step.StepId, subfirst.SubConDetailsId);
-                                                var processingTimeSum = subworks
-                                                            .GroupBy(sd => sd.RoutingStepId)
-                                                            .Select(g => new
-                                                            {
-                                                                RoutingStepId = g.Key,
-                                                                TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes / sd.NoOfPartsPerLoading)
-                                                            });
-                                                var setupTimeSum = subworks
-                                                           .GroupBy(sd => sd.RoutingStepId)
-                                                           .Select(g => new
-                                                           {
-                                                               RoutingStepId = g.Key,
-                                                               TotalSetupTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes)
-                                                           });
-                                                var cyletime = 0;
-                                                var setuptime = 0;
-                                                transporttime += Convert.ToInt32(subfirst.TransportTime);
-                                                foreach (var min in processingTimeSum)
-                                                {
-                                                    cyletime += (int)min.TotalProcessingTime;
-                                                }
-                                                foreach (var min in setupTimeSum)
-                                                {
-                                                    setuptime += (int)min.TotalSetupTime;
-                                                }
-                                                // parallelsubconminutes += (setuptime + (item.CalcWOQty * cyletime) + (transporttime * 60));
-                                                paralleltransporttime = transporttime * 60;
-                                                parallelsubconcycletime = cyletime;
-                                                parallelsubconsetuptime = setuptime;
-                                            }
-                                        }
+                                       
                                     }
-                                }
+                               // }
                                 int departmentshifts = 0;
                                 if (machines.Any())
                                 {
@@ -6167,6 +6134,7 @@ namespace CWB.App.Controllers
 
                                            })
                                             .ToList();
+                                    bool allMaterialsAvailable = true;
                                     foreach (var grouped in groupedResults)
                                     {
                                         var mfpdList = await _masterService.PartPurchasesFor(grouped.PartId);
@@ -6188,16 +6156,16 @@ namespace CWB.App.Controllers
                                         decimal intermediateResult = 0;
                                         if (ptype.MasterPartType == "ManufacturedPart")
                                         {
-                                            intermediateResult = item.CalcWOQty / grouped.QntyperInput;
+                                            intermediateResult = item.PlanWOQnty / grouped.QntyperInput;
                                         }
                                         else if (ptype.MasterPartType == "RawMaterial" && uom.Name != "Nos")
                                         {
                                             ///var manufPartweight = await _masterService.GetManufPart(grouped.PartId);
-                                            intermediateResult = item.CalcWOQty * Convert.ToDecimal(mf.FinishedWeight);
+                                            intermediateResult = item.PlanWOQnty * Convert.ToDecimal(mf.FinishedWeight);
                                         }
                                         else if (ptype.MasterPartType == "RawMaterial" && uom.Name == "Nos")
                                         {
-                                            intermediateResult = item.CalcWOQty / grouped.QntyperInput;
+                                            intermediateResult = item.PlanWOQnty / grouped.QntyperInput;
                                         }
 
 
@@ -6225,87 +6193,230 @@ namespace CWB.App.Controllers
                                                 criticalpart = 0;
                                             }
                                         }
+                                        
+                                        decimal requiredQty = intermediateResult;
+
+                                        decimal availableQty = await GetNetAvailableQty(grouped.PartId);
+
 
                                         if (groupedResults != null)
                                         {
-                                            if (ptype.MasterPartType == "RawMaterial")
-                                            {
-                                                ProcPlanVM ppdata = new ProcPlanVM
-                                                {
-                                                    PartId = grouped.PartId,
-                                                    PartType = ptype.MasterPartType,
-                                                    Calc_Proc_Qnty = (int)intermediateResult,
-                                                    UOMId = ptype.UOMId,
-                                                    PlanReceiptDate = (DateTime)item.PlanCompletionDate,
-                                                    CalcReceiptDate = nextworkdingdate,
-                                                    WorkOrderId = item.WoId,
-                                                    CriticalPart = criticalpart,
-                                                    PO_Flag = 0
-                                                };
-                                                listprocplan.Add(ppdata);
-                                            }
                                             long uniqwoid = long.Parse(DateTime.UtcNow.ToString("yyyyMMddHHmmssfffff"));
-                                            BOMListVM bomdata = new BOMListVM
+                                            decimal shortageQty = Math.Max(0, requiredQty - availableQty);
+                                            if (shortageQty > 0)
                                             {
-                                                ParentWoId = item.WoId,
-                                                Child_Part_No_ID = grouped.PartId,
-                                                Child_Part_No_Type = ptype.MasterPartType.ToString(),
-                                                Calc_Qnty = (int)intermediateResult,
-                                                Plan_Qnty = item.CalcWOQty,
-                                                //Plan_Start_Dt = planstartdt,
-                                                Plan_Compl_Dt = item.PlanCompletionDate.GetValueOrDefault(),
-                                                CalcReceiptDate = nextworkdingdate,
-                                                //Manf_Days_Avl = manfDays,
-                                                ProcPlanId = item.ProductionPlanId,
-                                                ChildWoId = uniqwoid
-                                                //SaNestLevel = Sa_Nest_level
-                                            };
-                                            if (ptype.MasterPartType == "ManufacturedPart")
-                                            {
-                                                var input = 0;
-                                                ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)bomdata.Child_Part_No_ID);
-                                                if (manuf.ManufacturedPartType == 1)
+                                                allMaterialsAvailable = false;
+                                                if (ptype.MasterPartType == "RawMaterial")
                                                 {
-                                                    var mpmakefromlistinputs = await _masterService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
-
-                                                    var selectedMakeFrom = mpmakefromlistinputs.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
-                                                    input = selectedMakeFrom.MPPartId;
-
+                                                    ProcPlanVM ppdata = new ProcPlanVM
+                                                    {
+                                                        PartId = grouped.PartId,
+                                                        PartType = ptype.MasterPartType,
+                                                        Calc_Proc_Qnty = (int)intermediateResult,
+                                                        Plan_Proc_Qnty=(int)intermediateResult,
+                                                        UOMId = ptype.UOMId,
+                                                        PlanReceiptDate = (DateTime)item.PlanCompletionDate,
+                                                        CalcReceiptDate = nextworkdingdate,
+                                                        WorkOrderId = item.WoId,
+                                                        CriticalPart = criticalpart,
+                                                        PO_Flag = 0
+                                                    };
+                                                    listprocplan.Add(ppdata);
                                                 }
-                                                else
+                                               
+                                                BOMListVM bomdata = new BOMListVM
                                                 {
-                                                    input = 0;
-                                                }
-
-                                                ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
-                                                {
-                                                    WoId = uniqwoid,//; item.ProductionPlanId ,
                                                     ParentWoId = item.WoId,
-                                                    SalesOrderId = item.SalesOrderId,
-                                                    PartId = bomdata.Child_Part_No_ID,
-                                                    PartType = 1,
-                                                    Parentlevel = 'N',
-                                                    BuildToStock = item.BuildToStock,
-                                                    TestData = item.TestData,
-                                                    CalcWOQty = bomdata.Calc_Qnty,
-                                                    //PlanStartDate = item.PlanCompletionDate.GetValueOrDefault(),
-                                                    PlanStartDate = planchildstartdt,
-                                                    PlanCompletionDate = planchildcompletiondt,
-                                                    SoComplDate = item.SoComplDate,
-                                                    RoutingId = item.RoutingId,
-                                                    StartingOpNo = item.StartingOpNo,
-                                                    EndingOpNo = item.EndingOpNo,
-                                                    For_Ref = 'N',
-                                                    ReloadOption = "",
-                                                    TenantId = item.TenantId,
-                                                    Consolidation_Flag = 0,
-                                                    Input_Part_No= input
+                                                    Child_Part_No_ID = grouped.PartId,
+                                                    Child_Part_No_Type = ptype.MasterPartType.ToString(),
+                                                    Calc_Qnty = (int)intermediateResult,
+                                                    Plan_Qnty = (int)intermediateResult,
+                                                    //Plan_Start_Dt = planstartdt,
+                                                    Plan_Compl_Dt = item.PlanCompletionDate.GetValueOrDefault(),
+                                                    CalcReceiptDate = nextworkdingdate,
+                                                    //Manf_Days_Avl = manfDays,
+                                                    ProcPlanId = item.ProductionPlanId,
+                                                    ChildWoId = uniqwoid
+                                                    //SaNestLevel = Sa_Nest_level
+                                                };
+                                                if (ptype.MasterPartType == "ManufacturedPart")
+                                                {
+                                                    double stepCapacityMinutes = 0;
+                                                    long capacityrequired = 0;
+                                                    var input = 0;
+                                                    ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)bomdata.Child_Part_No_ID);
+                                                    if (manuf.ManufacturedPartType == 1)
+                                                    {
+                                                        var mpmakefromlistinputs = await _masterService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
+
+                                                        var selectedMakeFrom = mpmakefromlistinputs.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
+                                                        input = selectedMakeFrom.MPPartId;
+
+                                                    }
+                                                    else
+                                                    {
+                                                        input = 0;
+                                                    }
+                                                    var childresultList = await _routingService.Routings(manuf.ManufacturedPartNoDetailId);
+                                                    var childprefferedrouting = childresultList.OrderByDescending(x => x.PreferredRouting).FirstOrDefault();
+                                                    var chilstepresult = await _routingService.RoutingSteps(childprefferedrouting.RoutingId);
+                                                    foreach (var step in chilstepresult)
+                                                    {
+                                                        //if (step.StepNextSequence == 1)
+                                                        //{
+                                                        //if(step.ste)
+
+                                                        var stepdetails = await _routingService.StepMachines((int)step.StepId);
+                                                        if (stepdetails.Count() != 0)
+                                                        {
+
+
+
+                                                            foreach (var machine in stepdetails)
+                                                            {
+                                                                double setup =
+                                                                    TimeSpan.Parse(machine.SetupTime).TotalMinutes;
+
+                                                                double firstPiece =
+                                                                    TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
+
+                                                                double cycle =
+                                                                    TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
+
+                                                                int qtyPerLoad =
+                                                                    machine.NoOfPartsPerLoading <= 0
+                                                                        ? 1
+                                                                        : machine.NoOfPartsPerLoading;
+
+                                                                int simultaneous =
+                                                                    step.NumberOfSimMachines <= 0
+                                                                        ? 1
+                                                                        : step.NumberOfSimMachines;
+
+                                                                double capacityMinutes =
+                                                                    setup
+                                                                    + firstPiece
+                                                                    + ((double)intermediateResult / simultaneous)
+                                                                        * (cycle / qtyPerLoad);
+
+                                                                stepCapacityMinutes += capacityMinutes;
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            var sub = await _routingService.SubCons((int)step.StepId);
+                                                            var subfirst = sub.FirstOrDefault();
+                                                            if (subfirst == null)
+                                                            {
+                                                                continue; // 🔥 VERY IMPORTANT
+                                                            }
+                                                            var subworks = await _routingService.SubConWSS((int)step.StepId, subfirst.SubConDetailsId);
+                                                            var processingTimeSum = subworks
+                                                                        .GroupBy(sd => sd.RoutingStepId)
+                                                                        .Select(g => new
+                                                                        {
+                                                                            RoutingStepId = g.Key,
+                                                                            TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes / sd.NoOfPartsPerLoading <= 0
+                                                                ? 1
+                                                                : sd.NoOfPartsPerLoading)
+                                                                        });
+                                                            var steptimesum = subworks
+                                                                   .GroupBy(sd => sd.RoutingStepId)
+                                                                   .Select(g => new
+                                                                   {
+                                                                       RoutingStepId = g.Key,
+                                                                       TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.SetupTime).TotalMinutes)
+                                                                   });
+                                                            transporttime += Convert.ToInt32(subfirst.TransportTime);
+                                                            foreach (var min in processingTimeSum)
+                                                            {
+                                                                subconminutes += (int)min.TotalProcessingTime;
+                                                            }
+
+                                                            double cycleTime = processingTimeSum.Sum(x => x.TotalProcessingTime);
+
+                                                            double setupTime = steptimesum.Sum(x => x.TotalProcessingTime);
+                                                            double capacityMinutes = setupTime + (transporttime * 60) + ((double)intermediateResult * cycleTime);
+                                                            stepCapacityMinutes += capacityMinutes;
+                                                        }
+
+                                                    }
+                                                    capacityrequired = (long)Math.Ceiling((double)stepCapacityMinutes / 60);
+                                                    ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
+                                                    {
+                                                        WoId = uniqwoid,//; item.ProductionPlanId ,
+                                                        ParentWoId = item.WoId,
+                                                        Calc_Capacity_Reqd = capacityrequired,
+                                                        SalesOrderId = item.SalesOrderId,
+                                                        PartId = bomdata.Child_Part_No_ID,
+                                                        PartType = 1,
+                                                        Parentlevel = 'N',
+                                                        BuildToStock = item.BuildToStock,
+                                                        TestData = item.TestData,
+                                                        CalcWOQty = bomdata.Calc_Qnty,
+                                                        PlanWOQnty=bomdata.Plan_Qnty,
+                                                        QtyOnHand=0,
+                                                        //PlanStartDate = item.PlanCompletionDate.GetValueOrDefault(),
+                                                        PlanStartDate = planchildstartdt,
+                                                        PlanCompletionDate = planchildcompletiondt,
+                                                        SoComplDate = item.SoComplDate,
+                                                        RoutingId = childprefferedrouting.RoutingId,
+                                                        StartingOpNo = item.StartingOpNo,
+                                                        EndingOpNo = item.EndingOpNo,
+                                                        For_Ref = 'N',
+                                                        ReloadOption = "",
+                                                        TenantId = item.TenantId,
+                                                        Consolidation_Flag = 0,
+                                                        Input_Part_No = input,
+                                                        Sim_Seq_No = item.Sim_Seq_No
+
+                                                    };
+                                                    childwos.Add(cwo);
+                                                }
+                                                listbom.Add(bomdata);
+
+                                                Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
+                                                {
+                                                    PO_NO_ID = 0,
+                                                    WO_Id = item.WoId,
+                                                    PartId = grouped.PartId,
+                                                    Plan_Alloc_Qnty = intermediateResult,
+                                                    Allocation_done = 'N',
+                                                    Bal_to_Issue = intermediateResult,
+                                                    Qnty_Recd = 0
+
 
                                                 };
-                                                childwos.Add(cwo);
+                                                inpputreservelist.Add(newinput);
+
                                             }
-                                            listbom.Add(bomdata);
+                                            else
+                                            {
+                                                Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
+                                                {
+                                                    PO_NO_ID = 0,
+                                                    WO_Id = item.WoId,
+                                                    PartId = grouped.PartId,
+                                                    Plan_Alloc_Qnty = requiredQty,
+                                                    Allocation_done = 'Y',
+                                                    Bal_to_Issue = 0,
+                                                    Qnty_Recd = requiredQty
+
+
+                                                };
+                                                inpputreservelist.Add(newinput);
+                                            }
                                         }
+                                    }
+                                    if(allMaterialsAvailable)
+                                    {
+                                        item.QtyOnHand = item.PlanWOQnty;
+                                        await _woService.UpdateProductionPlan_WoAllocatedqntyandstatus(item);
+                                    }
+                                    else
+                                    {
+                                        item.QtyOnHand = 0;
+                                        await _woService.UpdateProductionPlan_WoAllocatedqntyandstatus(item);
                                     }
                                 }
                                 else if (mf.ManufacturedPartType == 2)
@@ -6329,6 +6440,7 @@ namespace CWB.App.Controllers
                                                TotalQuantity = g.Sum(x => x.Quantity)
                                            })
                                             .ToList();
+                                    bool allMaterialsAvailable = true;
                                     foreach (var bomgrp in bomgroupedResults)
                                     {
                                         var mp = await _masterService.ItemMasterPartById(bomgrp.PartId);
@@ -6349,7 +6461,10 @@ namespace CWB.App.Controllers
                              "N", noofweeklyoff);
                                         //DateTime planstartdt = item.PlanCompletionDate.Value.AddDays(-assyTimeInDays);
                                         int? mainManufacturedpartid = null;
+                                        decimal requiredQty = (decimal)bomgrp.TotalQuantity * item.PlanWOQnty;
+                                        decimal availableQty = await GetNetAvailableQty(bomgrp.PartId);
 
+                                       
                                         switch (mp.MasterPartType)
                                         {
                                             case MasterPartType.ManufacturedPart:
@@ -6454,67 +6569,194 @@ namespace CWB.App.Controllers
                                                     parttype = "Assembly";
                                                 }
                                                 long uniqwoid = long.Parse(DateTime.UtcNow.ToString("yyyyMMddHHmmssfffff"));
-
-                                                BOMListVM bomdata = new BOMListVM
+                                                decimal shortageQty = Math.Max(0, requiredQty - availableQty);
+                                                if (shortageQty > 0)
                                                 {
-                                                    ParentWoId = item.WoId,
-                                                    Child_Part_No_ID = bomgrp.PartId,
-                                                    Child_Part_No_Type = parttype,
-                                                    Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
-                                                    Plan_Qnty = item.CalcWOQty,
-                                                    Plan_Start_Dt = planstartdt,
-                                                    Plan_Compl_Dt = planstartdt,
-                                                    CalcReceiptDate = planstartdt,
-                                                    Manf_Days_Avl = manfDays,
-                                                    ProcPlanId = item.ProductionPlanId,
-                                                    SaNestLevel = Sa_Nest_level,
-                                                    ChildWoId = uniqwoid
-                                                };
-                                                listbom.Add(bomdata);
-                                                var input = 0;
-                                                ManufacturedPartNoDetailVM manuf1 = await _masterService.GetManufPart((int)bomdata.Child_Part_No_ID);
-                                                if (manuf1.ManufacturedPartType == 1)
-                                                {
-                                                    var mpmakefromlistinputs = await _masterService.GetMPMakeFromListByPartId(manuf1.ManufacturedPartNoDetailId.ToString());
+                                                    allMaterialsAvailable = false;
+                                                    BOMListVM bomdata = new BOMListVM
+                                                    {
+                                                        ParentWoId = item.WoId,
+                                                        Child_Part_No_ID = bomgrp.PartId,
+                                                        Child_Part_No_Type = parttype,
+                                                        Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
+                                                        Plan_Qnty = (int)bomgrp.TotalQuantity * item.PlanWOQnty,
+                                                        Plan_Start_Dt = planstartdt,
+                                                        Plan_Compl_Dt = planstartdt,
+                                                        CalcReceiptDate = planstartdt,
+                                                        Manf_Days_Avl = manfDays,
+                                                        ProcPlanId = item.ProductionPlanId,
+                                                        SaNestLevel = Sa_Nest_level,
+                                                        ChildWoId = uniqwoid
+                                                    };
+                                                    listbom.Add(bomdata);
+                                                    var input = 0;
+                                                    var checkedroutingid = 0;
+                                                    double stepCapacityMinutes = 0;
+                                                    long capacityrequired = 0;
+                                                    if (manufchild.ManufacturedPartType == 1 || manufchild.ManufacturedPartType == 2)
+                                                    {
+                                                        var childresultList = await _routingService.Routings(manufchild.ManufacturedPartNoDetailId);
+                                                        var childprefferedrouting = childresultList.OrderByDescending(x => x.PreferredRouting).FirstOrDefault();
+                                                        checkedroutingid = childprefferedrouting.RoutingId;
+                                                        var stepresult = await _routingService.RoutingSteps(childprefferedrouting.RoutingId);
+                                                        foreach (var step in stepresult)
+                                                        {
 
-                                                    var selectedMakeFrom = mpmakefromlistinputs.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
-                                                    input = selectedMakeFrom.MPPartId;
 
+                                                            var stepdetails = await _routingService.StepMachines((int)step.StepId);
+                                                            if (stepdetails.Count() != 0)
+                                                            {
+
+
+
+                                                                foreach (var machine in stepdetails)
+                                                                {
+                                                                    double setup =
+                                                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
+
+                                                                    double firstPiece =
+                                                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
+
+                                                                    double cycle =
+                                                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
+
+                                                                    int qtyPerLoad =
+                                                                        machine.NoOfPartsPerLoading <= 0
+                                                                            ? 1
+                                                                            : machine.NoOfPartsPerLoading;
+
+                                                                    int simultaneous =
+                                                                        step.NumberOfSimMachines <= 0
+                                                                            ? 1
+                                                                            : step.NumberOfSimMachines;
+
+                                                                    double capacityMinutes =
+                                                                        setup
+                                                                        + firstPiece
+                                                                        + ((double)bomdata.Plan_Qnty / simultaneous)
+                                                                            * (cycle / qtyPerLoad);
+
+                                                                    stepCapacityMinutes += capacityMinutes;
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                var sub = await _routingService.SubCons((int)step.StepId);
+                                                                var subfirst = sub.FirstOrDefault();
+                                                                if (subfirst == null)
+                                                                {
+                                                                    continue; // 🔥 VERY IMPORTANT
+                                                                }
+                                                                var subworks = await _routingService.SubConWSS((int)step.StepId, subfirst.SubConDetailsId);
+                                                                var processingTimeSum = subworks
+                                                                            .GroupBy(sd => sd.RoutingStepId)
+                                                                            .Select(g => new
+                                                                            {
+                                                                                RoutingStepId = g.Key,
+                                                                                TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes / sd.NoOfPartsPerLoading <= 0
+                                                                    ? 1
+                                                                    : sd.NoOfPartsPerLoading)
+                                                                            });
+                                                                var steptimesum = subworks
+                                                                       .GroupBy(sd => sd.RoutingStepId)
+                                                                       .Select(g => new
+                                                                       {
+                                                                           RoutingStepId = g.Key,
+                                                                           TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.SetupTime).TotalMinutes)
+                                                                       });
+                                                                transporttime += Convert.ToInt32(subfirst.TransportTime);
+                                                                foreach (var min in processingTimeSum)
+                                                                {
+                                                                    subconminutes += (int)min.TotalProcessingTime;
+                                                                }
+
+                                                                double cycleTime = processingTimeSum.Sum(x => x.TotalProcessingTime);
+
+                                                                double setupTime = steptimesum.Sum(x => x.TotalProcessingTime);
+                                                                double capacityMinutes = setupTime + (transporttime * 60) + (bomdata.Plan_Qnty * cycleTime);
+                                                                stepCapacityMinutes += capacityMinutes;
+                                                            }
+
+                                                        }
+                                                    }
+                                                    capacityrequired = (long)Math.Ceiling((double)stepCapacityMinutes / 60);
+                                                    ManufacturedPartNoDetailVM manuf1 = await _masterService.GetManufPart((int)bomdata.Child_Part_No_ID);
+                                                    if (manuf1.ManufacturedPartType == 1)
+                                                    {
+                                                        var mpmakefromlistinputs = await _masterService.GetMPMakeFromListByPartId(manuf1.ManufacturedPartNoDetailId.ToString());
+
+                                                        var selectedMakeFrom = mpmakefromlistinputs.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
+                                                        input = selectedMakeFrom.MPPartId;
+
+                                                    }
+                                                    else
+                                                    {
+                                                        input = 0;
+                                                    }
+                                                    ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
+                                                    {
+                                                        WoId = uniqwoid,//procplanid
+                                                        ParentWoId = item.WoId,
+                                                        Calc_Capacity_Reqd = capacityrequired,
+                                                        SalesOrderId = item.SalesOrderId,
+                                                        PartId = bomdata.Child_Part_No_ID,
+                                                        PartType = (int)manufchild.ManufacturedPartType,
+                                                        Parentlevel = 'N',
+                                                        BuildToStock = item.BuildToStock,
+                                                        TestData = item.TestData,
+                                                        CalcWOQty = bomdata.Calc_Qnty,
+                                                        PlanWOQnty=bomdata.Plan_Qnty,
+                                                        PlanStartDate = planstartdt,
+                                                        PlanCompletionDate = completionDate,
+                                                        // PlanCompletionDate = item.PlanCompletionDate.Value.AddDays(-1),
+                                                        SoComplDate = item.SoComplDate,
+                                                        RoutingId = checkedroutingid,
+                                                        StartingOpNo = item.StartingOpNo,
+                                                        EndingOpNo = item.EndingOpNo,
+                                                        For_Ref = 'N',
+                                                        ReloadOption = "",
+                                                        TenantId = item.TenantId,
+                                                        Consolidation_Flag = 0,
+                                                        Input_Part_No = input,
+                                                        Sim_Seq_No = item.Sim_Seq_No
+                                                    };
+                                                    childwos.Add(cwo);
+                                                    Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
+                                                    {
+                                                        PO_NO_ID = 0,
+                                                        WO_Id = item.WoId,
+                                                        PartId = cwo.PartId,
+                                                        Plan_Alloc_Qnty = cwo.PlanWOQnty,
+                                                        Allocation_done = 'N',
+                                                        Bal_to_Issue = cwo.PlanWOQnty,
+                                                        Qnty_Recd = 0
+
+
+                                                    };
+                                                    inpputreservelist.Add(newinput);
                                                 }
                                                 else
                                                 {
-                                                    input = 0;
+                                                    Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
+                                                    {
+                                                        PO_NO_ID = 0,
+                                                        WO_Id = item.WoId,
+                                                        PartId = bomgrp.PartId,
+                                                        Plan_Alloc_Qnty = bomgrp.TotalQuantity * item.PlanWOQnty,
+                                                        Allocation_done = 'Y',
+                                                        Bal_to_Issue = 0,
+                                                        Qnty_Recd = bomgrp.TotalQuantity * item.PlanWOQnty
+
+
+                                                    };
+                                                    inpputreservelist.Add(newinput);
                                                 }
-                                                ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
-                                                {
-                                                    WoId = uniqwoid,//procplanid
-                                                    ParentWoId = item.WoId,
-                                                    SalesOrderId = item.SalesOrderId,
-                                                    PartId = bomdata.Child_Part_No_ID,
-                                                    PartType = (int)manufchild.ManufacturedPartType,
-                                                    Parentlevel = 'N',
-                                                    BuildToStock = item.BuildToStock,
-                                                    TestData = item.TestData,
-                                                    CalcWOQty = bomdata.Calc_Qnty,
-                                                    PlanStartDate = planstartdt,
-                                                    PlanCompletionDate = completionDate,
-                                                    // PlanCompletionDate = item.PlanCompletionDate.Value.AddDays(-1),
-                                                    SoComplDate = item.SoComplDate,
-                                                    RoutingId = item.RoutingId,
-                                                    StartingOpNo = item.StartingOpNo,
-                                                    EndingOpNo = item.EndingOpNo,
-                                                    For_Ref = 'N',
-                                                    ReloadOption = "",
-                                                    TenantId = item.TenantId,
-                                                    Consolidation_Flag = 0,
-                                                    Input_Part_No=input
-                                                };
-                                                childwos.Add(cwo);
                                                 break;
                                             //case MasterPartType.BOM:
 
                                             //    break;
                                             case MasterPartType.BOF:
+                                                decimal shortagebofQty = Math.Max(0, requiredQty - availableQty);
                                                 var bofpdList = await _masterService.PartPurchasesFor(bomgrp.PartId);
                                                 //var bofptype = await _masterService.GetRMPart(bomgrp.PartId);
                                                 BoughtOutFinishDetailVM manuf = await _masterService.GetBOFPart(bomgrp.PartId);
@@ -6531,32 +6773,66 @@ namespace CWB.App.Controllers
                                                 {
                                                     criticalpart = 0;
                                                 }
-                                                BOMListVM bofbomdata = new BOMListVM
+                                                if (shortagebofQty > 0)
                                                 {
-                                                    ParentWoId = item.WoId,
-                                                    Child_Part_No_ID = bomgrp.PartId,
-                                                    Child_Part_No_Type = mp.MasterPartType.ToString(),
-                                                    Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
-                                                    Plan_Qnty = item.CalcWOQty,
-                                                    Plan_Compl_Dt = planstartdt,
-                                                    CalcReceiptDate = bofnextworkdingdate,
-                                                    ProcPlanId = item.ProductionPlanId,
+                                                    allMaterialsAvailable = false;
+                                                    BOMListVM bofbomdata = new BOMListVM
+                                                    {
+                                                        ParentWoId = item.WoId,
+                                                        Child_Part_No_ID = bomgrp.PartId,
+                                                        Child_Part_No_Type = mp.MasterPartType.ToString(),
+                                                        Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
+                                                        Plan_Qnty = (int)bomgrp.TotalQuantity * item.PlanWOQnty,
+                                                        Plan_Compl_Dt = planstartdt,
+                                                        CalcReceiptDate = bofnextworkdingdate,
+                                                        ProcPlanId = item.ProductionPlanId,
 
-                                                };
-                                                listbom.Add(bofbomdata);
-                                                ProcPlanVM ppdata = new ProcPlanVM
+                                                    };
+                                                    listbom.Add(bofbomdata);
+                                                    ProcPlanVM ppdata = new ProcPlanVM
+                                                    {
+                                                        PartId = bomgrp.PartId,
+                                                        PartType = mp.MasterPartType.ToString(),
+                                                        Calc_Proc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
+                                                        Plan_Proc_Qnty= (int)bomgrp.TotalQuantity * item.PlanWOQnty,
+                                                        UOMId = manuf.UOMId,
+                                                        PlanReceiptDate = item.PlanStartDate,
+                                                        CalcReceiptDate = bofnextworkdingdate,
+                                                        WorkOrderId = item.WoId,
+                                                        CriticalPart = criticalpart,
+                                                        PO_Flag = 0
+                                                    };
+                                                    listprocplan.Add(ppdata);
+                                                    Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
+                                                    {
+                                                        PO_NO_ID = 0,
+                                                        WO_Id = item.WoId,
+                                                        PartId = bomgrp.PartId,
+                                                        Plan_Alloc_Qnty = (int)bomgrp.TotalQuantity * item.PlanWOQnty,
+                                                        Allocation_done = 'N',
+                                                        Bal_to_Issue = (int)bomgrp.TotalQuantity * item.PlanWOQnty,
+                                                        Qnty_Recd = 0
+
+
+                                                    };
+                                                    inpputreservelist.Add(newinput);
+                                                }
+                                                else
                                                 {
-                                                    PartId = bomgrp.PartId,
-                                                    PartType = mp.MasterPartType.ToString(),
-                                                    Calc_Proc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
-                                                    UOMId = manuf.UOMId,
-                                                    PlanReceiptDate = item.PlanStartDate,
-                                                    CalcReceiptDate = bofnextworkdingdate,
-                                                    WorkOrderId = item.WoId,
-                                                    CriticalPart = criticalpart,
-                                                    PO_Flag = 0
-                                                };
-                                                listprocplan.Add(ppdata);
+                                                    Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
+                                                    {
+                                                        PO_NO_ID = 0,
+                                                        WO_Id = item.WoId,
+                                                        PartId = bomgrp.PartId,
+                                                        Plan_Alloc_Qnty = (int)bomgrp.TotalQuantity * item.PlanWOQnty,
+                                                        Allocation_done = 'Y',
+                                                        Bal_to_Issue = 0,
+                                                        Qnty_Recd = (int)bomgrp.TotalQuantity * item.PlanWOQnty
+
+
+                                                    };
+                                                    inpputreservelist.Add(newinput);
+                                                }
 
                                                 break;
                                             case MasterPartType.RawMaterial:
@@ -6604,7 +6880,16 @@ namespace CWB.App.Controllers
                                                 break;
                                         }
                                     }
-
+                                    if (allMaterialsAvailable)
+                                    {
+                                        item.QtyOnHand = item.PlanWOQnty;
+                                        await _woService.UpdateProductionPlan_WoAllocatedqntyandstatus(item);
+                                    }
+                                    else
+                                    {
+                                        item.QtyOnHand = 0;
+                                        await _woService.UpdateProductionPlan_WoAllocatedqntyandstatus(item);
+                                    }
                                 }
 
                             }
@@ -6794,7 +7079,9 @@ namespace CWB.App.Controllers
                         }
                         var childworels = await _woService.PostChildWoRel(childWoRels);
                         var machinetimepost = await _woService.PostMcTimeList(mcTimeListVMs);
+                        var postinputreservelist = await _woService.PostInputReservelist(inpputreservelist);
                         var childproductionwopost = await _woService.ProductionPlanWoPost(childwos);
+                       
                         //try
                         //{
                         if (childproductionwopost.Any())
@@ -6850,6 +7137,7 @@ namespace CWB.App.Controllers
                 List<ProductionPlan_WoVM> childwos = new List<ProductionPlan_WoVM>();
                 List<ChildWoRelVM> childWoRels = new List<ChildWoRelVM>();
                 List<McTimeListVM> mcTimeListVMs = new List<McTimeListVM>();
+                List<Input_Resrv_ListVM> inpputreservelist = new List<Input_Resrv_ListVM>();
                 int totalLeadTime = 0;
                 foreach (var item in procdutionpost)
                 {
@@ -7123,6 +7411,8 @@ namespace CWB.App.Controllers
 
                                    })
                                     .ToList();
+                           
+                            bool allMaterialsAvailable = true;
                             foreach (var grouped in groupedResults)
                             {
                                 var mfpdList = await _masterService.PartPurchasesFor(grouped.PartId);
@@ -7144,23 +7434,22 @@ namespace CWB.App.Controllers
                                 decimal intermediateResult = 0;
                                 if (ptype.MasterPartType == "ManufacturedPart")
                                 {
-                                    intermediateResult = item.CalcWOQty / grouped.QntyperInput;
+                                    intermediateResult = item.PlanWOQnty / grouped.QntyperInput;
                                 }
                                 else if (ptype.MasterPartType == "RawMaterial" && uom.Name != "Nos")
                                 {
-                                    //var manufPartweight = await _masterService.GetManufPart(grouped.PartId);
-                                    intermediateResult = item.CalcWOQty * Convert.ToDecimal(mf.FinishedWeight);
+                                    ///var manufPartweight = await _masterService.GetManufPart(grouped.PartId);
+                                    intermediateResult = item.PlanWOQnty * Convert.ToDecimal(mf.FinishedWeight);
                                 }
                                 else if (ptype.MasterPartType == "RawMaterial" && uom.Name == "Nos")
                                 {
-                                    intermediateResult = item.CalcWOQty / grouped.QntyperInput;
+                                    intermediateResult = item.PlanWOQnty / grouped.QntyperInput;
                                 }
 
 
                                 totalLeadTime = mfpdList.Sum(x => x.LeadTimeInDays);
                                 DateTime nextworkdingdate = DateTime.Now;
                                 nextworkdingdate = nextworkdingdate.AddDays(totalLeadTime);
-
                                 // decimal intermediateResult = grouped.TotalQuantity * item.CalcWOQty;
                                 //var workdetails = await _plantService.GetPlantWD(13);
                                 //var holidaylist = await _plantService.GetHolidays(13);
@@ -7182,85 +7471,230 @@ namespace CWB.App.Controllers
                                         criticalpart = 0;
                                     }
                                 }
+
+                                decimal requiredQty = intermediateResult;
+
+                                decimal availableQty = await GetNetAvailableQty(grouped.PartId);
+
+
                                 if (groupedResults != null)
                                 {
-                                    if (ptype.MasterPartType == "RawMaterial")
+                                    long uniqwoid = long.Parse(DateTime.UtcNow.ToString("yyyyMMddHHmmssfffff"));
+                                    decimal shortageQty = Math.Max(0, requiredQty - availableQty);
+                                    if (shortageQty > 0)
                                     {
-                                        ProcPlanVM ppdata = new ProcPlanVM
+                                        allMaterialsAvailable = false;
+                                        if (ptype.MasterPartType == "RawMaterial")
                                         {
-                                            PartId = grouped.PartId,
-                                            PartType = ptype.MasterPartType,
-                                            Calc_Proc_Qnty = (int)intermediateResult,
-                                            UOMId = ptype.UOMId,
-                                            PlanReceiptDate = (DateTime)item.PlanCompletionDate,
-                                            CalcReceiptDate = nextworkdingdate,
-                                            WorkOrderId = item.WoId,
-                                            CriticalPart = criticalpart,
-                                            PO_Flag = 0
-                                        };
-                                        listprocplan.Add(ppdata);
-                                    }
-                                    long uniquewo = long.Parse(DateTime.UtcNow.ToString("yyyyMMddHHmmssfffff"));
-                                    BOMListVM bomdata = new BOMListVM
-                                    {
-                                        ParentWoId = item.ParentWoId,
-                                        Child_Part_No_ID = grouped.PartId,
-                                        Child_Part_No_Type = ptype.MasterPartType.ToString(),
-                                        Calc_Qnty = (int)intermediateResult,
-                                        Plan_Qnty = item.CalcWOQty,
-                                        //Plan_Start_Dt = planstartdt,
-                                        Plan_Compl_Dt = item.PlanCompletionDate.GetValueOrDefault(),
-                                        CalcReceiptDate = nextworkdingdate,
-                                        //Manf_Days_Avl = manfDays,
-                                        ProcPlanId = item.ProductionPlanId,
-                                        ChildWoId = uniquewo
-                                        //SaNestLevel = Sa_Nest_level
-                                    };
-                                    if (ptype.MasterPartType == "ManufacturedPart")
-                                    {
-                                        var input = 0;
-                                        ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)bomdata.Child_Part_No_ID);
-                                        if (manuf.ManufacturedPartType == 1)
-                                        {
-                                            var mpmakefromlistinputs = await _masterService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
-
-                                            var selectedMakeFrom = mpmakefromlistinputs.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
-                                            input = selectedMakeFrom.MPPartId;
-
-                                        }
-                                        else
-                                        {
-                                            input = 0;
+                                            ProcPlanVM ppdata = new ProcPlanVM
+                                            {
+                                                PartId = grouped.PartId,
+                                                PartType = ptype.MasterPartType,
+                                                Calc_Proc_Qnty = (int)intermediateResult,
+                                                Plan_Proc_Qnty = (int)intermediateResult,
+                                                UOMId = ptype.UOMId,
+                                                PlanReceiptDate = (DateTime)item.PlanCompletionDate,
+                                                CalcReceiptDate = nextworkdingdate,
+                                                WorkOrderId = item.WoId,
+                                                CriticalPart = criticalpart,
+                                                PO_Flag = 0
+                                            };
+                                            listprocplan.Add(ppdata);
                                         }
 
-                                        ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
+                                        BOMListVM bomdata = new BOMListVM
                                         {
-                                            WoId = uniquewo,//item.ProductionPlanId,
                                             ParentWoId = item.ParentWoId,
-                                            SalesOrderId = item.SalesOrderId,
-                                            PartId = bomdata.Child_Part_No_ID,
-                                            PartType = 1,
-                                            Parentlevel = 'N',
-                                            BuildToStock = item.BuildToStock,
-                                            TestData = item.TestData,
-                                            CalcWOQty = bomdata.Calc_Qnty,
-                                            //PlanStartDate = item.PlanCompletionDate.GetValueOrDefault(),
-                                            PlanStartDate = planchildstartdt,
-                                            PlanCompletionDate = planchildcompletiondt,
-                                            SoComplDate = item.SoComplDate,
-                                            RoutingId = item.RoutingId,
-                                            StartingOpNo = item.StartingOpNo,
-                                            EndingOpNo = item.EndingOpNo,
-                                            For_Ref = 'N',
-                                            ReloadOption = "",
-                                            TenantId = item.TenantId,
-                                            Consolidation_Flag = 0,
-                                            Input_Part_No=input
+                                            Child_Part_No_ID = grouped.PartId,
+                                            Child_Part_No_Type = ptype.MasterPartType.ToString(),
+                                            Calc_Qnty = (int)intermediateResult,
+                                            Plan_Qnty = (int)intermediateResult,
+                                            //Plan_Start_Dt = planstartdt,
+                                            Plan_Compl_Dt = item.PlanCompletionDate.GetValueOrDefault(),
+                                            CalcReceiptDate = nextworkdingdate,
+                                            //Manf_Days_Avl = manfDays,
+                                            ProcPlanId = item.ProductionPlanId,
+                                            ChildWoId = uniqwoid
+                                            //SaNestLevel = Sa_Nest_level
                                         };
-                                        childwos.Add(cwo);
+                                        if (ptype.MasterPartType == "ManufacturedPart")
+                                        {
+                                            double stepCapacityMinutes = 0;
+                                            long capacityrequired = 0;
+                                            var input = 0;
+                                            ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)bomdata.Child_Part_No_ID);
+                                            if (manuf.ManufacturedPartType == 1)
+                                            {
+                                                var mpmakefromlistinputs = await _masterService.GetMPMakeFromListByPartId(manuf.ManufacturedPartNoDetailId.ToString());
+
+                                                var selectedMakeFrom = mpmakefromlistinputs.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
+                                                input = selectedMakeFrom.MPPartId;
+
+                                            }
+                                            else
+                                            {
+                                                input = 0;
+                                            }
+                                            var childresultList = await _routingService.Routings(manuf.ManufacturedPartNoDetailId);
+                                            var childprefferedrouting = childresultList.OrderByDescending(x => x.PreferredRouting).FirstOrDefault();
+                                            var chilstepresult = await _routingService.RoutingSteps(childprefferedrouting.RoutingId);
+                                            foreach (var step in chilstepresult)
+                                            {
+                                                //if (step.StepNextSequence == 1)
+                                                //{
+                                                //if(step.ste)
+
+                                                var stepdetails = await _routingService.StepMachines((int)step.StepId);
+                                                if (stepdetails.Count() != 0)
+                                                {
+
+
+
+                                                    foreach (var machine in stepdetails)
+                                                    {
+                                                        double setup =
+                                                            TimeSpan.Parse(machine.SetupTime).TotalMinutes;
+
+                                                        double firstPiece =
+                                                            TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
+
+                                                        double cycle =
+                                                            TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
+
+                                                        int qtyPerLoad =
+                                                            machine.NoOfPartsPerLoading <= 0
+                                                                ? 1
+                                                                : machine.NoOfPartsPerLoading;
+
+                                                        int simultaneous =
+                                                            step.NumberOfSimMachines <= 0
+                                                                ? 1
+                                                                : step.NumberOfSimMachines;
+
+                                                        double capacityMinutes =
+                                                            setup
+                                                            + firstPiece
+                                                            + ((double)intermediateResult / simultaneous)
+                                                                * (cycle / qtyPerLoad);
+
+                                                        stepCapacityMinutes += capacityMinutes;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    var sub = await _routingService.SubCons((int)step.StepId);
+                                                    var subfirst = sub.FirstOrDefault();
+                                                    if (subfirst == null)
+                                                    {
+                                                        continue; // 🔥 VERY IMPORTANT
+                                                    }
+                                                    var subworks = await _routingService.SubConWSS((int)step.StepId, subfirst.SubConDetailsId);
+                                                    var processingTimeSum = subworks
+                                                                .GroupBy(sd => sd.RoutingStepId)
+                                                                .Select(g => new
+                                                                {
+                                                                    RoutingStepId = g.Key,
+                                                                    TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes / sd.NoOfPartsPerLoading <= 0
+                                                        ? 1
+                                                        : sd.NoOfPartsPerLoading)
+                                                                });
+                                                    var steptimesum = subworks
+                                                           .GroupBy(sd => sd.RoutingStepId)
+                                                           .Select(g => new
+                                                           {
+                                                               RoutingStepId = g.Key,
+                                                               TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.SetupTime).TotalMinutes)
+                                                           });
+                                                    transporttime += Convert.ToInt32(subfirst.TransportTime);
+                                                    foreach (var min in processingTimeSum)
+                                                    {
+                                                        subconminutes += (int)min.TotalProcessingTime;
+                                                    }
+
+                                                    double cycleTime = processingTimeSum.Sum(x => x.TotalProcessingTime);
+
+                                                    double setupTime = steptimesum.Sum(x => x.TotalProcessingTime);
+                                                    double capacityMinutes = setupTime + (transporttime * 60) + ((double)intermediateResult * cycleTime);
+                                                    stepCapacityMinutes += capacityMinutes;
+                                                }
+
+                                            }
+                                            capacityrequired = (long)Math.Ceiling((double)stepCapacityMinutes / 60);
+                                            ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
+                                            {
+                                                WoId = uniqwoid,//; item.ProductionPlanId ,
+                                                ParentWoId = item.ParentWoId,
+                                                Calc_Capacity_Reqd = capacityrequired,
+                                                SalesOrderId = item.SalesOrderId,
+                                                PartId = bomdata.Child_Part_No_ID,
+                                                PartType = 1,
+                                                Parentlevel = 'N',
+                                                BuildToStock = item.BuildToStock,
+                                                TestData = item.TestData,
+                                                CalcWOQty = bomdata.Calc_Qnty,
+                                                PlanWOQnty = bomdata.Plan_Qnty,
+                                                QtyOnHand = 0,
+                                                //PlanStartDate = item.PlanCompletionDate.GetValueOrDefault(),
+                                                PlanStartDate = planchildstartdt,
+                                                PlanCompletionDate = planchildcompletiondt,
+                                                SoComplDate = item.SoComplDate,
+                                                RoutingId = childprefferedrouting.RoutingId,
+                                                StartingOpNo = item.StartingOpNo,
+                                                EndingOpNo = item.EndingOpNo,
+                                                For_Ref = 'N',
+                                                ReloadOption = "",
+                                                TenantId = item.TenantId,
+                                                Consolidation_Flag = 0,
+                                                Input_Part_No = input,
+                                                Sim_Seq_No = item.Sim_Seq_No
+
+                                            };
+                                            childwos.Add(cwo);
+                                        }
+                                        listbom.Add(bomdata);
+
+                                        Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
+                                        {
+                                            PO_NO_ID = 0,
+                                            WO_Id = item.WoId,
+                                            PartId = grouped.PartId,
+                                            Plan_Alloc_Qnty = intermediateResult,
+                                            Allocation_done = 'N',
+                                            Bal_to_Issue = intermediateResult,
+                                            Qnty_Recd = 0
+
+
+                                        };
+                                        inpputreservelist.Add(newinput);
+
                                     }
-                                    listbom.Add(bomdata);
+                                    else
+                                    {
+                                        Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
+                                        {
+                                            PO_NO_ID = 0,
+                                            WO_Id = item.WoId,
+                                            PartId = grouped.PartId,
+                                            Plan_Alloc_Qnty = requiredQty,
+                                            Allocation_done = 'Y',
+                                            Bal_to_Issue = 0,
+                                            Qnty_Recd = requiredQty
+
+
+                                        };
+                                        inpputreservelist.Add(newinput);
+                                    }
                                 }
+                            }
+                            if (allMaterialsAvailable)
+                            {
+                                item.QtyOnHand = item.PlanWOQnty;
+                                await _woService.UpdateProductionPlan_WoAllocatedqntyandstatus(item);
+                            }
+                            else
+                            {
+                                item.QtyOnHand = 0;
+                                await _woService.UpdateProductionPlan_WoAllocatedqntyandstatus(item);
                             }
                         }
                         else if (mf.ManufacturedPartType == 2)
@@ -7284,6 +7718,8 @@ namespace CWB.App.Controllers
                                        TotalQuantity = g.Sum(x => x.Quantity)
                                    })
                                     .ToList();
+                            
+                            bool allMaterialsAvailable = true;
                             foreach (var bomgrp in bomgroupedResults)
                             {
                                 var mp = await _masterService.ItemMasterPartById(bomgrp.PartId);
@@ -7304,6 +7740,10 @@ namespace CWB.App.Controllers
                      "N", noofweeklyoff);
                                 //DateTime planstartdt = item.PlanCompletionDate.Value.AddDays(-assyTimeInDays);
                                 int? mainManufacturedpartid = null;
+                                decimal requiredQty = (decimal)bomgrp.TotalQuantity * item.PlanWOQnty;
+                                decimal availableQty = await GetNetAvailableQty(bomgrp.PartId);
+
+
                                 switch (mp.MasterPartType)
                                 {
                                     case MasterPartType.ManufacturedPart:
@@ -7407,68 +7847,195 @@ namespace CWB.App.Controllers
                                         {
                                             parttype = "Assembly";
                                         }
-                                        long uniquewo = long.Parse(DateTime.UtcNow.ToString("yyyyMMddHHmmssfffff"));
-                                        BOMListVM bomdata = new BOMListVM
+                                        long uniqwoid = long.Parse(DateTime.UtcNow.ToString("yyyyMMddHHmmssfffff"));
+                                        decimal shortageQty = Math.Max(0, requiredQty - availableQty);
+                                        if (shortageQty > 0)
                                         {
-                                            ParentWoId = item.ParentWoId,
-                                            Child_Part_No_ID = bomgrp.PartId,
-                                            Child_Part_No_Type = parttype,
-                                            Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
-                                            Plan_Qnty = item.CalcWOQty,
-                                            Plan_Start_Dt = planstartdt,
-                                            Plan_Compl_Dt = planstartdt,
-                                            CalcReceiptDate = planstartdt,
-                                            Manf_Days_Avl = manfDays,
-                                            ProcPlanId = item.ProductionPlanId,
-                                            SaNestLevel = Sa_Nest_level,
-                                            ChildWoId = uniquewo
+                                            allMaterialsAvailable = false;
+                                            BOMListVM bomdata = new BOMListVM
+                                            {
+                                                ParentWoId = item.ParentWoId,
+                                                Child_Part_No_ID = bomgrp.PartId,
+                                                Child_Part_No_Type = parttype,
+                                                Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
+                                                Plan_Qnty = (int)bomgrp.TotalQuantity * item.PlanWOQnty,
+                                                Plan_Start_Dt = planstartdt,
+                                                Plan_Compl_Dt = planstartdt,
+                                                CalcReceiptDate = planstartdt,
+                                                Manf_Days_Avl = manfDays,
+                                                ProcPlanId = item.ProductionPlanId,
+                                                SaNestLevel = Sa_Nest_level,
+                                                ChildWoId = uniqwoid
+                                            };
+                                            listbom.Add(bomdata);
+                                            var input = 0;
+                                            var checkedroutingid = 0;
+                                            double stepCapacityMinutes = 0;
+                                            long capacityrequired = 0;
+                                            if (manufchild.ManufacturedPartType == 1 || manufchild.ManufacturedPartType == 2)
+                                            {
+                                                var childresultList = await _routingService.Routings(manufchild.ManufacturedPartNoDetailId);
+                                                var childprefferedrouting = childresultList.OrderByDescending(x => x.PreferredRouting).FirstOrDefault();
+                                                checkedroutingid = childprefferedrouting.RoutingId;
+                                                var stepresult = await _routingService.RoutingSteps(childprefferedrouting.RoutingId);
+                                                foreach (var step in stepresult)
+                                                {
 
-                                        };
-                                        listbom.Add(bomdata);
-                                        var input = 0;
-                                        ManufacturedPartNoDetailVM manuf1 = await _masterService.GetManufPart((int)bomdata.Child_Part_No_ID);
-                                        if (manuf1.ManufacturedPartType == 1)
-                                        {
-                                            var mpmakefromlistinputs = await _masterService.GetMPMakeFromListByPartId(manuf1.ManufacturedPartNoDetailId.ToString());
 
-                                            var selectedMakeFrom = mpmakefromlistinputs.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
-                                            input = selectedMakeFrom.MPPartId;
+                                                    var stepdetails = await _routingService.StepMachines((int)step.StepId);
+                                                    if (stepdetails.Count() != 0)
+                                                    {
 
+
+
+                                                        foreach (var machine in stepdetails)
+                                                        {
+                                                            double setup =
+                                                                TimeSpan.Parse(machine.SetupTime).TotalMinutes;
+
+                                                            double firstPiece =
+                                                                TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
+
+                                                            double cycle =
+                                                                TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
+
+                                                            int qtyPerLoad =
+                                                                machine.NoOfPartsPerLoading <= 0
+                                                                    ? 1
+                                                                    : machine.NoOfPartsPerLoading;
+
+                                                            int simultaneous =
+                                                                step.NumberOfSimMachines <= 0
+                                                                    ? 1
+                                                                    : step.NumberOfSimMachines;
+
+                                                            double capacityMinutes =
+                                                                setup
+                                                                + firstPiece
+                                                                + ((double)bomdata.Plan_Qnty / simultaneous)
+                                                                    * (cycle / qtyPerLoad);
+
+                                                            stepCapacityMinutes += capacityMinutes;
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        var sub = await _routingService.SubCons((int)step.StepId);
+                                                        var subfirst = sub.FirstOrDefault();
+                                                        if (subfirst == null)
+                                                        {
+                                                            continue; // 🔥 VERY IMPORTANT
+                                                        }
+                                                        var subworks = await _routingService.SubConWSS((int)step.StepId, subfirst.SubConDetailsId);
+                                                        var processingTimeSum = subworks
+                                                                    .GroupBy(sd => sd.RoutingStepId)
+                                                                    .Select(g => new
+                                                                    {
+                                                                        RoutingStepId = g.Key,
+                                                                        TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes / sd.NoOfPartsPerLoading <= 0
+                                                            ? 1
+                                                            : sd.NoOfPartsPerLoading)
+                                                                    });
+                                                        var steptimesum = subworks
+                                                               .GroupBy(sd => sd.RoutingStepId)
+                                                               .Select(g => new
+                                                               {
+                                                                   RoutingStepId = g.Key,
+                                                                   TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.SetupTime).TotalMinutes)
+                                                               });
+                                                        transporttime += Convert.ToInt32(subfirst.TransportTime);
+                                                        foreach (var min in processingTimeSum)
+                                                        {
+                                                            subconminutes += (int)min.TotalProcessingTime;
+                                                        }
+
+                                                        double cycleTime = processingTimeSum.Sum(x => x.TotalProcessingTime);
+
+                                                        double setupTime = steptimesum.Sum(x => x.TotalProcessingTime);
+                                                        double capacityMinutes = setupTime + (transporttime * 60) + (bomdata.Plan_Qnty * cycleTime);
+                                                        stepCapacityMinutes += capacityMinutes;
+                                                    }
+
+                                                }
+                                            }
+                                            capacityrequired = (long)Math.Ceiling((double)stepCapacityMinutes / 60);
+                                            ManufacturedPartNoDetailVM manuf1 = await _masterService.GetManufPart((int)bomdata.Child_Part_No_ID);
+                                            if (manuf1.ManufacturedPartType == 1)
+                                            {
+                                                var mpmakefromlistinputs = await _masterService.GetMPMakeFromListByPartId(manuf1.ManufacturedPartNoDetailId.ToString());
+
+                                                var selectedMakeFrom = mpmakefromlistinputs.OrderByDescending(x => x.PreferedRawMaterial).FirstOrDefault();
+                                                input = selectedMakeFrom.MPPartId;
+
+                                            }
+                                            else
+                                            {
+                                                input = 0;
+                                            }
+                                            ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
+                                            {
+                                                WoId = uniqwoid,//procplanid
+                                                ParentWoId = item.ParentWoId,
+                                                Calc_Capacity_Reqd = capacityrequired,
+                                                SalesOrderId = item.SalesOrderId,
+                                                PartId = bomdata.Child_Part_No_ID,
+                                                PartType = (int)manufchild.ManufacturedPartType,
+                                                Parentlevel = 'N',
+                                                BuildToStock = item.BuildToStock,
+                                                TestData = item.TestData,
+                                                CalcWOQty = bomdata.Calc_Qnty,
+                                                PlanWOQnty = bomdata.Plan_Qnty,
+                                                PlanStartDate = planstartdt,
+                                                PlanCompletionDate = completionDate,
+                                                // PlanCompletionDate = item.PlanCompletionDate.Value.AddDays(-1),
+                                                SoComplDate = item.SoComplDate,
+                                                RoutingId = checkedroutingid,
+                                                StartingOpNo = item.StartingOpNo,
+                                                EndingOpNo = item.EndingOpNo,
+                                                For_Ref = 'N',
+                                                ReloadOption = "",
+                                                TenantId = item.TenantId,
+                                                Consolidation_Flag = 0,
+                                                Input_Part_No = input,
+                                                Sim_Seq_No = item.Sim_Seq_No
+                                            };
+                                            childwos.Add(cwo);
+                                            Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
+                                            {
+                                                PO_NO_ID = 0,
+                                                WO_Id = item.WoId,
+                                                PartId = cwo.PartId,
+                                                Plan_Alloc_Qnty = cwo.PlanWOQnty,
+                                                Allocation_done = 'N',
+                                                Bal_to_Issue = cwo.PlanWOQnty,
+                                                Qnty_Recd = 0
+
+
+                                            };
+                                            inpputreservelist.Add(newinput);
                                         }
                                         else
                                         {
-                                            input = 0;
+                                            Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
+                                            {
+                                                PO_NO_ID = 0,
+                                                WO_Id = item.WoId,
+                                                PartId = bomgrp.PartId,
+                                                Plan_Alloc_Qnty = bomgrp.TotalQuantity * item.PlanWOQnty,
+                                                Allocation_done = 'Y',
+                                                Bal_to_Issue = 0,
+                                                Qnty_Recd = bomgrp.TotalQuantity * item.PlanWOQnty
+
+
+                                            };
+                                            inpputreservelist.Add(newinput);
                                         }
-                                        ProductionPlan_WoVM cwo = new ProductionPlan_WoVM()
-                                        {
-                                            WoId = uniquewo,//item.ProductionPlanId,
-                                            ParentWoId = item.ParentWoId,
-                                            SalesOrderId = item.SalesOrderId,
-                                            PartId = bomdata.Child_Part_No_ID,
-                                            PartType = (int)manufchild.ManufacturedPartType,
-                                            Parentlevel = 'N',
-                                            BuildToStock = item.BuildToStock,
-                                            TestData = item.TestData,
-                                            CalcWOQty = bomdata.Calc_Qnty,
-                                            PlanStartDate = planstartdt,
-                                            PlanCompletionDate = completionDate,
-                                            // PlanCompletionDate = item.PlanCompletionDate.Value.AddDays(-1),
-                                            SoComplDate = item.SoComplDate,
-                                            RoutingId = item.RoutingId,
-                                            StartingOpNo = item.StartingOpNo,
-                                            EndingOpNo = item.EndingOpNo,
-                                            For_Ref = 'N',
-                                            ReloadOption = "",
-                                            TenantId = item.TenantId,
-                                            Consolidation_Flag = 0,
-                                            Input_Part_No= input
-                                        };
-                                        childwos.Add(cwo);
                                         break;
                                     //case MasterPartType.BOM:
 
                                     //    break;
                                     case MasterPartType.BOF:
+                                        decimal shortagebofQty = Math.Max(0, requiredQty - availableQty);
                                         var bofpdList = await _masterService.PartPurchasesFor(bomgrp.PartId);
                                         //var bofptype = await _masterService.GetRMPart(bomgrp.PartId);
                                         BoughtOutFinishDetailVM manuf = await _masterService.GetBOFPart(bomgrp.PartId);
@@ -7479,37 +8046,72 @@ namespace CWB.App.Controllers
                                         if (bofnextworkdingdate >= item.PlanStartDate)
                                         {
                                             criticalpart = 1;
-                                            //await _woService.UpdateProductionPlan_WoCritcalPart(item);
+                                            await _woService.UpdateProductionPlan_WoCritcalPart(item);
                                         }
                                         else
                                         {
                                             criticalpart = 0;
                                         }
-                                        BOMListVM bofbomdata = new BOMListVM
+                                        if (shortagebofQty > 0)
                                         {
-                                            ParentWoId = item.ProductionPlanId,
-                                            Child_Part_No_ID = bomgrp.PartId,
-                                            Child_Part_No_Type = mp.MasterPartType.ToString(),
-                                            Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
-                                            Plan_Qnty = item.CalcWOQty,
-                                            Plan_Compl_Dt = planstartdt,
-                                            CalcReceiptDate = bofnextworkdingdate,
-                                            ProcPlanId = item.ProductionPlanId
-                                        };
-                                        listbom.Add(bofbomdata);
-                                        ProcPlanVM ppdata = new ProcPlanVM
+                                            allMaterialsAvailable = false;
+                                            BOMListVM bofbomdata = new BOMListVM
+                                            {
+                                                ParentWoId = item.ParentWoId,
+                                                Child_Part_No_ID = bomgrp.PartId,
+                                                Child_Part_No_Type = mp.MasterPartType.ToString(),
+                                                Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
+                                                Plan_Qnty = (int)bomgrp.TotalQuantity * item.PlanWOQnty,
+                                                Plan_Compl_Dt = planstartdt,
+                                                CalcReceiptDate = bofnextworkdingdate,
+                                                ProcPlanId = item.ProductionPlanId,
+
+                                            };
+                                            listbom.Add(bofbomdata);
+                                            ProcPlanVM ppdata = new ProcPlanVM
+                                            {
+                                                PartId = bomgrp.PartId,
+                                                PartType = mp.MasterPartType.ToString(),
+                                                Calc_Proc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
+                                                Plan_Proc_Qnty = (int)bomgrp.TotalQuantity * item.PlanWOQnty,
+                                                UOMId = manuf.UOMId,
+                                                PlanReceiptDate = item.PlanStartDate,
+                                                CalcReceiptDate = bofnextworkdingdate,
+                                                WorkOrderId = item.WoId,
+                                                CriticalPart = criticalpart,
+                                                PO_Flag = 0
+                                            };
+                                            listprocplan.Add(ppdata);
+                                            Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
+                                            {
+                                                PO_NO_ID = 0,
+                                                WO_Id = item.WoId,
+                                                PartId = bomgrp.PartId,
+                                                Plan_Alloc_Qnty = (int)bomgrp.TotalQuantity * item.PlanWOQnty,
+                                                Allocation_done = 'N',
+                                                Bal_to_Issue = (int)bomgrp.TotalQuantity * item.PlanWOQnty,
+                                                Qnty_Recd = 0
+
+
+                                            };
+                                            inpputreservelist.Add(newinput);
+                                        }
+                                        else
                                         {
-                                            PartId = bomgrp.PartId,
-                                            PartType = mp.MasterPartType.ToString(),
-                                            Calc_Proc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
-                                            UOMId = manuf.UOMId,
-                                            PlanReceiptDate = item.PlanStartDate,
-                                            CalcReceiptDate = bofnextworkdingdate,
-                                            WorkOrderId = item.WoId,
-                                            CriticalPart = criticalpart,
-                                            PO_Flag = 0
-                                        };
-                                        listprocplan.Add(ppdata);
+                                            Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
+                                            {
+                                                PO_NO_ID = 0,
+                                                WO_Id = item.WoId,
+                                                PartId = bomgrp.PartId,
+                                                Plan_Alloc_Qnty = (int)bomgrp.TotalQuantity * item.PlanWOQnty,
+                                                Allocation_done = 'Y',
+                                                Bal_to_Issue = 0,
+                                                Qnty_Recd = (int)bomgrp.TotalQuantity * item.PlanWOQnty
+
+
+                                            };
+                                            inpputreservelist.Add(newinput);
+                                        }
 
                                         break;
                                     case MasterPartType.RawMaterial:
@@ -7540,7 +8142,7 @@ namespace CWB.App.Controllers
 
                                         BOMListVM rmbomdata = new BOMListVM
                                         {
-                                            ParentWoId = item.ProductionPlanId,
+                                            ParentWoId = item.WoId,
                                             Child_Part_No_ID = bomgrp.PartId,
                                             Child_Part_No_Type = mp.MasterPartType.ToString(),
                                             // Calc_Qnty = (int)bomgrp.TotalQuantity * item.CalcWOQty,
@@ -7557,7 +8159,16 @@ namespace CWB.App.Controllers
                                         break;
                                 }
                             }
-
+                            if (allMaterialsAvailable)
+                            {
+                                item.QtyOnHand = item.PlanWOQnty;
+                                await _woService.UpdateProductionPlan_WoAllocatedqntyandstatus(item);
+                            }
+                            else
+                            {
+                                item.QtyOnHand = 0;
+                                await _woService.UpdateProductionPlan_WoAllocatedqntyandstatus(item);
+                            }
                         }
 
                     }
@@ -7748,6 +8359,8 @@ namespace CWB.App.Controllers
                 }
                 var childworels = await _woService.PostChildWoRel(childWoRels);
                 var machinetimepost = await _woService.PostMcTimeList(mcTimeListVMs);
+
+                var postinputreservelist = await _woService.PostInputReservelist(inpputreservelist);
                 var childproductionwopost = await _woService.ProductionPlanWoPost(childwos);
                 listprocplan.Clear();
                 listbom.Clear();
@@ -7769,19 +8382,22 @@ namespace CWB.App.Controllers
 
         private async Task Consolidate()
         {
+            var depratmentstores = await _departmentService.GetAllStoresIDs();
             var productionTask = _woService.AllProductionWoReadForProd();
             await Task.WhenAll(productionTask);
             var productions = productionTask.Result.Where(x => x.Consolidation_Flag == 0).ToList();
             var updatedproductions = _woService.ProductionPlanWoPostConsolidation(productions);
-            var grouped = productions.GroupBy(x => new { x.PartId, x.PartType }).Where(g => g.Count() > 1) // 🔥 ONLY duplicates
+            var groupedco = productions.GroupBy(x => new { x.PartId, x.PartType }).Where(g => g.Count() > 1) // 🔥 ONLY duplicates
             .ToList();
-
-            foreach (var group in grouped)
+            List<Input_Resrv_ListVM> inpputreservelist = new List<Input_Resrv_ListVM>();
+            foreach (var group in groupedco)
             {
                 var key = group.Key;
                 var first = group.First();
                 int totalQty = group.Sum(x => x.CalcWOQty);
-
+                int plnatotalqty = group.Sum(x => x.PlanWOQnty);
+                long calculated = group.Sum(x => x.Calc_Capacity_Reqd);
+                long simseqno = group.Min(x => x.Sim_Seq_No);
                 DateTime minStartDate = group.Min(x => x.PlanStartDate);
                 DateTime? minCompletionDate = group.Min(x => x.PlanCompletionDate);
                 DateTime? socompletiondate = group.Min(x => x.SoComplDate);
@@ -7792,12 +8408,14 @@ namespace CWB.App.Controllers
                 {
                     WoId = uniqwoid,//; item.ProductionPlanId ,
                     ParentWoId = 0,
+                    Calc_Capacity_Reqd= calculated,
                     SalesOrderId = first.SalesOrderId,
                     PartId = key.PartId,
                     PartType = key.PartType,
                     Parentlevel = 'N',
                     TestData = 'Y',
                     CalcWOQty = totalQty,
+                    PlanWOQnty= plnatotalqty,
                     //PlanStartDate = item.PlanCompletionDate.GetValueOrDefault(),
                     PlanStartDate = minStartDate,
                     PlanCompletionDate = minCompletionDate,
@@ -7810,15 +8428,162 @@ namespace CWB.App.Controllers
                     TenantId = 0,
                     Consolidation_Flag = 1,
                     Input_Part_No=first.Input_Part_No,
-                    Combined_WO='Y'
+                    Combined_WO='Y',
+                    Sim_Seq_No= simseqno,
+                    Status=3
                 };
                 consolidatedproduction.Add(cwo);
                 var procdutionpost = await _woService.ProductionPlanWoPost(consolidatedproduction);
+                if(procdutionpost.Any())
+                {   
+                    foreach(var item in procdutionpost)
+                    {
+                        decimal planquantity = 0;
+                        decimal currentqntyonhyand = 0;
+                        decimal quanityallocatedinallocation = 0;
+                        var invmasterbypartid = await _woService.GetAllInventory_MasterBypartidWithFlag("Internal", depratmentstores.Stores_DirMatl_ID, 0, 0, item.PartId);
+                        var inputreservelist = await _woService.GetallInputreservelistbypartid(item.PartId);
+                        if (inputreservelist.Any())
+                        {
+                            var totalAllocatedQty = inputreservelist.Where(x => x.Allocation_done == 'N' || x.Allocation_done == 'Y').Sum(x => x.Plan_Alloc_Qnty);
+                            quanityallocatedinallocation = totalAllocatedQty;
+
+
+                        }
+                        else
+                        {
+                            quanityallocatedinallocation = 0;
+                        }
+                        if (invmasterbypartid.Any())
+                        {
+                            var inv = invmasterbypartid.First();
+                            currentqntyonhyand = inv.Current_QntOnHand;
+                        }
+                        else
+                        {
+                            currentqntyonhyand = 0;
+                        }
+                        planquantity = item.PlanWOQnty - (currentqntyonhyand - quanityallocatedinallocation);
+                        if (item.PartType == 1)
+                        {
+
+                            ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart((int)item.PartId);
+                            var mpmakefromlist = await _masterService.GetMPMakeFromListByPartId(mf.ManufacturedPartNoDetailId.ToString());
+
+                            var groupedResults = mpmakefromlist.GroupBy(x => x.MPPartId)
+                                       .Select(g => new
+                                       {
+                                           PartId = g.Key,
+                                           TotalQuantity = g.Sum(x =>
+                                           {
+                                               decimal quantity;
+                                               return decimal.TryParse(x.InputWeight, out quantity) ? quantity : 0;
+                                           }),
+                                           QntyperInput = g.Sum(x =>
+                                           {
+                                               int qntyperinput;
+                                               return int.TryParse(x.QuantityPerInput, out qntyperinput) ? qntyperinput : 0;
+                                           })
+
+                                       })
+                                        .ToList();
+                            foreach (var grouped in groupedResults)
+                            {
+                                var mfpdList = await _masterService.PartPurchasesFor(grouped.PartId);
+                                var ptype = await _masterService.GetRMPart(grouped.PartId);
+
+                                if (ptype.MasterPartType == null)
+                                {
+                                    var manufPart = await _masterService.GetManufPart(grouped.PartId);
+
+                                    if (manufPart != null)
+                                    {
+                                        ptype = new RawMaterialDetailVM
+                                        {
+                                            MasterPartType = manufPart.MasterPartType
+                                        };
+                                    }
+                                }
+
+
+                                var uom = (await _masterService.GetUOMs()).FirstOrDefault(x => x.UOMId == ptype.UOMId);
+                                decimal intermediateResult = 0;
+                                if (ptype.MasterPartType == "ManufacturedPart")
+                                {
+                                    intermediateResult = planquantity / grouped.QntyperInput;
+                                }
+                                else if (ptype.MasterPartType == "RawMaterial" && uom.Name != "Nos")
+                                {
+                                    //var manufPartweight = await _masterService.GetManufPart(grouped.PartId);
+                                    intermediateResult = planquantity * Convert.ToDecimal(mf.FinishedWeight);
+                                }
+                                else if (ptype.MasterPartType == "RawMaterial" && uom.Name == "Nos")
+                                {
+                                    intermediateResult = planquantity / grouped.QntyperInput;
+                                }
+
+                                Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
+                                {
+                                    PO_NO_ID = 0,
+                                    WO_Id = item.WoId,
+                                    PartId = grouped.PartId,
+                                    Plan_Alloc_Qnty = intermediateResult,
+                                    Allocation_done = 'N',
+                                    Bal_to_Issue = intermediateResult,
+                                    Qnty_Recd = 0
+
+
+                                };
+                                inpputreservelist.Add(newinput);
+
+                               
+
+
+
+                            }
+
+                        }
+                        else if (item.PartType == 2)
+                        {
+
+                            ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart((int)item.PartId);
+                            var bomlst = await _masterService.BOMS(mf.ManufacturedPartNoDetailId.ToString());
+
+                            var bomgroupedResults = bomlst.GroupBy(x => x.BOMPartId)
+                                                              .Select(g => new
+                                                              {
+                                                                  PartId = g.Key,
+                                                                  TotalQuantity = g.Sum(x => x.Quantity)
+                                                              })
+                                                               .ToList();
+                            foreach (var bomgrp in bomgroupedResults)
+                            {
+                                Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
+                                {
+                                    PO_NO_ID = 0,
+                                    WO_Id = item.WoId,
+                                    PartId = bomgrp.PartId,
+                                    Plan_Alloc_Qnty = planquantity * bomgrp.TotalQuantity,
+                                    Allocation_done = 'N',
+                                    Bal_to_Issue = planquantity * bomgrp.TotalQuantity,
+                                    Qnty_Recd = 0
+
+
+                                };
+                                inpputreservelist.Add(newinput);
+                              
+
+                            }
+                        }
+                        var postinputreservelist = await _woService.PostInputReservelist(inpputreservelist);
+                    }
+                }
                 var newWoId = procdutionpost.First().WoId;
                 List<ConsolidatedWoMappingVM> mapping = new List<ConsolidatedWoMappingVM>();
                 foreach (var item in group)
                 {
-
+                    //here for each woid i need to deallocate 
+                    await _woService.Deleteforreryalloc(item.WoId);
                     ConsolidatedWoMappingVM map = new ConsolidatedWoMappingVM()
                     {
                         CombinedWoId = newWoId,
@@ -8303,9 +9068,9 @@ namespace CWB.App.Controllers
             var allDocsTask = _docMangService.GetAllDocList();
             var allSalesOrdersTask = _baService.AllSalesOrders();
             var allRoutingStepsTask = _routingService.AllRoutingSteps();
-
+            
             await Task.WhenAll(productionTask, masterPartsTask, customerTask, allDocsTask, allSalesOrdersTask, allRoutingStepsTask);
-
+            
             // 2. Prepare Data Structures (Dictionaries & Lookups for O(1) access)
             var productions = productionTask.Result.Where(x => x.For_Ref == 'N').ToList();
             var masterparts = masterPartsTask.Result.ToDictionary(p => p.PartId);
@@ -8342,7 +9107,16 @@ namespace CWB.App.Controllers
             // 4. Main Loop for Data Enrichment
             foreach (var item in productions)
             {
-
+                if(item.BuildToStock=='Y')
+                {
+                    item.WoType = "Build To Stock";
+                }
+                else
+                {
+                    item.WoType = "Regular";
+                }
+                var wostatuslist = await _woService.GetWOStatus(item.Status);
+                item.WoStatus = wostatuslist.Status;
                 item.WoIdStr = item.WoId.ToString();
                 // A. Populate Part Details
                 if (masterparts.TryGetValue(item.PartId, out var imp))
@@ -8350,12 +9124,19 @@ namespace CWB.App.Controllers
                     item.PartNo = imp.PartNo;
                     item.PartDesc = imp.Description;
                 }
+                
                 item.WoIdStr = item.WoId.ToString();
                 // B. Sales Order Logic
                 // OPTIMIZATION: Use dictionary lookup instead of await _baService.GetOneSO(...)
                 SalesOrderVM so = null;
                 salesOrdersDict.TryGetValue(item.SalesOrderId, out so);
-
+                if (item.Parentlevel == 'Y')
+                {
+                    var childdcapacity = productions
+                        .Where(x => x.ParentWoId == item.WoId &&x.For_Ref=='N' )
+                        .Sum(x => x.Calc_Capacity_Reqd);
+                    item.Calc_Capacity_Reqd = item.Calc_Capacity_Reqd + childdcapacity;
+                }
                 if (so != null)
                 {
                     // Logic for Direct SO

@@ -88,6 +88,14 @@ namespace CWB.ProductionPlanWO.Configurations
               .HasColumnName("SplitParentWoId")
               .HasDefaultValue(0);
             builder
+              .Property(t => t.Sim_Seq_No)
+              .HasColumnName("Sim_Seq_No")
+              .HasDefaultValue(0);
+            builder
+              .Property(t => t.Calc_Capacity_Reqd)
+              .HasColumnName("Calc_Capacity_Reqd")
+              .HasDefaultValue(0);
+            builder
              .Property(t => t.PlanWOQnty)
              .HasColumnName("PlanWOQnty")
              .HasDefaultValue(0);

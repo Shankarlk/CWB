@@ -192,6 +192,50 @@ services:
     networks:
       cwb-network: null
     restart: always
+  cwb.gro:
+    build:
+      context: F:\CWBworking
+      dockerfile: CWB.Gro/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      HOST_DEFAULT_SWITCH_IP: 10.70.30.75
+    image: shankar84kl/cwbgro
+    links:
+      - db
+    networks:
+      cwb-network: null
+    ports:
+      - mode: ingress
+        target: 443
+        published: "9022"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        published: "9023"
+        protocol: tcp
+      - mode: ingress
+        target: 80
+        protocol: tcp
+      - mode: ingress
+        target: 443
+        protocol: tcp
+    restart: always
+    volumes:
+      - type: bind
+        source: C:\Users\PC\AppData\Roaming/Microsoft/UserSecrets
+        target: /root/.microsoft/usersecrets
+        read_only: true
+        bind: {}
+      - type: bind
+        source: C:\Users\PC\AppData\Roaming/ASP.NET/Https
+        target: /root/.aspnet/https
+        read_only: true
+        bind: {}
   cwb.identity:
     build:
       context: F:\CWBworking

@@ -20,6 +20,7 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<ProductionPlan_WoVM> UpdateProductionPlan_Wo(ProductionPlan_WoVM productions);
         Task<ProductionPlan_WoVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WoVM productions);
         Task<ProductionPlan_WoVM> UpdateProductionPlan_WoCritcalPart(ProductionPlan_WoVM productions);
+        Task<ProductionPlan_WoVM> UpdateProductionPlan_WoAllocatedqntyandstatus(ProductionPlan_WoVM productions);
         Task<IEnumerable<ProductionPlan_WoVM>> AllProductionPlan_Wo();
         Task<IEnumerable<ProductionPlan_WoVM>> AllProductionWoReadForProd();
 
@@ -46,6 +47,7 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<bool> DeleteWo(long doctypeId);
         Task<bool> DeleteWoSoRel(long doctypeId);
         Task<bool> Deleteproductionplansplitwo(long doctypeId);
+        Task<bool> Deleteforreryalloc(long doctypeId);
         Task<List<PODetailsVM>> PODetails(IEnumerable<PODetailsVM> pODetails);
         Task<List<PODetailsVM>> UpdateInspection(IEnumerable<PODetailsVM> pODetails);
         Task<List<POHeaderVM>> POHeader(IEnumerable<POHeaderVM> pOHeaderVMs);

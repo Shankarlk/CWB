@@ -1,0 +1,814 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+<div class="content">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="pb-1 mt-1 mb-1">Gro Sales Data Management</h4>
+
+            @{
+                List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM> permissionResult = null;
+                var permissionsJson = HttpContextAccessor.HttpContext.Session.GetString("Permissions");
+                if (permissionsJson != null)
+                {
+                    permissionResult = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM>>(permissionsJson);
+
+                }
+            }
+            <!-- Upload Section -->
+            <div class="border rounded p-3 mb-3">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5>
+                            Upload Gro Data from Excel File
+                            <small>(Last Updated on  <span id="LastUpdatedDate">--</span>)</small>
+                        </h5>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#groUploadModal">
+                            Upload
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="border rounded p-3 mb-3">
+                <!-- Dispatch Qty -->
+
+                <div class="row">
+                    <div class="col-md-9">
+                        <h5>Number of Indent Line Items to be Dispatched</h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <th>Ageing</th>
+                                        <th>0</th>
+                                        <th>1</th>
+                                        <th>2</th>
+                                        <th>3</th>
+                                        <th>> 3</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Full Qty to be Dispatched</td>
+                                        <td>xx</td>
+                                        <td></td>
+                                        <td>xx</td>
+                                        <td></td>
+                                        <td>xx</td>
+                                        <td>xx</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Partial Qty Dispatched</td>
+                                        <td></td>
+                                        <td>xx</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>xx</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Qty not Dispatched</td>
+                                        <td></td>
+                                        <td>xx</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>xx</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total</td>
+                                        <td>xx</td>
+                                        <td>xx</td>
+                                        <td>xx</td>
+                                        <td></td>
+                                        <td>xx</td>
+                                        <td>xx</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 text-end align-self-center">
+
+                        <button class="btn btn-primary gro-btn"
+                                data-bs-toggle="modal"
+                                data-bs-target="#dispatchPopup">
+                            Dispatch Qnty
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="border rounded p-3 mb-3">
+                <!-- Dispatch Details -->
+
+                <div class="row align-items-center">
+                    <div class="col-md-9">
+                        <h5>
+                            Number of Dispatches waiting for Courier Dispatch Details
+                            Update : xx
+                        </h5>
+                    </div>
+
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#dispatchDetailsDataUpdatePopup">
+                            Dispatch Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="border rounded p-3 mb-3">
+                <!-- Delivery Details -->
+
+                <div class="row">
+                    <div class="col-md-9">
+
+                        <h5>
+                            Number of Indent waiting for Delivery Date Update : xx
+                        </h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <th>Ageing</th>
+                                        <th>0-2</th>
+                                        <th>3-5</th>
+                                        <th>5-7</th>
+                                        <th>8-10</th>
+                                        <th>>11</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <td>Full Qty to be Dispatched</td>
+                                        <td>xx</td>
+                                        <td></td>
+                                        <td>xx</td>
+                                        <td></td>
+                                        <td>xx</td>
+                                        <td>xx</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-2">
+                            Total No of Parts : xx
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-3 text-end align-self-center">
+                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#deliverydataupdatemodal">
+                            Delivery Details
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="border rounded p-3 mb-3">
+                <!-- Delivery Complete -->
+
+                <div class="row align-items-center">
+                    <div class="col-md-9">
+                        <h5>View Dispatched / Delivered Indent Data</h5>
+                    </div>
+
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#deliveryCompletePopup">
+                            Delivery Complete
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="border rounded p-3 mb-3">
+                <!-- MIS -->
+
+                <div class="row align-items-center">
+                    <div class="col-md-9">
+                        <h5>View Reports / Analysis</h5>
+                    </div>
+
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-primary gro-btn">
+                            MIS
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="border rounded p-3 mb-3">
+                <!-- Setup -->
+
+                <div class="row align-items-center">
+                    <div class="col-md-9">
+                        <h5>Setup</h5>
+                    </div>
+
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-primary gro-btn"
+                                 onclick="location.href='@Url.Action("GroSetup", "Gro")'">
+                            Setup
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script src="~/js/gro/grosales.js"></script>
+
+
+}
+
+@* Popup 8  gro upload *@
+<div class="modal fade"
+     id="groUploadModal"
+     tabindex="-1"
+     aria-labelledby="groUploadModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+
+            <div class="modal-header border-0 pb-0">
+                <h4 class="modal-title" id="groUploadModalLabel">
+                    Gro - Data Upload from Excel
+                </h4>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <hr />
+
+                <div class="row mt-4">
+
+                    <!-- Left Side -->
+                    <div class="col-md-4 text-center">
+
+                        <div class="mb-3">
+
+                            <input type="file"
+                                   id="groExcelFile"
+                                   accept=".xls,.xlsx"
+                                   style="display:none;"
+                                   onchange="displayFileName()" />
+
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    onclick="$('#groExcelFile').click();">
+
+                                Select File
+
+                            </button>
+
+                        </div>
+
+                        <div class="input-group mb-4">
+
+                            <input type="text"
+                                   id="selectedFileName"
+                                   class="form-control"
+                                   readonly />
+
+                        </div>
+
+                        <button class="btn btn-primary"
+                                onclick="startGroUpload()">
+
+                            Start Upload
+
+                        </button>
+
+                        <br />
+
+                        <button class="btn btn-outline-danger mt-5" style="display:none;">
+                            Abort Upload
+                        </button>
+
+                    </div>
+
+                    <!-- Right Side -->
+                    <div class="col-md-8">
+
+                        <h5 class="mb-4">
+                            Summary of Uploaded Data
+                        </h5>
+
+                        <table class="table table-borderless table-sm w-auto">
+                            <tr>
+                                <td>Number of Indents</td>
+                                <td>:</td>
+                                <td id="IndentCount">0</td>
+                            </tr>
+
+                            <tr>
+                                <td>Sum of Ordered Products</td>
+                                <td>:</td>
+                                <td id="ProductCount">0</td>
+                            </tr>
+                        </table>
+
+                        <div class="mt-5">
+
+                            <h6>
+                                Select if uploaded Entries need to be deleted
+                            </h6>
+
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+@* popup9 gro upload error popup *@
+<div class="modal fade"
+     id="UploadErrroModal"
+     tabindex="-1"
+     aria-labelledby="labelUploadErrroModal"
+     aria-hidden="true">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="UploadErrroModalLabel">
+                    Upload Error
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- Header Details -->
+                <!-- Label Preview -->
+
+                <div class="border rounded p-3 mb-4"
+                     style="height:250px;"
+                     id="ErrorPreview">
+
+                    <!-- Label Preview Content Here -->
+
+                </div>
+
+
+
+            </div>
+
+            <div class="modal-footer justify-content-center">
+
+                <button class="btn btn-primary"
+                        data-bs-dismiss="modal">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+@* popup 1 Dispatch selection popup *@
+<div class="modal fade" id="dispatchPopup" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    Gro - Dispatch Selection
+                </h4>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- Filters -->
+                <div class="row mb-3">
+
+                    <div class="col-md-3">
+                        <label>Indent</label>
+                        <input type="text"
+                               class="form-control"
+                               id="txtIndentSearch"
+                               placeholder="Search Indent">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>From Date</label>
+                        <input id="txtFromDate" type="date" class="form-control">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>To Date</label>
+                        <input id="txtToDate" type="date" class="form-control">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label>Dispatch Status</label>
+                        <select class="form-select">
+                            <option>All</option>
+                            <option>Partial Dispatch</option>
+                            <option>No Dispatch</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- Select All -->
+                <div class="form-check mb-3">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="chkAll">
+
+                    <label class="form-check-label"
+                           for="chkAll">
+                        Select All
+                    </label>
+                </div>
+
+                <!-- Grid -->
+                <div class="table-responsive  table-he-350">
+                    <table class="table table-sm table-bordered w-100 text-center" id="Dispatchselectiontable">
+                        <thead class=" table-info th-sti">
+                            <tr class="table-border-bottom">
+                                <th></th>
+                                <th>Indent Date</th>
+                                <th>Indent No</th>
+                                <th>Customer</th>
+                                <th>Product</th>
+                                <th>Order Qty</th>
+                                <th>Bal Disp Qty</th>
+                                <th>Qnty Avl</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                        </tbody>
+
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button id="updatedispatchqnty" class="btn btn-primary" disabled
+                        data-bs-toggle="modal"
+                        data-bs-target="#dispatchQtyModal">
+                    Update Dispatch Qty
+                </button>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+@* popup 2 show Dispatch Details/gro data line item popup *@
+<div class="modal fade" id="dispatchDetailsPopup" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    Gro - Line Item Details
+                </h4>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row mb-2">
+                    <div class="col-md-2"><strong>Indent Date</strong></div>
+                    <div class="col-md-10">:<span id="lblIndentDate"></span></div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-2"><strong>Indent No</strong></div>
+                    <div class="col-md-10">: <span id="lblIndentNo"></span></div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-2"><strong>Customer</strong></div>
+                    <div class="col-md-10">:<span id="lblCustomer"></span></div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-2"><strong>Address</strong></div>
+                    <div class="col-md-10">
+                        :  <span id="lblAddress"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-2"><strong>Contact</strong></div>
+                    <div class="col-md-10">
+                        : <span id="lblContactperson"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-2"><strong>Cell Phone</strong></div>
+                    <div class="col-md-10">: <span id="lblContactpersonCellPhone"></span></div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-2"><strong>Executive</strong></div>
+                    <div class="col-md-10">: <span id="lblExecutive"></span></div>
+                </div>
+
+                <hr>
+
+                <div class="row mb-2">
+                    <div class="col-md-2"><strong>Product</strong></div>
+                    <div class="col-md-10">:  <span id="lblProduct"></span></div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-2"><strong>Reqd Qty</strong></div>
+                    <div class="col-md-10">: <span id="lblReqQty"></span></div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-2"><strong>Total Dispatched</strong></div>
+                    <div class="col-md-10">: <span id="lblTotalDispatch"></span></div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-2"><strong>Balance to Dispatch</strong></div>
+                    <div class="col-md-10">: <span id="lblBalance"></span></div>
+                </div>
+
+                <hr>
+
+                <h5 class="mb-3">Dispatch Details</h5>
+
+                <div class="table-responsive mb-2 table-he-350">
+                    <table class="table table-sm table-bordered w-100 text-center" id="DispatchedDetailstable">
+                        <thead class="table-info th-sti">
+                            <tr class="table-border-bottom">
+                                <th>Date</th>
+                                <th>Dispatched Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+@* popup3 :popup to enter dispatch Quantity for unique Indent *@
+<div class="modal fade"
+     id="dispatchQtyModal"
+     tabindex="-1"
+     aria-labelledby="dispatchQtyModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-xl">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="dispatchQtyModalLabel">
+                    Gro - Dispatch Quantity Update
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- Header Information -->
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div><strong>Indent Date :</strong> <span id="IndentDate"></span></div>
+                        <div><strong>Indent No :</strong> <span id="IndentNo"></span></div>
+                        <div><strong>Customer :</strong> <span id="Customer"></span></div>
+
+                        <div><strong>Address :</strong> <span id="Address"></span></div>
+                        <div><strong>Contact :</strong> <span id="Contact"></span></div>
+                        <div><strong>Cell Phone :</strong> <span id="Mobile"></span></div>
+                        <div><strong>Executive :</strong> <span id="Executive"></span></div>
+                    </div>
+                </div>
+
+                <!-- Product Grid -->
+
+                <div class="table-responsive mb-2 table-he-350">
+                    <table class="table table-sm table-bordered w-100 text-center" id="Dispheadertable">
+                        <thead class="table-info th-sti">
+                            <tr class="table-border-bottom">
+                                <th>Part No/Desc</th>
+                                <th>Order Qty</th>
+                                <th>Qnty Avl</th>
+                                <th>Disp.Till Date </th>
+                                <th>Bal Disp Qty</th>
+                                <th>DispQty Scanned </th>
+                                 
+                               
+                                <th ></th>
+                            </tr>
+                        </thead>
+
+                        <tbody  >
+
+                           
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer justify-content-between">
+
+                <button class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#editDispatchAddressModal">
+                    Edit Dispatch Address
+                </button>
+
+                <button class="btn btn-primary">
+                    Ready for Dispatch
+                </button>
+
+                <button class="btn btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#DCPrintModal">
+                    Print DC
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<template id="dispatchSelectionRow">
+    <tr>
+        <td>
+            <input type="checkbox" />
+        </td>
+
+        <td hidden>{gro_DataId}</td>
+        <td hidden>{cWB_Customer}</td>
+        <td hidden>{gro_Part_No}</td>
+
+        <td hidden>{indentDate}</td>
+        <td>{indentDateStr}</td>
+        <td>{indent}</td>
+        <td>{company_Name}</td>
+        <td>{groPartNo}</td>
+        <td>{reqd_Quantity}</td>
+        <td>{bal_to_Disp}</td>
+        <td>{qntyAval}</td>
+
+        <td class="text-center">
+            <div class="dropdown">
+
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+
+                <div class="dropdown-menu dropdown-menu-end ">
+
+                    <a href="javascript:void(0);"
+                       class="dropdown-item"
+                       onclick="ShowDispatchDetails(this)"
+                       data-grodataid="{gro_DataId}"
+                       data-customerid="{cWB_Customer}"
+                       data-customer="{company_Name}"
+                       data-partid="{gro_Part_No}"
+                       data-indentno="{indent}"
+                       data-indentdate="{indentDateStr}"
+                       data-address="{shipping_Address}, {shipping_City} - {shipping_PINCODE}"
+                       data-contact="{contact_Person}"
+                       data-cellphone="{contact_Person_No}"
+                       data-executive="{excutive_Name}"
+                       data-partno="{groPartNo}"
+                       data-requiredqty="{reqd_Quantity}"
+                       data-balqty="{bal_to_Disp}">
+
+                        Show Details
+                    </a>
+
+                </div>
+
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="dispatchQtyRow">
+
+    <tr>
+
+        <td hidden>{gro_DataId}</td>
+
+        <td>{groPartNo}</td>
+
+        <td>{reqd_Quantity}</td>
+        <td>{qntyAval}</td>
+        <td> </td>
+
+        <td>{bal_to_Disp}</td>
+
+
+
+        <td> </td>
+
+        <td class="text-center">
+
+            <div class="dropdown">
+
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown">
+
+                    <i class="mdi mdi-dots-vertical"></i>
+
+                </a>
+
+                <div class="dropdown-menu dropdown-menu-end">
+
+                    <a href="javascript:void(0)"
+                       class="dropdown-item"
+                       onclick="EditDispatchQty(this)"
+                       data-grodataid="{gro_DataId}"
+                       data-partid="{gro_Part_No}"
+                       data-partno="{groPartNo}"
+                       data-requiredqty="{reqd_Quantity}"
+                       data-balqty="{bal_to_Disp}"
+                       data-qntyaval="{qntyAval}">
+
+                        Edit Dispatch Qty
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </td>
+
+    </tr>
+
+</template>

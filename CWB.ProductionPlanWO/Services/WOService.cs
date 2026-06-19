@@ -884,7 +884,24 @@ namespace CWB.ProductionPlanWO.Services
             }
             return false;
         }
-
+        public async Task<bool> Deleteforreryalloc(long Id)
+        {
+            var co = await _Input_Resrv_ListRepository.AwaitGetRangeAsync(m => m.WO_Id == Id);
+            if (co != null)
+            {
+                try
+                {
+                    foreach (var item in co)
+                    {
+                        _Input_Resrv_ListRepository.Remove(item);
+                    }
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
         public async Task<IEnumerable<WorkOrdersVM>> AllParentChildWo(long parentWoId, long tenantId)
         {
             var allwo = _workOrderRepository.GetRangeAsync(d => d.ParentWoId == parentWoId && d.TenantId == tenantId);
@@ -1238,7 +1255,29 @@ namespace CWB.ProductionPlanWO.Services
             }
             return productions;
         }
-       
+        public async Task<ProductionPlan_WOVM> UpdateProductionPlan_WoAllocatedqntyandstatus(ProductionPlan_WOVM productions)
+        {
+            var pp = _mapper.Map<ProductionPlan_WO>(productions);
+            var upp = await _productionPlan_WORepository.SingleOrDefaultAsync(x => x.Id == pp.Id);
+            if (upp == null)
+            {
+                return productions;
+            }
+            upp.QtyOnHand = pp.QtyOnHand;
+            upp.Status = pp.QtyOnHand > 0 ? 10 : 3;
+
+            pp = await _productionPlan_WORepository.UpdateAsync(pp.Id, upp);
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            return productions;
+        }
         public async Task<ProductionPlan_WOVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WOVM productions)
         {
             var pp = _mapper.Map<ProductionPlan_WO>(productions);
