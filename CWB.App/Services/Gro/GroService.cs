@@ -237,6 +237,30 @@ namespace CWB.App.Services.Gro
             grodispheadervm.TenantId = tenantId;
             return await RestHelper<Gro_Disp_HeaderVM>.PostAsync(uri, grodispheadervm, headers);
         }
+        public async Task<Gro_Disp_HeaderVM> UpdateGroDispHeaderAddress(Gro_Disp_HeaderVM grodispheadervm)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/updategrodispheaderaddress");
+
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            grodispheadervm.TenantId = tenantId;
+            return await RestHelper<Gro_Disp_HeaderVM>.PostAsync(uri, grodispheadervm, headers);
+        }
+        public async Task<Gro_Disp_HeaderVM> UpdateGroDispHeaderAWB(Gro_Disp_HeaderVM grodispheadervm)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/updategrodispheadercourierawbdispatchdate");
+
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            grodispheadervm.TenantId = tenantId;
+            return await RestHelper<Gro_Disp_HeaderVM>.PostAsync(uri, grodispheadervm, headers);
+        }
+        public async Task<Gro_Disp_HeaderVM> UpdateGroDispHeaderDeliveryDate(Gro_Disp_HeaderVM grodispheadervm)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/updatedispheaderdeliverydate");
+
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            grodispheadervm.TenantId = tenantId;
+            return await RestHelper<Gro_Disp_HeaderVM>.PostAsync(uri, grodispheadervm, headers);
+        }
         public async Task<IEnumerable<Courier_ListVM>> GetallcourierList()
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/Getallcourierlist/{tenantId}");
@@ -264,6 +288,13 @@ namespace CWB.App.Services.Gro
             grodispheadervm.TenantId = tenantId;
             return await RestHelper<TK_DC_Inv_ContrlVM>.PostAsync(uri, grodispheadervm, headers);
         }
-
+        public async Task<TK_DC_Inv_ContrlVM> UpdateTkDcLastInvandDcNo(TK_DC_Inv_ContrlVM grodispheadervm)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/updatetkdclastdcandinvno");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            grodispheadervm.TenantId = tenantId;
+            return await RestHelper<TK_DC_Inv_ContrlVM>.PostAsync(uri, grodispheadervm, headers);
+        }
+        
     }
 }

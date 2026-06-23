@@ -28,6 +28,9 @@ namespace CWB.Gro.GroUtils
             public const string AllGroDispatchHeader = Base + "/Getallgrodispatchheader/{tenantId}";
             public const string PostMultipleGroDispatchHeader = Base + "/postmultiplegrodispatchheader";
             public const string PostGroDispatchHeader = Base + "/postgrodispatchheader";
+            public const string UpdateGroDispHeaderAddress = Base + "/updategrodispheaderaddress";
+            public const string UpdateGroDispatchHeaderAWB = Base + "/updategrodispheadercourierawbdispatchdate";
+            public const string UpdateGroDispatchHeaderDeliveryDate = Base + "/updatedispheaderdeliverydate";
             public const string DeleteGroDispatchHeader = Base + "/deletegrodispatchheader/{Id}";
 
             public const string AllCustSpecificData = Base + "/Getallcustspecificdata/{tenantId}";
@@ -73,6 +76,7 @@ namespace CWB.Gro.GroUtils
             public const string AllTKDCInvContrl = Base + "/getalltkdcinctrl/{tenantId}";
             public const string PostMultipleTKDCInvContrl = Base + "/postmultipltkdcinvctrl";
             public const string PostTKDCInvContrl = Base + "/posttkdcinvctrl";
+            public const string UpdateTkDclastDcandInvNo = Base + "/updatetkdclastdcandinvno";
             public const string DeleteTKDCInvContrl = Base + "/deletetkdcinvctrl/{Id}";
 
 

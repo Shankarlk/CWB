@@ -20,6 +20,8 @@ namespace CWB.App.Models.Gro
 
         public int Reqd_Quantity { get; set; }
         public string? IndentDateStr { get; set; }
+        public string? DispatchDateStr { get; set; }
+        public string? DeliveredDateStr { get; set; }
         public string Remarks { get; set; }
         public string Shipping_Address { get; set; }
         public string Shipping_City { get; set; }

@@ -1,5 +1,11 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+<style>
+    #editDispatchAddressModal
+    {
+        z-index: 1065 !important;
+    }
+</style>
 <div class="content">
     <div class="card">
         <div class="card-body">
@@ -15,200 +21,219 @@
                 }
             }
             <!-- Upload Section -->
-            <div class="border rounded p-3 mb-3">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h5>
-                            Upload Gro Data from Excel File
-                            <small>(Last Updated on  <span id="LastUpdatedDate">--</span>)</small>
-                        </h5>
-                    </div>
-                    <div class="col-md-4 text-end">
-                        <button class="btn btn-primary"
-                                data-bs-toggle="modal"
-                                data-bs-target="#groUploadModal">
-                            Upload
-                        </button>
-                    </div>
+            <hr class="my-1" />
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5>
+                        Upload Gro Data from Excel File
+                        <small>(Last Updated on  <span id="LastUpdatedDate">--</span>)</small>
+                    </h5>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button class="btn btn-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#groUploadModal">
+                        Upload
+                    </button>
                 </div>
             </div>
-            <div class="border rounded p-3 mb-3">
-                <!-- Dispatch Qty -->
+            <hr class="my-1" />
 
-                <div class="row">
-                    <div class="col-md-9">
-                        <h5>Number of Indent Line Items to be Dispatched</h5>
+            <!-- Dispatch Qty -->
 
-                        <div class="table-responsive">
-                            <table class="table table-bordered text-center">
-                                <thead>
-                                    <tr>
-                                        <th>Ageing</th>
-                                        <th>0</th>
-                                        <th>1</th>
-                                        <th>2</th>
-                                        <th>3</th>
-                                        <th>> 3</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Full Qty to be Dispatched</td>
-                                        <td>xx</td>
-                                        <td></td>
-                                        <td>xx</td>
-                                        <td></td>
-                                        <td>xx</td>
-                                        <td>xx</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Partial Qty Dispatched</td>
-                                        <td></td>
-                                        <td>xx</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>xx</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Qty not Dispatched</td>
-                                        <td></td>
-                                        <td>xx</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td>xx</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Total</td>
-                                        <td>xx</td>
-                                        <td>xx</td>
-                                        <td>xx</td>
-                                        <td></td>
-                                        <td>xx</td>
-                                        <td>xx</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+            <div class="row">
+                <div class="col-md-9">
+                    <h5>Number of Indent Line Items to be Dispatched</h5>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead>
+                                <tr>
+                                    <th>Ageing</th>
+                                    <th>0</th>
+                                    <th>1</th>
+                                    <th>2</th>
+                                    <th>3</th>
+                                    <th>> 3</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Full Qty to be Dispatched</td>
+                                    <td>xx</td>
+                                    <td></td>
+                                    <td>xx</td>
+                                    <td></td>
+                                    <td>xx</td>
+                                    <td>xx</td>
+                                </tr>
+                                <tr>
+                                    <td>Partial Qty Dispatched</td>
+                                    <td></td>
+                                    <td>xx</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>xx</td>
+                                </tr>
+                                <tr>
+                                    <td>Qty not Dispatched</td>
+                                    <td></td>
+                                    <td>xx</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>xx</td>
+                                </tr>
+                                <tr>
+                                    <td>Total</td>
+                                    <td>xx</td>
+                                    <td>xx</td>
+                                    <td>xx</td>
+                                    <td></td>
+                                    <td>xx</td>
+                                    <td>xx</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-md-3 text-end align-self-center">
+
+                    <button class="btn btn-primary gro-btn"
+                            data-bs-toggle="modal"
+                            data-bs-target="#dispatchPopup">
+                        Dispatch Qnty
+                    </button>
+                </div>
+            </div>
+            <hr class="my-1" />
+
+            <!-- Dispatch Details -->
+
+            <div class="row align-items-center">
+                <div class="col-md-9">
+                    <h5>
+                        Number of Dispatches waiting for Courier Dispatch Details
+                        Update : xx
+                    </h5>
+                </div>
+
+                <div class="col-md-3 text-end">
+                    <button class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#dispatchDetailsDataUpdatePopup">
+                        Dispatch Details
+                    </button>
+                </div>
+            </div>
+            <hr class="my-1" />
+
+            <!-- Delivery Details -->
+
+            <div class="row">
+                <div class="col-md-9">
+
+                    <h5>
+                        Number of Indent waiting for Delivery Date Update : xx
+                    </h5>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead>
+                                <tr>
+                                    <th>Ageing</th>
+                                    <th>0-2</th>
+                                    <th>3-5</th>
+                                    <th>5-7</th>
+                                    <th>8-10</th>
+                                    <th>>11</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>Full Qty to be Dispatched</td>
+                                    <td>xx</td>
+                                    <td></td>
+                                    <td>xx</td>
+                                    <td></td>
+                                    <td>xx</td>
+                                    <td>xx</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-2">
+                        Total No of Parts : xx
+                    </div>
+
+                </div>
+
+                <div class="col-md-3 text-end align-self-center">
+                    <button class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#deliverydataupdatemodal">
+                        Delivery Details
+                    </button>
+                </div>
+            </div>
+            <hr class="my-1" />
+
+            <!-- Delivery Complete -->
+
+            <div class="row align-items-center">
+                <div class="col-md-9">
+                    <h5>View Dispatched / Delivered Indent Data</h5>
+                </div>
+
+                <div class="col-md-3 text-end">
+                    <button class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#deliveryCompletePopup">
+                        Delivery Complete
+                    </button>
+                </div>
+            </div>
+            <hr class="my-1" />
+
+            <!-- MIS -->
+
+            <div class="row align-items-center">
+                <div class="col-md-9">
+                    <h5>View Reports / Analysis</h5>
+                </div>
+
+                <div class="col-md-3 text-end">
+                    <button class="btn btn-primary gro-btn">
+                        MIS
+                    </button>
+                </div>
+            </div>
+            <hr class="my-1" />
+
+            <!-- Setup -->
+            @if (permissionResult != null)
+            {
+                @if (permissionResult.Any(r => r.Menu3 == "Gro Sales Setup"))
+                {
+                    <div class="row align-items-center">
+                        <div class="col-md-9">
+                            <h5>Setup</h5>
+                        </div>
+
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-primary gro-btn"
+                                    onclick="location.href='@Url.Action("GroSetup", "Gro")'">
+                                Setup
+                            </button>
                         </div>
                     </div>
-
-                    <div class="col-md-3 text-end align-self-center">
-
-                        <button class="btn btn-primary gro-btn"
-                                data-bs-toggle="modal"
-                                data-bs-target="#dispatchPopup">
-                            Dispatch Qnty
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="border rounded p-3 mb-3">
-                <!-- Dispatch Details -->
-
-                <div class="row align-items-center">
-                    <div class="col-md-9">
-                        <h5>
-                            Number of Dispatches waiting for Courier Dispatch Details
-                            Update : xx
-                        </h5>
-                    </div>
-
-                    <div class="col-md-3 text-end">
-                        <button class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#dispatchDetailsDataUpdatePopup">
-                            Dispatch Details
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="border rounded p-3 mb-3">
-                <!-- Delivery Details -->
-
-                <div class="row">
-                    <div class="col-md-9">
-
-                        <h5>
-                            Number of Indent waiting for Delivery Date Update : xx
-                        </h5>
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered text-center">
-                                <thead>
-                                    <tr>
-                                        <th>Ageing</th>
-                                        <th>0-2</th>
-                                        <th>3-5</th>
-                                        <th>5-7</th>
-                                        <th>8-10</th>
-                                        <th>>11</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    <tr>
-                                        <td>Full Qty to be Dispatched</td>
-                                        <td>xx</td>
-                                        <td></td>
-                                        <td>xx</td>
-                                        <td></td>
-                                        <td>xx</td>
-                                        <td>xx</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="mt-2">
-                            Total No of Parts : xx
-                        </div>
-
-                    </div>
-
-                    <div class="col-md-3 text-end align-self-center">
-                        <button class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#deliverydataupdatemodal">
-                            Delivery Details
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="border rounded p-3 mb-3">
-                <!-- Delivery Complete -->
-
-                <div class="row align-items-center">
-                    <div class="col-md-9">
-                        <h5>View Dispatched / Delivered Indent Data</h5>
-                    </div>
-
-                    <div class="col-md-3 text-end">
-                        <button class="btn btn-primary" data-bs-toggle="modal"
-                                data-bs-target="#deliveryCompletePopup">
-                            Delivery Complete
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="border rounded p-3 mb-3">
-                <!-- MIS -->
-
-                <div class="row align-items-center">
-                    <div class="col-md-9">
-                        <h5>View Reports / Analysis</h5>
-                    </div>
-
-                    <div class="col-md-3 text-end">
-                        <button class="btn btn-primary gro-btn">
-                            MIS
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="border rounded p-3 mb-3">
-                <!-- Setup -->
-
+                }
+            }
+            else
+            {
                 <div class="row align-items-center">
                     <div class="col-md-9">
                         <h5>Setup</h5>
@@ -216,12 +241,14 @@
 
                     <div class="col-md-3 text-end">
                         <button class="btn btn-primary gro-btn"
-                                 onclick="location.href='@Url.Action("GroSetup", "Gro")'">
+                                onclick="location.href='@Url.Action("GroSetup", "Gro")'">
                             Setup
                         </button>
                     </div>
                 </div>
-            </div>
+
+            }
+
 
 
 
@@ -239,6 +266,8 @@
      id="groUploadModal"
      tabindex="-1"
      aria-labelledby="groUploadModalLabel"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
      aria-hidden="true">
 
     <div class="modal-dialog modal-lg">
@@ -259,7 +288,7 @@
 
             <div class="modal-body">
 
-                <hr />
+                <hr class="my-1" />
 
                 <div class="row mt-4">
 
@@ -355,6 +384,8 @@
      id="UploadErrroModal"
      tabindex="-1"
      aria-labelledby="labelUploadErrroModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
      aria-hidden="true">
 
     <div class="modal-dialog">
@@ -405,8 +436,9 @@
 
 </div>
 @* popup 1 Dispatch selection popup *@
-<div class="modal fade" id="dispatchPopup" tabindex="-1">
-    <div class="modal-dialog modal-xl">
+<div class="modal fade" id="dispatchPopup" tabindex="-1" data-bs-backdrop="static"
+     data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
 
             <div class="modal-header">
@@ -425,7 +457,7 @@
                 <!-- Filters -->
                 <div class="row mb-3">
 
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label>Indent</label>
                         <input type="text"
                                class="form-control"
@@ -443,13 +475,18 @@
                         <input id="txtToDate" type="date" class="form-control">
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label>Dispatch Status</label>
                         <select class="form-select">
                             <option>All</option>
                             <option>Partial Dispatch</option>
                             <option>No Dispatch</option>
                         </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" id="btnClearFilter" class="btn btn-secondary w-100">
+                            Clear
+                        </button>
                     </div>
 
                 </div>
@@ -505,7 +542,8 @@
     </div>
 </div>
 @* popup 2 show Dispatch Details/gro data line item popup *@
-<div class="modal fade" id="dispatchDetailsPopup" tabindex="-1">
+<div class="modal fade" id="dispatchDetailsPopup" tabindex="-1" data-bs-backdrop="static"
+     data-bs-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
 
@@ -608,10 +646,11 @@
 <div class="modal fade"
      id="dispatchQtyModal"
      tabindex="-1"
-     aria-labelledby="dispatchQtyModalLabel"
+     aria-labelledby="dispatchQtyModalLabel" data-bs-backdrop="static"
+     data-bs-keyboard="false"
      aria-hidden="true">
 
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-lg">
 
         <div class="modal-content">
 
@@ -627,7 +666,8 @@
             </div>
 
             <div class="modal-body">
-
+                <input type="hidden" id="hdnGroDispHeaderId" />
+                <input type="hidden" id="hdnIndentId" />
                 <!-- Header Information -->
 
                 <div class="row mb-3">
@@ -655,16 +695,13 @@
                                 <th>Disp.Till Date </th>
                                 <th>Bal Disp Qty</th>
                                 <th>DispQty Scanned </th>
-                                 
-                               
-                                <th ></th>
+
+
+                                <th></th>
                             </tr>
                         </thead>
 
-                        <tbody  >
-
-                           
-
+                        <tbody>
                         </tbody>
 
                     </table>
@@ -676,7 +713,8 @@
             <div class="modal-footer justify-content-between">
 
                 <button class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#editDispatchAddressModal">
+                        data-bs-target="#editDispatchAddressModal"
+                        onclick="loadDispatchAddress()">
                     Edit Dispatch Address
                 </button>
 
@@ -689,6 +727,472 @@
                         data-bs-target="#DCPrintModal">
                     Print DC
                 </button>
+                <button class="btn btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#InvoicePrintModal">
+                    Print Invoice
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Popup 7 :Edit Dispatch Address  popup -->
+<div class="modal fade"
+     id="editDispatchAddressModal"
+     tabindex="-1" data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     aria-labelledby="editDispatchAddressModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog ">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="editDispatchAddressModalLabel">
+                    Gro - Edit Dispatch Address
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="HeaderId" />
+
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <strong>Indent Date</strong>
+                    </div>
+                    <div class="col-md-8">
+                        : <span id="addrIndentDate"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <strong>Indent No</strong>
+                    </div>
+                    <div class="col-md-8">
+                        : <span id="addrIndentNo"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <strong>Contact</strong>
+                    </div>
+                    <div class="col-md-8">
+                        : <span id="addrContact"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <strong>Cell Phone</strong>
+                    </div>
+                    <div class="col-md-8">
+                        : <span id="addrCellPhone"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <strong>Executive Name</strong>
+                    </div>
+                    <div class="col-md-8">
+                        : <span id="addrExecutiveName"></span>
+                    </div>
+                </div>
+
+                <hr class="my-1" />
+
+                <!-- Editable Fields -->
+
+                <div class="row mb-3">
+                    <label class="col-md-3 col-form-label">
+                        Customer
+                    </label>
+
+                    <div class="col-md-6">
+                        <input type="text"
+                               class="form-control"
+                               id="txtCustomer" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-md-3 col-form-label">
+                        Address
+                    </label>
+
+                    <div class="col-md-9">
+                        <textarea class="form-control"
+                                  id="txtAddress"
+                                  rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+
+                    <label class="col-md-3 col-form-label">
+                        City
+                    </label>
+
+                    <div class="col-md-6">
+                        <input type="text"
+                               class="form-control"
+                               id="txtCity" />
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+
+                    <label class="col-md-3 col-form-label">
+                        PIN
+                    </label>
+
+                    <div class="col-md-6">
+                        <input type="text"
+                               class="form-control"
+                               id="txtPin" />
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer justify-content-center">
+
+                <button class="btn btn-primary"
+                        id="btnSaveDispatchAddress">
+                    Save
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- Popup 12 :Dispatch Data update popup  for loading  data updating courier/awb/ dispatch date   -->
+<div class="modal fade"
+     id="dispatchDetailsDataUpdatePopup"
+     tabindex="-1" data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     aria-labelledby="dispatchDetailsDataUpdatePopupLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content">
+
+            <!-- Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"
+                    id="dispatchDetailsDataUpdatePopupLabel">
+                    Gro - Dispatch Details Data Update
+                </h4>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+
+                <!-- Search Filter -->
+                <div class="row mb-4">
+
+                    <div class="col-md-4">
+                        <label class="form-label">
+                            Indent
+                        </label>
+                        <input type="text"
+                               class="form-control"
+                               id="searchbyindent"
+                               placeholder="Search Indent">
+                    </div>
+
+                </div>
+
+                <!-- Grid -->
+                <div class="table-responsive table-he-350">
+
+                    <table class="table table-bordered table-sm text-center w-100" id="dispatchdataupdatetable">
+
+                        <thead class="table-info th-sti">
+                            <tr class="table-border-bottom">
+                                <th>Indent Date</th>
+                                <th>Indent No</th>
+                                <th>Customer</th>
+                                <th>City</th>
+
+                                <th style="width:70px;"></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Popup 13 :Updation/show of data for that INdent Called From Popup12 -->
+<div class="modal fade"
+     id="dispatchdataupdatebyindentmodal"
+     tabindex="-1" data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     aria-labelledby="dispatchdataupdatebyindentmodalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-xl">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="dispatchdataupdatebyindentmodalLabel">
+                    Gro - Dispatch Data Update By Indent
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="updateHeaderId" />
+                <!-- Header Information -->
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div><strong>Indent Date :</strong> <span id="updIndentDate"></span></div>
+                        <div><strong>Indent No :</strong> <span id="updIndentNo"></span></div>
+                        <div><strong>Customer :</strong> <span id="updCustomer"></span></div>
+                        <div><strong>Address :</strong> <span id="updAddress"></span></div>
+                        <div><strong>Contact :</strong> <span id="updContact"></span></div>
+                        <div><strong>Cell Phone :</strong> <span id="updMobile"></span></div>
+                    </div>
+                </div>
+
+                <!-- Product Grid -->
+
+                <div class="table-responsive mb-2 table-he-350">
+                    <table class="table table-sm table-bordered w-100 text-center" id="dispatchupdateline">
+
+                        <thead class="table-info th-sti">
+                            <tr class="table-border-bottom">
+                                <th>Product</th>
+                                <th>Order Qty</th>
+                                <th>Disp Till Date</th>
+                                <th>This Dispatch Quantity</th>
+                                <th>Bal Disp Qty</th>
+
+
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+
+
+            </div>
+            <div id="dispatchUpdateSection">
+                <div class="d-flex justify-content-between px-3 mt-4 mb-4">
+
+                    <button class="btn btn-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editDispatchAddressModal">
+                        Edit Dispatch Address
+                    </button>
+
+
+
+                    <button class="btn btn-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#DCPrintModal">
+                        Print DC
+                    </button>
+
+                </div>
+                <div class="border rounded p-4 mx-3 mt-3 mb-3 bg-light">
+
+
+
+                    <div class="row mb-3">
+                        <label class="col-md-3 col-form-label">
+                            Courier
+                        </label>
+
+                        <div class="col-md-6">
+                            <select class="form-select" id="ddlCourier">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-md-3 col-form-label">
+                            AWB / Reference
+                        </label>
+
+                        <div class="col-md-6">
+                            <input type="text"
+                                   class="form-control"
+                                   id="txtAwbReference"
+                                   placeholder="Enter AWB / Reference No" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-0">
+                        <label class="col-md-3 col-form-label">
+                            Dispatch Date
+                        </label>
+
+                        <div class="col-md-6">
+                            <input type="date"
+                                   class="form-control"
+                                   id="txtDispatchDate" />
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer justify-content-right">
+
+                    <button class="btn btn-primary"
+                            id="btnUpdatedispatchdate">
+                        Update
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<!-- Popup 14 :Delivery date data update modal -->
+
+<div class="modal fade"
+     id="deliverydataupdatemodal"
+     tabindex="-1"
+     aria-labelledby="deliverydataupdatemodalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-xl">
+
+        <div class="modal-content">
+
+            <!-- Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"
+                    id="deliverydataupdatemodalLabel">
+                    Gro - Delivery Data Update
+                </h4>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+
+                <!-- Search Filters -->
+                <div class="row mb-4">
+
+                    <div class="col-md-3">
+                        <label class="form-label">Indent</label>
+                        <input type="text"
+                               class="form-control"
+                               id="txtDeliveryIndentSearch"
+                               placeholder="Search Indent" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Courier</label>
+                        <input type="text"
+                               class="form-control"
+                               id="txtDeliveryCourierSearch"
+                               placeholder="Search Courier" />
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label">From Dispatch Date</label>
+                        <input type="date"
+                               class="form-control"
+                               id="txtDeliveryFromDate" />
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label">To Dispatch Date</label>
+                        <input type="date"
+                               class="form-control"
+                               id="txtDeliveryToDate" />
+                    </div>
+
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button class="btn btn-secondary w-100"
+                                id="btnClearDeliveryFilter">
+                            Clear
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Grid -->
+                <div class="table-responsive table-he-350">
+
+                    <table class="table table-bordered table-sm text-center w-100" id="deliverydatatable">
+
+                        <thead class="table-info th-sti">
+                            <tr>
+                                <th>Dispatch Date</th>
+                                <th>Indent No</th>
+                                <th>Customer</th>
+                                <th>Courier</th>
+                                <th style="width:70px;"></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                        </tbody>
+
+                    </table>
+
+                </div>
 
             </div>
 
@@ -698,6 +1202,229 @@
 
 </div>
 
+
+<!-- Popup 15 :Delivery date modal update by indent call from popup 14 -->
+<div class="modal fade"
+     id="deliverydataupdatebyindent"
+     tabindex="-1"
+     aria-labelledby="deliverydataupdatebyindentLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-xl">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title"
+                    id="deliverydataupdatebyindentLabel">
+                    Gro - Delivery Data Update By Indent
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="deliveryUpdateHeaderId" />
+                <!-- Header Information -->
+
+                <div class="row mb-3">
+
+                    <div class="col-md-6">
+                        <div><strong>Indent Date :</strong> <span id="delIndentDate"></span></div>
+                        <div><strong>Indent No :</strong> <span id="delIndentNo"></span></div>
+                        <div><strong>Customer :</strong> <span id="delCustomer"></span></div>
+
+                        <div><strong>Address :</strong> <span id="delAddress"></span></div>
+                        <div><strong>Contact :</strong> <span id="delContact"></span></div>
+                        <div><strong>Cell Phone :</strong> <span id="delMobile"></span></div>
+
+                        <div><strong>Dispatch Date :</strong> <span id="DispatchDate"></span></div>
+                        <div><strong>Courier :</strong> <span id="courier"></span></div>
+                        <div><strong>AWB/Ref :</strong> <span id="awbref"></span></div>
+                    </div>
+
+                </div>
+
+                <!-- Product Grid -->
+
+                <div class="table-responsive mb-2 table-he-350">
+
+                    <table class="table table-sm table-bordered w-100 text-center" id="DeliveryDataUpdateGrid">
+
+                        <thead class="table-info th-sti">
+                            <tr class="table-border-bottom">
+                                <th>Product</th>
+                                <th>Order Qty</th>
+
+                                <th>Delivered Till Date</th>
+                                <th>Balance Disp Qnty</th>
+                                <th>
+                                    Dispatched Qnty
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <!-- Delivery Information -->
+
+
+
+            </div>
+            <div id="deliveryUpdateSection">
+                <div class="border rounded p-4 mx-3 mt-3 mb-3 bg-light">
+
+
+                    <div class="row mb-0">
+
+                        <label class="col-md-3 col-form-label">
+                            Delivery Date
+                        </label>
+
+                        <div class="col-md-6">
+                            <input type="date"
+                                   class="form-control"
+                                   id="txtActualDeliveryDate" />
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+
+                    <button class="btn btn-primary"
+                            id="btnUpdateDeliveryData">
+                        Update
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<!-- Popup 10 :Delivery Complete popup -->
+<div class="modal fade"
+     id="deliveryCompletePopup"
+     tabindex="-1"
+     aria-labelledby="deliveryCompletePopupLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-xl">
+
+        <div class="modal-content">
+
+            <!-- Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"
+                    id="deliveryCompletePopupLabel">
+                    Gro - Dispatched / Delivered Indent Data
+                </h4>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="modal-body">
+
+                <!-- Search Filters -->
+                <div class="row mb-4 align-items-end">
+
+                    <div class="col-md-3">
+                        <label class="form-label">Indent</label>
+                        <input type="text"
+                               class="form-control"
+                               id="txtSearchIndent"
+                               placeholder="Enter Indent No" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Date Category</label>
+                        <select class="form-select" id="ddlDateCategory">
+                            <option value="">All</option>
+                            <option value="Indent">Indent Date</option>
+                            <option value="Dispatch">Dispatch Date</option>
+                            <option value="Delivery">Delivery Date</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label">From Date</label>
+                        <input type="date"
+                               class="form-control"
+                               id="txtdelFromDate" />
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label">To Date</label>
+                        <input type="date"
+                               class="form-control"
+                               id="txtdelToDate" />
+                    </div>
+
+                    <div class="col-md-2">
+                        <button class="btn btn-secondary w-100"
+                                id="btnClearDeliveryComplete">
+                            Clear
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Grid -->
+                <div class="table-responsive table-he-350">
+
+                    <table class="table table-bordered table-sm text-center w-100" id="deliverycompletetable">
+
+                        <thead class="table-info th-sti">
+                            <tr>
+                                <th>Indent Date</th>
+                                <th>Indent No</th>
+                                <th>Customer</th>
+                                <th>Product</th>
+                                <th>Order Qty</th>
+                                <th>Dispatch Qty</th>
+                                <th>Last Delivery Date</th>
+
+
+                                <th style="width:70px;">
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+
+
+        </div>
+
+    </div>
+
+</div>
 
 
 <template id="dispatchSelectionRow">
@@ -811,4 +1538,164 @@
 
     </tr>
 
+</template>
+<template id="dispatchUpdateRow">
+    <tr>
+
+
+
+
+        <td hidden>{indentDate}</td>
+        <td hidden>{gro_Disp_HeaderId}</td>
+        <td>{indentDateStr}</td>
+        <td>{indent}</td>
+        <td>{company_Name}</td>
+        <td>{shipping_City}</td>
+
+
+        <td class="text-center">
+            <div class="dropdown">
+
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+
+                <div class="dropdown-menu dropdown-menu-end ">
+
+                    <a href="javascript:void(0);"
+                       class="dropdown-item"
+                       onclick="ShowDetails(this)">
+
+                        Show Details
+                    </a>
+                    <a href="javascript:void(0);"
+                       class="dropdown-item"
+                       onclick="UpdateDispheader(this)">
+
+                        Update Dispatch Details
+                    </a>
+                </div>
+
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="dispatchupdatelinerow">
+    <tr>
+
+
+
+
+
+        <td>{groPartNo}</td>
+        <td>{reqd_Quantity}</td>
+        <td> </td>
+        <td></td>
+        <td>{bal_to_Disp}</td>
+
+
+
+    </tr>
+</template>
+<template id="deliverydetailrow">
+    <tr>
+
+
+
+
+        <td hidden>{gro_Disp_HeaderId}</td>
+        <td>{dispatchDateStr}</td>
+        <td>{indent}</td>
+        <td>{company_Name}</td>
+        <td>{courier} </td>
+        <td class="text-center">
+            <div class="dropdown">
+
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+
+                <div class="dropdown-menu dropdown-menu-end ">
+
+                    <a href="javascript:void(0);"
+                       class="dropdown-item"
+                       onclick="LoadDeliveryDetails(this,'view')">
+
+                        Show Details
+                    </a>
+                    <a href="javascript:void(0);"
+                       class="dropdown-item"
+                       onclick="LoadDeliveryDetails(this,'edit')">
+                        Update Delivery Details
+                    </a>
+                </div>
+
+            </div>
+        </td>
+
+
+
+    </tr>
+</template>
+<template id="deliveryupdatelinerow">
+    <tr>
+
+
+
+
+
+        <td>{groPartNo}</td>
+        <td>{reqd_Quantity}</td>
+        <td> </td>
+        <td></td>
+        <td>{bal_to_Disp}</td>
+
+
+
+    </tr>
+</template>
+<template id="deliverycompleterow">
+    <tr>
+         
+        <td>{indentDateStr}</td>
+        <td>{indent}</td>
+        <td>{company_Name}</td>
+        <td>{groPartNo}</td>
+        <td>{reqd_Quantity} </td>
+        <td>0 </td>
+        <td hidden>{bal_to_Disp}</td>
+        <td hidden>{dispatchDateStr}</td>
+        <td >{deliveredDateStr}</td>
+        <td class="text-center">
+            <div class="dropdown">
+
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+
+                <div class="dropdown-menu dropdown-menu-end ">
+
+                    <a href="javascript:void(0);"
+                       class="dropdown-item">
+
+                        Show Details
+                    </a>
+                    
+                </div>
+
+            </div>
+        </td>
+
+
+
+    </tr>
 </template>

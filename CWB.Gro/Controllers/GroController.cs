@@ -112,6 +112,31 @@ namespace CWB.Gro.Controllers
             return Ok(result);
         }
         [HttpPost]
+        [Route(ApiRoutes.Gro.UpdateGroDispHeaderAddress)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Gro_DataVM))]
+        public async Task<IActionResult> UpdateGroDispHeaderAddress([FromBody] Gro_Disp_HeaderVM workOrdersVM)
+        {
+            var result = await _groService.UpdateGroDispatchHeader(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Gro.UpdateGroDispatchHeaderAWB)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Gro_DataVM))]
+        public async Task<IActionResult> UpdateGroDispatchHeaderAWB([FromBody] Gro_Disp_HeaderVM workOrdersVM)
+        {
+            var result = await _groService.UpdateGroDispatchHeaderAWB(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Gro.UpdateGroDispatchHeaderDeliveryDate)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Gro_DataVM))]
+        public async Task<IActionResult> UpdateGroDispatchHeaderDeliveryDate([FromBody] Gro_Disp_HeaderVM workOrdersVM)
+        {
+            var result = await _groService.UpdateGroDispatchHeaderDeliveryDate(workOrdersVM);
+            return Ok(result);
+        }
+
+        [HttpPost]
         [Route(ApiRoutes.Gro.PostMultipleGroDispatchHeader)]
         [Produces(AppContentTypes.ContentType, Type = typeof(Gro_DataVM))]
         public async Task<IActionResult> PostMultipleGroDispatchHeader([FromBody] List<Gro_Disp_HeaderVM> workOrdersVM)
@@ -370,6 +395,14 @@ namespace CWB.Gro.Controllers
         public async Task<IActionResult> PostTKDCInvContrl([FromBody] TK_DC_Inv_ContrlVM workOrdersVM)
         {
             var result = await _groService.PostTKDCInvContrl(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Gro.UpdateTkDclastDcandInvNo)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(TK_DC_Inv_ContrlVM))]
+        public async Task<IActionResult> UpdateTkDclastDcandInvNo([FromBody] TK_DC_Inv_ContrlVM workOrdersVM)
+        {
+            var result = await _groService.UpdateTkDclastDcandInvNo(workOrdersVM);
             return Ok(result);
         }
         [HttpPost]

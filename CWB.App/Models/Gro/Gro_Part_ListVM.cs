@@ -19,5 +19,6 @@ namespace CWB.App.Models.Gro
         public int GSTRate { get; set; }
         public string HSNCode { get; set; } = string.Empty;
         public long TenantId { get; set; }
+        public int Qnty_on_Hand { get; set; }
     }
 }

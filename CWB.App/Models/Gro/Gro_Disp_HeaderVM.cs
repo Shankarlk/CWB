@@ -30,6 +30,13 @@ namespace CWB.App.Models.Gro
         public char Inv_Uploaded { get; set; }
         public char Customer_Inv_Attached { get; set; }
 
+        public string Company_Name { get; set; }
+        public string? IndentDateStr { get; set; }
+        public string? DispatchDateStr { get; set; }
+        public string Contact_Person { get; set; }
+        public string Contact_Person_No { get; set; }
+        public string Excutive_Name { get; set; }
+        public string Courier { get; set; }
         public long TenantId { get; set; }
     }
 }

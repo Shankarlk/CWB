@@ -24,6 +24,9 @@ namespace CWB.Gro.Services
         Task<IEnumerable<Gro_Disp_HeaderVM>> AllGroDispatchHeader(long tenantId);
         Task<List<Gro_Disp_HeaderVM>> MultipleGroDispatchHeader(List<Gro_Disp_HeaderVM> GroDataVM);
         Task<Gro_Disp_HeaderVM> PostGroDispatchHeader(Gro_Disp_HeaderVM GroDataVM);
+        Task<Gro_Disp_HeaderVM> UpdateGroDispatchHeader(Gro_Disp_HeaderVM GroDataVM);
+        Task<Gro_Disp_HeaderVM> UpdateGroDispatchHeaderAWB(Gro_Disp_HeaderVM GroDataVM);
+        Task<Gro_Disp_HeaderVM> UpdateGroDispatchHeaderDeliveryDate(Gro_Disp_HeaderVM GroDataVM);
         Task<bool> DeleteGroDispatchHeader(long Id);
 
 
@@ -73,6 +76,7 @@ namespace CWB.Gro.Services
         Task<IEnumerable<TK_DC_Inv_ContrlVM>> AllTKDCInvContrl(long tenantId);
         Task<List<TK_DC_Inv_ContrlVM>> MultipleTKDCInvContrl(List<TK_DC_Inv_ContrlVM> controlVM);
         Task<TK_DC_Inv_ContrlVM> PostTKDCInvContrl(TK_DC_Inv_ContrlVM controlVM);
+        Task<TK_DC_Inv_ContrlVM> UpdateTkDclastDcandInvNo(TK_DC_Inv_ContrlVM controlVM);
         Task<bool> DeleteTKDCInvContrl(long id);
 
 

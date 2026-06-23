@@ -15,5 +15,6 @@ namespace CWB.App.Models.Gro
 
         public long Correction_User { get; set; }
         public long TenantId { get; set; }
+        public string Gro_Part_No { get; set; }
     }
 }

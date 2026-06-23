@@ -257,7 +257,10 @@ namespace CWB.CompanySettings.Configurations
     new UiList { Id = 128, MenuLevelId = 3, TopLevel = 'N', UI_Type = "Tab", UI_Name_Label = "Add Roles", UI_Part_linked_to = 127, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'Y', Delete_Allowed = 'Y', TenantId = 1 },
     new UiList { Id = 129, MenuLevelId = 4, TopLevel = 'N', UI_Type = "Tab", UI_Name_Label = "Generate WO", UI_Part_linked_to = 66, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'Y', Delete_Allowed = 'Y', TenantId = 1 },
     new UiList { Id = 130, MenuLevelId = 1, TopLevel = 'Y', UI_Type = "Landing Page", UI_Name_Label = "Gro", UI_Part_linked_to = 0, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 3 },
-    new UiList { Id = 131, MenuLevelId = 2, TopLevel = 'N', UI_Type = "Landing Page", UI_Name_Label = "Gro Sales Data Management", UI_Part_linked_to = 130, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 3 }
+    new UiList { Id = 131, MenuLevelId = 2, TopLevel = 'N', UI_Type = "Landing Page", UI_Name_Label = "Gro Sales Data Management", UI_Part_linked_to = 130, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 3 },
+    new UiList { Id = 132, MenuLevelId = 3, TopLevel = 'N', UI_Type = "Landing Page", UI_Name_Label = "Gro Sales Setup", UI_Part_linked_to = 131, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 3 },
+     new UiList { Id = 133, MenuLevelId = 2, TopLevel = 'N', UI_Type = "Landing Page", UI_Name_Label = "Gro Sales Stock Management", UI_Part_linked_to = 130, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 3 }
+
     );
             builder.HasIndex(c => c.TenantId).HasDatabaseName("UiList_TenantId");
         }

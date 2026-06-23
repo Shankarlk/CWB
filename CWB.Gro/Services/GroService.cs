@@ -359,8 +359,133 @@ namespace CWB.Gro.Services
             return GroDataVM;
         }
 
+        public async Task<Gro_Disp_HeaderVM> UpdateGroDispatchHeader(Gro_Disp_HeaderVM GroDataVM)
+        {
+
+            var gro = _mapper.Map<Gro_Disp_Header>(GroDataVM);
+
+            if (gro.Id > 0)
+            {
+
+                try
+                {
+                    gro = await _gro_Disp_HeaderRepository.SingleOrDefaultAsync(x => x.Id == gro.Id);
+                    gro.Shipping_Address = GroDataVM.Shipping_Address;
+                    gro.Shipping_City = GroDataVM.Shipping_City;
+                    gro.Shipping_PINCODE = GroDataVM.Shipping_PINCODE;
 
 
+                    gro = await _gro_Disp_HeaderRepository.UpdateAsync(gro.Id, gro);
+                    //await _unitOfWork.CommitAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+
+            GroDataVM.Gro_Disp_HeaderId = gro.Id;
+
+
+            return GroDataVM;
+        }
+        public async Task<Gro_Disp_HeaderVM> UpdateGroDispatchHeaderAWB(Gro_Disp_HeaderVM GroDataVM)
+        {
+
+            var gro = _mapper.Map<Gro_Disp_Header>(GroDataVM);
+
+            if (gro.Id > 0)
+            {
+
+                try
+                {
+                    gro = await _gro_Disp_HeaderRepository.SingleOrDefaultAsync(x => x.Id == gro.Id);
+                    gro.Courier_Partner = GroDataVM.Courier_Partner;
+                    gro.AWB = GroDataVM.AWB;
+                    gro.Dispatch_Date = GroDataVM.Dispatch_Date;
+
+
+                    gro = await _gro_Disp_HeaderRepository.UpdateAsync(gro.Id, gro);
+                    //await _unitOfWork.CommitAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+
+            GroDataVM.Gro_Disp_HeaderId = gro.Id;
+
+
+            return GroDataVM;
+        }
+
+
+        public async Task<Gro_Disp_HeaderVM> UpdateGroDispatchHeaderDeliveryDate(Gro_Disp_HeaderVM GroDataVM)
+        {
+
+            var gro = _mapper.Map<Gro_Disp_Header>(GroDataVM);
+
+            if (gro.Id > 0)
+            {
+
+                try
+                {
+                    gro = await _gro_Disp_HeaderRepository.SingleOrDefaultAsync(x => x.Id == gro.Id);
+                    gro.Delivered_Date = GroDataVM.Delivered_Date;
+                   
+
+
+                    gro = await _gro_Disp_HeaderRepository.UpdateAsync(gro.Id, gro);
+                    //await _unitOfWork.CommitAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+
+            GroDataVM.Gro_Disp_HeaderId = gro.Id;
+
+
+            return GroDataVM;
+        }
         public async Task<bool> DeleteGroDispatchHeader(long Id)
         {
             var co = await _gro_Disp_HeaderRepository.SingleOrDefaultAsync(m => m.Id == Id);
@@ -1086,7 +1211,7 @@ namespace CWB.Gro.Services
                 try
                 {
                     await _tK_DC_Inv_ContrlRepository.AddAsync(control);
-                    await _unitOfWork.CommitAsync();
+                    //await _unitOfWork.CommitAsync();
                 }
                 catch (Exception ex)
                 {
@@ -1096,7 +1221,16 @@ namespace CWB.Gro.Services
             }
             else
             {
+                control = await _tK_DC_Inv_ContrlRepository.SingleOrDefaultAsync(x => x.Id == control.Id);
+                control.TK_DC_Last_No = controlVM.TK_DC_Last_No;
+                control.TK_Inv_Last_No = controlVM.TK_Inv_Last_No;
+                control.DC_Enable = controlVM.DC_Enable;
+                control.Inv_Print_Enable = controlVM.Inv_Print_Enable;
+                control.Inv_Push_Enable = controlVM.Inv_Push_Enable;
+               
 
+
+                control = await _tK_DC_Inv_ContrlRepository.UpdateAsync(control.Id, control);
             }
 
             try
@@ -1113,7 +1247,37 @@ namespace CWB.Gro.Services
 
             return controlVM;
         }
+        public async Task<TK_DC_Inv_ContrlVM> UpdateTkDclastDcandInvNo(TK_DC_Inv_ContrlVM controlVM)
+        {
+            var control = _mapper.Map<TK_DC_Inv_Contrl>(controlVM);
 
+            if (control.Id > 0)
+            {
+                
+                control = await _tK_DC_Inv_ContrlRepository.SingleOrDefaultAsync(x => x.Id == control.Id);
+                control.TK_DC_Last_No = controlVM.TK_DC_Last_No;
+                control.TK_Inv_Last_No = controlVM.TK_Inv_Last_No;
+                
+
+
+
+                control = await _tK_DC_Inv_ContrlRepository.UpdateAsync(control.Id, control);
+            }
+
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+
+            controlVM.TK_DC_Inv_ContrlId = control.Id;
+
+            return controlVM;
+        }
         public async Task<bool> DeleteTKDCInvContrl(long id)
         {
             var control = await _tK_DC_Inv_ContrlRepository.SingleOrDefaultAsync(m => m.Id == id);

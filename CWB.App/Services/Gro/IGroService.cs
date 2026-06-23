@@ -30,10 +30,17 @@ namespace CWB.App.Services.Gro
 
         Task<IEnumerable<Gro_Disp_HeaderVM>> GetallgroDispHeader();
         Task<Gro_Disp_HeaderVM> PostGroDispHeader(Gro_Disp_HeaderVM grodispheadervm);
+        Task<Gro_Disp_HeaderVM> UpdateGroDispHeaderAddress(Gro_Disp_HeaderVM grodispheadervm);
+        Task<Gro_Disp_HeaderVM> UpdateGroDispHeaderAWB(Gro_Disp_HeaderVM grodispheadervm);
+        Task<Gro_Disp_HeaderVM> UpdateGroDispHeaderDeliveryDate(Gro_Disp_HeaderVM grodispheadervm);
+
         Task<IEnumerable<Courier_ListVM>> GetallcourierList();
         Task<Courier_ListVM> PostCourier(Courier_ListVM grodispheadervm);
 
         Task<IEnumerable<TK_DC_Inv_ContrlVM>> Getalltkdcinvctrl();
         Task<TK_DC_Inv_ContrlVM> Posttkdcctrl(TK_DC_Inv_ContrlVM grodispheadervm);
+        Task<TK_DC_Inv_ContrlVM> UpdateTkDcLastInvandDcNo(TK_DC_Inv_ContrlVM grodispheadervm);
+
+        
     }
 }

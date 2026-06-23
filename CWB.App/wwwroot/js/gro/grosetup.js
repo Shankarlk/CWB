@@ -121,7 +121,7 @@ function saveGroPart() {
         Update_By:1,
        // Our_Part_Description: $("#txtDescription").val(),
         mrp: $("#txtMrp").val(),
-        gstRate: $("#txtGstRate").val(),
+        gstRate: $("#txtGSTRate").val(),
         hsnCode: $("#txtHSNCode").val(),
         part_Status: $("#ddlGroPartStatus").val()
     };

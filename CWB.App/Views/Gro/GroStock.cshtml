@@ -1,0 +1,497 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+<div class="container-fluid">
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h3>Gro Stock Data Management</h3>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <!-- Parts with Stock -->
+        <div class="col-lg-6">
+
+            <div class="card">
+
+                <div class="card-header text-center">
+                    <h5>Part Nos with Stock</h5>
+                </div>
+
+                <div class="card-body">
+
+                    <label>Gro Part No</label>
+
+                    <input type="text"
+                           id="txtWithStockSearch"
+                           class="form-control"
+                           placeholder="Search Part No / Description" />
+
+                    <div class="table-responsive table-he-500 mt-3">
+
+                        <table class="table table-bordered table-hover"
+                               id="tblWithStock">
+
+                            <thead class="table-info">
+
+                                <tr>
+                                    <th>Gro Part No / Description</th>
+                                    <th width="80">QOH</th>
+                                    <th width="40"></th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Parts with Zero Stock -->
+
+        <div class="col-lg-6">
+
+            <div class="card">
+
+                <div class="card-header text-center">
+                    <h5>Part Nos with Zero Stock</h5>
+                </div>
+
+                <div class="card-body">
+
+                    <label>Gro Part No</label>
+
+                    <input type="text"
+                           id="txtZeroStockSearch"
+                           class="form-control"
+                           placeholder="Search Part No / Description" />
+
+                    <div class="table-responsive table-he-500 mt-3">
+
+                        <table class="table table-bordered table-hover"
+                               id="tblZeroStock">
+
+                            <thead class="table-info">
+
+                                <tr>
+                                    <th>Gro Part No / Description</th>
+                                    <th width="40"></th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade" id="updateStockModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Gro Part Stock Update</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <input type="hidden" id="hdnGroPartListId" />
+
+                <!-- Row 1 -->
+                <div class="row mb-1 align-items-end">
+
+                    <div class="col-md-7">
+                        <label class="form-label">Gro Part No</label>
+                        <input type="text"
+                               id="txtGroPartNo"
+                               class="form-control"
+                               readonly>
+                    </div>
+
+                </div>
+
+                <!-- Row 2 -->
+                <div class="row mb-1 align-items-center">
+
+                    <div class="col-md-8">
+                        <label class="mb-0">
+                            Current Stock of
+                            <span id="lblCurrentStockText">0</span>
+                        </label>
+                    </div>
+
+                    <div class="col-md-4">
+                        <input type="text"
+                               id="txtCurrentStock"
+                               class="form-control text-end"
+                               readonly>
+                    </div>
+
+                </div>
+
+                <!-- Row 3 -->
+                <div class="row mb-1 align-items-center">
+
+                    <div class="col-md-8">
+                        <label class="mb-0">
+                            Qty to add to Stock <span class="text-danger">*</span>
+                        </label>
+                    </div>
+
+                    <div class="col-md-4">
+                        <input  
+                               id="txtQtyToAdd"
+                               class="form-control">
+                    </div>
+
+                </div>
+
+                <!-- Row 4 -->
+                <div class="row mb-1 align-items-center">
+
+                    <div class="col-md-8">
+                        Sticker(s) printed. Please Stick
+                        <br>
+                        one MRP Label per Box / Packet
+                    </div>
+
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100"
+                                id="btnPrintLabels">
+                            Print MRP Label
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Row 5 -->
+                <div class="row mb-1 align-items-center">
+
+                    <div class="col-md-8">
+                        Confirm Labels are stuck are on Boxes / Packets
+                    </div>
+
+                    <div class="col-md-3">
+                        <button class="btn btn-primary w-100"
+                                id="btnLabelsStuck">
+                            Labels Stuck
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Row 6 -->
+                <div class="row mb-1 align-items-center">
+
+                    <div class="col text-center">
+                        <button class="btn btn-primary" id="btnScanLabels">
+                            Scan Labels
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Row 7 -->
+                <div class="row mb-1 align-items-center">
+
+                    <div class="col-md-8">
+                        Number of Boxes Scanned
+                    </div>
+
+                    <div class="col-md-2">
+                        <input type="text"
+                               id="txtBoxesScanned"
+                               class="form-control text-end"
+                               readonly>
+                    </div>
+
+                </div>
+
+                <!-- Summary -->
+                <div class="border rounded p-3 mx-auto mb-4"
+                     style="width:380px;border-style:dashed!important;">
+
+                    <table class="table table-borderless table-sm mb-3">
+
+                        <tr>
+                            <td>Qty added to Stock Successfully</td>
+                            <td id="lblQtyAdded">xxx</td>
+                        </tr>
+
+                        <tr>
+                            <td>Current Stock</td>
+                            <td id="lblUpdatedStock">xxxxx</td>
+                        </tr>
+
+                    </table>
+
+                    <div class="text-center">
+
+                        <button class="btn btn-primary"
+                                id="btnSaveExit">
+                            Save & Exit
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <!-- Validation -->
+                <div class="border rounded p-3 mx-auto"
+                      >
+
+                    <table class="table table-borderless table-sm">
+
+                        <tr>
+                            <td>Number of Labels Printed</td>
+                            <td id="lblPrinted">xxx</td>
+                        </tr>
+
+                        <tr>
+                            <td>Number of Labels Scanned</td>
+                            <td id="lblScanned">xxx</td>
+                        </tr>
+
+                        <tr class="text-danger fw-bold">
+                            <td>Number of Printed Labels not Scanned</td>
+                            <td id="lblPending">xxx</td>
+                        </tr>
+
+                    </table>
+
+                    <div class="row mb-1 align-items-center">
+
+                        <button class="btn btn-primary"
+                                id="btnRescan">
+                            Re-Scan
+                        </button>
+
+                    </div>
+
+                    <div class="row mb-1 align-items-center">
+
+                        <button type="button"
+                                class="btn btn-primary"
+                                id="btnUpdateStock"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteLabelsModal">
+                            Update Stock with Scanned Labels &
+                            Delete / Cancel Labels not Scanned
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="deleteLabelsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Delete / Cancel Printed Labels
+                </h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- Heading -->
+                <div class="text-center fw-bold text-secondary mb-4">
+                    Delete / Cancel <span id="lblPendingLabels">xx</span> Labels not scanned
+                </div>
+
+                <!-- Qty -->
+                <div class="row mb-1 align-items-center">
+                    <div class="col-md-7">
+                        Qty to add to Stock Entered
+                    </div>
+
+                    <div class="col-md-2 text-end">
+                        :
+                    </div>
+
+                    <div class="col-md-3">
+                        <span id="lblQtyEntered">xx</span>
+                    </div>
+                </div>
+
+                <!-- Stickers -->
+                <div class="row mb-2 align-items-center">
+                    <div class="col-md-7">
+                        Number of Stickers Stuck on Box entered
+                    </div>
+
+                    <div class="col-md-2 text-end">
+                        :
+                    </div>
+
+                    <div class="col-md-3">
+                        <span id="lblStickerCount">xx</span>
+                    </div>
+                </div>
+
+                <!-- Serial Numbers -->
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        Following Sl Nos are not Scanned
+                    </div>
+
+                    <div class="col-md-8">
+                        <textarea class="form-control"
+                                  rows="4"
+                                  id="txtNotScanned"
+                                  readonly></textarea>
+                    </div>
+                </div>
+
+                <!-- Button 1 -->
+                <div class="text-center mb-3">
+                    <button class="btn btn-primary px-4"
+                            id="btnConfirmDelete">
+                        Confirm Deletion of Printed Labels not Scanned
+                    </button>
+                </div>
+
+                <!-- Button 2 -->
+                <div class="text-center mb-4">
+                    <button class="btn btn-primary px-4"
+                            id="btnConfirmDestroyed">
+                        Confirm Printed Labels not Scanned have been Destroyed
+                    </button>
+                </div>
+
+                <!-- Save -->
+                <div class="text-center">
+                    <button class="btn btn-primary px-5"
+                            id="btnSaveExit">
+                        Save &amp; Exit
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <script src="~/js/Gro/grostock.js"></script>
+}
+<template id="groPartWithStockRow">
+
+    <tr>
+
+        <td hidden>{gro_Part_List_Id}</td>
+
+        <td>
+            {gro_Part_No}
+        </td>
+
+        <td class="text-center">
+            {qnty_on_Hand}
+        </td>
+
+        <td class="text-center">
+
+            <div class="dropdown">
+
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+
+                <div class="dropdown-menu dropdown-menu-end">
+
+                    <a href="javascript:void(0);"
+                       class="dropdown-item"
+                       onclick="LoadUpdateStock(this)"
+                       data-bs-toggle="modal"
+                       data-bs-target="#updateStockModal">
+
+                        Update Stock
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </td>
+
+    </tr>
+
+</template>
+<template id="groPartWithoutStockRow">
+
+    <tr>
+
+        <td hidden>{gro_Part_List_Id}</td>
+
+        <td>
+            {gro_Part_No}
+        </td>
+        <td hidden>
+            {qnty_on_Hand}
+        </td>
+        <td class="text-center">
+
+            <div class="dropdown">
+
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+
+                <div class="dropdown-menu dropdown-menu-end">
+
+                    <a href="javascript:void(0);"
+                       class="dropdown-item"
+                       onclick="LoadUpdateStock(this)"
+                       data-bs-toggle="modal"
+                       data-bs-target="#updateStockModal">
+
+                        Update Stock
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </td>
+
+    </tr>
+
+</template>
