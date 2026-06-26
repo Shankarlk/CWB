@@ -23,7 +23,8 @@ namespace CWB.Gro.Configurations
         new Sl_No_Status_List { Id = 2, Sl_No_Status_Desc = "1st Scan" },
         new Sl_No_Status_List { Id = 3, Sl_No_Status_Desc = "Assigned" },
         new Sl_No_Status_List { Id = 4, Sl_No_Status_Desc = "Sent" },
-        new Sl_No_Status_List { Id = 5, Sl_No_Status_Desc = "Deleted" }
+        new Sl_No_Status_List { Id = 5, Sl_No_Status_Desc = "Deleted" },
+        new Sl_No_Status_List { Id = 6, Sl_No_Status_Desc = "InStock" }
     );
 
 

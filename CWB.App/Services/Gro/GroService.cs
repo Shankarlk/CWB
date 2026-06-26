@@ -295,6 +295,48 @@ namespace CWB.App.Services.Gro
             grodispheadervm.TenantId = tenantId;
             return await RestHelper<TK_DC_Inv_ContrlVM>.PostAsync(uri, grodispheadervm, headers);
         }
-        
+        public async Task<Gro_Stock_DetVM> PostGroStockDet(Gro_Stock_DetVM grodispheadervm)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/postgrostockdet");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            grodispheadervm.TenantId = tenantId;
+            return await RestHelper<Gro_Stock_DetVM>.PostAsync(uri, grodispheadervm, headers);
+        }
+        public async Task<Gro_Stock_ListVM> UpdategrostocklastslnobyPartNo(Gro_Stock_ListVM grodispheadervm)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/updategrostocklastslnobypartno");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            grodispheadervm.TenantId = tenantId;
+            return await RestHelper<Gro_Stock_ListVM>.PostAsync(uri, grodispheadervm, headers);
+        }
+        public async Task<IEnumerable<Gro_Stock_DetVM>> GetallGroStockDet()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/getallgrostockdetails/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Gro_Stock_DetVM>>.GetAsync(uri, headers);
+        }
+        public async Task<Gro_Stock_ListVM> PostGroStockpart(Gro_Stock_ListVM companyVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/postgrostocklist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            companyVM.TenantId = tenantId;
+            return await RestHelper<Gro_Stock_ListVM>.PostAsync(uri, companyVM, headers);
+        }
+        public async Task<List<Gro_Stock_DetVM>> Updategrostockdetto1stscan(IEnumerable<Gro_Stock_DetVM> productions)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/updategrostockdetslnoto1stscan");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            foreach (var item in productions)
+            {
+                item.TenantId = tenantId;
+            }
+            return await RestHelper<List<Gro_Stock_DetVM>>.PostAsync(uri, productions, headers);
+        }
+        public async Task<Gro_Stock_ListVM> Getgrostockbypoartid(long gropartlistid)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/getstockbygropart/{gropartlistid}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<Gro_Stock_ListVM>.GetAsync(uri, headers);
+        }
     }
 }

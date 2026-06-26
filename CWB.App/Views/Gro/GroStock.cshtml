@@ -7,7 +7,15 @@
             <h3>Gro Stock Data Management</h3>
         </div>
     </div>
+    @{
+        List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM> permissionResult = null;
+        var permissionsJson = HttpContextAccessor.HttpContext.Session.GetString("Permissions");
+        if (permissionsJson != null)
+        {
+            permissionResult = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM>>(permissionsJson);
 
+        }
+    }
     <div class="row">
 
         <!-- Parts with Stock -->
@@ -104,8 +112,9 @@
 
 </div>
 
-<div class="modal fade" id="updateStockModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-scrollable">
+<div class="modal fade" id="updateStockModal" tabindex="-1" data-bs-backdrop="static"
+     data-bs-keyboard="false">
+    <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
         <div class="modal-content">
 
             <div class="modal-header">
@@ -310,7 +319,8 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="deleteLabelsModal" tabindex="-1">
+<div class="modal fade" id="deleteLabelsModal" tabindex="-1" data-bs-backdrop="static"
+     data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
 
@@ -403,6 +413,91 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="printLabelModal" tabindex="-1" data-bs-backdrop="static"
+     data-bs-keyboard="false">
+
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Print MRP Labels</h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body"
+                 style="max-height:70vh;overflow-y:auto;">
+
+                <div id="printHelper">
+
+                    <div class="row g-3"
+                         id="qrContainer">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button class="btn btn-primary"
+                        id="btnPrint">
+                    Print
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade"
+     id="pendingLabelsModal"
+     tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header bg-danger text-white">
+
+                <h5 class="modal-title">
+                    Pending Labels Found
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div id="pendingLabelsMessage"></div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 @section Scripts
 {
     <script src="~/js/Gro/grostock.js"></script>
@@ -411,7 +506,7 @@
 
     <tr>
 
-        <td hidden>{gro_Part_List_Id}</td>
+        <td hidden>{gro_Part_List_ID}</td>
 
         <td>
             {gro_Part_No}
@@ -433,15 +528,34 @@
 
                 <div class="dropdown-menu dropdown-menu-end">
 
-                    <a href="javascript:void(0);"
-                       class="dropdown-item"
-                       onclick="LoadUpdateStock(this)"
-                       data-bs-toggle="modal"
-                       data-bs-target="#updateStockModal">
+                    @if (permissionResult != null)
+                    {
+                        var pr = permissionResult
+                            .FirstOrDefault(r => r.Menu3 == "Update Stock");
 
-                        Update Stock
+                        if (pr != null && pr.PermissionId >= 3)
+                        {
+                            <a href="javascript:void(0);"
+                               class="dropdown-item"
+                               onclick="LoadUpdateStock(this)"
+                               data-bs-toggle="modal"
+                               data-bs-target="#updateStockModal">
+                                Update Stock
+                            </a>
+                        }
 
-                    </a>
+                    }
+                    else
+                    {
+                        <a href="javascript:void(0);"
+                           class="dropdown-item"
+                           onclick="LoadUpdateStock(this)"
+                           data-bs-toggle="modal"
+                           data-bs-target="#updateStockModal">
+                            Update Stock
+                        </a>
+                    }
+
 
                 </div>
 
@@ -456,7 +570,7 @@
 
     <tr>
 
-        <td hidden>{gro_Part_List_Id}</td>
+        <td hidden>{gro_Part_List_ID}</td>
 
         <td>
             {gro_Part_No}
@@ -476,15 +590,33 @@
 
                 <div class="dropdown-menu dropdown-menu-end">
 
-                    <a href="javascript:void(0);"
-                       class="dropdown-item"
-                       onclick="LoadUpdateStock(this)"
-                       data-bs-toggle="modal"
-                       data-bs-target="#updateStockModal">
+                    @if (permissionResult != null)
+                    {
+                        var pr = permissionResult
+                            .FirstOrDefault(r => r.Menu3 == "Update Stock");
 
-                        Update Stock
+                        if (pr != null && pr.PermissionId >= 3)
+                        {
+                            <a href="javascript:void(0);"
+                               class="dropdown-item"
+                               onclick="LoadUpdateStock(this)"
+                               data-bs-toggle="modal"
+                               data-bs-target="#updateStockModal">
+                                Update Stock
+                            </a>
+                        }
 
-                    </a>
+                    }
+                    else
+                    {
+                        <a href="javascript:void(0);"
+                           class="dropdown-item"
+                           onclick="LoadUpdateStock(this)"
+                           data-bs-toggle="modal"
+                           data-bs-target="#updateStockModal">
+                            Update Stock
+                        </a>
+                    }
 
                 </div>
 

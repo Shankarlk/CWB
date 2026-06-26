@@ -68,6 +68,7 @@ namespace CWB.Gro.GroUtils
             public const string AllGroStockList = Base + "/Getallgrostocklist/{tenantId}";
             public const string PostMultipleGroStockList = Base + "/postmultiplegrostocklist";
             public const string PostGroStockList = Base + "/postgrostocklist";
+            public const string Updategrostocklastslno = Base + "/updategrostocklastslnobypartno";
             public const string DeleteGroStockList = Base + "/deletegrostocklist/{Id}";
             public const string GetStockByGroPartListId = Base + "/getstockbygropart/{gropartlistid}/{tenantId}";
 
@@ -82,6 +83,7 @@ namespace CWB.Gro.GroUtils
 
             public const string AllGroStockDet = Base + "/getallgrostockdetails/{tenantId}";
             public const string PostMultipleGroStockDet = Base + "/postmultiplegrostockdet";
+            public const string UpdateGrostockdetStatusto1stScan = Base + "/updategrostockdetslnoto1stscan";
             public const string PostGroStockDet = Base + "/postgrostockdet";
             public const string DeleteGroStockDet = Base + "/deletegrostockdet/{Id}";
 

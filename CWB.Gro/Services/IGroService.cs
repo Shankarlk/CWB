@@ -68,6 +68,7 @@ namespace CWB.Gro.Services
         Task<IEnumerable<Gro_Stock_ListVM>> AllGroStockList(long tenantId);
         Task<List<Gro_Stock_ListVM>> MultipleGroStockList(List<Gro_Stock_ListVM> stockListVM);
         Task<Gro_Stock_ListVM> PostGroStockList(Gro_Stock_ListVM stockVM);
+        Task<Gro_Stock_ListVM> Updategrostocklastslno(Gro_Stock_ListVM controlVM);
         Task<bool> DeleteGroStockList(long id);
         Task<Gro_Stock_ListVM> GetStockByGroPartListId(long groPartListId, long tenantId);
 
@@ -83,6 +84,7 @@ namespace CWB.Gro.Services
 
         Task<IEnumerable<Gro_Stock_DetVM>> AllGroStockDet(long tenantId);
         Task<List<Gro_Stock_DetVM>> MultipleGroStockDet(List<Gro_Stock_DetVM> GroStockDetVM);
+        Task<List<Gro_Stock_DetVM>> UpdateGrostockdetStatusto1stScan(List<Gro_Stock_DetVM> GroStockDetVM);
         Task<Gro_Stock_DetVM> PostGroStockDet(Gro_Stock_DetVM GroStockDetVM);
         Task<bool> DeleteGroStockDet(long Id);
 

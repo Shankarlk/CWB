@@ -1103,7 +1103,7 @@ namespace CWB.Gro.Services
                 try
                 {
                     await _GroStocklistRepository.AddAsync(stock);
-                    await _unitOfWork.CommitAsync();
+                     
                 }
                 catch (Exception ex)
                 {
@@ -1113,6 +1113,9 @@ namespace CWB.Gro.Services
             }
             else
             {
+                stock = await _GroStocklistRepository.SingleOrDefaultAsync(x => x.Id == stock.Id);
+                stock.Qnty_on_Hand = stockVM.Qnty_on_Hand;
+                stock = await _GroStocklistRepository.UpdateAsync(stock.Id, stock);
                 // Update logic if required
             }
 
@@ -1130,7 +1133,33 @@ namespace CWB.Gro.Services
 
             return stockVM;
         }
+        public async Task<Gro_Stock_ListVM> Updategrostocklastslno(Gro_Stock_ListVM controlVM)
+        {
+            var control = _mapper.Map<Gro_Stock_List>(controlVM);
 
+            if (control.Id > 0)
+            {
+
+                control = await _GroStocklistRepository.SingleOrDefaultAsync(x => x.Id == control.Id);
+                control.Last_Sl_No = controlVM.Last_Sl_No;
+                
+                control = await _GroStocklistRepository.UpdateAsync(control.Id, control);
+            }
+
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+
+            controlVM.Gro_Stock_ListId = control.Id;
+
+            return controlVM;
+        }
         public async Task<bool> DeleteGroStockList(long id)
         {
             var stock = await _GroStocklistRepository.SingleOrDefaultAsync(x => x.Id == id);
@@ -1344,7 +1373,40 @@ namespace CWB.Gro.Services
 
             return GroStockDetVM;
         }
+        public async Task<List<Gro_Stock_DetVM>> UpdateGrostockdetStatusto1stScan(List<Gro_Stock_DetVM> GroStockDetVM)
+        {
+            foreach (Gro_Stock_DetVM item in GroStockDetVM)
+            {
+                var stockDet = _mapper.Map<Gro_Stock_Det>(item);
 
+                if (stockDet.Id > 0)
+                {
+                    stockDet = await _gro_Stock_DetRepository.SingleOrDefaultAsync(x => x.Part_Sl_No == item.Part_Sl_No);
+                    stockDet.Sl_No_Status_ID = item.Sl_No_Status_ID;
+
+
+
+
+
+                    stockDet = await _gro_Stock_DetRepository.UpdateAsync(stockDet.Id, stockDet);
+
+                }
+
+                try
+                {
+                    await _unitOfWork.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+
+                item.Gro_Stock_DetId = stockDet.Id;
+            }
+
+            return GroStockDetVM;
+        }
         public async Task<Gro_Stock_DetVM> PostGroStockDet(Gro_Stock_DetVM GroStockDetVM)
         {
             var stockDet = _mapper.Map<Gro_Stock_Det>(GroStockDetVM);

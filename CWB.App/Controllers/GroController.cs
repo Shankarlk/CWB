@@ -26,6 +26,7 @@ using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.IO;
+using QRCoder;
 namespace CWB.App.Controllers
 {
     [Authorize(Roles = Roles.ADMIN)]
@@ -47,14 +48,16 @@ namespace CWB.App.Controllers
             _logger.LogTrace("Gro--Index--Loading");
             return View();
         }
+        [Route("~/G!@S$%T()P ")]
         public IActionResult GroSetup()
         {
             _logger.LogTrace("Gro--GroSetup--Loading");
             return View();
         }
-
+        [Route("~/G!@#S$%O*&K")]
         public IActionResult GroStock()
         {
+            _logger.LogTrace("Gro--stock--Loading");
             return View();
         }
         [HttpPost]
@@ -99,6 +102,7 @@ namespace CWB.App.Controllers
                 long lastRow = sheet.LastRowNum;
                 var groDataList = new List<Gro_DataVM>();
                 //var companies = (await _masterservice.GetCompaniesGro()).ToList();
+                var allgrostock = await _groservicee.Getallgrostocklist();
                 var allgropartno = (await _groservicee.Getallgroparts()).ToList();
                 var allgrodata = (await _groservicee.GetallgroData()).ToList();
                 for (long rowNo = startingrowno; rowNo <= lastRow; rowNo++)
@@ -164,15 +168,49 @@ namespace CWB.App.Controllers
 
                             };
 
-                        var postedgropartno =
-                            await _groservicee.PostGroPart(partVm);
+                        var postedgropartno =         await _groservicee.PostGroPart(partVm);
                         partId = postedgropartno.Gro_Part_ListId;
                         allgropartno.Add(postedgropartno);
+
+
+                        var grostockpart = allgrostock.Where(x => x.Gro_Part_List_ID == partId).FirstOrDefault();
+                        if(grostockpart!=null)
+                        { }
+                        else
+                        {
+                            var newgrostockpart = new Gro_Stock_ListVM();
+                            newgrostockpart.Gro_Stock_ListId = 0;
+                            newgrostockpart.Gro_Part_List_ID = partId;
+                            newgrostockpart.Last_Sl_No = 0;
+                            newgrostockpart.Qnty_on_Hand = 0;
+                            newgrostockpart.Correction_User = 1;
+                            var postgrostock = await _groservicee.PostGroStockpart(newgrostockpart);
+                        }
+
+                        //add
+
+
+
+
+
                         // Add newly created part to collection
                     }
                     else
                     {
                         partId = part.Gro_Part_ListId;
+                        var grostockpart = allgrostock.Where(x => x.Gro_Part_List_ID == partId).FirstOrDefault();
+                        if (grostockpart != null)
+                        { }
+                        else
+                        {
+                            var newgrostockpart = new Gro_Stock_ListVM();
+                            newgrostockpart.Gro_Stock_ListId = 0;
+                            newgrostockpart.Gro_Part_List_ID = partId;
+                            newgrostockpart.Last_Sl_No = 0;
+                            newgrostockpart.Qnty_on_Hand = 0;
+                            newgrostockpart.Correction_User = 1;
+                            var postgrostock = await _groservicee.PostGroStockpart(newgrostockpart);
+                        }
                     }
 
                     //--------------------------------------------------
@@ -401,6 +439,20 @@ namespace CWB.App.Controllers
         {
             //postgropartno
             var allgropartno = await _groservicee.PostGroPart(gropratvm);
+            var allgrostock = await _groservicee.Getallgrostocklist();
+            var grostockpart = allgrostock.Where(x => x.Gro_Part_List_ID == allgropartno.Gro_Part_ListId).FirstOrDefault();
+            if (grostockpart != null)
+            { }
+            else
+            {
+                var newgrostockpart = new Gro_Stock_ListVM();
+                newgrostockpart.Gro_Stock_ListId = 0;
+                newgrostockpart.Gro_Part_List_ID = allgropartno.Gro_Part_ListId;
+                newgrostockpart.Last_Sl_No = 0;
+                newgrostockpart.Qnty_on_Hand = 0;
+                newgrostockpart.Correction_User = 1;
+                var postgrostock = await _groservicee.PostGroStockpart(newgrostockpart);
+            }
             return Ok();
 
         }
@@ -695,6 +747,198 @@ namespace CWB.App.Controllers
             }
              return Ok(result);
 
+        }
+        [HttpPost]
+        public async Task<IActionResult> GenerateQrCode(GrostockVM model)
+        {
+            var allgroparts = await _groservicee.Getallgroparts();
+            var allgrostocklist = await _groservicee.Getallgrostocklist();
+            var allgrostockdetails = await _groservicee.GetallGroStockDet();
+
+            var qrpartno = allgroparts.Where(x => x.Gro_Part_No == model.GroPartNo).FirstOrDefault();
+            var gropartstockdetailsbyId = allgrostockdetails.Where(x => x.Gro_Part_List_ID == qrpartno.Gro_Part_ListId && x.Sl_No_Status_ID == 1).ToList();
+
+            var partstock = allgrostocklist.Where(x => x.Gro_Part_List_ID == qrpartno.Gro_Part_ListId).FirstOrDefault();
+            var lastSerialNo = partstock.Last_Sl_No;
+            var qty = model.Qty;
+            if (gropartstockdetailsbyId.Any())
+            {
+                List<QRLabelVM> labels = new List<QRLabelVM>();
+
+                foreach (var item in gropartstockdetailsbyId)
+                {
+                    string qrText = item.Part_Sl_No;
+
+                    QRCodeGenerator generator = new QRCodeGenerator();
+
+                    QRCodeData qrData =  generator.CreateQrCode( qrText, QRCodeGenerator.ECCLevel.Q);
+
+                    PngByteQRCode qrCode =  new PngByteQRCode(qrData);
+
+                    byte[] bytes =    qrCode.GetGraphic(20);
+
+                    string base64 =  Convert.ToBase64String(bytes);
+
+                    labels.Add(new QRLabelVM
+                    {
+                        GroPartNo = model.GroPartNo,
+                        SerialNo = qrText,
+                        QRCode = base64
+                    });
+                }
+
+                return Json(new
+                {
+                    success = true,
+                    labels = labels
+                });
+            }
+            else { 
+                List<QRLabelVM> labels = new List<QRLabelVM>();
+                    for (long i = 1; i <= model.Qty; i++)
+                    {
+                        long currentSerial = lastSerialNo + i;
+
+                        string serialNo =
+                            currentSerial.ToString("D7");
+
+                        string qrText = $"{model.GroPartNo}-{serialNo}";
+
+                        QRCodeGenerator generator = new QRCodeGenerator();
+
+                        QRCodeData qrData = generator.CreateQrCode(qrText, QRCodeGenerator.ECCLevel.Q);
+
+                        PngByteQRCode qrCode = new PngByteQRCode(qrData);
+
+                        byte[] bytes = qrCode.GetGraphic(20);
+
+                        string base64 = Convert.ToBase64String(bytes);
+
+                        labels.Add(new QRLabelVM
+                        {
+                            GroPartNo = model.GroPartNo,
+                            SerialNo = qrText,
+                            QRCode = base64
+                        });
+                        var gro_stock_det = new Gro_Stock_DetVM();
+                        gro_stock_det.Gro_Part_List_ID = qrpartno.Gro_Part_ListId;
+                        gro_stock_det.Part_Sl_No = qrText;
+                        gro_stock_det.Sl_No_Status_ID = 1;
+                        var postgrostockdet = await _groservicee.PostGroStockDet(gro_stock_det);
+
+
+
+
+                    }
+                var updatelastserailno = new Gro_Stock_ListVM();
+                updatelastserailno.Gro_Stock_ListId = partstock.Gro_Stock_ListId;
+                updatelastserailno.Last_Sl_No = lastSerialNo + model.Qty;
+                updatelastserailno.Gro_Part_List_ID = qrpartno.Gro_Part_ListId;
+                var postgro = await _groservicee.UpdategrostocklastslnobyPartNo(updatelastserailno);
+                //update api  for that grostockid in the gro_stock_list table by Id
+                return Json(new
+                {
+                    success = true,
+                    labels = labels
+                });
+
+            }
+            
+        }
+
+
+        //hard coding for ORcode status change from printed to 1st scan now after scanner arrives  it needs to changed  
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="groPartListId"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> ScanLabels(long groPartListId)
+        {
+            try
+            {
+                var allgrostockdet = await _groservicee.GetallGroStockDet();
+
+                var grostockdetbypartid = allgrostockdet.Where(x => x.Gro_Part_List_ID == groPartListId && x.Sl_No_Status_ID==1).ToList();
+                List<Gro_Stock_DetVM> data = new List<Gro_Stock_DetVM>();
+                foreach(var item in grostockdetbypartid)
+                {
+                    var updatestatusto1stscan = new Gro_Stock_DetVM();
+                    updatestatusto1stscan.Gro_Stock_DetId = item.Gro_Stock_DetId;
+                    updatestatusto1stscan.Part_Sl_No = item.Part_Sl_No;
+                    updatestatusto1stscan.Sl_No_Status_ID = 2;
+                    data.Add(updatestatusto1stscan);
+                }
+
+                var postedslno1stscan = await _groservicee.Updategrostockdetto1stscan(data);
+
+
+
+
+                return Json(new
+                {
+                    success = true,
+                    scannedCount = postedslno1stscan.Count
+                }) ;
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> UpdateStockFromScannedLabels(long groPartListId)
+        {
+            try
+            {
+                var allgrostockdet = await _groservicee.GetallGroStockDet();
+
+                var grostockdetbypartid = allgrostockdet.Where(x => x.Gro_Part_List_ID == groPartListId && x.Sl_No_Status_ID == 2).ToList();
+
+                List<Gro_Stock_DetVM> data = new List<Gro_Stock_DetVM>();
+                foreach (var item in grostockdetbypartid)
+                {
+                    var updatestatusto1stscan = new Gro_Stock_DetVM();
+                    updatestatusto1stscan.Gro_Stock_DetId = item.Gro_Stock_DetId;
+                    updatestatusto1stscan.Part_Sl_No = item.Part_Sl_No;
+                    updatestatusto1stscan.Sl_No_Status_ID = 6;
+                    data.Add(updatestatusto1stscan);
+                }
+
+                var postedslno1stscan = await _groservicee.Updategrostockdetto1stscan(data);
+
+
+                var getgropartbyid = await _groservicee.Getgrostockbypoartid(groPartListId);
+
+                int existingqty = getgropartbyid.Qnty_on_Hand;
+
+                var newgrostock = new Gro_Stock_ListVM();
+                newgrostock.Gro_Stock_ListId = getgropartbyid.Gro_Stock_ListId;
+                newgrostock.Qnty_on_Hand = existingqty + grostockdetbypartid.Count();
+
+
+                var result = await _groservicee.PostGroStockpart(newgrostock);
+
+                return Json(new
+                {
+                    success = true,
+                    qtyAdded = grostockdetbypartid.Count,
+                    updatedStock = result.Qnty_on_Hand
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
         }
     }
 }

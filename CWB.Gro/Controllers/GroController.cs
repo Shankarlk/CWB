@@ -354,6 +354,14 @@ namespace CWB.Gro.Controllers
             return Ok(result);
         }
         [HttpPost]
+        [Route(ApiRoutes.Gro.Updategrostocklastslno)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Gro_Stock_ListVM))]
+        public async Task<IActionResult> Updategrostocklastslno([FromBody] Gro_Stock_ListVM workOrdersVM)
+        {
+            var result = await _groService.Updategrostocklastslno(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpPost]
         [Route(ApiRoutes.Gro.PostMultipleGroStockList)]
         [Produces(AppContentTypes.ContentType, Type = typeof(Gro_Stock_ListVM))]
         public async Task<IActionResult> PostMultipleGroStockList([FromBody] List<Gro_Stock_ListVM> workOrdersVM)
@@ -445,6 +453,14 @@ namespace CWB.Gro.Controllers
         public async Task<IActionResult> PostMultipleGroStockDet([FromBody] List<Gro_Stock_DetVM> workOrdersVM)
         {
             var result = await _groService.MultipleGroStockDet(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Gro.UpdateGrostockdetStatusto1stScan)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Gro_Stock_DetVM))]
+        public async Task<IActionResult> UpdateGrostockdetStatusto1stScan([FromBody] List<Gro_Stock_DetVM> workOrdersVM)
+        {
+            var result = await _groService.UpdateGrostockdetStatusto1stScan(workOrdersVM);
             return Ok(result);
         }
         [HttpGet]

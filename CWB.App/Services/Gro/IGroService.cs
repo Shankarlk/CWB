@@ -39,8 +39,16 @@ namespace CWB.App.Services.Gro
 
         Task<IEnumerable<TK_DC_Inv_ContrlVM>> Getalltkdcinvctrl();
         Task<TK_DC_Inv_ContrlVM> Posttkdcctrl(TK_DC_Inv_ContrlVM grodispheadervm);
+        Task<Gro_Stock_ListVM> PostGroStockpart(Gro_Stock_ListVM companyVM);
         Task<TK_DC_Inv_ContrlVM> UpdateTkDcLastInvandDcNo(TK_DC_Inv_ContrlVM grodispheadervm);
+        Task<Gro_Stock_DetVM> PostGroStockDet(Gro_Stock_DetVM grodispheadervm);
+        Task<Gro_Stock_ListVM> UpdategrostocklastslnobyPartNo(Gro_Stock_ListVM grodispheadervm);
 
-        
-    }
+        Task<IEnumerable<Gro_Stock_DetVM>> GetallGroStockDet();
+        Task<List<Gro_Stock_DetVM>> Updategrostockdetto1stscan(IEnumerable<Gro_Stock_DetVM> productions);
+        Task<Gro_Stock_ListVM> Getgrostockbypoartid(long gropartlistid);
+
+
+
+        }
 }

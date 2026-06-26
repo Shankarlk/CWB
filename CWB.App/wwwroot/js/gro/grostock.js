@@ -67,9 +67,227 @@ function loadGroPartWithoutStock() {
 function LoadUpdateStock(ctrl) {
 
     var tr = $(ctrl).closest("tr");
-
+    $("#btnPrintLabels").hide();
     $("#hdnGroPartListId").val(tr.find("td:eq(0)").text().trim());
     $("#txtGroPartNo").val(tr.find("td:eq(1)").text().trim());
     $("#txtCurrentStock").val(tr.find("td:eq(2)").text().trim());
-
+    
+    
 }
+$("#txtQtyToAdd").on("input change", function () {
+
+    
+
+    var qty = parseInt($(this).val()) || 0;
+
+    if (qty > 0) {
+        $("#btnPrintLabels").show();
+    } else {
+        $("#btnPrintLabels").hide();
+    }
+});
+$("#btnPrintLabels").click(function () {
+
+    var partNo = $("#txtGroPartNo").val();
+    var qty = $("#txtQtyToAdd").val();
+
+    var serialNo = "SR000001";
+
+    api.post("/Gro/GenerateQrCode", {
+        GroPartNo: partNo,
+        Qty: qty
+    })
+        .then((response) => {
+            if (!response.success) {
+
+                $("#pendingLabelsMessage")
+                    .text(response.message);
+
+               
+                $("#pendingLabelsModal").modal('show');
+                return;
+            }
+            $("#qrContainer").empty();
+
+            $.each(response.labels, function (index, item) {
+
+                var card = `
+            <div class="col-md-6">
+
+                <div class="border p-2 text-center">
+
+                 
+
+                    <div>${item.serialNo}</div>
+
+                    <img
+                        src="data:image/png;base64,${item.qrCode}"
+                        width="180"
+                        height="180" />
+
+                </div>
+
+            </div>
+        `;
+
+                $("#qrContainer").append(card);
+
+            });
+
+           
+            $("#printLabelModal") .modal('show');
+
+        })
+        .catch((error) => {
+
+            console.log(error);
+
+        });
+
+});
+ //  <h6>${item.groPartNo}</h6>
+//design for QR code 
+$("#btnPrint").click(function () {
+
+    var printContents =
+        $("#printHelper").html();
+
+    var printWindow =
+        window.open(
+            "",
+            "_blank",
+            "width=900,height=700"
+        );
+
+    printWindow.document.write(`
+        <html>
+        <head>
+
+            <title>Print Labels</title>
+
+            <style>
+
+                body{
+                    margin:10px;
+                    font-family:Arial;
+                }
+
+                .row{
+                    display:flex;
+                    flex-wrap:wrap;
+                }
+
+                .col-md-6{
+                    width:50%;
+                    box-sizing:border-box;
+                    padding:10px;
+                }
+
+                .border{
+                    border:1px solid #000;
+                }
+
+                .text-center{
+                    text-align:center;
+                }
+
+            </style>
+
+        </head>
+
+        <body>
+
+            ${printContents}
+
+        </body>
+
+        </html>
+    `);
+
+    printWindow.document.close();
+
+    printWindow.onload = function () {
+
+        printWindow.focus();
+
+        printWindow.print();
+
+        printWindow.close();
+
+    };
+
+});
+$("#btnScanLabels").click(function () {
+
+    var groPartListId = $("#hdnGroPartListId").val();
+
+    if (!groPartListId) {
+        alert("Gro Part not selected.");
+        return;
+    }
+
+    api.getbulk("/Gro/ScanLabels?groPartListId=" + encodeURIComponent(groPartListId))
+        .then(function (data) {
+
+            if (data.success) {
+
+                $("#txtBoxesScanned").val(data.scannedCount);
+
+                toastr.success("Labels scanned successfully.");
+            }
+            else {
+
+                toastr.error(data.message);
+            }
+        })
+        .catch(function (err) {
+
+            console.log(err);
+            toastr.error("Error while scanning labels.");
+        });
+});
+
+$("#btnSaveExit").click(function () {
+
+    var groPartListId = $("#hdnGroPartListId").val();
+
+    if (!groPartListId) {
+        toastr.error("Part not selected.");
+        return;
+    }
+
+    api.getbulk("/Gro/UpdateStockFromScannedLabels?groPartListId="
+        + encodeURIComponent(groPartListId))
+        .then(function (data) {
+
+            if (data.success) {
+
+                $("#lblQtyAdded").text(data.qtyAdded);
+                $("#lblUpdatedStock").text(data.updatedStock);
+
+                toastr.success("Stock updated successfully.");
+                loadGroPartWithStock();
+                loadGroPartWithoutStock();
+                $("#updateStockModal").modal('hide');
+ 
+            }
+            else {
+
+                toastr.error(data.message);
+            }
+
+        })
+        .catch(function (err) {
+
+            console.log(err);
+            toastr.error("Error while updating stock.");
+        });
+
+});
+
+
+
+
+
+
+
