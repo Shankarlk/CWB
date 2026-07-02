@@ -54,8 +54,7 @@ namespace CWB.Gro.Configurations
              .HasDefaultValue('N');
             builder
              .Property(t => t.AWB)
-             .HasColumnName("AWB")
-             .IsRequired();
+             .HasColumnName("AWB");
             builder
              .Property(t => t.DC_Printed)
              .HasColumnName("DC_Printed")
@@ -84,6 +83,10 @@ namespace CWB.Gro.Configurations
           .Property(t => t.Customer_Inv_Attached)
           .HasColumnName("Customer_Inv_Attached")
           .HasDefaultValue('N');
+            builder
+         .Property(t => t.Dispatched)
+         .HasColumnName("Dispatched")
+         .HasDefaultValue('N');
             builder
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")

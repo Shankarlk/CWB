@@ -102,7 +102,7 @@ namespace CWB.App.Controllers
                 long lastRow = sheet.LastRowNum;
                 var groDataList = new List<Gro_DataVM>();
                 //var companies = (await _masterservice.GetCompaniesGro()).ToList();
-                var allgrostock = await _groservicee.Getallgrostocklist();
+                var allgrostock = (await _groservicee.Getallgrostocklist()).ToList();
                 var allgropartno = (await _groservicee.Getallgroparts()).ToList();
                 var allgrodata = (await _groservicee.GetallgroData()).ToList();
                 for (long rowNo = startingrowno; rowNo <= lastRow; rowNo++)
@@ -143,74 +143,55 @@ namespace CWB.App.Controllers
                     }
 
 
-
                     string partNo =
-                      row.GetCell(4)?.ToString()?.Trim();
-                    //--------------------------------------------------
-                    // PART CHECK
-                    //--------------------------------------------------
+                        row.GetCell(4)?.ToString()?.Trim();
 
-                    var part = allgropartno.FirstOrDefault(x => x.Gro_Part_No.Trim().ToUpper() == partNo.Trim().ToUpper());
+                    // PART CHECK
+                    var part = allgropartno.FirstOrDefault(x =>
+                        x.Gro_Part_No.Trim().ToUpper() == partNo.Trim().ToUpper());
 
                     long partId;
 
                     if (part == null)
                     {
-                        var partVm =
-                            new Gro_Part_ListVM
-                            {
-                                Gro_Part_No = partNo,
-                                Part_Status = 1,
-                                MRP = 0,
-                                Part_No = 0,
-                                Data_Update = DateTime.Now,
-                                Update_By = 1
-
-                            };
-
-                        var postedgropartno =         await _groservicee.PostGroPart(partVm);
-                        partId = postedgropartno.Gro_Part_ListId;
-                        allgropartno.Add(postedgropartno);
-
-
-                        var grostockpart = allgrostock.Where(x => x.Gro_Part_List_ID == partId).FirstOrDefault();
-                        if(grostockpart!=null)
-                        { }
-                        else
+                        var partVm = new Gro_Part_ListVM
                         {
-                            var newgrostockpart = new Gro_Stock_ListVM();
-                            newgrostockpart.Gro_Stock_ListId = 0;
-                            newgrostockpart.Gro_Part_List_ID = partId;
-                            newgrostockpart.Last_Sl_No = 0;
-                            newgrostockpart.Qnty_on_Hand = 0;
-                            newgrostockpart.Correction_User = 1;
-                            var postgrostock = await _groservicee.PostGroStockpart(newgrostockpart);
-                        }
+                            Gro_Part_No = partNo,
+                            Part_Status = 1,
+                            MRP = 0,
+                            Part_No = 0,
+                            Data_Update = DateTime.Now,
+                            Update_By = 1
+                        };
 
-                        //add
+                        var postedgropartno = await _groservicee.PostGroPart(partVm);
+                        partId = postedgropartno.Gro_Part_ListId;
 
-
-
-
-
-                        // Add newly created part to collection
+                        allgropartno.Add(postedgropartno);
                     }
                     else
                     {
                         partId = part.Gro_Part_ListId;
-                        var grostockpart = allgrostock.Where(x => x.Gro_Part_List_ID == partId).FirstOrDefault();
-                        if (grostockpart != null)
-                        { }
-                        else
+                    }
+
+                    // STOCK CHECK (ONLY ONCE)
+                    var grostockpart = allgrostock
+                        .FirstOrDefault(x => x.Gro_Part_List_ID == partId);
+
+                    if (grostockpart == null)
+                    {
+                        var newgrostockpart = new Gro_Stock_ListVM
                         {
-                            var newgrostockpart = new Gro_Stock_ListVM();
-                            newgrostockpart.Gro_Stock_ListId = 0;
-                            newgrostockpart.Gro_Part_List_ID = partId;
-                            newgrostockpart.Last_Sl_No = 0;
-                            newgrostockpart.Qnty_on_Hand = 0;
-                            newgrostockpart.Correction_User = 1;
-                            var postgrostock = await _groservicee.PostGroStockpart(newgrostockpart);
-                        }
+                            Gro_Stock_ListId = 0,
+                            Gro_Part_List_ID = partId,
+                            Last_Sl_No = 0,
+                            Qnty_on_Hand = 0,
+                            Correction_User = 1
+                        };
+
+                        var postgrostock = await _groservicee.PostGroStockpart(newgrostockpart);
+
+                        allgrostock.Add(postgrostock);
                     }
 
                     //--------------------------------------------------
@@ -358,33 +339,15 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDispatchData(string indentNo)
         {
+            var allgrodispdetails = await _groservicee.GetallgroDispatchDetails(); 
             var allgropartno = await _groservicee.Getallgroparts();
             var allgrodata = await _groservicee.GetallgroData();
             var allgrostocklist = await _groservicee.Getallgrostocklist();
             List<Gro_DataVM> result = new List<Gro_DataVM>();
-            var grodatabyindent = allgrodata.Where(x => x.Indent == indentNo).ToList();
-            foreach(var item in grodatabyindent)
-            {
-                var part = allgropartno.FirstOrDefault(x => x.Gro_Part_ListId == item.Gro_Part_No);
-
-                item.GroPartNo = part.Gro_Part_No ?? "";
-
-                item.IndentDateStr = item.SentDate?.ToString("dd-MM-yyyy") ?? "";
-
-                var gropratstock = allgrostocklist.FirstOrDefault(x => x.Gro_Part_List_ID == item.Gro_Part_No);
-                if (gropratstock == null)
-                {
-                    item.QntyAval = 0;
-                }
-                else
-                {
-                    item.QntyAval = gropratstock.Qnty_on_Hand;
-                }
-                result.Add(item);
-
-            }
+            var grodatabyindent = allgrodata.Where(x => x.Indent == indentNo && x.Bal_to_Disp>0).ToList();
+            
             var allgrodispheader = await _groservicee.GetallgroDispHeader();
-            var grodispheaderbyindent = allgrodispheader.Where(x => x.Indent == indentNo).FirstOrDefault();
+            var grodispheaderbyindent = allgrodispheader.Where(x => x.Indent == indentNo && x.Dispatched=='N').FirstOrDefault();
            // var createdheader=null ;
             if(grodispheaderbyindent==null)
             {
@@ -403,7 +366,7 @@ namespace CWB.App.Controllers
                 grodispheaderdata.Shipping_City = grodatabyindent.First().Shipping_City;
                 grodispheaderdata.Shipping_PINCODE = grodatabyindent.First().Shipping_PINCODE;
                 grodispheaderdata.Courier_Partner = 0;
-                grodispheaderdata.AWB = "AWB";
+                //grodispheaderdata.AWB = "AWB";
                 grodispheaderdata.DC_No = dcNo;
                 grodispheaderdata.Inv_No = invNo;
                 grodispheaderbyindent = await _groservicee.PostGroDispHeader(grodispheaderdata);
@@ -417,7 +380,37 @@ namespace CWB.App.Controllers
 
             }
 
+            foreach (var item in grodatabyindent)
+            {
+                var getdispatchdetailbyheaderandgroodataid = allgrodispdetails.Where(x => x.Gro_Disp_Header_ID == grodispheaderbyindent.Gro_Disp_HeaderId
+                     && x.Gro_data_ID == item.Gro_DataId && x.Gro_Part_No == item.Gro_Part_No).FirstOrDefault();
+                if(getdispatchdetailbyheaderandgroodataid!=null)
+                {
+                    item.Scannedqty = getdispatchdetailbyheaderandgroodataid.Qnty_Dispatched;
+                }
+                else
+                {
+                    item.Scannedqty = 0;
+                }
 
+                var part = allgropartno.FirstOrDefault(x => x.Gro_Part_ListId == item.Gro_Part_No);
+
+                item.GroPartNo = part.Gro_Part_No ?? "";
+
+                item.IndentDateStr = item.SentDate?.ToString("dd-MM-yyyy") ?? "";
+                item.DispatchDateStr= grodispheaderbyindent.Dispatch_Date?.ToString("dd-MM-yyyy") ?? "";
+                var gropratstock = allgrostocklist.FirstOrDefault(x => x.Gro_Part_List_ID == item.Gro_Part_No);
+                if (gropratstock == null)
+                {
+                    item.QntyAval = 0;
+                }
+                else
+                {
+                    item.QntyAval = gropratstock.Qnty_on_Hand;
+                }
+                result.Add(item);
+
+            }
 
 
             return Ok(new
@@ -530,6 +523,7 @@ namespace CWB.App.Controllers
                 item.IndentDateStr = item.SentDate?.ToString("dd-MM-yyyy") ?? "";
                 var alldata = allgrodata.Where(x => x.Indent == item.Indent).FirstOrDefault();
                 item.Company_Name = alldata.Company_Name;
+                item.Excutive_Name = alldata.Excutive_Name;
                 result.Add(item);
             }
                       
@@ -539,11 +533,12 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> GetDispatchDetails(string indent, long groDispHeaderId)
         {
+            var allgrodispdetails = await _groservicee.GetallgroDispatchDetails();
             var allgropartno = await _groservicee.Getallgroparts();
             var allgrodata = await _groservicee.GetallgroData();
-            var grodatabyindent = allgrodata.Where(x => x.Indent == indent).ToList();
+            var grodatabyindent = allgrodata.Where(x => x.Indent == indent  ).ToList();
             var allgrodispheader = await _groservicee.GetallgroDispHeader();
-            var header = allgrodispheader.Where(x => x.Gro_Disp_HeaderId == groDispHeaderId).FirstOrDefault();
+            var header = allgrodispheader.Where(x => x.Gro_Disp_HeaderId == groDispHeaderId && x.Dispatched=='N').FirstOrDefault();
             header.IndentDateStr = header.SentDate?.ToString("dd-MM-yyyy") ?? "";
             header.Company_Name = grodatabyindent.First().Company_Name;
             header.Excutive_Name = grodatabyindent.First().Excutive_Name;
@@ -553,6 +548,19 @@ namespace CWB.App.Controllers
             foreach(var item in grodatabyindent)
             {
                 var part = allgropartno.FirstOrDefault(x => x.Gro_Part_ListId == item.Gro_Part_No);
+                var currentDispatch = allgrodispdetails.FirstOrDefault(x =>
+     x.Gro_Disp_Header_ID == groDispHeaderId &&
+     x.Gro_data_ID == item.Gro_DataId);
+
+                item.QntyDispatched = currentDispatch?.Qnty_Dispatched ?? 0;
+                var dispatchedTillDate = allgrodispdetails
+    .Where(x => x.Gro_data_ID == item.Gro_DataId
+             && x.Gro_Disp_Header_ID != groDispHeaderId
+            
+             )
+    .Sum(x => x.Qnty_Dispatched);
+
+                item.DispatchedTillDate = dispatchedTillDate;
 
                 item.GroPartNo = part.Gro_Part_No ?? "";
                 result.Add(item);
@@ -606,8 +614,48 @@ namespace CWB.App.Controllers
         {
             //update dispatch header courier,awb and dispatch date 
             var getalldispatchheaders = await _groservicee.UpdateGroDispHeaderAWB((model));
+            var alldispheaders = await _groservicee.GetallgroDispHeader();
+            var dispheader = alldispheaders.Where(x => x.Gro_Disp_HeaderId == model.Gro_Disp_HeaderId).FirstOrDefault();
+            var post = new Gro_Indent_DispHeadVM();
+            post.Gro_Indent_DispHead_ID = 0;
+            post.Gro_Indent = dispheader.Indent;
+            post.Gro_Disp_Header_ID = dispheader.Gro_Disp_HeaderId;
+            var postedata = await _groservicee.PostGroIndentDispHeader(post);
+            //post dispatch to gro_indent_dispheader
+            var allDispatchDetails = await _groservicee.GetallgroDispatchDetails();
 
-            return Ok();
+            var dispatchDetails = allDispatchDetails
+                .Where(x => x.Gro_Disp_Header_ID == model.Gro_Disp_HeaderId)
+                .ToList();
+            var allIndentPartSlNo = await _groservicee.GetallGroIndentpartSlno();
+            var allGroStockDet = await _groservicee.GetallGroStockDet();
+            List<Gro_Stock_DetVM> updateList = new List<Gro_Stock_DetVM>();
+            foreach (var dispatch in dispatchDetails)
+            {
+                var serialLinks = allIndentPartSlNo
+    .Where(x => x.Gro_Disp_Det_ID == dispatch.Gro_Disp_DetId)
+    .ToList();
+                foreach (var sl in serialLinks)
+                {
+                    var stockDet = allGroStockDet
+                        .FirstOrDefault(x => x.Gro_Stock_DetId == sl.Gro_Stock_Det_ID);
+
+                    if (stockDet == null)
+                        continue;
+
+                    updateList.Add(new Gro_Stock_DetVM
+                    {
+                        Gro_Stock_DetId = stockDet.Gro_Stock_DetId,
+                        Part_Sl_No = stockDet.Part_Sl_No,
+                        Sl_No_Status_ID = 4      // Sent
+                    });
+                }
+                if (updateList.Any())
+                {
+                    await _groservicee.Updategrostockdetto1stscan(updateList);
+                }
+            }
+                return Ok();
 
 
         }
@@ -637,12 +685,13 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> GetDeliveryDetails(long groDispHeaderId)
         {
-
+            var allgrodispdetails = await _groservicee.GetallgroDispatchDetails();
             var allgropartno = await _groservicee.Getallgroparts();
             var allgrodata = await _groservicee.GetallgroData();
             var allcourier = await _groservicee.GetallcourierList();
             var allgrodispheader = await _groservicee.GetallgroDispHeader();
             var header = allgrodispheader.Where(x => x.Gro_Disp_HeaderId == groDispHeaderId).FirstOrDefault();
+
             var comp = allcourier.Where(x => x.courier_List_ID == header.Courier_Partner).FirstOrDefault();
             var grodatabyindent = allgrodata.Where(x => x.Indent == header.Indent).ToList();
             header.IndentDateStr = header.SentDate?.ToString("dd-MM-yyyy") ?? "";
@@ -656,7 +705,19 @@ namespace CWB.App.Controllers
             foreach (var item in grodatabyindent)
             {
                 var part = allgropartno.FirstOrDefault(x => x.Gro_Part_ListId == item.Gro_Part_No);
+                var currentDispatch = allgrodispdetails.FirstOrDefault(x =>
+       x.Gro_Disp_Header_ID == groDispHeaderId &&
+       x.Gro_data_ID == item.Gro_DataId);
 
+                item.QntyDispatched = currentDispatch?.Qnty_Dispatched ?? 0;
+
+                // Qty dispatched till date from OTHER dispatches
+                var dispatchedTillDate = allgrodispdetails
+                    .Where(x => x.Gro_data_ID == item.Gro_DataId
+                             && x.Gro_Disp_Header_ID != groDispHeaderId)
+                    .Sum(x => x.Qnty_Dispatched);
+
+                item.DispatchedTillDate = dispatchedTillDate;
                 item.GroPartNo = part.Gro_Part_No ?? "";
                 result.Add(item);
             }
@@ -683,38 +744,60 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDeliveryCompleteData()
         {
-            var allgropartno = await _groservicee.Getallgroparts();
-            var allgrodispheader = await _groservicee.GetallgroDispHeader();
-            var dispheaders = allgrodispheader.Where(x => x.Delivered_Date != null).ToList();
-            var allgrodata = await _groservicee.GetallgroData();
-            List<Gro_DataVM> grolist = new List<Gro_DataVM>();
-            foreach (var item in dispheaders)
+            var allHeaders = await _groservicee.GetallgroDispHeader();
+            var allDetails = await _groservicee.GetallgroDispatchDetails();
+            var allGroData = await _groservicee.GetallgroData();
+            var allParts = await _groservicee.Getallgroparts();
+
+            List<Gro_DataVM> result = new List<Gro_DataVM>();
+
+            // Only delivered headers
+            var deliveredHeaders = allHeaders
+                .Where(x => x.Delivered_Date != null)
+                .ToList();
+
+            foreach (var groData in allGroData)
             {
-                var grofilteredlist = allgrodata.Where(x => x.Indent == item.Indent).ToList();
+                // All delivered dispatch details for this Gro_Data
+                var dispatchDetails = allDetails
+                    .Where(x => x.Gro_data_ID == groData.Gro_DataId)
+                    .Join(deliveredHeaders,
+                          d => d.Gro_Disp_Header_ID,
+                          h => h.Gro_Disp_HeaderId,
+                          (d, h) => new { Detail = d, Header = h })
+                    .ToList();
 
-                
-                foreach(var data in grofilteredlist)
-                {
-                    var part = allgropartno.FirstOrDefault(x => x.Gro_Part_ListId == data.Gro_Part_No);
+                if (!dispatchDetails.Any())
+                    continue;
 
-                    data.GroPartNo = part.Gro_Part_No ?? "";
-                    data.IndentDateStr=data.SentDate?.ToString("dd-MM-yyyy") ?? "";
-                    data.DispatchDateStr=item.Dispatch_Date?.ToString("dd-MM-yyyy") ?? "";
-                    data.DeliveredDateStr=item.Delivered_Date?.ToString("dd-MM-yyyy") ?? "";
-                    grolist.Add(data);
-                }
+                var part = allParts.FirstOrDefault(x => x.Gro_Part_ListId == groData.Gro_Part_No);
 
+                groData.GroPartNo = part?.Gro_Part_No ?? "";
+
+                groData.IndentDateStr = groData.SentDate?.ToString("dd-MM-yyyy") ?? "";
+
+                // Total dispatched across all delivered dispatches
+                groData.QntyDispatched = dispatchDetails.Sum(x => x.Detail.Qnty_Dispatched);
+
+                // Latest Dispatch Date
+                groData.DispatchDateStr = dispatchDetails
+                    .Max(x => x.Header.Dispatch_Date)?
+                    .ToString("dd-MM-yyyy") ?? "";
+
+                // Latest Delivered Date
+                groData.DeliveredDateStr = dispatchDetails
+                    .Max(x => x.Header.Delivered_Date)?
+                    .ToString("dd-MM-yyyy") ?? "";
+
+                result.Add(groData);
             }
 
-       
-
-            return Ok(grolist);
-
+            return Ok(result);
         }
         [HttpGet]
         public async Task<IActionResult> GetGroPartWithStock()
         {
-
+           
             var allgroparts = await _groservicee.Getallgroparts();
             var allgrostocklist = await _groservicee.Getallgrostocklist();
             var filteredgrostocklist = allgrostocklist.Where(x => x.Qnty_on_Hand > 0).ToList();
@@ -939,6 +1022,430 @@ namespace CWB.App.Controllers
                     message = ex.Message
                 });
             }
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateDispatchDetail( Gro_Disp_DetVM model)
+        {
+            var allgrodispdet = await _groservicee.GetallgroDispatchDetails();
+            var postGrodispdetail = allgrodispdet.Where(x => x.Gro_Disp_Header_ID == model.Gro_Disp_Header_ID && x.Gro_data_ID == model.Gro_data_ID
+             && x.Gro_Part_No == model.Gro_Part_No).FirstOrDefault();
+            if(postGrodispdetail==null)
+            {
+                var datadispatchdetail = new Gro_Disp_DetVM();
+                datadispatchdetail.Gro_Disp_DetId = 0;
+                datadispatchdetail.Gro_Disp_Header_ID = model.Gro_Disp_Header_ID;
+                datadispatchdetail.Gro_data_ID = model.Gro_data_ID;
+                datadispatchdetail.Gro_Part_No = model.Gro_Part_No;
+                datadispatchdetail.int_Part_No = 0;
+                datadispatchdetail.Qnty_Dispatched = 0;
+                //postdatadispatch detail to db?
+                postGrodispdetail = await _groservicee.PostGroDispatchDetail(datadispatchdetail);
+
+            }
+                       
+
+            return Ok(postGrodispdetail);
+        }
+        [HttpPost]
+        public async Task<IActionResult> ScanDispatchLabels( DispatchScanVM model)
+        {
+            var allgrodispdet = await _groservicee.GetallgroDispatchDetails();
+            var getdispatchdetbyid = allgrodispdet.Where(x => x.Gro_Disp_DetId == model.Gro_Disp_Det_Id).FirstOrDefault();
+            var requiredquanity = model.RequiredQty;
+            var getstockbypartid = await _groservicee.GetGropartnoStock(getdispatchdetbyid.Gro_Part_No);
+            var assignedqty=0;
+            if(getstockbypartid.Qnty_on_Hand>= requiredquanity)
+            {
+                assignedqty = requiredquanity;
+            }
+            else
+            {
+                assignedqty = getstockbypartid.Qnty_on_Hand;
+            }
+            var allgrostockdet = await _groservicee.GetallGroStockDet();
+            
+            var grostockdetbypartid = allgrostockdet.Where(x => x.Gro_Part_List_ID == getdispatchdetbyid.Gro_Part_No && x.Sl_No_Status_ID == 6).ToList();
+            var selectedStock = grostockdetbypartid.Take(assignedqty).ToList();
+            List<Gro_Stock_DetVM> data = new List<Gro_Stock_DetVM>();
+            List<Indent_Part_Sl_NoVM> Indentslno = new List<Indent_Part_Sl_NoVM>();
+            foreach (var item in selectedStock)
+            {
+                var updatestatusto1stscan = new Gro_Stock_DetVM();
+                updatestatusto1stscan.Gro_Stock_DetId = item.Gro_Stock_DetId;
+                updatestatusto1stscan.Part_Sl_No = item.Part_Sl_No;
+                updatestatusto1stscan.Sl_No_Status_ID = 3;
+                data.Add(updatestatusto1stscan);
+
+
+                var indentdata = new Indent_Part_Sl_NoVM();
+                indentdata.Gro_Disp_Det_ID = model.Gro_Disp_Det_Id;
+                indentdata.Gro_Stock_Det_ID = item.Gro_Stock_DetId;
+                Indentslno.Add(indentdata);
+
+            }
+
+            var postedslno1stscan = await _groservicee.Updategrostockdetto1stscan(data);
+
+            var postindentslno = await _groservicee.PostMultipleIndentSlno(Indentslno);
+
+
+
+
+
+
+
+            return Ok(new
+            {
+                assignedQty = assignedqty,
+                scannedQty = getdispatchdetbyid.Qnty_Dispatched + assignedqty,
+                balanceQty = requiredquanity - assignedqty,
+                
+                message = assignedqty == 0
+        ? "Available Stock is scanned - Save & Exit"
+        : ((requiredquanity - assignedqty) <= 0
+            ? "Balance to Dispatch Quantity Scanned - Save & Exit"
+            : "Continue Scanning")
+            });
+        }
+        [HttpPost]
+        public async Task<IActionResult> SaveDispatchQty(DispatchScanVM model)
+        {
+            
+            var allgrodispdet = await _groservicee.GetallgroDispatchDetails();
+            var allindentslno = await _groservicee.GetallGroIndentpartSlno();
+            var allgrodata = await _groservicee.GetallgroData();
+            var getdispatchdetbyid = allgrodispdet.Where(x => x.Gro_Disp_DetId == model.Gro_Disp_Det_Id).FirstOrDefault();
+            var indtslnobydipatchdetid = allindentslno.Where(x => x.Gro_Disp_Det_ID == model.Gro_Disp_Det_Id).ToList();
+            var gropartrequired = allgrodata.Where(X => X.Gro_DataId == getdispatchdetbyid.Gro_data_ID).FirstOrDefault();
+
+
+            var currentdispatchquantity = getdispatchdetbyid.Qnty_Dispatched;
+            var Newquanity =  indtslnobydipatchdetid.Count;
+
+            var updatedispatchqnty = new Gro_Disp_DetVM();
+            updatedispatchqnty.Gro_Disp_DetId = model.Gro_Disp_Det_Id;
+            updatedispatchqnty.Qnty_Dispatched = Newquanity;
+            var updateqty = await _groservicee.UpdategroDispatchdetailqty(updatedispatchqnty);
+            //update stock for gro_Disp_det
+
+            var getstockbypart = await _groservicee.GetGropartnoStock(getdispatchdetbyid.Gro_Part_No);
+            var curretnstock = getstockbypart.Qnty_on_Hand;
+            var newstock = curretnstock - Newquanity;
+            var stockupdate = new Gro_Stock_ListVM();
+            stockupdate.Gro_Stock_ListId = getstockbypart.Gro_Stock_ListId;
+            stockupdate.Gro_Part_List_ID = getstockbypart.Gro_Part_List_ID;
+            stockupdate.Qnty_on_Hand = newstock;
+            var poststockupdate = await _groservicee.UpdategrostockbyPart(stockupdate);
+            //update stock api
+
+            var bal_to_dispatch = gropartrequired.Bal_to_Disp;
+            var Newbaltodispatch = bal_to_dispatch - Newquanity;
+
+            var updategrodata = new Gro_DataVM();
+            updategrodata.Gro_DataId = gropartrequired.Gro_DataId;
+            updategrodata.Bal_to_Disp = Newbaltodispatch;
+            var postgrodata = await _groservicee.UpdateGroDatabaltoDispatch(updategrodata);
+            //update gro_data bal to dispatchs
+
+
+
+
+            //yet to update  stock and gro part list 
+            //
+            return Ok();
+        }
+        ///below is to me implemented in save and exit 
+        //hard coding for ORcode status change from printed to 1st scan now after scanner arrives  it needs to changed  
+        [HttpGet]
+        public async Task<IActionResult> GetDCPrintData(long headerId)
+        {
+            var allGroDispHeaders = await _groservicee.GetallgroDispHeader();
+            var allGroDispDetails = await _groservicee.GetallgroDispatchDetails();
+            var allGroParts = await _groservicee.Getallgroparts();
+            var allgrodata = await _groservicee.GetallgroData();
+            // Header
+          
+            var header = allGroDispHeaders
+                            .FirstOrDefault(x => x.Gro_Disp_HeaderId == headerId);
+            var grofirtrecord = allgrodata.Where(x => x.Indent == header.Indent).FirstOrDefault();
+            if (header == null)
+                return NotFound();
+
+            header.IndentDateStr = header.SentDate?.ToString("dd-MM-yyyy") ?? "";
+            header.DispatchDateStr = header.Dispatch_Date?.ToString("dd-MM-yyyy") ?? "";
+            header.Company_Name = grofirtrecord.Company_Name;
+            // Items
+            List<Gro_DataVM> items = new List<Gro_DataVM>();
+
+            var dispatchDetails = allGroDispDetails
+                                    .Where(x => x.Gro_Disp_Header_ID == headerId)
+                                    .ToList();
+
+            foreach (var detail in dispatchDetails)
+            {
+                var part = allGroParts
+                            .FirstOrDefault(x => x.Gro_Part_ListId == detail.Gro_Part_No);
+
+                var item = new Gro_DataVM();
+
+                item.Gro_Part_No = detail.Gro_Part_No;
+                item.GroPartNo = part?.Gro_Part_No ?? "";
+                item.QntyDispatched = detail.Qnty_Dispatched;
+
+                items.Add(item);
+            }
+
+            return Ok(new
+            {
+                header,
+                items
+            });
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetInvoicePrintData(long headerId)
+        {
+            var allgrodata = await _groservicee.GetallgroData();
+            var allgrodispheader = await _groservicee.GetallgroDispHeader();
+            var alldispatchdetails = await _groservicee.GetallgroDispatchDetails();
+            var allgroparts = await _groservicee.Getallgroparts();
+            var groheaderdetails = allgrodispheader.Where(x => x.Gro_Disp_HeaderId == headerId).FirstOrDefault();
+            var grodatafirstrecord = allgrodata.Where(x => x.Indent == groheaderdetails.Indent).FirstOrDefault();
+            groheaderdetails.Excutive_Name = grodatafirstrecord.Excutive_Name;
+            groheaderdetails.Company_Name = grodatafirstrecord.Company_Name;
+            groheaderdetails.Contact_Person = grodatafirstrecord.Contact_Person;
+            groheaderdetails.Contact_Person_No = grodatafirstrecord.Contact_Person_No;
+            InvoicePrintVM vm = new InvoicePrintVM();
+
+            vm.Header = groheaderdetails;
+            var dispatchbyheader = alldispatchdetails.Where(x => x.Gro_Disp_Header_ID == headerId).ToList();
+            int slno = 1;
+
+            foreach (var item in dispatchbyheader)
+            {
+                var part = allgroparts
+                    .FirstOrDefault(x => x.Gro_Part_ListId == item.Gro_Part_No);
+
+                if (part == null)
+                    continue;
+
+                InvoiceDetailVM line = new InvoiceDetailVM();
+
+                line.SlNo = slno++;
+
+                line.PartId = part.Gro_Part_ListId;
+
+                line.PartNo = part.Gro_Part_No;
+
+               // line.Description = part.GroPartDesc;
+
+                line.HSNCode = part.HSNCode;
+
+                line.Unit = "Nos";
+
+                line.Qty = item.Qnty_Dispatched;
+
+                line.Rate = part.OurPrice;
+
+               line.GSTRate = part.GSTRate;
+
+                line.TaxableAmount = line.Qty * line.Rate;
+
+                line.GSTAmount = line.TaxableAmount * line.GSTRate / 100;
+
+                line.TotalAmount = line.TaxableAmount + line.GSTAmount;
+
+                vm.Details.Add(line);
+            }
+
+            vm.TaxableAmount = vm.Details.Sum(x => x.TaxableAmount);
+
+            vm.GSTAmount = vm.Details.Sum(x => x.GSTAmount);
+
+            vm.GrandTotal = vm.Details.Sum(x => x.TotalAmount);
+            vm.AmountInWords = ConvertAmountToWords(vm.GrandTotal);
+            vm.TaxAmountInWords = ConvertAmountToWords(vm.GSTAmount);
+
+
+            return Ok(vm);
+        }
+        private string ConvertAmountToWords(decimal amount)
+        {
+            long rupees = (long)Math.Floor(amount);
+
+            int paise = (int)Math.Round((amount - rupees) * 100);
+
+            string words = "Indian Rupees " + ConvertNumber(rupees);
+
+            if (paise > 0)
+            {
+                words += " and " + ConvertNumber(paise) + " Paise";
+            }
+
+            words += " Only";
+
+            return words;
+        }
+
+        private string ConvertNumber(long number)
+        {
+            string[] ones =
+            {
+        "", "One", "Two", "Three", "Four", "Five", "Six",
+        "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve",
+        "Thirteen", "Fourteen", "Fifteen", "Sixteen",
+        "Seventeen", "Eighteen", "Nineteen"
+    };
+
+            string[] tens =
+            {
+        "", "", "Twenty", "Thirty", "Forty", "Fifty",
+        "Sixty", "Seventy", "Eighty", "Ninety"
+    };
+
+            if (number == 0)
+                return "Zero";
+
+            if (number < 20)
+                return ones[number];
+
+            if (number < 100)
+                return tens[number / 10] +
+                       ((number % 10 > 0) ? " " + ConvertNumber(number % 10) : "");
+
+            if (number < 1000)
+                return ConvertNumber(number / 100) + " Hundred" +
+                       ((number % 100 > 0) ? " " + ConvertNumber(number % 100) : "");
+
+            if (number < 100000)
+                return ConvertNumber(number / 1000) + " Thousand" +
+                       ((number % 1000 > 0) ? " " + ConvertNumber(number % 1000) : "");
+
+            if (number < 10000000)
+                return ConvertNumber(number / 100000) + " Lakh" +
+                       ((number % 100000 > 0) ? " " + ConvertNumber(number % 100000) : "");
+
+            return ConvertNumber(number / 10000000) + " Crore" +
+                   ((number % 10000000 > 0) ? " " + ConvertNumber(number % 10000000) : "");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDispatchSummary(string indent)
+        {
+            var allHeaders = await _groservicee.GetallgroDispHeader();
+            var allDetails = await _groservicee.GetallgroDispatchDetails();
+            var allGroData = await _groservicee.GetallgroData();
+            var allParts = await _groservicee.Getallgroparts();
+
+            var deliveredHeaderIds = allHeaders
+                .Where(x => x.Delivered_Date != null)
+                .Select(x => x.Gro_Disp_HeaderId)
+                .ToList();
+
+            var groDataByIndent = allGroData
+                .Where(x => x.Indent == indent)
+                .ToList();
+
+            List<Gro_DataVM> result = new List<Gro_DataVM>();
+
+            foreach (var item in groDataByIndent)
+            {
+                var part = allParts.FirstOrDefault(x => x.Gro_Part_ListId == item.Gro_Part_No);
+
+                item.GroPartNo = part?.Gro_Part_No ?? "";
+
+                var dispatches = allDetails
+                    .Where(x => x.Gro_data_ID == item.Gro_DataId &&
+                                deliveredHeaderIds.Contains(x.Gro_Disp_Header_ID))
+                    .ToList();
+                 
+                item.QntyDispatched = dispatches.Sum(x => x.Qnty_Dispatched);
+                item.TotalRecordedQnty = dispatches.Sum(x => x.Qnty_Dispatched);
+                item.DeliveredDateStr = allHeaders
+                    .Where(x => deliveredHeaderIds.Contains(x.Gro_Disp_HeaderId) &&
+                                dispatches.Select(d => d.Gro_Disp_Header_ID)
+                                          .Contains(x.Gro_Disp_HeaderId))
+                    .Max(x => x.Delivered_Date)?
+                    .ToString("dd-MM-yyyy") ?? "";
+
+                item.Bal_to_Disp = item.Reqd_Quantity - item.QntyDispatched;
+                item.BalToReceive= item.Reqd_Quantity - item.QntyDispatched;
+                result.Add(item);
+            }
+
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetDispatchHistory(string indent)
+        {
+            var allHeaders = await _groservicee.GetallgroDispHeader();
+            var allDetails = await _groservicee.GetallgroDispatchDetails();
+            var allGroData = await _groservicee.GetallgroData();
+            var allParts = await _groservicee.Getallgroparts();
+            var allCourier = await _groservicee.GetallcourierList();
+
+            List<GroDispatchHistoryVM> result = new List<GroDispatchHistoryVM>();
+
+            var headers = allHeaders
+                .Where(x => x.Indent == indent && x.Delivered_Date != null)
+                .OrderBy(x => x.Dispatch_Date)
+                .ToList();
+            var grofirstrecord = allGroData.Where(x => x.Indent == indent).FirstOrDefault();
+            foreach (var header in headers)
+            {
+                var vm = new GroDispatchHistoryVM();
+
+                var courier = allCourier
+                    .FirstOrDefault(x => x.courier_List_ID == header.Courier_Partner);
+
+                header.Courier = courier?.Courier_Name ?? "";
+                header.DispatchDateStr = header.Dispatch_Date?.ToString("dd-MM-yyyy") ?? "";
+                header.DeliveredDateStr = header.Delivered_Date?.ToString("dd-MM-yyyy") ?? "";
+                header.Contact_Person = grofirstrecord.Contact_Person;
+                header.Contact_Person_No = grofirstrecord.Contact_Person_No;
+                vm.Header = header;
+
+                var details = allDetails
+                    .Where(x => x.Gro_Disp_Header_ID == header.Gro_Disp_HeaderId)
+                    .ToList();
+
+                foreach (var det in details)
+                {
+                    var gro = allGroData.FirstOrDefault(x => x.Gro_DataId == det.Gro_data_ID);
+
+                    if (gro != null)
+                    {
+                        var part = allParts.FirstOrDefault(x => x.Gro_Part_ListId == gro.Gro_Part_No);
+
+                        det.PartNo = part?.Gro_Part_No ?? "";
+                    }
+                }
+
+                vm.Details = details;
+
+                result.Add(vm);
+            }
+
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetLineItemDispatchHistory(long groDataId)
+        {
+            var allHeaders = await _groservicee.GetallgroDispHeader();
+            var allDetails = await _groservicee.GetallgroDispatchDetails();
+
+            var result = (from det in allDetails
+                          join head in allHeaders
+                          on det.Gro_Disp_Header_ID equals head.Gro_Disp_HeaderId
+                          where det.Gro_data_ID == groDataId
+                                && head.Dispatch_Date != null
+                          orderby head.Dispatch_Date
+                          select new
+                          {
+                              DispatchDate = head.Dispatch_Date?.ToString("dd-MM-yyyy") ?? "",
+                              DispatchQty = det.Qnty_Dispatched
+                          }).ToList();
+
+            return Ok(result);
         }
     }
 }

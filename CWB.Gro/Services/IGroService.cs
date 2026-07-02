@@ -11,6 +11,7 @@ namespace CWB.Gro.Services
     {
         Task<IEnumerable<Gro_DataVM>> AllGroData(long tenantId);
         Task<Gro_DataVM> PostGrodata(Gro_DataVM GroDataVM);
+        Task<Gro_DataVM> UpdateGrodataBaltoDispatch(Gro_DataVM GroDataVM);
         Task<List<Gro_DataVM>> MultipleGrodata(List<Gro_DataVM> GroDataVM);
         Task<bool> DeleteGroData(long Id);
 
@@ -40,6 +41,7 @@ namespace CWB.Gro.Services
         Task<IEnumerable<Gro_Disp_DetVM>> AllGroDispatchDetails(long tenantId);
         Task<List<Gro_Disp_DetVM>> MultipleGroDispatchDetails(List<Gro_Disp_DetVM> GroDataVM);
         Task<Gro_Disp_DetVM> PostGroDispatchDetail(Gro_Disp_DetVM GroDataVM);
+        Task<Gro_Disp_DetVM> UpdateGroDispatchDetailQty(Gro_Disp_DetVM GroDataVM);
         Task<bool> DeleteGroDispatchDetail(long Id);
 
 
@@ -69,6 +71,7 @@ namespace CWB.Gro.Services
         Task<List<Gro_Stock_ListVM>> MultipleGroStockList(List<Gro_Stock_ListVM> stockListVM);
         Task<Gro_Stock_ListVM> PostGroStockList(Gro_Stock_ListVM stockVM);
         Task<Gro_Stock_ListVM> Updategrostocklastslno(Gro_Stock_ListVM controlVM);
+        Task<Gro_Stock_ListVM> UpdateGroStockQty(Gro_Stock_ListVM GroDataVM);
         Task<bool> DeleteGroStockList(long id);
         Task<Gro_Stock_ListVM> GetStockByGroPartListId(long groPartListId, long tenantId);
 
@@ -96,5 +99,14 @@ namespace CWB.Gro.Services
         Task<List<Indent_Part_Sl_NoVM>> MultipleIndentPartSlNo(List<Indent_Part_Sl_NoVM> indentPartSlNoVM);
         Task<Indent_Part_Sl_NoVM> PostIndentPartSlNo(Indent_Part_Sl_NoVM indentPartSlNoVM);
         Task<bool> DeleteIndentPartSlNo(long Id);
+
+
+
+        Task<IEnumerable<Gro_Indent_DispHeadVM>> AllGroIndentDispHeader(long tenantId);
+        Task<List<Gro_Indent_DispHeadVM>> MultipleGroIndentDispheader(List<Gro_Indent_DispHeadVM> GroDataVM);
+        Task<Gro_Indent_DispHeadVM> PostGroIndentDispHeader(Gro_Indent_DispHeadVM GroDataVM);
+        Task<bool> DeleteGroIndentDispHeader(long Id);
+
+
     }
 }

@@ -23,6 +23,7 @@ namespace CWB.Gro.GroUtils
             services.AddTransient<IGro_Stock_DetRepository, Gro_Stock_DetRepository>();
             services.AddTransient<ISl_No_Status_ListRepository, Sl_No_Status_ListRepository>();
             services.AddTransient<IIndent_Part_Sl_NoRepository, Indent_Part_Sl_NoRepository>();
+            services.AddTransient<IGro_Indent_DispHeadRepository,Gro_Indent_DispHeadRepository>();
             services.AddTransient<IGroService, GroService>();
             
            

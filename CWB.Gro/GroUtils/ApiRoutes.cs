@@ -17,6 +17,7 @@ namespace CWB.Gro.GroUtils
             public const string GetAllGroData = Base + "/Getallgrodata/{tenantId}";
             public const string PostMultipleGroData = Base + "/postmultiplegrodata";
             public const string PostGrodata = Base + "/postgrodata";
+            public const string UpdateGrodataBaltoDispatch = Base + "/updategrodatabaltodispatch";
             public const string DeleteGroData = Base + "/deletegrodata/{Id}";
 
 
@@ -42,6 +43,7 @@ namespace CWB.Gro.GroUtils
             public const string AllGroDispatchDetails = Base + "/Getallgrodispatchdetails/{tenantId}";
             public const string PostMultipleGroDispatchDetails = Base + "/postmultiplegrodispatchdetails";
             public const string PostGroDispatchDetail = Base + "/postgrodispatchDetail";
+            public const string UpdateGroDispatchDetailQty = Base + "/updategrodispatchdetailqty";
             public const string DeleteGroDispatchDetail = Base + "/deletegrodispatchdetail/{Id}";
 
 
@@ -69,6 +71,7 @@ namespace CWB.Gro.GroUtils
             public const string PostMultipleGroStockList = Base + "/postmultiplegrostocklist";
             public const string PostGroStockList = Base + "/postgrostocklist";
             public const string Updategrostocklastslno = Base + "/updategrostocklastslnobypartno";
+            public const string UpdateGroStockQty = Base + "/updategrostockbypart";
             public const string DeleteGroStockList = Base + "/deletegrostocklist/{Id}";
             public const string GetStockByGroPartListId = Base + "/getstockbygropart/{gropartlistid}/{tenantId}";
 
@@ -93,6 +96,14 @@ namespace CWB.Gro.GroUtils
             public const string PostMultipleIndentPartSlNo = Base + "/postmultipleindentpartslno";
             public const string PostIndentPartSlNo = Base + "/postindentpartslno";
             public const string DeleteIndentPartSlNo = Base + "/deleteindentpartslno/{Id}";
+
+
+            public const string AllGroIndentDispHeader = Base + "/getallgroindentdispheader/{tenantId}";
+            public const string PostMultipleGroIndentDispheader = Base + "/postmultiplegroindentdispheader";
+            public const string PostGroIndentDispHeader = Base + "/postgroindentdispheader";
+            public const string DeleteGroIndentDispHeader = Base + "/deletegroindentdispheader/{Id}";
+
+
 
         }
     }

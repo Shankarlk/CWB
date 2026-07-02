@@ -97,6 +97,7 @@ namespace CWB.Gro.GroUtils
               .ForMember(m => m.Inv_Printed, m => m.MapFrom(src => src.Inv_Printed))
               .ForMember(m => m.Inv_Uploaded, m => m.MapFrom(src => src.Inv_Uploaded))
               .ForMember(m => m.Customer_Inv_Attached, m => m.MapFrom(src => src.Customer_Inv_Attached))
+              .ForMember(m => m.Dispatched, m => m.MapFrom(src => src.Dispatched))
               .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
             CreateMap<Gro_Disp_HeaderVM, Gro_Disp_Header>()
@@ -119,6 +120,7 @@ namespace CWB.Gro.GroUtils
               .ForMember(m => m.Inv_Printed, m => m.MapFrom(src => src.Inv_Printed))
               .ForMember(m => m.Inv_Uploaded, m => m.MapFrom(src => src.Inv_Uploaded))
               .ForMember(m => m.Customer_Inv_Attached, m => m.MapFrom(src => src.Customer_Inv_Attached))
+              .ForMember(m => m.Dispatched, m => m.MapFrom(src => src.Dispatched))
               .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
 
@@ -314,6 +316,21 @@ namespace CWB.Gro.GroUtils
                .ForMember(m => m.Id, m => m.MapFrom(src => src.Indent_Part_Sl_No_ID))
                 .ForMember(m => m.Gro_Disp_Det_ID, m => m.MapFrom(src => src.Gro_Disp_Det_ID))
            .ForMember(m => m.Gro_Stock_Det_ID, m => m.MapFrom(src => src.Gro_Stock_Det_ID))
+           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+
+
+
+
+            CreateMap<Gro_Indent_DispHead, Gro_Indent_DispHeadVM>()
+    .ForMember(m => m.Gro_Indent_DispHead_ID, m => m.MapFrom(src => src.Id))
+    .ForMember(m => m.Gro_Indent, m => m.MapFrom(src => src.Gro_Indent))
+     .ForMember(m => m.Gro_Disp_Header_ID, m => m.MapFrom(src => src.Gro_Disp_Header_ID))
+      .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+
+            CreateMap<Gro_Indent_DispHeadVM, Gro_Indent_DispHead>()
+               .ForMember(m => m.Id, m => m.MapFrom(src => src.Gro_Indent_DispHead_ID))
+                .ForMember(m => m.Gro_Indent, m => m.MapFrom(src => src.Gro_Indent))
+           .ForMember(m => m.Gro_Disp_Header_ID, m => m.MapFrom(src => src.Gro_Disp_Header_ID))
            .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
         }
     }

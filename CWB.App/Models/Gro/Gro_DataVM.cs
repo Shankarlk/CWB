@@ -32,6 +32,14 @@ namespace CWB.App.Models.Gro
         public char Part_Not_Avl { get; set; }
         public int Bal_to_Disp { get; set; }
         public int QntyAval { get; set; }
+        public int QntyDispatched { get; set; }
+        public long Gro_Disp_HeaderId { get; set; }
+        public int DispatchedTillDate { get; set; }
+        public long Gro_Disp_DetId { get; set; }
+        public int Scannedqty { get; set; }
+
+        public int TotalRecordedQnty { get; set; }
+        public int BalToReceive { get; set; }
         public long TenantId { get; set; }
     }
 }

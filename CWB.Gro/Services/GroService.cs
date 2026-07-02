@@ -30,11 +30,13 @@ namespace CWB.Gro.Services
         private readonly IGro_Stock_DetRepository _gro_Stock_DetRepository;
         private readonly ISl_No_Status_ListRepository _slNo_Status_ListRepository;
         private readonly IIndent_Part_Sl_NoRepository _indent_Part_Sl_NoRepository;
+        private readonly IGro_Indent_DispHeadRepository _Gro_Indent_DispHeadRepository;
         public GroService(ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork, IGro_DataRepository gro_DataRepository,IGro_Part_ListRepository  gro_part_listRepository,
             IGro_Disp_HeaderRepository gro_Disp_HeaderRepository, ICust_Specific_DataRepository Cust_Specific_DataRepository, IGro_Disp_DetRepository gro_Disp_DetRepository,
             IUpload_FormatRepository upload_FormatRepository, IField_TypeRepository FieldTypeRepository,ICourier_ListRepository courier_ListRepository,
             IPrintout_formatRepository printout_FormatRepository, IGro_Stock_ListRepository GroStocklistRepository, ITK_DC_Inv_ContrlRepository tK_DC_Inv_ContrlRepository,
-            IGro_Stock_DetRepository gro_Stock_DetRepository, ISl_No_Status_ListRepository slNo_Status_ListRepository, IIndent_Part_Sl_NoRepository indent_Part_Sl_NoRepository)
+            IGro_Stock_DetRepository gro_Stock_DetRepository, ISl_No_Status_ListRepository slNo_Status_ListRepository, IIndent_Part_Sl_NoRepository indent_Part_Sl_NoRepository,
+            IGro_Indent_DispHeadRepository Gro_Indent_DispHeadRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -53,6 +55,7 @@ namespace CWB.Gro.Services
             _gro_Stock_DetRepository = gro_Stock_DetRepository;
             _slNo_Status_ListRepository = slNo_Status_ListRepository;
             _indent_Part_Sl_NoRepository = indent_Part_Sl_NoRepository;
+            _Gro_Indent_DispHeadRepository = Gro_Indent_DispHeadRepository;
         }
         public async Task<IEnumerable<Gro_DataVM>> AllGroData(long tenantId)
         {
@@ -138,7 +141,34 @@ namespace CWB.Gro.Services
              
             return GroDataVM;
         }
+        public async Task<Gro_DataVM> UpdateGrodataBaltoDispatch(Gro_DataVM GroDataVM)
+        {
 
+            var gro = _mapper.Map<Gro_Data>(GroDataVM);
+
+            if (gro.Id > 0)
+            {
+
+                gro = await _gro_DataRepository.SingleOrDefaultAsync(x => x.Id == gro.Id);
+                gro.Bal_to_Disp = GroDataVM.Bal_to_Disp;
+                gro = await _gro_DataRepository.UpdateAsync(gro.Id, gro);
+
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+
+            GroDataVM.Gro_DataId = gro.Id;
+
+
+            return GroDataVM;
+        }
 
 
         public async Task<bool> DeleteGroData(long Id)
@@ -415,7 +445,7 @@ namespace CWB.Gro.Services
                     gro.Courier_Partner = GroDataVM.Courier_Partner;
                     gro.AWB = GroDataVM.AWB;
                     gro.Dispatch_Date = GroDataVM.Dispatch_Date;
-
+                    gro.Dispatched = 'Y';
 
                     gro = await _gro_Disp_HeaderRepository.UpdateAsync(gro.Id, gro);
                     //await _unitOfWork.CommitAsync();
@@ -699,7 +729,46 @@ namespace CWB.Gro.Services
             return GroDataVM;
         }
 
+        public async Task<Gro_Disp_DetVM> UpdateGroDispatchDetailQty(Gro_Disp_DetVM GroDataVM)
+        {
 
+            var gro = _mapper.Map<Gro_Disp_Det>(GroDataVM);
+
+            if (gro.Id > 0)
+            {
+
+                try
+                {
+                    gro = await _gro_Disp_DetRepository.SingleOrDefaultAsync(x => x.Id == gro.Id);
+                    gro.Qnty_Dispatched = GroDataVM.Qnty_Dispatched;
+
+
+                    gro = await _gro_Disp_DetRepository.UpdateAsync(gro.Id, gro);
+                    //await _unitOfWork.CommitAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+
+            GroDataVM.Gro_Disp_DetId = gro.Id;
+
+
+            return GroDataVM;
+        }
 
         public async Task<bool> DeleteGroDispatchDetail(long Id)
         {
@@ -1160,6 +1229,46 @@ namespace CWB.Gro.Services
 
             return controlVM;
         }
+        public async Task<Gro_Stock_ListVM> UpdateGroStockQty(Gro_Stock_ListVM GroDataVM)
+        {
+
+            var gro = _mapper.Map<Gro_Stock_List>(GroDataVM);
+
+            if (gro.Id > 0)
+            {
+
+                try
+                {
+                    gro = await _GroStocklistRepository.SingleOrDefaultAsync(x => x.Gro_Part_List_ID == gro.Gro_Part_List_ID);
+                    gro.Qnty_on_Hand = GroDataVM.Qnty_on_Hand;
+
+
+                    gro = await _GroStocklistRepository.UpdateAsync(gro.Id, gro);
+                    //await _unitOfWork.CommitAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+
+            GroDataVM.Gro_Stock_ListId = gro.Id;
+
+
+            return GroDataVM;
+        }
         public async Task<bool> DeleteGroStockList(long id)
         {
             var stock = await _GroStocklistRepository.SingleOrDefaultAsync(x => x.Id == id);
@@ -1579,6 +1688,108 @@ namespace CWB.Gro.Services
 
             return false;
         }
+        public async Task<IEnumerable<Gro_Indent_DispHeadVM>> AllGroIndentDispHeader(long tenantId)
+        {
+            var allwo = _Gro_Indent_DispHeadRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<Gro_Indent_DispHeadVM>>(allwo);
+        }
+        public async Task<List<Gro_Indent_DispHeadVM>> MultipleGroIndentDispheader(List<Gro_Indent_DispHeadVM> GroDataVM)
+        {
+            foreach (Gro_Indent_DispHeadVM item in GroDataVM)
+            {
+                var gro = _mapper.Map<Gro_Indent_DispHead>(item);
 
+                if (gro.Id == 0)
+                {
+
+                    try
+                    {
+                        await _Gro_Indent_DispHeadRepository.AddAsync(gro);
+                        await _unitOfWork.CommitAsync();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Exception exa = ex.InnerException;
+                        string msg = ex.Message;
+                    }
+                }
+                else
+                {
+
+                }
+                try
+                {
+                    await _unitOfWork.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+
+                item.Gro_Indent_DispHead_ID = gro.Id;
+
+            }
+            return GroDataVM;
+        }
+        public async Task<Gro_Indent_DispHeadVM> PostGroIndentDispHeader(Gro_Indent_DispHeadVM GroDataVM)
+        {
+
+            var gro = _mapper.Map<Gro_Indent_DispHead>(GroDataVM);
+
+            if (gro.Id == 0)
+            {
+
+                try
+                {
+                    await _Gro_Indent_DispHeadRepository.AddAsync(gro);
+                    await _unitOfWork.CommitAsync();
+
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+            else
+            {
+
+            }
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+
+            GroDataVM.Gro_Indent_DispHead_ID = gro.Id;
+
+
+            return GroDataVM;
+        }
+        
+
+
+        public async Task<bool> DeleteGroIndentDispHeader(long Id)
+        {
+            var co = await _Gro_Indent_DispHeadRepository.SingleOrDefaultAsync(m => m.Id == Id);
+            if (co != null)
+            {
+                try
+                {
+                    _Gro_Indent_DispHeadRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
     }
 }

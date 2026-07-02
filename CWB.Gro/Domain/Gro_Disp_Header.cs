@@ -28,7 +28,7 @@ namespace CWB.Gro.Domain
         public char Inv_Printed { get; set; }
         public char Inv_Uploaded { get; set; }
         public char Customer_Inv_Attached { get; set; }
-
+        public char Dispatched { get; set; }
         public long TenantId { get; set; }
     }
 }

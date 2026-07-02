@@ -23,13 +23,13 @@ namespace CWB.App.Models.Gro
 
         public char DC_Printed { get; set; }
         public DateTime? Delivered_Date { get; set; }
-
+        public string? DeliveredDateStr { get; set; }
         public string DC_No { get; set; }
         public string Inv_No { get; set; }
         public char Inv_Printed { get; set; }
         public char Inv_Uploaded { get; set; }
         public char Customer_Inv_Attached { get; set; }
-
+        public char Dispatched { get; set; }
         public string Company_Name { get; set; }
         public string? IndentDateStr { get; set; }
         public string? DispatchDateStr { get; set; }

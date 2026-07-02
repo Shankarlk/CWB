@@ -309,6 +309,13 @@ namespace CWB.App.Services.Gro
             grodispheadervm.TenantId = tenantId;
             return await RestHelper<Gro_Stock_ListVM>.PostAsync(uri, grodispheadervm, headers);
         }
+        public async Task<Gro_Stock_ListVM> UpdategrostockbyPart(Gro_Stock_ListVM grodispheadervm)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/updategrostockbypart");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            grodispheadervm.TenantId = tenantId;
+            return await RestHelper<Gro_Stock_ListVM>.PostAsync(uri, grodispheadervm, headers);
+        }
         public async Task<IEnumerable<Gro_Stock_DetVM>> GetallGroStockDet()
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/getallgrostockdetails/{tenantId}");
@@ -337,6 +344,57 @@ namespace CWB.App.Services.Gro
             var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/getstockbygropart/{gropartlistid}/{tenantId}");
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<Gro_Stock_ListVM>.GetAsync(uri, headers);
+        }
+        public async Task<IEnumerable<Gro_Disp_DetVM>> GetallgroDispatchDetails()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/Getallgrodispatchdetails/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Gro_Disp_DetVM>>.GetAsync(uri, headers);
+        }
+        public async Task<Gro_Disp_DetVM> PostGroDispatchDetail(Gro_Disp_DetVM grodispheadervm)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/postgrodispatchDetail");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            grodispheadervm.TenantId = tenantId;
+            return await RestHelper<Gro_Disp_DetVM>.PostAsync(uri, grodispheadervm, headers);
+        }
+        public async Task<List<Indent_Part_Sl_NoVM>> PostMultipleIndentSlno(List<Indent_Part_Sl_NoVM> grodispheadervm)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/postmultipleindentpartslno");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            foreach (var item in grodispheadervm)
+            {
+                item.TenantId = tenantId;
+            }
+            return await RestHelper <List<Indent_Part_Sl_NoVM>>.PostAsync(uri, grodispheadervm, headers);
+        }
+        public async Task<Gro_Disp_DetVM> UpdategroDispatchdetailqty(Gro_Disp_DetVM grodispheadervm)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/updategrodispatchdetailqty");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            grodispheadervm.TenantId = tenantId;
+            return await RestHelper<Gro_Disp_DetVM>.PostAsync(uri, grodispheadervm, headers);
+        }
+        public async Task<IEnumerable<Indent_Part_Sl_NoVM>> GetallGroIndentpartSlno()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/getallindentpartslno/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Indent_Part_Sl_NoVM>>.GetAsync(uri, headers);
+        }
+        public async Task<Gro_DataVM> UpdateGroDatabaltoDispatch(Gro_DataVM companyVM)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/updategrodatabaltodispatch");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            companyVM.TenantId = tenantId;
+            return await RestHelper<Gro_DataVM>.PostAsync(uri, companyVM, headers);
+        }
+        public async Task<Gro_Indent_DispHeadVM> PostGroIndentDispHeader(Gro_Indent_DispHeadVM grodispheadervm)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/postgroindentdispheader");
+
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            grodispheadervm.TenantId = tenantId;
+            return await RestHelper<Gro_Indent_DispHeadVM>.PostAsync(uri, grodispheadervm, headers);
         }
     }
 }

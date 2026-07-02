@@ -17,7 +17,7 @@ namespace CWB.App.Models.Gro
         public char Qnty_Recd { get; set; }
         public char Label_print { get; set; }
 
-
+        public string? PartNo { get; set; }
         public long TenantId { get; set; }
     }
 }

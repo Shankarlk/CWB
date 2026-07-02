@@ -45,6 +45,14 @@ namespace CWB.Gro.Controllers
             return Ok(result);
         }
         [HttpPost]
+        [Route(ApiRoutes.Gro.UpdateGrodataBaltoDispatch)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Gro_DataVM))]
+        public async Task<IActionResult> UpdateGrodataBaltoDispatch([FromBody] Gro_DataVM workOrdersVM)
+        {
+            var result = await _groService.UpdateGrodataBaltoDispatch(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpPost]
         [Route(ApiRoutes.Gro.PostMultipleGroData)]
         [Produces(AppContentTypes.ContentType, Type = typeof(Gro_DataVM))]
         public async Task<IActionResult> PostMultipleGroData([FromBody] List<Gro_DataVM> workOrdersVM)
@@ -206,6 +214,14 @@ namespace CWB.Gro.Controllers
             return Ok(result);
         }
         [HttpPost]
+        [Route(ApiRoutes.Gro.UpdateGroDispatchDetailQty)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Gro_Disp_DetVM))]
+        public async Task<IActionResult> UpdateGroDispatchDetailQty([FromBody] Gro_Disp_DetVM workOrdersVM)
+        {
+            var result = await _groService.UpdateGroDispatchDetailQty(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpPost]
         [Route(ApiRoutes.Gro.PostMultipleGroDispatchDetails)]
         [Produces(AppContentTypes.ContentType, Type = typeof(Gro_Disp_DetVM))]
         public async Task<IActionResult> PostMultipleGroDispatchDetails([FromBody] List<Gro_Disp_DetVM> workOrdersVM)
@@ -359,6 +375,14 @@ namespace CWB.Gro.Controllers
         public async Task<IActionResult> Updategrostocklastslno([FromBody] Gro_Stock_ListVM workOrdersVM)
         {
             var result = await _groService.Updategrostocklastslno(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Gro.UpdateGroStockQty)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Gro_Stock_ListVM))]
+        public async Task<IActionResult> UpdateGroStockQty([FromBody] Gro_Stock_ListVM workOrdersVM)
+        {
+            var result = await _groService.UpdateGroStockQty(workOrdersVM);
             return Ok(result);
         }
         [HttpPost]
@@ -517,6 +541,38 @@ namespace CWB.Gro.Controllers
             return Ok(result);
         }
 
-
+        [HttpGet]
+        [Route(ApiRoutes.Gro.AllGroIndentDispHeader)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Gro_Indent_DispHeadVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> AllGroIndentDispHeader(long tenantId)
+        {
+            var grodata = await _groService.AllGroIndentDispHeader(tenantId);
+            return Ok(grodata);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Gro.PostGroIndentDispHeader)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Gro_Indent_DispHeadVM))]
+        public async Task<IActionResult> PostGroIndentDispHeader([FromBody] Gro_Indent_DispHeadVM workOrdersVM)
+        {
+            var result = await _groService.PostGroIndentDispHeader(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Gro.PostMultipleGroIndentDispheader)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Gro_Indent_DispHeadVM))]
+        public async Task<IActionResult> PostMultipleGroIndentDispheader([FromBody] List<Gro_Indent_DispHeadVM> workOrdersVM)
+        {
+            var result = await _groService.MultipleGroIndentDispheader(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Gro.DeleteGroIndentDispHeader)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> DeleteGroIndentDispHeader(long Id)
+        {
+            var result = await _groService.DeleteGroIndentDispHeader(Id);
+            return Ok(result);
+        }
     }
 }
