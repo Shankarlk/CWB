@@ -60,6 +60,12 @@ namespace CWB.App.Controllers
             _logger.LogTrace("Gro--stock--Loading");
             return View();
         }
+        [Route("~/G!@#D$%O*&M")]
+        public IActionResult GroDocumentManagement()
+        {
+            _logger.LogTrace("Gro--Document--Loading");
+            return View();
+        }
         [HttpPost]
         public async Task<IActionResult>UploadGroData(IFormFile uploadedFile)
         {
@@ -70,7 +76,8 @@ namespace CWB.App.Controllers
                 return Json(result);
             }
             IWorkbook workbook;
-
+            int indentCount = 0;
+            int productCount = 0;
             using (var stream = uploadedFile.OpenReadStream())
             {
                 string ext =
@@ -272,12 +279,22 @@ namespace CWB.App.Controllers
                 }
 
                 var postmultiplegrodata = await _groservicee.PostMultipleGrodata(groDataList);
+
+                 indentCount = groDataList
+                    .Select(x => x.Indent)
+                    .Distinct()
+                    .Count();
+
+                 productCount = groDataList
+                                    .Sum(x => x.Reqd_Quantity);
             }
 
             return Json(new
             {
                 Success = true,
-                Message = "Upload Completed Successfully"
+                Message = "Upload Completed Successfully",
+                IndentCount = indentCount,
+                ProductCount = productCount
             });
         }
         [HttpGet]
@@ -318,9 +335,28 @@ namespace CWB.App.Controllers
                 item.GroPartNo = part.Gro_Part_No??"";
                  
                 item.IndentDateStr = item.SentDate?.ToString("dd-MM-yyyy") ?? "";
+                var days = (DateTime.Today - item.SentDate.Value.Date).Days;
 
+                if (days <= 0)
+                    item.Ageing = 0;
+                else if (days == 1)
+                    item.Ageing = 1;
+                else if (days == 2)
+                    item.Ageing = 2;
+                else if (days == 3)
+                    item.Ageing = 3;
+                else
+                    item.Ageing = 4;
                 var gropratstock = allgrostocklist.FirstOrDefault(x => x.Gro_Part_List_ID == item.Gro_Part_No);
-                if(gropratstock==null)
+                if (item.Bal_to_Disp == item.Reqd_Quantity)
+                {
+                    item.DispatchStatus = "No Dispatch";
+                }
+                else if (item.Bal_to_Disp < item.Reqd_Quantity)
+                {
+                    item.DispatchStatus = "Partial Dispatch";
+                }
+                if (gropratstock==null)
                 {
                     item.QntyAval = 0;
                 }
@@ -424,6 +460,13 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetGroPartList()
         {
             var allgropartno = await _groservicee.Getallgroparts();
+            foreach( var item in allgropartno)
+            {
+                if(item.OurPartDescription==null)
+                {
+                    item.OurPartDescription = "";
+                }
+            }
              return Ok(allgropartno);
 
         }
@@ -672,6 +715,8 @@ namespace CWB.App.Controllers
             foreach (var item in filtereredheader)
             {
                 item.DispatchDateStr= item.Dispatch_Date?.ToString("dd-MM-yyyy") ?? "";
+                item.DeliveryAgeing =
+            (DateTime.Today - item.Dispatch_Date.Value.Date).Days;
                 var alldata = allgrodata.Where(x => x.Indent == item.Indent).FirstOrDefault();
                 item.Company_Name = alldata.Company_Name;
                 var courier = allcourier.Where(x => x.courier_List_ID == item.Courier_Partner).FirstOrDefault();
@@ -1405,9 +1450,12 @@ namespace CWB.App.Controllers
                 vm.Header = header;
 
                 var details = allDetails
-                    .Where(x => x.Gro_Disp_Header_ID == header.Gro_Disp_HeaderId)
+                    .Where(x => x.Gro_Disp_Header_ID == header.Gro_Disp_HeaderId && x.Qnty_Dispatched>0)
                     .ToList();
-
+                if(!details.Any())
+                {
+                    continue;
+                }
                 foreach (var det in details)
                 {
                     var gro = allGroData.FirstOrDefault(x => x.Gro_DataId == det.Gro_data_ID);
@@ -1446,6 +1494,341 @@ namespace CWB.App.Controllers
                           }).ToList();
 
             return Ok(result);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetInvoiceDeleteData()
+        {
+            var allHeaders = await _groservicee.GetallgroDispHeader();
+            var allGroData = await _groservicee.GetallgroData();
+
+            var result = allHeaders
+                .Where(x => string.IsNullOrWhiteSpace(x.AWB))
+                .ToList();
+
+            foreach (var item in result)
+            {
+                var gro = allGroData.FirstOrDefault(x => x.Indent == item.Indent);
+
+                if (gro != null)
+                {
+                    item.Company_Name = gro.Company_Name;
+                }
+                item.HeaderDatestr=item.HeaderCreationDate?.ToString("dd-MM-yyyy") ?? "";
+                item.IndentDateStr = item.SentDate?.ToString("dd-MM-yyyy") ?? "";
+            }
+
+            return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetDeleteDispatchHeaderDetails(long headerId)
+        {
+            var headers = await _groservicee.GetallgroDispHeader();
+            var details = await _groservicee.GetallgroDispatchDetails();
+            var groData = await _groservicee.GetallgroData();
+            var parts = await _groservicee.Getallgroparts();
+
+            var header = headers
+                .FirstOrDefault(x => x.Gro_Disp_HeaderId == headerId);
+
+            header.IndentDateStr = header.SentDate?.ToString("dd-MM-yyyy") ?? "";
+            header.HeaderDatestr = header.HeaderCreationDate?.ToString("dd-MM-yyyy") ?? "";
+            var indentData = groData
+                .Where(x => x.Indent == header.Indent)
+                .ToList();
+
+            if (indentData.Any())
+            {
+                header.Company_Name = indentData.First().Company_Name;
+                header.Excutive_Name = indentData.First().Excutive_Name;
+                header.Contact_Person = indentData.First().Contact_Person;
+                header.Contact_Person_No = indentData.First().Contact_Person_No;
+            }
+
+            List<DeleteInvoiceLineVM> result = new List<DeleteInvoiceLineVM>();
+
+            var dispatchDetails = details
+                .Where(x => x.Gro_Disp_Header_ID == headerId &&
+                            x.Qnty_Dispatched > 0)
+                .ToList();
+
+            foreach (var det in dispatchDetails)
+            {
+                var item = groData
+                    .FirstOrDefault(x => x.Gro_DataId == det.Gro_data_ID);
+
+                if (item == null)
+                    continue;
+
+                var part = parts
+                    .FirstOrDefault(x => x.Gro_Part_ListId == item.Gro_Part_No);
+
+                DeleteInvoiceLineVM vm = new DeleteInvoiceLineVM();
+
+                vm.GroPartNo = part?.Gro_Part_No ?? "";
+
+                vm.QntyDispatched = det.Qnty_Dispatched;
+
+                vm.OurPrice = part?.OurPrice ?? 0;
+
+                vm.InvoiceValue = vm.OurPrice * vm.QntyDispatched;
+
+                result.Add(vm);
+            }
+
+            return Ok(new
+            {
+                header,
+                details = result
+            });
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteInvoiceHeader(long headerId)
+        {
+            var deleteinvoiceheader = await _groservicee.DeleteInvoiceHeader(headerId);
+
+            return Ok(deleteinvoiceheader);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetDispatchAgeingSummary()
+        {
+            var groData = (await _groservicee.GetallgroData())
+                            .Where(x => x.Bal_to_Disp > 0)
+                            .ToList();
+
+            int full0 = 0, full1 = 0, full2 = 0, full3 = 0, fullGt3 = 0;
+            int partial0 = 0, partial1 = 0, partial2 = 0, partial3 = 0, partialGt3 = 0;
+
+            foreach (var item in groData)
+            {
+                if (!item.SentDate.HasValue)
+                    continue;
+
+                int ageing = (DateTime.Today - item.SentDate.Value.Date).Days;
+
+                bool isFullDispatch = item.Bal_to_Disp == item.Reqd_Quantity;
+                bool isPartialDispatch = item.Bal_to_Disp < item.Reqd_Quantity;
+
+                if (isFullDispatch)
+                {
+                    switch (ageing)
+                    {
+                        case 0:
+                            full0++;
+                            break;
+
+                        case 1:
+                            full1++;
+                            break;
+
+                        case 2:
+                            full2++;
+                            break;
+
+                        case 3:
+                            full3++;
+                            break;
+
+                        default:
+                            fullGt3++;
+                            break;
+                    }
+                }
+                else if (isPartialDispatch)
+                {
+                    switch (ageing)
+                    {
+                        case 0:
+                            partial0++;
+                            break;
+
+                        case 1:
+                            partial1++;
+                            break;
+
+                        case 2:
+                            partial2++;
+                            break;
+
+                        case 3:
+                            partial3++;
+                            break;
+
+                        default:
+                            partialGt3++;
+                            break;
+                    }
+                }
+            }
+
+            return Json(new
+            {
+                full = new
+                {
+                    day0 = full0,
+                    day1 = full1,
+                    day2 = full2,
+                    day3 = full3,
+                    gt3 = fullGt3,
+                    total = full0 + full1 + full2 + full3 + fullGt3
+                },
+
+                partial = new
+                {
+                    day0 = partial0,
+                    day1 = partial1,
+                    day2 = partial2,
+                    day3 = partial3,
+                    gt3 = partialGt3,
+                    total = partial0 + partial1 + partial2 + partial3 + partialGt3
+                }
+            });
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetDeliveryAgeingSummary()
+        {
+            var headers = await _groservicee.GetallgroDispHeader();
+
+            var pending = headers
+                .Where(x =>
+                    x.Dispatch_Date != null &&
+                    x.Delivered_Date == null)
+                .ToList();
+
+            int day0to2 = 0;
+            int day3to5 = 0;
+            int day6to7 = 0;
+            int day8to10 = 0;
+            int daygt10 = 0;
+
+            foreach (var item in pending)
+            {
+                int days = (DateTime.Today - item.Dispatch_Date.Value.Date).Days;
+
+                if (days <= 2)
+                    day0to2++;
+
+                else if (days <= 5)
+                    day3to5++;
+
+                else if (days <= 7)
+                    day6to7++;
+
+                else if (days <= 10)
+                    day8to10++;
+
+                else
+                    daygt10++;
+            }
+
+            return Ok(new
+            {
+                day0to2,
+                day3to5,
+                day6to7,
+                day8to10,
+                daygt10,
+                total = pending.Count
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPendingCourierCount()
+        {
+            var headers = await _groservicee.GetallgroDispHeader();
+
+            int count = headers.Count(x =>
+                (x.Courier_Partner == 0) &&
+                x.Delivered_Date == null);
+
+            return Ok(count);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPendingInvoicesForUpload()
+        {
+            var allHeaders = await _groservicee.GetallgroDispHeader();
+
+            // Select only invoices waiting for upload
+            var pendingHeaders = allHeaders
+                .Where(x => x.Dispatched == 'Y' &&
+                            x.Inv_Uploaded == 'N')
+                .ToList();
+
+            List<InvoicePrintVM> invoices = new List<InvoicePrintVM>();
+
+            foreach (var header in pendingHeaders)
+            {
+                var invoice = await BuildInvoicePrintData(header.Gro_Disp_HeaderId);
+
+                invoices.Add(invoice);
+            }
+
+            return Ok(invoices);
+        }
+        private async Task<InvoicePrintVM> BuildInvoicePrintData(long headerId)
+        {
+            var allgrodata = await _groservicee.GetallgroData();
+            var allgrodispheader = await _groservicee.GetallgroDispHeader();
+            var alldispatchdetails = await _groservicee.GetallgroDispatchDetails();
+            var allgroparts = await _groservicee.Getallgroparts();
+
+            var groheaderdetails = allgrodispheader
+                .FirstOrDefault(x => x.Gro_Disp_HeaderId == headerId);
+
+            var grodatafirstrecord = allgrodata
+                .FirstOrDefault(x => x.Indent == groheaderdetails.Indent);
+
+            groheaderdetails.Excutive_Name = grodatafirstrecord.Excutive_Name;
+            groheaderdetails.Company_Name = grodatafirstrecord.Company_Name;
+            groheaderdetails.Contact_Person = grodatafirstrecord.Contact_Person;
+            groheaderdetails.Contact_Person_No = grodatafirstrecord.Contact_Person_No;
+
+            InvoicePrintVM vm = new InvoicePrintVM();
+
+            vm.Header = groheaderdetails;
+
+            var dispatchbyheader = alldispatchdetails
+                .Where(x => x.Gro_Disp_Header_ID == headerId)
+                .ToList();
+
+            int slno = 1;
+
+            foreach (var item in dispatchbyheader)
+            {
+                var part = allgroparts
+                    .FirstOrDefault(x => x.Gro_Part_ListId == item.Gro_Part_No);
+
+                if (part == null)
+                    continue;
+
+                InvoiceDetailVM line = new InvoiceDetailVM();
+
+                line.SlNo = slno++;
+                line.PartId = part.Gro_Part_ListId;
+                line.PartNo = part.Gro_Part_No;
+                // line.Description = part.GroPartDesc;
+                line.HSNCode = part.HSNCode;
+                line.Unit = "Nos";
+                line.Qty = item.Qnty_Dispatched;
+                line.Rate = part.OurPrice;
+                line.GSTRate = part.GSTRate;
+
+                line.TaxableAmount = line.Qty * line.Rate;
+                line.GSTAmount = line.TaxableAmount * line.GSTRate / 100;
+                line.TotalAmount = line.TaxableAmount + line.GSTAmount;
+
+                vm.Details.Add(line);
+            }
+
+            vm.TaxableAmount = vm.Details.Sum(x => x.TaxableAmount);
+            vm.GSTAmount = vm.Details.Sum(x => x.GSTAmount);
+            vm.GrandTotal = vm.Details.Sum(x => x.TotalAmount);
+
+            vm.AmountInWords = ConvertAmountToWords(vm.GrandTotal);
+            vm.TaxAmountInWords = ConvertAmountToWords(vm.GSTAmount);
+
+            return vm;
         }
     }
 }

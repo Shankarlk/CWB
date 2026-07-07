@@ -23,6 +23,9 @@ namespace CWB.App.Models.Gro
 
         public char DC_Printed { get; set; }
         public DateTime? Delivered_Date { get; set; }
+
+        public DateTime? HeaderCreationDate { get; set; }
+        public string? HeaderDatestr { get; set; }
         public string? DeliveredDateStr { get; set; }
         public string DC_No { get; set; }
         public string Inv_No { get; set; }
@@ -37,6 +40,7 @@ namespace CWB.App.Models.Gro
         public string Contact_Person_No { get; set; }
         public string Excutive_Name { get; set; }
         public string Courier { get; set; }
+        public int DeliveryAgeing { get; set; }
         public long TenantId { get; set; }
     }
 }

@@ -3,6 +3,36 @@
     loadGroPartList();
     $("#preloaderblurred").hide();
 });
+var modalStack = [];
+$(document).on("show.bs.modal", ".modal", function () {
+
+    var currentModal = $(this);
+
+    if (modalStack.length > 0) {
+
+        modalStack[modalStack.length - 1]
+            .find(".modal-content")
+            .addClass("modal-stack-blur");
+
+    }
+
+    modalStack.push(currentModal);
+
+});
+
+$(document).on("hidden.bs.modal", ".modal", function () {
+
+    modalStack.pop();
+
+    if (modalStack.length > 0) {
+
+        modalStack[modalStack.length - 1]
+            .find(".modal-content")
+            .removeClass("modal-stack-blur");
+
+    }
+
+});
 function loadGroPartList() {
 
     api.getbulk("/Gro/GetGroPartList")
@@ -43,7 +73,7 @@ function bindGroPartList(data) {
         data[i].statusText = data[i].part_Status == 1
             ? "Active"
             : "Obsolete";
-        console.log(data[i]);
+       // console.log(data[i]);
         tableBody.append(
             AppUtil.ProcessTemplateData("groPartListRow", data[i])
         );
@@ -59,6 +89,7 @@ function editGroPart(obj) {
 
     $("#txtGroPartNo").val($(obj).data("gropart"));
     $("#txtMrp").val($(obj).data("mrp"));
+    $("#txtourdescription").val($(obj).data("description"));
     $("#txtOurPrice").val($(obj).data("ourprice"));
     $("#txtOurPartNo").val($(obj).data("ourpart"));
     $("#txtHSNCode").val($(obj).data("hsn"));
@@ -74,6 +105,7 @@ function newGroPart() {
     $("#hdnGroPartId").val(0);
 
     $("#txtGroPartNo").val("");
+    $("#txtourdescription").val("");
     $("#txtMrp").val("");
     $("#txtOurPrice").val("");
     $("#txtOurPartNo").val("");
@@ -118,6 +150,7 @@ function saveGroPart() {
         gro_Part_No: $("#txtGroPartNo").val(),
         part_No: 0,
         ourPrice: $("#txtOurPrice").val(),
+        ourPartDescription: $("#txtourdescription").val(),
         Update_By:1,
        // Our_Part_Description: $("#txtDescription").val(),
         mrp: $("#txtMrp").val(),

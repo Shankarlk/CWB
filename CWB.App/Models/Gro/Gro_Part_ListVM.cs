@@ -18,6 +18,7 @@ namespace CWB.App.Models.Gro
         public string statusText { set; get; }
         public int GSTRate { get; set; }
         public string HSNCode { get; set; } = string.Empty;
+        public string OurPartDescription { get; set; } = string.Empty;
         public long TenantId { get; set; }
         public int Qnty_on_Hand { get; set; }
     }

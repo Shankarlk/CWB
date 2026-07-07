@@ -17,7 +17,7 @@ namespace CWB.Gro.Domain
 
         public int GSTRate { get; set; }
         public string HSNCode { get; set; }
-
+        public string OurPartDescription { get; set; }
         public long TenantId { get; set; }
     }
 }

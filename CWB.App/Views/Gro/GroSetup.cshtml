@@ -1,5 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    <style>
+        .modal-stack-blur {
+            filter: blur(5px);
+            pointer-events: none;
+            user-select: none;
+        }
+    </style>
 <div class="content">
     <div class="card">
         <div class="card-body">
@@ -325,6 +332,17 @@
 
                         </div>
 
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-md-3 col-form-label">
+                        Our Part Description <span class="text-danger">*</span>
+                    </label>
+
+                    <div class="col-md-6">
+                        <input type="text"
+                               class="form-control"
+                               id="txtourdescription" />
                     </div>
                 </div>
 
@@ -669,7 +687,7 @@
 
         <td> </td>
 
-        <td> </td>
+        <td>{ourPartDescription}</td>
 
         <td>{mrp}</td>
         <td>{gstRate}</td>
@@ -699,7 +717,7 @@
                        data-id="{gro_Part_ListId}"
                        data-gropart="{gro_Part_No}"
                        data-ourpart="{our_Part_No}"
-                       data-description="{our_Part_Description}"
+                       data-description="{ourPartDescription}"
                        data-mrp="{mrp}"
                        data-ourprice="{ourPrice}"
                        data-gstrate="{gstRate}"

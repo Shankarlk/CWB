@@ -45,6 +45,9 @@ namespace CWB.Gro.Configurations
               .Property(t => t.HSNCode)
               .HasColumnName("HSNCode");
             builder
+             .Property(t => t.OurPartDescription)
+             .HasColumnName("OurPartDescription");
+            builder
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();

@@ -1,0 +1,335 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    <style>
+        .modal-stack-blur {
+            filter: blur(5px);
+            pointer-events: none;
+            user-select: none;
+        }
+    </style>
+    <div class="content">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h4 class="m-0">Gro Document Management</h4>
+                    @{
+                        List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM> permissionResult = null;
+                        var permissionsJson = HttpContextAccessor.HttpContext.Session.GetString("Permissions");
+                        if (permissionsJson != null)
+                        {
+                            permissionResult = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM>>(permissionsJson);
+
+                        }
+                    }
+
+                </div>
+
+                <!-- Upload Section -->
+                <!-- Gro Part List Update -->
+
+
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <h5>Gro Invoice/DC Delete</h5>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-primary"
+                                onclick="OpenInvoiceDeletePopup()">
+                            Inv / DC Delete
+                        </button>
+                    </div>
+                </div>
+                <hr />
+
+                <!-- Courier List Update -->
+
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <h5>Stock Correction</h5>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-primary"
+                                 >
+                            Stock Correction
+                        </button>
+                    </div>
+                </div>
+
+                <hr />
+
+
+
+            </div>
+        </div>
+    </div>
+    @section scripts {
+        <script src="~/js/gro/grodocument.js"></script>
+
+
+    }
+    @* popup1 invoice delete modal *@
+    <div class="modal fade"
+         id="groInvoiceDeleteModal"
+         tabindex="-1"
+         data-bs-backdrop="static"
+         data-bs-keyboard="false">
+
+        <div class="modal-dialog modal-xl">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        Gro - DC / Invoice Deletion (Before Dispatch)
+                    </h5>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row mb-3">
+
+                        <div class="col-md-4">
+
+                            <label class="form-label">
+                                Indent
+                            </label>
+
+                            <input type="text"
+                                   id="txtDeleteIndent"
+                                   class="form-control"
+                                   placeholder="Search Indent">
+
+                        </div>
+
+                    </div>
+
+                    <div class="table-responsive table-he-350">
+
+                        <table class="table table-bordered table-sm w-100 text-center"
+                               id="tblInvoiceDelete">
+
+                            <thead class=" table-info th-sti">
+                                <tr class="table-border-bottom">
+
+                                    <th>Indent Date</th>
+
+                                    <th>Indent No</th>
+
+                                    <th>Customer</th>
+
+                                    <th>DC No</th>
+
+                                    <th>Inv No</th>
+
+                                    <th style="width:60px;"></th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    @* popup2 delete confiramtion popup *@
+    <div class="modal fade"
+         id="deleteDispatchPopup"
+         tabindex="-1"
+         data-bs-backdrop="static"
+         data-bs-keyboard="false">
+
+        <div class="modal-dialog modal-xl">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h5 class="modal-title">
+                        Gro - Line Item Details
+                    </h5>
+
+                    <button class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row">
+
+                        <div class="col-md-12">
+
+                            <div><strong>Indent Date :</strong> <span id="delIndentDate"></span></div>
+                            <div><strong>Indent No :</strong> <span id="delIndentNo"></span></div>
+                            <div><strong>Customer :</strong> <span id="delCustomer"></span></div>
+                            <div><strong>Executive :</strong> <span id="delExecutive"></span></div>
+
+                            <br />
+
+                            <div><strong>Address :</strong> <span id="delAddress"></span></div>
+                            <div><strong>Contact :</strong> <span id="delContact"></span></div>
+                            <div><strong>Cell Phone :</strong> <span id="delPhone"></span></div>
+
+                            <div>
+                                <strong>Our DC No :</strong>
+                                <span id="delDCNo"></span>
+                            </div>
+
+                            <div>
+                                <strong>Our Inv No :</strong>
+                                <span id="delInvNo"></span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <hr />
+
+                    <div id="invoiceDeleteSection">
+
+                        <h6>Invoiced Parts</h6>
+
+                        <table class="table table-bordered table-sm text-center"
+                               id="tblDeleteInvoiceParts">
+
+                            <thead class="table-info th-sti">
+                                <tr class="table-border-bottom">
+                                    <th>Part No / Desc</th>
+                                    <th>Invoiced Qty</th>
+                                    <th>Unit Value</th>
+                                    <th>Invoice Value</th>
+                                </tr>
+                            </thead>
+
+                            <tbody></tbody>
+
+                        </table>
+
+                        <div class="text-end">
+
+                            <h5>
+                                Total :
+                                <span id="lblInvoiceTotal">0</span>
+                            </h5>
+
+                        </div>
+
+                        <hr />
+
+                        <div class="text-center">
+
+                            <label>
+
+                                Confirm Delete
+
+                                <input type="checkbox"
+                                       id="chkConfirmDelete" />
+
+                            </label>
+
+                        </div>
+
+                        <div class="modal-footer">
+
+                            <button class="btn btn-danger"
+                                    id="btnDeleteInvoice"
+                                    disabled>
+
+                                Delete
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <template id="invoiceDeleteRow">
+
+            <tr>
+
+                <td>{indentDateStr}</td>
+
+                <td>{indent}</td>
+
+                <td>{company_Name}</td>
+
+                <td>{dC_No}</td>
+
+                <td>{inv_No}</td>
+
+                <td class="text-center">
+
+                    <div class="dropdown">
+
+                        <a href="#"
+                           class="dropdown-toggle arrow-none card-drop"
+                           data-bs-toggle="dropdown">
+
+                            <i class="mdi mdi-dots-vertical"></i>
+
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-end">
+
+                            <a href="javascript:void(0)"
+                               class="dropdown-item"
+                               onclick="DeleteDispatchHeader('{gro_Disp_HeaderId}')">
+
+                                Delete
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        </template>
+        <template id="deleteInvoiceRow">
+
+            <tr>
+
+                <td>{groPartNo}</td>
+
+                <td>{qntyDispatched}</td>
+
+                <td>{ourPrice}</td>
+
+                <td>{invoiceValue}</td>
+
+            </tr>
+
+        </template>

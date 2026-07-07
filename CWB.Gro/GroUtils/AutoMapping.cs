@@ -60,6 +60,7 @@ namespace CWB.Gro.GroUtils
               .ForMember(m => m.OurPrice, m => m.MapFrom(src => src.OurPrice))
               .ForMember(m => m.GSTRate, m => m.MapFrom(src => src.GSTRate))
               .ForMember(m => m.HSNCode, m => m.MapFrom(src => src.HSNCode))
+              .ForMember(m => m.OurPartDescription, m => m.MapFrom(src => src.OurPartDescription))
               .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
             CreateMap<Gro_Part_ListVM, Gro_Part_List>()
@@ -73,11 +74,13 @@ namespace CWB.Gro.GroUtils
               .ForMember(m => m.OurPrice, m => m.MapFrom(src => src.OurPrice))
               .ForMember(m => m.GSTRate, m => m.MapFrom(src => src.GSTRate))
               .ForMember(m => m.HSNCode, m => m.MapFrom(src => src.HSNCode))
+               .ForMember(m => m.OurPartDescription, m => m.MapFrom(src => src.OurPartDescription))
               .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
 
             CreateMap<Gro_Disp_Header, Gro_Disp_HeaderVM>()
               .ForMember(m => m.Gro_Disp_HeaderId, m => m.MapFrom(src => src.Id))
+              .ForMember(m => m.HeaderCreationDate, m => m.MapFrom(src => src.CreationDate))
              
               .ForMember(m => m.CWB_Customer, m => m.MapFrom(src => src.CWB_Customer))
                .ForMember(m => m.Indent, m => m.MapFrom(src => src.Indent))
@@ -102,6 +105,7 @@ namespace CWB.Gro.GroUtils
 
             CreateMap<Gro_Disp_HeaderVM, Gro_Disp_Header>()
                .ForMember(m => m.Id, m => m.MapFrom(src => src.Gro_Disp_HeaderId))
+               .ForMember(m => m.CreationDate, m => m.MapFrom(src => src.HeaderCreationDate))
                 .ForMember(m => m.CWB_Customer, m => m.MapFrom(src => src.CWB_Customer))
                .ForMember(m => m.Indent, m => m.MapFrom(src => src.Indent))
               .ForMember(m => m.SentDate, m => m.MapFrom(src => src.SentDate))

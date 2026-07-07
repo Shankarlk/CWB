@@ -1,9 +1,74 @@
-﻿$(document).ready(function () {
+﻿
+var modalStack = [];
+$(document).on("show.bs.modal", ".modal", function () {
+
+    var currentModal = $(this);
+
+    if (modalStack.length > 0) {
+
+        modalStack[modalStack.length - 1]
+            .find(".modal-content")
+            .addClass("modal-stack-blur");
+
+    }
+
+    modalStack.push(currentModal);
+
+});
+
+$(document).on("hidden.bs.modal", ".modal", function () {
+
+    modalStack.pop();
+
+    if (modalStack.length > 0) {
+
+        modalStack[modalStack.length - 1]
+            .find(".modal-content")
+            .removeClass("modal-stack-blur");
+
+    }
+
+});
+$(document).ready(function () {
 
     loadGroPartWithStock();
     loadGroPartWithoutStock();
+    $("#txtWithStockSearch").on("keyup", filterWithStock);
+
+    $("#txtZeroStockSearch").on("keyup", filterZeroStock);
+
 
 });
+function filterWithStock() {
+
+    var search = $("#txtWithStockSearch").val().toLowerCase().trim();
+
+    $("#tblWithStock tbody tr").each(function () {
+
+        var row = $(this);
+
+        var part = row.find("td:eq(1)").text().toLowerCase().trim();
+
+        row.toggle(search === "" || part.indexOf(search) !== -1);
+
+    });
+
+}
+function filterZeroStock() {
+
+    var search = $("#txtZeroStockSearch").val().toLowerCase().trim();
+
+    $("#tblZeroStock tbody tr").each(function () {
+
+        var row = $(this);
+
+        var part = row.find("td:eq(1)").text().toLowerCase().trim();
+
+        row.toggle(search === "" || part.indexOf(search) !== -1);
+
+    });
+
+}
 function loadGroPartWithStock() {
 
     api.getbulk("/Gro/GetGroPartWithStock").then((data) => {
@@ -71,7 +136,9 @@ function LoadUpdateStock(ctrl) {
     $("#hdnGroPartListId").val(tr.find("td:eq(0)").text().trim());
     $("#txtGroPartNo").val(tr.find("td:eq(1)").text().trim());
     $("#txtCurrentStock").val(tr.find("td:eq(2)").text().trim());
-    
+    $("#btnPrintLabels").hide();
+    $("#btnLabelsStuck").hide();
+    $("#btnScanLabels").hide();
     
 }
 $("#txtQtyToAdd").on("input change", function () {
@@ -135,7 +202,8 @@ $("#btnPrintLabels").click(function () {
             });
 
            
-            $("#printLabelModal") .modal('show');
+            $("#printLabelModal").modal('show');
+            $("#btnLabelsStuck").show();
 
         })
         .catch((error) => {
@@ -215,6 +283,15 @@ $("#btnPrint").click(function () {
         printWindow.close();
 
     };
+
+});
+$("#btnLabelsStuck").click(function () {
+
+    $("#btnScanLabels").show();
+
+    $(this).hide();     // optional
+
+    toastr.success("Now scan the labels.");
 
 });
 $("#btnScanLabels").click(function () {

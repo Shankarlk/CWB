@@ -107,6 +107,10 @@ namespace CWB.App.Services.Gro
                     string value =
                         cell?.ToString()?.Trim();
 
+                    if(col==6)
+                    {
+                        continue;
+                    }
                     if (string.IsNullOrWhiteSpace(value))
                     {
                         return new UploadValidationResult
@@ -395,6 +399,12 @@ namespace CWB.App.Services.Gro
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             grodispheadervm.TenantId = tenantId;
             return await RestHelper<Gro_Indent_DispHeadVM>.PostAsync(uri, grodispheadervm, headers);
+        }
+        public async Task<bool> DeleteInvoiceHeader(long doctypeId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/deletegrodispatchheader/{doctypeId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
         }
     }
 }

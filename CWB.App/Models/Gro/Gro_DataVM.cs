@@ -40,6 +40,8 @@ namespace CWB.App.Models.Gro
 
         public int TotalRecordedQnty { get; set; }
         public int BalToReceive { get; set; }
+        public string DispatchStatus { get; set; } = "";
+        public int Ageing { get; set; }
         public long TenantId { get; set; }
     }
 }

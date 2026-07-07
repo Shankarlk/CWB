@@ -18,6 +18,7 @@ namespace CWB.Gro.ViewModels
 
         public int GSTRate { get; set; }
         public string HSNCode { get; set; }
+        public string OurPartDescription { get; set; } = string.Empty;
         public long TenantId { get; set; }
     }
 }

@@ -23,7 +23,7 @@ namespace CWB.Gro.ViewModels
 
         public char DC_Printed { get; set; }
         public DateTime? Delivered_Date { get; set; }
-
+        public DateTime? HeaderCreationDate { get; set; }
         public string DC_No { get; set; }
         public string Inv_No { get; set; }
         public char Inv_Printed { get; set; }

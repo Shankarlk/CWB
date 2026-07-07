@@ -265,6 +265,7 @@ namespace CWB.Gro.Services
                 gro.HSNCode = GroDataVM.HSNCode;
                 gro.GSTRate = GroDataVM.GSTRate;
                 gro.Part_Status = GroDataVM.Part_Status;
+                gro.OurPartDescription = GroDataVM.OurPartDescription;
                 gro = await _gro_part_listRepository.UpdateAsync(gro.Id, gro);
                // await _unitOfWork.CommitAsync();
             }
@@ -523,7 +524,56 @@ namespace CWB.Gro.Services
             {
                 try
                 {
-                    _gro_Disp_HeaderRepository.Remove(co);
+                    var header = await _gro_Disp_HeaderRepository.SingleOrDefaultAsync(x => x.Id == Id);
+
+                    if (header == null)
+                        return false;
+                    var alldsipatchdetails = await _gro_Disp_DetRepository.GetAllAsync();
+                    var dispatchDetails = alldsipatchdetails.Where(x => x.Gro_Disp_Header_ID == Id).ToList();
+
+                    foreach (var det in dispatchDetails)
+                    {
+                        var groData = await _gro_DataRepository .SingleOrDefaultAsync(x => x.Id == det.Gro_data_ID);
+
+                        if (groData != null)
+                        {
+                            groData.Bal_to_Disp += det.Qnty_Dispatched;
+
+                            var uptgro= _gro_DataRepository.UpdateAsync(groData.Id, groData);
+                        }
+                        var stock = await _GroStocklistRepository.SingleOrDefaultAsync(x => x.Gro_Part_List_ID == det.Gro_Part_No);
+
+                        if (stock != null)
+                        {
+                            stock.Qnty_on_Hand += det.Qnty_Dispatched;
+
+                            var uptstock= _GroStocklistRepository.UpdateAsync(stock.Id,stock);
+                        }
+
+
+                        var allslnos = await _indent_Part_Sl_NoRepository.GetAllAsync();
+                        var slNos =  allslnos.Where(x => x.Gro_Disp_Det_ID == det.Id).ToList();
+
+                        foreach (var sl in slNos)
+                        {
+                            var stockDet = await _gro_Stock_DetRepository.SingleOrDefaultAsync(x => x.Id == sl.Gro_Stock_Det_ID);
+
+                            if (stockDet != null)
+                            {
+                                stockDet.Sl_No_Status_ID = 6;
+
+                              var uptstockdet=  _gro_Stock_DetRepository.UpdateAsync(stockDet.Id,stockDet);
+                            }
+                            _indent_Part_Sl_NoRepository.Remove(sl);
+
+                        }
+
+                        _gro_Disp_DetRepository.Remove(det);
+
+
+                    }
+
+                        _gro_Disp_HeaderRepository.Remove(co);
                     await _unitOfWork.CommitAsync();
 
                     return true;

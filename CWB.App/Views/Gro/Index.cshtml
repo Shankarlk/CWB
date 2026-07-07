@@ -19,6 +19,11 @@
         #DCPreview td {
             border-width: 1.5px !important;
         }
+    .modal-stack-blur {
+        filter: blur(5px);
+        pointer-events: none;
+        user-select: none;
+    }
 </style>
 <div class="content">
     <div class="card">
@@ -35,7 +40,7 @@
                 }
             }
             <!-- Upload Section -->
-            <hr class="my-1" />
+           
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h5>
@@ -51,7 +56,7 @@
                     </button>
                 </div>
             </div>
-            <hr class="my-1" />
+            
 
             <!-- Dispatch Qty -->
 
@@ -73,41 +78,51 @@
                                 </tr>
                             </thead>
                             <tbody>
+
                                 <tr>
                                     <td>Full Qty to be Dispatched</td>
-                                    <td>xx</td>
-                                    <td></td>
-                                    <td>xx</td>
-                                    <td></td>
-                                    <td>xx</td>
-                                    <td>xx</td>
+
+                                    <td id="full0"></td>
+                                    <td id="full1"></td>
+                                    <td id="full2"></td>
+                                    <td id="full3"></td>
+                                    <td id="fullgt3"></td>
+                                    <td id="fulltotal"></td>
                                 </tr>
+
                                 <tr>
-                                    <td>Partial Qty Dispatched</td>
-                                    <td></td>
-                                    <td>xx</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>xx</td>
+                                    <td>Partial Qty to be Dispatched</td>
+
+                                    <td id="partial0"></td>
+                                    <td id="partial1"></td>
+                                    <td id="partial2"></td>
+                                    <td id="partial3"></td>
+                                    <td id="partialgt3"></td>
+                                    <td id="partialtotal"></td>
                                 </tr>
-                                <tr>
+
+                                <tr hidden>
                                     <td>Qty not Dispatched</td>
-                                    <td></td>
-                                    <td>xx</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>xx</td>
+
+                                    <td id="none0"></td>
+                                    <td id="none1"></td>
+                                    <td id="none2"></td>
+                                    <td id="none3"></td>
+                                    <td id="nonegt3"></td>
+                                    <td id="nonetotal"></td>
                                 </tr>
+
                                 <tr>
-                                    <td>Total</td>
-                                    <td>xx</td>
-                                    <td>xx</td>
-                                    <td>xx</td>
-                                    <td></td>
-                                    <td>xx</td>
-                                    <td>xx</td>
+
+                                    <td><b>Total</b></td>
+
+                                    <td id="total0"></td>
+                                    <td id="total1"></td>
+                                    <td id="total2"></td>
+                                    <td id="total3"></td>
+                                    <td id="totalgt3"></td>
+                                    <td id="grandtotal"></td>
+
                                 </tr>
                             </tbody>
                         </table>
@@ -123,7 +138,7 @@
                     </button>
                 </div>
             </div>
-            <hr class="my-1" />
+            
 
             <!-- Dispatch Details -->
 
@@ -131,7 +146,7 @@
                 <div class="col-md-9">
                     <h5>
                         Number of Dispatches waiting for Courier Dispatch Details
-                        Update : xx
+                        Update :  <span id="pendingCourierCount">0</span>
                     </h5>
                 </div>
 
@@ -152,7 +167,7 @@
                 </div>
 
                 <div class="col-md-3 text-end">
-                    <button class="btn btn-primary" data-bs-toggle="modal"
+                    <button class="btn btn-primary" id="btnUploadInvoice"
                            >
                        Upload Invoice
                     </button>
@@ -167,7 +182,7 @@
                 <div class="col-md-9">
 
                     <h5>
-                        Number of Indent waiting for Delivery Date Update : xx
+                        Number of Indent waiting for Delivery Date Update :  <span id="pendingDeliveryCount">0</span>
                     </h5>
 
                     <div class="table-responsive">
@@ -187,20 +202,18 @@
                             <tbody>
                                 <tr>
                                     <td>Full Qty to be Dispatched</td>
-                                    <td>xx</td>
-                                    <td></td>
-                                    <td>xx</td>
-                                    <td></td>
-                                    <td>xx</td>
-                                    <td>xx</td>
+                                    <td id="delivery0to2"></td>
+                                    <td id="delivery3to5"></td>
+                                    <td id="delivery6to7"></td>
+                                    <td id="delivery8to10"></td>
+                                    <td id="deliverygt10"></td>
+                                    <td id="deliveryTotal"></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="mt-2">
-                        Total No of Parts : xx
-                    </div>
+                   
 
                 </div>
 
@@ -211,7 +224,7 @@
                     </button>
                 </div>
             </div>
-            <hr class="my-1" />
+            
 
             <!-- Delivery Complete -->
 
@@ -362,9 +375,7 @@
 
                         <br />
 
-                        <button class="btn btn-outline-danger mt-5" style="display:none;">
-                            Abort Upload
-                        </button>
+                         
 
                     </div>
 
@@ -389,15 +400,7 @@
                             </tr>
                         </table>
 
-                        <div class="mt-5">
-
-                            <h6>
-                                Select if uploaded Entries need to be deleted
-                            </h6>
-
-
-
-                        </div>
+                        
 
                     </div>
 
@@ -469,7 +472,7 @@
 @* popup 1 Dispatch selection popup *@
 <div class="modal fade" id="dispatchPopup" tabindex="-1" data-bs-backdrop="static"
      data-bs-keyboard="false">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-full-width">
         <div class="modal-content">
 
             <div class="modal-header">
@@ -484,11 +487,14 @@
             </div>
 
             <div class="modal-body">
-
+                <div class="mb-2" id="divAgeingInfo" style="display:none;">
+                    <strong>Ageing :</strong>
+                    <span id="lblAgeing"></span>
+                </div>
                 <!-- Filters -->
                 <div class="row mb-3">
 
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <label>Indent</label>
                         <input type="text"
                                class="form-control"
@@ -506,76 +512,78 @@
                         <input id="txtToDate" type="date" class="form-control">
                     </div>
 
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <label>Dispatch Status</label>
-                        <select class="form-select">
-                            <option>All</option>
-                            <option>Partial Dispatch</option>
-                            <option>No Dispatch</option>
+                        <select class="form-select" id="ddlDispatchStatus">
+                            <option value="All">All</option>
+                            <option value="No Dispatch">No Dispatch</option>
+                            <option value="Partial Dispatch">Partial Dispatch</option>
                         </select>
                     </div>
-                    <div class="col-md-2">
+                   
+
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3">
                         <button type="button" id="btnClearFilter" class="btn btn-secondary w-100">
                             Clear
                         </button>
                     </div>
+                </div>
+                    <!-- Select All -->
+                    <div class="form-check mb-3">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               id="chkAll">
+
+                        <label class="form-check-label"
+                               for="chkAll">
+                            Select All
+                        </label>
+                    </div>
+
+                    <!-- Grid -->
+                    <div class="table-responsive  table-he-250">
+                        <table class="table table-sm table-bordered w-100 text-center" id="Dispatchselectiontable">
+                            <thead class=" table-info th-sti">
+                                <tr class="table-border-bottom">
+                                    <th></th>
+                                    <th>Indent Date</th>
+                                    <th>Indent No</th>
+                                    <th>Customer</th>
+                                    <th>Product</th>
+                                    <th>Order Qty</th>
+                                    <th>Bal Disp Qty</th>
+                                    <th>Qnty Avl</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                            </tbody>
+
+                        </table>
+                    </div>
 
                 </div>
 
-                <!-- Select All -->
-                <div class="form-check mb-3">
-                    <input class="form-check-input"
-                           type="checkbox"
-                           id="chkAll">
+                <div class="modal-footer">
+                    <button id="updatedispatchqnty" class="btn btn-primary" disabled
+                            data-bs-toggle="modal"
+                            data-bs-target="#dispatchQtyModal">
+                        Update Dispatch Qty
+                    </button>
 
-                    <label class="form-check-label"
-                           for="chkAll">
-                        Select All
-                    </label>
-                </div>
 
-                <!-- Grid -->
-                <div class="table-responsive  table-he-350">
-                    <table class="table table-sm table-bordered w-100 text-center" id="Dispatchselectiontable">
-                        <thead class=" table-info th-sti">
-                            <tr class="table-border-bottom">
-                                <th></th>
-                                <th>Indent Date</th>
-                                <th>Indent No</th>
-                                <th>Customer</th>
-                                <th>Product</th>
-                                <th>Order Qty</th>
-                                <th>Bal Disp Qty</th>
-                                <th>Qnty Avl</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                        </tbody>
-
-                    </table>
                 </div>
 
             </div>
-
-            <div class="modal-footer">
-                <button id="updatedispatchqnty" class="btn btn-primary" disabled
-                        data-bs-toggle="modal"
-                        data-bs-target="#dispatchQtyModal">
-                    Update Dispatch Qty
-                </button>
-
-
-            </div>
-
-        </div>
     </div>
 </div>
 @* popup 2 show Dispatch Details/gro data line item popup *@
 <div class="modal fade" id="dispatchDetailsPopup" tabindex="-1" data-bs-backdrop="static"
      data-bs-keyboard="false">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-full-width">
         <div class="modal-content">
 
             <div class="modal-header">
@@ -683,7 +691,7 @@
      data-bs-keyboard="false"
      aria-hidden="true">
 
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-full-width">
 
         <div class="modal-content">
 
@@ -751,7 +759,7 @@
                     Edit Dispatch Address
                 </button>
 
-                <button class="btn btn-primary">
+                <button class="btn btn-primary" id="btnReadyDispatch">
                     Ready for Dispatch
                 </button>
 
@@ -844,7 +852,25 @@
                         </button>
                     </div>
                 </div>
+                <!-- Last Scanned Label -->
 
+                <div class="row mb-3 align-items-center">
+
+                    <label class="col-6 col-form-label">
+                        Last Scanned QR Code
+                    </label>
+
+                    <div class="col-6">
+
+                        <input type="text"
+                               class="form-control"
+                               id="txtDispatchScannedQRCode"
+                               placeholder="Waiting for scan..."
+                               readonly />
+
+                    </div>
+
+                </div>
                 <!-- Balance -->
 
                 <div class="row mb-3 align-items-center">
@@ -918,7 +944,7 @@
      aria-labelledby="editDispatchAddressModalLabel"
      aria-hidden="true">
 
-    <div class="modal-dialog ">
+    <div class="modal-dialog  modal-lg">
 
         <div class="modal-content">
 
@@ -1162,7 +1188,7 @@
      aria-labelledby="dispatchDetailsDataUpdatePopupLabel"
      aria-hidden="true">
 
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-full-width">
 
         <div class="modal-content">
 
@@ -1239,7 +1265,7 @@
      aria-labelledby="dispatchdataupdatebyindentmodalLabel"
      aria-hidden="true">
 
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-full-width">
 
         <div class="modal-content">
 
@@ -1309,7 +1335,12 @@
                             id="btnEditDispatchAddressUpdate">
                         Edit Dispatch Address
                     </button>
-
+                    <button class="btn btn-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#InvoicePrintModal"
+                            id="btnPrintInvoiceUpdate">
+                        Print Invoice
+                    </button>
 
 
                     <button class="btn btn-primary"
@@ -1384,7 +1415,7 @@
      aria-labelledby="deliverydataupdatemodalLabel"
      aria-hidden="true">
 
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-full-width">
 
         <div class="modal-content">
 
@@ -1446,7 +1477,12 @@
                     </div>
 
                 </div>
+                <div id="divDeliveryAgeing" class="alert alert-info mb-3" style="display:none;">
 
+                    <strong>Ageing :</strong>
+                    <span id="lblDeliveryAgeing"></span>
+
+                </div>
                 <!-- Grid -->
                 <div class="table-responsive table-he-350">
 
@@ -1486,7 +1522,7 @@
      data-bs-keyboard="false"
      aria-hidden="true">
 
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-full-width">
 
         <div class="modal-content">
 
@@ -1597,7 +1633,7 @@
      data-bs-keyboard="false"
      aria-hidden="true">
 
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-full-width">
 
         <div class="modal-content">
 
@@ -3039,6 +3075,8 @@
         <td>{reqd_Quantity}</td>
         <td>{bal_to_Disp}</td>
         <td>{qntyAval}</td>
+        <td hidden>{dispatchStatus}</td>
+        <td hidden>{ageing}</td>
 
         <td class="text-center">
             <div class="dropdown">
@@ -3212,6 +3250,7 @@
         <td>{indent}</td>
         <td>{company_Name}</td>
         <td>{courier} </td>
+        <td hidden>{deliveryAgeing} </td>
         <td class="text-center">
             <div class="dropdown">
 

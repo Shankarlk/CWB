@@ -55,5 +55,7 @@ namespace CWB.App.Services.Gro
         Task<IEnumerable<Indent_Part_Sl_NoVM>> GetallGroIndentpartSlno();
         Task<Gro_DataVM> UpdateGroDatabaltoDispatch(Gro_DataVM companyVM);
         Task<Gro_Indent_DispHeadVM> PostGroIndentDispHeader(Gro_Indent_DispHeadVM grodispheadervm);
+
+        Task<bool> DeleteInvoiceHeader(long doctypeId);
         }
 }

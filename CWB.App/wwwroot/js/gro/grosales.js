@@ -1,15 +1,218 @@
-﻿$(document).ready(function () {
+﻿var dispatchAgeing = -1;
+var dispatchStatus = "All";
+var deliveryAgeing = -1;
+var modalStack = [];
+$(document).on("show.bs.modal", ".modal", function () {
+
+    var currentModal = $(this);
+
+    if (modalStack.length > 0) {
+
+        modalStack[modalStack.length - 1]
+            .find(".modal-content")
+            .addClass("modal-stack-blur");
+
+    }
+
+    modalStack.push(currentModal);
+
+});
+
+$(document).on("hidden.bs.modal", ".modal", function () {
+
+    modalStack.pop();
+
+    if (modalStack.length > 0) {
+
+        modalStack[modalStack.length - 1]
+            .find(".modal-content")
+            .removeClass("modal-stack-blur");
+
+    }
+
+});
+
+
+
+$(document).ready(function () {
     $("#preloaderblurred").show();
     loadGroUploadSummary();
     $("#preloaderblurred").hide();
 
+    $("#preloaderblurred").show();
+    loadDispatchAgeingSummary();
+    $("#preloaderblurred").hide();
+
+    $("#preloaderblurred").show();
+    loadDeliveryAgeingSummary();
+    $("#preloaderblurred").hide();
+
+    $("#preloaderblurred").show();
+    loadPendingCourierCount();
+    $("#preloaderblurred").hide();
+
 });
+function loadDispatchAgeingSummary() {
 
-$('#groUploadModal').on('shown.bs.modal', function () {
+    api.getbulk("/Gro/GetDispatchAgeingSummary")
 
-    loadGroUploadSummary();
+        .then(function (data) {
 
-});
+            bindDispatchAgeingSummary(data);
+
+        })
+
+        .catch(function (err) {
+
+            console.log(err);
+
+        });
+
+}
+
+
+function makeHyperLink(control, value, status, ageing) {
+
+    if (value == 0) {
+
+        control.text("0");
+
+        return;
+    }
+
+    control.html(
+        '<a href="javascript:void(0);" ' +
+        'onclick="openDispatchAgeing(\'' + status + '\',' + ageing + ')">' +
+        value +
+        '</a>'
+    );
+}
+function bindDispatchAgeingSummary(data) {
+
+    // Full Qty to be Dispatched
+    makeHyperLink($("#full0"), data.full.day0, "No Dispatch", 0);
+    makeHyperLink($("#full1"), data.full.day1, "No Dispatch", 1);
+    makeHyperLink($("#full2"), data.full.day2, "No Dispatch", 2);
+    makeHyperLink($("#full3"), data.full.day3, "No Dispatch", 3);
+    makeHyperLink($("#fullgt3"), data.full.gt3, "No Dispatch", 4);
+
+    $("#fulltotal").text(data.full.total);
+
+    // Partial Qty Dispatched
+    makeHyperLink($("#partial0"), data.partial.day0, "Partial Dispatch", 0);
+    makeHyperLink($("#partial1"), data.partial.day1, "Partial Dispatch", 1);
+    makeHyperLink($("#partial2"), data.partial.day2, "Partial Dispatch", 2);
+    makeHyperLink($("#partial3"), data.partial.day3, "Partial Dispatch", 3);
+    makeHyperLink($("#partialgt3"), data.partial.gt3, "Partial Dispatch", 4);
+
+    $("#partialtotal").text(data.partial.total);
+
+    // Totals (Ageing only, no status filter)
+    makeHyperLink($("#total0"),
+        data.full.day0 + data.partial.day0,
+        "All",
+        0);
+
+    makeHyperLink($("#total1"),
+        data.full.day1 + data.partial.day1,
+        "All",
+        1);
+
+    makeHyperLink($("#total2"),
+        data.full.day2 + data.partial.day2,
+        "All",
+        2);
+
+    makeHyperLink($("#total3"),
+        data.full.day3 + data.partial.day3,
+        "All",
+        3);
+
+    makeHyperLink($("#totalgt3"),
+        data.full.gt3 + data.partial.gt3,
+        "All",
+        4);
+
+    $("#grandtotal").text(
+        data.full.total +
+        data.partial.total
+    );
+}
+function openDispatchAgeing(status, ageing) {
+
+    dispatchStatus = status;
+    dispatchAgeing = ageing;
+
+    $("#dispatchPopup").modal("show");
+
+}
+function loadPendingCourierCount() {
+
+    api.getbulk("/Gro/GetPendingCourierCount")
+        .then(function (data) {
+
+            $("#pendingCourierCount").text(data);
+
+        })
+        .catch(function (err) {
+
+            console.log(err);
+
+        });
+
+}
+function loadDeliveryAgeingSummary() {
+
+    api.getbulk("/Gro/GetDeliveryAgeingSummary")
+        .then(function (data) {
+
+            bindDeliveryAgeingSummary(data);
+
+        })
+        .catch(function (err) {
+
+            console.log(err);
+
+        });
+
+}
+function bindDeliveryAgeingSummary(data) {
+
+    $("#pendingDeliveryCount").text(data.total);
+
+    makeDeliveryHyperLink($("#delivery0to2"), data.day0to2, 0);
+    makeDeliveryHyperLink($("#delivery3to5"), data.day3to5, 1);
+    makeDeliveryHyperLink($("#delivery6to7"), data.day6to7, 2);
+    makeDeliveryHyperLink($("#delivery8to10"), data.day8to10, 3);
+    makeDeliveryHyperLink($("#deliverygt10"), data.daygt10, 4);
+
+    $("#deliveryTotal").text(data.total);
+
+}
+function makeDeliveryHyperLink(control, value, ageing) {
+
+    if (value == 0) {
+
+        control.text("0");
+
+        return;
+    }
+
+    control.html(
+        '<a href="javascript:void(0);" ' +
+        'onclick="openDeliveryAgeing(' + ageing + ')">' +
+        value +
+        '</a>'
+    );
+
+}
+function openDeliveryAgeing(ageing) {
+
+    deliveryAgeing = ageing;
+
+    $("#deliverydataupdatemodal").modal("show");
+}
+
 $('#groUploadModal').on('hidden.bs.modal', function () {
 
     // Clear selected file
@@ -64,7 +267,8 @@ function startGroUpload() {
             if (response.success) {
 
                 $("#preloaderblurred").hide();
-                loadGroUploadSummary();
+                $("#IndentCount").text(response.indentCount);
+                $("#ProductCount").text(response.productCount);
 
                 alert("Upload Completed");
             }
@@ -86,23 +290,50 @@ function loadGroUploadSummary() {
         $("#LastUpdatedDate")
             .text(response.lastUpdatedDate);
 
-        $("#IndentCount")
-            .text(response.indentCount);
+        //$("#IndentCount")
+        //    .text(response.indentCount);
 
-        $("#ProductCount")
-            .text(response.productCount);
+        //$("#ProductCount")
+        //    .text(response.productCount);
     });
 }
+
 $('#dispatchPopup').on('shown.bs.modal', function () {
     $("#preloaderblurred").show();
-    loadDispatchSelection();
+    loadDispatchSelection(function () {
+
+        // Show / Hide Ageing
+        if (dispatchAgeing > -1) {
+
+            $("#lblAgeing").text(
+                dispatchAgeing == 4 ? "> 3" : dispatchAgeing
+            );
+
+            $("#divAgeingInfo").show();
+
+        }
+        else {
+
+            $("#divAgeingInfo").hide();
+
+        }
+
+        // Apply Dispatch Status selected from dashboard
+        $("#ddlDispatchStatus").val(dispatchStatus);
+
+        // Filter after grid is loaded
+        applyFilters();
+
+    });
     $("#preloaderblurred").hide();
     $('#txtIndentSearch').on('keyup', applyFilters);
-
+    $('#ddlDispatchStatus').on('change', applyFilters);
     $('#txtFromDate,#txtToDate').on('change', applyFilters);
     function applyFilters() {
 
         var indent = $('#txtIndentSearch').val().toLowerCase().trim();
+
+        var status = $('#ddlDispatchStatus').val();
 
         var from = $('#txtFromDate').val()
             ? new Date($('#txtFromDate').val())
@@ -118,10 +349,16 @@ $('#dispatchPopup').on('shown.bs.modal', function () {
         $('#Dispatchselectiontable tbody tr').each(function () {
 
             var row = $(this);
+            var rowAgeing = parseInt(row.find("td:eq(13)").text());
+
+            var matchAgeing =
+                dispatchAgeing == -1 || rowAgeing == dispatchAgeing;
 
             var rowIndent = row.find('td:eq(6)').text().toLowerCase().trim();
 
             var rowDate = parseDate(row.find('td:eq(5)').text().trim());
+
+            var rowStatus = row.find('td:eq(12)').text().trim();
 
             var matchIndent = indent === "" || rowIndent.includes(indent);
 
@@ -129,7 +366,9 @@ $('#dispatchPopup').on('shown.bs.modal', function () {
 
             var matchTo = !to || rowDate <= to;
 
-            row.toggle(matchIndent && matchFrom && matchTo);
+            var matchStatus = status === "All" || rowStatus === status;
+
+            row.toggle(matchIndent && matchFrom && matchTo &&matchStatus &&  matchAgeing );
 
         });
 
@@ -139,7 +378,7 @@ $('#dispatchPopup').on('shown.bs.modal', function () {
         $('#txtIndentSearch').val('');
         $('#txtFromDate').val('');
         $('#txtToDate').val('');
-
+        $('#ddlDispatchStatus').val('All');
         applyFilters();   // All rows become visible because no filters are applied
     });
     function parseDate(dateStr) {
@@ -203,6 +442,30 @@ $('#dispatchPopup').on('shown.bs.modal', function () {
 
 
 });
+$('#dispatchPopup').on('hidden.bs.modal', function () {
+
+    // Reset global variables
+    dispatchAgeing = -1;
+    dispatchStatus = "All";
+
+    // Hide Ageing Information
+    $("#divAgeingInfo").hide();
+    $("#lblAgeing").text("");
+
+    // Reset Filters
+    $("#txtIndentSearch").val("");
+    $("#txtFromDate").val("");
+    $("#txtToDate").val("");
+    $("#ddlDispatchStatus").val("All");
+
+    // Reset Selection
+    $("#chkAll").prop("checked", false);
+    $("#Dispatchselectiontable tbody input[type=checkbox]").prop("checked", false);
+
+    // Disable Button
+    $("#updatedispatchqnty").prop("disabled", true);
+
+});
 function ShowDispatchDetails(ele) {
 
     var item = $(ele);
@@ -258,7 +521,7 @@ function ShowDispatchDetails(ele) {
     $('#dispatchDetailsPopup').modal('show');
 
 }
-function loadDispatchSelection() {
+function loadDispatchSelection(callback) {
 
 
 
@@ -287,7 +550,8 @@ function loadDispatchSelection() {
             //data[i].woType = "";
             $(tablebody).append(AppUtil.ProcessTemplateData("dispatchSelectionRow", data[i]));
         }
-       
+        if (callback)
+            callback();
     }).catch((error) => {
     });
 
@@ -302,45 +566,11 @@ $('#dispatchQtyModal').on('show.bs.modal', function () {
 
         return false; // first row is enough since all selected rows have same indent
     });
-    loadInvDcControlButtons();
+    
     loadDispatchData(indentNo);
 
 });
-function loadInvDcControlButtons() {
-
-    api.getbulk("/Gro/GetInvDcControl")
-        .then((data) => {
-
-            // Hide both by default
-            $("#btnPrintDC").hide();
-            $("#btnPrintInvoice").hide();
-
-            // No record found
-            if (!data)
-                return;
-
-            // Show DC button
-            if ((data.dC_Enable || "").toUpperCase() === "Y") {
-                $("#btnPrintDC").show();
-            }
-
-            // Show Invoice button
-            if ((data.inv_Print_Enable || "").toUpperCase() === "Y") {
-                $("#btnPrintInvoice").show();
-            }
-
-        })
-        .catch((error) => {
-
-            console.log(error);
-
-            // Keep both hidden if an error occurs
-            $("#btnPrintDC").hide();
-            $("#btnPrintInvoice").hide();
-
-        });
-
-}
+ 
 function loadDispatchData(indentNo) {
 
     api.getbulk("/Gro/GetDispatchData?indentNo=" + encodeURIComponent(indentNo))
@@ -413,8 +643,40 @@ function bindDispatchGrid(data) {
             AppUtil.ProcessTemplateData("dispatchQtyRow", data[i])
         );
     }
+    updateDispatchButtons();
 
 }
+function updateDispatchButtons() {
+
+    var hasScannedQty = false;
+
+    $("#Dispheadertable tbody tr").each(function () {
+
+        var scannedQty = parseInt($(this).find("td:eq(6)").text()) || 0;
+
+        if (scannedQty > 0) {
+            hasScannedQty = true;
+            return false;
+        }
+
+    });
+
+    $("#btnReadyDispatch").prop("disabled", !hasScannedQty);
+
+    $("#btnOpenDCPrint").prop("disabled", true);
+
+    $("#btnPrintInvoice").prop("disabled", true);
+
+}
+$("#btnReadyDispatch").click(function () {
+
+    $("#btnOpenDCPrint").prop("disabled", false);
+
+    $("#btnPrintInvoice").prop("disabled", false);
+
+    $(this).prop("disabled", true);
+
+});
 function loadDispatchAddress() {
 
     var headerId = $("#hdnGroDispHeaderId").val();
@@ -718,10 +980,12 @@ $("#btnUpdatedispatchdate").click(function () {
             }
             api.post("/Gro/UpdateDispatchDetailByheader", model)
                 .then((result) => {
-
+                    loadDispatchDetailsDataUpdate();
 
                     $("#dispatchdataupdatebyindentmodal").modal("hide");
                     // Unique - proceed with Update API
+                    loadDeliveryAgeingSummary();
+                    loadPendingCourierCount();
 
                 })
                 .catch((err) => {
@@ -744,6 +1008,39 @@ $("#btnUpdatedispatchdate").click(function () {
 $("#deliverydataupdatemodal").on("show.bs.modal", function () {
 
     LoadDeliveryPendingList();
+    if (deliveryAgeing > -1) {
+
+        $("#divDeliveryAgeing").show();
+
+        switch (deliveryAgeing) {
+
+            case 0:
+                $("#lblDeliveryAgeing").text("0 - 2 Days");
+                break;
+
+            case 1:
+                $("#lblDeliveryAgeing").text("3 - 5 Days");
+                break;
+
+            case 2:
+                $("#lblDeliveryAgeing").text("6 - 7 Days");
+                break;
+
+            case 3:
+                $("#lblDeliveryAgeing").text("8 - 10 Days");
+                break;
+
+            case 4:
+                $("#lblDeliveryAgeing").text("> 10 Days");
+                break;
+        }
+
+    }
+    else {
+
+        $("#divDeliveryAgeing").hide();
+
+    }
     $("#txtDeliveryIndentSearch").on("keyup", FilterDeliveryGrid);
 
     $("#txtDeliveryCourierSearch").on("keyup", FilterDeliveryGrid);
@@ -761,64 +1058,78 @@ $("#deliverydataupdatemodal").on("show.bs.modal", function () {
         FilterDeliveryGrid();
 
     });
-    function FilterDeliveryGrid() {
-
-        var indent = $("#txtDeliveryIndentSearch").val().toLowerCase().trim();
-        var courier = $("#txtDeliveryCourierSearch").val().toLowerCase().trim();
-
-        var fromDate = $("#txtDeliveryFromDate").val();
-        var toDate = $("#txtDeliveryToDate").val();
-
-        $("#deliverydatatable tbody tr").each(function () {
-
-            var row = $(this);
-
-            var dispatchDate = row.find("td:eq(1)").text().trim(); // dd-MM-yyyy
-            var rowIndent = row.find("td:eq(2)").text().toLowerCase().trim();
-            var rowCustomer = row.find("td:eq(3)").text().toLowerCase().trim();
-            var rowCourier = row.find("td:eq(4)").text().toLowerCase().trim();
-
-            var show = true;
-
-            // Indent filter
-            if (indent !== "" && rowIndent.indexOf(indent) === -1) {
-                show = false;
-            }
-
-            // Courier filter
-            if (courier !== "" && rowCourier.indexOf(courier) === -1) {
-                show = false;
-            }
-
-            // Date filter
-            if (show && (fromDate !== "" || toDate !== "")) {
-
-                var parts = dispatchDate.split("-");
-                var rowDate = new Date(parts[2], parts[1] - 1, parts[0]);
-
-                if (fromDate !== "") {
-
-                    var from = new Date(fromDate);
-
-                    if (rowDate < from)
-                        show = false;
-                }
-
-                if (toDate !== "") {
-
-                    var to = new Date(toDate);
-
-                    if (rowDate > to)
-                        show = false;
-                }
-            }
-
-            row.toggle(show);
-
-        });
-
-    }
+  
 });
+function FilterDeliveryGrid() {
+
+    var indent = $("#txtDeliveryIndentSearch").val().toLowerCase().trim();
+    var courier = $("#txtDeliveryCourierSearch").val().toLowerCase().trim();
+
+    var fromDate = $("#txtDeliveryFromDate").val();
+    var toDate = $("#txtDeliveryToDate").val();
+
+    $("#deliverydatatable tbody tr").each(function () {
+
+        var row = $(this);
+        var rowAgeing = parseInt(row.find("td:eq(5)").text());
+        var dispatchDate = row.find("td:eq(1)").text().trim(); // dd-MM-yyyy
+        var rowIndent = row.find("td:eq(2)").text().toLowerCase().trim();
+        var rowCustomer = row.find("td:eq(3)").text().toLowerCase().trim();
+        var rowCourier = row.find("td:eq(4)").text().toLowerCase().trim();
+
+        var show = true;
+
+        // Indent filter
+        if (indent !== "" && rowIndent.indexOf(indent) === -1) {
+            show = false;
+        }
+        var matchAgeing = false;
+
+        if (deliveryAgeing == -1)
+            matchAgeing = true;
+        else if (deliveryAgeing == 0)
+            matchAgeing = rowAgeing >= 0 && rowAgeing <= 2;
+        else if (deliveryAgeing == 1)
+            matchAgeing = rowAgeing >= 3 && rowAgeing <= 5;
+        else if (deliveryAgeing == 2)
+            matchAgeing = rowAgeing >= 6 && rowAgeing <= 7;
+        else if (deliveryAgeing == 3)
+            matchAgeing = rowAgeing >= 8 && rowAgeing <= 10;
+        else if (deliveryAgeing == 4)
+            matchAgeing = rowAgeing >= 11;
+        // Courier filter
+        if (courier !== "" && rowCourier.indexOf(courier) === -1) {
+            show = false;
+        }
+
+        // Date filter
+        if (show && (fromDate !== "" || toDate !== "")) {
+
+            var parts = dispatchDate.split("-");
+            var rowDate = new Date(parts[2], parts[1] - 1, parts[0]);
+
+            if (fromDate !== "") {
+
+                var from = new Date(fromDate);
+
+                if (rowDate < from)
+                    show = false;
+            }
+
+            if (toDate !== "") {
+
+                var to = new Date(toDate);
+
+                if (rowDate > to)
+                    show = false;
+            }
+        }
+
+        row.toggle(show && matchAgeing);
+
+    });
+
+}
 function LoadDeliveryPendingList() {
     api.getbulk("/Gro/GetPendingDeliveryDetails")
         .then((data) => {
@@ -847,7 +1158,7 @@ function LoadDeliveryPendingList() {
                 );
             }
 
-
+            FilterDeliveryGrid();
         })
         .catch((err) => {
 
@@ -855,6 +1166,22 @@ function LoadDeliveryPendingList() {
 
         });
 }
+
+
+$("#deliverydataupdatemodal").on("hidden.bs.modal", function () {
+
+    deliveryAgeing = -1;
+
+    $("#divDeliveryAgeing").hide();
+
+    $("#txtDeliveryIndentSearch").val("");
+    $("#txtDeliveryCourierSearch").val("");
+    $("#txtDeliveryFromDate").val("");
+    $("#txtDeliveryToDate").val("");
+
+});
+
+
 function LoadDeliveryDetails(ele, mode) {
 
     var tr = $(ele).closest("tr");
@@ -995,6 +1322,7 @@ $("#btnUpdateDeliveryData").click(function () {
 
                 // Reload the delivery list if required
                 LoadDeliveryPendingList();
+                loadDeliveryAgeingSummary();
             }
             else {
 
@@ -1261,11 +1589,14 @@ $("#btnSaveExitDispatch").click(function () {
 
         .then(function (data) {
 
+            const indentId = $("#hdnIndentId").val();
+
+            loadDispatchData(indentId);
             // Close current popup
             $("#lineItemDispatchQtyModal").modal("hide");
 
             // Refresh parent dispatch grid
-            loadDispatchDetails($("#hdnIndentId").val());
+           
 
             // Optional message
             // AppUtil.MessageBox("Dispatch quantity updated successfully.", 1);
@@ -2079,5 +2410,48 @@ ${printContents}
         printWindow.close();
 
     }, 500);
+
+});
+
+$("#btnPrintInvoiceUpdate").click(function () {
+
+    var headerId = $("#updateHeaderId").val();
+
+    api.getbulk("/Gro/GetInvoicePrintData?headerId=" + encodeURIComponent(headerId))
+
+        .then(function (data) {
+
+            bindInvoice(data);
+
+        })
+
+        .catch(function (err) {
+
+            console.log(err);
+
+        });
+
+});
+$("#btnUploadInvoice").click(function () {
+
+    api.getbulk("/Gro/GetPendingInvoicesForUpload")
+        .then(function (data) {
+
+            //console.log(data);
+
+            //data.forEach(function (invoice) {
+
+            //    console.log(invoice.header);
+
+            //    console.log(invoice.details);
+
+            //});
+
+        })
+        .catch(function (err) {
+
+            console.log(err);
+
+        });
 
 });

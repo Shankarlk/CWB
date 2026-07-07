@@ -1,5 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    <style>
+        .modal-stack-blur {
+            filter: blur(5px);
+            pointer-events: none;
+            user-select: none;
+        }
+    </style>
 <div class="container-fluid">
 
     <div class="row mb-4">
@@ -36,7 +43,7 @@
                            class="form-control"
                            placeholder="Search Part No / Description" />
 
-                    <div class="table-responsive table-he-500 mt-3">
+                    <div class="table-responsive  mt-3">
 
                         <table class="table table-bordered table-hover"
                                id="tblWithStock">
@@ -82,7 +89,7 @@
                            class="form-control"
                            placeholder="Search Part No / Description" />
 
-                    <div class="table-responsive table-he-500 mt-3">
+                    <div class="table-responsive   mt-3">
 
                         <table class="table table-bordered table-hover"
                                id="tblZeroStock">
@@ -117,198 +124,260 @@
     <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
         <div class="modal-content">
 
-            <div class="modal-header">
-                <h5 class="modal-title">Gro Part Stock Update</h5>
+            <div class="modal-header position-relative">
+
+                <h5 class="modal-title position-absolute start-50 translate-middle-x">
+                    Gro Part Stock Update
+                </h5>
+
                 <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"></button>
+                        class="btn-close ms-auto"
+                        data-bs-dismiss="modal">
+                </button>
+
             </div>
 
             <div class="modal-body">
 
                 <input type="hidden" id="hdnGroPartListId" />
 
-                <!-- Row 1 -->
-                <div class="row mb-1 align-items-end">
+                <div class="mx-auto" style="width:850px;">
 
-                    <div class="col-md-7">
+                    <!-- Gro Part -->
+                    <div class="mb-2">
+
                         <label class="form-label">Gro Part No</label>
+
                         <input type="text"
                                id="txtGroPartNo"
                                class="form-control"
-                               readonly>
+                               style="width:300px;"
+                               readonly />
+
                     </div>
 
-                </div>
+                    <!-- Current Stock -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
 
-                <!-- Row 2 -->
-                <div class="row mb-1 align-items-center">
+                        <div style="width:520px;">
 
-                    <div class="col-md-8">
-                        <label class="mb-0">
                             Current Stock of
-                            <span id="lblCurrentStockText">0</span>
-                        </label>
-                    </div>
+                            <b><span id="lblCurrentStockText">xxx</span></b>
 
-                    <div class="col-md-4">
+                        </div>
+
                         <input type="text"
                                id="txtCurrentStock"
                                class="form-control text-end"
-                               readonly>
+                               style="width:120px;"
+                               readonly />
+
                     </div>
 
-                </div>
+                    <!-- Qty -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
 
-                <!-- Row 3 -->
-                <div class="row mb-1 align-items-center">
+                        <div style="width:520px;">
 
-                    <div class="col-md-8">
-                        <label class="mb-0">
-                            Qty to add to Stock <span class="text-danger">*</span>
-                        </label>
+                            Qty to add to Stock
+                            <span class="text-danger">*</span>
+
+                        </div>
+
+                        <input id="txtQtyToAdd"
+                               class="form-control text-end"
+                               style="width:120px;" />
+
                     </div>
 
-                    <div class="col-md-4">
-                        <input  
-                               id="txtQtyToAdd"
-                               class="form-control">
-                    </div>
+                    <!-- Print -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
 
-                </div>
+                        <div style="width:520px;">
 
-                <!-- Row 4 -->
-                <div class="row mb-1 align-items-center">
+                            Sticker(s) printed. Please Stick
+                            <br />
+                            one MRP Label per Box / Packet
 
-                    <div class="col-md-8">
-                        Sticker(s) printed. Please Stick
-                        <br>
-                        one MRP Label per Box / Packet
-                    </div>
+                        </div>
 
-                    <div class="col-md-3">
-                        <button class="btn btn-primary w-100"
-                                id="btnPrintLabels">
+                        <button class="btn btn-primary"
+                                id="btnPrintLabels"
+                                style="width:120px;">
+
                             Print MRP Label
+
                         </button>
+
                     </div>
 
-                </div>
+                    <!-- Labels Stuck -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
 
-                <!-- Row 5 -->
-                <div class="row mb-1 align-items-center">
+                        <div style="width:520px;">
 
-                    <div class="col-md-8">
-                        Confirm Labels are stuck are on Boxes / Packets
-                    </div>
+                            Confirm Labels are stuck are on Boxes / Packets
 
-                    <div class="col-md-3">
-                        <button class="btn btn-primary w-100"
-                                id="btnLabelsStuck">
+                        </div>
+
+                        <button class="btn btn-primary"
+                                id="btnLabelsStuck"
+                                style="width:120px;">
+
                             Labels Stuck
+
                         </button>
+
                     </div>
 
-                </div>
+                    <!-- Scan -->
+                    <div class="text-center mb-2">
 
-                <!-- Row 6 -->
-                <div class="row mb-1 align-items-center">
+                        <button class="btn btn-primary px-5"
+                                id="btnScanLabels">
 
-                    <div class="col text-center">
-                        <button class="btn btn-primary" id="btnScanLabels">
                             Scan Labels
+
                         </button>
+
                     </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
 
-                </div>
+                        <div style="width:520px;">
 
-                <!-- Row 7 -->
-                <div class="row mb-1 align-items-center">
+                            Last Scanned QR Code
 
-                    <div class="col-md-8">
-                        Number of Boxes Scanned
+                        </div>
+
+                        <input type="text"
+                               id="txtScannedQRCode"
+                               class="form-control"
+                               style="width:250px;"
+                               placeholder="Waiting for scan..."
+                               readonly />
+
                     </div>
+                    <!-- Boxes -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
 
-                    <div class="col-md-2">
+                        <div style="width:520px;">
+
+                            Number of Boxes Scanned
+
+                        </div>
+
                         <input type="text"
                                id="txtBoxesScanned"
                                class="form-control text-end"
-                               readonly>
-                    </div>
-
-                </div>
-
-                <!-- Summary -->
-                <div class="border rounded p-3 mx-auto mb-4"
-                     style="width:380px;border-style:dashed!important;">
-
-                    <table class="table table-borderless table-sm mb-3">
-
-                        <tr>
-                            <td>Qty added to Stock Successfully</td>
-                            <td id="lblQtyAdded">xxx</td>
-                        </tr>
-
-                        <tr>
-                            <td>Current Stock</td>
-                            <td id="lblUpdatedStock">xxxxx</td>
-                        </tr>
-
-                    </table>
-
-                    <div class="text-center">
-
-                        <button class="btn btn-primary"
-                                id="btnSaveExit">
-                            Save & Exit
-                        </button>
+                               style="width:120px;"
+                               readonly />
 
                     </div>
 
-                </div>
+                    <!-- Success Box -->
 
-                <!-- Validation -->
-                <div class="border rounded p-3 mx-auto"
-                      >
+                    <div class="mx-auto mb-5"
+                         style="width:330px;
+                    border:1px dashed #666;
+                    border-radius:8px;
+                    padding:2px;">
 
-                    <table class="table table-borderless table-sm">
+                        <table class="table table-borderless table-sm mb-3">
 
-                        <tr>
-                            <td>Number of Labels Printed</td>
-                            <td id="lblPrinted">xxx</td>
-                        </tr>
+                            <tr>
 
-                        <tr>
-                            <td>Number of Labels Scanned</td>
-                            <td id="lblScanned">xxx</td>
-                        </tr>
+                                <td>Qty added to Stock Successfully</td>
 
-                        <tr class="text-danger fw-bold">
-                            <td>Number of Printed Labels not Scanned</td>
-                            <td id="lblPending">xxx</td>
-                        </tr>
+                                <td id="lblQtyAdded">xxx</td>
 
-                    </table>
+                            </tr>
 
-                    <div class="row mb-1 align-items-center">
+                            <tr>
 
-                        <button class="btn btn-primary"
-                                id="btnRescan">
-                            Re-Scan
-                        </button>
+                                <td>Current Stock</td>
+
+                                <td id="lblUpdatedStock">xxxxx</td>
+
+                            </tr>
+
+                        </table>
+
+                        <div class="text-center">
+
+                            <button class="btn btn-primary"
+                                    id="btnSaveExit">
+
+                                Save & Exit
+
+                            </button>
+
+                        </div>
 
                     </div>
 
-                    <div class="row mb-1 align-items-center">
+                    <!-- Validation Box -->
 
-                        <button type="button"
-                                class="btn btn-primary"
-                                id="btnUpdateStock"
-                                data-bs-toggle="modal"
-                                data-bs-target="#deleteLabelsModal">
-                            Update Stock with Scanned Labels &
-                            Delete / Cancel Labels not Scanned
-                        </button>
+                    <div class="mx-auto"
+                         style="width:430px;
+                    border:1px dashed #666;
+                    border-radius:8px;
+                    padding:2px;">
+
+                        <table class="table table-borderless table-sm">
+
+                            <tr>
+
+                                <td>Number of Labels Printed</td>
+
+                                <td id="lblPrinted">xxx</td>
+
+                            </tr>
+
+                            <tr>
+
+                                <td>Number of Labels Scanned</td>
+
+                                <td id="lblScanned">xxx</td>
+
+                            </tr>
+
+                            <tr class="text-danger fw-bold">
+
+                                <td>Number of Printed Labels not Scanned</td>
+
+                                <td id="lblPending">xxx</td>
+
+                            </tr>
+
+                        </table>
+
+                        <div class="text-center mb-3">
+
+                            <button class="btn btn-primary"
+                                    id="btnRescan"
+                                    style="width:120px;">
+
+                                Re-Scan
+
+                            </button>
+
+                        </div>
+
+                        <div class="text-center">
+
+                            <button type="button"
+                                    class="btn btn-primary"
+                                    id="btnUpdateStock"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteLabelsModal"
+                                    style="width:340px;">
+
+                                Update Stock with Scanned Labels &
+                                Delete / Cancel Labels not Scanned
+
+                            </button>
+
+                        </div>
 
                     </div>
 
