@@ -8037,3 +8037,12 @@
 2026-07-07 10:11:31 | ConfigureServices started
 2026-07-07 10:11:33 | ConfigureServices completed successfully
 2026-07-07 10:11:34 | Configure pipeline started
+2026-07-07 11:30:58 | Program.Main started
+2026-07-07 11:30:58 | Building host
+2026-07-07 11:31:02 | Configuring WebHost
+2026-07-07 11:31:18 | Startup constructor started
+2026-07-07 11:31:21 | HOST_DEFAULT_SWITCH_IP = '192.168.1.50'
+2026-07-07 11:31:21 | Startup constructor completed successfully
+2026-07-07 11:31:23 | ConfigureServices started
+2026-07-07 11:31:29 | ConfigureServices completed successfully
+2026-07-07 11:31:32 | Configure pipeline started
