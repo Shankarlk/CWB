@@ -7,6 +7,7 @@ using CWB.App.Services.Masters;
 using CWB.App.Services.ProductionPlanWo;
 using CWB.App.Services.Routings;
 using CWB.App.Services.CompanySettings;
+using CWB.App.Models.Plants;
 using CWB.Constants.UserIdentity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -82,6 +83,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> WOpost(WorkOrdersVM workOrdersVM)
         {
             List<WorkOrdersVM> workOrdersVMs = new List<WorkOrdersVM>();
+            List<WorkOrdersVM> timeslotwo = new List<WorkOrdersVM>();
             WorkOrdersVM postWO = null;
             var message = await checkmissing(workOrdersVM);
             Selected_Sales_OrderVM selected_Sales_OrderVMs1 = (Selected_Sales_OrderVM)((OkObjectResult)message).Value;
@@ -223,7 +225,11 @@ namespace CWB.App.Controllers
                 }
 
 
-
+                if(postWO!=null)
+                {
+                    timeslotwo.Add(postWO);
+                    await EnsureTimeslotsForWO(timeslotwo);
+                }
 
 
 
@@ -399,21 +405,21 @@ namespace CWB.App.Controllers
                             //return Ok(somiss);
                         }
 
-                        if (!timeslotList.Any(t => t.PlantId == mc.MachinePlantId))
-                        {
-                            var plant = await _plantService.GetPlant(mc.MachinePlantId);
+                        //if (!timeslotList.Any(t => t.PlantId == mc.MachinePlantId))
+                        //{
+                        //    var plant = await _plantService.GetPlant(mc.MachinePlantId);
 
-                            Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
-                            somiss.SoNumber = workorder.SaleOrderNo;
-                            somiss.PartNo = workorder.PartNo;
-                            somiss.RoutingName = routing.RoutingName;
-                            somiss.StepNo = step.StepNumber;
-                            somiss.Machines = mc.MachineMachineSlNo + " For Plant : " + plant.Name + " Timeslotlist is not set";
-                            steps.Add(somiss);
-                            continue;
+                        //    Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
+                        //    somiss.SoNumber = workorder.SaleOrderNo;
+                        //    somiss.PartNo = workorder.PartNo;
+                        //    somiss.RoutingName = routing.RoutingName;
+                        //    somiss.StepNo = step.StepNumber;
+                        //    somiss.Machines = mc.MachineMachineSlNo + " For Plant : " + plant.Name + " Timeslotlist is not set";
+                        //    steps.Add(somiss);
+                        //    continue;
 
-                            // return Ok(somiss);
-                        }
+                        //    // return Ok(somiss);
+                        //}
                     }
                 }
 
@@ -510,20 +516,20 @@ namespace CWB.App.Controllers
                             continue;
                             //return Ok(somiss);
                         }
-                        if (!timeslotList.Any(t => t.PlantId == machine.PlantId))
-                        {
-                            var plant = await _plantService.GetPlant(machine.PlantId);
+                        //if (!timeslotList.Any(t => t.PlantId == machine.PlantId))
+                        //{
+                        //    var plant = await _plantService.GetPlant(machine.PlantId);
 
-                            Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
-                            somiss.SoNumber = workorder.SaleOrderNo;
-                            somiss.PartNo = workorder.PartNo;
-                            somiss.RoutingName = routing.RoutingName;
-                            somiss.StepNo = step.StepNumber;
-                            somiss.Subcons = plant.Name + " Timeslotlist is not set";
-                            steps.Add(somiss);
-                            continue;
-                            //return Ok(somiss);
-                        }
+                        //    Selected_Sales_OrderVM somiss = new Selected_Sales_OrderVM();
+                        //    somiss.SoNumber = workorder.SaleOrderNo;
+                        //    somiss.PartNo = workorder.PartNo;
+                        //    somiss.RoutingName = routing.RoutingName;
+                        //    somiss.StepNo = step.StepNumber;
+                        //    somiss.Subcons = plant.Name + " Timeslotlist is not set";
+                        //    steps.Add(somiss);
+                        //    continue;
+                        //    //return Ok(somiss);
+                        //}
                     }
                 }
             }
@@ -706,10 +712,10 @@ namespace CWB.App.Controllers
             }
 
 
-
+           
 
             var postWO = await _baService.MultiplePostWO(finalWOList);
-           
+            await EnsureTimeslotsForWO(postWO);
             List<BOMTempVM> bompost = new List<BOMTempVM>();
             foreach (var item in postWO)
             {
@@ -984,6 +990,148 @@ namespace CWB.App.Controllers
             }
         }
         [HttpGet]
+        private async Task EnsureTimeslotsForWO(List<WorkOrdersVM> workOrders)
+        {
+            if (workOrders == null || !workOrders.Any())
+                return;
+
+            // Only consider WOs having a planned completion date
+            var validWOs = workOrders
+                .Where(w => w.PlanCompletionDate.HasValue)
+                .ToList();
+
+            if (!validWOs.Any())
+                return;
+
+            DateTime maxWODate = validWOs.Max(x => x.PlanCompletionDate.Value).Date;
+
+            var plants = await _plantService.GetPlants();
+
+            // Load timeslots once
+            var allTimeslots = await _woService.GetAllTimeslot_List();
+
+            foreach (var plant in plants)
+            {
+                var wd = await _plantService.GetPlantWD(plant.PlantId);
+
+                if (wd == null)
+                    continue;
+
+                var holidays = await _plantService.GetHolidays(plant.PlantId);
+                var holidayList = holidays
+                                    .Select(x => x.HolidayDate)
+                                    .ToList();
+
+                // Existing slots for this plant
+                var plantSlots = allTimeslots
+                    .Where(x => x.PlantId == plant.PlantId)
+                    .OrderBy(x => x.Start_time)
+                    .ToList();
+
+                DateTime startDate;
+
+                if (!plantSlots.Any())
+                {
+                    // First time generation
+                    startDate = DateTime.Today;
+                }
+                else
+                {
+                    DateTime lastDate = plantSlots
+                                        .Last()
+                                        .Start_time
+                                        .Date;
+
+                    // Generate only after last existing date
+                    startDate = lastDate.AddDays(1);
+                }
+
+                // Nothing to generate
+                if (startDate > maxWODate)
+                    continue;
+
+                // Skip holidays/week offs
+                DateTime? nextWorkingDate =
+                    await GetNextWorkingDate(wd, startDate, holidayList);
+
+                if (!nextWorkingDate.HasValue)
+                    continue;
+
+                await GenerateTimeslots(
+                    plant,
+                    wd,
+                    nextWorkingDate.Value.Date,
+                    maxWODate,
+                    holidayList);
+            }
+        }
+        private async Task GenerateTimeslots(Models.CoSettings.PlantVM plant, PlantWorkingDetailsVM wd, DateTime from, DateTime to, List<DateTime?> holidays)
+        {
+            for (var date = from; date <= to; date = date.AddDays(1))
+            {
+                if (holidays.Contains(date.Date) || date.DayOfWeek.ToString() == wd.WeeklyOff1 || date.DayOfWeek.ToString() == wd.WeeklyOff2)
+                    continue;
+
+
+                for (int shift = 1; shift <= wd.NoOfShifts; shift++)
+                {
+                    string shiftStartTime = shift == 1 ? wd.FirstShiftStartTime : shift == 2 ? wd.SecondShiftStartTime : wd.ThirdShiftStartTime;
+                    string shiftDurationStr = shift == 1 ? wd.FirstShiftDuration : shift == 2 ? wd.SecondShiftDuration : wd.ThirdShiftDuration;
+                    string breakStartStr = shift == 1 ? wd.First_Shift_Break_start_time : shift == 2 ? wd.Sec_Shift_Break_start_time : wd.Third_Shift_Break_start_time;
+                    string breakDurationStr = shift == 1 ? wd.First_Shift_Break_duration : shift == 2 ? wd.Sec_Shift_Break_duration : wd.Third_Shift_Break_duration;
+
+                    if (string.IsNullOrWhiteSpace(shiftStartTime) || string.IsNullOrWhiteSpace(shiftDurationStr)) continue;
+
+                    DateTime shiftStart = DateTime.Parse($"{date:yyyy-MM-dd} {shiftStartTime}");
+                    TimeSpan shiftDuration = TimeSpan.Parse(shiftDurationStr);
+                    DateTime shiftEnd = shiftStart.Add(shiftDuration);
+
+                    DateTime? breakStart = null;
+                    DateTime? breakEnd = null;
+                    if (!string.IsNullOrWhiteSpace(breakStartStr) && !string.IsNullOrWhiteSpace(breakDurationStr))
+                    {
+                        breakStart = DateTime.Parse($"{date:yyyy-MM-dd} {breakStartStr}");
+                        if (breakDurationStr.Count(c => c == ':') == 1)
+                        {
+                            breakDurationStr = "00:" + breakDurationStr; // converts "30:00" → "00:30:00"
+                        }
+                        breakEnd = breakStart.Value.Add(TimeSpan.Parse(breakDurationStr));
+                    }
+
+                    DateTime currentSlotStart = shiftStart;
+                    while (currentSlotStart < shiftEnd)
+                    {
+                        DateTime currentSlotEnd = currentSlotStart.AddMinutes(60);
+                        if (currentSlotEnd > shiftEnd) break;
+
+                        bool isBreak = breakStart.HasValue && breakEnd.HasValue &&
+                                       currentSlotStart >= breakStart.Value && currentSlotStart < breakEnd.Value;
+
+                        await _woService.PostTimeslot_List(new Timeslot_ListVM
+                        {
+                            PlantId = plant.PlantId,
+                            Start_time = currentSlotStart,
+                            End_time = currentSlotEnd,
+                            Break_Slot = isBreak ? 'Y' : 'N'
+                        });
+
+                        currentSlotStart = currentSlotEnd;
+                    }
+                }
+            }
+        }
+        private async Task<DateTime?> GetNextWorkingDate(PlantWorkingDetailsVM plant, DateTime startDate, List<DateTime?> holidays)
+        {
+            for (int i = 0; i < 30; i++)
+            {
+                var date = startDate.AddDays(i);
+                if (!holidays.Contains(date.Date) && date.DayOfWeek.ToString() != plant.WeeklyOff1 && date.DayOfWeek.ToString() != plant.WeeklyOff2)
+                {
+                    return date;
+                }
+            }
+            return null;
+        }
         public async Task<IActionResult> AllWorkOrders()
         {
             var workOrders = await _baService.AllWorkOrders();

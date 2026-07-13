@@ -66,6 +66,12 @@ namespace CWB.App.Controllers
             _logger.LogTrace("Gro--Document--Loading");
             return View();
         }
+        [Route("~/G!@#F$%P*&U")]
+        public IActionResult GroFinalPackUpdate()
+        {
+            _logger.LogTrace("Gro--FinalPack--Loading");
+            return View();
+        }
         [HttpPost]
         public async Task<IActionResult>UploadGroData(IFormFile uploadedFile)
         {
