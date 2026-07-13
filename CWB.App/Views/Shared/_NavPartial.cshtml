@@ -142,13 +142,13 @@
                                     }
                                     @if (permissionResult.Any(r => r.Menu2 == "Gro Sales Stock Management"))
                                     {
-                                        <li><a asp-action="GroStock" asp-controller="Gro" data-navid="G-ST">Gro Stock Data Management</a></li>
+                                        <li><a asp-action="GroStock" asp-controller="Gro" data-navid="G-ST">Gro Stock Update</a></li>
                                     }
                                     @if (permissionResult.Any(r => r.Menu2 == "Gro Document Management"))
                                     {
                                         <li><a asp-action="GroDocumentManagement" asp-controller="Gro" data-navid="G-DO">Gro Document Management</a></li>
                                     }
-                                    @if (permissionResult.Any(r => r.Menu2 == "Gro Document Management"))
+                                    @if (permissionResult.Any(r => r.Menu2 == "GroFinalPackUpdate"))
                                     {
                                         <li><a asp-action="GroFinalPackUpdate" asp-controller="Gro" data-navid="G-FP">Final Pack Update</a></li>
                                     }
@@ -256,7 +256,7 @@
                         <div class="collapse" id="sidebarMAST-5">
                             <ul class="nav-second-level">
                                 <li><a asp-action="Index" asp-controller="Gro" data-navid="G-GS">Gro Sales Data Management</a></li>
-                                <li><a asp-action="GroStock" asp-controller="Gro" data-navid="G-ST">Gro Stock Data Management</a></li>
+                                <li><a asp-action="GroStock" asp-controller="Gro" data-navid="G-ST">Gro Stock Update</a></li>
                                 <li><a asp-action="GroDocumentManagement" asp-controller="Gro" data-navid="G-DO">Gro Document Management</a></li>
                                 <li><a asp-action="GroFinalPackUpdate" asp-controller="Gro" data-navid="G-FP">Final Pack Update</a></li>
                             </ul>

@@ -19,82 +19,189 @@
                         }
                     }
                     <!-- WO Status Overview -->
+                    <!--<div class="row">
+    <div class="col-md-7">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th style="font-weight: bold;font-size: large;" class="text-center" colspan="2">WO Status Overview</th>
+                        <th class="text-center">Assembly</th>
+                        <th width="20%" class="text-center">Child Manf Part</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="4" class="text-center">Waiting for M/c Slot<br>(not in M/c Queue)</td>
+                        <td rowspan="2" style="font-weight: bold;">Parent WO Released - Ready for Production</td>
+                        <td>Ready for Production (Material Available) </td>
+                        <td class="text-center" id="ReadAssy">0</td>
+                        <td class="text-center" id="ReadCMp">0</td>
+                    </tr>
+                    <tr>
+                        <td>Waiting for Material</td>
+                        <td class="text-center" id="WAssy">0</td>
+                        <td class="text-center" id="WCmp">0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="text-end">Rework WO</td>
+                        <td class="text-center" id="RwkAssy">0</td>
+                        <td class="text-center" id="RwkCmp">0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="text-end">Non Plan Work</td>
+                        <td colspan="2" class="text-center" id="NonAssy">0</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4" class="text-center">In M/c Queue</td>
+                        <td rowspan="2" style="font-weight: bold;">Child / Parent WO </td>
+                        <td>Ready for Production (Material Available) </td>
+                        <td class="text-center" id="InMcQueRAssy">0</td>
+                        <td class="text-center" id="InMcQueRCmp">0</td>
+                    </tr>
+                    <tr>
+                        <td>Waiting for Material</td>
+                        <td class="text-center" id="InMcQueWAssy">0</td>
+                        <td class="text-center" id="InMcQueWCmp">0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="text-end">Rework WO</td>
+                        <td class="text-center" id="InMcQueRwkAssy">0</td>
+                        <td class="text-center" id="InMcQueRwkCmp">0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="text-end">Non Plan Work</td>
+                        <td colspan="2" class="text-center" id="InMcQueNon">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="row m-5">
+            <div class="d-grid gap-2">
+                <button class="btn btn-outline-primary" data-bs-target="#Popup1" data-bs-toggle="modal"
+                        id="selectwoProdBtn">
+                    Select WO for Production Planning
+                </button>
+            </div>
+        </div>
+        <div class="row m-5">
+            <div class="d-grid gap-2">-->
+                    <!-- <button class="btn btn-primary ">Update Production Completion Status</button> -->
+                    <!--</div>
+    </div>
+    <div class="row m-5">
+        <div class="d-grid gap-2">-->
+                    <!-- <button class="btn btn-primary ">Update Production Completion Status</button> -->
+                    <!--</div>
+            </div>
+            <div class="row m-5">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary " data-bs-target="#" data-bs-toggle="modal" id="UpdateSimulaion">Update Production Completion Status</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-1 text-end">
+            <a asp-action="Index" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                X
+            </a>
+        </div>
+    </div>-->
                     <div class="row">
                         <div class="col-md-7">
                             <div class="table-responsive">
+
+                                <div class="text-center mb-1" style="margin-left:72%;">
+                                    <strong>Number of WO</strong>
+                                </div>
+
                                 <table class="table table-bordered">
+
                                     <thead>
                                         <tr>
-                                            <th></th>
-                                            <th style="font-weight: bold;font-size: large;" class="text-center" colspan="2">WO Status Overview</th>
-                                            <th class="text-center">Assembly</th>
-                                            <th width="20%" class="text-center">Child Manf Part</th>
+                                            <th width="70%" class="text-center fw-bold">WO Status</th>
+                                            <th class="text-center fw-bold">Assembly</th>
+                                            <th class="text-center fw-bold">Child Manf Part</th>
                                         </tr>
                                     </thead>
+
                                     <tbody>
+
                                         <tr>
-                                            <td rowspan="4" class="text-center">Waiting for M/c Slot<br>(not in M/c Queue)</td>
-                                            <td rowspan="2" style="font-weight: bold;">Parent WO Released - Ready for Production</td>
-                                            <td>Ready for Production (Material Available) </td>
-                                            <td class="text-center" id="ReadAssy">0</td>
-                                            <td class="text-center" id="ReadCMp">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Waiting for Material</td>
-                                            <td class="text-center" id="WAssy">0</td>
-                                            <td class="text-center" id="WCmp">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2" class="text-end">Rework WO</td>
-                                            <td class="text-center" id="RwkAssy">0</td>
-                                            <td class="text-center" id="RwkCmp">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2" class="text-end">Non Plan Work</td>
-                                            <td colspan="2" class="text-center" id="NonAssy">0</td>
-                                        </tr>
-                                        <tr>
-                                            <td rowspan="4" class="text-center">In M/c Queue</td>
-                                            <td rowspan="2" style="font-weight: bold;">Child / Parent WO </td>
-                                            <td>Ready for Production (Material Available) </td>
+                                            <td>In Machine</td>
                                             <td class="text-center" id="InMcQueRAssy">0</td>
                                             <td class="text-center" id="InMcQueRCmp">0</td>
                                         </tr>
+
                                         <tr>
-                                            <td>Waiting for Material</td>
-                                            <td class="text-center" id="InMcQueWAssy">0</td>
-                                            <td class="text-center" id="InMcQueWCmp">0</td>
+                                            <td>
+                                                Ready for Production (Material Available)<br />
+                                                with Machine Slot Allocated
+                                            </td>
+                                            <td class="text-center" id="ReadAssy">0</td>
+                                            <td class="text-center" id="ReadCMp">0</td>
                                         </tr>
+
                                         <tr>
-                                            <td colspan="2" class="text-end">Rework WO</td>
-                                            <td class="text-center" id="InMcQueRwkAssy">0</td>
-                                            <td class="text-center" id="InMcQueRwkCmp">0</td>
+                                            <td>
+                                                WO Released waiting for Material<br />
+                                                (McTimeslot allocated in prev Simulation)
+                                            </td>
+                                            <td class="text-center" id="WAssy">0</td>
+                                            <td class="text-center" id="WCmp">0</td>
                                         </tr>
+
                                         <tr>
-                                            <td colspan="2" class="text-end">Non Plan Work</td>
-                                            <td colspan="2" class="text-center" id="InMcQueNon">0</td>
+                                            <td>New WO with Material Available</td>
+                                            <td class="text-center" id="RwkAssy">0</td>
+                                            <td class="text-center" id="RwkCmp">0</td>
                                         </tr>
+
+                                        <tr>
+                                            <td>New WO Waiting for Material</td>
+                                            <td class="text-center" id="NonAssy">0</td>
+                                            <td class="text-center" id="InMcQueNon">0</td>
+                                        </tr>
+
                                     </tbody>
+
                                 </table>
+
                             </div>
                         </div>
                         <div class="col-md-4">
+                            @*<div class="row m-5">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" data-bs-target="#Popup1" data-bs-toggle="modal"
+                                id="selectwoProdBtn">
+                            Select WO for Production Planning
+                        </button>
+                    </div>
+                </div>*@
+
                             <div class="row m-5">
                                 <div class="d-grid gap-2">
-                                    <button class="btn btn-outline-primary" data-bs-target="#Popup1" data-bs-toggle="modal"
-                                            id="selectwoProdBtn">
-                                        Select WO for Production Planning
+                                    <button class="btn btn-outline-primary" id="simulate">
+                                        Simulate
                                     </button>
                                 </div>
                             </div>
-                            <div class="row m-5">
-                                <div class="d-grid gap-2">
-                                    <!-- <button class="btn btn-primary ">Update Production Completion Status</button> -->
+
+                            <div class="row mt-3 justify-content-center align-items-center">
+                                <div class="col-auto">
+                                    <label class="form-label mb-0" for="txtCushionTime">
+                                        Cushion Time<br>
+                                        (% of Total Time)
+                                    </label>
                                 </div>
-                            </div>
-                            <div class="row m-5">
-                                <div class="d-grid gap-2">
-                                    <!-- <button class="btn btn-primary ">Update Production Completion Status</button> -->
+                                <div class="col-auto">
+                                    <input type="text"
+                                           id="txtCushionTime"
+                                           class="form-control form-control-sm"
+                                           style="width: 70px;">
                                 </div>
                             </div>
                             <div class="row m-5">
@@ -102,6 +209,17 @@
                                     <button class="btn btn-outline-primary " data-bs-target="#" data-bs-toggle="modal" id="UpdateSimulaion">Update Production Completion Status</button>
                                 </div>
                             </div>
+                            <!--<div class="row m-5">
+            <div class="d-grid gap-2">-->
+                            <!-- <button class="btn btn-primary ">Update Production Completion Status</button> -->
+                            <!--</div>
+            </div>
+            <div class="row m-5">
+                <div class="d-grid gap-2">-->
+                            <!-- <button class="btn btn-primary ">Update Production Completion Status</button> -->
+                            <!--</div>
+            </div>-->
+
                         </div>
 
                         <div class="col-md-1 text-end">
@@ -110,7 +228,6 @@
                             </a>
                         </div>
                     </div>
-
                     <!-- Actions -->
                     <div class="row mt-1">
                         <div class="col d-flex gap-2">
@@ -122,6 +239,54 @@
                     </div>
 
                     <!-- Simulation Controls -->
+                    <!--<div class="row mt-4">
+        <div class="col">
+            <h4 class="section-title">Simulation Output : WO List - Parent Level - Assembly & Child Manufactured Parts </h4>
+            <div class="d-flex gap-3 mb-2">-->
+                    @*<button class="btn btn-outline-dark" id="PauseBtn">Pause <i class="fas fa-pause"></i></button>*@
+                    <!--<button class="btn btn-outline-success" id="CountinueBtn">Continue <i class="fas fa-play"></i></button>
+        <button class="btn btn-outline-danger" id="CancelBtn">Cancel <i class="fas fa-times"></i></button>
+    </div>
+
+    <div class="col-md-12">
+        <div class="row">
+            <div class="table-responsive table-he-250">
+                <table class="table table-sm table-bordered w-100 text-center" id="SimWoGrid">
+                    <thead class="  table-info th-sti">
+                        <tr class="table-border-bottom">
+                            <th>Work Order # </th>
+                            <th>Customer</th>
+                            <th>Build to Stock</th>
+                            <th>Part No / Desc</th>
+                            <th>Part Type </th>
+                            <th>WIP</th>
+                            <th>Plan WO Qnty</th>
+                            <th>Reqd Compl Dt</th>
+                            <th>Cur Plan Qnty</th>
+                            <th>PS Start Date</th>
+                            <th>PS Compl Date </th>
+                            <th>CS Start Date </th>
+                            <th>CS Compl Date </th>
+                            <th>Act Start Date </th>
+                            <th>Critical Part </th>
+                            <th>Data Changed </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>-->
+                    <!-- -------------  -->
+                    <!-- -------------  -->
+                    <!--</tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <h6>PS : Previous Simulation&nbsp;&nbsp;&nbsp;&nbsp;CS : Current Simulation</h6>
+            </div>
+        </div>
+    </div>-->
                     <div class="row mt-4">
                         <div class="col">
                             <h4 class="section-title">Simulation Output : WO List - Parent Level - Assembly & Child Manufactured Parts </h4>
@@ -137,20 +302,21 @@
                                         <table class="table table-sm table-bordered w-100 text-center" id="SimWoGrid">
                                             <thead class="  table-info th-sti">
                                                 <tr class="table-border-bottom">
+                                                    <th>WO Seq No</th>
                                                     <th>Work Order # </th>
-                                                    <th>Customer</th>
+                                                    @*<th>Customer</th>*@
                                                     <th>Build to Stock</th>
                                                     <th>Part No / Desc</th>
                                                     <th>Part Type </th>
                                                     <th>WIP</th>
                                                     <th>Plan WO Qnty</th>
                                                     <th>Reqd Compl Dt</th>
-                                                    <th>Cur Plan Qnty</th>
-                                                    <th>PS Start Date</th>
-                                                    <th>PS Compl Date </th>
+                                                    @*<th>Cur Plan Qnty</th>*@
+                                                    @*<th>PS Start Date</th>*@
+                                                    @*<th>PS Compl Date </th>*@
                                                     <th>CS Start Date </th>
                                                     <th>CS Compl Date </th>
-                                                    <th>Act Start Date </th>
+                                                    @*<th>Act Start Date </th>*@
                                                     <th>Critical Part </th>
                                                     <th>Data Changed </th>
                                                     <th></th>
@@ -170,7 +336,6 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- Bottom Actions -->
                     <div class="row mt-1">
                         <div class="col-md-12 mb-3">
@@ -221,6 +386,23 @@
                         </div>
                         <div class="col-md-9 text-end mt-3">
                         </div>
+                        <div class="col-md-2 text-end">
+                            @if (permissionResult != null)
+                            {
+                                @if (permissionResult.Any(r => r.Menu3 == "DetailedPlanning"))
+                                {
+                                    <button class="btn btn-primary mb-2" id="gobacktodetailplaningbtn">Go back to Detailed Planning</button>
+                                }
+                            }
+                            else
+                            {
+                                <button class="btn btn-primary mb-2" id="gobacktodetailplaningbtn">Go back to Detailed Planning</button>
+                            }
+                        </div>
+                        <div class="col-md-9 text-end mt-3">
+
+                        </div>
+
                         <div class="col-md-2 text-end mt-3">
                             @if (permissionResult != null)
                             {
@@ -3482,20 +3664,21 @@
 </template>
 <template id="SimWoGridRow">
     <tr>
+        <td> </td>
         <td>{woNumber}</td>
-        <td>{customer}</td>
+        @*<td>{customer}</td>*@
         <td>{buildToStock}</td>
         <td>{partNo} / {partDesc}</td>
         <td>{partTypeName}</td>
         <td>{wipp}</td>
         <td>{calcWOQty}</td>
         <td>{planCompletionDateStr}</td>
-        <td>{calcWOQty}</td>
-        <td>{psStartDate}</td>
-        <td>{psEndDate}</td>
+        @*<td>{calcWOQty}</td>*@
+        @*<td>{psStartDate}</td>*@
+        @*<td>{psEndDate}</td>*@
         <td>{csStartDate}</td>
         <td>{csEndDate}</td>
-        <td>{actStartDateStr}</td>
+        @*<td>{actStartDateStr}</td>*@
         <td>{criticalParts}</td>
         <td>{dataChange}</td>
         @*<td hidden>{productionPlanId}</td>*@

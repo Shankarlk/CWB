@@ -4,6 +4,7 @@
     #editDispatchAddressModal, #editDispatchAddressUpdateModal {
         z-index: 1065 !important;
     }
+
     #DCPreview,
     #DCPreview * {
         border-color: #000 !important;
@@ -19,8 +20,9 @@
         #DCPreview td {
             border-width: 1.5px !important;
         }
+
     .modal-stack-blur {
-        filter: blur(5px);
+        filter: blur(10px);
         pointer-events: none;
         user-select: none;
     }
@@ -40,7 +42,7 @@
                 }
             }
             <!-- Upload Section -->
-           
+
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h5>
@@ -56,7 +58,7 @@
                     </button>
                 </div>
             </div>
-            
+
 
             <!-- Dispatch Qty -->
 
@@ -138,7 +140,7 @@
                     </button>
                 </div>
             </div>
-            
+
 
             <!-- Dispatch Details -->
 
@@ -162,14 +164,13 @@
                 <div class="col-md-9">
                     <h5>
                         Number of Invoices waiting for Upload to Tally
-                          : xx
+                        : xx
                     </h5>
                 </div>
 
                 <div class="col-md-3 text-end">
-                    <button class="btn btn-primary" id="btnUploadInvoice"
-                           >
-                       Upload Invoice
+                    <button class="btn btn-primary" id="btnUploadInvoice">
+                        Upload Invoice
                     </button>
                 </div>
             </div>
@@ -213,7 +214,7 @@
                         </table>
                     </div>
 
-                   
+
 
                 </div>
 
@@ -224,7 +225,7 @@
                     </button>
                 </div>
             </div>
-            
+
 
             <!-- Delivery Complete -->
 
@@ -375,7 +376,7 @@
 
                         <br />
 
-                         
+
 
                     </div>
 
@@ -400,7 +401,7 @@
                             </tr>
                         </table>
 
-                        
+
 
                     </div>
 
@@ -520,7 +521,7 @@
                             <option value="Partial Dispatch">Partial Dispatch</option>
                         </select>
                     </div>
-                   
+
 
                 </div>
                 <div class="row mb-3">
@@ -530,54 +531,54 @@
                         </button>
                     </div>
                 </div>
-                    <!-- Select All -->
-                    <div class="form-check mb-3">
-                        <input class="form-check-input"
-                               type="checkbox"
-                               id="chkAll">
+                <!-- Select All -->
+                <div class="form-check mb-3" style="display:none;">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="chkAll">
 
-                        <label class="form-check-label"
-                               for="chkAll">
-                            Select All
-                        </label>
-                    </div>
-
-                    <!-- Grid -->
-                    <div class="table-responsive  table-he-250">
-                        <table class="table table-sm table-bordered w-100 text-center" id="Dispatchselectiontable">
-                            <thead class=" table-info th-sti">
-                                <tr class="table-border-bottom">
-                                    <th></th>
-                                    <th>Indent Date</th>
-                                    <th>Indent No</th>
-                                    <th>Customer</th>
-                                    <th>Product</th>
-                                    <th>Order Qty</th>
-                                    <th>Bal Disp Qty</th>
-                                    <th>Qnty Avl</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                            </tbody>
-
-                        </table>
-                    </div>
-
+                    <label class="form-check-label"
+                           for="chkAll">
+                        Select All
+                    </label>
                 </div>
 
-                <div class="modal-footer">
-                    <button id="updatedispatchqnty" class="btn btn-primary" disabled
-                            data-bs-toggle="modal"
-                            data-bs-target="#dispatchQtyModal">
-                        Update Dispatch Qty
-                    </button>
+                <!-- Grid -->
+                <div class="table-responsive  table-he-250">
+                    <table class="table table-sm table-bordered w-100 text-center" id="Dispatchselectiontable">
+                        <thead class=" table-info th-sti">
+                            <tr class="table-border-bottom">
+                                <th hidden></th>
+                                <th>Indent Date</th>
+                                <th>Indent No</th>
+                                <th>Customer</th>
+                                <th>Product</th>
+                                <th>Order Qty</th>
+                                <th>Bal Disp Qty</th>
+                                <th>Qnty Avl</th>
+                                <th></th>
+                            </tr>
+                        </thead>
 
+                        <tbody>
+                        </tbody>
 
+                    </table>
                 </div>
 
             </div>
+
+            <div class="modal-footer" style="display:none;">
+                <button id="updatedispatchqnty" class="btn btn-primary" disabled
+                        data-bs-toggle="modal"
+                        data-bs-target="#dispatchQtyModal">
+                    Update Dispatch Qty
+                </button>
+
+
+            </div>
+
+        </div>
     </div>
 </div>
 @* popup 2 show Dispatch Details/gro data line item popup *@
@@ -662,7 +663,7 @@
 
                 <hr>
 
-               
+
 
                 <div class="table-responsive mb-2 table-he-350" id="disp">
                     <h5 class="mb-3">Dispatch Details</h5>
@@ -1334,6 +1335,12 @@
                             data-bs-target="#editDispatchAddressUpdateModal"
                             id="btnEditDispatchAddressUpdate">
                         Edit Dispatch Address
+                    </button>
+                    <button class="btn btn-primary"
+                            id="btnPrintAddressLabel"
+                            data-bs-toggle="modal"
+                            data-bs-target="#AddressLabelModal">
+                        Print Address Label
                     </button>
                     <button class="btn btn-primary"
                             data-bs-toggle="modal"
@@ -2069,12 +2076,12 @@
 
                                 <div class="mb-1">
                                     <strong>Email :</strong>
-                                    <span >naveenkumar@tisskgk.com</span>
+                                    <span>naveenkumar@tisskgk.com</span>
                                 </div>
 
                                 <div>
                                     <strong>Website :</strong>
-                                    <span >www.kgkengineering.com</span>
+                                    <span>www.kgkengineering.com</span>
                                 </div>
 
                             </div>
@@ -2193,7 +2200,7 @@
 
                         </thead>
 
-                        <tbody >
+                        <tbody>
                         </tbody>
 
                     </table>
@@ -2225,7 +2232,7 @@
                             <td>
                                 <strong>GSTIN :</strong>
 
-                                <span  >29AAGCT7823F1Z2</span>
+                                <span>29AAGCT7823F1Z2</span>
                             </td>
                         </tr>
 
@@ -2975,7 +2982,7 @@
                                 <th>
                                     Total Tax
                                 </th>
-                                
+
 
                             </tr>
 
@@ -3057,9 +3064,66 @@
     </div>
 
 </div>
+@* Address Label Modal *@
+<div class="modal fade"
+     id="AddressLabelModal"
+     tabindex="-1"
+     aria-labelledby="AddressLabelModalLabel"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-md">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="AddressLabelModalLabel">
+                    Customer Address Label
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+
+                <div id="AddressLabelPreview"
+                     class="border p-4 bg-white"
+                     style="min-height:220px;font-size:18px;line-height:1.8;">
+
+                    <div id="lblCustomerName" class="fw-bold"></div>
+
+                    <div id="lblCustomerAddress"></div>
+
+                    <div>
+                        <strong>Cell :</strong>
+                        <span id="lblCustomerMobile"></span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button class="btn btn-primary"
+                        id="btnPrintAddressLabelFinal">
+                    Print Address Label
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 <template id="dispatchSelectionRow">
     <tr>
-        <td>
+        <td hidden>
             <input type="checkbox" />
         </td>
 
@@ -3369,7 +3433,7 @@
 
     <tr>
 
-        <td >{slno}</td>
+        <td>{slno}</td>
 
         <td>{groPartNo}</td>
 

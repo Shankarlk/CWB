@@ -2455,3 +2455,91 @@ $("#btnUploadInvoice").click(function () {
         });
 
 });
+$("#btnPrintAddressLabel").click(function () {
+
+    $("#lblCustomerName").text($("#updCustomer").text());
+    $("#lblCustomerAddress").html($("#updAddress").html());
+    $("#lblCustomerMobile").text($("#updMobile").text());
+
+});
+$(document).on("click", "#btnPrintAddressLabelFinal", function () {
+
+    var printContents = $("#AddressLabelPreview").prop("outerHTML");
+
+    var printWindow = window.open("", "_blank");
+
+    printWindow.document.write(`
+<html>
+
+<head>
+
+    <title>Address Label</title>
+
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="/css/site.css">
+
+    <link rel="stylesheet" href="/css/custom.css">
+
+    <style>
+
+        @page{
+            size:A4 portrait;
+            margin:15mm;
+        }
+
+        html,body{
+            margin:0;
+            padding:0;
+            background:#fff;
+            font-family:Arial, Helvetica, sans-serif;
+            font-size:20px;
+            line-height:1.8;
+        }
+
+        #AddressLabelPreview{
+            width:100%;
+            padding:20px;
+        }
+
+        #lblCustomerName{
+            font-size:24px;
+            font-weight:bold;
+            margin-bottom:20px;
+        }
+
+        #lblCustomerAddress{
+            white-space:pre-line;
+            margin-bottom:20px;
+        }
+
+        #lblCustomerMobile{
+            font-weight:bold;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+${printContents}
+
+</body>
+
+</html>
+`);
+
+    printWindow.document.close();
+
+    setTimeout(function () {
+
+        printWindow.focus();
+
+        printWindow.print();
+
+        printWindow.close();
+
+    }, 500);
+
+});

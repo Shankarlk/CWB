@@ -324,7 +324,7 @@ $("#btnScanLabels").click(function () {
         });
 });
 
-$("#btnSaveExit").click(function () {
+$("#btnSaveExitStock").click(function () {
 
     var groPartListId = $("#hdnGroPartListId").val();
 

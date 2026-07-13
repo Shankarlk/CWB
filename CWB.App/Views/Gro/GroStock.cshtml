@@ -11,7 +11,7 @@
 
     <div class="row mb-4">
         <div class="col-md-12">
-            <h3>Gro Stock Data Management</h3>
+            <h3>Gro Stock Update</h3>
         </div>
     </div>
     @{
@@ -137,7 +137,7 @@
 
             </div>
 
-            <div class="modal-body">
+            <div class="modal-body fs-4">
 
                 <input type="hidden" id="hdnGroPartListId" />
 
@@ -157,7 +157,7 @@
                     </div>
 
                     <!-- Current Stock -->
-                    <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
 
                         <div style="width:520px;">
 
@@ -175,7 +175,7 @@
                     </div>
 
                     <!-- Qty -->
-                    <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
 
                         <div style="width:520px;">
 
@@ -191,7 +191,7 @@
                     </div>
 
                     <!-- Print -->
-                    <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
 
                         <div style="width:520px;">
 
@@ -212,7 +212,7 @@
                     </div>
 
                     <!-- Labels Stuck -->
-                    <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
 
                         <div style="width:520px;">
 
@@ -241,7 +241,7 @@
                         </button>
 
                     </div>
-                    <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
 
                         <div style="width:520px;">
 
@@ -258,7 +258,7 @@
 
                     </div>
                     <!-- Boxes -->
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
 
                         <div style="width:520px;">
 
@@ -276,8 +276,8 @@
 
                     <!-- Success Box -->
 
-                    <div class="mx-auto mb-5"
-                         style="width:330px;
+                    <div class="mx-auto mb-6 fs-4"
+                         style="width:370px;
                     border:1px dashed #666;
                     border-radius:8px;
                     padding:2px;">
@@ -305,7 +305,7 @@
                         <div class="text-center">
 
                             <button class="btn btn-primary"
-                                    id="btnSaveExit">
+                                    id="btnSaveExitStock">
 
                                 Save & Exit
 
@@ -317,69 +317,7 @@
 
                     <!-- Validation Box -->
 
-                    <div class="mx-auto"
-                         style="width:430px;
-                    border:1px dashed #666;
-                    border-radius:8px;
-                    padding:2px;">
-
-                        <table class="table table-borderless table-sm">
-
-                            <tr>
-
-                                <td>Number of Labels Printed</td>
-
-                                <td id="lblPrinted">xxx</td>
-
-                            </tr>
-
-                            <tr>
-
-                                <td>Number of Labels Scanned</td>
-
-                                <td id="lblScanned">xxx</td>
-
-                            </tr>
-
-                            <tr class="text-danger fw-bold">
-
-                                <td>Number of Printed Labels not Scanned</td>
-
-                                <td id="lblPending">xxx</td>
-
-                            </tr>
-
-                        </table>
-
-                        <div class="text-center mb-3">
-
-                            <button class="btn btn-primary"
-                                    id="btnRescan"
-                                    style="width:120px;">
-
-                                Re-Scan
-
-                            </button>
-
-                        </div>
-
-                        <div class="text-center">
-
-                            <button type="button"
-                                    class="btn btn-primary"
-                                    id="btnUpdateStock"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteLabelsModal"
-                                    style="width:340px;">
-
-                                Update Stock with Scanned Labels &
-                                Delete / Cancel Labels not Scanned
-
-                            </button>
-
-                        </div>
-
-                    </div>
+                    
 
                 </div>
 
@@ -452,23 +390,49 @@
                                   readonly></textarea>
                     </div>
                 </div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
 
+                    <div style="width:520px;">
+
+                        Last Scanned QR Code
+
+                    </div>
+
+                    <input type="text"
+                           id="txtReScannedQRCode"
+                           class="form-control"
+                           style="width:250px;"
+                           placeholder="Waiting for scan..."
+                           readonly />
+
+                </div>
                 <!-- Button 1 -->
                 <div class="text-center mb-3">
                     <button class="btn btn-primary px-4"
-                            id="btnConfirmDelete">
-                        Confirm Deletion of Printed Labels not Scanned
+                            id="btnRescan">
+                       Re-Scan Sl Nos. not Scanned
                     </button>
                 </div>
 
                 <!-- Button 2 -->
                 <div class="text-center mb-4">
                     <button class="btn btn-primary px-4"
-                            id="btnConfirmDestroyed">
-                        Confirm Printed Labels not Scanned have been Destroyed
+                            id="btndeletelabel">
+                        Delete Labels not Scanned
                     </button>
                 </div>
-
+                <div class="text-center mb-3">
+                    <button class="btn btn-primary px-4"
+                            id="btnConfirmDelete">
+                        Confirm Deletion of Printed Labels not Scanned
+                    </button>
+                </div>
+                <div class="text-center mb-3">
+                    <button class="btn btn-primary px-4"
+                            id="btnConfirmDestroy">
+                        Confirm Printed Labels not scanned have been Destroyed
+                    </button>
+                </div>
                 <!-- Save -->
                 <div class="text-center">
                     <button class="btn btn-primary px-5"
