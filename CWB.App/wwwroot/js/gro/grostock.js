@@ -139,7 +139,7 @@ function LoadUpdateStock(ctrl) {
     $("#btnPrintLabels").hide();
     $("#btnLabelsStuck").hide();
     $("#btnScanLabels").hide();
-    
+    $("#txtScannedQRCode").prop("disabled", true);
 }
 $("#txtQtyToAdd").on("input change", function () {
 
@@ -286,12 +286,33 @@ $("#btnPrint").click(function () {
 
 });
 $("#btnLabelsStuck").click(function () {
-
+    $("#txtScannedQRCode")
+        .prop("disabled", false)
+        .val("")
+        .focus();
     $("#btnScanLabels").show();
 
     $(this).hide();     // optional
 
     toastr.success("Now scan the labels.");
+
+});
+$("#txtScannedQRCode").on("keypress", function (e) {
+
+    if (e.which == 13) {
+
+        e.preventDefault();
+
+        var qrCode = $(this).val().trim();
+
+        if (qrCode == "")
+            return;
+
+        alert(qrCode);   // Temporary - we'll replace this with an AJAX call
+
+       // $(this).val("");
+
+    }
 
 });
 $("#btnScanLabels").click(function () {
@@ -310,7 +331,7 @@ $("#btnScanLabels").click(function () {
 
                 $("#txtBoxesScanned").val(data.scannedCount);
 
-                toastr.success("Labels scanned successfully.");
+                toastr.success("Label scanned successfully.");
             }
             else {
 

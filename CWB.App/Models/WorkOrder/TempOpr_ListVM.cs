@@ -30,5 +30,16 @@ namespace CWB.App.Models.WorkOrder
         public DateTime Setup_Start_time { get; set; }
         public DateTime Act_End_time { get; set; }
         public long TenantId { get; set; }
+        //for simulation calculation Only 
+
+        public int RequiredTimeslots { get; set; }
+
+        public decimal TotalProcessMinutes { get; set; }
+
+        public double OffsetMinutes { get; set; }
+
+        public double ResidenceMinutes { get; set; }
+
+        public string OperationType { get; set; } // Sequential / Parallel / SubCon
     }
 }

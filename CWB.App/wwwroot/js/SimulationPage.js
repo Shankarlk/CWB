@@ -128,45 +128,75 @@ $(document).ready(function () {
             }
         });
     });
-    $("#P1Simulate").secureClick( function () {
-        let selectedWOs = [];
+    $("#simulate").secureClick(function () {
 
-        $(".P1gridChk:checked").each(function () {
-            let ppid = $(this).data("workorderid");  // you can also use data("workorderid") etc.
-            selectedWOs.push(ppid);
-        });
+        alert("Simulation Has Started");
 
-        if (selectedWOs.length === 0) {
-            alert("Please select at least one Work Order to simulate.");
-            return;
-        }
-        alert('Simulation Has Started');
         isDataSaved = false;
         $('#preloadersim').show();
-        return $.ajax({
+
+        $.ajax({
             type: "POST",
-            url: '/WorkOrder/SimulateWOAllocation',
-            contentType: "application/json; charset=utf-8",
-            headers: { 'Content-Type': 'application/json' },
-            data: JSON.stringify(selectedWOs),
-            dataType: "json",
+            url: "/WorkOrder/SimulateWO",
             success: function (result) {
                 alert(result.message);
+
                 isDataSaved = true;
-                $("#Popup1").modal("hide");
-                $('#preloadersim').hide();
+
+                
+
                 loadSimulationWos();
             },
             error: function (xhr, status, error) {
-                console.error("Error:", error);
-                alert("Simulation failed ");
+                console.log(xhr.responseText);
+                console.error(error);
+                alert("Simulation Failed");
             },
             complete: function () {
-                // This always runs after success or error
                 $('#preloadersim').hide();
             }
         });
+
     });
+    //$("#P1Simulate").secureClick( function () {
+    //    let selectedWOs = [];
+
+    //    $(".P1gridChk:checked").each(function () {
+    //        let ppid = $(this).data("workorderid");  // you can also use data("workorderid") etc.
+    //        selectedWOs.push(ppid);
+    //    });
+
+    //    if (selectedWOs.length === 0) {
+    //        alert("Please select at least one Work Order to simulate.");
+    //        return;
+    //    }
+    //    alert('Simulation Has Started');
+    //    isDataSaved = false;
+    //    $('#preloadersim').show();
+    //    return $.ajax({
+    //        type: "POST",
+    //        url: '/WorkOrder/SimulateWOAllocation',
+    //        contentType: "application/json; charset=utf-8",
+    //        headers: { 'Content-Type': 'application/json' },
+    //        data: JSON.stringify(selectedWOs),
+    //        dataType: "json",
+    //        success: function (result) {
+    //            alert(result.message);
+    //            isDataSaved = true;
+    //            $("#Popup1").modal("hide");
+    //            $('#preloadersim').hide();
+    //            loadSimulationWos();
+    //        },
+    //        error: function (xhr, status, error) {
+    //            console.error("Error:", error);
+    //            alert("Simulation failed ");
+    //        },
+    //        complete: function () {
+    //            // This always runs after success or error
+    //            $('#preloadersim').hide();
+    //        }
+    //    });
+    //});
     $("#PauseBtn").hide();
     $("#CountinueBtn").hide();
     $("#CancelBtn").hide();
