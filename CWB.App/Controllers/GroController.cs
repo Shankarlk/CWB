@@ -386,7 +386,7 @@ namespace CWB.App.Controllers
             var allgrodata = await _groservicee.GetallgroData();
             var allgrostocklist = await _groservicee.Getallgrostocklist();
             List<Gro_DataVM> result = new List<Gro_DataVM>();
-            var grodatabyindent = allgrodata.Where(x => x.Indent == indentNo && x.Bal_to_Disp>0).ToList();
+            var grodatabyindent = allgrodata.Where(x => x.Indent == indentNo && x.Bal_to_Disp>=0).ToList();
             
             var allgrodispheader = await _groservicee.GetallgroDispHeader();
             var grodispheaderbyindent = allgrodispheader.Where(x => x.Indent == indentNo && x.Dispatched=='N').FirstOrDefault();
@@ -980,41 +980,110 @@ namespace CWB.App.Controllers
             
         }
 
-
+        //stock page from line number 983 to
         //hard coding for ORcode status change from printed to 1st scan now after scanner arrives  it needs to changed  
         /// <summary>
         /// 
         /// </summary>
         /// <param name="groPartListId"></param>
         /// <returns></returns>
+        //[HttpGet]
+        //public async Task<IActionResult> ScanLabels(long groPartListId)
+        //{
+        //    try
+        //    {
+        //        var allgrostockdet = await _groservicee.GetallGroStockDet();
+
+        //        var grostockdetbypartid = allgrostockdet.Where(x => x.Gro_Part_List_ID == groPartListId && x.Sl_No_Status_ID==1).ToList();
+        //        List<Gro_Stock_DetVM> data = new List<Gro_Stock_DetVM>();
+        //        foreach(var item in grostockdetbypartid)
+        //        {
+        //            var updatestatusto1stscan = new Gro_Stock_DetVM();
+        //            updatestatusto1stscan.Gro_Stock_DetId = item.Gro_Stock_DetId;
+        //            updatestatusto1stscan.Part_Sl_No = item.Part_Sl_No;
+        //            updatestatusto1stscan.Sl_No_Status_ID = 2;
+        //            data.Add(updatestatusto1stscan);
+        //        }
+
+        //        var postedslno1stscan = await _groservicee.Updategrostockdetto1stscan(data);
+
+
+
+
+        //        return Json(new
+        //        {
+        //            success = true,
+        //            scannedCount = postedslno1stscan.Count
+        //        }) ;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Json(new
+        //        {
+        //            success = false,
+        //            message = ex.Message
+        //        });
+        //    }
+        //}
         [HttpGet]
-        public async Task<IActionResult> ScanLabels(long groPartListId)
+        public async Task<IActionResult> ScanLabels(long groPartListId, string qrCode)
         {
             try
             {
                 var allgrostockdet = await _groservicee.GetallGroStockDet();
 
-                var grostockdetbypartid = allgrostockdet.Where(x => x.Gro_Part_List_ID == groPartListId && x.Sl_No_Status_ID==1).ToList();
-                List<Gro_Stock_DetVM> data = new List<Gro_Stock_DetVM>();
-                foreach(var item in grostockdetbypartid)
+                var label = allgrostockdet.FirstOrDefault(x =>
+                                x.Gro_Part_List_ID == groPartListId &&
+                                x.Part_Sl_No == qrCode);
+
+                if (label == null)
                 {
-                    var updatestatusto1stscan = new Gro_Stock_DetVM();
-                    updatestatusto1stscan.Gro_Stock_DetId = item.Gro_Stock_DetId;
-                    updatestatusto1stscan.Part_Sl_No = item.Part_Sl_No;
-                    updatestatusto1stscan.Sl_No_Status_ID = 2;
-                    data.Add(updatestatusto1stscan);
+                    return Json(new
+                    {
+                        success = false,
+                        message = "QR Code not found."
+                    });
                 }
 
-                var postedslno1stscan = await _groservicee.Updategrostockdetto1stscan(data);
+                if (label.Sl_No_Status_ID == 2)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "QR Code already scanned. Move to next."
+                    });
+                }
 
+                if (label.Sl_No_Status_ID != 1)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "QR Code is not in Printed status."
+                    });
+                }
 
+                var update = new List<Gro_Stock_DetVM>();
 
+                update.Add(new Gro_Stock_DetVM
+                {
+                    Gro_Stock_DetId = label.Gro_Stock_DetId,
+                    Part_Sl_No = label.Part_Sl_No,
+                    Sl_No_Status_ID = 2
+                });
+
+                await _groservicee.Updategrostockdetto1stscan(update);
+
+                var scannedCount = allgrostockdet.Count(x =>
+                                    x.Gro_Part_List_ID == groPartListId &&
+                                    x.Sl_No_Status_ID == 2) + 1;
 
                 return Json(new
                 {
                     success = true,
-                    scannedCount = postedslno1stscan.Count
-                }) ;
+                    message = "Label scanned successfully.",
+                    scannedCount = scannedCount
+                });
             }
             catch (Exception ex)
             {
@@ -1074,6 +1143,125 @@ namespace CWB.App.Controllers
                 });
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetPendingPrintedLabels(long groPartListId)
+        {
+            var stock = await _groservicee.GetallGroStockDet();
+
+            var pending = stock
+                .Where(x => x.Gro_Part_List_ID == groPartListId &&
+                            x.Sl_No_Status_ID == 1)
+                .OrderBy(x => x.Part_Sl_No)
+                .ToList();
+
+            return Json(new
+            {
+                success = true,
+                qtyEntered = stock.Count(x => x.Gro_Part_List_ID == groPartListId),
+                stickerCount = stock.Count(x => x.Gro_Part_List_ID == groPartListId &&
+                                                x.Sl_No_Status_ID == 2),
+                pendingCount = pending.Count,
+                serialNos = pending.Select(x => x.Part_Sl_No).ToList()
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ReScanLabel(long groPartListId, string qrCode)
+        {
+            var stock = await _groservicee.GetallGroStockDet();
+
+            var label = stock.FirstOrDefault(x => x.Gro_Part_List_ID == groPartListId &&
+                                                x.Part_Sl_No == qrCode);
+
+            if (label == null)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "QR Code not found."
+                });
+            }
+
+            if (label.Sl_No_Status_ID == 2)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Already scanned."
+                });
+            }
+
+            if (label.Sl_No_Status_ID != 1)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Label cannot be scanned."
+                });
+            }
+
+            await _groservicee.Updategrostockdetto1stscan(new List<Gro_Stock_DetVM>
+    {
+        new Gro_Stock_DetVM
+        {
+            Gro_Stock_DetId=label.Gro_Stock_DetId,
+            Part_Sl_No=label.Part_Sl_No,
+            Sl_No_Status_ID=2
+        }
+    });
+
+            return Json(new
+            {
+                success = true,
+                message = "Label scanned successfully."
+            });
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeletePendingLabels(long groPartListId)
+        {
+            var stock = await _groservicee.GetallGroStockDet();
+
+            var pending = stock
+                .Where(x => x.Gro_Part_List_ID == groPartListId &&
+                            x.Sl_No_Status_ID == 1)
+                .ToList();
+
+            var update = new List<Gro_Stock_DetVM>();
+
+            foreach (var item in pending)
+            {
+                update.Add(new Gro_Stock_DetVM
+                {
+                    Gro_Stock_DetId = item.Gro_Stock_DetId,
+                    Part_Sl_No = item.Part_Sl_No,
+                    Sl_No_Status_ID = 5   // Deleted
+                });
+            }
+
+            await _groservicee.Updategrostockdetto1stscan(update);
+
+            var latest = await _groservicee.GetallGroStockDet();
+
+            var pendingCount = latest.Count(x =>
+                x.Gro_Part_List_ID == groPartListId &&
+                x.Sl_No_Status_ID == 1);
+
+            return Json(new
+            {
+                success = true,
+                pendingCount = pendingCount
+            });
+        }
+        /// <summary>
+        /// //stock page dynamic implementation
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        /// 
+
+
+
+        //  from here dynamic implementation  of scanning at final pack 
         [HttpPost]
         public async Task<IActionResult> CreateDispatchDetail( Gro_Disp_DetVM model)
         {
@@ -1100,44 +1288,128 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> ScanDispatchLabels( DispatchScanVM model)
         {
+            var allgrodata = await _groservicee.GetallgroData();
+            
             var allgrodispdet = await _groservicee.GetallgroDispatchDetails();
             var getdispatchdetbyid = allgrodispdet.Where(x => x.Gro_Disp_DetId == model.Gro_Disp_Det_Id).FirstOrDefault();
-            var requiredquanity = model.RequiredQty;
+            var grodatabydispatch = allgrodata.Where(x => x.Gro_DataId == getdispatchdetbyid.Gro_data_ID).FirstOrDefault();
+           // var requiredquanity = model.RequiredQty;
             var getstockbypartid = await _groservicee.GetGropartnoStock(getdispatchdetbyid.Gro_Part_No);
-            var assignedqty=0;
-            if(getstockbypartid.Qnty_on_Hand>= requiredquanity)
-            {
-                assignedqty = requiredquanity;
-            }
-            else
-            {
-                assignedqty = getstockbypartid.Qnty_on_Hand;
-            }
+            //var assignedqty=0;
+            //if(getstockbypartid.Qnty_on_Hand>= requiredquanity)
+            //{
+            //    assignedqty = requiredquanity;
+            //}
+            //else
+            //{
+            //    assignedqty = getstockbypartid.Qnty_on_Hand;
+            //}
             var allgrostockdet = await _groservicee.GetallGroStockDet();
-            
-            var grostockdetbypartid = allgrostockdet.Where(x => x.Gro_Part_List_ID == getdispatchdetbyid.Gro_Part_No && x.Sl_No_Status_ID == 6).ToList();
-            var selectedStock = grostockdetbypartid.Take(assignedqty).ToList();
-            List<Gro_Stock_DetVM> data = new List<Gro_Stock_DetVM>();
-            List<Indent_Part_Sl_NoVM> Indentslno = new List<Indent_Part_Sl_NoVM>();
-            foreach (var item in selectedStock)
+            var stock = allgrostockdet .FirstOrDefault(x => x.Part_Sl_No == model.QRCode);
+            if (stock == null)
             {
-                var updatestatusto1stscan = new Gro_Stock_DetVM();
-                updatestatusto1stscan.Gro_Stock_DetId = item.Gro_Stock_DetId;
-                updatestatusto1stscan.Part_Sl_No = item.Part_Sl_No;
-                updatestatusto1stscan.Sl_No_Status_ID = 3;
-                data.Add(updatestatusto1stscan);
+                return Ok(new
+                {
 
+                    success = false,
 
-                var indentdata = new Indent_Part_Sl_NoVM();
-                indentdata.Gro_Disp_Det_ID = model.Gro_Disp_Det_Id;
-                indentdata.Gro_Stock_Det_ID = item.Gro_Stock_DetId;
-                Indentslno.Add(indentdata);
+                    message = "QR Code not found."
 
+                });
             }
+            if (stock.Gro_Part_List_ID != getdispatchdetbyid.Gro_Part_No)
+            {
+                return Ok(new
+                {
 
-            var postedslno1stscan = await _groservicee.Updategrostockdetto1stscan(data);
+                    success = false,
 
-            var postindentslno = await _groservicee.PostMultipleIndentSlno(Indentslno);
+                    message = "Wrong Part."
+
+                });
+            }
+            if (stock.Sl_No_Status_ID == 3)
+            {
+                return Ok(new
+                {
+
+                    success = false,
+
+                    message = "Label already scanned."
+
+                });
+            }
+            if (stock.Sl_No_Status_ID == 1)
+            {
+                return Ok(new
+                {
+                    success = false,
+
+                    showPrintedPopup = true,
+
+                    partNo = getdispatchdetbyid.Gro_Part_No,
+
+                    serialNo = stock.Part_Sl_No,
+
+                    groStockDetId = stock.Gro_Stock_DetId
+                });
+            }
+            if (stock.Sl_No_Status_ID != 6)
+            {
+                return Ok(new
+                {
+
+                    success = false,
+
+                    message = "Invalid Status."
+
+                });
+            }
+            var update = new Gro_Stock_DetVM();
+
+            update.Gro_Stock_DetId = stock.Gro_Stock_DetId;
+
+            update.Part_Sl_No = stock.Part_Sl_No;
+
+            update.Sl_No_Status_ID = 3;
+
+            await _groservicee.Updategrostockdetto1stscan(
+                new List<Gro_Stock_DetVM> { update });
+            var indent = new Indent_Part_Sl_NoVM();
+
+            indent.Gro_Disp_Det_ID = model.Gro_Disp_Det_Id;
+
+            indent.Gro_Stock_Det_ID = stock.Gro_Stock_DetId;
+
+            await _groservicee.PostMultipleIndentSlno(new List<Indent_Part_Sl_NoVM> { indent });
+            var allindentpartslno = await _groservicee.GetallGroIndentpartSlno();
+            var scanned =allindentpartslno.Count(x => x.Gro_Disp_Det_ID ==model.Gro_Disp_Det_Id);
+            var balance =grodatabydispatch.Reqd_Quantity - scanned;
+
+
+            //var grostockdetbypartid = allgrostockdet.Where(x => x.Gro_Part_List_ID == getdispatchdetbyid.Gro_Part_No && x.Sl_No_Status_ID == 6).ToList();
+            //var selectedStock = grostockdetbypartid.Take(assignedqty).ToList();
+            //List<Gro_Stock_DetVM> data = new List<Gro_Stock_DetVM>();
+            //List<Indent_Part_Sl_NoVM> Indentslno = new List<Indent_Part_Sl_NoVM>();
+            //foreach (var item in selectedStock)
+            //{
+            //    var updatestatusto1stscan = new Gro_Stock_DetVM();
+            //    updatestatusto1stscan.Gro_Stock_DetId = item.Gro_Stock_DetId;
+            //    updatestatusto1stscan.Part_Sl_No = item.Part_Sl_No;
+            //    updatestatusto1stscan.Sl_No_Status_ID = 3;
+            //    data.Add(updatestatusto1stscan);
+
+
+            //    var indentdata = new Indent_Part_Sl_NoVM();
+            //    indentdata.Gro_Disp_Det_ID = model.Gro_Disp_Det_Id;
+            //    indentdata.Gro_Stock_Det_ID = item.Gro_Stock_DetId;
+            //    Indentslno.Add(indentdata);
+
+            //}
+
+            //var postedslno1stscan = await _groservicee.Updategrostockdetto1stscan(data);
+
+            //var postindentslno = await _groservicee.PostMultipleIndentSlno(Indentslno);
 
 
 
@@ -1147,15 +1419,143 @@ namespace CWB.App.Controllers
 
             return Ok(new
             {
-                assignedQty = assignedqty,
-                scannedQty = getdispatchdetbyid.Qnty_Dispatched + assignedqty,
-                balanceQty = requiredquanity - assignedqty,
-                
-                message = assignedqty == 0
-        ? "Available Stock is scanned - Save & Exit"
-        : ((requiredquanity - assignedqty) <= 0
-            ? "Balance to Dispatch Quantity Scanned - Save & Exit"
-            : "Continue Scanning")
+
+                success = true,
+
+                scannedQty = scanned,
+
+                balanceQty = balance,
+
+                message =
+     balance == 0
+     ? "Balance to Dispatch Quantity Scanned - Save & Exit"
+     : "Continue Scanning"
+
+            });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDispatchPendingSession(long groDispDetId)
+        {
+            var allIndent = await _groservicee.GetallGroIndentpartSlno();
+
+            var allStock = await _groservicee.GetallGroStockDet();
+
+            var scanned = allIndent
+                .Where(x => x.Gro_Disp_Det_ID == groDispDetId)
+                .ToList();
+
+            var serials = scanned
+                .Join(allStock,
+                      i => i.Gro_Stock_Det_ID,
+                      s => s.Gro_Stock_DetId,
+                      (i, s) => s.Part_Sl_No)
+                .ToList();
+
+            return Json(new
+            {
+                success = true,
+
+                scannedQty = serials.Count,
+
+                serialNos = serials
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CancelDispatchScan(long groDispDetId)
+        {
+            var allIndent = await _groservicee.GetallGroIndentpartSlno();
+
+            var allStock = await _groservicee.GetallGroStockDet();
+
+            var session = allIndent
+                .Where(x => x.Gro_Disp_Det_ID == groDispDetId)
+                .ToList();
+
+            var updates = new List<Gro_Stock_DetVM>();
+
+            foreach (var item in session)
+            {
+                var stock = allStock
+                    .First(x => x.Gro_Stock_DetId == item.Gro_Stock_Det_ID);
+
+                updates.Add(new Gro_Stock_DetVM
+                {
+                    Gro_Stock_DetId = stock.Gro_Stock_DetId,
+
+                    Part_Sl_No = stock.Part_Sl_No,
+
+                    Sl_No_Status_ID = 6 // InStock
+                });
+            }
+
+            await _groservicee.Updategrostockdetto1stscan(updates);
+            //delete indentpartslno pendin api 
+            await _groservicee.DeleteIndentpartSlno(groDispDetId);
+
+            return Json(new
+            {
+                success = true
+            });
+        }
+        [HttpPost]
+        public async Task<IActionResult> ForceAssignPrintedLabel(ForceAssignVM model)
+        {
+            var allgrodata = await _groservicee.GetallgroData();
+
+            var allgrodispdet = await _groservicee.GetallgroDispatchDetails();
+            var allStock = await _groservicee.GetallGroStockDet();
+            var getdispatchdetbyid = allgrodispdet.Where(x => x.Gro_Disp_DetId == model.groDispDetId).FirstOrDefault();
+            var grodatabydispatch = allgrodata.Where(x => x.Gro_DataId == getdispatchdetbyid.Gro_data_ID).FirstOrDefault();
+            var stock = allStock
+                .First(x => x.Gro_Stock_DetId == model.groStockDetId);
+            var update = new Gro_Stock_DetVM();
+
+            update.Gro_Stock_DetId = stock.Gro_Stock_DetId;
+
+            update.Part_Sl_No = stock.Part_Sl_No;
+
+            update.Sl_No_Status_ID = 6;
+            var stockList =
+await _groservicee.GetGropartnoStock(getdispatchdetbyid.Gro_Part_No);
+
+            stockList.Qnty_on_Hand += 1;
+            int updatedStock = stockList.Qnty_on_Hand;
+            await _groservicee.UpdategrostockbyPart(stockList);
+            await _groservicee.Updategrostockdetto1stscan(
+                new List<Gro_Stock_DetVM> { update });
+            update.Sl_No_Status_ID = 3;
+
+            await _groservicee.Updategrostockdetto1stscan(
+                new List<Gro_Stock_DetVM> { update });
+            var indent = new Indent_Part_Sl_NoVM();
+
+            indent.Gro_Disp_Det_ID = model.groDispDetId;
+
+            indent.Gro_Stock_Det_ID = stock.Gro_Stock_DetId;
+
+            await _groservicee.PostMultipleIndentSlno(
+                new List<Indent_Part_Sl_NoVM> { indent });
+
+            var allIndent =
+await _groservicee.GetallGroIndentpartSlno();
+
+            var scanned =
+            allIndent.Count(x =>
+            x.Gro_Disp_Det_ID == model.groDispDetId);
+            var balance = grodatabydispatch.Reqd_Quantity - scanned;
+            return Ok(new
+            {
+                success = true,
+
+                scannedQty = scanned,
+
+                balanceQty = balance,
+                qtyOnHand = updatedStock,
+                message = balance == 0
+        ? "Balance to Dispatch Quantity Scanned - Save & Exit"
+        : "Continue Scanning"
             });
         }
         [HttpPost]
@@ -1221,7 +1621,7 @@ namespace CWB.App.Controllers
             var grofirtrecord = allgrodata.Where(x => x.Indent == header.Indent).FirstOrDefault();
             if (header == null)
                 return NotFound();
-
+            
             header.IndentDateStr = header.SentDate?.ToString("dd-MM-yyyy") ?? "";
             header.DispatchDateStr = header.Dispatch_Date?.ToString("dd-MM-yyyy") ?? "";
             header.Company_Name = grofirtrecord.Company_Name;
@@ -1229,7 +1629,7 @@ namespace CWB.App.Controllers
             List<Gro_DataVM> items = new List<Gro_DataVM>();
 
             var dispatchDetails = allGroDispDetails
-                                    .Where(x => x.Gro_Disp_Header_ID == headerId)
+                                    .Where(x => x.Gro_Disp_Header_ID == headerId &&x.Qnty_Dispatched>0)
                                     .ToList();
 
             foreach (var detail in dispatchDetails)
@@ -1240,16 +1640,44 @@ namespace CWB.App.Controllers
                 var item = new Gro_DataVM();
 
                 item.Gro_Part_No = detail.Gro_Part_No;
-                item.GroPartNo = part?.Gro_Part_No ?? "";
+                item.GroPartNo = (part?.Gro_Part_No ?? "") + " " + (part?.OurPartDescription ?? "");
                 item.QntyDispatched = detail.Qnty_Dispatched;
 
                 items.Add(item);
             }
 
+            decimal invoiceValue = 0;
+
+            foreach (var detail in dispatchDetails)
+            {
+                var part = allGroParts
+                            .FirstOrDefault(x => x.Gro_Part_ListId == detail.Gro_Part_No);
+
+                var item = new Gro_DataVM();
+
+                item.Gro_Part_No = detail.Gro_Part_No;
+                item.GroPartNo = (part?.Gro_Part_No ?? "") + " " + (part?.OurPartDescription ?? "");
+                item.QntyDispatched = detail.Qnty_Dispatched;
+
+                
+
+                // Calculate invoice value
+                if (part != null)
+                {
+                    decimal taxable = detail.Qnty_Dispatched * part.OurPrice;
+                    decimal gst = taxable * part.GSTRate / 100m;
+
+                    invoiceValue += taxable + gst;
+                }
+            }
+
+            decimal approxValue = Math.Round(invoiceValue * 0.20m, 2);
+
             return Ok(new
             {
                 header,
-                items
+                items,
+                approxValue
             });
         }
         [HttpGet]
@@ -1268,7 +1696,7 @@ namespace CWB.App.Controllers
             InvoicePrintVM vm = new InvoicePrintVM();
 
             vm.Header = groheaderdetails;
-            var dispatchbyheader = alldispatchdetails.Where(x => x.Gro_Disp_Header_ID == headerId).ToList();
+            var dispatchbyheader = alldispatchdetails.Where(x => x.Gro_Disp_Header_ID == headerId &&x.Qnty_Dispatched>0).ToList();
             int slno = 1;
 
             foreach (var item in dispatchbyheader)
@@ -1795,7 +2223,7 @@ namespace CWB.App.Controllers
             vm.Header = groheaderdetails;
 
             var dispatchbyheader = alldispatchdetails
-                .Where(x => x.Gro_Disp_Header_ID == headerId)
+                .Where(x => x.Gro_Disp_Header_ID == headerId &&x.Qnty_Dispatched>0)
                 .ToList();
 
             int slno = 1;
@@ -1835,6 +2263,95 @@ namespace CWB.App.Controllers
             vm.TaxAmountInWords = ConvertAmountToWords(vm.GSTAmount);
 
             return vm;
+        }
+
+        //stock Correction In Gro Document Page
+        [HttpPost]
+        public async Task<IActionResult> GetCorrectionLabel(string qrCode)
+        {
+            try
+            {
+                var allStock = await _groservicee.GetallGroStockDet();
+                var allParts = await _groservicee.Getallgroparts();
+
+                var stock = allStock
+                    .FirstOrDefault(x => x.Part_Sl_No == qrCode);
+
+                if (stock == null)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        message = "QR Code not found."
+                    });
+                }
+
+                var part = allParts
+                    .FirstOrDefault(x => x.Gro_Part_ListId == stock.Gro_Part_List_ID);
+
+                if (part == null)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        message = "Part not found."
+                    });
+                }
+
+                return Ok(new
+                {
+                    success = true,
+
+                    stockDetId = stock.Gro_Stock_DetId,
+
+                    partId = part.Gro_Part_ListId,
+
+                    partNo = part.Gro_Part_No,
+
+                    description = part.OurPartDescription,
+
+                    serialNo = stock.Part_Sl_No,
+
+                    statusId = stock.Sl_No_Status_ID
+                });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetCorrectionPart(string partNo)
+        {
+
+            var stock =
+                await _groservicee.GetGropartnoStock(Convert.ToInt64(partNo));
+            var part = await _groservicee.Getallgroparts();
+            var correctionpart = part.Where(x => x.Gro_Part_ListId == stock.Gro_Part_List_ID).FirstOrDefault();
+            if (stock == null)
+            {
+                return Ok(new
+                {
+                    success = false
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+
+                partId = stock.Gro_Part_List_ID,
+
+                partNo = correctionpart.Gro_Part_No,
+
+                description = correctionpart.OurPartDescription,
+
+                qoh = stock.Qnty_on_Hand
+            });
         }
     }
 }

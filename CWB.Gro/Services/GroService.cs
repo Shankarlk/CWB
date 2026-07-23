@@ -1719,13 +1719,18 @@ namespace CWB.Gro.Services
 
         public async Task<bool> DeleteIndentPartSlNo(long Id)
         {
-            var co = await _indent_Part_Sl_NoRepository.SingleOrDefaultAsync(m => m.Id == Id);
+            var co = await _indent_Part_Sl_NoRepository.GetAllAsync();
+            var codetails = co.Where(x => x.Gro_Disp_Det_ID == Id).ToList();
 
-            if (co != null)
+            if (codetails != null)
             {
                 try
                 {
-                    _indent_Part_Sl_NoRepository.Remove(co);
+                    foreach(var item in codetails)
+                    {
+                        _indent_Part_Sl_NoRepository.Remove(item);
+                    }
+                  
                     await _unitOfWork.CommitAsync();
 
                     return true;

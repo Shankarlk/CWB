@@ -67,5 +67,6 @@ namespace CWB.ProductionPlanWO.ViewModels
         public long SplitParentWoId { get; set; }
         public long Sim_Seq_No { get; set; }
         public long Calc_Capacity_Reqd { get; set; }
+        public long WOLevel { get; set; }
     }
 }

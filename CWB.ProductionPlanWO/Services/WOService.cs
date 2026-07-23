@@ -969,7 +969,7 @@ namespace CWB.ProductionPlanWO.Services
                         {
                             pp.WONumber = "WO_" + pp.WODate.Value.ToString("yyyyMMddHHmmssffff");
                         }
-                        pp.Status = 1;
+                        pp.Status = 3;
                         pp.TestData = 'Y';
                         try
                         {
@@ -1243,6 +1243,28 @@ namespace CWB.ProductionPlanWO.Services
             }
             upp.CriticalPart = 1;
            
+            pp = await _productionPlan_WORepository.UpdateAsync(pp.Id, upp);
+            try
+            {
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            return productions;
+        }
+        public async Task<ProductionPlan_WOVM> UpdateProductionPlan_WoTestData(ProductionPlan_WOVM productions)
+        {
+            var pp = _mapper.Map<ProductionPlan_WO>(productions);
+            var upp = await _productionPlan_WORepository.SingleOrDefaultAsync(x => x.Id == pp.Id);
+            if (upp == null)
+            {
+                return productions;
+            }
+            upp.TestData = 'N';
+
             pp = await _productionPlan_WORepository.UpdateAsync(pp.Id, upp);
             try
             {
@@ -4957,6 +4979,10 @@ namespace CWB.ProductionPlanWO.Services
                 {
                     item.PlanStartDateStr = item.PlanStartDate.ToString("dd-MM-yyyy");
                     item.PartTypeName = "Assembly"; // Default for Type 2
+                }
+                else if(item.PartType==1)
+                {
+                    item.PartTypeName = "CMP";
                 }
                 else
                 {

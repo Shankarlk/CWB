@@ -177,3 +177,125 @@ $("#btnDeleteInvoice").click(function () {
         });
 
 });
+$("#btnStockCorrection").click(function () {
+
+    $("#stockCorrectionModal").modal("show");
+
+});
+$("#ddlSituation").change(function () {
+
+    if ($(this).val() == "") {
+
+        $("#btnScanCorrection").prop("disabled", true);
+
+        return;
+
+    }
+
+    $("#btnScanCorrection").prop("disabled", false);
+
+});
+$("#btnScanCorrection").click(function () {
+
+    $("#txtCorrectionQRCode")
+        .prop("readonly", false)
+        .focus();
+
+});
+$("#txtCorrectionQRCode").on("keypress", function (e) {
+
+    if (e.which != 13)
+        return;
+
+    e.preventDefault();
+
+    loadCorrectionLabel($(this).val().trim());
+
+    $(this).val("");
+
+});
+function loadCorrectionLabel(qrCode) {
+
+    api.post("/Gro/GetCorrectionLabel",
+        {
+            qrCode: qrCode
+        })
+        .then(function (data) {
+
+            if (!data.success) {
+
+                toastr.error(data.message);
+
+                return;
+
+            }
+
+            $("#lblCorrPartNo").text(data.partNo);
+
+            $("#lblCorrPartDesc").text(data.description);
+
+            $("#lblCorrSerial").text(data.serialNo);
+
+            $("#txtCorrectionQRCode")
+                .prop("readonly", true);
+
+            loadCorrectionParts(data.partId);
+
+        });
+
+}
+function loadCorrectionParts(partNo) {
+
+    api.getbulk("/Gro/GetCorrectionPart?partNo="
+        + encodeURIComponent(partNo))
+
+        .then(function (data) {
+
+            $("#tblCorrectionPartBody").empty();
+
+            if (!data.success)
+                return;
+
+            var template =
+                $("#correctionPartRow").html();
+
+            template = template
+                .replace("{gro_Part_List_ID}", data.partId)
+                .replace("{gro_Part_No}",
+                    data.partNo + " - " + data.description)
+                .replace("{qnty_on_Hand}", data.qoh);
+
+            $("#tblCorrectionPartBody").append(template);
+
+        });
+
+}
+$("#stockCorrectionModal").on("hidden.bs.modal", function () {
+
+    $("#ddlSituation").val("");
+
+    $("#txtCorrectionQRCode")
+        .val("")
+        .prop("readonly", true);
+
+    $("#lblCorrPartNo").text("");
+
+    $("#lblCorrPartDesc").text("");
+
+    $("#lblCorrSerial").text("");
+
+    $("#txtCorrectPart").val("");
+
+    $("#tblCorrectionPartBody").empty();
+
+    $("#btnScanCorrection")
+        .prop("disabled", true);
+
+});
+$("#btnConfirmCorrection").click(function () {
+
+    // Call your controller here...
+
+    $("#stockCorrectionModal").modal("hide");
+
+});

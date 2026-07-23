@@ -9,6 +9,6 @@ namespace CWB.App.Models.Gro
     {
         public long Gro_Disp_Det_Id { get; set; }
 
-        public int RequiredQty { get; set; }
+        public string QRCode { get; set; }
     }
 }

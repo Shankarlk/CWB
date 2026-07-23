@@ -1,0 +1,156 @@
+﻿<div class="content">
+    <div class="card-body">
+
+        <!-- Page Title -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0"> </h4>
+
+
+        </div>
+
+        <!-- Filters -->
+        <div class="row mb-3">
+            <!-- Search Filters -->
+            <div class="row mb-3">
+
+                <div class="col-md-2">
+
+                    <label class="form-label fw-bold">Machine</label>
+                    <input type="text" id="txtMachine" class="form-control form-control-sm"
+                           placeholder="Search Machine No">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Part No</label>
+                    <input type="text" id="txtPartNo" class="form-control form-control-sm"
+                           placeholder="Search Part">
+                </div>
+
+
+
+            </div>
+        </div>
+
+
+
+
+        <!-- Timeline Container -->
+        <div class="table-responsive" style="max-height:650px;">
+
+            <table class="table table-bordered text-center align-middle mb-0">
+
+                <!-- ================= HEADER ================= -->
+
+                <thead>
+
+                    <tr id="dateHeader">
+                    </tr>
+
+                    <tr id="shiftHeader">
+                    </tr>
+
+                    <tr id="hourHeader">
+                    </tr>
+
+                </thead>
+
+                <!-- ================= BODY ================= -->
+
+                <tbody id="simulationBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <!-- Legend -->
+        <div class="row mt-4">
+
+            <!-- Left Side -->
+            <div class="col-md-8">
+
+
+
+                <div>1212-121 Op 10 = Critical Routing Step (Operation)</div>
+
+                <div>234102-11 * Op 30  = Critical Routing Step (Operation) + Critical Setup</div>
+
+
+                <div>8390-995 * - Op 50 = Critical Setup</div>
+
+
+                <br>
+
+                <div>Mc Utilization Summary Can be provided below</div>
+
+            </div>
+
+            <!-- Right Side -->
+            <div class="col-md-4 d-flex justify-content-end">
+
+                <div class="border rounded p-3">
+
+                    <h6 class="mb-1">Status</h6>
+
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-success me-2">&nbsp;&nbsp;&nbsp;</span>
+                        <span>Running</span>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-danger me-2">&nbsp;&nbsp;&nbsp;</span>
+                        <span>Machine Stop</span>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-secondary me-2">&nbsp;&nbsp;&nbsp;</span>
+                        <span>Idle</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<template id="simulationRow">
+
+    <tr>
+
+        <td>{machineNo}</td>
+
+
+
+        <td colspan="{totalHours}" class="position-relative p-0">
+
+            <div style="position:relative;height:{rowHeight}px;width:{totalWidth}px;">
+
+                {operations}
+
+            </div>
+
+        </td>
+
+    </tr>
+
+</template>
+<template id="operationTemplate">
+
+    <div class="bg-success text-white rounded px-2"
+         style="
+        position:absolute;
+        left:{left}px;
+        top:{top}px;
+        width:{width}px;
+        height:24px;
+        line-height:24px;">
+
+        {partNum} - {operationName}
+
+    </div>
+
+</template>
+@section Scripts {
+    <script src="~/js/SimulationDashboard/SimulationMachineDashboard.js"></script>
+}

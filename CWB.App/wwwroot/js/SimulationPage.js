@@ -5,6 +5,24 @@ let currentRoutingId = 0;
 let mcAdd = 0;
 let Popup10Open = 0;
 let closeP26 = 0;
+$(document).ready(function () {
+    $("#txtCushionTime").val(10);
+});
+$("#txtCushionTime").on("input", function () {
+
+    let value = $(this).val();
+
+    // Allow empty while typing
+    if (value === "")
+        return;
+
+    value = parseInt(value);
+
+    if (isNaN(value) || value < 0 || value > 25) {
+        alert("Cushion Time should be between 0 and 25%.");
+        $(this).val(10);
+    }
+});
 var stoppingData = {
     woStoppingOprIds: {},     // { woId: oprListId }
     oprStoppingMcWaitIds: {}  // { oprListId: mcWaitListId }
@@ -12,29 +30,68 @@ var stoppingData = {
 function landingPage() {
     const today = new Date();
     $("#preloaderblurred").show();
-    api.getbulk("/WorkOrder/GetAllReadyforProductionWo").then((data) => {
-        const count = data.length;
-        const AssyCount = data.filter((salesOrder) => salesOrder.partType === 2 && salesOrder.parentWoId === 0 ).length;
-        const CmpCount = data.filter((salesOrder) => salesOrder.partType === 1 && salesOrder.parentWoId === 0).length;
-        const ChildAssyCount = data.filter((salesOrder) => salesOrder.partType === 2  ).length;
-        const ChildCmpCount = data.filter((salesOrder) => salesOrder.partType === 1 ).length;
+    //api.getbulk("/WorkOrder/GetAllReadyforProductionWo").then((data) => {
+    //    const count = data.length;
+    //    const AssyCount = data.filter((salesOrder) => salesOrder.partType === 2 && salesOrder.parentWoId === 0 ).length;
+    //    const CmpCount = data.filter((salesOrder) => salesOrder.partType === 1 && salesOrder.parentWoId === 0).length;
+    //    const ChildAssyCount = data.filter((salesOrder) => salesOrder.partType === 2  ).length;
+    //    const ChildCmpCount = data.filter((salesOrder) => salesOrder.partType === 1 ).length;
+    //    $('#ReadAssy').text(AssyCount);
+    //    $('#ReadCMp').text(CmpCount);
+    //    $('#InMcQueRAssy').text('0');
+    //    $('#InMcQueRCmp').text('0');
+    //    $("#preloaderblurred").hide();
+    //}).catch((error) => {
+    //    $("#preloaderblurred").hide();
+    //});
+
+    api.getbulk("/WorkOrder/GetAllproductionWithMaterailavailableFreezed").then((data) => {
+        
+        const AssyCount = data.filter((workOrder) => workOrder.partType === 2).length;
+        const CmpCount = data.filter((workOrder) => workOrder.partType === 1).length;
+       
         $('#ReadAssy').text(AssyCount);
         $('#ReadCMp').text(CmpCount);
-        $('#InMcQueRAssy').text('0');
-        $('#InMcQueRCmp').text('0');
+        
         $("#preloaderblurred").hide();
     }).catch((error) => {
         $("#preloaderblurred").hide();
     });
-    api.getbulk("/WorkOrder/GetAllRwk_List").then((data) => {
-        const AssyCount = data.filter((workOrder) => workOrder.partType === 1).length;
-        const CmpCount = data.filter((workOrder) => workOrder.partType === 2).length;
+    api.getbulk("/WorkOrder/GetAllproductionWithoutMaterailavailableFreezed").then((data) => {
+
+        const AssyCount = data.filter((workOrder) => workOrder.partType === 2).length;
+        const CmpCount = data.filter((workOrder) => workOrder.partType === 1).length;
+
+        $('#WAssy').text(AssyCount);
+        $('#WCmp').text(CmpCount);
+
+        $("#preloaderblurred").hide();
+    }).catch((error) => {
+        $("#preloaderblurred").hide();
+    });
+    //api.getbulk("/WorkOrder/GetAllRwk_List").then((data) => {
+    //    const AssyCount = data.filter((workOrder) => workOrder.partType === 1).length;
+    //    const CmpCount = data.filter((workOrder) => workOrder.partType === 2).length;
+    //    $('#RwkAssy').text(AssyCount);
+    //    $('#RwkCmp').text(CmpCount);
+    //}).catch((error) => {
+    //});
+    api.getbulk("/WorkOrder/GetAllproductionWithMaterailavailable").then((data) => {
+        const AssyCount = data.filter((workOrder) => workOrder.partType === 2).length;
+        const CmpCount = data.filter((workOrder) => workOrder.partType === 1).length;
         $('#RwkAssy').text(AssyCount);
         $('#RwkCmp').text(CmpCount);
     }).catch((error) => {
     });
-    api.getbulk("/WorkOrder/GetAllNon_Plan_Wk_List").then((data) => {
-        $('#NonAssy').text(data.length);
+    //api.getbulk("/WorkOrder/GetAllNon_Plan_Wk_List").then((data) => {
+    //    $('#NonAssy').text(data.length);
+    //}).catch((error) => {
+    //});
+    api.getbulk("/WorkOrder/GetAllproductionWithoutMaterailavailable").then((data) => {
+        const AssyCount = data.filter((workOrder) => workOrder.partType === 2).length;
+        const CmpCount = data.filter((workOrder) => workOrder.partType === 1).length;
+        $('#NonAssy').text(AssyCount);
+        $('#InMcQueNon').text(CmpCount);
     }).catch((error) => {
     });
     api.getbulk("/WorkOrder/GetAllWO_Wait_List").then((data) => {
@@ -129,7 +186,22 @@ $(document).ready(function () {
         });
     });
     $("#simulate").secureClick(function () {
+        var value = $("#txtCushionTime").val().trim();
 
+        if (value === "") {
+            cushionPercent = 10.0;
+            $("#txtCushionTime").val(10);
+        }
+        else {
+            cushionPercent = parseFloat(value);
+
+            if (isNaN(cushionPercent) || cushionPercent < 0 || cushionPercent > 25) {
+                alert("Cushion Time should be between 0 and 25%.");
+                cushionPercent = 10.0;
+                $("#txtCushionTime").val(10);
+                return;
+            }
+        }
         alert("Simulation Has Started");
 
         isDataSaved = false;
@@ -138,6 +210,9 @@ $(document).ready(function () {
         $.ajax({
             type: "POST",
             url: "/WorkOrder/SimulateWO",
+            data: {
+                cushionPercent: cushionPercent
+            },
             success: function (result) {
                 alert(result.message);
 
@@ -1423,7 +1498,9 @@ $(document).ready(function () {
     $('#Popup27').on('hidden.bs.modal', function (event) {
     });
     $('#Popup28').on('show.bs.modal', function (event) {
+        $("#preloaderblurred").show();
         loadMcWaitSetup();
+        $("#preloaderblurred").hide();
     });
     $('#Popup28').on('hidden.bs.modal', function (event) {
     });
@@ -1929,28 +2006,28 @@ $(document).ready(function () {
         });
     });
     $('#FreezeBtn').secureClick( function () {
-        var selectedWOIds = [];
+        //var selectedWOIds = [];
 
-        $('#SimWoGrid tbody tr').each(function () {
-            var id = $(this).find('td:eq(16)').text().trim(); // Hidden WO ID column
-            if (id) {
-                selectedWOIds.push(parseInt(id));
-            }
-        });
+        //$('#SimWoGrid tbody tr').each(function () {
+        //    var id = $(this).find('td:eq(16)').text().trim(); // Hidden WO ID column
+        //    if (id) {
+        //        selectedWOIds.push(parseInt(id));
+        //    }
+        //});
 
-        if (selectedWOIds.length === 0) {
-            alert("No Work Orders found to freeze.");
-            return;
-        }
+        //if (selectedWOIds.length === 0) {
+        //    alert("No Work Orders found to freeze.");
+        //    return;
+        //}
         document.getElementById('preloader').style.display = 'block';
         document.getElementById('status').style.display = 'block';
         return $.ajax({
             type: "POST",
             url: '/WorkOrder/FreezeSimulation',
-            contentType: "application/json; charset=utf-8",
-            headers: { 'Content-Type': 'application/json' },
-            data: JSON.stringify(selectedWOIds),
-            dataType: "json",
+            //contentType: "application/json; charset=utf-8",
+            //headers: { 'Content-Type': 'application/json' },
+            //data: JSON.stringify(selectedWOIds),
+            //dataType: "json",
             success: function (result) {
                 alert(result.message);
                 document.getElementById('preloader').style.display = 'none';
@@ -2536,7 +2613,7 @@ function calculateActualDuration() {
     }
 }
 function loadMcWaitSetup() {
-
+    $("#preloaderblurred").show();
     api.getbulk("/workOrder/GetAllMcWaitSetupList").then((data) => {
         var tablebody = $("#P28Grid tbody");
         $(tablebody).html(""); // empty tbody
@@ -2560,6 +2637,7 @@ function loadMcWaitSetup() {
     }).catch((error) => {
         console.error("Failed to load WOs", error);
     });
+    $("#preloaderblurred").hide();
 }
 function loadMoveMatl() {
 

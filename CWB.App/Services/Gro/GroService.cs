@@ -406,5 +406,11 @@ namespace CWB.App.Services.Gro
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<bool>.GetAsync(uri, headers);
         }
+        public async Task<bool> DeleteIndentpartSlno(long doctypeId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbgro/deleteindentpartslno/{doctypeId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
     }
 }

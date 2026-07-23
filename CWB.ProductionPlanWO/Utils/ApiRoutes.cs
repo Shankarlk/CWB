@@ -63,6 +63,7 @@ namespace CWB.ProductionPlanWO.Utils
             public const string PostProductionPlan_WoFreeze = Base + "/productionplanfreeeze";
             public const string UpdateProductionPlan_Wo = Base + "/updateproductionplan";
             public const string UpdateProductionPlan_WoCriticalPart = Base + "/updateproductionplancriticalpart";
+            public const string UpdateProductionPlan_WoTestData = Base + "/updateproductionplantestdata";
             public const string UpdateProductionPlan_WoAllocatedqntyandstatus = Base + "/updateproductionplanstatusandallocatedqnty";
             public const string PostProductionPlan_WoConsolidation = Base + "/postproductionplanconsolidation";
             public const string UpdateHoldProductionPlan_Wo = Base + "/updateholdproductionplan";

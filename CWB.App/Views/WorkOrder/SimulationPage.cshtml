@@ -232,7 +232,7 @@
                     <div class="row mt-1">
                         <div class="col d-flex gap-2">
                             <button class="btn btn-outline-primary ms-3" data-bs-target="#Popup8" data-bs-toggle="modal">Edit/New Non-Plan Work</button>
-                            <button class="btn btn-outline-primary ms-2" data-bs-target="#Popup10" data-bs-toggle="modal">Edit Rework Slot</button>
+                            <button class="btn btn-outline-primary ms-2" data-bs-target="#Popup10" data-bs-toggle="modal" style="display:none;">Edit Rework Slot</button>
                             <button class="btn btn-outline-primary ms-2" data-bs-target="#Popup13" data-bs-toggle="modal">Update Mc Non-Availability</button>
                             <button class="btn btn-outline-primary ms-2" data-bs-target="#ErrorMessage1" data-bs-toggle="modal" hidden>Error Message 1</button>
                         </div>
@@ -389,14 +389,14 @@
                         <div class="col-md-2 text-end">
                             @if (permissionResult != null)
                             {
-                                @if (permissionResult.Any(r => r.Menu3 == "DetailedPlanning"))
+                                @if (permissionResult.Any(r => r.Menu3 == "Detailed Production Planning"))
                                 {
-                                    <button class="btn btn-primary mb-2" id="gobacktodetailplaningbtn">Go back to Detailed Planning</button>
+                                    <button class="btn btn-primary mb-2" id="gobacktodetailplaningbtn"  onclick="window.location.href = '/D%231@122P%20I%255$3T%20I'">Go back to Detailed Planning</button>
                                 }
                             }
                             else
                             {
-                                <button class="btn btn-primary mb-2" id="gobacktodetailplaningbtn">Go back to Detailed Planning</button>
+                                <button class="btn btn-primary mb-2" id="gobacktodetailplaningbtn"  onclick="window.location.href = '/D%231@122P%20I%255$3T%20I'">Go back to Detailed Planning</button>
                             }
                         </div>
                         <div class="col-md-9 text-end mt-3">
@@ -3664,7 +3664,7 @@
 </template>
 <template id="SimWoGridRow">
     <tr>
-        <td> </td>
+        <td>{sim_Seq_No} </td>
         <td>{woNumber}</td>
         @*<td>{customer}</td>*@
         <td>{buildToStock}</td>

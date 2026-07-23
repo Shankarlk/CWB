@@ -96,6 +96,10 @@ namespace CWB.ProductionPlanWO.Configurations
               .HasColumnName("Calc_Capacity_Reqd")
               .HasDefaultValue(0);
             builder
+             .Property(t => t.WOLevel)
+             .HasColumnName("WOLevel")
+             .HasDefaultValue(0);
+            builder
              .Property(t => t.PlanWOQnty)
              .HasColumnName("PlanWOQnty")
              .HasDefaultValue(0);

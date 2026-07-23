@@ -147,6 +147,13 @@ namespace CWB.App.Services.ProductionPlanWo
             productions.TenantId = tenantId;
             return await RestHelper<ProductionPlan_WoVM>.PostAsync(uri, productions, headers);
         }
+        public async Task<ProductionPlan_WoVM> UpdateProductionPlanTestData(ProductionPlan_WoVM productions)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/updateproductionplantestdata");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            productions.TenantId = tenantId;
+            return await RestHelper<ProductionPlan_WoVM>.PostAsync(uri, productions, headers);
+        }
         public async Task<ProductionPlan_WoVM> UpdateProductionPlan_WoAllocatedqntyandstatus(ProductionPlan_WoVM productions)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/updateproductionplanstatusandallocatedqnty");

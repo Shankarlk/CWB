@@ -2009,12 +2009,12 @@ function bindDCPrintUpdate(data) {
 
     $("#dcDateUpd").text(data.header.dispatchDateStr);
     $("#dcNoUpd").text(data.header.gro_Disp_HeaderId);
-
+    
     $("#dcCustomerUpd").text(data.header.company_Name);
     $("#dcAddressUpd").text(data.header.shipping_Address);
 
     $("#dctransportUpd").text(data.header.courierName);
-
+    $("#approx").text("₹ " + data.approxValue.toFixed(2));
     var tbody = $("#dcItemsBodyUpd tbody");
 
     tbody.empty();
@@ -2112,6 +2112,9 @@ table,th,td{
 
     border:1px solid #000 !important;
 
+}
+.text-start{
+    text-align:left !important;
 }
 
 img{

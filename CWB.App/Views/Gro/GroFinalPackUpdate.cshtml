@@ -163,7 +163,7 @@
 <div class="modal fade" id="dispatchPopup" tabindex="-1" data-bs-backdrop="static"
      data-bs-keyboard="false">
     <div class="modal-dialog modal-full-width">
-        <div class="modal-content">
+        <div class="modal-content border border-4 border-primary">
 
             <div class="modal-header">
                 <h4 class="modal-title">
@@ -274,7 +274,7 @@
 <div class="modal fade" id="dispatchDetailsPopup" tabindex="-1" data-bs-backdrop="static"
      data-bs-keyboard="false">
     <div class="modal-dialog modal-full-width">
-        <div class="modal-content">
+        <div class="modal-content border border-4 border-primary">
 
             <div class="modal-header">
                 <h4 class="modal-title">
@@ -383,7 +383,7 @@
 
     <div class="modal-dialog modal-lg">
 
-        <div class="modal-content">
+        <div class="modal-content border border-4 border-primary">
 
             <div class="modal-header">
                 <h5 class="modal-title" id="dispatchQtyModalLabel">
@@ -484,7 +484,7 @@
 
     <div class="modal-dialog modal-md">
 
-        <div class="modal-content">
+        <div class="modal-content border border-4 border-primary">
 
             <div class="modal-header">
                 <h5 class="modal-title"
@@ -560,7 +560,7 @@
                                class="form-control"
                                id="txtDispatchScannedQRCode"
                                placeholder="Waiting for scan..."
-                               readonly />
+                               autocomplete="off" />
 
                     </div>
 
@@ -640,7 +640,7 @@
 
     <div class="modal-dialog  modal-lg">
 
-        <div class="modal-content">
+        <div class="modal-content border border-4 border-primary">
 
             <div class="modal-header">
                 <h5 class="modal-title"
@@ -787,7 +787,7 @@
 
     <div class="modal-dialog">
 
-        <div class="modal-content">
+        <div class="modal-content border border-4 border-primary">
 
             <div class="modal-header">
 
@@ -863,7 +863,7 @@
 
     <div class="modal-dialog">
 
-        <div class="modal-content">
+        <div class="modal-content border border-4 border-primary">
 
             <div class="modal-header">
 
@@ -879,7 +879,7 @@
             </div>
 
             <div class="modal-body">
-
+                <input type="hidden" id="hdnPrintedStockDetId" />
                 <div class="row mb-2">
                     <div class="col-5"><strong>Part No / Desc</strong></div>
                     <div class="col-7">: <span id="lblPartNo"></span></div>
@@ -935,7 +935,7 @@
 
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
 
-        <div class="modal-content">
+        <div class="modal-content border border-4 border-primary">
 
             <!-- Header -->
             <div class="modal-header">
@@ -1142,7 +1142,8 @@
 
                                 <strong>Note :</strong>
 
-                                <span id="dcNote"></span>
+                                <span>For Process &  Return,Not for Sale</span>
+
 
                             </td>
 
@@ -1162,6 +1163,16 @@
                                 <span>29AAGCT7823F1Z2</span>
                             </td>
                         </tr>
+                        <tr>
+                            <td>
+
+                                <strong>Approx Value :</strong>
+
+                                <span id="approx"></span>
+
+                            </td>
+                        </tr>
+
 
                     </table>
 
@@ -1171,7 +1182,7 @@
 
                         <div class="col-6 text-center border-dark">
                             <strong>Received the goods in good condition</strong>
-                            <br /><br />
+                            <div style="height:1in;"></div>
 
                             _______________________________
 
@@ -1183,7 +1194,7 @@
 
                         <div class="col-6 text-center border-dark">
                             <strong>For Tiss KGK Security Systems Pvt. Ltd.</strong>
-                            <br /><br />
+                            <div style="height:1in;"></div>
 
                             _______________________________
 
@@ -1227,7 +1238,7 @@
 
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
 
-        <div class="modal-content">
+        <div class="modal-content border border-4 border-primary">
 
             <div class="modal-header">
 
@@ -1521,7 +1532,7 @@
 
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
 
-        <div class="modal-content">
+        <div class="modal-content border border-4 border-primary">
 
             <div class="modal-header">
 
@@ -2002,7 +2013,7 @@
 
     <div class="modal-dialog modal-md">
 
-        <div class="modal-content">
+        <div class="modal-content border border-4 border-primary">
 
             <div class="modal-header">
                 <h5 class="modal-title" id="AddressLabelModalLabel">
@@ -2362,7 +2373,7 @@
 
         <td>{slno}</td>
 
-        <td>{groPartNo}</td>
+        <td class="text-start">{groPartNo}</td>
 
         <td>{qntyDispatched}</td>
 

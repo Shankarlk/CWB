@@ -142,7 +142,7 @@
                                     }
                                     @if (permissionResult.Any(r => r.Menu2 == "Gro Sales Stock Management"))
                                     {
-                                        <li><a asp-action="GroStock" asp-controller="Gro" data-navid="G-ST">Gro Stock Update</a></li>
+                                        <li><a asp-action="GroStock" asp-controller="Gro" data-navid="G-ST">Unit Pack Update</a></li>
                                     }
                                     @if (permissionResult.Any(r => r.Menu2 == "Gro Document Management"))
                                     {
@@ -187,35 +187,40 @@
                                         Process Planning
                                     </a>
                                     @*<a href="#sidebarPP" data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebarPP" class="ms-auto">
-                                    <span class="menu-arrow"></span>
-                                </a>*@
+                <span class="menu-arrow"></span>
+            </a>*@
                                 </li>
+                                <li><a asp-action="SimulationDashboard" asp-controller="WorkOrder" data-navid="B-BA">Simulation Part Dashboard</a></li>
+                                <li><a asp-action="SimulationMachineDashboard" asp-controller="WorkOrder" data-navid="B-BA">Simulation Machine Dashboard</a></li>
+
+
+
                                 @*<div class="collapse" id="sidebarPP">
-                                <ul class="nav-third-level ms-3">
-                                    <li><a asp-action="Step1" asp-controller="WorkOrder" data-navid="PP-1">Step 1</a></li>
-                                    <li><a asp-action="Step2" asp-controller="WorkOrder" data-navid="PP-2">Step 2</a></li>
-                                    <li><a asp-action="Step3" asp-controller="WorkOrder" data-navid="PP-3">Step 3</a></li>
-                                </ul>
-                            </div>*@
+            <ul class="nav-third-level ms-3">
+                <li><a asp-action="Step1" asp-controller="WorkOrder" data-navid="PP-1">Step 1</a></li>
+                <li><a asp-action="Step2" asp-controller="WorkOrder" data-navid="PP-2">Step 2</a></li>
+                <li><a asp-action="Step3" asp-controller="WorkOrder" data-navid="PP-3">Step 3</a></li>
+            </ul>
+        </div>*@
                                 <!--<li>
-                        <div class="d-flex justify-content-between align-items-center">-->
+    <div class="d-flex justify-content-between align-items-center">-->
                                 <!-- Actual link -->
                                 <!--<a asp-action="Index" asp-controller="WorkOrder" data-navid="B-BP">
-                            Process Planning
-                        </a>-->
+        Process Planning
+    </a>-->
                                 <!-- Arrow only for submenu toggle -->
                                 <!--<a href="#sidebarPP" data-bs-toggle="collapse" aria-expanded="false" aria-controls="sidebarPP">
-                                    <span class="menu-arrow"></span>
-                                </a>
-                            </div>
-                            <div class="collapse" id="sidebarPP">
-                                <ul class="nav-third-level">
-                                    <li><a asp-action="Step1" asp-controller="WorkOrder" data-navid="PP-1">Step 1</a></li>
-                                    <li><a asp-action="Step2" asp-controller="WorkOrder" data-navid="PP-2">Step 2</a></li>
-                                    <li><a asp-action="Step3" asp-controller="WorkOrder" data-navid="PP-3">Step 3</a></li>
-                                </ul>
-                            </div>
-                        </li>-->
+                <span class="menu-arrow"></span>
+            </a>
+        </div>
+        <div class="collapse" id="sidebarPP">
+            <ul class="nav-third-level">
+                <li><a asp-action="Step1" asp-controller="WorkOrder" data-navid="PP-1">Step 1</a></li>
+                <li><a asp-action="Step2" asp-controller="WorkOrder" data-navid="PP-2">Step 2</a></li>
+                <li><a asp-action="Step3" asp-controller="WorkOrder" data-navid="PP-3">Step 3</a></li>
+            </ul>
+        </div>
+    </li>-->
                                 <li><a href="#" data-navid="B-PR">Production</a></li>
                                 <li><a href="#" data-navid="B-PD">Product Design</a></li>
                             </ul>
@@ -256,7 +261,7 @@
                         <div class="collapse" id="sidebarMAST-5">
                             <ul class="nav-second-level">
                                 <li><a asp-action="Index" asp-controller="Gro" data-navid="G-GS">Gro Sales Data Management</a></li>
-                                <li><a asp-action="GroStock" asp-controller="Gro" data-navid="G-ST">Gro Stock Update</a></li>
+                                <li><a asp-action="GroStock" asp-controller="Gro" data-navid="G-ST">Unit Pack Update</a></li>
                                 <li><a asp-action="GroDocumentManagement" asp-controller="Gro" data-navid="G-DO">Gro Document Management</a></li>
                                 <li><a asp-action="GroFinalPackUpdate" asp-controller="Gro" data-navid="G-FP">Final Pack Update</a></li>
                             </ul>
@@ -303,6 +308,6 @@
     <div class="clearfix"></div>
     <div style="height: 275px;"></div>
     <div class="text-center p-2 mt-3" style="font-size: 12px; color: #6c757d;">
-        Version: 4.5 <br /> Date: 17-07-2026
+        Version: 4.6 <br /> Date: 23-07-2026
     </div>
 </div>

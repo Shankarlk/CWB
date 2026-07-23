@@ -294,6 +294,10 @@ $('#dispatchPopup').on('shown.bs.modal', function () {
 
 
 
+}); 
+$('#dispatchQtyModal').on('hidden.bs.modal', function () {
+
+    loadDispatchSelection();
 });
 $('#dispatchPopup').on('hidden.bs.modal', function () {
 
@@ -317,7 +321,7 @@ $('#dispatchPopup').on('hidden.bs.modal', function () {
 
     // Disable Button
     $("#updatedispatchqnty").prop("disabled", true);
-
+    loadDispatchAgeingSummary();
 });
 function ShowDispatchDetails(ele) {
 
@@ -491,7 +495,7 @@ function bindDispatchGrid(data) {
 
     for (var i = 0; i < data.length; i++) {
         data[i].editDispatchStyle =
-            Number(data[i].qntyAval) > 0 ? "" : "display:none;";
+            (Number(data[i].qntyAval) > 0 && Number(data[i].bal_to_Disp) > 0) ? "" : "display:none;";
         tablebody.append(
             AppUtil.ProcessTemplateData("dispatchQtyRow", data[i])
         );
@@ -654,7 +658,7 @@ function EditDispatchQty(ctrl) {
 
             }
             // bindDispatchDetail(data);
-
+            $("#btnSaveExitDispatch").hide();
         })
 
         .catch(function (error) {
@@ -667,45 +671,260 @@ function EditDispatchQty(ctrl) {
 
 }
 
+//$("#btnScanLabel").click(function () {
+
+//    var model = {
+
+//        gro_Disp_Det_Id: $("#hdnDispDetailId").val(),
+
+//        requiredQty: parseInt($("#txtBalanceDispatch").val())
+//    };
+
+//    api.post("/Gro/ScanDispatchLabels", model)
+
+//        .then(function (data) {
+
+//            $("#txtScannedQty").val(data.scannedQty);
+
+//            $("#txtBalanceDispatch").val(data.balanceQty);
+
+//            $("#txtDispatchStatus").val(data.message)
+
+//            //if (data.disableScanner) {
+
+//            //    $("#btnScanLabel").prop("disabled", true);
+
+//            //    $("#btnSaveExitDispatch")
+//            //        .removeClass("btn-secondary")
+//            //        .addClass("btn-primary");
+//            //}
+
+//        })
+
+//        .catch(function (error) {
+
+//            console.log(error);
+
+//            // AppUtil.MessageBox("Unable to assign stock.", 2);
+
+//        });
+
+//});
+
 $("#btnScanLabel").click(function () {
+
+    $("#txtDispatchQRCode")
+        .prop("readonly", false)
+        .focus();
+    if ($("#txtDispatchScannedQRCode").prop("readonly"))
+        return;
+
+    $("#txtDispatchScannedQRCode")
+        .focus();
+});
+$("#txtDispatchScannedQRCode").on("keypress", function (e) {
+
+    if (e.which == 13) {
+
+        e.preventDefault();
+
+        var qr = $(this).val().trim();
+
+        if (qr == "")
+            return;
+
+        scanDispatchLabel(qr);
+
+        $(this).val("");
+
+    }
+
+});
+function scanDispatchLabel(qrCode) {
 
     var model = {
 
         gro_Disp_Det_Id: $("#hdnDispDetailId").val(),
 
-        requiredQty: parseInt($("#txtBalanceDispatch").val())
+        qrCode: qrCode
+
     };
 
     api.post("/Gro/ScanDispatchLabels", model)
 
         .then(function (data) {
 
+            if (data.showPrintedPopup) {
+
+                $("#lblPartNo").text($("#liPartNo").text());
+
+                $("#lblSerialNo").text(data.serialNo);
+
+                $("#hdnPrintedStockDetId").val(data.groStockDetId);
+
+                $("#lineItemDispatchQtyModal").modal("hide");
+
+                $("#labelNotInStockModal").modal("show");
+                $("#btnForceAssign").hide();
+
+                $("#btnConfirmSingle").prop("disabled", false);
+
+                $("#btnSkipPart").prop("disabled", false);
+                return;
+            }
+
+            if (!data.success) {
+
+                toastr.warning(data.message);
+
+                $("#txtDispatchScannedQRCode")
+                    .val("")
+                    .focus();
+
+                return;
+            }
+
             $("#txtScannedQty").val(data.scannedQty);
 
             $("#txtBalanceDispatch").val(data.balanceQty);
 
-            $("#txtDispatchStatus").val(data.message)
+            $("#txtDispatchStatus").val(data.message);
 
-            //if (data.disableScanner) {
+            if (parseInt(data.scannedQty) > 0)
+                $("#btnSaveExitDispatch").show();
 
-            //    $("#btnScanLabel").prop("disabled", true);
+            checkDispatchCompletion();
 
-            //    $("#btnSaveExitDispatch")
-            //        .removeClass("btn-secondary")
-            //        .addClass("btn-primary");
-            //}
+            $("#txtDispatchScannedQRCode")
+                .val("")
+                .focus();
 
         })
 
-        .catch(function (error) {
+        .catch(function (err) {
 
-            console.log(error);
+            console.log(err);
 
-            // AppUtil.MessageBox("Unable to assign stock.", 2);
+        });
+
+}
+function checkDispatchCompletion() {
+
+    var scanned = parseInt($("#txtScannedQty").val()) || 0;
+
+    var balance = parseInt($("#txtBalanceDispatch").val()) || 0;
+
+    var qtyOnHand = parseInt($("#liQtyOnHand").text()) || 0;
+
+    if (balance == 0) {
+
+        $("#txtDispatchStatus").val(
+            "Balance to Dispatch Quantity Scanned - Save & Exit"
+        );
+
+        $("#txtDispatchScannedQRCode")
+            .prop("readonly", true);
+
+        $("#btnScanLabel")
+            .prop("disabled", true);
+
+        $("#btnSaveExitDispatch")
+            .prop("disabled", false);
+
+        return;
+    }
+
+    if (scanned >= qtyOnHand) {
+
+        $("#txtDispatchStatus").val(
+            "Available Stock is scanned - Save & Exit"
+        );
+
+        $("#txtDispatchScannedQRCode")
+            .prop("readonly", true);
+
+        $("#btnScanLabel")
+            .prop("disabled", true);
+
+        $("#btnSaveExitDispatch")
+            .prop("disabled", false);
+
+        return;
+    }
+
+    $("#txtDispatchStatus").val("Continue Scanning");
+
+    $("#txtDispatchScannedQRCode")
+        .prop("readonly", false);
+
+    $("#btnScanLabel")
+        .prop("disabled", false);
+}
+var dispatchSaved = false;
+$("#btnConfirmSingle").click(function () {
+
+    $("#btnForceAssign").show();
+
+    $("#btnConfirmSingle").prop("disabled", true);
+
+});
+
+$("#btnForceAssign").click(function () {
+
+    var model = {
+
+        groDispDetId: $("#hdnDispDetailId").val(),  
+
+        groStockDetId: $("#hdnPrintedStockDetId").val()
+
+    };
+
+    api.post("/Gro/ForceAssignPrintedLabel", model)
+
+        .then(function (data) {
+
+            if (!data.success) {
+
+                toastr.error(data.message);
+
+                return;
+
+            }
+
+            $("#txtScannedQty").val(data.scannedQty);
+
+            $("#txtBalanceDispatch").val(data.balanceQty);
+
+            $("#txtDispatchStatus").val(data.message);
+
+            if (parseInt(data.scannedQty) > 0)
+                $("#btnSaveExitDispatch").show();
+            $("#liQtyOnHand").text(data.qtyOnHand); 
+            checkDispatchCompletion();
+
+            $("#labelNotInStockModal").modal("hide");
+
+            $("#lineItemDispatchQtyModal").modal("show");
+
+            $("#txtDispatchScannedQRCode")
+                .val("")
+                .focus();
 
         });
 
 });
+$("#btnSkipPart").click(function () {
+
+    $("#labelNotInStockModal").modal("hide");
+
+    $("#lineItemDispatchQtyModal").modal("show");
+
+    $("#txtDispatchScannedQRCode")
+        .val("")
+        .focus();
+
+});
+
 $("#btnSaveExitDispatch").click(function () {
 
     var model = {
@@ -721,6 +940,7 @@ $("#btnSaveExitDispatch").click(function () {
 
             loadDispatchData(indentId);
             // Close current popup
+            dispatchSaved = true;
             $("#lineItemDispatchQtyModal").modal("hide");
 
             // Refresh parent dispatch grid
@@ -770,7 +990,95 @@ $("#btnSaveExitDispatch").click(function () {
 //    // Show popup
 
 //}
- 
+//popup 4.1 or Popup3
+$("#lineItemDispatchQtyModal").on("hidden.bs.modal", function () {
+
+    if (dispatchSaved) {
+
+
+        dispatchSaved = false;
+
+        return;
+    }
+
+    var scanned = parseInt($("#txtScannedQty").val()) || 0;
+
+    if (scanned == 0)
+        return;
+
+    loadDispatchPendingSession();
+
+    $("#scanNotSavedModal").modal("show");
+
+});
+
+function loadDispatchPendingSession() {
+
+    $.get("/Gro/GetDispatchPendingSession",
+        {
+            groDispDetId: $("#hdnDispDetailId").val()
+        },
+        function (res) {
+
+            if (!res.success)
+                return;
+
+            $("#unsavedPartNo").text($("#liPartNo").text());
+
+            $("#unsavedBalance").text($("#txtBalanceDispatch").val());
+
+            $("#unsavedQty").text(res.scannedQty);
+
+            $("#txtUnsavedSlNos").val(res.serialNos.join("\n"));
+
+        });
+
+}
+$("#btnReturnScanning").click(function () {
+
+    $("#scanNotSavedModal").modal("hide");
+
+    $("#lineItemDispatchQtyModal").modal("show");
+
+    $("#txtDispatchScannedQRCode").focus();
+
+});
+$("#btnAcceptDispatch").click(function () {
+
+    $("#scanNotSavedModal").modal("hide");
+
+    $("#btnSaveExitDispatch").click();
+
+});
+
+$("#btnCancelScanning").click(function () {
+
+    $.post("/Gro/CancelDispatchScan",
+        {
+            groDispDetId: $("#hdnDispDetailId").val()
+        },
+        function (res) {
+
+            if (!res.success)
+                return;
+
+            $("#scanNotSavedModal").modal("hide");
+
+            loadDispatchData($("#hdnIndentId").val());
+
+        });
+
+});
+
+
+
+
+
+
+
+
+
+
 $("#btnOpenDCPrint").click(function () {
 
     var headerId = $("#hdnGroDispHeaderId").val();
@@ -1000,7 +1308,7 @@ function bindDCPrintUpdate(data) {
 
     $("#dcDateUpd").text(data.header.dispatchDateStr);
     $("#dcNoUpd").text(data.header.gro_Disp_HeaderId);
-
+    $("#approx").text("₹ " + data.approxValue.toFixed(2));
     $("#dcCustomerUpd").text(data.header.company_Name);
     $("#dcAddressUpd").text(data.header.shipping_Address);
 
@@ -1104,7 +1412,9 @@ table,th,td{
     border:1px solid #000 !important;
 
 }
-
+.text-start{
+    text-align:left !important;
+}
 img{
 
     max-width:100%;
@@ -1451,41 +1761,49 @@ $(document).on("click", "#btnPrintAddressLabelFinal", function () {
 
     <style>
 
-        @page{
-            size:A4 portrait;
-            margin:15mm;
-        }
+    @page{
+        size:100mm 80mm;
+        margin:0;
+    }
 
-        html,body{
-            margin:0;
-            padding:0;
-            background:#fff;
-            font-family:Arial, Helvetica, sans-serif;
-            font-size:20px;
-            line-height:1.8;
-        }
+    html,body{
+        width:100mm;
+        height:80mm;
+        margin:0;
+        padding:0;
+        background:#fff;
+        font-family:Arial, Helvetica, sans-serif;
+        overflow:hidden;
+    }
 
-        #AddressLabelPreview{
-            width:100%;
-            padding:20px;
-        }
+    #AddressLabelPreview{
+        width:100mm;
+        height:80mm;
+        box-sizing:border-box;
+        padding:0mm;
+    }
 
-        #lblCustomerName{
-            font-size:24px;
-            font-weight:bold;
-            margin-bottom:20px;
-        }
+    #lblCustomerName{
+        font-size:22px;
+        font-weight:bold;
+        margin-bottom:8px;
+        line-height:1.2;
+    }
 
-        #lblCustomerAddress{
-            white-space:pre-line;
-            margin-bottom:20px;
-        }
+    #lblCustomerAddress{
+        font-size:18px;
+        line-height:1.4;
+        white-space:pre-line;
+        margin-bottom:8px;
+    }
 
-        #lblCustomerMobile{
-            font-weight:bold;
-        }
+    #lblCustomerMobile{
+        font-size:18px;
+        font-weight:bold;
+        line-height:1.3;
+    }
 
-    </style>
+</style>
 
 </head>
 

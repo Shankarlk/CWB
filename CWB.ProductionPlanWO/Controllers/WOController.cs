@@ -280,6 +280,15 @@ namespace CWB.ProductionPlanWO.Controllers
             return Ok(productionPlan);
         }
         [HttpPost]
+        [Route(ApiRoutes.WO.UpdateProductionPlan_WoTestData)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(ProductionPlan_WOVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> UpdateProductionPlan_WoTestData([FromBody] ProductionPlan_WOVM productions)
+        {
+            var productionPlan = await _woSerivce.UpdateProductionPlan_WoTestData(productions);
+            return Ok(productionPlan);
+        }
+        [HttpPost]
         [Route(ApiRoutes.WO.UpdateProductionPlan_WoAllocatedqntyandstatus)]
         [Produces(AppContentTypes.ContentType, Type = typeof(ProductionPlan_WOVM))]
         [Authorize(Roles = Roles.ADMIN)]

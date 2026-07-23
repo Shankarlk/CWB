@@ -26,7 +26,8 @@ namespace CWB.ProductionPlanWO.Configurations
         new Time_Slot_Allocation { Id = 1, Allocation_Desc = "Not Allocated" },
         new Time_Slot_Allocation { Id = 2, Allocation_Desc = "Test" },
         new Time_Slot_Allocation { Id = 3, Allocation_Desc = "Allocated" },
-        new Time_Slot_Allocation { Id = 4, Allocation_Desc = "Complete" }
+        new Time_Slot_Allocation { Id = 4, Allocation_Desc = "Complete" },
+        new Time_Slot_Allocation { Id = 5, Allocation_Desc = "In Machine" }
     );
 
 
