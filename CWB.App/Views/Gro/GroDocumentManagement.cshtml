@@ -298,6 +298,9 @@
             <div class="modal-body">
 
                 <!-- Situation -->
+                <input type="hidden"
+                       id="hdnCorrectionStockDetId" />
+
 
                 <div class="mb-4">
 
@@ -346,6 +349,17 @@
                                placeholder="Waiting for scan..."
                                readonly
                                autocomplete="off" />
+
+                    </div>
+
+                </div>
+                <div class="row mb-3">
+
+                    <div class="col-12">
+
+                        <div id="divCorrectionMessage"
+                             class="alert alert-info d-none mb-0">
+                        </div>
 
                     </div>
 
@@ -401,6 +415,7 @@
 
                     </div>
 
+
                 </fieldset>
 
                 <!-- Correct Part -->
@@ -418,7 +433,7 @@
                 </div>
 
                 <!-- Parts -->
-                <table class="table table-bordered table-sm">
+                <table class="table table-bordered table-sm table-he-250">
 
                     <thead>
 

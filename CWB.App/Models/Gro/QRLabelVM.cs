@@ -10,5 +10,6 @@ namespace CWB.App.Models.Gro
         public string GroPartNo { get; set; }
         public string SerialNo { get; set; }
         public string QRCode { get; set; }
+        public decimal MRP { get; set; }
     }
 }

@@ -895,6 +895,7 @@ namespace CWB.App.Controllers
             var partstock = allgrostocklist.Where(x => x.Gro_Part_List_ID == qrpartno.Gro_Part_ListId).FirstOrDefault();
             var lastSerialNo = partstock.Last_Sl_No;
             var qty = model.Qty;
+            decimal mrp = Math.Round(qrpartno.MRP, 2);
             if (gropartstockdetailsbyId.Any())
             {
                 List<QRLabelVM> labels = new List<QRLabelVM>();
@@ -917,13 +918,15 @@ namespace CWB.App.Controllers
                     {
                         GroPartNo = model.GroPartNo,
                         SerialNo = qrText,
-                        QRCode = base64
+                        QRCode = base64,
+                        MRP = Math.Round(qrpartno.MRP, 2)
                     });
                 }
 
                 return Json(new
                 {
-                    success = true,
+                    success = false,
+                    pendingLabels = true,
                     labels = labels
                 });
             }
@@ -952,7 +955,8 @@ namespace CWB.App.Controllers
                         {
                             GroPartNo = model.GroPartNo,
                             SerialNo = qrText,
-                            QRCode = base64
+                            QRCode = base64,
+                            MRP = Math.Round(qrpartno.MRP, 2)
                         });
                         var gro_stock_det = new Gro_Stock_DetVM();
                         gro_stock_det.Gro_Part_List_ID = qrpartno.Gro_Part_ListId;
@@ -1624,6 +1628,7 @@ await _groservicee.GetallGroIndentpartSlno();
             
             header.IndentDateStr = header.SentDate?.ToString("dd-MM-yyyy") ?? "";
             header.DispatchDateStr = header.Dispatch_Date?.ToString("dd-MM-yyyy") ?? "";
+            header.HeaderDatestr=header.HeaderCreationDate?.ToString("dd-MM-yyyy") ?? "";
             header.Company_Name = grofirtrecord.Company_Name;
             // Items
             List<Gro_DataVM> items = new List<Gro_DataVM>();
@@ -1693,6 +1698,8 @@ await _groservicee.GetallGroIndentpartSlno();
             groheaderdetails.Company_Name = grodatafirstrecord.Company_Name;
             groheaderdetails.Contact_Person = grodatafirstrecord.Contact_Person;
             groheaderdetails.Contact_Person_No = grodatafirstrecord.Contact_Person_No;
+            groheaderdetails.HeaderDatestr= groheaderdetails.HeaderCreationDate?.ToString("dd-MM-yyyy") ?? "";
+            groheaderdetails.IndentDateStr= groheaderdetails.SentDate?.ToString("dd-MM-yyyy") ?? "";
             InvoicePrintVM vm = new InvoicePrintVM();
 
             vm.Header = groheaderdetails;
@@ -2272,6 +2279,7 @@ await _groservicee.GetallGroIndentpartSlno();
             try
             {
                 var allStock = await _groservicee.GetallGroStockDet();
+              
                 var allParts = await _groservicee.Getallgroparts();
 
                 var stock = allStock
@@ -2285,6 +2293,9 @@ await _groservicee.GetallGroIndentpartSlno();
                         message = "QR Code not found."
                     });
                 }
+               
+
+
 
                 var part = allParts
                     .FirstOrDefault(x => x.Gro_Part_ListId == stock.Gro_Part_List_ID);
@@ -2313,6 +2324,8 @@ await _groservicee.GetallGroIndentpartSlno();
                     serialNo = stock.Part_Sl_No,
 
                     statusId = stock.Sl_No_Status_ID
+
+                  
                 });
             }
             catch (Exception ex)
@@ -2324,34 +2337,124 @@ await _groservicee.GetallGroIndentpartSlno();
                 });
             }
         }
-        [HttpGet]
-        public async Task<IActionResult> GetCorrectionPart(string partNo)
+        [HttpPost]
+        public async Task<IActionResult> DiscardInventoryLabel(
+    DiscardInventoryLabelVM model)
         {
+            var allStock =await _groservicee.GetallGroStockDet();
 
-            var stock =
-                await _groservicee.GetGropartnoStock(Convert.ToInt64(partNo));
-            var part = await _groservicee.Getallgroparts();
-            var correctionpart = part.Where(x => x.Gro_Part_ListId == stock.Gro_Part_List_ID).FirstOrDefault();
+            var stock = allStock
+            .FirstOrDefault(x =>
+            x.Gro_Stock_DetId == model.StockDetId);
+
             if (stock == null)
             {
                 return Ok(new
                 {
-                    success = false
+                    success = false,
+                    message = "Label not found."
                 });
             }
+            if (stock.Sl_No_Status_ID != 6)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    message = "Only Inventory labels can be discarded."
+                });
+            }
+            var update = new Gro_Stock_DetVM();
+
+            update.Gro_Stock_DetId =
+            stock.Gro_Stock_DetId;
+
+            update.Part_Sl_No =
+            stock.Part_Sl_No;
+
+            update.Sl_No_Status_ID = 5;
+
+            await _groservicee.Updategrostockdetto1stscan(
+            new List<Gro_Stock_DetVM> { update });
+
+
+
+            var stockList =await _groservicee.GetGropartnoStock(stock.Gro_Part_List_ID);
+
+            stockList.Qnty_on_Hand--;
+
+            await _groservicee.UpdategrostockbyPart( stockList);
 
             return Ok(new
             {
                 success = true,
 
-                partId = stock.Gro_Part_List_ID,
-
-                partNo = correctionpart.Gro_Part_No,
-
-                description = correctionpart.OurPartDescription,
-
-                qoh = stock.Qnty_on_Hand
+                message ="Label discarded. Go to Unit Pack and generate a new label for correct Part No."
             });
+
+
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> ConfirmEmptyBox(long stockDetId)
+        {
+            var stock =
+                (await _groservicee.GetallGroStockDet())
+                .FirstOrDefault(x => x.Gro_Stock_DetId == stockDetId);
+
+            if (stock == null)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    message = "Label not found."
+                });
+            }
+
+            if (stock.Sl_No_Status_ID != 6)
+            {
+                return Ok(new
+                {
+                    success = false,
+                    message = "Only Inventory labels can be confirmed."
+                });
+            }
+
+            // Nothing to update.
+            // User has only confirmed that the correct part
+            // has now been placed inside the labelled box.
+
+            return Ok(new
+            {
+                success = true,
+                message = "Box confirmed successfully."
+            });
+        }
+
+
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCorrectionParts()
+        {
+            var parts = await _groservicee.Getallgroparts();
+
+            var stock = await _groservicee.Getallgrostocklist();
+
+            var list =
+                from p in parts
+                join s in stock
+                    on p.Gro_Part_ListId equals s.Gro_Part_List_ID
+                orderby p.Gro_Part_No
+                select new
+                {
+                    partId = p.Gro_Part_ListId,
+                    partNo = p.Gro_Part_No,
+                    description = p.OurPartDescription,
+                    qoh = s.Qnty_on_Hand
+                };
+
+            return Ok(list);
         }
     }
 }

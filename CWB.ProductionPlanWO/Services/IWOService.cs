@@ -87,6 +87,7 @@ namespace CWB.ProductionPlanWO.Services
         Task<IEnumerable<Input_Resrv_ListVM>> GetAllInputReservelistwithpartidandwoid(long tenantId, long partId, long woId);
         Task<IEnumerable<Input_Resrv_ListVM>> GetAllInputReservelistwithpartidwoidandponoid(long tenantId, long partId, long woId, long ponoId);
         Task<IEnumerable<Input_Resrv_ListVM>> GetAllInputReservelistwithpartid(long tenantId, long partId);
+        Task<IEnumerable<Input_Resrv_ListVM>> GetAllInputReservelist(long tenantId);
         Task<InwardDocTypeVM> PostInwardDocList(InwardDocTypeVM itemMasterDocList);
         Task<bool> DeleteInwardDoc(long itemMasterDocListId, long tenantId);
         Task<IEnumerable<LineInspectDocTypeVM>> GetAllLineInspectDocList(long tenantId);

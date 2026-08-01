@@ -1,4 +1,12 @@
-﻿<div class="content">
+﻿<style>
+    .table-bordered > :not(caption) > * > * {
+        border-color: #ced4da !important;
+    }
+    #simulationBody .bg-success {
+        border: none !important;
+    }
+</style>
+<div class="content">
     <div class="card-body">
 
         <!-- Page Title -->
@@ -25,7 +33,30 @@
                            placeholder="Search Machine">
                 </div>
 
+                <div class="col-md-8 d-flex justify-content-end">
 
+                    <div class="border rounded p-3">
+
+                        <h6 class="mb-1">Status</h6>
+
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge bg-success me-2">&nbsp;&nbsp;&nbsp;</span>
+                            <span>Running</span>
+                        </div>
+
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge bg-danger me-2">&nbsp;&nbsp;&nbsp;</span>
+                            <span>Machine Stop</span>
+                        </div>
+
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-secondary me-2">&nbsp;&nbsp;&nbsp;</span>
+                            <span>Idle</span>
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
         </div>
@@ -83,7 +114,7 @@
             </div>
 
             <!-- Right Side -->
-            <div class="col-md-4 d-flex justify-content-end">
+            @*<div class="col-md-4 d-flex justify-content-end">
 
                 <div class="border rounded p-3">
 
@@ -106,20 +137,20 @@
 
                 </div>
 
-            </div>
+            </div>*@
 
         </div>
     </div>
 </div>
 <template id="simulationRow">
 
-    <tr>
+    <tr style=" border-color: #ced4da ;">
 
         <td>{partNo}</td>
 
         <td>{urgent}</td>
 
-        <td colspan="{totalHours}" class="position-relative p-0">
+        <td colspan="{totalHours}" class="position-relative p-0" style="border: none;">
 
             <div style="position:relative;height:{rowHeight}px;width:{totalWidth}px;">
 
@@ -141,7 +172,7 @@
         top:{top}px;
         width:{width}px;
         height:24px;
-        line-height:24px;">
+        line-height:24px; border-color: #ced4da;">
 
         {machineName} - {operationName}
 

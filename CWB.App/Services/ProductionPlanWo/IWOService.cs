@@ -26,6 +26,7 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<IEnumerable<ProductionPlan_WoVM>> AllProductionWoReadForProd();
 
         Task<List<Input_Resrv_ListVM>> GetallInputreservelistbypartid(long partId);
+        Task<List<Input_Resrv_ListVM>> GetallInputreservelist();
         Task<IEnumerable<ProductionPlan_WoVM>> GetAllReadyforProductionWo();
         Task<List<ProcPlanVM>> ProcPlanPost(IEnumerable<ProcPlanVM> procPlans);
         Task<List<ProcPlanVM>> ProcPlanPostPOFlag(IEnumerable<ProcPlanVM> procPlans);

@@ -21,6 +21,14 @@ namespace CWB.ProductionPlanWO.Configurations
                 .Property(b => b.Part_Ref)
                 .HasColumnName("Part_Ref");
             builder
+                .Property(b => b.WO_Id)
+                .HasColumnName("WO_Id")
+                .IsRequired();
+            builder
+                .Property(b => b.Input_PartId)
+                .HasColumnName("Input_PartId")
+                .IsRequired();
+            builder
                 .Property(b => b.Issue_Qnty)
                 .HasColumnName("Issue_Qnty");
             builder
@@ -45,6 +53,12 @@ namespace CWB.ProductionPlanWO.Configurations
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();
+            builder
+                .Property(b => b.From_Loc_Flag)
+                .HasColumnName("From_Loc_Flag");
+            builder
+               .Property(b => b.To_Loc_Flag)
+               .HasColumnName("To_Loc_Flag");
             builder.ConfigureBase();
             builder.HasIndex(c => c.TenantId).HasDatabaseName("Matl_Issue_List_TenantId");
         }

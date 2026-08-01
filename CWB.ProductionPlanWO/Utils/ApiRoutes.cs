@@ -99,6 +99,7 @@ namespace CWB.ProductionPlanWO.Utils
             public const string GetAllInputReservelistwithpartidandwoid = Base + "/allinputreservelistwithpartidandwoid/{tenantId}/{partId}/{woId}";
             public const string GetAllInputReservelistwithpartidwoidandponoid = Base + "/allinputreservelistwithpartidwoidandponoid/{tenantId}/{partId}/{woId}/{ponoId}";
             public const string GetAllInputReservelistwithpartid = Base + "/allinputreservelistwithpartid/{tenantId}/{partId}";
+            public const string GetAllInputReservelist = Base + "/allinputreservelist/{tenantId}";
             public const string GetAllRcCaDocList = Base + "/allrccadoc/{tenantId}";
             public const string GetAllInspectDocList = Base + "/allinspectdoc/{tenantId}";
             public const string GetAllNcLogStatusList = Base + "/allnclogstatus";

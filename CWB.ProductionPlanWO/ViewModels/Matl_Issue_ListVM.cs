@@ -9,7 +9,9 @@ namespace CWB.ProductionPlanWO.ViewModels
     {
         public long Matl_Issue_ListId { get; set; }
         public long Part_Ref { get; set; }
-        public long Issue_Qnty { get; set; }
+        public long WO_Id { get; set; }
+        public long Input_PartId { get; set; }
+        public decimal Issue_Qnty { get; set; }
         public DateTime Issue_Mov_date { get; set; }
         public long Mode { get; set; }
         public char Immediate_Movmt { get; set; }
@@ -33,5 +35,8 @@ namespace CWB.ProductionPlanWO.ViewModels
         public long PartId { get; set; }
         public long RoutingId { get; set; }
         public long OprId { get; set; }
+
+        public string From_Loc_Flag { get; set; }
+        public string To_Loc_Flag { get; set; }
     }
 }

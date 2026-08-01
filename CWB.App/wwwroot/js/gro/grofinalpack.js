@@ -1109,7 +1109,7 @@ function bindDCPrint(data) {
     $("#dcIndentDate").text(data.header.indentDateStr);
     $("#dcIndentNo").text(data.header.indent);
 
-    $("#dcDate").text(data.header.dispatchDateStr);
+    $("#dcDate").text(data.header.headerDatestr);
     $("#dcNo").text(data.header.gro_Disp_HeaderId);
 
     $("#dcCustomer").text(data.header.company_Name);
@@ -1482,7 +1482,7 @@ function bindInvoice(data) {
 
     $("#invInvoiceNo").text(data.header.gro_Disp_HeaderId);
 
-    $("#invInvoiceDate").text(data.header.dispatchDateStr);
+    $("#invInvoiceDate").text(data.header.headerDatestr);
 
     $("#invOrderNo").text(data.header.indent);
 

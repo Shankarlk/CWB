@@ -95,6 +95,12 @@ namespace CWB.App.Services.ProductionPlanWo
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<Input_Resrv_ListVM>>.GetAsync(uri, headers);
         }
+        public async Task<List<Input_Resrv_ListVM>> GetallInputreservelist()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/allinputreservelist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Input_Resrv_ListVM>>.GetAsync(uri, headers);
+        }
         public async Task<List<ProductionPlan_WoVM>> ProductionPlanWoPostConsolidation(IEnumerable<ProductionPlan_WoVM> productions)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postproductionplanconsolidation");

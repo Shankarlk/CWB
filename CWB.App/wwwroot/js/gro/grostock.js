@@ -170,13 +170,42 @@ $("#btnPrintLabels").click(function () {
         Qty: qty
     })
         .then((response) => {
-            if (!response.success) {
+            //if (!response.success) {
 
-                $("#pendingLabelsMessage")
-                    .text(response.message);
+            //    $("#pendingLabelsMessage")
+            //        .text(response.message);
 
-                printed = true;
-                $("#pendingLabelsModal").modal('show');
+            //    printed = true;
+            //    $("#pendingLabelsModal").modal('show');
+            //    return;
+            //}
+            if (!response.success && response.pendingLabels) {
+
+                $("#pendingQrContainer").empty();
+
+                $.each(response.labels, function (index, item) {
+
+                    var card = `
+        <div class="qr-label">
+
+            <div class="qr-left">
+                <img src="data:image/png;base64,${item.qrCode}" />
+            </div>
+
+            <div class="qr-right">
+                <div>Part No : ${item.groPartNo}</div>
+                <div>MRP : ₹${parseFloat(item.mrp).toFixed(2)}</div>
+                <div>SL No : ${item.serialNo}</div>
+            </div>
+
+        </div>`;
+
+                    $("#pendingQrContainer").append(card);
+
+                });
+
+                $("#pendingLabelsModal").modal("show");
+
                 return;
             }
             $("#qrContainer").empty();
@@ -210,7 +239,7 @@ $("#btnPrintLabels").click(function () {
 
                     <div class="qr-right">
                         <div>Part No : ${item.groPartNo}</div>
-                        <div>MRP : ${item.mrp}</div>
+                        <div>MRP : ₹${parseFloat(item.mrp).toFixed(2)}</div>
                         <div>SL No : ${item.serialNo}</div>
                     </div>
 
@@ -325,6 +354,92 @@ $("#btnPrint").click(function () {
     printWindow.onload = function () {
 
         printWindow.focus();
+
+        printWindow.print();
+
+        printWindow.close();
+
+    };
+
+});
+$("#btnPrintPendingLabels").click(function () {
+
+    var printContents =
+        $("#pendingPrintHelper").html();
+
+    var printWindow =
+        window.open("", "_blank", "width=900,height=700");
+
+    printWindow.document.write(`
+<html>
+
+<head>
+
+<title>Pending Labels</title>
+
+<style>
+
+@page{
+    size:75mm 25mm;
+    margin:0;
+}
+
+html,body{
+    margin:0;
+    padding:0;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+.qr-label{
+    width:75mm;
+    height:25mm;
+    display:flex;
+    border:1px solid #000;
+    box-sizing:border-box;
+}
+
+.qr-label:not(:last-child){
+    page-break-after:always;
+}
+
+.qr-left{
+    width:25mm;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-right:1px solid #000;
+}
+
+.qr-left img{
+    width:22mm;
+    height:22mm;
+}
+
+.qr-right{
+    width:50mm;
+    padding:2mm;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    font-size:10pt;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+${printContents}
+
+</body>
+
+</html>`);
+
+    printWindow.document.close();
+
+    printWindow.onload = function () {
 
         printWindow.print();
 

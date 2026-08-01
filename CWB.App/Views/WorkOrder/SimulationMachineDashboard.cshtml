@@ -1,4 +1,9 @@
-﻿<div class="content">
+﻿<style>
+    .table-bordered > :not(caption) > * > * {
+        border-color: #212529 !important;
+    }
+</style>
+<div class="content">
     <div class="card-body">
 
         <!-- Page Title -->
@@ -25,7 +30,30 @@
                     <input type="text" id="txtPartNo" class="form-control form-control-sm"
                            placeholder="Search Part">
                 </div>
+                <div class="col-md-8 d-flex justify-content-end">
 
+                    <div class="border rounded p-3">
+
+                        <h6 class="mb-1">Status</h6>
+
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge bg-success me-2">&nbsp;&nbsp;&nbsp;</span>
+                            <span>Running</span>
+                        </div>
+
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge bg-danger me-2">&nbsp;&nbsp;&nbsp;</span>
+                            <span>Machine Stop</span>
+                        </div>
+
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-secondary me-2">&nbsp;&nbsp;&nbsp;</span>
+                            <span>Idle</span>
+                        </div>
+
+                    </div>
+
+                </div>
 
 
             </div>
@@ -86,30 +114,7 @@
             </div>
 
             <!-- Right Side -->
-            <div class="col-md-4 d-flex justify-content-end">
-
-                <div class="border rounded p-3">
-
-                    <h6 class="mb-1">Status</h6>
-
-                    <div class="d-flex align-items-center mb-2">
-                        <span class="badge bg-success me-2">&nbsp;&nbsp;&nbsp;</span>
-                        <span>Running</span>
-                    </div>
-
-                    <div class="d-flex align-items-center mb-2">
-                        <span class="badge bg-danger me-2">&nbsp;&nbsp;&nbsp;</span>
-                        <span>Machine Stop</span>
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <span class="badge bg-secondary me-2">&nbsp;&nbsp;&nbsp;</span>
-                        <span>Idle</span>
-                    </div>
-
-                </div>
-
-            </div>
+            
 
         </div>
     </div>

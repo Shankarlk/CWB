@@ -804,7 +804,15 @@ namespace CWB.ProductionPlanWO.Controllers
             var allwo = await _woSerivce.GetAllInputReservelistwithpartid(tenantId, partId);
             return Ok(allwo);
         }
-
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetAllInputReservelist)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Input_Resrv_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllInputReservelist(long tenantId)
+        {
+            var allwo = await _woSerivce.GetAllInputReservelist(tenantId);
+            return Ok(allwo);
+        }
 
 
         [HttpGet]

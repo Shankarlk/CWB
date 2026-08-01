@@ -180,6 +180,7 @@ $("#btnDeleteInvoice").click(function () {
 $("#btnStockCorrection").click(function () {
 
     $("#stockCorrectionModal").modal("show");
+    $("#btnConfirmCorrection").hide();
 
 });
 $("#ddlSituation").change(function () {
@@ -235,67 +236,225 @@ function loadCorrectionLabel(qrCode) {
             $("#lblCorrPartDesc").text(data.description);
 
             $("#lblCorrSerial").text(data.serialNo);
+            $("#hdnCorrectionStockDetId")
+                .val(data.stockDetId);
 
             $("#txtCorrectionQRCode")
                 .prop("readonly", true);
+            loadCorrectionParts();
 
-            loadCorrectionParts(data.partId);
+            var situation = $("#ddlSituation").val();
+
+            //----------------------------------------------------
+            // Wrong Label
+            //----------------------------------------------------
+
+            if (situation == "WrongLabel") {
+
+                if (data.statusId != 6) {
+
+                    toastr.warning(
+                        "Only Inventory labels can be corrected."
+                    );
+
+                    return;
+                }
+                $("#divCorrectionMessage")
+                    .removeClass("d-none alert-info alert-success")
+                    .addClass("alert-danger")
+                    .text("Discard this incorrect label. Generate a new label from Unit Pack, stick it on the box, add it to inventory, then continue dispatch.");
+
+                
+                $("#btnConfirmCorrection")
+                    .text("Discard Label")
+                    .show();
+
+                return;
+            }
+
+            //----------------------------------------------------
+            // Empty Box
+            //----------------------------------------------------
+
+            if (situation == "EmptyBox") {
+
+                if (data.statusId != 6) {
+
+                    toastr.warning(
+                        "Only Inventory labels can be corrected."
+                    );
+
+                    return;
+                }
+
+                $("#divCorrectionMessage")
+                    .removeClass("d-none alert-danger alert-success")
+                    .addClass("alert-info")
+                    .text("Place the correct part inside this box and press Confirm.");
+
+                $("#btnConfirmCorrection")
+                    .text("Confirm Box Filled")
+                    .show();
+
+                return;
+            }
+           
+            //loadCorrectionParts(data.partId);
 
         });
 
 }
-function loadCorrectionParts(partNo) {
 
-    api.getbulk("/Gro/GetCorrectionPart?partNo="
-        + encodeURIComponent(partNo))
+function loadCorrectionParts() {
 
-        .then(function (data) {
+    api.getbulk("/Gro/GetAllCorrectionParts")
+
+        .then(function (list) {
 
             $("#tblCorrectionPartBody").empty();
 
-            if (!data.success)
-                return;
+            var template = $("#correctionPartRow").html();
 
-            var template =
-                $("#correctionPartRow").html();
+            $.each(list, function (i, item) {
 
-            template = template
-                .replace("{gro_Part_List_ID}", data.partId)
-                .replace("{gro_Part_No}",
-                    data.partNo + " - " + data.description)
-                .replace("{qnty_on_Hand}", data.qoh);
+                var row = template;
 
-            $("#tblCorrectionPartBody").append(template);
+                row = row
+                    .replace("{gro_Part_List_ID}", item.partId)
+                    .replace("{gro_Part_No}",
+                        item.partNo + " - " + item.description)
+                    .replace("{qnty_on_Hand}", item.qoh);
+
+                $("#tblCorrectionPartBody").append(row);
+
+            });
 
         });
 
 }
+$("#txtCorrectPartNo").on("keyup", function () {
+
+    var value = $(this).val().toLowerCase();
+
+    $("#tblCorrectionPartBody tr").each(function () {
+
+        $(this).toggle(
+            $(this).text().toLowerCase().indexOf(value) > -1
+        );
+
+    });
+
+});
 $("#stockCorrectionModal").on("hidden.bs.modal", function () {
 
+    // Hidden fields
+    $("#hdnCorrectionStockDetId").val("");
+
+    // Situation
     $("#ddlSituation").val("");
 
+    // Scan textbox
     $("#txtCorrectionQRCode")
         .val("")
         .prop("readonly", true);
 
+    // Scanned label details
     $("#lblCorrPartNo").text("");
-
     $("#lblCorrPartDesc").text("");
-
     $("#lblCorrSerial").text("");
 
-    $("#txtCorrectPart").val("");
+    // Search textbox
+    $("#txtCorrectPartNo").val("");
 
+    // Parts table
     $("#tblCorrectionPartBody").empty();
 
+    // Instruction message
+    $("#divCorrectionMessage")
+        .addClass("d-none")
+        .removeClass("alert-info alert-success alert-danger")
+        .text("");
+
+    // Buttons
     $("#btnScanCorrection")
         .prop("disabled", true);
+
+    $("#btnConfirmCorrection")
+        .text("Confirm Label")
+        .hide();
 
 });
 $("#btnConfirmCorrection").click(function () {
 
-    // Call your controller here...
+    var situation = $("#ddlSituation").val();
 
-    $("#stockCorrectionModal").modal("hide");
+    if (situation == "WrongLabel") {
+
+        discardWrongLabel();
+
+        return;
+    }
+
+    if (situation == "EmptyBox") {
+
+        confirmEmptyBox();
+
+        return;
+    }
 
 });
+function confirmEmptyBox() {
+
+    api.post("/Gro/ConfirmEmptyBox", {
+
+        stockDetId:
+            $("#hdnCorrectionStockDetId").val()
+
+    })
+
+        .then(function (data) {
+
+            if (!data.success) {
+
+                toastr.error(data.message);
+
+                return;
+            }
+
+            toastr.success(data.message);
+
+            $("#stockCorrectionModal").modal("hide");
+
+        });
+
+}
+function discardWrongLabel() {
+
+    api.post("/Gro/DiscardInventoryLabel", {
+
+        stockDetId: $("#hdnCorrectionStockDetId").val()
+
+    })
+
+        .then(function (data) {
+
+            if (!data.success) {
+
+                toastr.error(data.message);
+
+                return;
+            }
+
+            toastr.success(data.message);
+
+            $("#stockCorrectionModal").modal("hide");
+
+        })
+
+        .catch(function (err) {
+
+            console.log(err);
+
+        });
+
+}

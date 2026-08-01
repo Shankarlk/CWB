@@ -2195,6 +2195,12 @@ namespace CWB.ProductionPlanWO.Services
             var allDocuType = _Input_Resrv_ListRepository.GetRangeAsync(d => d.TenantId == tenantId && d.PartId == partId );
             return _mapper.Map<IEnumerable<Input_Resrv_ListVM>>(allDocuType);
         }
+
+        public async Task<IEnumerable<Input_Resrv_ListVM>> GetAllInputReservelist(long tenantId)
+        {
+            var allDocuType = _Input_Resrv_ListRepository.GetRangeAsync(d => d.TenantId == tenantId );
+            return _mapper.Map<IEnumerable<Input_Resrv_ListVM>>(allDocuType);
+        }
         public async Task<InwardDocTypeVM> PostInwardDocList(InwardDocTypeVM itemMasterDocList)
         {
             var itemMaster = _mapper.Map<InwardDocType>(itemMasterDocList);
