@@ -30,6 +30,7 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(m => m.Input_Part_No, m => m.MapFrom(src => src.Input_Part_No))
                .ForMember(m => m.IsSplit, m => m.MapFrom(src => src.IsSplit))
                .ForMember(m => m.SplitParentWorkOrderId, m => m.MapFrom(src => src.SplitParentWorkOrderId))
+               .ForMember(m => m.Calc_Capacity_Reqd, m => m.MapFrom(src => src.Calc_Capacity_Reqd))
                .ForMember(m => m.WODate, m => m.MapFrom(src => src.WODate));
 
             CreateMap<WorkOrdersVM, WorkOrders>()
@@ -55,6 +56,7 @@ namespace CWB.ProductionPlanWO.Utils
                 .ForMember(m => m.Input_Part_No, m => m.MapFrom(src => src.Input_Part_No))
                .ForMember(m => m.IsSplit, m => m.MapFrom(src => src.IsSplit))
                .ForMember(m => m.SplitParentWorkOrderId, m => m.MapFrom(src => src.SplitParentWorkOrderId))
+               .ForMember(m => m.Calc_Capacity_Reqd, m => m.MapFrom(src => src.Calc_Capacity_Reqd))
                .ForMember(m => m.WODate, m => m.MapFrom(src => src.WODate));
 
             CreateMap<Cust_NC_Decs_MatrixVM, Cust_NC_Decs_Matrix>()

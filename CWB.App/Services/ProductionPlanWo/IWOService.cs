@@ -184,6 +184,7 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<IEnumerable<TempOpr_ListVM>> GetAllTempOpr_Listwithroutingidandwoid(long routingId, long woId);
         Task<TempOpr_ListVM> PostTempOpr_List(TempOpr_ListVM FinalDocTypeVM);
         Task<bool> DeleteTempOpr_List(long itemMasterDocListId);
+        Task<IEnumerable<ProcPlanPartPurChaseRelVM>> ProcPlanPartPurChaseRel(long procPlanId);
 
     }
 }

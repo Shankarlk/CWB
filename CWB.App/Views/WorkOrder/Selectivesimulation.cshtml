@@ -1,0 +1,613 @@
+﻿<style>
+    .table-bordered > :not(caption) > * > * {
+        border-color: #ced4da;
+    }
+
+    #simulationBody .bg-success {
+        border: none !important;
+    }
+</style>
+<div class="content">
+    <div class="card-body">
+
+        <!-- Page Title -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0"> </h4>
+
+
+        </div>
+
+        <!-- Filters -->
+        <div class="row mb-3">
+            <!-- Search Filters -->
+            <div class="row mb-3">
+
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">View</label>
+
+                    <select id="ddlView" class="form-select form-select-sm">
+                        <option value="Machine">Machine View</option>
+                        <option value="Part">Part View</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Display</label>
+
+                    <select id="ddlDisplay" class="form-select form-select-sm">
+                        <option value="Hour">Hour-wise</option>
+                        <option value="Shift">Shift-wise</option>
+                        <option value="Day">Day-wise</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Part No</label>
+                    <input type="text" id="txtPartNo" class="form-control form-control-sm"
+                           placeholder="Search Part No">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Machine</label>
+                    <input type="text" id="txtMachine" class="form-control form-control-sm"
+                           placeholder="Search Machine">
+                </div>
+
+                <div>
+                    <label class="form-label fw-bold" style="visibility:hidden;">Machine</label>
+                </div>
+
+
+
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <div id="legendBar" class="d-flex flex-wrap align-items-center gap-4 border rounded p-2 px-3">
+
+                            <!-- PART VIEW LEGEND -->
+                            <div id="legendPartView" class="d-none flex-wrap align-items-center gap-4">
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#7092BE;"></span>
+                                    <span>Frozen Production Plan (Inhouse)</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#8B5FBF;"></span>
+                                    <span>Frozen Production Plan (Subcon)</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#FFC107;"></span>
+                                    <span>New Production Plan (Inhouse)</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#FD7E14;"></span>
+                                    <span>New Production Plan (Subcon)</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#000000;"></span>
+                                    <span>So Completion Date</span>
+                                </div>
+                            </div>
+
+                            <!-- MACHINE VIEW LEGEND -->
+                            <div id="legendMachineView" class="d-none flex-wrap align-items-center gap-4">
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#7092BE;"></span>
+                                    <span>Frozen Production Plan (Inhouse)</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#FFC107;"></span>
+                                    <span>New Production Plan (Inhouse)</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#DC3545;"></span>
+                                    <span>Non-Plan Work</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-wrapper">
+
+                    <button id="btnPrev" class="timeline-arrow left">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+
+                    <div class="timeline-wrapper">
+
+                        <button id="btnPrev" class="timeline-arrow left">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+
+                        <div class="table-responsive" id="timelineContainer" style="max-height:650px; overflow:auto;">
+
+                            <table class="table table-bordered text-center align-middle mb-0">
+
+                                <thead>
+                                    <tr id="dateHeader"></tr>
+                                    <tr id="shiftHeader"></tr>
+                                    <tr id="hourHeader"></tr>
+                                </thead>
+
+                                <tbody id="simulationBody"></tbody>
+
+                            </table>
+
+                        </div>
+
+                        <button id="btnNext" class="timeline-arrow right">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+
+                    </div>
+
+                    <!-- Legend -->
+
+                    <div class="row mt-4">
+
+                        <!-- Left Side -->
+                        <div class="col-md-8">
+
+
+
+                            <div>VMC1 = Critical Routing Step (Operation)</div>
+
+                            <div>VMC1 * = Critical Routing Step (Operation) + Critical Setup</div>
+
+                            <div>Pride * = Critical Setup</div>
+
+                            <br>
+
+                            <div>Part Bookout Summary can be provided below</div>
+
+                        </div>
+
+
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<template id="partSimulationRow">
+
+    <tr>
+
+        <td style="background:{partNoColor};">{partNo}</td>
+
+        <td>{urgent}</td>
+
+        <td colspan="{totalHours}" class="position-relative p-0" style="border: 0.5px solid #ced4da;">
+
+            <div class="timeline-grid" style="height:{rowHeight}px;width:{totalWidth}px;position:relative;">
+
+                {operations}
+
+                {soMarker}
+
+            </div>
+
+        </td>
+
+    </tr>
+
+</template>
+<template id="machineSimulationRow">
+
+    <tr>
+
+        <td>{machineNo}</td>
+
+
+
+        <td colspan="{totalHours}" class="position-relative p-0" style="border: 0.5px solid #ced4da;">
+
+            <div class="timeline-grid"
+                 style="height:{rowHeight}px;width:{totalWidth}px;position:relative;">
+
+                {operations}
+
+            </div>
+
+        </td>
+
+    </tr>
+
+</template>
+<template id="machineOperationTemplate">
+
+    <div class="operation-bar"
+         data-bartype="{tooltipType}"
+         style="
+        position:absolute;
+        left:{left}px;
+        top:{top}px;
+        width:{width}px;
+        height:24px;
+        background:{color};
+        color:#fff;
+        line-height:24px;
+        text-align:center;
+        border-radius:4px;">
+
+        {partNum} - {operationName}
+
+        <div class="operation-tooltip tooltip-inhouse">
+            <b>Tool Tip Content for M/c Bar</b><br>
+            <span class="customer-line"><b>Part Sold to Customer:</b> {partSoldToCustomer}<br></span>
+            <b>Shop / Machine:</b> {shopMachine}<br>
+            <b>Part No / Desc:</b> {partNoDesc}<br>
+            <b>Routing No / Opr No:</b> {routingOprNo}<br>
+            <b>WO No:</b> {woNo}<br>
+            <b>Batch Qnty:</b> {batchQnty}<br>
+            <b>Start Date / Time:</b> {startDateTime}<br>
+            <b>End Date / Time:</b> {endDateTime}<br>
+            <b>Duration (Hrs):</b> {durationHours}<br>
+            <b>Floor to Floor Time (min):</b> {floorToFloorTime}<br>
+            <b>Setup Time (min):</b> {setupTime}<br>
+        </div>
+
+        <div class="operation-tooltip tooltip-nonplan">
+            <b>Tool Tip Content (for Non Plan Work)</b><br>
+            <u>Non Plan Work Details</u><br>
+            <b>Shop / Machine:</b> {shopMachine}<br>
+            <b>Start Date / Time:</b> {startDateTime}<br>
+            <b>End Date / Time:</b> {endDateTime}<br>
+            <b>Duration (Hrs):</b> {durationHours}<br>
+            <b>Initiated by:</b> {initiatedBy}<br>
+        </div>
+
+    </div>
+
+</template>
+<template id="partOperationTemplate">
+    <div class="operation-bar"
+         data-supplier="{supplier}"
+         data-machine="{machineName}"
+         data-bartype="{tooltipType}"
+         style="
+        position:absolute;
+        left:{left}px;
+        top:{top}px;
+        width:{width}px;
+        height:24px;
+        background:{color};
+        color:#fff;
+        line-height:24px;
+        text-align:center;
+        border-radius:4px;">
+        {displayLabel} - {operationName}
+
+        <div class="operation-tooltip tooltip-inhouse">
+
+            <span class="assy-customer-line"><b>Assy Sold to Customer / Child Manufactured:</b> {assySoldToCustomer}<br></span>
+            <span class="part-customer-line"><b>Part Sold to Customer / Sub Assy / Child Manufactured Part (Common *)</b> {partSoldToCustomer}<br></span>
+            <b>Shop / Machine:</b> {shopMachine}<br>
+            <b>Part No / Desc:</b> {partNoDesc}<br>
+            <b>Routing No / Opr No:</b> {routingOprNo}<br>
+            <b>WO No:</b> {woNo}<br>
+            <b>Batch Qnty:</b> {batchQnty}<br>
+            <b>Start Date / Time:</b> {startDateTime}<br>
+            <b>End Date / Time:</b> {endDateTime}<br>
+            <b>Duration (Hrs):</b> {durationHours}<br>
+            <b>Floor to Floor Time (min):</b> {floorToFloorTime}<br>
+            <b>Setup Time (min):</b> {setupTime}<br>
+
+        </div>
+        <div class="operation-tooltip tooltip-subcon">
+
+            <b>Sub Con:</b> {supplier}<br>
+            <b>Part No / Desc:</b> {partNoDesc}<br>
+            <b>Routing No / Opr No:</b> {routingOprNo}<br>
+            <b>WO No:</b> {woNo}<br>
+            <b>Batch Qnty:</b> {batchQnty}<br>
+            <b>Start Date / Time:</b> {startDateTime}<br>
+            <b>End Date / Time:</b> {endDateTime}<br>
+        </div>
+    </div>
+</template>
+
+
+
+<style>
+
+    .d-flex {
+        display: flex !important;
+    }
+
+    .legend-swatch {
+        display: inline-block;
+        width: 18px;
+        height: 14px;
+        border-radius: 3px;
+    }
+
+    #dateHeader th {
+        position: sticky;
+        top: 0;
+        background: #f5f6f7;
+        z-index: 50;
+    }
+
+    #shiftHeader th {
+        position: sticky;
+        top: 40px; /* height of Date row */
+        background: #f5f6f7;
+        z-index: 49;
+    }
+
+    #hourHeader th {
+        position: sticky;
+        top: 80px; /* Date + Shift height */
+        background: #f5f6f7;
+        z-index: 48;
+    }
+
+    .timeline-wrapper {
+        position: relative;
+    }
+
+    /* Floating arrows */
+    .timeline-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
+        border: none;
+        border-radius: 50%;
+        background: #fff;
+        color: #555;
+        box-shadow: 0 2px 10px rgba(0,0,0,.25);
+        z-index: 99999;
+        display: none;
+        transition: .25s;
+    }
+
+        .timeline-arrow:hover {
+            background: #7092BE;
+            color: #fff;
+        }
+
+        .timeline-arrow.left {
+            left: 12px;
+        }
+
+        .timeline-arrow.right {
+            right: 12px;
+        }
+
+    .so-completion-marker {
+        position: absolute;
+        top: 4px;
+        width: 36px;
+        height: 6px;
+        background: #000;
+        cursor: pointer;
+        z-index: 6;
+    }
+
+    .tooltip-somarker {
+        display: none;
+        position: absolute;
+        /* show above the marker */
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 220px;
+        padding: 10px;
+        background: #fff;
+        color: #333;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        text-align: left;
+        white-space: normal;
+        box-shadow: 0 4px 12px rgba(0,0,0,.2);
+        z-index: 999999;
+    }
+
+    .so-completion-marker:hover .tooltip-somarker {
+        display: block !important;
+    }
+
+
+
+    /* Part View */
+    .part-view #dateHeader th:first-child,
+    .part-view #simulationBody td:first-child {
+        position: sticky;
+        left: 0;
+        min-width: 160px;
+        background: #f8f9fa;
+        z-index: 100;
+    }
+
+    .part-view #dateHeader th:nth-child(2),
+    .part-view #simulationBody td:nth-child(2) {
+        position: sticky;
+        left: 160px;
+        min-width: 80px;
+        background: #f8f9fa;
+        z-index: 101;
+        border-left: 1px solid #ced4da !important;
+    }
+
+    /* Machine View */
+    .machine-view #dateHeader th:first-child,
+    .machine-view #simulationBody td:first-child {
+        position: sticky;
+        left: 0;
+        min-width: 160px;
+        background: #f8f9fa;
+        z-index: 100;
+    }
+
+    /*  #simulationBody td {
+        border-top: 1px solid #ced4da;
+        border-bottom: 1px solid #ced4da;
+    }
+
+    #simulationBody tr {
+        box-shadow: inset 0 -1px 0 #ced4da;
+    }*/
+
+
+    .machine-view #dateHeader th:first-child {
+        border-right: 1px solid #ced4da !important;
+    }
+
+    .part-view #dateHeader th:nth-child(2) {
+        border-right: 1px solid #ced4da !important;
+    }
+
+    .machine-view #simulationBody td:first-child {
+        border-right: 1px solid #ced4da !important;
+    }
+
+    .part-view #simulationBody td:nth-child(2) {
+        border-right: 1px solid #ced4da !important;
+    }
+
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .timeline-grid {
+        position: relative;
+        background-color: white;
+        background-image: repeating-linear-gradient( to right, rgba(0,0,0,.05) 0px, rgba(0,0,0,.05) 1px, transparent 1px, transparent 38px );
+    }
+
+    #dateHeader th:first-child,
+    #dateHeader th:nth-child(2) {
+        top: 0;
+    }
+
+    #shiftHeader th:first-child,
+    #shiftHeader th:nth-child(2) {
+        top: 40px;
+    }
+
+    #hourHeader th:first-child,
+    #hourHeader th:nth-child(2) {
+        top: 80px;
+    }
+</style>
+
+
+
+<style>
+    .operation-bar {
+        cursor: pointer;
+        position: absolute;
+        z-index: 3;
+    }
+
+    .operation-tooltip {
+        display: none !important;
+        position: absolute;
+        bottom: 110%;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 220px;
+        background: #fff;
+        color: #333;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 10px;
+        text-align: left;
+        box-shadow: 0 4px 12px rgba(0,0,0,.2);
+        z-index: 9999;
+        white-space: nowrap;
+    }
+
+    /* Only show the matching tooltip type for each bar type */
+    .operation-bar[data-bartype="Inhouse"]:hover .tooltip-inhouse {
+        display: block;
+    }
+
+    .operation-bar[data-bartype="NonPlan"]:hover .tooltip-nonplan {
+        display: block;
+    }
+
+    .operation-bar[data-bartype="Subcon"]:hover .tooltip-subcon {
+        display: block;
+    }
+
+    /* No rule for [data-bartype="Temp"] — stays hidden always */
+
+    .operation-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 8px;
+        border-style: solid;
+        z-index: 500;
+        border-color: #fff transparent transparent transparent;
+    }
+
+    .matl-receipt-marker {
+        position: absolute;
+        top: 4px;
+        height: 6px;
+        background: #fff;
+        border: 2px solid #000;
+        cursor: pointer;
+        z-index: 6;
+    }
+
+    .tooltip-matlmarker {
+        display: none;
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 220px;
+        padding: 10px;
+        background: #fff;
+        color: #333;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        text-align: left;
+        white-space: normal;
+        box-shadow: 0 4px 12px rgba(0,0,0,.2);
+        z-index: 999999;
+    }
+
+    .matl-receipt-marker:hover .tooltip-matlmarker {
+        display: block !important;
+    }
+
+    #sharedTooltip {
+        position: fixed !important;
+        display: none;
+        min-width: 220px;
+        max-width: 500px;
+        padding: 10px;
+        background: #fff;
+        color: #333;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        text-align: left;
+        white-space: normal;
+        z-index: 2147483647 !important;
+        pointer-events: none;
+    }
+
+    .operation-bar .operation-tooltip {
+        display: none !important;
+    }
+</style>
+<div id="sharedTooltip"></div>
+@section Scripts {
+    <script src="~/js/SimulationDashboard/SimulationDashboard.js"></script>
+}

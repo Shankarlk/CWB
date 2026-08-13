@@ -10,7 +10,7 @@ namespace CWB.App.Models.ProductionSimulation
         public int StepNo { get; set; }
 
         public string OperationName { get; set; }
-
+        public string PartNum { get; set; }
         public string MachineName { get; set; }
 
         public string Department { get; set; }
@@ -31,5 +31,25 @@ namespace CWB.App.Models.ProductionSimulation
         public int SlotCount { get; set; }
 
         public string Tooltip { get; set; }
+
+        public string Supplier { get; set; }
+
+        public string DisplayLabel { get; set; }
+
+        public string BarType { get; set; }
+
+        public string TooltipType { get; set; }
+        public string AssySoldToCustomer { get; set; }
+        public string PartSoldToCustomer { get; set; }
+        public string ShopMachine { get; set; }
+        public string PartNoDesc { get; set; }
+        public string RoutingOprNo { get; set; }
+        public string WoNo { get; set; }
+        public string BatchQnty { get; set; }
+        public string StartDateTime { get; set; }
+        public string EndDateTime { get; set; }
+        public string DurationHours { get; set; }
+        public string FloorToFloorTime { get; set; }
+        public string SetupTime { get; set; }
     }
 }

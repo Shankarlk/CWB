@@ -1183,5 +1183,11 @@ namespace CWB.App.Services.ProductionPlanWo
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<bool>.GetAsync(uri, headers);
         }
+        public async Task<IEnumerable<ProcPlanPartPurChaseRelVM>> ProcPlanPartPurChaseRel(long procPlanId)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getprocpurchase/{procPlanId}/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<ProcPlanPartPurChaseRelVM>>.GetAsync(uri, headers);
+        }
     }
 }

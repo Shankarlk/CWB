@@ -177,6 +177,10 @@ namespace CWB.ProductionPlanWO.Configurations
               .HasColumnName("Comment")
              .HasDefaultValue("");
             builder
+            .Property(t => t.Calc_Capacity_Reqd)
+            .HasColumnName("Calc_Capacity_Reqd")
+            .HasDefaultValue(0);
+            builder
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();

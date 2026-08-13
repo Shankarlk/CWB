@@ -51,5 +51,6 @@ namespace CWB.ProductionPlanWO.Domain
 
         public int IsSplit { get; set; }
         public long SplitParentWorkOrderId { get; set; }
+        public long Calc_Capacity_Reqd { get; set; }
     }
 }

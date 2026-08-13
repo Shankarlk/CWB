@@ -87,7 +87,8 @@ namespace CWB.App.Controllers
             WorkOrdersVM postWO = null;
             var message = await checkmissing(workOrdersVM);
             Selected_Sales_OrderVM selected_Sales_OrderVMs1 = (Selected_Sales_OrderVM)((OkObjectResult)message).Value;
-            
+            double stepCapacityMinutes = 0;
+            long capacityrequired = 0;
             if (selected_Sales_OrderVMs1.PartNo == "WorkOrder Created")
             {
                 
@@ -131,10 +132,106 @@ namespace CWB.App.Controllers
                 workOrdersVM.EndingOpNo = reverse?.StepId != null
                                             ? int.TryParse(reverse.StepId.ToString(), out int eopNo) ? eopNo : 0
                                             : 0;
-            }
+
+                    var chilstepresult = await _routingService.RoutingSteps(rout.RoutingId);
+                    int subconminutes = 0;
+                    int transporttime = 0;
+                    foreach (var step in chilstepresult)
+                    {
+                        //if (step.StepNextSequence == 1)
+                        //{
+                        //if(step.ste)
+
+                        var stepdetails = await _routingService.StepMachines((int)step.StepId);
+                        if (stepdetails.Count() != 0)
+                        {
+
+
+
+                            foreach (var machine in stepdetails)
+                            {
+                                double setup =
+                                    TimeSpan.Parse(machine.SetupTime).TotalMinutes;
+
+                                double firstPiece =
+                                    TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
+
+                                double cycle =
+                                    TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
+
+                                int qtyPerLoad =
+                                    machine.NoOfPartsPerLoading <= 0
+                                        ? 1
+                                        : machine.NoOfPartsPerLoading;
+
+                                int simultaneous =
+                                    step.NumberOfSimMachines <= 0
+                                        ? 1
+                                        : step.NumberOfSimMachines;
+
+                                double capacityMinutes =
+                                    setup
+                                    + firstPiece
+                                    + ((double)workOrdersVM.CalcWOQty / simultaneous)
+                                        * (cycle / qtyPerLoad);
+
+                                stepCapacityMinutes += capacityMinutes;
+                            }
+                        }
+                        else
+                        {
+                            var sub = await _routingService.SubCons((int)step.StepId);
+                            var subfirst = sub.FirstOrDefault();
+                            if (subfirst == null)
+                            {
+                                continue; // 🔥 VERY IMPORTANT
+                            }
+                            var subworks = await _routingService.SubConWSS((int)step.StepId, subfirst.SubConDetailsId);
+                            var processingTimeSum = subworks
+                                        .GroupBy(sd => sd.RoutingStepId)
+                                        .Select(g => new
+                                        {
+                                            RoutingStepId = g.Key,
+                                            TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes / sd.NoOfPartsPerLoading <= 0
+                                ? 1
+                                : sd.NoOfPartsPerLoading)
+                                        });
+                            var steptimesum = subworks
+                                   .GroupBy(sd => sd.RoutingStepId)
+                                   .Select(g => new
+                                   {
+                                       RoutingStepId = g.Key,
+                                       TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.SetupTime).TotalMinutes)
+                                   });
+                            transporttime += Convert.ToInt32(subfirst.TransportTime);
+                            foreach (var min in processingTimeSum)
+                            {
+                                subconminutes += (int)min.TotalProcessingTime;
+                            }
+
+                            double cycleTime = processingTimeSum.Sum(x => x.TotalProcessingTime);
+
+                            double setupTime = steptimesum.Sum(x => x.TotalProcessingTime);
+                            double capacityMinutes = setupTime + (transporttime * 60) + ((double)workOrdersVM.CalcWOQty* cycleTime);
+                            stepCapacityMinutes += capacityMinutes;
+                        }
+
+                    }
+                    capacityrequired = (long)Math.Ceiling((double)stepCapacityMinutes / 60);
+                    workOrdersVM.Calc_Capacity_Reqd = capacityrequired;
+
+
+
+
+
+
+
+
+
+                }
             if (workOrdersVM.PartType == 1)
             {
-                workOrdersVM.Parentlevel = 'N';
+                workOrdersVM.Parentlevel = 'Y';
                 
             }
             else
@@ -151,7 +248,7 @@ namespace CWB.App.Controllers
                         }
                         else
                         {
-                            workOrdersVM.Parentlevel = 'N';
+                            workOrdersVM.Parentlevel = 'Y';
                         }
                     }
                 }
@@ -575,6 +672,8 @@ namespace CWB.App.Controllers
                 {
                     continue;
                 }
+                double stepCapacityMinutes = 0;
+                long capacityrequired = 0;
                 ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)workOrdersVM.PartId);
                 if(manuf.ManufacturedPartType==1)
                 {
@@ -611,9 +710,98 @@ namespace CWB.App.Controllers
                 workOrdersVM.EndingOpNo = (int)(result?.StepId != null
                     ? result.StepId
                     : 0);
+                var chilstepresult = await _routingService.RoutingSteps(rout.RoutingId);
+                int subconminutes = 0;
+                int transporttime = 0;
+                foreach (var step in chilstepresult)
+                {
+                    //if (step.StepNextSequence == 1)
+                    //{
+                    //if(step.ste)
+
+                    var stepdetails = await _routingService.StepMachines((int)step.StepId);
+                    if (stepdetails.Count() != 0)
+                    {
+
+
+
+                        foreach (var machine in stepdetails)
+                        {
+                            double setup =
+                                TimeSpan.Parse(machine.SetupTime).TotalMinutes;
+
+                            double firstPiece =
+                                TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
+
+                            double cycle =
+                                TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
+
+                            int qtyPerLoad =
+                                machine.NoOfPartsPerLoading <= 0
+                                    ? 1
+                                    : machine.NoOfPartsPerLoading;
+
+                            int simultaneous =
+                                step.NumberOfSimMachines <= 0
+                                    ? 1
+                                    : step.NumberOfSimMachines;
+
+                            double capacityMinutes =
+                                setup
+                                + firstPiece
+                                + ((double)workOrdersVM.CalcWOQty / simultaneous)
+                                    * (cycle / qtyPerLoad);
+
+                            stepCapacityMinutes += capacityMinutes;
+                        }
+                    }
+                    else
+                    {
+                        var sub = await _routingService.SubCons((int)step.StepId);
+                        var subfirst = sub.FirstOrDefault();
+                        if (subfirst == null)
+                        {
+                            continue; // 🔥 VERY IMPORTANT
+                        }
+                        var subworks = await _routingService.SubConWSS((int)step.StepId, subfirst.SubConDetailsId);
+                        var processingTimeSum = subworks
+                                    .GroupBy(sd => sd.RoutingStepId)
+                                    .Select(g => new
+                                    {
+                                        RoutingStepId = g.Key,
+                                        TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.FloorToFloorTime).TotalMinutes / sd.NoOfPartsPerLoading <= 0
+                            ? 1
+                            : sd.NoOfPartsPerLoading)
+                                    });
+                        var steptimesum = subworks
+                               .GroupBy(sd => sd.RoutingStepId)
+                               .Select(g => new
+                               {
+                                   RoutingStepId = g.Key,
+                                   TotalProcessingTime = g.Sum(sd => TimeSpan.Parse(sd.SetupTime).TotalMinutes)
+                               });
+                        transporttime += Convert.ToInt32(subfirst.TransportTime);
+                        foreach (var min in processingTimeSum)
+                        {
+                            subconminutes += (int)min.TotalProcessingTime;
+                        }
+
+                        double cycleTime = processingTimeSum.Sum(x => x.TotalProcessingTime);
+
+                        double setupTime = steptimesum.Sum(x => x.TotalProcessingTime);
+                        double capacityMinutes = setupTime + (transporttime * 60) + ((double)workOrdersVM.CalcWOQty * cycleTime);
+                        stepCapacityMinutes += capacityMinutes;
+                    }
+
+                }
+                capacityrequired = (long)Math.Ceiling((double)stepCapacityMinutes / 60);
+                workOrdersVM.Calc_Capacity_Reqd = capacityrequired;
+
+
+
                 if (workOrdersVM.PartType == 1)
                 {
-                    workOrdersVM.Parentlevel = 'N';
+                    workOrdersVM.Parentlevel = 'Y';
                 }
                 else
                 {
@@ -630,7 +818,7 @@ namespace CWB.App.Controllers
                             }
                             else
                             {
-                                workOrdersVM.Parentlevel = 'N';
+                                workOrdersVM.Parentlevel = 'Y';
                             }
                         }
                     }
@@ -1099,21 +1287,54 @@ namespace CWB.App.Controllers
                     }
 
                     DateTime currentSlotStart = shiftStart;
+                    //while (currentSlotStart < shiftEnd)
+                    //{
+                    //    DateTime currentSlotEnd = currentSlotStart.AddMinutes(60);
+                    //    if (currentSlotEnd > shiftEnd) break;
+
+                    //    bool isBreak = breakStart.HasValue && breakEnd.HasValue &&
+                    //                   currentSlotStart >= breakStart.Value && currentSlotStart < breakEnd.Value;
+
+                    //    await _woService.PostTimeslot_List(new Timeslot_ListVM
+                    //    {
+                    //        PlantId = plant.PlantId,
+                    //        Start_time = currentSlotStart,
+                    //        End_time = currentSlotEnd,
+                    //        Break_Slot = isBreak ? 'Y' : 'N'
+                    //    });
+
+                    //    currentSlotStart = currentSlotEnd;
+                    //}
                     while (currentSlotStart < shiftEnd)
                     {
                         DateTime currentSlotEnd = currentSlotStart.AddMinutes(60);
-                        if (currentSlotEnd > shiftEnd) break;
 
-                        bool isBreak = breakStart.HasValue && breakEnd.HasValue &&
-                                       currentSlotStart >= breakStart.Value && currentSlotStart < breakEnd.Value;
+                        if (currentSlotEnd > shiftEnd)
+                            break;
 
-                        await _woService.PostTimeslot_List(new Timeslot_ListVM
+                        // Do not create slot if the slot starts on a non-working day
+                        DateTime slotDate = currentSlotStart.Date;
+
+                        bool isHoliday = holidays.Any(h => h.HasValue && h.Value.Date == slotDate);
+                        bool isWeeklyOff =
+                            currentSlotStart.DayOfWeek.ToString() == wd.WeeklyOff1 ||
+                            currentSlotStart.DayOfWeek.ToString() == wd.WeeklyOff2;
+
+                        if (!isHoliday && !isWeeklyOff)
                         {
-                            PlantId = plant.PlantId,
-                            Start_time = currentSlotStart,
-                            End_time = currentSlotEnd,
-                            Break_Slot = isBreak ? 'Y' : 'N'
-                        });
+                            bool isBreak = breakStart.HasValue &&
+                                           breakEnd.HasValue &&
+                                           currentSlotStart >= breakStart.Value &&
+                                           currentSlotStart < breakEnd.Value;
+
+                            await _woService.PostTimeslot_List(new Timeslot_ListVM
+                            {
+                                PlantId = plant.PlantId,
+                                Start_time = currentSlotStart,
+                                End_time = currentSlotEnd,
+                                Break_Slot = isBreak ? 'Y' : 'N'
+                            });
+                        }
 
                         currentSlotStart = currentSlotEnd;
                     }

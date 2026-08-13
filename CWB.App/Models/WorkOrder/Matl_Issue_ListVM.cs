@@ -37,5 +37,9 @@ namespace CWB.App.Models.WorkOrder
         public long OprId { get; set; }
         public string From_Loc_Flag { get; set; }
         public string To_Loc_Flag { get; set; }
+
+
+        public string IssueQntyDisplay { get; set; }
+        public string QntyAvlDisplay { get; set; }
     }
 }

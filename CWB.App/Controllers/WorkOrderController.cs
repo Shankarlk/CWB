@@ -28,7 +28,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Globalization;
 namespace CWB.App.Controllers
 {
     [Authorize(Roles = Roles.ADMIN)]
@@ -177,16 +177,14 @@ namespace CWB.App.Controllers
             return View();
         }
 
+        
         [Route("~/S$%^D#$!D")]
-        public IActionResult SimulationDashboard()
+        public IActionResult Selectivesimulation()
         {
             return View();
         }
-        [Route("~/S$%^M#$A!D")]
-        public IActionResult SimulationMachineDashboard()
-        {
-            return View();
-        }
+
+
         [HttpGet]
         public async Task<IActionResult> AllSalesOrders()
         {
@@ -5627,7 +5625,7 @@ namespace CWB.App.Controllers
                 string mcweekOff2 = mcworkdetails.WeeklyOff2;
                 var departments = await _departmentService.GetDepartments(1);
                 var workOrders = await _baService.AllWorkOrders();
-                var workordersbydate = workOrders.OrderBy(x => x.PlanCompletionDate).ToList();
+                var workordersbydate = workOrders.OrderBy(x => x.PlanCompletionDate).ThenBy(x => x.Calc_Capacity_Reqd).ToList();
                 List<ProductionPlan_WoVM> productions = new List<ProductionPlan_WoVM>();
                 foreach (var item in workordersbydate)
                 {
@@ -5639,7 +5637,7 @@ namespace CWB.App.Controllers
                         double stepCapacityMinutes = 0;
                         long capacityrequired = 0;
                         DateTime planstartdt = item.PlanCompletionDate.Value;
-                        if (mf.ManufacturedPartType == 2)
+                        if (mf.ManufacturedPartType == 2 || mf.ManufacturedPartType==1)
                         {
 
                             var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
@@ -5895,7 +5893,7 @@ namespace CWB.App.Controllers
                         {
                             WONumber = item.WONumber,
                             WoId = item.WOID,
-                            Calc_Capacity_Reqd = capacityrequired,
+                            Calc_Capacity_Reqd = item.Calc_Capacity_Reqd,
                             SalesOrderId = item.SalesOrderId,
                             PartId = item.PartId,
                             PartType = item.PartType,
@@ -5919,8 +5917,9 @@ namespace CWB.App.Controllers
                             WOLevel=0
                         };
                         productions.Add(production);
+                        currentseqno = currentseqno + 1;
                     }
-                    currentseqno = currentseqno + 1;
+                 
                 }
                 var procdutionpost = await _woService.ProductionPlanWoPost(productions);
                 try
@@ -14073,21 +14072,55 @@ namespace CWB.App.Controllers
                     }
 
                     DateTime currentSlotStart = shiftStart;
+                    //while (currentSlotStart < shiftEnd)
+                    //{
+                    //    DateTime currentSlotEnd = currentSlotStart.AddMinutes(60);
+                    //    if (currentSlotEnd > shiftEnd) break;
+
+                    //    bool isBreak = breakStart.HasValue && breakEnd.HasValue &&
+                    //                   currentSlotStart >= breakStart.Value && currentSlotStart < breakEnd.Value;
+
+
+                    //    await _woService.PostTimeslot_List(new Timeslot_ListVM
+                    //    {
+                    //        PlantId = plant.PlantId,
+                    //        Start_time = currentSlotStart,
+                    //        End_time = currentSlotEnd,
+                    //        Break_Slot = isBreak ? 'Y' : 'N'
+                    //    });
+
+                    //    currentSlotStart = currentSlotEnd;
+                    //}
                     while (currentSlotStart < shiftEnd)
                     {
                         DateTime currentSlotEnd = currentSlotStart.AddMinutes(60);
-                        if (currentSlotEnd > shiftEnd) break;
 
-                        bool isBreak = breakStart.HasValue && breakEnd.HasValue &&
-                                       currentSlotStart >= breakStart.Value && currentSlotStart < breakEnd.Value;
+                        if (currentSlotEnd > shiftEnd)
+                            break;
 
-                        await _woService.PostTimeslot_List(new Timeslot_ListVM
+                        // Do not create slot if the slot starts on a non-working day
+                        DateTime slotDate = currentSlotStart.Date;
+
+                        bool isHoliday = holidays.Any(h => h.HasValue && h.Value.Date == slotDate);
+                        bool isWeeklyOff =
+                            currentSlotStart.DayOfWeek.ToString() == wd.WeeklyOff1 ||
+                            currentSlotStart.DayOfWeek.ToString() == wd.WeeklyOff2;
+
+                        if (!isHoliday && !isWeeklyOff)
                         {
-                            PlantId = plant.PlantId,
-                            Start_time = currentSlotStart,
-                            End_time = currentSlotEnd,
-                            Break_Slot = isBreak ? 'Y' : 'N'
-                        });
+                            bool isBreak = breakStart.HasValue &&
+                                           breakEnd.HasValue &&
+                                           currentSlotStart >= breakStart.Value &&
+                                           currentSlotStart < breakEnd.Value;
+
+                            await _woService.PostTimeslot_List(new Timeslot_ListVM
+                            {
+                                PlantId = plant.PlantId,
+                                Start_time = currentSlotStart,
+                                End_time = currentSlotEnd,
+                                Break_Slot = isBreak ? 'Y' : 'N'
+                            });
+                        }
 
                         currentSlotStart = currentSlotEnd;
                     }
@@ -14097,7 +14130,7 @@ namespace CWB.App.Controllers
 
         private async Task<DateTime?> GetNextWorkingDate(PlantWorkingDetailsVM plant, DateTime startDate, List<DateTime?> holidays)
         {
-            for (int i = 0; i < 30; i++)
+            for (int i = 1; i <= 30; i++)
             {
                 var date = startDate.AddDays(i);
                 if (!holidays.Contains(date.Date) && date.DayOfWeek.ToString() != plant.WeeklyOff1 && date.DayOfWeek.ToString() != plant.WeeklyOff2)
@@ -14543,134 +14576,159 @@ namespace CWB.App.Controllers
             return Ok(machinesList);
 
         }
-        [HttpGet]
-        public async Task<IActionResult> GetAllMc_Wait_List()
-        {
-            var result = new List<TempMc_Wait_ListVM>();
-            var wowaitList = await _woService.GetAllTempWo_Wait_List();
-            var waitList = await _woService.GetAllTempMc_Wait_List();
-            var timeslots = await _woService.GetAllTempMc_Timeslot_List();
-            var mcactive = await _woService.GetAllMc_Timeslot_List();
-            var allTimeSlots = await _woService.GetAllTimeslot_List();
-            var machineTypes = await _machineService.GetMachineTypes();
-            var getshop = await _departmentService.GetDepartments(1);
-            var getsection = await _departmentService.GetSections();
-            var masterparts = await _masterService.MasterPartList();
-            var alProductionWOs = await _woService.AllProductionPlan_Wo();
-            var partinQ = 0;
-            foreach (var item in waitList)
+            [HttpGet]
+            public async Task<IActionResult> GetAllMc_Wait_List()
             {
-                var mcId = item.Mc_Id;
-                var machine = await _machineService.GetMachine(mcId);
-                var mcName = machine?.MachineMachineName ?? " ";
-                var mcTypeName = machineTypes.FirstOrDefault(m => m.MachineTypeTypeId == machine.MachineMachineTypeId)?.MachineTypeName ?? "Unknown";
-                var shopName = getshop.First(s => s.DepartmentId == machine.MachineDepartmentId).Name ?? " ";
-                var section = getsection.FirstOrDefault(s => s.SectionsId == machine.SectionId);
-                var secName = section != null ? section.Name : " ";
-
-                var plantwd = await _plantService.GetPlantWD(machine.MachinePlantId);
-                var duration = plantwd.Timeslot_duration;
-                var mcSlots = timeslots.Where(t => t.Mc_Wait_List_Id == item.TempMc_Wait_ListId).ToList();
-                double hrsBooked = 0;
-                if (mcSlots.Any())
+                var result = new List<TempMc_Wait_ListVM>();
+                var wowaitList = await _woService.GetAllWO_Wait_List();
+                var waitList = await _woService.GetAllMc_Wait_List();
+                
+                var mcactive = await _woService.GetAllMc_Timeslot_List();
+                var allTimeSlots = await _woService.GetAllTimeslot_List();
+                var machineTypes = await _machineService.GetMachineTypes();
+                var getshop = await _departmentService.GetDepartments(1);
+                var getsection = await _departmentService.GetSections();
+                var masterparts = await _masterService.MasterPartList();
+                var alProductionWOs = await _woService.AllProductionPlan_Wo();
+                var partinQ = 0;
+                foreach (var item in waitList)  
                 {
-                    var startSlotId = mcSlots.First().Timeslot_List_Id;
-                    var endSlotId = mcSlots.First().EndTimeslot_List_Id;
+                    var mcId = item.Mc_Id;
+                    var machine = await _machineService.GetMachine(mcId);
+                    var mcName = machine?.MachineMachineName ?? " ";
+                    var mcTypeName = machineTypes.FirstOrDefault(m => m.MachineTypeTypeId == machine.MachineMachineTypeId)?.MachineTypeName ?? "Unknown";
+                    var shopName = getshop.First(s => s.DepartmentId == machine.MachineDepartmentId).Name ?? " ";
+                    var section = getsection.FirstOrDefault(s => s.SectionsId == machine.SectionId);
+                    var secName = section != null ? section.Name : " ";
 
-                    var startSlot = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == startSlotId);
-                    var endSlot = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == endSlotId);
+                    var plantwd = await _plantService.GetPlantWD(machine.MachinePlantId);
+                    var duration = plantwd.Timeslot_duration;
+                    var mcSlots = mcactive.Where(t => t.Mc_Wait_List_Id == item.Mc_Wait_ListId).FirstOrDefault();
+                    double hrsBooked = 0;
+                    //if (mcSlots.Any())
+                    //{
+                        var startSlotId = mcSlots.Timeslot_List_Id;
+                        var endSlotId = mcSlots.EndTimeslot_List_Id;
 
-                    if (startSlot != null && endSlot != null)
+                        var startSlot = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == startSlotId);
+                        var endSlot = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == endSlotId);
+
+                        if (startSlot != null && endSlot != null)
+                        {
+                            //var timeDiff = (endSlot.End_time - startSlot.Start_time).TotalMinutes;
+                          //  hrsBooked = timeDiff / 60.0;
+                            hrsBooked = endSlotId - startSlotId + 1;
+                        }
+                    //}
+                    item.McName = mcName;
+                    item.McTypeName = mcTypeName;
+                    item.ShopName = shopName;
+                    item.SectionName = secName;
+                    item.PartInQueue = partinQ++;
+                    item.HrsBooked = hrsBooked.ToString("0.00");
+                    var mcNotAvlSlots = mcactive
+                        .Where(t => t.Mc_Id == mcId && t.Slot_Not_Avl == 'Y')
+                        .ToList();
+                    double mcNotAvlHrs = 0;
+                    foreach (var slot in mcNotAvlSlots)
                     {
-                        var timeDiff = (endSlot.End_time - startSlot.Start_time).TotalMinutes;
-                        hrsBooked = timeDiff / 60.0;
-                    }
-                }
-                item.McName = mcName;
-                item.McTypeName = mcTypeName;
-                item.ShopName = shopName;
-                item.SectionName = secName;
-                item.PartInQueue = partinQ++;
-                item.HrsBooked = hrsBooked.ToString("0.00");
-                var mcNotAvlSlots = mcactive
-                    .Where(t => t.Mc_Id == mcId && t.Slot_Not_Avl == 'Y')
-                    .ToList();
-                double mcNotAvlHrs = 0;
-                foreach (var slot in mcNotAvlSlots)
-                {
-                    var start = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == slot.Timeslot_List_Id)?.Start_time;
-                    var end = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == slot.EndTimeslot_List_Id)?.End_time;
+                        var start = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == slot.Timeslot_List_Id)?.Start_time;
+                        var end = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == slot.EndTimeslot_List_Id)?.End_time;
 
-                    if (start != null && end != null)
+                        if (start != null && end != null)
+                        {
+                            mcNotAvlHrs += (end.Value - start.Value).TotalMinutes / 60.0;
+                        }
+                    }
+                    item.McNotAvlHrs = mcNotAvlHrs.ToString("0.00");
+                    double simulationDurationHrs = 0;
+                    var machineSlots = mcactive.Where(x => x.Mc_Id == mcId).ToList();
+                       var firstSlotId = machineSlots.Min(x => x.Timeslot_List_Id);
+                   var lastSlotId = machineSlots.Max(x => x.EndTimeslot_List_Id);
+                //if (mcSlots.Any())
+                //{
+                var simStart = allTimeSlots.FirstOrDefault(x => x.Timeslot_ListId == firstSlotId)?.Start_time;
+
+                var simEnd = allTimeSlots.FirstOrDefault(x => x.Timeslot_ListId == lastSlotId)?.End_time;
+
+                if (simStart != null && simEnd != null)
+                        {
+                           // simulationDurationHrs = (simEnd.Value - simStart.Value).TotalMinutes / 60.0;
+                            simulationDurationHrs = lastSlotId - firstSlotId + 1;
+                }
+                    //}
+                    var freeHrs = simulationDurationHrs - hrsBooked - mcNotAvlHrs;
+                    if (freeHrs < 0) freeHrs = 0;
+                    var percentUsed = simulationDurationHrs > 0 ? (hrsBooked * 100.0) / simulationDurationHrs : 0;
+                    item.FreeHrs = freeHrs.ToString("0.00");
+                    item.SimulationDurationHrs = simulationDurationHrs.ToString("0.00");
+                    item.PercentHrsUsed = percentUsed.ToString("0.00");
+                    var lastWoEndSlotId = wowaitList
+                        .Where(w => w.Wo_Id == item.Wo_Id)
+                        .OrderByDescending(w => w.Plan_End_Date)
+                        .FirstOrDefault()?.Plan_End_Date;
+                    var pp = alProductionWOs.Where(p => p.WoId == item.Wo_Id).FirstOrDefault();
+                    if (lastWoEndSlotId != null)
                     {
-                        mcNotAvlHrs += (end.Value - start.Value).TotalMinutes / 60.0;
+                        item.DateMcNotLoaded = lastWoEndSlotId?.ToString("dd-MM-yyyy hh:mm tt");
                     }
-                }
-                item.McNotAvlHrs = mcNotAvlHrs.ToString("0.00");
-                double simulationDurationHrs = 0;
-                if (mcSlots.Any())
-                {
-                    var simStart = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == mcSlots.First().Timeslot_List_Id)?.Start_time;
-                    var simEnd = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == mcSlots.First().EndTimeslot_List_Id)?.End_time;
-
-                    if (simStart != null && simEnd != null)
+                    else
                     {
-                        simulationDurationHrs = (simEnd.Value - simStart.Value).TotalMinutes / 60.0;
+                        var csend = allTimeSlots.Where(t => t.Timeslot_ListId == item.Plan_end_time_Id).FirstOrDefault();
+                        item.DateMcNotLoaded = csend.Start_time.ToString("dd-MM-yyyy hh:mm tt");
                     }
-                }
-                var freeHrs = simulationDurationHrs - hrsBooked - mcNotAvlHrs;
-                if (freeHrs < 0) freeHrs = 0;
-                var percentUsed = simulationDurationHrs > 0 ? (hrsBooked * 100.0) / simulationDurationHrs : 0;
-                item.FreeHrs = freeHrs.ToString("0.00");
-                item.SimulationDurationHrs = simulationDurationHrs.ToString("0.00");
-                item.PercentHrsUsed = percentUsed.ToString("0.00");
-                var lastWoEndSlotId = wowaitList
-                    .Where(w => w.Wo_Id == item.Wo_Id)
-                    .OrderByDescending(w => w.Plan_End_Date)
-                    .FirstOrDefault()?.Plan_End_Date;
-                var pp = alProductionWOs.Where(p => p.WoId == item.Wo_Id).FirstOrDefault();
-                if (lastWoEndSlotId != null)
-                {
-                    item.DateMcNotLoaded = lastWoEndSlotId?.ToString("dd-MM-yyyy hh:mm tt");
-                }
-                else
-                {
-                    var csend = allTimeSlots.Where(t => t.Timeslot_ListId == item.Plan_end_time_Id).FirstOrDefault();
-                    item.DateMcNotLoaded = csend.Start_time.ToString("dd-MM-yyyy hh:mm tt");
-                }
-                var routste = await _routingService.RoutingSteps((int)pp.RoutingId);
-                item.PartNo = masterparts.FirstOrDefault(m => m.PartId == pp.PartId).PartNo + " / " + routste.FirstOrDefault().StepNumber;
+                    var routste = await _routingService.RoutingSteps((int)pp.RoutingId);
+                    item.PartNo = masterparts.FirstOrDefault(m => m.PartId == pp.PartId).PartNo + " / " + routste.FirstOrDefault().StepNumber;
 
-                if (item.Rework_Wo == 'Y')
-                {
-                    // Store rework hours on the item (we'll sum it later)
-                    item.ReworkHrs = hrsBooked.ToString("0.00");
-                    item.IsReworkCount = 1;
+                    if (item.Rework_Wo == 'Y')
+                    {
+                        // Store rework hours on the item (we'll sum it later)
+                        item.ReworkHrs = hrsBooked.ToString("0.00");
+                        item.IsReworkCount = 1;
+                    }
+                    else
+                    {
+                        item.ReworkHrs = "0.00";
+                    }
+                    bool isNonPlan = item.Non_Plan_Wk == 'Y';
+                    item.NonPlanHrs = isNonPlan ? hrsBooked.ToString("0.00") : "0.00";
+                    item.IsNonPlanCount = isNonPlan ? 1 : 0;
                 }
-                else
-                {
-                    item.ReworkHrs = "0.00";
-                }
-                bool isNonPlan = item.Non_Plan_Wk == 'Y';
-                item.NonPlanHrs = isNonPlan ? hrsBooked.ToString("0.00") : "0.00";
-                item.IsNonPlanCount = isNonPlan ? 1 : 0;
-            }
             var groupedResult = waitList
       .GroupBy(w => w.Mc_Id)
       .Select(g =>
       {
           var first = g.First(); // Take common fields like names from the first item
 
-          double totalHrsBooked = g.Sum(x => double.TryParse(x.HrsBooked, out var val) ? val : 0);
+                double totalHrsBooked = g.Sum(x => double.TryParse(x.HrsBooked, out var val) ? val : 0);
           double totalMcNotAvlHrs = double.TryParse(g.First().McNotAvlHrs, out var val) ? val : 0;
-          double totalSimulationDuration = g.Sum(x => double.TryParse(x.SimulationDurationHrs, out var val) ? val : 0);
-          double totalFreeHrs = g.Sum(x => double.TryParse(x.FreeHrs, out var val) ? val : 0);
-          double totalReworkHrs = g.Sum(x => double.TryParse(x.ReworkHrs, out var val) ? val : 0);
-          double percentUsed = totalSimulationDuration > 0 ? (totalHrsBooked * 100.0) / totalSimulationDuration : 0;
-          int totalReworkCount = g.Sum(x => x.IsReworkCount);
+          double totalSimulationDuration =   double.TryParse(first.SimulationDurationHrs, out var sim)  ? sim   : 0;
           double totalNonPlanHrs = g.Sum(x => double.TryParse(x.NonPlanHrs, out var val) ? val : 0);
+          double totalFreeHrs =    totalSimulationDuration -(totalHrsBooked+ totalNonPlanHrs+ totalMcNotAvlHrs);
+
+          if (totalFreeHrs < 0)
+              totalFreeHrs = 0;
+
+          double percentUsed =  totalSimulationDuration > 0  ? (totalHrsBooked * 100.0) / totalSimulationDuration: 0;
+
+
+
+
+         // double totalSimulationDuration = g.Sum(x => double.TryParse(x.SimulationDurationHrs, out var val) ? val : 0);
+         // double totalFreeHrs = g.Sum(x => double.TryParse(x.FreeHrs, out var val) ? val : 0);
+          double totalReworkHrs = g.Sum(x => double.TryParse(x.ReworkHrs, out var val) ? val : 0);
+          //double percentUsed = totalSimulationDuration > 0 ? (totalHrsBooked * 100.0) / totalSimulationDuration : 0;
+          int totalReworkCount = g.Sum(x => x.IsReworkCount);
+          
           int totalNonPlanCount = g.Sum(x => x.IsNonPlanCount);
-          var datenot = first.DateMcNotLoaded;
+          var maxDate = g
+     .Select(x => DateTime.ParseExact(
+         x.DateMcNotLoaded,
+         "dd-MM-yyyy hh:mm tt",
+         CultureInfo.InvariantCulture))
+     .Max();
+
+          var datenot = maxDate.ToString("dd-MM-yyyy hh:mm tt");
           string FormatHours(double hours)
           {
               var time = TimeSpan.FromHours(hours);
@@ -14698,8 +14756,9 @@ namespace CWB.App.Controllers
       })
       .ToList();
 
+
             return Ok(groupedResult);
-        }
+            }
         [HttpPost]
         public async Task<IActionResult> PostMc_Wait_List(Mc_Wait_ListVM masterDocListVM)
         {
@@ -17351,7 +17410,7 @@ namespace CWB.App.Controllers
 
 
                 //Master step1 fetch all simulation wo which has  status =10 Ready for Production  CMP and order Bysequence 
-                var readforproductionwos = productions.Where(x => x.Status == 10 && x.PartType==1 &&x.For_Ref=='N' &&x.Freeze==0).OrderBy(x=>x.Sim_Seq_No).ToList();//Ready for Production  CMP
+                var readforproductionwos = productions.Where(x => x.Status == 10 && x.PartType==1 &&x.For_Ref=='N' &&x.Freeze==0).OrderBy(x=>x.Sim_Seq_No).ThenBy(x => x.Calc_Capacity_Reqd).ToList();//Ready for Production  CMP
             //now send for simulation for this 
             if (readforproductionwos.Any())
             {
@@ -17387,634 +17446,224 @@ namespace CWB.App.Controllers
                                         .OrderBy(x => x.StepSequence)
                                         .ToList();
 
-                   
+
                     for (int i = 0; i < routingSteps.Count; i++)
                     {
-                        
-
                         var current = routingSteps[i];
-                        RoutingStepVM previous = i > 0 ? routingSteps[i - 1] : null;
-                        RoutingStepVM next = i < routingSteps.Count - 1 ? routingSteps[i + 1]: null;
+
+                        RoutingStepVM previous = i > 0
+                            ? routingSteps[i - 1]
+                            : null;
+
+                        RoutingStepVM next = i < routingSteps.Count - 1
+                            ? routingSteps[i + 1]
+                            : null;
+
                         bool isFirst = i == 0;
                         bool isLast = i == routingSteps.Count - 1;
 
+                        bool isSubCon = current.StepLocation == "2";
 
-                        string operationType="";
-                        bool isSubCon =  current.StepLocation == "2";
-                        bool isParallel = !isSubCon &&(current.StepNextSequence == 2|| current.StepNextSequence==3) ;
-                        bool isSequential = !isSubCon &&  current.StepNextSequence == 1;
+                        bool isParallel = !isSubCon &&
+                                          (current.StepNextSequence == 2 ||
+                                           current.StepNextSequence == 3);
 
+                        bool isSequential = !isSubCon &&
+                                            current.StepNextSequence == 1;
 
-                        if(isFirst)
+                        string operationType;
+
+                        if (isSubCon)
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
-                            var opr = new TempOpr_ListVM
-                            {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
-
-                                if (!machines.Any())
-                                    continue;
-
-                               // double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : machine.NoOfPartsPerLoading;
-
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
-                                        ? 1
-                                        : current.NumberOfSimMachines;
-
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
-
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
-
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
-
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
-
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
-                                }
-
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
-                            }
-
-                            else
-                            {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
-
-                                var preferred =   subcons.FirstOrDefault(x => x.PreferredSubcon == 1)  ?? subcons.FirstOrDefault();
-
-                                if (preferred == null)
-                                    continue;
-
-                                var ws =    await _routingService.SubConWSS( (int)current.StepId, preferred.SubConDetailsId);
-
-                              //  double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : work.NoOfPartsPerLoading;
-
-                                    totalSetup += setup;
-
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
-                            }
-
-
-                            
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
-
-
-
+                            operationType = "Subcon";
                         }
-                        else if(isLast)
+                        else if (isParallel)
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
-
-
-                            var opr = new TempOpr_ListVM
-                            {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
-
-
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
-
-                                if (!machines.Any())
-                                    continue;
-
-                               // double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : machine.NoOfPartsPerLoading;
-
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
-                                        ? 1
-                                        : current.NumberOfSimMachines;
-
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
-
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
-
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
-
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
-
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
-                                }
-
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
-                            }
-
-                            else
-                            {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
-
-                                var preferred = subcons.FirstOrDefault(x => x.PreferredSubcon == 1) ?? subcons.FirstOrDefault();
-
-                                if (preferred == null)
-                                    continue;
-
-                                var ws = await _routingService.SubConWSS((int)current.StepId, preferred.SubConDetailsId);
-
-                                //double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : work.NoOfPartsPerLoading;
-
-                                    totalSetup += setup;
-
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
-                            }
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
-
-
+                            operationType = "Parallel";
                         }
-
+                        else if (isSequential)
+                        {
+                            operationType = "Sequential";
+                        }
                         else
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
+                            operationType = null;
+                        }
 
+                        // ==========================================================
+                        // CREATE OPERATION ONLY ONCE
+                        // ==========================================================
 
-                            var opr = new TempOpr_ListVM
+                        var opr = new TempOpr_ListVM
+                        {
+                            Wo_Id = item.WoId,
+                            Opr_No = current.StepId,
+                            RoutingId = current.RoutingId,
+                            RoutingStepLocation = Convert.ToInt64(current.StepLocation),
+                            RoutingStepSequence = current.StepSequence,
+
+                            Mode = 1,
+                            Rework_Wo = 'N',
+                            NC_Log_Ref = 0,
+
+                            Act_Qnty = 0,
+                            Plan_Qnty = item.PlanWOQnty,
+
+                            No_of_Simult_Mcs = current.NumberOfSimMachines,
+
+                            Initial_Opr_TPT = 0,
+                            RequiredTimeslots = 0,
+                            OffsetMinutes = 0,
+                            ResidenceMinutes = 0,
+
+                            OperationType = operationType
+                        };
+
+                        // ==========================================================
+                        // CALCULATE OPERATION
+                        // ==========================================================
+
+                        if (!isSubCon)
+                        {
+                            var machines =
+                                await _routingService.StepMachines((int)current.StepId);
+
+                            if (!machines.Any())
+                                continue;
+
+                            double maxMinutes = 0;
+                            int maxSlots = 0;
+                            double maxOffset = 0;
+
+                            foreach (var machine in machines)
                             {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
+                                double setup =
+                                    TimeSpan.Parse(machine.SetupTime).TotalMinutes;
 
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
+                                double firstPiece =
+                                    TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
 
-                                if (!machines.Any())
-                                    continue;
+                                double cycle =
+                                    TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
 
-                                //double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
+                                int partsPerLoading =
+                                    machine.NoOfPartsPerLoading <= 0
                                         ? 1
                                         : machine.NoOfPartsPerLoading;
 
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
+                                int simMachines =
+                                    current.NumberOfSimMachines <= 0
                                         ? 1
                                         : current.NumberOfSimMachines;
 
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
+                                double processingMinutes =
+                                    ((double)item.PlanWOQnty / simMachines)
+                                    * (cycle / partsPerLoading);
 
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
+                                double totalMinutes =
+                                    (setup + processingMinutes)
+                                    * (1 + cushionPercent / 100);
 
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
+                                int requiredSlots =
+                                    (int)Math.Ceiling(totalMinutes / 60.0);
 
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
+                                double offsetMinutes =
+                                    Math.Ceiling(
+                                        (setup + firstPiece) / 60.0
+                                    ) * 60;
 
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
+                                if (totalMinutes > maxMinutes)
+                                {
+                                    maxMinutes = totalMinutes;
+                                    maxSlots = requiredSlots;
                                 }
 
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
+                                if (offsetMinutes > maxOffset)
+                                {
+                                    maxOffset = offsetMinutes;
+                                }
                             }
 
-                            else
+                            opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
+                            opr.RequiredTimeslots = maxSlots;
+                            opr.OffsetMinutes = maxOffset;
+                        }
+                        else
+                        {
+                            var subcons =
+                                await _routingService.SubCons((int)current.StepId);
+
+                            var preferred =
+                                subcons.FirstOrDefault(x => x.PreferredSubcon == 1)
+                                ?? subcons.FirstOrDefault();
+
+                            if (preferred == null)
+                                continue;
+
+                            var ws =
+                                await _routingService.SubConWSS(
+                                    (int)current.StepId,
+                                    preferred.SubConDetailsId);
+
+                            double totalSetup = 0;
+                            double totalProcessing = 0;
+
+                            foreach (var work in ws)
                             {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
+                                double setup =
+                                    TimeSpan.Parse(work.SetupTime).TotalMinutes;
 
-                                var preferred = subcons.FirstOrDefault(x => x.PreferredSubcon == 1) ?? subcons.FirstOrDefault();
+                                double cycle =
+                                    TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
 
-                                if (preferred == null)
-                                    continue;
-
-                                var ws = await _routingService.SubConWSS((int)current.StepId, preferred.SubConDetailsId);
-
-                                //double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
+                                int parts =
+                                    work.NoOfPartsPerLoading <= 0
                                         ? 1
                                         : work.NoOfPartsPerLoading;
 
-                                    totalSetup += setup;
+                                totalSetup += setup;
 
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
+                                totalProcessing +=
+                                    ((double)item.PlanWOQnty)
+                                    * (cycle / parts);
                             }
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
+
+                            int travelHours =
+                                Convert.ToInt32(preferred.TransportTime);
+
+                            double travelMinutes =
+                                travelHours * 60;
+
+                            double residenceMinutes =
+                                travelMinutes +
+                                (
+                                    (totalSetup + totalProcessing)
+                                    * (1 + cushionPercent / 100)
+                                );
+
+                            residenceMinutes =
+                                Math.Ceiling(residenceMinutes / 60.0) * 60;
+
+                            opr.Initial_Opr_TPT =
+                                Convert.ToInt32(residenceMinutes);
+
+                            opr.RequiredTimeslots =
+                                (int)Math.Ceiling(residenceMinutes / 60.0);
+
+                            opr.ResidenceMinutes =
+                                residenceMinutes;
                         }
-                        
 
+                        // ==========================================================
+                        // POST ONLY ONCE
+                        // ==========================================================
 
-
-                        
+                        var oprResult =
+                            await _woService.PostTempOpr_List(opr);
+                        oprResult.OperationType = opr.OperationType;
+                        oprResult.OffsetMinutes = opr.OffsetMinutes;
+                        oprResult.ResidenceMinutes = opr.ResidenceMinutes;
+                        allOprswo.Add(oprResult);
                     }
 
                     #endregion
@@ -18227,6 +17876,115 @@ namespace CWB.App.Controllers
                         }
                         else
                         {
+                            allTimeslots = await _woService.GetAllTimeslot_List();
+                            int currentIndex = operations.IndexOf(opr);
+
+                            var next =
+                                currentIndex < operations.Count - 1
+                                    ? operations[currentIndex + 1]
+                                    : null;
+
+                            var previous =
+                                currentIndex > 0
+                                    ? operations[currentIndex - 1]
+                                    : null;
+
+
+                            // ============================================================
+                            // CASE 1
+                            // Sequential -> Sequential
+                            //
+                            // Op10 Sequential
+                            // Op20 Sequential
+                            //
+                            // Op20 must start after Op10 END.
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Sequential")
+                            {
+                                var previousEndSlot = allTimeslots.First(x =>
+                                    x.Timeslot_ListId == previous.Shop_Plan_end_time);
+
+                                searchStart = previousEndSlot.End_time;
+                            }
+
+
+                            // ============================================================
+                            // CASE 2
+                            // Sequential -> Parallel
+                            //
+                            // Op10 Sequential
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            //
+                            // Parallel group starts based on Op10 start + offset.
+                            // ============================================================
+
+                            //if (opr.OperationType == "Sequential" &&
+                            //    next != null &&
+                            //    next.OperationType == "Parallel")
+                            //{
+                            //    var currentStartSlot = allTimeslots.First(x =>
+                            //        x.Timeslot_ListId == opr.Shop_Plan_start_time);
+
+                            //    DateTime scurrentStart = currentStartSlot.Start_time;
+
+                            //    searchStart =
+                            //        scurrentStart.AddMinutes(opr.OffsetMinutes);
+
+                            //    parallelParentStart = scurrentStart;
+
+                            //    insideParallelGroup = true;
+                            //}
+
+
+                            // ============================================================
+                            // CASE 3
+                            // Parallel -> Parallel
+                            //
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            //
+                            // Op30 starts from Op20 Start + Op20 Offset.
+                            // ============================================================
+
+                            if (opr.OperationType == "Parallel" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel")
+                            {
+                                var previousStartSlot = allTimeslots.First(x =>
+                                    x.Timeslot_ListId == previous.Shop_Plan_start_time);
+
+                                DateTime previousStart =
+                                    previousStartSlot.Start_time;
+
+                                searchStart =
+                                    previousStart.AddMinutes(previous.OffsetMinutes);
+
+                                insideParallelGroup = true;
+                            }
+
+
+                            // ============================================================
+                            // CASE 4
+                            // Parallel -> Sequential
+                            //
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            // Op40 Sequential
+                            //
+                            // Op40 must wait until the LATEST parallel operation ends.
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel" &&
+                                parallelGroupEnd != null)
+                            {
+                                searchStart = parallelGroupEnd.Value;
+                            }
                             int noOfMcs = noOfSimultMcs;
                             int qtyPerMc = item.CalcWOQty / (noOfMcs > 0 ? noOfMcs : 1);
                             var machines = await _routingService.StepMachines((int)opr.Opr_No);
@@ -18446,37 +18204,126 @@ namespace CWB.App.Controllers
                                 //mcWaits.Add(mcWait);
                                 //}
                             }
-                            var selectedMachines =   candidates   .OrderBy(x => x.AvailableTimeslots.First().Start_time)   .Take(noOfMcs)  .ToList();
-                            var selectedMachine = selectedMachines.First();
+                            //var selectedMachines =   candidates   .OrderBy(x => x.AvailableTimeslots.First().Start_time)   .Take(noOfMcs)  .ToList();
+                            //var selectedMachine = selectedMachines.First();
+                            // Select the required number of machines based on earliest availability
+                            var selectedMachines = candidates
+                                .Where(x => x.AvailableTimeslots != null &&
+                                            x.AvailableTimeslots.Any())
+                                .OrderBy(x => x.AvailableTimeslots.First().Start_time)
+                                .Take(noOfMcs)
+                                .ToList();
 
-                            var mcWaitnew = new TempMc_Wait_ListVM()
+                            // We must have enough machines
+                            if (selectedMachines.Count < noOfMcs)
                             {
-                                Wo_Id = item.WoId,
-                                Opr_No_Id = opr.Opr_No,
-                                Mc_Id = selectedMachine.Machine.MachineId,
-                                Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
-                                Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
-                                Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
-                                Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
-                                Mode = 1,
-                                Plan_Qnty = selectedMachine.QtyPerMc
-                            };
+                                // Not enough machines available for simultaneous execution
+                                continue;
+                            }
+                            //int totalQty = item.PlanWOQnty;
+                            //int baseQty = totalQty / selectedMachines.Count;
+                            //int remainder = totalQty % selectedMachines.Count;
 
-                            mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
-                            var newMcSlot = new TempMc_Timeslot_ListVM()
+                            //var mcWaitnew = new TempMc_Wait_ListVM()
+                            //{
+                            //    Wo_Id = item.WoId,
+                            //    Opr_No_Id = opr.Opr_No,
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
+                            //    Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
+                            //    Mode = 1,
+                            //    Plan_Qnty = selectedMachine.QtyPerMc
+                            //};
+
+                            //mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
+                            //var newMcSlot = new TempMc_Timeslot_ListVM()
+                            //{
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
+                            //    Allocation = 2,
+                            //    Slot_Not_Avl = 'N',
+                            //    Not_Avl_reason = 0
+                            //};
+
+                            //insttempMCTime =
+                            //    await _woService.PostTempMc_Timeslot_List(newMcSlot);
+                            //mcWaits.Add(mcWaitnew);
+                            int totalQty = item.CalcWOQty;
+                            int baseQty = totalQty / selectedMachines.Count;
+                            int remainder = totalQty % selectedMachines.Count;
+
+                            int machineIndex = 0;
+
+                            foreach (var selectedMachine in selectedMachines)
                             {
-                                Mc_Id = selectedMachine.Machine.MachineId,
-                                Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
-                                EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
-                                Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
-                                Allocation = 2,
-                                Slot_Not_Avl = 'N',
-                                Not_Avl_reason = 0
-                            };
+                                await CheckPauseAsync();
 
-                            insttempMCTime =
+                                // -----------------------------------------
+                                // Quantity for this machine
+                                // -----------------------------------------
+                                int machineQty = baseQty;
+
+                                if (machineIndex < remainder)
+                                {
+                                    machineQty++;
+                                }
+
+                                // -----------------------------------------
+                                // Create Machine Wait
+                                // -----------------------------------------
+                                var mcWaitnew = new TempMc_Wait_ListVM
+                                {
+                                    Wo_Id = item.WoId,
+                                    Opr_No_Id = opr.Opr_No,
+
+                                    Mc_Id = selectedMachine.Machine.MachineId,
+
+                                    Wait_Seq_No =  await CalculateNextTempWaitSeqNo( selectedMachine.Machine.MachineId),
+
+                                    Plan_start_time_Id =  selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+
+                                    Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+
+                                    Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
+
+                                    Mode = 1,
+
+                                    Plan_Qnty = machineQty
+                                };
+
+                                mcWaitnew =    await _woService.PostTempMc_Wait_List(mcWaitnew);
+
+                                // -----------------------------------------
+                                // Allocate machine timeslot
+                                // -----------------------------------------
+                                var newMcSlot = new TempMc_Timeslot_ListVM
+                                {
+                                    Mc_Id = selectedMachine.Machine.MachineId,
+
+                                    Timeslot_List_Id =   selectedMachine.AvailableTimeslots .First().Timeslot_ListId,
+
+                                    EndTimeslot_List_Id =  selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+
+                                    Mc_Wait_List_Id =  mcWaitnew.TempMc_Wait_ListId,
+
+                                    Allocation = 2,
+
+                                    Slot_Not_Avl = 'N',
+
+                                    Not_Avl_reason = 0
+                                };
+
                                 await _woService.PostTempMc_Timeslot_List(newMcSlot);
-                            mcWaits.Add(mcWaitnew);
+
+                                // Keep it for Opr_List aggregation
+                                mcWaits.Add(mcWaitnew);
+
+                                machineIndex++;
+                            }
 
                             // Update Opr_List with aggregated info
                             // Update Opr_List with aggregated info
@@ -18486,7 +18333,7 @@ namespace CWB.App.Controllers
                             opr.Shop_Plan_end_time = mcWaits.Max(mw => mw.Plan_end_time_Id);
                              opr.Rolledup_Opr_TPT = mcWaits.Sum(mw => Convert.ToInt64(mw.Mc_TPT));
                             await _woService.PostTempOpr_List(opr);
-
+                            allTimeslots = await _woService.GetAllTimeslot_List();
                             var startSlot = allTimeslots.First(x =>x.Timeslot_ListId == opr.Shop_Plan_start_time);
 
                             var endSlot = allTimeslots.First(x =>
@@ -18495,43 +18342,44 @@ namespace CWB.App.Controllers
                             DateTime currentStart = startSlot.Start_time;
 
                             DateTime currentEnd = endSlot.End_time;
-                            int currentIndex = operations.IndexOf(opr);
-
-                            var next =  currentIndex < operations.Count - 1 ? operations[currentIndex + 1] : null;
-
-                            searchStart = currentEnd;
-
-                            if (next != null &&  next.OperationType == "Parallel")
+                            if (opr.OperationType == "Sequential" &&
+    next != null &&
+    next.OperationType == "Parallel")
                             {
-                                parallelParentStart = currentStart;
+                                searchStart =
+                                    currentStart.AddMinutes(opr.OffsetMinutes);
 
-                                searchStart = currentStart.AddMinutes(opr.OffsetMinutes);
+                                parallelParentStart = currentStart;
 
                                 insideParallelGroup = true;
                             }
+                            // ============================================================
+                            // Track latest END of parallel group
+                            // ============================================================
+
                             if (opr.OperationType == "Parallel")
                             {
-                                if (parallelGroupEnd == null)
-                                {
-                                    parallelGroupEnd = currentEnd;
-                                }
-                                else if (currentEnd > parallelGroupEnd.Value)
+                                if (parallelGroupEnd == null ||
+                                    currentEnd > parallelGroupEnd.Value)
                                 {
                                     parallelGroupEnd = currentEnd;
                                 }
                             }
-                            bool lastParallel =    opr.OperationType == "Parallel"    &&   (  next == null   ||      next.OperationType != "Parallel" );
-                            if (lastParallel)
+                            // ============================================================
+                            // Finish Parallel Group
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel" &&
+                                parallelGroupEnd != null)
                             {
                                 searchStart = parallelGroupEnd.Value;
 
                                 parallelParentStart = null;
-
                                 parallelGroupEnd = null;
-
                                 insideParallelGroup = false;
                             }
-
 
 
 
@@ -18651,7 +18499,7 @@ namespace CWB.App.Controllers
 
             //master step2 fetch those cmps which have makefrom  as RM or BOF
             //then send this for simulation
-            var wowtihstatus = productions.Where(x => x.Status == 3 && x.PartType == 1 && x.For_Ref == 'N' &&x.Freeze==0).OrderBy(x => x.Sim_Seq_No).ToList();//makefrom  as RM or BOF
+            var wowtihstatus = productions.Where(x => x.Status == 3 && x.PartType == 1 && x.For_Ref == 'N' &&x.Freeze==0).OrderBy(x => x.Sim_Seq_No).ThenBy(x => x.Calc_Capacity_Reqd).ToList();//makefrom  as RM or BOF
             List<ProductionPlan_WoVM> filterList = new List<ProductionPlan_WoVM>();
             foreach (var item in wowtihstatus)
             {
@@ -18708,631 +18556,221 @@ namespace CWB.App.Controllers
 
                     for (int i = 0; i < routingSteps.Count; i++)
                     {
-
-
                         var current = routingSteps[i];
-                        RoutingStepVM previous = i > 0 ? routingSteps[i - 1] : null;
-                        RoutingStepVM next = i < routingSteps.Count - 1 ? routingSteps[i + 1] : null;
+
+                        RoutingStepVM previous = i > 0
+                            ? routingSteps[i - 1]
+                            : null;
+
+                        RoutingStepVM next = i < routingSteps.Count - 1
+                            ? routingSteps[i + 1]
+                            : null;
+
                         bool isFirst = i == 0;
                         bool isLast = i == routingSteps.Count - 1;
 
-
-                        string operationType = "";
                         bool isSubCon = current.StepLocation == "2";
-                        bool isParallel = !isSubCon && (current.StepNextSequence == 2 || current.StepNextSequence == 3);
-                        bool isSequential = !isSubCon && current.StepNextSequence == 1;
 
+                        bool isParallel = !isSubCon &&
+                                          (current.StepNextSequence == 2 ||
+                                           current.StepNextSequence == 3);
 
-                        if (isFirst)
+                        bool isSequential = !isSubCon &&
+                                            current.StepNextSequence == 1;
+
+                        string operationType;
+
+                        if (isSubCon)
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
-                            var opr = new TempOpr_ListVM
-                            {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
-
-                                if (!machines.Any())
-                                    continue;
-
-                                //double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : machine.NoOfPartsPerLoading;
-
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
-                                        ? 1
-                                        : current.NumberOfSimMachines;
-
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
-
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
-
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
-
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
-
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
-                                }
-
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
-                            }
-
-                            else
-                            {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
-
-                                var preferred = subcons.FirstOrDefault(x => x.PreferredSubcon == 1) ?? subcons.FirstOrDefault();
-
-                                if (preferred == null)
-                                    continue;
-
-                                var ws = await _routingService.SubConWSS((int)current.StepId, preferred.SubConDetailsId);
-
-                                //double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : work.NoOfPartsPerLoading;
-
-                                    totalSetup += setup;
-
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
-                            }
-
-
-
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
-
-
-
+                            operationType = "Subcon";
                         }
-                        else if (isLast)
+                        else if (isParallel)
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
-
-
-                            var opr = new TempOpr_ListVM
-                            {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
-
-
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
-
-                                if (!machines.Any())
-                                    continue;
-
-                               // double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : machine.NoOfPartsPerLoading;
-
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
-                                        ? 1
-                                        : current.NumberOfSimMachines;
-
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
-
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
-
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
-
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
-
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
-                                }
-
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
-                            }
-
-                            else
-                            {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
-
-                                var preferred = subcons.FirstOrDefault(x => x.PreferredSubcon == 1) ?? subcons.FirstOrDefault();
-
-                                if (preferred == null)
-                                    continue;
-
-                                var ws = await _routingService.SubConWSS((int)current.StepId, preferred.SubConDetailsId);
-
-                               // double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : work.NoOfPartsPerLoading;
-
-                                    totalSetup += setup;
-
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
-                            }
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
-
-
+                            operationType = "Parallel";
                         }
-
+                        else if (isSequential)
+                        {
+                            operationType = "Sequential";
+                        }
                         else
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
+                            operationType = null;
+                        }
 
+                        // ==========================================================
+                        // CREATE OPERATION ONLY ONCE
+                        // ==========================================================
 
-                            var opr = new TempOpr_ListVM
+                        var opr = new TempOpr_ListVM
+                        {
+                            Wo_Id = item.WoId,
+                            Opr_No = current.StepId,
+                            RoutingId = current.RoutingId,
+                            RoutingStepLocation = Convert.ToInt64(current.StepLocation),
+                            RoutingStepSequence = current.StepSequence,
+
+                            Mode = 1,
+                            Rework_Wo = 'N',
+                            NC_Log_Ref = 0,
+
+                            Act_Qnty = 0,
+                            Plan_Qnty = item.PlanWOQnty,
+
+                            No_of_Simult_Mcs = current.NumberOfSimMachines,
+
+                            Initial_Opr_TPT = 0,
+                            RequiredTimeslots = 0,
+                            OffsetMinutes = 0,
+                            ResidenceMinutes = 0,
+
+                            OperationType = operationType
+                        };
+
+                        // ==========================================================
+                        // CALCULATE OPERATION
+                        // ==========================================================
+
+                        if (!isSubCon)
+                        {
+                            var machines =
+                                await _routingService.StepMachines((int)current.StepId);
+
+                            if (!machines.Any())
+                                continue;
+
+                            double maxMinutes = 0;
+                            int maxSlots = 0;
+                            double maxOffset = 0;
+
+                            foreach (var machine in machines)
                             {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
+                                double setup =
+                                    TimeSpan.Parse(machine.SetupTime).TotalMinutes;
 
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
+                                double firstPiece =
+                                    TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
 
-                                if (!machines.Any())
-                                    continue;
+                                double cycle =
+                                    TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
 
-                               // double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
+                                int partsPerLoading =
+                                    machine.NoOfPartsPerLoading <= 0
                                         ? 1
                                         : machine.NoOfPartsPerLoading;
 
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
+                                int simMachines =
+                                    current.NumberOfSimMachines <= 0
                                         ? 1
                                         : current.NumberOfSimMachines;
 
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
+                                double processingMinutes =
+                                    ((double)item.PlanWOQnty / simMachines)
+                                    * (cycle / partsPerLoading);
 
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
+                                double totalMinutes =
+                                    (setup + processingMinutes)
+                                    * (1 + cushionPercent / 100);
 
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
+                                int requiredSlots =
+                                    (int)Math.Ceiling(totalMinutes / 60.0);
 
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
+                                double offsetMinutes =
+                                    Math.Ceiling(
+                                        (setup + firstPiece) / 60.0
+                                    ) * 60;
 
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
+                                if (totalMinutes > maxMinutes)
+                                {
+                                    maxMinutes = totalMinutes;
+                                    maxSlots = requiredSlots;
                                 }
 
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
+                                if (offsetMinutes > maxOffset)
+                                {
+                                    maxOffset = offsetMinutes;
+                                }
                             }
 
-                            else
+                            opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
+                            opr.RequiredTimeslots = maxSlots;
+                            opr.OffsetMinutes = maxOffset;
+                        }
+                        else
+                        {
+                            var subcons =
+                                await _routingService.SubCons((int)current.StepId);
+
+                            var preferred =
+                                subcons.FirstOrDefault(x => x.PreferredSubcon == 1)
+                                ?? subcons.FirstOrDefault();
+
+                            if (preferred == null)
+                                continue;
+
+                            var ws =
+                                await _routingService.SubConWSS(
+                                    (int)current.StepId,
+                                    preferred.SubConDetailsId);
+
+                            double totalSetup = 0;
+                            double totalProcessing = 0;
+
+                            foreach (var work in ws)
                             {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
+                                double setup =
+                                    TimeSpan.Parse(work.SetupTime).TotalMinutes;
 
-                                var preferred = subcons.FirstOrDefault(x => x.PreferredSubcon == 1) ?? subcons.FirstOrDefault();
+                                double cycle =
+                                    TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
 
-                                if (preferred == null)
-                                    continue;
-
-                                var ws = await _routingService.SubConWSS((int)current.StepId, preferred.SubConDetailsId);
-
-                               // double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
+                                int parts =
+                                    work.NoOfPartsPerLoading <= 0
                                         ? 1
                                         : work.NoOfPartsPerLoading;
 
-                                    totalSetup += setup;
+                                totalSetup += setup;
 
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
+                                totalProcessing +=
+                                    ((double)item.PlanWOQnty)
+                                    * (cycle / parts);
                             }
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
+
+                            int travelHours =
+                                Convert.ToInt32(preferred.TransportTime);
+
+                            double travelMinutes =
+                                travelHours * 60;
+
+                            double residenceMinutes =
+                                travelMinutes +
+                                (
+                                    (totalSetup + totalProcessing)
+                                    * (1 + cushionPercent / 100)
+                                );
+
+                            residenceMinutes =
+                                Math.Ceiling(residenceMinutes / 60.0) * 60;
+
+                            opr.Initial_Opr_TPT =
+                                Convert.ToInt32(residenceMinutes);
+
+                            opr.RequiredTimeslots =
+                                (int)Math.Ceiling(residenceMinutes / 60.0);
+
+                            opr.ResidenceMinutes =
+                                residenceMinutes;
                         }
 
+                        // ==========================================================
+                        // POST ONLY ONCE
+                        // ==========================================================
 
-
-
-
+                        var oprResult =
+                            await _woService.PostTempOpr_List(opr);
+                        oprResult.OperationType = opr.OperationType;
+                        oprResult.OffsetMinutes = opr.OffsetMinutes;
+                        oprResult.ResidenceMinutes = opr.ResidenceMinutes;
+                        allOprswo.Add(oprResult);
                     }
 
                     #endregion
@@ -19544,6 +18982,114 @@ namespace CWB.App.Controllers
                         }
                         else
                         {
+                            int currentIndex = operations.IndexOf(opr);
+
+                            var next =
+                                currentIndex < operations.Count - 1
+                                    ? operations[currentIndex + 1]
+                                    : null;
+
+                            var previous =
+                                currentIndex > 0
+                                    ? operations[currentIndex - 1]
+                                    : null;
+
+
+                            // ============================================================
+                            // CASE 1
+                            // Sequential -> Sequential
+                            //
+                            // Op10 Sequential
+                            // Op20 Sequential
+                            //
+                            // Op20 must start after Op10 END.
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Sequential")
+                            {
+                                var previousEndSlot = allTimeslots.First(x =>
+                                    x.Timeslot_ListId == previous.Shop_Plan_end_time);
+
+                                searchStart = previousEndSlot.End_time;
+                            }
+
+
+                            // ============================================================
+                            // CASE 2
+                            // Sequential -> Parallel
+                            //
+                            // Op10 Sequential
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            //
+                            // Parallel group starts based on Op10 start + offset.
+                            // ============================================================
+
+                            //if (opr.OperationType == "Sequential" &&
+                            //    next != null &&
+                            //    next.OperationType == "Parallel")
+                            //{
+                            //    var currentStartSlot = allTimeslots.First(x =>
+                            //        x.Timeslot_ListId == opr.Shop_Plan_start_time);
+
+                            //    DateTime scurrentStart = currentStartSlot.Start_time;
+
+                            //    searchStart =
+                            //        scurrentStart.AddMinutes(opr.OffsetMinutes);
+
+                            //    parallelParentStart = scurrentStart;
+
+                            //    insideParallelGroup = true;
+                            //}
+
+
+                            // ============================================================
+                            // CASE 3
+                            // Parallel -> Parallel
+                            //
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            //
+                            // Op30 starts from Op20 Start + Op20 Offset.
+                            // ============================================================
+
+                            if (opr.OperationType == "Parallel" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel")
+                            {
+                                var previousStartSlot = allTimeslots.First(x =>
+                                    x.Timeslot_ListId == previous.Shop_Plan_start_time);
+
+                                DateTime previousStart =
+                                    previousStartSlot.Start_time;
+
+                                searchStart =
+                                    previousStart.AddMinutes(previous.OffsetMinutes);
+
+                                insideParallelGroup = true;
+                            }
+
+
+                            // ============================================================
+                            // CASE 4
+                            // Parallel -> Sequential
+                            //
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            // Op40 Sequential
+                            //
+                            // Op40 must wait until the LATEST parallel operation ends.
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel" &&
+                                parallelGroupEnd != null)
+                            {
+                                searchStart = parallelGroupEnd.Value;
+                            }
                             int noOfMcs = noOfSimultMcs;
                             int qtyPerMc = item.CalcWOQty / (noOfMcs > 0 ? noOfMcs : 1);
                             var machines = await _routingService.StepMachines((int)opr.Opr_No);
@@ -19763,37 +19309,154 @@ namespace CWB.App.Controllers
                                 //mcWaits.Add(mcWait);
                                 //}
                             }
-                            var selectedMachines = candidates.OrderBy(x => x.AvailableTimeslots.First().Start_time).Take(noOfMcs).ToList();
-                            var selectedMachine = selectedMachines.First();
+                            //var selectedMachines = candidates.OrderBy(x => x.AvailableTimeslots.First().Start_time).Take(noOfMcs).ToList();
+                            //var selectedMachine = selectedMachines.First();
 
-                            var mcWaitnew = new TempMc_Wait_ListVM()
+                            //var mcWaitnew = new TempMc_Wait_ListVM()
+                            //{
+                            //    Wo_Id = item.WoId,
+                            //    Opr_No_Id = opr.Opr_No,
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
+                            //    Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
+                            //    Mode = 1,
+                            //    Plan_Qnty = selectedMachine.QtyPerMc
+                            //};
+
+                            //mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
+                            //var newMcSlot = new TempMc_Timeslot_ListVM()
+                            //{
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
+                            //    Allocation = 2,
+                            //    Slot_Not_Avl = 'N',
+                            //    Not_Avl_reason = 0
+                            //};
+
+                            //insttempMCTime =
+                            //    await _woService.PostTempMc_Timeslot_List(newMcSlot);
+                            //mcWaits.Add(mcWaitnew);
+                            var selectedMachines = candidates
+                               .Where(x => x.AvailableTimeslots != null &&
+                                           x.AvailableTimeslots.Any())
+                               .OrderBy(x => x.AvailableTimeslots.First().Start_time)
+                               .Take(noOfMcs)
+                               .ToList();
+
+                            // We must have enough machines
+                            if (selectedMachines.Count < noOfMcs)
                             {
-                                Wo_Id = item.WoId,
-                                Opr_No_Id = opr.Opr_No,
-                                Mc_Id = selectedMachine.Machine.MachineId,
-                                Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
-                                Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
-                                Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
-                                Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
-                                Mode = 1,
-                                Plan_Qnty = selectedMachine.QtyPerMc
-                            };
+                                // Not enough machines available for simultaneous execution
+                                continue;
+                            }
+                            //int totalQty = item.PlanWOQnty;
+                            //int baseQty = totalQty / selectedMachines.Count;
+                            //int remainder = totalQty % selectedMachines.Count;
 
-                            mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
-                            var newMcSlot = new TempMc_Timeslot_ListVM()
+                            //var mcWaitnew = new TempMc_Wait_ListVM()
+                            //{
+                            //    Wo_Id = item.WoId,
+                            //    Opr_No_Id = opr.Opr_No,
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
+                            //    Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
+                            //    Mode = 1,
+                            //    Plan_Qnty = selectedMachine.QtyPerMc
+                            //};
+
+                            //mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
+                            //var newMcSlot = new TempMc_Timeslot_ListVM()
+                            //{
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
+                            //    Allocation = 2,
+                            //    Slot_Not_Avl = 'N',
+                            //    Not_Avl_reason = 0
+                            //};
+
+                            //insttempMCTime =
+                            //    await _woService.PostTempMc_Timeslot_List(newMcSlot);
+                            //mcWaits.Add(mcWaitnew);
+                            int totalQty = item.CalcWOQty;
+                            int baseQty = totalQty / selectedMachines.Count;
+                            int remainder = totalQty % selectedMachines.Count;
+
+                            int machineIndex = 0;
+
+                            foreach (var selectedMachine in selectedMachines)
                             {
-                                Mc_Id = selectedMachine.Machine.MachineId,
-                                Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
-                                EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
-                                Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
-                                Allocation = 2,
-                                Slot_Not_Avl = 'N',
-                                Not_Avl_reason = 0
-                            };
+                                await CheckPauseAsync();
 
-                            insttempMCTime =
+                                // -----------------------------------------
+                                // Quantity for this machine
+                                // -----------------------------------------
+                                int machineQty = baseQty;
+
+                                if (machineIndex < remainder)
+                                {
+                                    machineQty++;
+                                }
+
+                                // -----------------------------------------
+                                // Create Machine Wait
+                                // -----------------------------------------
+                                var mcWaitnew = new TempMc_Wait_ListVM
+                                {
+                                    Wo_Id = item.WoId,
+                                    Opr_No_Id = opr.Opr_No,
+
+                                    Mc_Id = selectedMachine.Machine.MachineId,
+
+                                    Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
+
+                                    Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+
+                                    Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+
+                                    Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
+
+                                    Mode = 1,
+
+                                    Plan_Qnty = machineQty
+                                };
+
+                                mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
+
+                                // -----------------------------------------
+                                // Allocate machine timeslot
+                                // -----------------------------------------
+                                var newMcSlot = new TempMc_Timeslot_ListVM
+                                {
+                                    Mc_Id = selectedMachine.Machine.MachineId,
+
+                                    Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+
+                                    EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+
+                                    Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
+
+                                    Allocation = 2,
+
+                                    Slot_Not_Avl = 'N',
+
+                                    Not_Avl_reason = 0
+                                };
+
                                 await _woService.PostTempMc_Timeslot_List(newMcSlot);
-                            mcWaits.Add(mcWaitnew);
+
+                                // Keep it for Opr_List aggregation
+                                mcWaits.Add(mcWaitnew);
+
+                                machineIndex++;
+                            }
 
                             // Update Opr_List with aggregated info
                             if (!mcWaits.Any())
@@ -19811,42 +19474,48 @@ namespace CWB.App.Controllers
                             DateTime currentStart = startSlot.Start_time;
 
                             DateTime currentEnd = endSlot.End_time;
-                            int currentIndex = operations.IndexOf(opr);
 
-                            var next = currentIndex < operations.Count - 1 ? operations[currentIndex + 1] : null;
-
-                            searchStart = currentEnd;
-
-                            if (next != null && next.OperationType == "Parallel")
+                            if (opr.OperationType == "Sequential" &&
+  next != null &&
+  next.OperationType == "Parallel")
                             {
-                                parallelParentStart = currentStart;
+                                searchStart =
+                                    currentStart.AddMinutes(opr.OffsetMinutes);
 
-                                searchStart = currentStart.AddMinutes(opr.OffsetMinutes);
+                                parallelParentStart = currentStart;
 
                                 insideParallelGroup = true;
                             }
+                            // ============================================================
+                            // Track latest END of parallel group
+                            // ============================================================
+
                             if (opr.OperationType == "Parallel")
                             {
-                                if (parallelGroupEnd == null)
-                                {
-                                    parallelGroupEnd = currentEnd;
-                                }
-                                else if (currentEnd > parallelGroupEnd.Value)
+                                if (parallelGroupEnd == null ||
+                                    currentEnd > parallelGroupEnd.Value)
                                 {
                                     parallelGroupEnd = currentEnd;
                                 }
                             }
-                            bool lastParallel = opr.OperationType == "Parallel" && (next == null || next.OperationType != "Parallel");
-                            if (lastParallel)
+                            // ============================================================
+                            // Finish Parallel Group
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel" &&
+                                parallelGroupEnd != null)
                             {
                                 searchStart = parallelGroupEnd.Value;
 
                                 parallelParentStart = null;
-
                                 parallelGroupEnd = null;
-
                                 insideParallelGroup = false;
                             }
+
+
+                            
 
 
 
@@ -19945,7 +19614,7 @@ namespace CWB.App.Controllers
             //master step 3 fetch those cmps which have makefrom as CMP
             var gettempwolist = await _woService.GetAllTempWo_Wait_List();
 
-            var wowtihstatuscmp = productions.Where(x => x.Status == 3 && x.PartType == 1 && x.For_Ref == 'N' &&x.Freeze==0).OrderBy(x => x.Sim_Seq_No).ToList();///makefrom== child ManufacturedPart
+            var wowtihstatuscmp = productions.Where(x => x.Status == 3 && x.PartType == 1 && x.For_Ref == 'N' &&x.Freeze==0).OrderBy(x => x.Sim_Seq_No).ThenBy(x => x.Calc_Capacity_Reqd).ToList();///makefrom== child ManufacturedPart
             List<ProductionPlan_WoVM> filterListcmp = new List<ProductionPlan_WoVM>();
             foreach (var item in wowtihstatuscmp)
             {
@@ -19980,7 +19649,7 @@ namespace CWB.App.Controllers
                     readyWOs.Add(woResult);
                     DateTime? nextWorkingDate= await GetNextWorkingDate(  wd,  DateTime.Now,  holidayList); 
                     //makepart from input part shoube be of the same parent woid else go for consolidated woid 
-                    var makefromwo = productions.Where(x => x.Status == 3 && x.PartType == 1 && x.For_Ref == 'N' && x.PartId == item.Input_Part_No &&x.ParentWoId==item.ParentWoId).FirstOrDefault();
+                    var makefromwo = productions.Where(x => (x.Status == 3 || x.Status==10) && x.PartType == 1 && x.For_Ref == 'N' && x.PartId == item.Input_Part_No &&x.ParentWoId==item.ParentWoId).FirstOrDefault();
                     if(makefromwo!=null)
                     {
                         var operationwo = gettempwolist.Where(x => x.Wo_Id == makefromwo.WoId).FirstOrDefault();
@@ -20013,631 +19682,221 @@ namespace CWB.App.Controllers
 
                     for (int i = 0; i < routingSteps.Count; i++)
                     {
-
-
                         var current = routingSteps[i];
-                        RoutingStepVM previous = i > 0 ? routingSteps[i - 1] : null;
-                        RoutingStepVM next = i < routingSteps.Count - 1 ? routingSteps[i + 1] : null;
+
+                        RoutingStepVM previous = i > 0
+                            ? routingSteps[i - 1]
+                            : null;
+
+                        RoutingStepVM next = i < routingSteps.Count - 1
+                            ? routingSteps[i + 1]
+                            : null;
+
                         bool isFirst = i == 0;
                         bool isLast = i == routingSteps.Count - 1;
 
-
-                        string operationType = "";
                         bool isSubCon = current.StepLocation == "2";
-                        bool isParallel = !isSubCon && (current.StepNextSequence == 2 || current.StepNextSequence == 3);
-                        bool isSequential = !isSubCon && current.StepNextSequence == 1;
 
+                        bool isParallel = !isSubCon &&
+                                          (current.StepNextSequence == 2 ||
+                                           current.StepNextSequence == 3);
 
-                        if (isFirst)
+                        bool isSequential = !isSubCon &&
+                                            current.StepNextSequence == 1;
+
+                        string operationType;
+
+                        if (isSubCon)
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
-                            var opr = new TempOpr_ListVM
-                            {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
-
-                                if (!machines.Any())
-                                    continue;
-
-                               // double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : machine.NoOfPartsPerLoading;
-
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
-                                        ? 1
-                                        : current.NumberOfSimMachines;
-
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
-
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
-
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
-
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
-
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
-                                }
-
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
-                            }
-
-                            else
-                            {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
-
-                                var preferred = subcons.FirstOrDefault(x => x.PreferredSubcon == 1) ?? subcons.FirstOrDefault();
-
-                                if (preferred == null)
-                                    continue;
-
-                                var ws = await _routingService.SubConWSS((int)current.StepId, preferred.SubConDetailsId);
-
-                               // double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : work.NoOfPartsPerLoading;
-
-                                    totalSetup += setup;
-
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
-                            }
-
-
-
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
-
-
-
+                            operationType = "Subcon";
                         }
-                        else if (isLast)
+                        else if (isParallel)
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
-
-
-                            var opr = new TempOpr_ListVM
-                            {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
-
-
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
-
-                                if (!machines.Any())
-                                    continue;
-
-                              //  double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : machine.NoOfPartsPerLoading;
-
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
-                                        ? 1
-                                        : current.NumberOfSimMachines;
-
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
-
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
-
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
-
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
-
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
-                                }
-
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
-                            }
-
-                            else
-                            {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
-
-                                var preferred = subcons.FirstOrDefault(x => x.PreferredSubcon == 1) ?? subcons.FirstOrDefault();
-
-                                if (preferred == null)
-                                    continue;
-
-                                var ws = await _routingService.SubConWSS((int)current.StepId, preferred.SubConDetailsId);
-
-                                //double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : work.NoOfPartsPerLoading;
-
-                                    totalSetup += setup;
-
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
-                            }
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
-
-
+                            operationType = "Parallel";
                         }
-
+                        else if (isSequential)
+                        {
+                            operationType = "Sequential";
+                        }
                         else
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
+                            operationType = null;
+                        }
 
+                        // ==========================================================
+                        // CREATE OPERATION ONLY ONCE
+                        // ==========================================================
 
-                            var opr = new TempOpr_ListVM
+                        var opr = new TempOpr_ListVM
+                        {
+                            Wo_Id = item.WoId,
+                            Opr_No = current.StepId,
+                            RoutingId = current.RoutingId,
+                            RoutingStepLocation = Convert.ToInt64(current.StepLocation),
+                            RoutingStepSequence = current.StepSequence,
+
+                            Mode = 1,
+                            Rework_Wo = 'N',
+                            NC_Log_Ref = 0,
+
+                            Act_Qnty = 0,
+                            Plan_Qnty = item.PlanWOQnty,
+
+                            No_of_Simult_Mcs = current.NumberOfSimMachines,
+
+                            Initial_Opr_TPT = 0,
+                            RequiredTimeslots = 0,
+                            OffsetMinutes = 0,
+                            ResidenceMinutes = 0,
+
+                            OperationType = operationType
+                        };
+
+                        // ==========================================================
+                        // CALCULATE OPERATION
+                        // ==========================================================
+
+                        if (!isSubCon)
+                        {
+                            var machines =
+                                await _routingService.StepMachines((int)current.StepId);
+
+                            if (!machines.Any())
+                                continue;
+
+                            double maxMinutes = 0;
+                            int maxSlots = 0;
+                            double maxOffset = 0;
+
+                            foreach (var machine in machines)
                             {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
+                                double setup =
+                                    TimeSpan.Parse(machine.SetupTime).TotalMinutes;
 
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
+                                double firstPiece =
+                                    TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
 
-                                if (!machines.Any())
-                                    continue;
+                                double cycle =
+                                    TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
 
-                               // double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
+                                int partsPerLoading =
+                                    machine.NoOfPartsPerLoading <= 0
                                         ? 1
                                         : machine.NoOfPartsPerLoading;
 
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
+                                int simMachines =
+                                    current.NumberOfSimMachines <= 0
                                         ? 1
                                         : current.NumberOfSimMachines;
 
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
+                                double processingMinutes =
+                                    ((double)item.PlanWOQnty / simMachines)
+                                    * (cycle / partsPerLoading);
 
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
+                                double totalMinutes =
+                                    (setup + processingMinutes)
+                                    * (1 + cushionPercent / 100);
 
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
+                                int requiredSlots =
+                                    (int)Math.Ceiling(totalMinutes / 60.0);
 
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
+                                double offsetMinutes =
+                                    Math.Ceiling(
+                                        (setup + firstPiece) / 60.0
+                                    ) * 60;
 
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
+                                if (totalMinutes > maxMinutes)
+                                {
+                                    maxMinutes = totalMinutes;
+                                    maxSlots = requiredSlots;
                                 }
 
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
+                                if (offsetMinutes > maxOffset)
+                                {
+                                    maxOffset = offsetMinutes;
+                                }
                             }
 
-                            else
+                            opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
+                            opr.RequiredTimeslots = maxSlots;
+                            opr.OffsetMinutes = maxOffset;
+                        }
+                        else
+                        {
+                            var subcons =
+                                await _routingService.SubCons((int)current.StepId);
+
+                            var preferred =
+                                subcons.FirstOrDefault(x => x.PreferredSubcon == 1)
+                                ?? subcons.FirstOrDefault();
+
+                            if (preferred == null)
+                                continue;
+
+                            var ws =
+                                await _routingService.SubConWSS(
+                                    (int)current.StepId,
+                                    preferred.SubConDetailsId);
+
+                            double totalSetup = 0;
+                            double totalProcessing = 0;
+
+                            foreach (var work in ws)
                             {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
+                                double setup =
+                                    TimeSpan.Parse(work.SetupTime).TotalMinutes;
 
-                                var preferred = subcons.FirstOrDefault(x => x.PreferredSubcon == 1) ?? subcons.FirstOrDefault();
+                                double cycle =
+                                    TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
 
-                                if (preferred == null)
-                                    continue;
-
-                                var ws = await _routingService.SubConWSS((int)current.StepId, preferred.SubConDetailsId);
-
-                               // double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
+                                int parts =
+                                    work.NoOfPartsPerLoading <= 0
                                         ? 1
                                         : work.NoOfPartsPerLoading;
 
-                                    totalSetup += setup;
+                                totalSetup += setup;
 
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
+                                totalProcessing +=
+                                    ((double)item.PlanWOQnty)
+                                    * (cycle / parts);
                             }
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
+
+                            int travelHours =
+                                Convert.ToInt32(preferred.TransportTime);
+
+                            double travelMinutes =
+                                travelHours * 60;
+
+                            double residenceMinutes =
+                                travelMinutes +
+                                (
+                                    (totalSetup + totalProcessing)
+                                    * (1 + cushionPercent / 100)
+                                );
+
+                            residenceMinutes =
+                                Math.Ceiling(residenceMinutes / 60.0) * 60;
+
+                            opr.Initial_Opr_TPT =
+                                Convert.ToInt32(residenceMinutes);
+
+                            opr.RequiredTimeslots =
+                                (int)Math.Ceiling(residenceMinutes / 60.0);
+
+                            opr.ResidenceMinutes =
+                                residenceMinutes;
                         }
 
+                        // ==========================================================
+                        // POST ONLY ONCE
+                        // ==========================================================
 
-
-
-
+                        var oprResult =
+                            await _woService.PostTempOpr_List(opr);
+                        oprResult.OperationType = opr.OperationType;
+                        oprResult.OffsetMinutes = opr.OffsetMinutes;
+                        oprResult.ResidenceMinutes = opr.ResidenceMinutes;
+                        allOprswo.Add(oprResult);
                     }
 
                     #endregion
@@ -20865,8 +20124,116 @@ namespace CWB.App.Controllers
                         }
                         else
                         {
+                            int currentIndex = operations.IndexOf(opr);
+
+                            var next =
+                                currentIndex < operations.Count - 1
+                                    ? operations[currentIndex + 1]
+                                    : null;
+
+                            var previous =
+                                currentIndex > 0
+                                    ? operations[currentIndex - 1]
+                                    : null;
+
+
+                            // ============================================================
+                            // CASE 1
+                            // Sequential -> Sequential
+                            //
+                            // Op10 Sequential
+                            // Op20 Sequential
+                            //
+                            // Op20 must start after Op10 END.
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Sequential")
+                            {
+                                var previousEndSlot = allTimeslots.First(x =>
+                                    x.Timeslot_ListId == previous.Shop_Plan_end_time);
+
+                                searchStart = previousEndSlot.End_time;
+                            }
+
+
+                            // ============================================================
+                            // CASE 2
+                            // Sequential -> Parallel
+                            //
+                            // Op10 Sequential
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            //
+                            // Parallel group starts based on Op10 start + offset.
+                            // ============================================================
+
+                            //if (opr.OperationType == "Sequential" &&
+                            //    next != null &&
+                            //    next.OperationType == "Parallel")
+                            //{
+                            //    var currentStartSlot = allTimeslots.First(x =>
+                            //        x.Timeslot_ListId == opr.Shop_Plan_start_time);
+
+                            //    DateTime scurrentStart = currentStartSlot.Start_time;
+
+                            //    searchStart =
+                            //        scurrentStart.AddMinutes(opr.OffsetMinutes);
+
+                            //    parallelParentStart = scurrentStart;
+
+                            //    insideParallelGroup = true;
+                            //}
+
+
+                            // ============================================================
+                            // CASE 3
+                            // Parallel -> Parallel
+                            //
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            //
+                            // Op30 starts from Op20 Start + Op20 Offset.
+                            // ============================================================
+
+                            if (opr.OperationType == "Parallel" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel")
+                            {
+                                var previousStartSlot = allTimeslots.First(x =>
+                                    x.Timeslot_ListId == previous.Shop_Plan_start_time);
+
+                                DateTime previousStart =
+                                    previousStartSlot.Start_time;
+
+                                searchStart =
+                                    previousStart.AddMinutes(previous.OffsetMinutes);
+
+                                insideParallelGroup = true;
+                            }
+
+
+                            // ============================================================
+                            // CASE 4
+                            // Parallel -> Sequential
+                            //
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            // Op40 Sequential
+                            //
+                            // Op40 must wait until the LATEST parallel operation ends.
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel" &&
+                                parallelGroupEnd != null)
+                            {
+                                searchStart = parallelGroupEnd.Value;
+                            }
                             int noOfMcs = noOfSimultMcs;
-                            int qtyPerMc = item.CalcWOQty / (noOfMcs > 0 ? noOfMcs : 1);
+                            int qtyPerMc = item.PlanWOQnty / (noOfMcs > 0 ? noOfMcs : 1);
                             var machines = await _routingService.StepMachines((int)opr.Opr_No);
                             List<TempMc_Wait_ListVM> mcWaits = new List<TempMc_Wait_ListVM>();
                             var insttempMCTime = new TempMc_Timeslot_ListVM();
@@ -21084,37 +20451,154 @@ namespace CWB.App.Controllers
                                 //mcWaits.Add(mcWait);
                                 //}
                             }
-                            var selectedMachines = candidates.OrderBy(x => x.AvailableTimeslots.First().Start_time).Take(noOfMcs).ToList();
-                            var selectedMachine = selectedMachines.First();
+                            //var selectedMachines = candidates.OrderBy(x => x.AvailableTimeslots.First().Start_time).Take(noOfMcs).ToList();
+                            //var selectedMachine = selectedMachines.First();
 
-                            var mcWaitnew = new TempMc_Wait_ListVM()
+                            //var mcWaitnew = new TempMc_Wait_ListVM()
+                            //{
+                            //    Wo_Id = item.WoId,
+                            //    Opr_No_Id = opr.Opr_No,
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
+                            //    Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
+                            //    Mode = 1,
+                            //    Plan_Qnty = selectedMachine.QtyPerMc
+                            //};
+
+                            //mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
+                            //var newMcSlot = new TempMc_Timeslot_ListVM()
+                            //{
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
+                            //    Allocation = 2,
+                            //    Slot_Not_Avl = 'N',
+                            //    Not_Avl_reason = 0
+                            //};
+
+                            //insttempMCTime =
+                            //    await _woService.PostTempMc_Timeslot_List(newMcSlot);
+                            //mcWaits.Add(mcWaitnew);
+                            var selectedMachines = candidates
+                               .Where(x => x.AvailableTimeslots != null &&
+                                           x.AvailableTimeslots.Any())
+                               .OrderBy(x => x.AvailableTimeslots.First().Start_time)
+                               .Take(noOfMcs)
+                               .ToList();
+
+                            // We must have enough machines
+                            if (selectedMachines.Count < noOfMcs)
                             {
-                                Wo_Id = item.WoId,
-                                Opr_No_Id = opr.Opr_No,
-                                Mc_Id = selectedMachine.Machine.MachineId,
-                                Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
-                                Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
-                                Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
-                                Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
-                                Mode = 1,
-                                Plan_Qnty = selectedMachine.QtyPerMc
-                            };
+                                // Not enough machines available for simultaneous execution
+                                continue;
+                            }
+                            //int totalQty = item.PlanWOQnty;
+                            //int baseQty = totalQty / selectedMachines.Count;
+                            //int remainder = totalQty % selectedMachines.Count;
 
-                            mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
-                            var newMcSlot = new TempMc_Timeslot_ListVM()
+                            //var mcWaitnew = new TempMc_Wait_ListVM()
+                            //{
+                            //    Wo_Id = item.WoId,
+                            //    Opr_No_Id = opr.Opr_No,
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
+                            //    Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
+                            //    Mode = 1,
+                            //    Plan_Qnty = selectedMachine.QtyPerMc
+                            //};
+
+                            //mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
+                            //var newMcSlot = new TempMc_Timeslot_ListVM()
+                            //{
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
+                            //    Allocation = 2,
+                            //    Slot_Not_Avl = 'N',
+                            //    Not_Avl_reason = 0
+                            //};
+
+                            //insttempMCTime =
+                            //    await _woService.PostTempMc_Timeslot_List(newMcSlot);
+                            //mcWaits.Add(mcWaitnew);
+                            int totalQty = item.CalcWOQty;
+                            int baseQty = totalQty / selectedMachines.Count;
+                            int remainder = totalQty % selectedMachines.Count;
+
+                            int machineIndex = 0;
+
+                            foreach (var selectedMachine in selectedMachines)
                             {
-                                Mc_Id = selectedMachine.Machine.MachineId,
-                                Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
-                                EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
-                                Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
-                                Allocation = 2,
-                                Slot_Not_Avl = 'N',
-                                Not_Avl_reason = 0
-                            };
+                                await CheckPauseAsync();
 
-                            insttempMCTime =
+                                // -----------------------------------------
+                                // Quantity for this machine
+                                // -----------------------------------------
+                                int machineQty = baseQty;
+
+                                if (machineIndex < remainder)
+                                {
+                                    machineQty++;
+                                }
+
+                                // -----------------------------------------
+                                // Create Machine Wait
+                                // -----------------------------------------
+                                var mcWaitnew = new TempMc_Wait_ListVM
+                                {
+                                    Wo_Id = item.WoId,
+                                    Opr_No_Id = opr.Opr_No,
+
+                                    Mc_Id = selectedMachine.Machine.MachineId,
+
+                                    Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
+
+                                    Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+
+                                    Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+
+                                    Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
+
+                                    Mode = 1,
+
+                                    Plan_Qnty = machineQty
+                                };
+
+                                mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
+
+                                // -----------------------------------------
+                                // Allocate machine timeslot
+                                // -----------------------------------------
+                                var newMcSlot = new TempMc_Timeslot_ListVM
+                                {
+                                    Mc_Id = selectedMachine.Machine.MachineId,
+
+                                    Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+
+                                    EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+
+                                    Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
+
+                                    Allocation = 2,
+
+                                    Slot_Not_Avl = 'N',
+
+                                    Not_Avl_reason = 0
+                                };
+
                                 await _woService.PostTempMc_Timeslot_List(newMcSlot);
-                            mcWaits.Add(mcWaitnew);
+
+                                // Keep it for Opr_List aggregation
+                                mcWaits.Add(mcWaitnew);
+
+                                machineIndex++;
+                            }
 
                             // Update Opr_List with aggregated info
                             if (!mcWaits.Any())
@@ -21132,40 +20616,43 @@ namespace CWB.App.Controllers
                             DateTime currentStart = startSlot.Start_time;
 
                             DateTime currentEnd = endSlot.End_time;
-                            int currentIndex = operations.IndexOf(opr);
 
-                            var next = currentIndex < operations.Count - 1 ? operations[currentIndex + 1] : null;
-
-                            searchStart = currentEnd;
-
-                            if (next != null && next.OperationType == "Parallel")
+                            if (opr.OperationType == "Sequential" &&
+ next != null &&
+ next.OperationType == "Parallel")
                             {
-                                parallelParentStart = currentStart;
+                                searchStart =
+                                    currentStart.AddMinutes(opr.OffsetMinutes);
 
-                                searchStart = currentStart.AddMinutes(opr.OffsetMinutes);
+                                parallelParentStart = currentStart;
 
                                 insideParallelGroup = true;
                             }
+                            // ============================================================
+                            // Track latest END of parallel group
+                            // ============================================================
+
                             if (opr.OperationType == "Parallel")
                             {
-                                if (parallelGroupEnd == null)
-                                {
-                                    parallelGroupEnd = currentEnd;
-                                }
-                                else if (currentEnd > parallelGroupEnd.Value)
+                                if (parallelGroupEnd == null ||
+                                    currentEnd > parallelGroupEnd.Value)
                                 {
                                     parallelGroupEnd = currentEnd;
                                 }
                             }
-                            bool lastParallel = opr.OperationType == "Parallel" && (next == null || next.OperationType != "Parallel");
-                            if (lastParallel)
+                            // ============================================================
+                            // Finish Parallel Group
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel" &&
+                                parallelGroupEnd != null)
                             {
                                 searchStart = parallelGroupEnd.Value;
 
                                 parallelParentStart = null;
-
                                 parallelGroupEnd = null;
-
                                 insideParallelGroup = false;
                             }
 
@@ -21286,7 +20773,8 @@ namespace CWB.App.Controllers
             //master step4 fetch those assemblies which are not sold to customer i.e subassemblies
             var gettempwosubbomlist = await _woService.GetAllTempWo_Wait_List();
             productions = await _woService.AllProductionPlan_Wo();
-            var subassemblies = productions.Where(x => x.Status == 3 && x.PartType == 2 && x.For_Ref == 'N' && x.Freeze == 0 && x.Parentlevel == 'N').OrderByDescending(x => x.WOLevel).ToList();
+            var subassemblies = productions.Where(x => x.Status == 3 && x.PartType == 2 && x.For_Ref == 'N' && x.Freeze == 0 && x.Parentlevel == 'N').OrderBy(x => x.Sim_Seq_No)
+    .ThenByDescending(x => x.WOLevel).ThenBy(x => x.Calc_Capacity_Reqd).ToList();
             if(subassemblies.Any())
             {
                 List<TempWO_Wait_ListVM> readyWOs = new List<TempWO_Wait_ListVM>();
@@ -21469,631 +20957,221 @@ namespace CWB.App.Controllers
 
                     for (int i = 0; i < routingSteps.Count; i++)
                     {
-
-
                         var current = routingSteps[i];
-                        RoutingStepVM previous = i > 0 ? routingSteps[i - 1] : null;
-                        RoutingStepVM next = i < routingSteps.Count - 1 ? routingSteps[i + 1] : null;
+
+                        RoutingStepVM previous = i > 0
+                            ? routingSteps[i - 1]
+                            : null;
+
+                        RoutingStepVM next = i < routingSteps.Count - 1
+                            ? routingSteps[i + 1]
+                            : null;
+
                         bool isFirst = i == 0;
                         bool isLast = i == routingSteps.Count - 1;
 
-
-                        string operationType = "";
                         bool isSubCon = current.StepLocation == "2";
-                        bool isParallel = !isSubCon && (current.StepNextSequence == 2 || current.StepNextSequence == 3);
-                        bool isSequential = !isSubCon && current.StepNextSequence == 1;
 
+                        bool isParallel = !isSubCon &&
+                                          (current.StepNextSequence == 2 ||
+                                           current.StepNextSequence == 3);
 
-                        if (isFirst)
+                        bool isSequential = !isSubCon &&
+                                            current.StepNextSequence == 1;
+
+                        string operationType;
+
+                        if (isSubCon)
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
-                            var opr = new TempOpr_ListVM
-                            {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
-
-                                if (!machines.Any())
-                                    continue;
-
-                               // double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : machine.NoOfPartsPerLoading;
-
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
-                                        ? 1
-                                        : current.NumberOfSimMachines;
-
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
-
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
-
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
-
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
-
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
-                                }
-
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
-                            }
-
-                            else
-                            {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
-
-                                var preferred = subcons.FirstOrDefault(x => x.PreferredSubcon == 1) ?? subcons.FirstOrDefault();
-
-                                if (preferred == null)
-                                    continue;
-
-                                var ws = await _routingService.SubConWSS((int)current.StepId, preferred.SubConDetailsId);
-
-                                //double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : work.NoOfPartsPerLoading;
-
-                                    totalSetup += setup;
-
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
-                            }
-
-
-
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
-
-
-
+                            operationType = "Subcon";
                         }
-                        else if (isLast)
+                        else if (isParallel)
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
-
-
-                            var opr = new TempOpr_ListVM
-                            {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
-
-
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
-
-                                if (!machines.Any())
-                                    continue;
-
-                               // double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : machine.NoOfPartsPerLoading;
-
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
-                                        ? 1
-                                        : current.NumberOfSimMachines;
-
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
-
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
-
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
-
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
-
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
-                                }
-
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
-                            }
-
-                            else
-                            {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
-
-                                var preferred = subcons.FirstOrDefault(x => x.PreferredSubcon == 1) ?? subcons.FirstOrDefault();
-
-                                if (preferred == null)
-                                    continue;
-
-                                var ws = await _routingService.SubConWSS((int)current.StepId, preferred.SubConDetailsId);
-
-                              //  double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : work.NoOfPartsPerLoading;
-
-                                    totalSetup += setup;
-
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
-                            }
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
-
-
+                            operationType = "Parallel";
                         }
-
+                        else if (isSequential)
+                        {
+                            operationType = "Sequential";
+                        }
                         else
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
+                            operationType = null;
+                        }
 
+                        // ==========================================================
+                        // CREATE OPERATION ONLY ONCE
+                        // ==========================================================
 
-                            var opr = new TempOpr_ListVM
+                        var opr = new TempOpr_ListVM
+                        {
+                            Wo_Id = item.WoId,
+                            Opr_No = current.StepId,
+                            RoutingId = current.RoutingId,
+                            RoutingStepLocation = Convert.ToInt64(current.StepLocation),
+                            RoutingStepSequence = current.StepSequence,
+
+                            Mode = 1,
+                            Rework_Wo = 'N',
+                            NC_Log_Ref = 0,
+
+                            Act_Qnty = 0,
+                            Plan_Qnty = item.PlanWOQnty,
+
+                            No_of_Simult_Mcs = current.NumberOfSimMachines,
+
+                            Initial_Opr_TPT = 0,
+                            RequiredTimeslots = 0,
+                            OffsetMinutes = 0,
+                            ResidenceMinutes = 0,
+
+                            OperationType = operationType
+                        };
+
+                        // ==========================================================
+                        // CALCULATE OPERATION
+                        // ==========================================================
+
+                        if (!isSubCon)
+                        {
+                            var machines =
+                                await _routingService.StepMachines((int)current.StepId);
+
+                            if (!machines.Any())
+                                continue;
+
+                            double maxMinutes = 0;
+                            int maxSlots = 0;
+                            double maxOffset = 0;
+
+                            foreach (var machine in machines)
                             {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
+                                double setup =
+                                    TimeSpan.Parse(machine.SetupTime).TotalMinutes;
 
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
+                                double firstPiece =
+                                    TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
 
-                                if (!machines.Any())
-                                    continue;
+                                double cycle =
+                                    TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
 
-                               // double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
+                                int partsPerLoading =
+                                    machine.NoOfPartsPerLoading <= 0
                                         ? 1
                                         : machine.NoOfPartsPerLoading;
 
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
+                                int simMachines =
+                                    current.NumberOfSimMachines <= 0
                                         ? 1
                                         : current.NumberOfSimMachines;
 
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
+                                double processingMinutes =
+                                    ((double)item.PlanWOQnty / simMachines)
+                                    * (cycle / partsPerLoading);
 
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
+                                double totalMinutes =
+                                    (setup + processingMinutes)
+                                    * (1 + cushionPercent / 100);
 
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
+                                int requiredSlots =
+                                    (int)Math.Ceiling(totalMinutes / 60.0);
 
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
+                                double offsetMinutes =
+                                    Math.Ceiling(
+                                        (setup + firstPiece) / 60.0
+                                    ) * 60;
 
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
+                                if (totalMinutes > maxMinutes)
+                                {
+                                    maxMinutes = totalMinutes;
+                                    maxSlots = requiredSlots;
                                 }
 
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
+                                if (offsetMinutes > maxOffset)
+                                {
+                                    maxOffset = offsetMinutes;
+                                }
                             }
 
-                            else
+                            opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
+                            opr.RequiredTimeslots = maxSlots;
+                            opr.OffsetMinutes = maxOffset;
+                        }
+                        else
+                        {
+                            var subcons =
+                                await _routingService.SubCons((int)current.StepId);
+
+                            var preferred =
+                                subcons.FirstOrDefault(x => x.PreferredSubcon == 1)
+                                ?? subcons.FirstOrDefault();
+
+                            if (preferred == null)
+                                continue;
+
+                            var ws =
+                                await _routingService.SubConWSS(
+                                    (int)current.StepId,
+                                    preferred.SubConDetailsId);
+
+                            double totalSetup = 0;
+                            double totalProcessing = 0;
+
+                            foreach (var work in ws)
                             {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
+                                double setup =
+                                    TimeSpan.Parse(work.SetupTime).TotalMinutes;
 
-                                var preferred = subcons.FirstOrDefault(x => x.PreferredSubcon == 1) ?? subcons.FirstOrDefault();
+                                double cycle =
+                                    TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
 
-                                if (preferred == null)
-                                    continue;
-
-                                var ws = await _routingService.SubConWSS((int)current.StepId, preferred.SubConDetailsId);
-
-                                //double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
+                                int parts =
+                                    work.NoOfPartsPerLoading <= 0
                                         ? 1
                                         : work.NoOfPartsPerLoading;
 
-                                    totalSetup += setup;
+                                totalSetup += setup;
 
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
+                                totalProcessing +=
+                                    ((double)item.PlanWOQnty)
+                                    * (cycle / parts);
                             }
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
+
+                            int travelHours =
+                                Convert.ToInt32(preferred.TransportTime);
+
+                            double travelMinutes =
+                                travelHours * 60;
+
+                            double residenceMinutes =
+                                travelMinutes +
+                                (
+                                    (totalSetup + totalProcessing)
+                                    * (1 + cushionPercent / 100)
+                                );
+
+                            residenceMinutes =
+                                Math.Ceiling(residenceMinutes / 60.0) * 60;
+
+                            opr.Initial_Opr_TPT =
+                                Convert.ToInt32(residenceMinutes);
+
+                            opr.RequiredTimeslots =
+                                (int)Math.Ceiling(residenceMinutes / 60.0);
+
+                            opr.ResidenceMinutes =
+                                residenceMinutes;
                         }
 
+                        // ==========================================================
+                        // POST ONLY ONCE
+                        // ==========================================================
 
-
-
-
+                        var oprResult =
+                            await _woService.PostTempOpr_List(opr);
+                        oprResult.OperationType = opr.OperationType;
+                        oprResult.OffsetMinutes = opr.OffsetMinutes;
+                        oprResult.ResidenceMinutes = opr.ResidenceMinutes;
+                        allOprswo.Add(oprResult);
                     }
 
                     #endregion
@@ -22304,6 +21382,114 @@ namespace CWB.App.Controllers
                         }
                         else
                         {
+                            int currentIndex = operations.IndexOf(opr);
+
+                            var next =
+                                currentIndex < operations.Count - 1
+                                    ? operations[currentIndex + 1]
+                                    : null;
+
+                            var previous =
+                                currentIndex > 0
+                                    ? operations[currentIndex - 1]
+                                    : null;
+
+
+                            // ============================================================
+                            // CASE 1
+                            // Sequential -> Sequential
+                            //
+                            // Op10 Sequential
+                            // Op20 Sequential
+                            //
+                            // Op20 must start after Op10 END.
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Sequential")
+                            {
+                                var previousEndSlot = allTimeslots.First(x =>
+                                    x.Timeslot_ListId == previous.Shop_Plan_end_time);
+
+                                searchStart = previousEndSlot.End_time;
+                            }
+
+
+                            // ============================================================
+                            // CASE 2
+                            // Sequential -> Parallel
+                            //
+                            // Op10 Sequential
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            //
+                            // Parallel group starts based on Op10 start + offset.
+                            // ============================================================
+
+                            //if (opr.OperationType == "Sequential" &&
+                            //    next != null &&
+                            //    next.OperationType == "Parallel")
+                            //{
+                            //    var currentStartSlot = allTimeslots.First(x =>
+                            //        x.Timeslot_ListId == opr.Shop_Plan_start_time);
+
+                            //    DateTime scurrentStart = currentStartSlot.Start_time;
+
+                            //    searchStart =
+                            //        scurrentStart.AddMinutes(opr.OffsetMinutes);
+
+                            //    parallelParentStart = scurrentStart;
+
+                            //    insideParallelGroup = true;
+                            //}
+
+
+                            // ============================================================
+                            // CASE 3
+                            // Parallel -> Parallel
+                            //
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            //
+                            // Op30 starts from Op20 Start + Op20 Offset.
+                            // ============================================================
+
+                            if (opr.OperationType == "Parallel" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel")
+                            {
+                                var previousStartSlot = allTimeslots.First(x =>
+                                    x.Timeslot_ListId == previous.Shop_Plan_start_time);
+
+                                DateTime previousStart =
+                                    previousStartSlot.Start_time;
+
+                                searchStart =
+                                    previousStart.AddMinutes(previous.OffsetMinutes);
+
+                                insideParallelGroup = true;
+                            }
+
+
+                            // ============================================================
+                            // CASE 4
+                            // Parallel -> Sequential
+                            //
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            // Op40 Sequential
+                            //
+                            // Op40 must wait until the LATEST parallel operation ends.
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel" &&
+                                parallelGroupEnd != null)
+                            {
+                                searchStart = parallelGroupEnd.Value;
+                            }
                             int noOfMcs = noOfSimultMcs;
                             int qtyPerMc = item.CalcWOQty / (noOfMcs > 0 ? noOfMcs : 1);
                             var machines = await _routingService.StepMachines((int)opr.Opr_No);
@@ -22522,37 +21708,154 @@ namespace CWB.App.Controllers
                                 //mcWaits.Add(mcWait);
                                 //}
                             }
-                            var selectedMachines = candidates.OrderBy(x => x.AvailableTimeslots.First().Start_time).Take(noOfMcs).ToList();
-                            var selectedMachine = selectedMachines.First();
+                            //var selectedMachines = candidates.OrderBy(x => x.AvailableTimeslots.First().Start_time).Take(noOfMcs).ToList();
+                            //var selectedMachine = selectedMachines.First();
 
-                            var mcWaitnew = new TempMc_Wait_ListVM()
+                            //var mcWaitnew = new TempMc_Wait_ListVM()
+                            //{
+                            //    Wo_Id = item.WoId,
+                            //    Opr_No_Id = opr.Opr_No,
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
+                            //    Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
+                            //    Mode = 1,
+                            //    Plan_Qnty = selectedMachine.QtyPerMc
+                            //};
+
+                            //mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
+                            //var newMcSlot = new TempMc_Timeslot_ListVM()
+                            //{
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
+                            //    Allocation = 2,
+                            //    Slot_Not_Avl = 'N',
+                            //    Not_Avl_reason = 0
+                            //};
+
+                            //insttempMCTime =
+                            //    await _woService.PostTempMc_Timeslot_List(newMcSlot);
+                            //mcWaits.Add(mcWaitnew);
+                            var selectedMachines = candidates
+                               .Where(x => x.AvailableTimeslots != null &&
+                                           x.AvailableTimeslots.Any())
+                               .OrderBy(x => x.AvailableTimeslots.First().Start_time)
+                               .Take(noOfMcs)
+                               .ToList();
+
+                            // We must have enough machines
+                            if (selectedMachines.Count < noOfMcs)
                             {
-                                Wo_Id = item.WoId,
-                                Opr_No_Id = opr.Opr_No,
-                                Mc_Id = selectedMachine.Machine.MachineId,
-                                Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
-                                Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
-                                Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
-                                Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
-                                Mode = 1,
-                                Plan_Qnty = selectedMachine.QtyPerMc
-                            };
+                                // Not enough machines available for simultaneous execution
+                                continue;
+                            }
+                            //int totalQty = item.PlanWOQnty;
+                            //int baseQty = totalQty / selectedMachines.Count;
+                            //int remainder = totalQty % selectedMachines.Count;
 
-                            mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
-                            var newMcSlot = new TempMc_Timeslot_ListVM()
+                            //var mcWaitnew = new TempMc_Wait_ListVM()
+                            //{
+                            //    Wo_Id = item.WoId,
+                            //    Opr_No_Id = opr.Opr_No,
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
+                            //    Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
+                            //    Mode = 1,
+                            //    Plan_Qnty = selectedMachine.QtyPerMc
+                            //};
+
+                            //mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
+                            //var newMcSlot = new TempMc_Timeslot_ListVM()
+                            //{
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
+                            //    Allocation = 2,
+                            //    Slot_Not_Avl = 'N',
+                            //    Not_Avl_reason = 0
+                            //};
+
+                            //insttempMCTime =
+                            //    await _woService.PostTempMc_Timeslot_List(newMcSlot);
+                            //mcWaits.Add(mcWaitnew);
+                            int totalQty = item.CalcWOQty;
+                            int baseQty = totalQty / selectedMachines.Count;
+                            int remainder = totalQty % selectedMachines.Count;
+
+                            int machineIndex = 0;
+
+                            foreach (var selectedMachine in selectedMachines)
                             {
-                                Mc_Id = selectedMachine.Machine.MachineId,
-                                Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
-                                EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
-                                Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
-                                Allocation = 2,
-                                Slot_Not_Avl = 'N',
-                                Not_Avl_reason = 0
-                            };
+                                await CheckPauseAsync();
 
-                            insttempMCTime =
+                                // -----------------------------------------
+                                // Quantity for this machine
+                                // -----------------------------------------
+                                int machineQty = baseQty;
+
+                                if (machineIndex < remainder)
+                                {
+                                    machineQty++;
+                                }
+
+                                // -----------------------------------------
+                                // Create Machine Wait
+                                // -----------------------------------------
+                                var mcWaitnew = new TempMc_Wait_ListVM
+                                {
+                                    Wo_Id = item.WoId,
+                                    Opr_No_Id = opr.Opr_No,
+
+                                    Mc_Id = selectedMachine.Machine.MachineId,
+
+                                    Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
+
+                                    Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+
+                                    Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+
+                                    Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
+
+                                    Mode = 1,
+
+                                    Plan_Qnty = machineQty
+                                };
+
+                                mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
+
+                                // -----------------------------------------
+                                // Allocate machine timeslot
+                                // -----------------------------------------
+                                var newMcSlot = new TempMc_Timeslot_ListVM
+                                {
+                                    Mc_Id = selectedMachine.Machine.MachineId,
+
+                                    Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+
+                                    EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+
+                                    Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
+
+                                    Allocation = 2,
+
+                                    Slot_Not_Avl = 'N',
+
+                                    Not_Avl_reason = 0
+                                };
+
                                 await _woService.PostTempMc_Timeslot_List(newMcSlot);
-                            mcWaits.Add(mcWaitnew);
+
+                                // Keep it for Opr_List aggregation
+                                mcWaits.Add(mcWaitnew);
+
+                                machineIndex++;
+                            }
 
                             // Update Opr_List with aggregated info
                             if (!mcWaits.Any())
@@ -22570,40 +21873,43 @@ namespace CWB.App.Controllers
                             DateTime currentStart = startSlot.Start_time;
 
                             DateTime currentEnd = endSlot.End_time;
-                            int currentIndex = operations.IndexOf(opr);
 
-                            var next = currentIndex < operations.Count - 1 ? operations[currentIndex + 1] : null;
-
-                            searchStart = currentEnd;
-
-                            if (next != null && next.OperationType == "Parallel")
+                            if (opr.OperationType == "Sequential" &&
+  next != null &&
+  next.OperationType == "Parallel")
                             {
-                                parallelParentStart = currentStart;
+                                searchStart =
+                                    currentStart.AddMinutes(opr.OffsetMinutes);
 
-                                searchStart = currentStart.AddMinutes(opr.OffsetMinutes);
+                                parallelParentStart = currentStart;
 
                                 insideParallelGroup = true;
                             }
+                            // ============================================================
+                            // Track latest END of parallel group
+                            // ============================================================
+
                             if (opr.OperationType == "Parallel")
                             {
-                                if (parallelGroupEnd == null)
-                                {
-                                    parallelGroupEnd = currentEnd;
-                                }
-                                else if (currentEnd > parallelGroupEnd.Value)
+                                if (parallelGroupEnd == null ||
+                                    currentEnd > parallelGroupEnd.Value)
                                 {
                                     parallelGroupEnd = currentEnd;
                                 }
                             }
-                            bool lastParallel = opr.OperationType == "Parallel" && (next == null || next.OperationType != "Parallel");
-                            if (lastParallel)
+                            // ============================================================
+                            // Finish Parallel Group
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel" &&
+                                parallelGroupEnd != null)
                             {
                                 searchStart = parallelGroupEnd.Value;
 
                                 parallelParentStart = null;
-
                                 parallelGroupEnd = null;
-
                                 insideParallelGroup = false;
                             }
 
@@ -22707,7 +22013,7 @@ namespace CWB.App.Controllers
             var gettempwobomlist = await _woService.GetAllTempWo_Wait_List();
             productions = await _woService.AllProductionPlan_Wo();
             var parentassemblies = productions.Where(x =>   x.Status == 3 &&   x.PartType == 2 &&  x.For_Ref == 'N' &&  
-            x.Freeze == 0 && x.Parentlevel == 'Y') .OrderByDescending(x => x.WOLevel).ToList();
+            x.Freeze == 0 && x.Parentlevel == 'Y') .OrderByDescending(x => x.WOLevel).ThenBy(x => x.Calc_Capacity_Reqd).ToList();
             if(parentassemblies.Any())
             {
                 List<TempWO_Wait_ListVM> readyWOs = new List<TempWO_Wait_ListVM>();
@@ -22885,631 +22191,221 @@ namespace CWB.App.Controllers
 
                     for (int i = 0; i < routingSteps.Count; i++)
                     {
-
-
                         var current = routingSteps[i];
-                        RoutingStepVM previous = i > 0 ? routingSteps[i - 1] : null;
-                        RoutingStepVM next = i < routingSteps.Count - 1 ? routingSteps[i + 1] : null;
+
+                        RoutingStepVM previous = i > 0
+                            ? routingSteps[i - 1]
+                            : null;
+
+                        RoutingStepVM next = i < routingSteps.Count - 1
+                            ? routingSteps[i + 1]
+                            : null;
+
                         bool isFirst = i == 0;
                         bool isLast = i == routingSteps.Count - 1;
 
-
-                        string operationType = "";
                         bool isSubCon = current.StepLocation == "2";
-                        bool isParallel = !isSubCon && (current.StepNextSequence == 2 || current.StepNextSequence == 3);
-                        bool isSequential = !isSubCon && current.StepNextSequence == 1;
 
+                        bool isParallel = !isSubCon &&
+                                          (current.StepNextSequence == 2 ||
+                                           current.StepNextSequence == 3);
 
-                        if (isFirst)
+                        bool isSequential = !isSubCon &&
+                                            current.StepNextSequence == 1;
+
+                        string operationType;
+
+                        if (isSubCon)
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
-                            var opr = new TempOpr_ListVM
-                            {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
-
-                                if (!machines.Any())
-                                    continue;
-
-                               // double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : machine.NoOfPartsPerLoading;
-
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
-                                        ? 1
-                                        : current.NumberOfSimMachines;
-
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
-
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
-
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
-
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
-
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
-                                }
-
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
-                            }
-
-                            else
-                            {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
-
-                                var preferred = subcons.FirstOrDefault(x => x.PreferredSubcon == 1) ?? subcons.FirstOrDefault();
-
-                                if (preferred == null)
-                                    continue;
-
-                                var ws = await _routingService.SubConWSS((int)current.StepId, preferred.SubConDetailsId);
-
-                                //double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : work.NoOfPartsPerLoading;
-
-                                    totalSetup += setup;
-
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
-                            }
-
-
-
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
-
-
-
+                            operationType = "Subcon";
                         }
-                        else if (isLast)
+                        else if (isParallel)
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
-
-
-                            var opr = new TempOpr_ListVM
-                            {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
-
-
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
-
-                                if (!machines.Any())
-                                    continue;
-
-                               // double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : machine.NoOfPartsPerLoading;
-
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
-                                        ? 1
-                                        : current.NumberOfSimMachines;
-
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
-
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
-
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
-
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
-
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
-                                }
-
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
-                            }
-
-                            else
-                            {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
-
-                                var preferred = subcons.FirstOrDefault(x => x.PreferredSubcon == 1) ?? subcons.FirstOrDefault();
-
-                                if (preferred == null)
-                                    continue;
-
-                                var ws = await _routingService.SubConWSS((int)current.StepId, preferred.SubConDetailsId);
-
-                               // double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
-                                        ? 1
-                                        : work.NoOfPartsPerLoading;
-
-                                    totalSetup += setup;
-
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
-                            }
-
-
-
-
-
-
-
-
-
-
-
-
-
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
-
-
+                            operationType = "Parallel";
                         }
-
+                        else if (isSequential)
+                        {
+                            operationType = "Sequential";
+                        }
                         else
                         {
-                            if (isSubCon)
-                                operationType = "Subcon";
-                            else if (isParallel)
-                                operationType = "Parallel";
-                            else if (isSequential)
-                                operationType = "Sequential";
+                            operationType = null;
+                        }
 
+                        // ==========================================================
+                        // CREATE OPERATION ONLY ONCE
+                        // ==========================================================
 
-                            var opr = new TempOpr_ListVM
+                        var opr = new TempOpr_ListVM
+                        {
+                            Wo_Id = item.WoId,
+                            Opr_No = current.StepId,
+                            RoutingId = current.RoutingId,
+                            RoutingStepLocation = Convert.ToInt64(current.StepLocation),
+                            RoutingStepSequence = current.StepSequence,
+
+                            Mode = 1,
+                            Rework_Wo = 'N',
+                            NC_Log_Ref = 0,
+
+                            Act_Qnty = 0,
+                            Plan_Qnty = item.PlanWOQnty,
+
+                            No_of_Simult_Mcs = current.NumberOfSimMachines,
+
+                            Initial_Opr_TPT = 0,
+                            RequiredTimeslots = 0,
+                            OffsetMinutes = 0,
+                            ResidenceMinutes = 0,
+
+                            OperationType = operationType
+                        };
+
+                        // ==========================================================
+                        // CALCULATE OPERATION
+                        // ==========================================================
+
+                        if (!isSubCon)
+                        {
+                            var machines =
+                                await _routingService.StepMachines((int)current.StepId);
+
+                            if (!machines.Any())
+                                continue;
+
+                            double maxMinutes = 0;
+                            int maxSlots = 0;
+                            double maxOffset = 0;
+
+                            foreach (var machine in machines)
                             {
-                                Wo_Id = item.WoId,
-                                Opr_No = current.StepId,
-                                RoutingId = current.RoutingId,
-                                RoutingStepLocation = Convert.ToInt64(current.StepLocation),
-                                RoutingStepSequence = current.StepSequence,
-                                Mode = 1,
-                                Rework_Wo = 'N',
-                                NC_Log_Ref = 0,
-                                Act_Qnty = 0,
-                                Plan_Qnty = item.PlanWOQnty,
-                                No_of_Simult_Mcs = current.NumberOfSimMachines,
-                                Initial_Opr_TPT = 0,
-                                RequiredTimeslots = 0,
-                                OffsetMinutes = 0,
-                                ResidenceMinutes = 0,
-                                OperationType = operationType
-                            };
+                                double setup =
+                                    TimeSpan.Parse(machine.SetupTime).TotalMinutes;
 
-                            if (!isSubCon)
-                            {
-                                var machines = await _routingService.StepMachines((int)current.StepId);
+                                double firstPiece =
+                                    TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
 
-                                if (!machines.Any())
-                                    continue;
+                                double cycle =
+                                    TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
 
-                                //double cushionPercent = 10; // TODO: Get from Settings
-
-                                double maxMinutes = 0;
-                                int maxSlots = 0;
-                                double maxOffset = 0;
-
-                                foreach (var machine in machines)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(machine.SetupTime).TotalMinutes;
-
-                                    double firstPiece =
-                                        TimeSpan.Parse(machine.FirstPieceProcessingTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(machine.FloorToFloorTime).TotalMinutes;
-
-                                    int partsPerLoading =
-                                        machine.NoOfPartsPerLoading <= 0
+                                int partsPerLoading =
+                                    machine.NoOfPartsPerLoading <= 0
                                         ? 1
                                         : machine.NoOfPartsPerLoading;
 
-                                    int simMachines =
-                                        current.NumberOfSimMachines <= 0
+                                int simMachines =
+                                    current.NumberOfSimMachines <= 0
                                         ? 1
                                         : current.NumberOfSimMachines;
 
-                                    //------------------------------------------
-                                    // Processing Time
-                                    //------------------------------------------
+                                double processingMinutes =
+                                    ((double)item.PlanWOQnty / simMachines)
+                                    * (cycle / partsPerLoading);
 
-                                    double processingMinutes =
-                                        ((double)item.PlanWOQnty / simMachines)
-                                        * (cycle / partsPerLoading);
+                                double totalMinutes =
+                                    (setup + processingMinutes)
+                                    * (1 + cushionPercent / 100);
 
-                                    //------------------------------------------
-                                    // Total Time
-                                    //------------------------------------------
+                                int requiredSlots =
+                                    (int)Math.Ceiling(totalMinutes / 60.0);
 
-                                    double totalMinutes =
-                                        (setup + processingMinutes)
-                                        * (1 + cushionPercent / 100);
+                                double offsetMinutes =
+                                    Math.Ceiling(
+                                        (setup + firstPiece) / 60.0
+                                    ) * 60;
 
-                                    //------------------------------------------
-                                    // Required Slots
-                                    //------------------------------------------
-
-                                    int requiredSlots =
-                                        (int)Math.Ceiling(totalMinutes / 60.0);
-
-                                    //------------------------------------------
-                                    // Parallel Offset
-                                    //------------------------------------------
-
-                                    double offsetMinutes =
-                                        Math.Ceiling((setup + firstPiece) / 60.0) * 60;
-
-                                    //------------------------------------------
-                                    // Keep Maximum
-                                    //------------------------------------------
-
-                                    if (totalMinutes > maxMinutes)
-                                    {
-                                        maxMinutes = totalMinutes;
-                                        maxSlots = requiredSlots;
-                                    }
-
-                                    if (offsetMinutes > maxOffset)
-                                    {
-                                        maxOffset = offsetMinutes;
-                                    }
+                                if (totalMinutes > maxMinutes)
+                                {
+                                    maxMinutes = totalMinutes;
+                                    maxSlots = requiredSlots;
                                 }
 
-                                //------------------------------------------
-                                // Save into TempOpr
-                                //------------------------------------------
-
-                                opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
-
-                                opr.RequiredTimeslots = maxSlots;
-
-                                opr.OffsetMinutes = maxOffset;
+                                if (offsetMinutes > maxOffset)
+                                {
+                                    maxOffset = offsetMinutes;
+                                }
                             }
 
-                            else
+                            opr.Initial_Opr_TPT = Convert.ToInt32(maxMinutes);
+                            opr.RequiredTimeslots = maxSlots;
+                            opr.OffsetMinutes = maxOffset;
+                        }
+                        else
+                        {
+                            var subcons =
+                                await _routingService.SubCons((int)current.StepId);
+
+                            var preferred =
+                                subcons.FirstOrDefault(x => x.PreferredSubcon == 1)
+                                ?? subcons.FirstOrDefault();
+
+                            if (preferred == null)
+                                continue;
+
+                            var ws =
+                                await _routingService.SubConWSS(
+                                    (int)current.StepId,
+                                    preferred.SubConDetailsId);
+
+                            double totalSetup = 0;
+                            double totalProcessing = 0;
+
+                            foreach (var work in ws)
                             {
-                                var subcons =
-                                    await _routingService.SubCons((int)current.StepId);
+                                double setup =
+                                    TimeSpan.Parse(work.SetupTime).TotalMinutes;
 
-                                var preferred = subcons.FirstOrDefault(x => x.PreferredSubcon == 1) ?? subcons.FirstOrDefault();
+                                double cycle =
+                                    TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
 
-                                if (preferred == null)
-                                    continue;
-
-                                var ws = await _routingService.SubConWSS((int)current.StepId, preferred.SubConDetailsId);
-
-                                //double cushionPercent = 10;
-
-                                double totalSetup = 0;
-                                double totalProcessing = 0;
-
-                                foreach (var work in ws)
-                                {
-                                    double setup =
-                                        TimeSpan.Parse(work.SetupTime).TotalMinutes;
-
-                                    double cycle =
-                                        TimeSpan.Parse(work.FloorToFloorTime).TotalMinutes;
-
-                                    int parts =
-                                        work.NoOfPartsPerLoading <= 0
+                                int parts =
+                                    work.NoOfPartsPerLoading <= 0
                                         ? 1
                                         : work.NoOfPartsPerLoading;
 
-                                    totalSetup += setup;
+                                totalSetup += setup;
 
-                                    totalProcessing +=
-                                        ((double)item.PlanWOQnty)
-                                        * (cycle / parts);
-                                }
-
-                                //-----------------------------------
-                                // Travel Time
-                                //-----------------------------------
-
-                                int travelHours = Convert.ToInt32(preferred.TransportTime);
-                                double travelMinutes = travelHours * 60;
-
-                                //-----------------------------------
-                                // Residence Time
-                                //-----------------------------------
-
-                                double residenceMinutes =
-                                    travelMinutes +
-                                    (
-                                        (totalSetup + totalProcessing)
-                                        * (1 + cushionPercent / 100)
-                                    );
-
-                                //-----------------------------------
-                                // Round to Next Hour
-                                //-----------------------------------
-
-                                residenceMinutes =
-                                    Math.Ceiling(residenceMinutes / 60.0) * 60;
-
-                                opr.Initial_Opr_TPT =
-                                    Convert.ToInt32(residenceMinutes);
-
-                                opr.RequiredTimeslots =
-                                    (int)Math.Ceiling(residenceMinutes / 60.0);
-
-                                opr.ResidenceMinutes =
-                                    residenceMinutes;
+                                totalProcessing +=
+                                    ((double)item.PlanWOQnty)
+                                    * (cycle / parts);
                             }
-                            var oprResult = await _woService.PostTempOpr_List(opr);
-                            allOprswo.Add(oprResult);
+
+                            int travelHours =
+                                Convert.ToInt32(preferred.TransportTime);
+
+                            double travelMinutes =
+                                travelHours * 60;
+
+                            double residenceMinutes =
+                                travelMinutes +
+                                (
+                                    (totalSetup + totalProcessing)
+                                    * (1 + cushionPercent / 100)
+                                );
+
+                            residenceMinutes =
+                                Math.Ceiling(residenceMinutes / 60.0) * 60;
+
+                            opr.Initial_Opr_TPT =
+                                Convert.ToInt32(residenceMinutes);
+
+                            opr.RequiredTimeslots =
+                                (int)Math.Ceiling(residenceMinutes / 60.0);
+
+                            opr.ResidenceMinutes =
+                                residenceMinutes;
                         }
 
+                        // ==========================================================
+                        // POST ONLY ONCE
+                        // ==========================================================
 
-
-
-
+                        var oprResult =
+                            await _woService.PostTempOpr_List(opr);
+                        oprResult.OperationType = opr.OperationType;
+                        oprResult.OffsetMinutes = opr.OffsetMinutes;
+                        oprResult.ResidenceMinutes = opr.ResidenceMinutes;
+                        allOprswo.Add(oprResult);
                     }
 
                     #endregion
@@ -23720,6 +22616,116 @@ namespace CWB.App.Controllers
                         }
                         else
                         {
+
+
+                            int currentIndex = operations.IndexOf(opr);
+
+                            var next =
+                                currentIndex < operations.Count - 1
+                                    ? operations[currentIndex + 1]
+                                    : null;
+
+                            var previous =
+                                currentIndex > 0
+                                    ? operations[currentIndex - 1]
+                                    : null;
+
+
+                            // ============================================================
+                            // CASE 1
+                            // Sequential -> Sequential
+                            //
+                            // Op10 Sequential
+                            // Op20 Sequential
+                            //
+                            // Op20 must start after Op10 END.
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Sequential")
+                            {
+                                var previousEndSlot = allTimeslots.First(x =>
+                                    x.Timeslot_ListId == previous.Shop_Plan_end_time);
+
+                                searchStart = previousEndSlot.End_time;
+                            }
+
+
+                            // ============================================================
+                            // CASE 2
+                            // Sequential -> Parallel
+                            //
+                            // Op10 Sequential
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            //
+                            // Parallel group starts based on Op10 start + offset.
+                            // ============================================================
+
+                            //if (opr.OperationType == "Sequential" &&
+                            //    next != null &&
+                            //    next.OperationType == "Parallel")
+                            //{
+                            //    var currentStartSlot = allTimeslots.First(x =>
+                            //        x.Timeslot_ListId == opr.Shop_Plan_start_time);
+
+                            //    DateTime scurrentStart = currentStartSlot.Start_time;
+
+                            //    searchStart =
+                            //        scurrentStart.AddMinutes(opr.OffsetMinutes);
+
+                            //    parallelParentStart = scurrentStart;
+
+                            //    insideParallelGroup = true;
+                            //}
+
+
+                            // ============================================================
+                            // CASE 3
+                            // Parallel -> Parallel
+                            //
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            //
+                            // Op30 starts from Op20 Start + Op20 Offset.
+                            // ============================================================
+
+                            if (opr.OperationType == "Parallel" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel")
+                            {
+                                var previousStartSlot = allTimeslots.First(x =>
+                                    x.Timeslot_ListId == previous.Shop_Plan_start_time);
+
+                                DateTime previousStart =
+                                    previousStartSlot.Start_time;
+
+                                searchStart =
+                                    previousStart.AddMinutes(previous.OffsetMinutes);
+
+                                insideParallelGroup = true;
+                            }
+
+
+                            // ============================================================
+                            // CASE 4
+                            // Parallel -> Sequential
+                            //
+                            // Op20 Parallel
+                            // Op30 Parallel
+                            // Op40 Sequential
+                            //
+                            // Op40 must wait until the LATEST parallel operation ends.
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel" &&
+                                parallelGroupEnd != null)
+                            {
+                                searchStart = parallelGroupEnd.Value;
+                            }
                             int noOfMcs = noOfSimultMcs;
                             int qtyPerMc = item.CalcWOQty / (noOfMcs > 0 ? noOfMcs : 1);
                             var machines = await _routingService.StepMachines((int)opr.Opr_No);
@@ -23939,37 +22945,154 @@ namespace CWB.App.Controllers
                                 //mcWaits.Add(mcWait);
                                 //}
                             }
-                            var selectedMachines = candidates.OrderBy(x => x.AvailableTimeslots.First().Start_time).Take(noOfMcs).ToList();
-                            var selectedMachine = selectedMachines.First();
+                            //var selectedMachines = candidates.OrderBy(x => x.AvailableTimeslots.First().Start_time).Take(noOfMcs).ToList();
+                            //var selectedMachine = selectedMachines.First();
 
-                            var mcWaitnew = new TempMc_Wait_ListVM()
+                            //var mcWaitnew = new TempMc_Wait_ListVM()
+                            //{
+                            //    Wo_Id = item.WoId,
+                            //    Opr_No_Id = opr.Opr_No,
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
+                            //    Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
+                            //    Mode = 1,
+                            //    Plan_Qnty = selectedMachine.QtyPerMc
+                            //};
+
+                            //mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
+                            //var newMcSlot = new TempMc_Timeslot_ListVM()
+                            //{
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
+                            //    Allocation = 2,
+                            //    Slot_Not_Avl = 'N',
+                            //    Not_Avl_reason = 0
+                            //};
+
+                            //insttempMCTime =
+                            //    await _woService.PostTempMc_Timeslot_List(newMcSlot);
+                            //mcWaits.Add(mcWaitnew);
+                            var selectedMachines = candidates
+                               .Where(x => x.AvailableTimeslots != null &&
+                                           x.AvailableTimeslots.Any())
+                               .OrderBy(x => x.AvailableTimeslots.First().Start_time)
+                               .Take(noOfMcs)
+                               .ToList();
+
+                            // We must have enough machines
+                            if (selectedMachines.Count < noOfMcs)
                             {
-                                Wo_Id = item.WoId,
-                                Opr_No_Id = opr.Opr_No,
-                                Mc_Id = selectedMachine.Machine.MachineId,
-                                Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
-                                Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
-                                Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
-                                Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
-                                Mode = 1,
-                                Plan_Qnty = selectedMachine.QtyPerMc
-                            };
+                                // Not enough machines available for simultaneous execution
+                                continue;
+                            }
+                            //int totalQty = item.PlanWOQnty;
+                            //int baseQty = totalQty / selectedMachines.Count;
+                            //int remainder = totalQty % selectedMachines.Count;
 
-                            mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
-                            var newMcSlot = new TempMc_Timeslot_ListVM()
+                            //var mcWaitnew = new TempMc_Wait_ListVM()
+                            //{
+                            //    Wo_Id = item.WoId,
+                            //    Opr_No_Id = opr.Opr_No,
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
+                            //    Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
+                            //    Mode = 1,
+                            //    Plan_Qnty = selectedMachine.QtyPerMc
+                            //};
+
+                            //mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
+                            //var newMcSlot = new TempMc_Timeslot_ListVM()
+                            //{
+                            //    Mc_Id = selectedMachine.Machine.MachineId,
+                            //    Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+                            //    EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+                            //    Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
+                            //    Allocation = 2,
+                            //    Slot_Not_Avl = 'N',
+                            //    Not_Avl_reason = 0
+                            //};
+
+                            //insttempMCTime =
+                            //    await _woService.PostTempMc_Timeslot_List(newMcSlot);
+                            //mcWaits.Add(mcWaitnew);
+                            int totalQty = item.CalcWOQty;
+                            int baseQty = totalQty / selectedMachines.Count;
+                            int remainder = totalQty % selectedMachines.Count;
+
+                            int machineIndex = 0;
+
+                            foreach (var selectedMachine in selectedMachines)
                             {
-                                Mc_Id = selectedMachine.Machine.MachineId,
-                                Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
-                                EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
-                                Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
-                                Allocation = 2,
-                                Slot_Not_Avl = 'N',
-                                Not_Avl_reason = 0
-                            };
+                                await CheckPauseAsync();
 
-                            insttempMCTime =
+                                // -----------------------------------------
+                                // Quantity for this machine
+                                // -----------------------------------------
+                                int machineQty = baseQty;
+
+                                if (machineIndex < remainder)
+                                {
+                                    machineQty++;
+                                }
+
+                                // -----------------------------------------
+                                // Create Machine Wait
+                                // -----------------------------------------
+                                var mcWaitnew = new TempMc_Wait_ListVM
+                                {
+                                    Wo_Id = item.WoId,
+                                    Opr_No_Id = opr.Opr_No,
+
+                                    Mc_Id = selectedMachine.Machine.MachineId,
+
+                                    Wait_Seq_No = await CalculateNextTempWaitSeqNo(selectedMachine.Machine.MachineId),
+
+                                    Plan_start_time_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+
+                                    Plan_end_time_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+
+                                    Mc_TPT = Convert.ToDecimal(selectedMachine.TPT),
+
+                                    Mode = 1,
+
+                                    Plan_Qnty = machineQty
+                                };
+
+                                mcWaitnew = await _woService.PostTempMc_Wait_List(mcWaitnew);
+
+                                // -----------------------------------------
+                                // Allocate machine timeslot
+                                // -----------------------------------------
+                                var newMcSlot = new TempMc_Timeslot_ListVM
+                                {
+                                    Mc_Id = selectedMachine.Machine.MachineId,
+
+                                    Timeslot_List_Id = selectedMachine.AvailableTimeslots.First().Timeslot_ListId,
+
+                                    EndTimeslot_List_Id = selectedMachine.AvailableTimeslots.Last().Timeslot_ListId,
+
+                                    Mc_Wait_List_Id = mcWaitnew.TempMc_Wait_ListId,
+
+                                    Allocation = 2,
+
+                                    Slot_Not_Avl = 'N',
+
+                                    Not_Avl_reason = 0
+                                };
+
                                 await _woService.PostTempMc_Timeslot_List(newMcSlot);
-                            mcWaits.Add(mcWaitnew);
+
+                                // Keep it for Opr_List aggregation
+                                mcWaits.Add(mcWaitnew);
+
+                                machineIndex++;
+                            }
 
                             // Update Opr_List with aggregated info
                             if (!mcWaits.Any())
@@ -23987,42 +23110,48 @@ namespace CWB.App.Controllers
                             DateTime currentStart = startSlot.Start_time;
 
                             DateTime currentEnd = endSlot.End_time;
-                            int currentIndex = operations.IndexOf(opr);
 
-                            var next = currentIndex < operations.Count - 1 ? operations[currentIndex + 1] : null;
-
-                            searchStart = currentEnd;
-
-                            if (next != null && next.OperationType == "Parallel")
+                            if (opr.OperationType == "Sequential" &&
+  next != null &&
+  next.OperationType == "Parallel")
                             {
-                                parallelParentStart = currentStart;
+                                searchStart =
+                                    currentStart.AddMinutes(opr.OffsetMinutes);
 
-                                searchStart = currentStart.AddMinutes(opr.OffsetMinutes);
+                                parallelParentStart = currentStart;
 
                                 insideParallelGroup = true;
                             }
+                            // ============================================================
+                            // Track latest END of parallel group
+                            // ============================================================
+
                             if (opr.OperationType == "Parallel")
                             {
-                                if (parallelGroupEnd == null)
-                                {
-                                    parallelGroupEnd = currentEnd;
-                                }
-                                else if (currentEnd > parallelGroupEnd.Value)
+                                if (parallelGroupEnd == null ||
+                                    currentEnd > parallelGroupEnd.Value)
                                 {
                                     parallelGroupEnd = currentEnd;
                                 }
                             }
-                            bool lastParallel = opr.OperationType == "Parallel" && (next == null || next.OperationType != "Parallel");
-                            if (lastParallel)
+                            // ============================================================
+                            // Finish Parallel Group
+                            // ============================================================
+
+                            if (opr.OperationType == "Sequential" &&
+                                previous != null &&
+                                previous.OperationType == "Parallel" &&
+                                parallelGroupEnd != null)
                             {
                                 searchStart = parallelGroupEnd.Value;
 
                                 parallelParentStart = null;
-
                                 parallelGroupEnd = null;
-
                                 insideParallelGroup = false;
                             }
+
+
+
 
 
 
@@ -25836,35 +24965,36 @@ namespace CWB.App.Controllers
 
                 #endregion
 
-                if (subconlist.Any())
-                {
-                    var result = await _woService.ProcPlanPost(subconlist);
-
-                    List<ProcPlanPartPurChaseRelVM> purcList = new List<ProcPlanPartPurChaseRelVM>();
-                    foreach (var s in result)
-                    {
-                        var submfpdList = await _masterService.PartPurchasesFor((int)s.PartId);
-                        foreach (var pur in submfpdList)
-                        {
-                            ProcPlanPartPurChaseRelVM subcwo = new ProcPlanPartPurChaseRelVM()
-                            {
-                                ProcPlanId = s.ProcPlanId,
-                                PartPurchaseId = pur.PartPurchaseId,
-                                LeadTime = pur.LeadTimeInDays.ToString(),
-                                Active = 1
-                            };
-                            purcList.Add(subcwo);
-                        }
-                    }
-                    if (purcList.Any())
-                    {
-                        var bomresult = await _woService.ProcPurchasePost(purcList);
-                    }
-
-                }
+                
                 
 
 
+
+            }
+            if (subconlist.Any())
+            {
+                var result = await _woService.ProcPlanPost(subconlist);
+
+                List<ProcPlanPartPurChaseRelVM> purcList = new List<ProcPlanPartPurChaseRelVM>();
+                foreach (var s in result)
+                {
+                    var submfpdList = await _masterService.PartPurchasesFor((int)s.PartId);
+                    foreach (var pur in submfpdList)
+                    {
+                        ProcPlanPartPurChaseRelVM subcwo = new ProcPlanPartPurChaseRelVM()
+                        {
+                            ProcPlanId = s.ProcPlanId,
+                            PartPurchaseId = pur.PartPurchaseId,
+                            LeadTime = pur.LeadTimeInDays.ToString(),
+                            Active = 1
+                        };
+                        purcList.Add(subcwo);
+                    }
+                }
+                if (purcList.Any())
+                {
+                    var bomresult = await _woService.ProcPurchasePost(purcList);
+                }
 
             }
             #region Material Issue
@@ -26244,22 +25374,23 @@ namespace CWB.App.Controllers
         {
             var productions = await _woService.AllProductionPlan_Wo();
             var masterparts = await _masterService.MasterPartList();
-            var mcwaitList = await _woService.GetAllTempMc_Wait_List();
+            var mcwaitList = await _woService.GetAllMc_Wait_List();
             var allTimeSlots = await _woService.GetAllTimeslot_List();
             var mcwaits = mcwaitList.Where(m => m.Mc_Id == mcId).ToList();
-            var wO_Wait_Lists = await _woService.GetAllTempWo_Wait_List();
+            var mcactive = await _woService.GetAllMc_Timeslot_List();
+            var wO_Wait_Lists = await _woService.GetAllWO_Wait_List();
             var nclogs = await _woService.GetAllNcLog();
             var recpts = await _woService.GetAllInw_Recpt_Header();
             var podetails = await _woService.GetAllPodetails();
             var procplans = await _woService.GetAllProcPlan();
             var rwkList = await _woService.GetAllRwk_List();
-            var allTimeslots = await _woService.GetAllTimeslot_List();
+             
             foreach (var item in mcwaits)
             {
                 var pwo = productions.Where(p => p.WoId == item.Wo_Id).FirstOrDefault();
                 item.WoNumber = pwo.WONumber;
                 item.DataChanged = (pwo.Changed == 0) ? "N" : "Y";
-                item.WoQnty = pwo.CalcWOQty.ToString();
+                item.WoQnty = pwo.PlanWOQnty.ToString();
                 item.Bal_Qnty = pwo.CalcWOQty;
                 var imp = masterparts.Where(im => im.PartId == pwo.PartId).FirstOrDefault();
                 item.PartNo = imp.PartNo + " / " + imp.Description;
@@ -26283,8 +25414,8 @@ namespace CWB.App.Controllers
                     var recpt = recpts.Where(r => r.PoHeaderId == podetail.PoDetailsId).FirstOrDefault();
                     var nclog = nclogs.Where(n => n.Inw_Recpt_Header_Id == recpt.Inw_Recpt_HeaderId).FirstOrDefault();
                     var rewk = rwkList.Where(w => w.NC_Log_Id == nclog.Insp_Outcome_Details_Id).FirstOrDefault();
-                    var csstart = allTimeslots.Where(t => t.Timeslot_ListId == item.Plan_start_time_Id).FirstOrDefault();
-                    var csend = allTimeslots.Where(t => t.Timeslot_ListId == item.Plan_end_time_Id).FirstOrDefault();
+                    var csstart = allTimeSlots.Where(t => t.Timeslot_ListId == item.Plan_start_time_Id).FirstOrDefault();
+                    var csend = allTimeSlots.Where(t => t.Timeslot_ListId == item.Plan_end_time_Id).FirstOrDefault();
                     item.CsStartDate = csstart.Start_time.ToString("dd-MM-yyyy");
                     item.CsEndDate = csend.End_time.ToString("dd-MM-yyyy");
                     item.ActStartDate = rewk.Actual_Start_Time.ToString("dd-MM-yyyy");
@@ -26292,69 +25423,108 @@ namespace CWB.App.Controllers
                 }
                 item.MatlIssued = "";
                 item.Non_Plan_Wk = 'N';
-                var routingMcs = await _routingService.StepMachines((int)item.Opr_No_Id);
-                var routingMc = routingMcs.FirstOrDefault(r => r.PreferredMachine == 1);
-                if (routingMc == null)
+                var mcSlots = mcactive
+    .FirstOrDefault(t => t.Mc_Wait_List_Id == item.Mc_Wait_ListId);
+
+                if (mcSlots != null)
                 {
-                    routingMc = routingMcs.FirstOrDefault();
-                }
-                if (item.Wait_Seq_No == 0)
-                {
-                    if (TimeSpan.TryParse(routingMc.FloorToFloorTime, out var f2fTime))
+                    var startSlotId = mcSlots.Timeslot_List_Id;
+                    var endSlotId = mcSlots.EndTimeslot_List_Id;
+
+                    double hrsBooked = endSlotId - startSlotId + 1;
+
+                    TimeSpan booked = TimeSpan.FromHours(hrsBooked);
+                    item.HrsBooked = $"{(int)booked.TotalHours:D2}:{booked.Minutes:D2}";
+
+                    if (item.Wait_Seq_No == 0)
                     {
-                        double f2fHrs = f2fTime.TotalHours;
-                        double totalHrs = item.Bal_Qnty * f2fHrs;
-                        TimeSpan hrsBooked = TimeSpan.FromHours(totalHrs);
-                        item.HrsBooked = $"{(int)hrsBooked.TotalHours:D2}:{hrsBooked.Minutes:D2}";
+                        item.WaitTime = "";
                     }
                     else
                     {
-                        item.HrsBooked = "00:00";
-                    }
-                    item.WaitTime = "";
-                }
-                else
-                {
-                    if (TimeSpan.TryParse(routingMc.SetupTime, out var setupTime) &&
-                        TimeSpan.TryParse(routingMc.FloorToFloorTime, out var cycleTime))
-                    {
-                        double setupHrs = setupTime.TotalHours;
-                        double cycleHrs = cycleTime.TotalHours;
-                        double totalHrs = setupHrs + (item.Bal_Qnty * cycleHrs);
-                        TimeSpan hrsBooked = TimeSpan.FromHours(totalHrs);
-                        item.HrsBooked = $"{(int)hrsBooked.TotalHours:D2}:{hrsBooked.Minutes:D2}";
-                    }
-                    else
-                    {
-                        item.HrsBooked = "00:00";
-                    }
-                    var currentStart = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == item.Plan_start_time_Id)?.Start_time;
-                    var prevTask = mcwaits
-                        .Where(w => w.Mc_Id == item.Mc_Id && w.Wait_Seq_No == item.Wait_Seq_No - 1)
-                        .FirstOrDefault();
-                    DateTime? prevEnd = null;
-                    if (prevTask != null)
-                    {
-                        prevEnd = allTimeSlots
-                            .FirstOrDefault(t => t.Timeslot_ListId == prevTask.Plan_end_time_Id)?.End_time;
-                    }
-                    if (currentStart != null && prevEnd != null)
-                    {
-                        if (currentStart == prevEnd)
+                        var currentStart = allTimeSlots
+                            .FirstOrDefault(t => t.Timeslot_ListId == startSlotId);
+
+                        if (currentStart != null)
                         {
-                            item.WaitTime = "0"; // Starts immediately after previous
+                            item.WaitTime = currentStart.Start_time
+                                .ToString("dd-MM-yyyy hh:mm tt");
                         }
                         else
                         {
-                            item.WaitTime = currentStart.Value.ToString("dd-MM-yyyy hh:mm tt");
+                            item.WaitTime = "-";
                         }
                     }
-                    else
-                    {
-                        item.WaitTime = "-"; // Could not determine time
-                    }
-
                 }
+                else
+                {
+                    item.HrsBooked = "00:00";
+                    item.WaitTime = item.Wait_Seq_No == 0 ? "" : "-";
+                }
+
+                //var routingMcs = await _routingService.StepMachines((int)item.Opr_No_Id);
+                //var routingMc = routingMcs.FirstOrDefault(r => r.PreferredMachine == 1);
+                //if (routingMc == null)
+                //{
+                //    routingMc = routingMcs.FirstOrDefault();
+                //}
+                //if (item.Wait_Seq_No == 0)
+                //{
+                //    if (TimeSpan.TryParse(routingMc.FloorToFloorTime, out var f2fTime))
+                //    {
+                //        double f2fHrs = f2fTime.TotalHours;
+                //        double totalHrs = item.Bal_Qnty * f2fHrs;
+                //        TimeSpan hrsBooked = TimeSpan.FromHours(totalHrs);
+                //        item.HrsBooked = $"{(int)hrsBooked.TotalHours:D2}:{hrsBooked.Minutes:D2}";
+                //    }
+                //    else
+                //    {
+                //        item.HrsBooked = "00:00";
+                //    }
+                //    item.WaitTime = "";
+                //}
+                //else
+                //{
+                //    if (TimeSpan.TryParse(routingMc.SetupTime, out var setupTime) &&
+                //        TimeSpan.TryParse(routingMc.FloorToFloorTime, out var cycleTime))
+                //    {
+                //        double setupHrs = setupTime.TotalHours;
+                //        double cycleHrs = cycleTime.TotalHours;
+                //        double totalHrs = setupHrs + (item.Bal_Qnty * cycleHrs);
+                //        TimeSpan hrsBooked = TimeSpan.FromHours(totalHrs);
+                //        item.HrsBooked = $"{(int)hrsBooked.TotalHours:D2}:{hrsBooked.Minutes:D2}";
+                //    }
+                //    else
+                //    {
+                //        item.HrsBooked = "00:00";
+                //    }
+                //    var currentStart = allTimeSlots.FirstOrDefault(t => t.Timeslot_ListId == item.Plan_start_time_Id)?.Start_time;
+                //    var prevTask = mcwaits
+                //        .Where(w => w.Mc_Id == item.Mc_Id && w.Wait_Seq_No == item.Wait_Seq_No - 1)
+                //        .FirstOrDefault();
+                //    DateTime? prevEnd = null;
+                //    if (prevTask != null)
+                //    {
+                //        prevEnd = allTimeSlots
+                //            .FirstOrDefault(t => t.Timeslot_ListId == prevTask.Plan_end_time_Id)?.End_time;
+                //    }
+                //    if (currentStart != null && prevEnd != null)
+                //    {
+                //        if (currentStart == prevEnd)
+                //        {
+                //            item.WaitTime = "0"; // Starts immediately after previous
+                //        }
+                //        else
+                //        {
+                //            item.WaitTime = currentStart.Value.ToString("dd-MM-yyyy hh:mm tt");
+                //        }
+                //    }
+                //    else
+                //    {
+                //        item.WaitTime = "-"; // Could not determine time
+                //    }
+
+                //}
             }
             return Ok(mcwaits);
         }
@@ -26928,13 +26098,13 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetAllSimulationMove()
         {
             var result = await _woService.GetAllMatl_Issue_List();
-
+            var stores = await _departmentService.GetAllStoresIDs();
             var oprs = await _woService.GetAllOpr_List();
             var woWaits = await _woService.GetAllWO_Wait_List();
             var productions = await _woService.AllProductionPlan_Wo();
 
             var masterparts = await _masterService.MasterPartList();
-
+            var rawmaterials = await _masterService.GetAllRMPart();
             var depts = await _departmentService.GetDepartments(1);
             var suppliers = await _masterService.GetCompanies();   // Supplier Master
 
@@ -26973,7 +26143,7 @@ namespace CWB.App.Controllers
 
                 if (finishedPart != null)
                     item.PartNo = finishedPart.PartNo + " / " + finishedPart.Description;
-
+                
                 //-------------------------------------------------------
                 // Input Part
                 //-------------------------------------------------------
@@ -26987,6 +26157,79 @@ namespace CWB.App.Controllers
                 //-------------------------------------------------------
                 var mf = await _masterService.GetManufPart((int)pp.PartId);
 
+                if(finishedPart.MasterPartType== "ManufacturedPart"  && inputPart.MasterPartType== "RawMaterial")
+                {
+                    var mpmakefromlist = await _masterService.GetMPMakeFromListByPartId(mf.ManufacturedPartNoDetailId.ToString());
+                    var makeFrom = mpmakefromlist.FirstOrDefault(x => x.MPPartId == item.Input_PartId);
+                    var rm = rawmaterials.Where(x => x.PartId == item.Input_PartId).FirstOrDefault();
+                    var uom = (await _masterService.GetUOMs()).FirstOrDefault(x => x.UOMId == rm.UOMId);
+                    if (Convert.ToInt32(makeFrom.QuantityPerInput)>1 && Convert.ToDecimal(rm.RawMaterialWeight) >0 && uom.Name=="Kgs" )
+                    {
+                        item.Issue_Qnty = Math.Ceiling(item.Issue_Qnty / Convert.ToDecimal(rm.RawMaterialWeight));
+                        var invpart = await _woService.GetAllInventory_MasterBypartid(stores.Stores_DirMatl_ID, 0, 0, item.Input_PartId);
+                        item.IssueQntyDisplay = $"{item.Issue_Qnty.ToString("0")} Nos";
+                        if (invpart!=null)
+                        {
+                            var qty = invpart.FirstOrDefault();
+                            if(qty !=null)
+                            {
+                                item.QntyAvl = (long)Math.Ceiling(qty.Current_QntOnHand / Convert.ToDecimal(rm.RawMaterialWeight));
+                                
+                            }
+                        }
+
+                        else
+                        {
+                            item.QntyAvl = 0;
+                            
+                        }
+                        item.QntyAvlDisplay = $"{item.QntyAvl.ToString("0")} Nos";
+                    }
+                    else
+                    {
+                        var invpart = await _woService.GetAllInventory_MasterBypartid(stores.Stores_DirMatl_ID, 0, 0, item.Input_PartId);
+                        item.IssueQntyDisplay = $"{item.Issue_Qnty} {uom.Name}";
+                        if (invpart != null)
+                        {
+                            var qty = invpart.FirstOrDefault();
+                            if (qty != null)
+                            {
+                                item.QntyAvl = (long)qty.Current_QntOnHand;
+                                 
+                            }
+                        }
+
+                        else
+                        {
+                            item.QntyAvl = 0;
+                            
+                        }
+                        item.QntyAvlDisplay = $"{item.QntyAvl.ToString("0")} {uom.Name}";
+                    }
+
+
+                }
+                else 
+                {
+                    var invpart = await _woService.GetAllInventory_MasterBypartid(stores.Stores_DirMatl_ID, 0, 0, item.Input_PartId);
+                    item.IssueQntyDisplay = $"{item.Issue_Qnty:0} Nos";
+                    if (invpart != null)
+                    {
+                        var qty = invpart.FirstOrDefault();
+                        if (qty != null)
+                        {
+                            item.QntyAvl =(long)qty.Current_QntOnHand;
+                            
+                        }
+                    }
+
+                    else
+                    {
+                        item.QntyAvl = 0;
+                        
+                    }
+                    item.QntyAvlDisplay = $"{item.QntyAvl:0} Nos";
+                }
                 var routingList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
 
                 var routing = routingList.FirstOrDefault(x => x.RoutingId == pp.RoutingId);
@@ -27042,7 +26285,7 @@ namespace CWB.App.Controllers
                 // Misc
                 //-------------------------------------------------------
                 item.BalWoQnty = pp.CalcWOQty.ToString();
-                item.QntyAvl = 0;
+               // item.QntyAvl = 0;
                 item.BookOutQnty = 0;
                 item.IssueMovDtStr = item.Issue_Mov_date.ToString("dd-MM-yyyy");
             }
@@ -27076,7 +26319,7 @@ namespace CWB.App.Controllers
             var translogs = await _woService.GetAllInv_Trans_Log();
             var allTimeSlots = await _woService.GetAllTimeslot_List();
 
-            foreach (var mcWait in waitList)
+            foreach (var mcWait in waitList.Where(x=>x.Non_Plan_Wk!='Y'))
             {
                 var wo = allWO.FirstOrDefault(p => p.WoId == mcWait.Wo_Id);
                 var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
@@ -27344,17 +26587,66 @@ namespace CWB.App.Controllers
             return "Unknown Shift";
         }
 
+        private DateTime GetPreviousWorkingDay(DateTime date, IEnumerable<HolidayVM> holidaylist)
+        {
+            var prevDay = date.AddDays(-1);
+
+            while (true)
+            {
+                bool isWeekend = prevDay.DayOfWeek == DayOfWeek.Sunday;
+                bool isHoliday = holidaylist.Any(h => h.HolidayDate.HasValue && h.HolidayDate.Value.Date == prevDay.Date);
+
+                if (!isWeekend && !isHoliday)
+                    break;
+
+                prevDay = prevDay.AddDays(-1);
+            }
+
+            return prevDay;
+        }
+
+        private Timeslot_ListVM GetLastSlotOfDay(DateTime targetDate, IEnumerable<Timeslot_ListVM> timeslotlist)
+        {
+            return timeslotlist
+                .Where(x => x.Start_time.Date == targetDate.Date)
+                .OrderByDescending(x => x.Start_time)
+                .FirstOrDefault();
+        }
+
+        private Timeslot_ListVM GetFirstSlotOfDay(DateTime targetDate, IEnumerable<Timeslot_ListVM> timeslotlist)
+        {
+            return timeslotlist
+                .Where(x => x.Start_time.Date == targetDate.Date)
+                .OrderBy(x => x.Start_time)
+                .FirstOrDefault();
+        }
+
 
         [HttpGet]
+
         public async Task<IActionResult> SimulationData()
         {
+            var Departments = await _departmentService.GetDepartments(13);
             var allprductionwo = await _woService.AllProductionWoReadForProd();
 
-            var tempwowaitlist = await _woService.GetAllWO_Wait_List();
-            var tempoperationslist = await _woService.GetAllOpr_List();
-            var tempmachinewaitlist = await _woService.GetAllMc_Wait_List();
-            var tempmachinetimeslotlist = await _woService.GetAllMc_Timeslot_List();
+            var livewowaitlist = await _woService.GetAllWO_Wait_List();
+            var tempwowaitlist = await _woService.GetAllTempWo_Wait_List();
 
+            var Liveoperationslist = await _woService.GetAllOpr_List();
+            var tempoperationslist = await _woService.GetAllTempOpr_List();
+
+            var Livemachinewaitlist = await _woService.GetAllMc_Wait_List();
+            var tempmachinewaitlist = await _woService.GetAllTempMc_Wait_List();
+
+            var procPlanList = await _woService.GetAllProcPlan();
+            var tempmachinetimeslotlist = await _woService.GetAllTempMc_Timeslot_List();
+            var Livemachinetimeslotlist = await _woService.GetAllMc_Timeslot_List();
+
+            var Livesubconlist = await _woService.GetAllSubCon_List();
+            var Tempsubconlist = await _woService.GetAllTempSubCon_List();
+
+            var companies = await _masterService.GetCompanies();
+            var salesOrders = await _baService.AllSalesOrders();
             var timeslotlist = await _woService.GetAllTimeslot_List();
             //DateTime chartStart = timeslotlist.OrderBy(x => x.Start_time).First().Start_time;
             var masterpartlist = await _masterService.MasterPartList();
@@ -27364,6 +26656,7 @@ namespace CWB.App.Controllers
             ProductionSimulationVM vm = new ProductionSimulationVM();
             var productions = allprductionwo.Where(x => x.For_Ref == 'N').ToList();
             var dates = timeslotlist.GroupBy(x => x.Start_time.Date).OrderBy(x => x.Key);
+
             foreach (var day in dates)
             {
                 SimulationHeaderVM header = new SimulationHeaderVM();
@@ -27404,8 +26697,9 @@ namespace CWB.App.Controllers
             }
             int firstTimelineSlot = (int)timeslotlist.Min(x => x.Timeslot_ListId);
 
-             const double slotWidth = 37;    //pixel 
-            foreach (var item in tempwowaitlist)
+            const double slotWidth = 38;    //pixel 
+            var liveWoIds = new HashSet<long>(livewowaitlist.Select(x => x.Wo_Id));
+            foreach (var item in livewowaitlist)
             {
 
                 var production = productions.Where(x => x.WoId == item.Wo_Id).FirstOrDefault();
@@ -27424,88 +26718,496 @@ namespace CWB.App.Controllers
                 partRow.Description = partno.Description;
                 partRow.IsUrgent = production.Urgent == 0;
 
-                var operations = tempoperationslist.Where(x => x.Wo_Id == item.Wo_Id).ToList();
+                if (production.Parentlevel == 'Y')
+                {
+                    bool isEven = production.Sim_Seq_No % 2 == 0;
+                    partRow.PartNoColor = isEven ? "#A8E6A1" : "#FFD59E";
+                }
+                else
+                {
+                    partRow.PartNoColor = "";
+                }
+
+
+
+
+                if (production.Parentlevel == 'Y' && production.SoComplDate != null)
+                {
+                    var soDate = production.SoComplDate.Value;
+                    var markerDay = GetPreviousWorkingDay(soDate, holidaylist);
+                    var lastSlot = GetLastSlotOfDay(markerDay, timeslotlist);
+                    var customerOrders = await _baService.GetCustomerOrders();
+                    if (lastSlot != null)
+                    {
+                        long slotId = lastSlot.Timeslot_ListId;
+                        partRow.SoCompletionMarkerLeft = (slotId - firstTimelineSlot) * slotWidth;
+                        partRow.HasSoCompletionMarker = true;
+                        var salesOrder = salesOrders.FirstOrDefault(x => x.SalesOrderId == production.SalesOrderId);
+
+                        if (salesOrder != null)
+                        {
+                            var customerOrder = customerOrders.FirstOrDefault(x => x.CustomerOrderId == salesOrder.CustomerOrderId);
+
+                            partRow.SoCustomer = customerOrder != null ? customerOrder.CustomerName : "";
+
+
+                        }
+                        else
+                        {
+                            partRow.SoCustomer = "";
+                        }
+
+                        partRow.SoNo = production.SalesOrderId.ToString();
+                        partRow.SoQnty = production.PlanWOQnty.ToString();
+                        partRow.SoCompletionDateDisplay = soDate.ToString("dd/MM/yyyy");
+                    }
+                    else
+                    {
+                        partRow.HasSoCompletionMarker = false;
+                    }
+                }
+                else
+                {
+                    partRow.HasSoCompletionMarker = false;
+                }
+
+
+
+
+                var operations = Liveoperationslist.Where(x => x.Wo_Id == item.Wo_Id).ToList();
 
 
                 foreach (var opr in operations)
                 {
+
                     var routingstep = await _routingService.GetStep((int)opr.Opr_No);
-                    //step number 
+                    var route = await _routingService.GetRouting((int)production.RoutingId);
 
-                    var stepmachines = await _routingService.StepMachines((int)routingstep.StepId);
-
-
-
-
-                    if (stepmachines.Any())
+                    if (opr.RoutingStepLocation == 1)
                     {
-                        var preffredstepmachine = stepmachines.OrderByDescending(x => x.PreferredMachine).FirstOrDefault();
+                        var stepmachines = await _routingService.StepMachines((int)routingstep.StepId);
 
-                        var machine = machinelist.Where(x => x.MachineId == preffredstepmachine.MachineId).FirstOrDefault();
-                        //machine Sl no
-
-                        SimulationOperationVM operation = new SimulationOperationVM();
-
-                        var machineinuse = tempmachinewaitlist.FirstOrDefault(x =>
-                           x.Wo_Id == item.Wo_Id &&
-                           x.Opr_No_Id == opr.Opr_No &&
-                           x.Mc_Id == preffredstepmachine.MachineId);
-
-                        if (machineinuse != null)
+                        if (stepmachines.Any())
                         {
-                            var operationSlots = tempmachinetimeslotlist
-                                .Where(x => x.Mc_Wait_List_Id == machineinuse.Mc_Wait_ListId)
-                                .OrderBy(x => x.Timeslot_List_Id)
-                                .ToList();
-                            if (operationSlots.Any())
+                            var preffredstepmachine = stepmachines.OrderByDescending(x => x.PreferredMachine).FirstOrDefault();
+
+                            var machine = machinelist.Where(x => x.MachineId == preffredstepmachine.MachineId).FirstOrDefault();
+                            //machine Sl no
+                            var Department = Departments.Where(x => x.DepartmentId == machine.ShopId).FirstOrDefault();
+
+                            SimulationOperationVM operation = new SimulationOperationVM();
+
+                            var machineinuse = Livemachinewaitlist.FirstOrDefault(x =>
+                               x.Wo_Id == item.Wo_Id &&
+                               x.Opr_No_Id == opr.Opr_No &&
+                               x.Mc_Id == preffredstepmachine.MachineId);
+
+                            if (machineinuse != null)
                             {
+                                var operationSlots = Livemachinetimeslotlist
+                                    .Where(x => x.Mc_Wait_List_Id == machineinuse.Mc_Wait_ListId)
+                                    .OrderBy(x => x.Timeslot_List_Id)
+                                    .ToList();
+                                if (operationSlots.Any())
+                                {
+                                    operation.PartNum = partno.PartNo;
+                                    operation.Department = Department != null ? Department.Name : "";
+                                    operation.OperationName = "Op " + routingstep.StepNumber;
+
+                                    long startSlot = (long)machineinuse.Plan_start_time_Id;
+                                    long endSlot = (long)machineinuse.Plan_end_time_Id;
+
+                                    operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
+                                    operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
+
+                                    operation.Color = "#7092BE";
+                                    operation.MachineName = machine.SlNo;
+
+                                    operation.DisplayLabel = machine.SlNo;
+                                    operation.Status = "Running";
 
 
-                                operation.MachineName = machine.SlNo;
-                                operation.OperationName = "Op " + routingstep.StepNumber;
+                                    operation.BarType = "Inhouse";
+                                    operation.TooltipType = "Inhouse";
+                                    var startSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == startSlot);
+                                    var endSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == endSlot);
 
-                                // Get slot ids from TempMc_Wait_List
-                                long startSlot = (long)machineinuse.Plan_start_time_Id;
-                                long endSlot = (long)machineinuse.Plan_end_time_Id;
+                                    operation.ShopMachine = (Department != null ? Department.Name : "") + " / " + machine.SlNo;
+                                    operation.PartNoDesc = partno.PartNo + " / " + partno.Description;
+                                    operation.RoutingOprNo = route.RoutingName + " / " + routingstep.StepNumber;
+                                    operation.WoNo = production.WONumber;
+                                    operation.BatchQnty = production.PlanWOQnty.ToString();
 
-                                // Calculate bar position
-                                operation.Left = (startSlot - firstTimelineSlot) * slotWidth; 
+                                    if (startSlotObj != null)
+                                    {
+                                        operation.StartDateTime = startSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
+                                    }
 
-                                // +1 because slot 1 to slot 1 is one full slot
-                                operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
+                                    if (endSlotObj != null)
+                                    {
+                                        operation.EndDateTime = endSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
+                                    }
 
-                                operation.Status = "Running";
+                                    operation.DurationHours = ((endSlot - startSlot) + 1).ToString();
 
-                                partRow.Operations.Add(operation);
+                                    var oprmachines = await _routingService.StepMachines((int)opr.Opr_No);
+                                    var machineselected = oprmachines.Where(x => x.MachineId == machineinuse.Mc_Id && x.RoutingStepId == opr.Opr_No).FirstOrDefault();
+                                    var setupTime = TimeSpan.Parse(machineselected.SetupTime);
+                                    var floorToFloorTime = TimeSpan.Parse(machineselected.FloorToFloorTime);
+
+                                    operation.FloorToFloorTime = floorToFloorTime.TotalMinutes.ToString();
+                                    operation.SetupTime = setupTime.TotalMinutes.ToString();
+
+                                    operation.AssySoldToCustomer = "";   // TODO — pending customer field
+                                    operation.PartSoldToCustomer = "";   // TODO — pending customer field
+
+                                    partRow.Operations.Add(operation);
+                                }
+
                             }
 
                         }
-
                     }
+                    else if (opr.RoutingStepLocation == 2)
+                    {
+
+                        // Match the subcon record for this operation
+                        var subconRecord = Livesubconlist.FirstOrDefault(x => x.Wo_Id == item.Wo_Id && x.Opr_No == opr.Opr_No);
+
+                        if (subconRecord != null && subconRecord.Plan_Disp_date != null && subconRecord.Plan_Recpt_date != null)
+                        {
+                            var dispDate = subconRecord.Plan_Disp_date;
+                            var recptDate = subconRecord.Plan_Recpt_date;
+
+                            // Find the timeslot that contains the dispatch date
+                            var startSlotObj = timeslotlist
+                                .Where(x => x.Start_time <= dispDate)
+                                .OrderByDescending(x => x.Start_time)
+                                .FirstOrDefault();
+
+                            // Find the timeslot that contains the receipt date
+                            var endSlotObj = timeslotlist
+                                .Where(x => x.Start_time <= recptDate)
+                                .OrderByDescending(x => x.Start_time)
+                                .FirstOrDefault();
+
+                            if (startSlotObj != null && endSlotObj != null)
+                            {
+                                SimulationOperationVM operation = new SimulationOperationVM();
+
+                                operation.PartNum = partno.PartNo;
+                                operation.Department = "";
+
+
+                                var supplierCompany = companies.FirstOrDefault(x => x.CompanyId == subconRecord.Supplier_Id);
+
+                                if (supplierCompany != null)
+                                {
+                                    operation.Supplier = supplierCompany.CompanyName;
+                                }
+                                else
+                                {
+                                    operation.Supplier = "Supplier " + subconRecord.Supplier_Id;
+                                }
+
+                                operation.MachineName = "";
+                                operation.DisplayLabel = operation.Supplier;
+                                operation.OperationName = "Op " + routingstep.StepNumber;
+
+                                long startSlot = (long)startSlotObj.Timeslot_ListId;
+                                long endSlot = (long)endSlotObj.Timeslot_ListId;
+
+                                operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
+                                operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
+                                operation.Color = "#8B5FBF";
+                                operation.Status = "Running";
+
+
+                                operation.BarType = "Subcon";
+                                operation.TooltipType = "Subcon";
+                                operation.PartNoDesc = partno.PartNo + " / " + partno.Description;
+                                operation.RoutingOprNo = route.RoutingName + " / " + routingstep.StepNumber;
+                                operation.WoNo = production.WONumber;
+                                operation.BatchQnty = production.PlanWOQnty.ToString();
+                                operation.StartDateTime = dispDate.ToString("dd/MM/yyyy HH:mm");
+                                operation.EndDateTime = recptDate.ToString("dd/MM/yyyy HH:mm");
+
+                                partRow.Operations.Add(operation);
+                            }
+                        }
+                    }
+
+                }
+                if (production.Combined_WO != 'Y')
+                {
+                    var qualifyingProcPlan = procPlanList
+                            .Where(x => x.WorkOrderId == item.Wo_Id && (x.PartType == "BOF" || x.PartType == "RawMaterial"))
+                            .OrderBy(x => x.CalcReceiptDate)
+                            .ToList();
+
+                    foreach (var prockpaln in qualifyingProcPlan)
+                    {
+                        var receiptDate = prockpaln.CalcReceiptDate;
+                        var procPlanPartPurchaseRelList = await _woService.ProcPlanPartPurChaseRel(prockpaln.ProcPlanId);
+                        var procplan = procPlanPartPurchaseRelList.FirstOrDefault();
+                        if (procplan == null)
+                        {
+                            continue;
+                        }
+                        var partPurchaseDetailsList = await _masterService.GetPartPurchase((int)procplan.PartPurchaseId);
+                        var firstSlot = GetFirstSlotOfDay(receiptDate, timeslotlist);
+                        var part = masterpartlist.FirstOrDefault(x => x.PartId == prockpaln.PartId);
+
+                        if (firstSlot != null)
+                        {
+                            long slotId = firstSlot.Timeslot_ListId;
+                            partRow.MatlReceiptMarkerLeft = (slotId - firstTimelineSlot) * slotWidth;
+                            partRow.HasMatlReceiptMarker = true;
+                            partRow.MatlReceiptPartNo = prockpaln.PartId.ToString();
+                            partRow.MatlReceiptPartType = prockpaln.PartType;
+                            partRow.MatlReceiptDateDisplay = receiptDate.ToString("dd/MM/yyyy");
+
+
+                            var matlPart = masterpartlist.FirstOrDefault(x => x.PartId == prockpaln.PartId);
+                            partRow.MatlReceiptPartNoDesc = matlPart != null
+                                ? matlPart.PartNo + " / " + matlPart.Description
+                                : prockpaln.PartId.ToString();
+
+
+                            partRow.MatlReceiptQnty = prockpaln.Calc_Proc_Qnty.ToString();
+
+                            if (partPurchaseDetailsList != null)
+                            {
+                                var supplierCompany = companies.FirstOrDefault(x => x.CompanyId == partPurchaseDetailsList.PSupplierId);
+                                partRow.MatlReceiptSupplier = supplierCompany != null ? supplierCompany.CompanyName : "";
+                            }
+                            else
+                            {
+                                partRow.MatlReceiptSupplier = "";
+                            }
+
+                            partRow.MatlReceiptPoNo = "";
+                        }
+                        else
+                        {
+                            partRow.HasMatlReceiptMarker = false;
+                        }
+                    }
+
+                }
+                else
+                {
+                    partRow.HasMatlReceiptMarker = false;
                 }
                 vm.Parts.Add(partRow);
 
+
+            }
+
+            //temp data 
+            foreach (var item in tempwowaitlist)
+            {
+                if (liveWoIds.Contains(item.Wo_Id))
+                    continue;
+
+                var production = productions.Where(x => x.WoId == item.Wo_Id).FirstOrDefault();
+                if (production == null)
+                {
+                    continue;
+                }
+                var partno = masterpartlist.Where(x => x.PartId == production.PartId).FirstOrDefault();
+                if (partno == null)
+                {
+                    continue;
+                }
+                SimulationPartRowVM partRow = new SimulationPartRowVM();
+                partRow.WoId = item.Wo_Id;
+                partRow.PartNo = partno.PartNo;
+                partRow.Description = partno.Description;
+                partRow.IsUrgent = production.Urgent == 0;
+                if (production.Parentlevel == 'Y')
+                {
+                    bool isEven = production.Sim_Seq_No % 2 == 0;
+                    partRow.PartNoColor = isEven ? "#A8E6A1" : "#FFD59E";
+                }
+                else
+                {
+                    partRow.PartNoColor = "";
+                }
+                var operations = tempoperationslist.Where(x => x.Wo_Id == item.Wo_Id).ToList();
+
+                foreach (var opr in operations)
+                {
+                    var routingstep = await _routingService.GetStep((int)opr.Opr_No);
+                    var route = await _routingService.GetRouting((int)production.RoutingId);
+                    if (opr.RoutingStepLocation == 1)
+                    {
+                        var stepmachines = await _routingService.StepMachines((int)routingstep.StepId);
+
+                        if (stepmachines.Any())
+                        {
+                            var preffredstepmachine = stepmachines.OrderByDescending(x => x.PreferredMachine).FirstOrDefault();
+                            var machine = machinelist.Where(x => x.MachineId == preffredstepmachine.MachineId).FirstOrDefault();
+                            var Department = Departments.Where(x => x.DepartmentId == machine.ShopId).FirstOrDefault();
+
+                            var machineinuse = tempmachinewaitlist.FirstOrDefault(x =>
+                               x.Wo_Id == item.Wo_Id &&
+                               x.Opr_No_Id == opr.Opr_No &&
+                               x.Mc_Id == preffredstepmachine.MachineId);
+
+                            if (machineinuse != null)
+                            {
+                                var operationSlots = tempmachinetimeslotlist
+                                    .Where(x => x.Mc_Wait_List_Id == machineinuse.TempMc_Wait_ListId)
+                                    .OrderBy(x => x.Timeslot_List_Id)
+                                    .ToList();
+
+                                if (operationSlots.Any())
+                                {
+                                    SimulationOperationVM operation = new SimulationOperationVM();
+
+                                    operation.PartNum = partno.PartNo;
+                                    operation.Department = Department != null ? Department.Name : "";
+                                    operation.OperationName = "Op " + routingstep.StepNumber;
+
+                                    long startSlot = (long)machineinuse.Plan_start_time_Id;
+                                    long endSlot = (long)machineinuse.Plan_end_time_Id;
+
+                                    operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
+                                    operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
+
+                                    operation.Color = "#FFC107";   // yellow — unfrozen/temp
+                                    operation.MachineName = machine.SlNo;
+                                    operation.Supplier = "";
+                                    operation.DisplayLabel = machine.SlNo;
+                                    operation.Status = "Running";
+                                    operation.BarType = "Temp";
+                                    operation.TooltipType = "Inhouse";
+                                    var startSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == startSlot);
+                                    var endSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == endSlot);
+
+                                    operation.ShopMachine = (Department != null ? Department.Name : "") + " / " + machine.SlNo;
+                                    operation.PartNoDesc = partno.PartNo + " / " + partno.Description;
+                                    operation.RoutingOprNo = route.RoutingName + " / " + routingstep.StepNumber;
+                                    operation.WoNo = production.WONumber;
+                                    operation.BatchQnty = production.PlanWOQnty.ToString();
+
+                                    if (startSlotObj != null)
+                                    {
+                                        operation.StartDateTime = startSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
+                                    }
+
+                                    if (endSlotObj != null)
+                                    {
+                                        operation.EndDateTime = endSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
+                                    }
+
+                                    operation.DurationHours = ((endSlot - startSlot) + 1).ToString();
+
+                                    var oprmachines = await _routingService.StepMachines((int)opr.Opr_No);
+                                    var machineselected = oprmachines.Where(x => x.MachineId == machineinuse.Mc_Id && x.RoutingStepId == opr.Opr_No).FirstOrDefault();
+                                    var setupTime = TimeSpan.Parse(machineselected.SetupTime);
+                                    var floorToFloorTime = TimeSpan.Parse(machineselected.FloorToFloorTime);
+
+                                    operation.FloorToFloorTime = floorToFloorTime.TotalMinutes.ToString();
+                                    operation.SetupTime = setupTime.TotalMinutes.ToString();
+
+                                    operation.AssySoldToCustomer = "";   // TODO — pending customer field
+                                    operation.PartSoldToCustomer = "";   // TODO — pending customer field
+
+                                    partRow.Operations.Add(operation);
+                                }
+                            }
+                        }
+                    }
+                    else if (opr.RoutingStepLocation == 2)
+                    {
+                        var subconRecord = Tempsubconlist.FirstOrDefault(x => x.Wo_Id == item.Wo_Id && x.Opr_No == opr.Opr_No);
+
+                        if (subconRecord != null && subconRecord.Plan_Disp_date != null && subconRecord.Plan_Recpt_date != null)
+                        {
+                            var dispDate = subconRecord.Plan_Disp_date;
+                            var recptDate = subconRecord.Plan_Recpt_date;
+
+                            var startSlotObj = timeslotlist
+                                .Where(x => x.Start_time <= dispDate)
+                                .OrderByDescending(x => x.Start_time)
+                                .FirstOrDefault();
+
+                            var endSlotObj = timeslotlist
+                                .Where(x => x.Start_time <= recptDate)
+                                .OrderByDescending(x => x.Start_time)
+                                .FirstOrDefault();
+
+                            if (startSlotObj != null && endSlotObj != null)
+                            {
+                                SimulationOperationVM operation = new SimulationOperationVM();
+
+                                operation.PartNum = partno.PartNo;
+                                operation.Department = "";
+
+                                var supplierCompany = companies.FirstOrDefault(x => x.CompanyId == subconRecord.Supplier_Id);
+
+                                if (supplierCompany != null)
+                                {
+                                    operation.Supplier = supplierCompany.CompanyName;
+                                }
+                                else
+                                {
+                                    operation.Supplier = "Supplier " + subconRecord.Supplier_Id;
+                                }
+
+                                operation.MachineName = "";
+                                operation.DisplayLabel = operation.Supplier;
+                                operation.OperationName = "Op " + routingstep.StepNumber;
+
+                                long startSlot = (long)startSlotObj.Timeslot_ListId;
+                                long endSlot = (long)endSlotObj.Timeslot_ListId;
+
+                                operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
+                                operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
+                                operation.Color = "#FD7E14";   // yellow — unfrozen/temp
+
+                                operation.Status = "Running";
+                                operation.BarType = "Temp";
+                                operation.TooltipType = "Subcon";
+                                operation.PartNoDesc = partno.PartNo + " / " + partno.Description;
+                                operation.RoutingOprNo = route.RoutingName + " / " + routingstep.StepNumber;
+                                operation.WoNo = production.WONumber;
+                                operation.BatchQnty = production.PlanWOQnty.ToString();
+                                operation.StartDateTime = dispDate.ToString("dd/MM/yyyy HH:mm");
+                                operation.EndDateTime = recptDate.ToString("dd/MM/yyyy HH:mm");
+                                partRow.Operations.Add(operation);
+                            }
+                        }
+                    }
+                }
+
+                if (partRow.Operations.Any())
+                    vm.Parts.Add(partRow);
             }
             return Ok(vm);
         }
-
-
-
-
+        [HttpGet]
         public async Task<IActionResult> SimulationMachineData()
         {
+
+            var Departments = await _departmentService.GetDepartments(13);
             var allprductionwo = await _woService.AllProductionWoReadForProd();
 
-            var tempwowaitlist = await _woService.GetAllWO_Wait_List();
+            var livewowaitlist = await _woService.GetAllWO_Wait_List();
+            var tempwowaitlist = await _woService.GetAllTempWo_Wait_List();
 
-            var tempoperationslist = await _woService.GetAllOpr_List();
+            var Liveoperationslist = await _woService.GetAllOpr_List();
+            var tempoperationslist = await _woService.GetAllTempOpr_List();
 
-            var tempmachinewaitlist = await _woService.GetAllMc_Wait_List();
+            var Livemachinewaitlist = await _woService.GetAllMc_Wait_List();
+            var tempmachinewaitlist = await _woService.GetAllTempMc_Wait_List();
 
-            var tempmachinetimeslotlist = await _woService.GetAllMc_Timeslot_List();
+            var tempmachinetimeslotlist = await _woService.GetAllTempMc_Timeslot_List();
+            var Livemachinetimeslotlist = await _woService.GetAllMc_Timeslot_List();
 
-
-
+            var nonplanbars = await _woService.GetAllNon_Plan_Wk_List();
             var timeslotlist = await _woService.GetAllTimeslot_List();
 
             var masterpartlist = await _masterService.MasterPartList();
@@ -27553,20 +27255,15 @@ namespace CWB.App.Controllers
             }
             int firstTimelineSlot = (int)timeslotlist.Min(x => x.Timeslot_ListId);
 
-            const double slotWidth = 37.5; //pixel
-
+            const double slotWidth = 38; //pixel
+            var liveWoIds = new HashSet<long>(livewowaitlist.Select(x => x.Wo_Id));
             foreach (var machine in machinelist)
             {
                 SimulationMachineRowVM row = new SimulationMachineRowVM();
                 row.MachineId = machine.MachineId;
                 row.MachineNo = machine.SlNo;
 
-                var machineOperations = tempmachinewaitlist
-                    .Where(x => x.Mc_Id == machine.MachineId)
-                    .ToList();
-
-
-
+                var machineOperations = Livemachinewaitlist.Where(x => x.Mc_Id == machine.MachineId).ToList();
 
                 foreach (var mc in machineOperations)
                 {
@@ -27576,8 +27273,7 @@ namespace CWB.App.Controllers
                     {
                         continue;
                     }
-
-
+                    var route = await _routingService.GetRouting((int)production.RoutingId);
 
                     var part = masterpartlist.FirstOrDefault(x => x.PartId == production.PartId);
 
@@ -27586,49 +27282,259 @@ namespace CWB.App.Controllers
                         continue;
                     }
 
-                    var opr = tempoperationslist.FirstOrDefault(x => x.Wo_Id == mc.Wo_Id && x.Opr_No == mc.Opr_No_Id);
+                    var opr = Liveoperationslist.FirstOrDefault(x => x.Wo_Id == mc.Wo_Id && x.Opr_No == mc.Opr_No_Id);
 
                     if (opr == null)
                     {
                         continue;
                     }
-
+                    var Department = Departments.Where(x => x.DepartmentId == machine.ShopId).FirstOrDefault();
 
                     var routingStep = await _routingService.GetStep((int)opr.Opr_No);
 
                     var operation = new SimulationMachineOperationVM();
 
-                    operation.PartNum = part.PartNo;
-                    operation.OperationName = "Op " + routingStep.StepNumber;
 
-                    var operationSlots = tempmachinetimeslotlist
+                    operation.Department = Department != null
+                        ? Department.Name
+                        : "";
+                    operation.PartNum = part.PartNo;
+                    operation.MachineName = machine.SlNo;
+                    operation.OperationName = "Op " + routingStep.StepNumber;
+                    operation.Color = "#7092BE";
+                    var operationSlots = Livemachinetimeslotlist
                         .Where(x => x.Mc_Wait_List_Id == mc.Mc_Wait_ListId)
                         .OrderBy(x => x.Timeslot_List_Id)
                         .ToList();
 
                     if (operationSlots.Any())
                     {
+
+                        operation.BarType = "Inhouse";
+                        operation.TooltipType = "Inhouse";
                         long startSlot = (long)mc.Plan_start_time_Id;
                         long endSlot = (long)mc.Plan_end_time_Id;
 
                         operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
                         operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
+
+                        var startSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == startSlot);
+                        var endSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == endSlot);
+
+                        operation.ShopMachine = (Department != null ? Department.Name : "") + " / " + machine.SlNo;
+                        operation.PartNoDesc = part.PartNo + " / " + part.Description;
+                        operation.RoutingOprNo = route.RoutingName + " / " + routingStep.StepNumber;
+                        operation.WoNo = production.WONumber;
+                        operation.BatchQnty = production.PlanWOQnty.ToString();
+
+                        if (startSlotObj != null)
+                            operation.StartDateTime = startSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
+
+                        if (endSlotObj != null)
+                            operation.EndDateTime = endSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
+
+                        operation.DurationHours = ((endSlot - startSlot) + 1).ToString();
+
+                        char partsoldtocustomer;
+
+                        if (production.Parentlevel == 'Y')
+                        {
+                            partsoldtocustomer = 'Y';
+                        }
+                        else
+                        {
+                            partsoldtocustomer = 'N';
+                        }
+                        operation.PartSoldToCustomer = partsoldtocustomer;
+
+                        var oprmachines = await _routingService.StepMachines((int)opr.Opr_No);
+
+                        var machineselected = oprmachines.Where(x => x.MachineId == mc.Mc_Id && x.RoutingStepId == opr.Opr_No).FirstOrDefault();
+
+                        var setupTime = TimeSpan.Parse(machineselected.SetupTime);
+                        var floorToFloorTime = TimeSpan.Parse(machineselected.FloorToFloorTime);
+
+                        operation.FloorToFloorTime = floorToFloorTime.TotalMinutes.ToString();
+                        operation.SetupTime = setupTime.TotalMinutes.ToString();
+
                     }
 
                     operation.Status = "Running";
 
                     row.Operations.Add(operation);
                 }
+
+
                 if (row.Operations.Any())
                 {
                     vm.Machines.Add(row);
                 }
 
+                var nonPlanForMachine = nonplanbars.Where(x => x.Mc_Id == machine.MachineId).ToList();
+
+                foreach (var np in nonPlanForMachine)
+                {
+                    if (np.Plan_start_time == null || np.Plan_Duration == null)
+                        continue;
+
+
+                    if (string.IsNullOrWhiteSpace(np.Plan_Duration))
+                        continue;
+
+                    if (!TimeSpan.TryParse(np.Plan_Duration, out TimeSpan duration))
+                        continue;
+
+                    var npStart = np.Plan_start_time;
+                    var npEnd = npStart.Add(duration);
+
+
+                    var startSlotObj = timeslotlist
+                        .Where(x => x.Start_time <= npStart)
+                        .OrderByDescending(x => x.Start_time)
+                        .FirstOrDefault();
+
+                    var endSlotObj = timeslotlist
+                        .Where(x => x.Start_time <= npEnd)
+                        .OrderByDescending(x => x.Start_time)
+                        .FirstOrDefault();
+
+                    if (startSlotObj == null || endSlotObj == null)
+                        continue;
+
+                    var operation = new SimulationMachineOperationVM();
+
+                    operation.PartNum = "";
+                    operation.MachineName = machine.SlNo;
+                    operation.Department = "";
+                    operation.OperationName = string.IsNullOrEmpty(np.Work_Description)
+                        ? "Non-Plan"
+                        : np.Work_Description;
+
+                    long startSlot = (long)startSlotObj.Timeslot_ListId;
+                    long endSlot = (long)endSlotObj.Timeslot_ListId;
+
+                    operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
+                    operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
+
+                    operation.Color = "#DC3545";
+                    // operation.Status = "Machine Stop";
+
+                    operation.BarType = "NonPlan";
+                    operation.ShopMachine = machine.SlNo;   // no department/shop context for non-plan, adjust if you have one
+                    operation.StartDateTime = npStart.ToString("dd/MM/yyyy HH:mm");
+                    operation.EndDateTime = npEnd.ToString("dd/MM/yyyy HH:mm");
+                    operation.DurationHours = duration.TotalHours.ToString();
+                    operation.InitiatedBy = "";
+
+
+                    row.Operations.Add(operation);
+                }
+
+                var tempMachineOperations = tempmachinewaitlist.Where(x => x.Mc_Id == machine.MachineId).ToList();
+
+                foreach (var mc in tempMachineOperations)
+                {
+                    if (liveWoIds.Contains(mc.Wo_Id))// already frozen/live, skip
+                    {
+                        continue;
+                    }
+                    var production = productions.FirstOrDefault(x => x.WoId == mc.Wo_Id);
+                    if (production == null)
+                    {
+                        continue;
+                    }
+                    var part = masterpartlist.FirstOrDefault(x => x.PartId == production.PartId);
+                    if (part == null)
+                    {
+                        continue;
+                    }
+                    var opr = tempoperationslist.FirstOrDefault(x => x.Wo_Id == mc.Wo_Id && x.Opr_No == mc.Opr_No_Id);
+                    if (opr == null)
+                    {
+                        continue;
+                    }
+                    var Department = Departments.Where(x => x.DepartmentId == machine.ShopId).FirstOrDefault();
+
+                    var routingStep = await _routingService.GetStep((int)opr.Opr_No);
+                    var route = await _routingService.GetRouting((int)production.RoutingId);
+                    var operation = new SimulationMachineOperationVM();
+                    operation.BarType = "Temp";
+                    operation.TooltipType = "Inhouse";
+                    operation.Department = Department != null ? Department.Name : "";
+                    operation.PartNum = part.PartNo;
+                    operation.MachineName = machine.SlNo;
+                    operation.OperationName = "Op " + routingStep.StepNumber;
+                    operation.Color = "#FFC107";
+
+                    var operationSlots = tempmachinetimeslotlist
+                   .Where(x => x.Mc_Wait_List_Id == mc.TempMc_Wait_ListId)
+                   .OrderBy(x => x.Timeslot_List_Id)
+                   .ToList();
+
+                    if (operationSlots.Any())
+                    {
+
+                        long startSlot = (long)mc.Plan_start_time_Id;
+                        long endSlot = (long)mc.Plan_end_time_Id;
+
+                        operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
+                        operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
+                        var startSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == startSlot);
+                        var endSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == endSlot);
+
+                        operation.ShopMachine = (Department != null ? Department.Name : "") + " / " + machine.SlNo;
+                        operation.PartNoDesc = part.PartNo + " / " + part.Description;
+                        operation.RoutingOprNo = route.RoutingName + " / " + routingStep.StepNumber;
+                        operation.WoNo = production.WONumber;
+                        operation.BatchQnty = production.PlanWOQnty.ToString();
+
+                        if (startSlotObj != null)
+                            operation.StartDateTime = startSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
+
+                        if (endSlotObj != null)
+                            operation.EndDateTime = endSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
+
+                        operation.DurationHours = ((endSlot - startSlot) + 1).ToString();
+
+                        char partsoldtocustomer;
+
+                        if (production.Parentlevel == 'Y')
+                        {
+                            partsoldtocustomer = 'Y';
+                        }
+                        else
+                        {
+                            partsoldtocustomer = 'N';
+                        }
+                        operation.PartSoldToCustomer = partsoldtocustomer;
+
+                        var oprmachines = await _routingService.StepMachines((int)opr.Opr_No);
+
+                        var machineselected = oprmachines.Where(x => x.MachineId == mc.Mc_Id && x.RoutingStepId == opr.Opr_No).FirstOrDefault();
+
+                        var setupTime = TimeSpan.Parse(machineselected.SetupTime);
+                        var floorToFloorTime = TimeSpan.Parse(machineselected.FloorToFloorTime);
+
+                        operation.FloorToFloorTime = floorToFloorTime.TotalMinutes.ToString();
+                        operation.SetupTime = setupTime.TotalMinutes.ToString();
+                    }
+
+
+                    operation.Status = "Running";
+                    row.Operations.Add(operation);
+                }
+
             }
+
+
             return Ok(vm);
 
         }
-    
-}
+
+
+
+
+
+    }
 }
 

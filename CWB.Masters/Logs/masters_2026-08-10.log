@@ -1,0 +1,159 @@
+2026-08-10 06:03:48.6304 ERROR Error: System.InvalidOperationException: IDX20803: Unable to obtain configuration from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationHandler`1.AuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.AuthenticateAsync(HttpContext context, String scheme)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-08-10 06:03:48.6255 ERROR Error: System.InvalidOperationException: IDX20803: Unable to obtain configuration from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationHandler`1.AuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.AuthenticateAsync(HttpContext context, String scheme)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Routing.EndpointRoutingMiddleware.<Invoke>g__AwaitMatcher|8_0(EndpointRoutingMiddleware middleware, HttpContext httpContext, Task`1 matcherTask)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-08-10 06:03:48.6255 ERROR Error: System.InvalidOperationException: IDX20803: Unable to obtain configuration from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+ ---> System.IO.IOException: IDX20804: Unable to retrieve document from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+ ---> System.Threading.Tasks.TaskCanceledException: The operation was canceled.
+ ---> System.IO.IOException: The response ended prematurely.
+   at System.Net.Http.HttpConnection.FillAsync()
+   at System.Net.Http.HttpConnection.ReadNextResponseHeaderLineAsync(Boolean foldedHeadersAllowed)
+   at System.Net.Http.HttpConnection.SendAsyncCore(HttpRequestMessage request, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at System.Net.Http.HttpConnection.SendAsyncCore(HttpRequestMessage request, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithNtConnectionAuthAsync(HttpConnection connection, HttpRequestMessage request, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithRetryAsync(HttpRequestMessage request, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.FinishSendAsyncBuffered(Task`1 sendTask, HttpRequestMessage request, CancellationTokenSource cts, Boolean disposeCts)
+   at Microsoft.IdentityModel.Protocols.HttpDocumentRetriever.GetDocumentAsync(String address, CancellationToken cancel)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.Protocols.HttpDocumentRetriever.GetDocumentAsync(String address, CancellationToken cancel)
+   at Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectConfigurationRetriever.GetAsync(String address, IDocumentRetriever retriever, CancellationToken cancel)
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationHandler`1.AuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.AuthenticateAsync(HttpContext context, String scheme)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Routing.EndpointRoutingMiddleware.<Invoke>g__AwaitMatcher|8_0(EndpointRoutingMiddleware middleware, HttpContext httpContext, Task`1 matcherTask)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-08-10 06:03:48.6304 ERROR Error: System.InvalidOperationException: IDX20803: Unable to obtain configuration from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationHandler`1.AuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.AuthenticateAsync(HttpContext context, String scheme)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Routing.EndpointRoutingMiddleware.<Invoke>g__AwaitMatcher|8_0(EndpointRoutingMiddleware middleware, HttpContext httpContext, Task`1 matcherTask)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-08-10 06:03:48.6255 ERROR Error: System.InvalidOperationException: IDX20803: Unable to obtain configuration from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationHandler`1.AuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.AuthenticateAsync(HttpContext context, String scheme)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Routing.EndpointRoutingMiddleware.<Invoke>g__AwaitMatcher|8_0(EndpointRoutingMiddleware middleware, HttpContext httpContext, Task`1 matcherTask)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-08-10 06:03:48.6255 ERROR Error: System.InvalidOperationException: IDX20803: Unable to obtain configuration from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationHandler`1.AuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.AuthenticateAsync(HttpContext context, String scheme)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at Microsoft.AspNetCore.Routing.EndpointRoutingMiddleware.<Invoke>g__AwaitMatcher|8_0(EndpointRoutingMiddleware middleware, HttpContext httpContext, Task`1 matcherTask)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-08-10 06:05:03.2239 ERROR Error: System.InvalidOperationException: IDX20803: Unable to obtain configuration from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationHandler`1.AuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.AuthenticateAsync(HttpContext context, String scheme)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-08-10 06:05:03.5835 ERROR Error: System.InvalidOperationException: IDX20803: Unable to obtain configuration from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationHandler`1.AuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.AuthenticateAsync(HttpContext context, String scheme)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-08-10 06:05:03.5857 ERROR Error: System.InvalidOperationException: IDX20803: Unable to obtain configuration from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationHandler`1.AuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.AuthenticateAsync(HttpContext context, String scheme)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-08-10 06:05:04.1537 ERROR Error: System.InvalidOperationException: IDX20803: Unable to obtain configuration from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+ ---> System.IO.IOException: IDX20804: Unable to retrieve document from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+ ---> System.Threading.Tasks.TaskCanceledException: The operation was canceled.
+ ---> System.IO.IOException: Unable to read data from the transport connection: Operation canceled.
+ ---> System.Net.Sockets.SocketException (125): Operation canceled
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.FillAsync()
+   at System.Net.Http.HttpConnection.ReadNextResponseHeaderLineAsync(Boolean foldedHeadersAllowed)
+   at System.Net.Http.HttpConnection.SendAsyncCore(HttpRequestMessage request, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at System.Net.Http.HttpConnection.SendAsyncCore(HttpRequestMessage request, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithNtConnectionAuthAsync(HttpConnection connection, HttpRequestMessage request, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithRetryAsync(HttpRequestMessage request, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.FinishSendAsyncBuffered(Task`1 sendTask, HttpRequestMessage request, CancellationTokenSource cts, Boolean disposeCts)
+   at Microsoft.IdentityModel.Protocols.HttpDocumentRetriever.GetDocumentAsync(String address, CancellationToken cancel)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.Protocols.HttpDocumentRetriever.GetDocumentAsync(String address, CancellationToken cancel)
+   at Microsoft.IdentityModel.Protocols.OpenIdConnect.OpenIdConnectConfigurationRetriever.GetAsync(String address, IDocumentRetriever retriever, CancellationToken cancel)
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   --- End of inner exception stack trace ---
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationHandler`1.AuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.AuthenticateAsync(HttpContext context, String scheme)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-08-10 06:05:04.7748 ERROR Error: System.InvalidOperationException: IDX20803: Unable to obtain configuration from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationHandler`1.AuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.AuthenticateAsync(HttpContext context, String scheme)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-08-10 06:05:04.7748 ERROR Error: System.InvalidOperationException: IDX20803: Unable to obtain configuration from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationHandler`1.AuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.AuthenticateAsync(HttpContext context, String scheme)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-08-10 06:05:04.9427 ERROR Error: System.InvalidOperationException: IDX20803: Unable to obtain configuration from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationHandler`1.AuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.AuthenticateAsync(HttpContext context, String scheme)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26
+2026-08-10 06:05:05.2422 ERROR Error: System.InvalidOperationException: IDX20803: Unable to obtain configuration from: '[PII is hidden. For more details, see https://aka.ms/IdentityModel/PII.]'.
+   at Microsoft.IdentityModel.Protocols.ConfigurationManager`1.GetConfigurationAsync(CancellationToken cancel)
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler.HandleAuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationHandler`1.AuthenticateAsync()
+   at Microsoft.AspNetCore.Authentication.AuthenticationService.AuthenticateAsync(HttpContext context, String scheme)
+   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)
+   at CWB.ExceptionHandling.ExceptionMiddleware.InvokeAsync(HttpContext httpContext) in F:\CWBworking\CWB.ExceptionHandling\ExceptionMiddleware.cs:line 26

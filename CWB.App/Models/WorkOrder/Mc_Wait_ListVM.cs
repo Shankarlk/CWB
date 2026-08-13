@@ -46,5 +46,30 @@ namespace CWB.App.Models.WorkOrder
         public string SetupTimeTaken { get; set; }
         public string AddntimeforSetup { get; set; }
         public string PlanEndStr { get; set; }
+        //additonal view feilds
+        public string ShopName { get; set; }
+        public string SectionName { get; set; }
+        public long PartInQueue { get; set; }
+        public string HrsBooked { get; set; }
+        public string McNotAvlHrs { get; set; }
+        public string FreeHrs { get; set; }
+        public string SimulationDurationHrs { get; set; }
+        public string PercentHrsUsed { get; set; }
+        public string DateMcNotLoaded { get; set; }
+        public string PartNo { get; set; }
+        public string ReworkHrs { get; set; }
+        public int IsReworkCount { get; set; }
+        public int IsNonPlanCount { get; set; }
+        public string NonPlanHrs { get; set; }
+        public string WoNumber { get; set; }
+        public string DataChanged { get; set; }
+        public string WoQnty { get; set; }
+        public string RoutingName { get; set; }
+        public string OprNoName { get; set; }
+        public string CsStartDate { get; set; }
+        public string ActStartDate { get; set; }
+        public string MatlIssued { get; set; }
+        public string CsEndDate { get; set; }
+        public string WaitTime { get; set; }
     }
 }

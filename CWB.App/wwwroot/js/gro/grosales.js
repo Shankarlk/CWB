@@ -399,10 +399,17 @@ $('#dispatchPopup').on('shown.bs.modal', function () {
         '#Dispatchselectiontable tbody input[type=checkbox]',
         function () {
 
-            updateDispatchButton();
+           // updateDispatchButton();
+            updatePrintLineItemsButton();
 
         });
+    function updatePrintLineItemsButton() {
 
+        var checkedCount = $('#Dispatchselectiontable tbody input[type=checkbox]:checked').length;
+
+        $('#btnPrintLineItems').prop('disabled', checkedCount === 0);
+
+    }
     function updateDispatchButton() {
 
         var selectedIndentNos = [];
@@ -442,6 +449,166 @@ $('#dispatchPopup').on('shown.bs.modal', function () {
 
 
 });
+
+$("#btnPrintLineItems").click(function () {
+
+    var indentNos = [];
+
+    $('#Dispatchselectiontable tbody input[type=checkbox]:checked').each(function () {
+
+        var indentNo = $(this).closest("tr").find("td:eq(6)").text().trim();
+
+        if ($.inArray(indentNo, indentNos) === -1) {
+            indentNos.push(indentNo);
+        }
+
+    });
+
+    api.post("/Gro/GetPrintLineItems", {
+
+        IndentNos: indentNos
+
+    }).then(function (response) {
+
+        bindPrintLineItems(response);
+
+        $("#printLineItemsModal").modal("show");
+
+    });
+
+});
+
+function bindPrintLineItems(response) {
+    var indents = response.selectedIndents.split("     ");
+
+    var html = "";
+
+    $.each(indents, function (i, indent) {
+
+        html += indent;
+
+        if ((i + 1) % 5 === 0) {
+            html += "<br/>";
+        }
+        else if (i < indents.length - 1) {
+            html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        }
+
+    });
+
+    $("#selectedIndents").html(html);
+    // Selected Indents
+   
+
+    // Clear old rows
+    $("#printLineItemsBody").empty();
+
+    if (!response.items || response.items.length === 0) {
+        return;
+    }
+
+    // Bind rows
+    $.each(response.items, function (i, item) {
+
+        var row = $("#printLineItemRow").html();
+
+        row = row.replace("{partNo}", item.partNo);
+        row = row.replace("{totalOrderQty}", item.totalOrderQty);
+        row = row.replace("{qtyAvailable}", item.qtyAvailable);
+        row = row.replace("{balanceToPack}", item.balanceToPack);
+
+        $("#printLineItemsBody").append(row);
+
+    });
+
+}
+
+$("#btnPrintLineItemsList").click(function () {
+
+    var printContents = $("#printLineItemsContent").html();
+
+    var printWindow = window.open("", "", "width=1000,height=700");
+
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Line Items Required</title>
+
+            <link rel="stylesheet"
+                  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+            <style>
+
+                body{
+                    padding:20px;
+                    font-family:Arial;
+                    font-size:14px;
+                }
+
+                table{
+                    width:100%;
+                    border-collapse:collapse;
+                }
+
+                table,th,td{
+                    border:1px solid black;
+                }
+
+                th,td{
+                    padding:6px;
+                }
+
+                th{
+                    text-align:center;
+                }
+
+                h3{
+                    text-align:center;
+                    margin-bottom:20px;
+                }
+
+            </style>
+
+        </head>
+
+        <body>
+
+            <h3>Line Items Required</h3>
+
+            ${printContents}
+
+        </body>
+
+        </html>
+    `);
+
+    printWindow.document.close();
+
+    printWindow.focus();
+
+    printWindow.print();
+
+    printWindow.close();
+
+});
+
+
+$('#printLineItemsModal').on('hidden.bs.modal', function () {
+
+    // Uncheck all checkboxes
+    $('#Dispatchselectiontable tbody input[type=checkbox]')
+        .prop('checked', false);
+
+    // Disable Print Line Items button
+    $('#btnPrintLineItems')
+        .prop('disabled', true);
+    $('#selectedIndents').empty();
+
+    $('#printLineItemsBody').empty();
+});
+
+
+
 $('#dispatchPopup').on('hidden.bs.modal', function () {
 
     // Reset global variables

@@ -2456,5 +2456,67 @@ await _groservicee.GetallGroIndentpartSlno();
 
             return Ok(list);
         }
+        [HttpPost]
+        public async Task<IActionResult> GetPrintLineItems(PrintLineItemsVM model)
+        {
+            var allGroData = await _groservicee.GetallgroData();
+
+            var allStock = await _groservicee.Getallgrostocklist();
+
+            var allParts = await _groservicee.Getallgroparts();
+
+            // Selected records
+            var selectedData = allGroData
+                .Where(x => model.IndentNos.Contains(x.Indent))
+                .ToList();
+
+            // Concatenate unique indent + date
+            var selectedIndents = string.Join("     ",
+                selectedData
+                    .GroupBy(x => x.Indent)
+                    .Select(g =>
+                    {
+                        var first = g.First();
+
+                        return $"{first.Indent} dated {first.SentDate:dd-MM-yy}";
+                    }));
+
+            // Group by Part
+            var items = selectedData
+                .GroupBy(x => x.Gro_Part_No)
+                .Select(g =>
+                {
+                    var totalOrderQty = g.Sum(x => x.Reqd_Quantity);
+
+                    var stock = allStock.FirstOrDefault(s => s.Gro_Part_List_ID == g.Key);
+                    var baltodispatch= g.Sum(x => x.Bal_to_Disp);
+                    var qtyAvailable = stock?.Qnty_on_Hand ?? 0;
+
+                    var part = allParts.FirstOrDefault(p => p.Gro_Part_ListId == g.Key);
+                    return new PrintLineItemResultVM
+                    {
+
+                    PartNo = part == null
+                        ? ""
+                        : string.IsNullOrWhiteSpace(part.OurPartDescription)
+                            ? part.Gro_Part_No
+                            : $"{part.Gro_Part_No} / {part.OurPartDescription}",
+
+                    TotalOrderQty = totalOrderQty,
+
+                        QtyAvailable = qtyAvailable,
+
+                        BalanceToPack = Math.Max(0, totalOrderQty - qtyAvailable)
+                    };
+                })
+                .OrderBy(x => x.PartNo)
+                .ToList();
+
+            return Json(new PrintLineItemPopupVM
+            {
+                SelectedIndents = selectedIndents,
+                Items = items
+            });
+        }
     }
 }

@@ -586,27 +586,27 @@ $(function () {
             }
         }
 
-        var Timeslot_duration = document.getElementById('Timeslot_duration');
-        if (!Timeslot_duration.value || parseInt(Timeslot_duration.value) <= 0) {
-            Timeslot_duration.style.border = '2px solid red';
-            return false;
-        } else {
-            Timeslot_duration.style.border = '';
-        }
-        var No_of_span_days = document.getElementById('No_of_span_days');
-        if (!No_of_span_days.value || parseInt(No_of_span_days.value) <= 0) {
-            No_of_span_days.style.border = '2px solid red';
-            return false;
-        } else {
-            No_of_span_days.style.border = '';
-        }
-        var Retention_Days = document.getElementById('Retention_Days');
-        if (!Retention_Days.value || parseInt(Retention_Days.value) <= 0) {
-            Retention_Days.style.border = '2px solid red';
-            return false;
-        } else {
-            Retention_Days.style.border = '';
-        }
+        //var Timeslot_duration = document.getElementById('Timeslot_duration');
+        //if (!Timeslot_duration.value || parseInt(Timeslot_duration.value) <= 0) {
+        //    Timeslot_duration.style.border = '2px solid red';
+        //    return false;
+        //} else {
+        //    Timeslot_duration.style.border = '';
+        //}
+        //var No_of_span_days = document.getElementById('No_of_span_days');
+        //if (!No_of_span_days.value || parseInt(No_of_span_days.value) <= 0) {
+        //    No_of_span_days.style.border = '2px solid red';
+        //    return false;
+        //} else {
+        //    No_of_span_days.style.border = '';
+        //}
+        //var Retention_Days = document.getElementById('Retention_Days');
+        //if (!Retention_Days.value || parseInt(Retention_Days.value) <= 0) {
+        //    Retention_Days.style.border = '2px solid red';
+        //    return false;
+        //} else {
+        //    Retention_Days.style.border = '';
+        //}
         var First_Shift_Break_start_time = document.getElementById('First_Shift_Break_start_time');
         if (!First_Shift_Break_start_time.value && parseInt(noofshitfs.value) >= 1) {
             First_Shift_Break_start_time.style.border = '2px solid red';
@@ -1160,6 +1160,9 @@ function validateBreakStartWithinShift() {
         const shiftEnd = new Date(shiftStart.getTime() + duration * 60 * 60 * 1000);
         const breakStartField = document.getElementById('Third_Shift_Break_start_time');
         const breakStart = parseTime(breakStartField.value);
+        if (breakStart < shiftStart) {
+            breakStart.setDate(breakStart.getDate() + 1);
+        }
 
         if (!(breakStart >= shiftStart && breakStart < shiftEnd)) {
             breakStartField.style.border = '2px solid red';

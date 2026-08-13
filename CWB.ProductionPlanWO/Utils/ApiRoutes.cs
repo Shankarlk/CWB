@@ -49,7 +49,7 @@ namespace CWB.ProductionPlanWO.Utils
             public const string AllParentChildWos = Base + "/allparentchildwos/{parentWoId}/{tenantId}";
             public const string GetSingleWorkOrder = Base + "/getsingleworkorder/{Id}/{tenantId}";
             public const string GetSoWo = Base + "/getsowo/{workOrderId}";
-            public const string GetProCPurchase = Base + "/getprocpurchase/{procPlanId}";
+            public const string GetProCPurchase = Base + "/getprocpurchase/{procPlanId}/{tenantId}";
             public const string PostWOSORel = Base + "/wosorel";
             public const string PostProcPurchase = Base + "/postprocpurchase";
             public const string PostBOMTemp = Base + "/bomtemp";

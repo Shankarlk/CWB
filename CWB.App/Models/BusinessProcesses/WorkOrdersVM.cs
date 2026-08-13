@@ -94,5 +94,6 @@ namespace CWB.App.Models.BusinessProcesses
         public long Input_Part_No { get; set; }
         public int IsSplit { get; set; }
         public long SplitParentWorkOrderId { get; set; }
+        public long Calc_Capacity_Reqd { get; set; }
     }
 }

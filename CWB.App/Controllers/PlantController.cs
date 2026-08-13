@@ -60,6 +60,8 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> PlantWd(PlantWorkingDetailsVM model)
         {
+            model.Retention_Days = 45;
+            ModelState.Remove(nameof(model.Retention_Days));
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

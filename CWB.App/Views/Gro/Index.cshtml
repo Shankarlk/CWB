@@ -548,7 +548,7 @@
                     <table class="table table-sm table-bordered w-100 text-center" id="Dispatchselectiontable">
                         <thead class=" table-info th-sti">
                             <tr class="table-border-bottom">
-                                <th hidden></th>
+                                <th ></th>
                                 <th>Indent Date</th>
                                 <th>Indent No</th>
                                 <th>Customer</th>
@@ -568,8 +568,15 @@
 
             </div>
 
-            <div class="modal-footer" style="display:none;">
-                <button id="updatedispatchqnty" class="btn btn-primary" disabled
+            <div class="modal-footer justify-content-between"  >
+                <button id="btnPrintLineItems"
+                        class="btn btn-primary"
+                        disabled
+                        data-bs-toggle="modal"
+                        data-bs-target="#printLineItemsModal">
+                    Print Line Items Required
+                </button>
+                <button id="updatedispatchqnty" class="btn btn-primary" style="display:none;"
                         data-bs-toggle="modal"
                         data-bs-target="#dispatchQtyModal">
                     Update Dispatch Qty
@@ -3130,9 +3137,82 @@
     </div>
 
 </div>
+
+@* print line items modal  *@
+<div class="modal fade"
+        data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     id="printLineItemsModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-xl">
+
+        <div class="modal-content  border border-4 border-primary">
+
+            <div class="modal-header">
+
+                <h5>Line Items Required for selected Indents</h5>
+
+                <button class="btn-close"
+                        data-bs-dismiss="modal"></button>
+
+            </div>
+
+            <div class="modal-body" id="printLineItemsContent">
+
+                <div class="mb-3">
+
+                    <label><b>Indents Selected</b></label>
+
+                    <div id="selectedIndents"
+                         class="border rounded p-2"></div>
+
+                </div>
+
+                <table class="table table-sm table-bordered w-100 text-center">
+
+                    <thead class="table-info th-sti">
+
+                        <tr class="table-border-bottom">
+
+                            <th>Part No / Desc</th>
+
+                            <th>Total Order Qty</th>
+
+                            <th>Qty Avl</th>
+
+                            <th>Balance To Pack</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="printLineItemsBody"></tbody>
+
+                </table>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button id="btnPrintLineItemsList" class="btn btn-primary">
+
+                    Print List
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 <template id="dispatchSelectionRow">
     <tr>
-        <td hidden>
+        <td >
             <input type="checkbox" />
         </td>
 
@@ -3559,6 +3639,21 @@
         <td>{dispatchDate}</td>
 
         <td>{dispatchQty}</td>
+
+    </tr>
+
+</template>
+<template id="printLineItemRow">
+
+    <tr>
+
+        <td>{partNo}</td>
+
+        <td  >{totalOrderQty}</td>
+
+        <td  >{qtyAvailable}</td>
+
+        <td  >{balanceToPack}</td>
 
     </tr>
 
