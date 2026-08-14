@@ -10,6 +10,7 @@ namespace CWB.ProductionPlanWO.Domain
     {
         public string POReference { get; set; }
         public long ProcPlanId { get; set; }
+        public string ProcPlanIds { get; set; }
         public char AddHocPO { get; set; }
         public long PartId { get; set; }
         public int PoQnty { get; set; }

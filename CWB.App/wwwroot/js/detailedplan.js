@@ -2155,7 +2155,13 @@ $(document).ready(function () {
     $("#UpdateMOQ").on("click", function () {
         var selectedRowsData = [];
         $("#ProcPlanGrid tbody tr").each(function () {
-            var row = $(this); 
+            var row = $(this);
+            var partType = row.find("td:eq(5)").text().trim();
+
+            // MOQ update only for RawMaterial and BOF
+            if (partType !== "RawMaterial" && partType !== "BOF") {
+                return; // skip SubCon
+            }
             var combinedFlag = row.find("td:eq(23)").text(); // 🔥 CombinedProcPlan (adjust index) 
             var childCount = parseInt(row.find("td:eq(22)").text()) || 1; // 🔥 ChildCount
             var calcQty = parseInt(row.find("td:eq(8)").text()) || 0;

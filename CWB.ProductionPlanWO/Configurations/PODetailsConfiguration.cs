@@ -22,6 +22,9 @@ namespace CWB.ProductionPlanWO.Configurations
                .HasColumnName("ProcPlanId")
                .IsRequired();
             builder
+               .Property(t => t.ProcPlanIds)
+               .HasColumnName("ProcPlanIds");
+            builder
                .Property(t => t.POReference)
                .HasColumnName("POReference")
                .IsRequired();

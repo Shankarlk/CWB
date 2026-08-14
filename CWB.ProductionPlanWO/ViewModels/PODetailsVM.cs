@@ -9,6 +9,7 @@ namespace CWB.ProductionPlanWO.ViewModels
     {
         public long PoDetailsId { get; set; }
         public string POReference { get; set; }
+        public string ProcPlanIds { get; set; }
         public long ProcPlanId { get; set; }
         public char AddHocPO { get; set; }
         public long PartId { get; set; }

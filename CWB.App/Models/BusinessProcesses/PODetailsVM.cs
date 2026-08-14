@@ -41,5 +41,6 @@ namespace CWB.App.Models.BusinessProcesses
         public long InwHeaderId { get; set; } = 0;
         public string CombinedIds { get; set; } = string.Empty;
         public char Inspection { get; set; }
+        public string ProcPlanIds { get; set; }
     }
 }

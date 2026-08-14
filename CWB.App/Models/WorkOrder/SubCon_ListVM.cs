@@ -10,7 +10,15 @@ namespace CWB.App.Models.WorkOrder
         public long SubCon_ListId { get; set; }
         public long Wo_Id { get; set; }
         public long Opr_No { get; set; }
+        public string WoNumber { get; set; }
+        public long IssueQnty { get; set; }
         public long Supplier_Id { get; set; }
+        public long QntyAvl { get; set; }
+        public long Bal_Qnty { get; set; }
+        public string PartNo { get; set; }
+        public string RoutingName { get; set; }
+        public string OprNoName { get; set; }
+        public string Supplier { get; set; }
         public long Mode { get; set; }
         public long Act_Qnty { get; set; }
         public long Plan_Qnty { get; set; }

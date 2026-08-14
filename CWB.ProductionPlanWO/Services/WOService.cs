@@ -1050,7 +1050,7 @@ namespace CWB.ProductionPlanWO.Services
                             return allocations;
                         }
                     upp.Qnty_Recd = pp.Qnty_Recd;
-                    upp.Bal_to_Issue = pp.Bal_to_Issue;
+                    upp.Allocation_done = pp.Allocation_done;
                         pp = await _Input_Resrv_ListRepository.UpdateAsync(pp.Id, upp);
                     }
                     try

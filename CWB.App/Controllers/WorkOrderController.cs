@@ -9624,7 +9624,7 @@ namespace CWB.App.Controllers
             var resultList = await _woService.GetAllProcPlan();
             var uoms = await _masterService.GetUOMs();
             var workOrders = await _woService.AllProductionPlan_Wo();
-
+            var comapnies = await _masterService.GetCompanies();
             // Build set of work order IDs to exclude (those with status == 8)
             var excludedWoIds = workOrders
                 .Where(wo => wo.Status == 8)
@@ -9653,19 +9653,29 @@ namespace CWB.App.Controllers
                 {
                     item.UomName = uomName;
                 }
-                var mfpdList = partPurchasesTasks[(int)item.PartId].Result;
-                var relevantPurchases = mfpdList.Where(purs => item.PartId == purs.PPartId).ToList();
-
-                if (relevantPurchases.Any())
+                if (item.PartType == "BOF" || item.PartType == "RawMaterial")
                 {
-                    item.Supplier = relevantPurchases.First().PSupplier;
-                    item.SupplierId = relevantPurchases.First().PSupplierId;
-                    item.LeadTimeInDays = relevantPurchases.Sum(x => x.LeadTimeInDays).ToString();
-                    item.Moq = relevantPurchases.Sum(x => x.MinimumOrderQuantity);
-                    item.Price = relevantPurchases
-                                .Where(x => long.TryParse(x.Price, out _))
-                                .Sum(x => Convert.ToInt64(x.Price ?? "0"))
-                                .ToString();
+                    var mfpdList = partPurchasesTasks[(int)item.PartId].Result;
+                    var relevantPurchases = mfpdList.Where(purs => item.PartId == purs.PPartId).ToList();
+
+                    if (relevantPurchases.Any())
+                    {
+                        item.Supplier = relevantPurchases.First().PSupplier;
+                        item.SupplierId = relevantPurchases.First().PSupplierId;
+                        item.LeadTimeInDays = relevantPurchases.Sum(x => x.LeadTimeInDays).ToString();
+                        item.Moq = relevantPurchases.Sum(x => x.MinimumOrderQuantity);
+                        item.Price = relevantPurchases
+                                    .Where(x => long.TryParse(x.Price, out _))
+                                    .Sum(x => Convert.ToInt64(x.Price ?? "0"))
+                                    .ToString();
+                    }
+                }
+                else
+                {
+                    var subconsupplier = await _routingService.SubCons((int)item.StartingOpNO);
+                    var suppliername = comapnies.Where(x => x.CompanyId == subconsupplier.FirstOrDefault().SupplierId).FirstOrDefault();
+                    item.Supplier = suppliername.CompanyName;
+                    item.SupplierId = suppliername.CompanyId;
                 }
                 if (item.CriticalPart == 1)
                 {
@@ -10236,6 +10246,16 @@ namespace CWB.App.Controllers
         {
             foreach (var po in pODetails)
             {
+                if (!string.IsNullOrWhiteSpace(po.CombinedIds))
+                {
+                    po.ProcPlanIds = po.CombinedIds;
+                }
+                else
+                {
+                    po.ProcPlanIds = po.ProcPlanId.ToString();
+                }
+
+              
                 po.Inspection = 'N';
             }
 
@@ -12721,7 +12741,12 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> PostInv_Trans_Log(Inv_Trans_LogVM masterDocListVM)
         {
+            var inputreservelist = await _woService.GetallInputreservelist();
 
+            var podetails = await _woService.GetAllPodetails();
+            var procplans = await _woService.GetAllProcPlan();
+            var consolidated = await _woService.Getallconsolidationproductionwo();
+            var allprductionwo = await _woService.AllProductionWoReadForProd();
             if (masterDocListVM.Transaction_Id == 1)
             {
                 var deptstoresid = await _departmentService.GetAllStoresIDs();
@@ -12733,6 +12758,66 @@ namespace CWB.App.Controllers
 
             // INSERT ONLY ONCE
             var result = await _woService.PostInv_Trans_Log(masterDocListVM);
+            if (result.Transaction_Id == 1)
+            {
+
+
+                var porecord = podetails.Where(x => x.PoDetailsId == result.PO_No_Id).FirstOrDefault();
+
+                if (porecord != null && !string.IsNullOrWhiteSpace(porecord.ProcPlanIds))
+                {
+                    var procPlanIds = porecord.ProcPlanIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => long.Parse(x.Trim())).ToList();
+
+                    if (procPlanIds.Count == 1)
+                    {
+                        var procPlan = procplans
+                            .FirstOrDefault(x => x.ProcPlanId == procPlanIds[0]);
+
+                        if (procPlan != null)
+                        {
+                            // Get WO + Part combination
+                            var woId = procPlan.WorkOrderId;
+                            var partId = procPlan.PartId;
+
+                            var allocation = inputreservelist.FirstOrDefault(x => x.WO_Id == woId && x.PartId == partId && x.Allocation_done == 'N');
+                            if (allocation != null &&
+        masterDocListVM.Qnty >= allocation.Plan_Alloc_Qnty)
+                            {
+                                allocation.Allocation_done = 'Y';
+                                allocation.Qnty_Recd = allocation.Plan_Alloc_Qnty;
+                                await _woService.PostInputReservelist(new List<Input_Resrv_ListVM> { allocation });
+
+                            }
+
+                        }
+                    }
+                    if (procPlanIds.Count > 1)
+                    {
+                        var selectedProcPlans = procplans.Where(x => procPlanIds.Contains(x.ProcPlanId)).ToList();
+                        var getwoidid = consolidated.Where(x => x.WoId == selectedProcPlans.First().WorkOrderId).FirstOrDefault();
+                        var woId = getwoidid.CombinedWoId;
+                        var partId = selectedProcPlans.First().PartId;
+                        var allocation = inputreservelist.FirstOrDefault(x => x.WO_Id == woId && x.PartId == partId && x.Allocation_done == 'N');
+                        if (allocation != null &&
+    masterDocListVM.Qnty >= allocation.Plan_Alloc_Qnty)
+                        {
+                            allocation.Allocation_done = 'Y';
+                            allocation.Qnty_Recd = allocation.Plan_Alloc_Qnty;
+                            await _woService.PostInputReservelist(new List<Input_Resrv_ListVM> { allocation });
+                        }
+
+                    }
+
+
+
+                    // Continue allocation logic
+                }
+
+
+            }
+
+
+
 
             // Inventory handling
             if (result.Transaction_Id == 1)
@@ -14668,6 +14753,7 @@ namespace CWB.App.Controllers
                         .OrderByDescending(w => w.Plan_End_Date)
                         .FirstOrDefault()?.Plan_End_Date;
                     var pp = alProductionWOs.Where(p => p.WoId == item.Wo_Id).FirstOrDefault();
+                  
                     if (lastWoEndSlotId != null)
                     {
                         item.DateMcNotLoaded = lastWoEndSlotId?.ToString("dd-MM-yyyy hh:mm tt");
@@ -15295,7 +15381,7 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllIssueSubCon()
         {
-            var subconOps = await _woService.GetAllTempSubCon_List();
+            var subconOps = await _woService.GetAllSubCon_List();
             var productions = await _woService.AllProductionPlan_Wo();
             var masterparts = await _masterService.MasterPartList();
             var compaines = await _masterService.GetCompanies();
@@ -15325,19 +15411,19 @@ namespace CWB.App.Controllers
         {
             try
             {
-                var tempoprs = await _woService.GetAllTempOpr_List();
+                var tempoprs = await _woService.GetAllOpr_List();
                 var depts = await _departmentService.GetDepartments(1);
                 var prodns = await _woService.AllProductionPlan_Wo();
                 var masterparts = await _masterService.MasterPartList();
-                var tempSubCon_Lists = await _woService.GetAllTempSubCon_List();
+                var tempSubCon_Lists = await _woService.GetAllSubCon_List();
                 var procplans = await _woService.GetAllProcPlan();
                 var podetails = await _woService.GetAllPodetails();
                 foreach (var item in selectedMatlIds)
                 {
                     var invdata = new Inv_Trans_LogVM();
-                    var tempSubCon_List = tempSubCon_Lists.Where(m => m.TempSubCon_ListId == item).FirstOrDefault();
-                    var tempopr = tempoprs.Where(o => o.TempOpr_ListId == tempSubCon_List.Opr_No).FirstOrDefault();
-                    var pp = prodns.Where(p => p.ProductionPlanId == tempopr.Wo_Id).FirstOrDefault();
+                    var tempSubCon_List = tempSubCon_Lists.Where(m => m.SubCon_ListId == item).FirstOrDefault();
+                    var tempopr = tempoprs.Where(o => o.Opr_ListId == tempSubCon_List.Opr_No).FirstOrDefault();
+                    var pp = prodns.Where(p => p.WoId == tempopr.Wo_Id).FirstOrDefault();
                     var procplan = procplans.Where(p => p.WorkOrderId == pp.WoId).LastOrDefault();
                     var podetail = podetails.Where(p => p.ProcPlanId == procplan.ProcPlanId).LastOrDefault();
                     invdata.Input_Part_NoId = pp.PartId;
@@ -15400,8 +15486,8 @@ namespace CWB.App.Controllers
         {
             var result = new List<TempMc_Wait_ListVM>();
 
-            var waitList = await _woService.GetAllTempMc_Wait_List();
-            var timeslots = await _woService.GetAllTempMc_Timeslot_List();
+            var waitList = await _woService.GetAllMc_Wait_List();
+            var timeslots = await _woService.GetAllMc_Timeslot_List();
             var allTimeslots = await _woService.GetAllTimeslot_List();
             var parts = await _masterService.MasterPartList();
             var machines = await _machineService.GetMachinesList();
@@ -15436,7 +15522,7 @@ namespace CWB.App.Controllers
                 TimeSpan timePerPart = cycleTime + setupTime;
                 TimeSpan totalTimeRequired = TimeSpan.FromTicks(timePerPart.Ticks * wipQty);
 
-                bool isPartInMc = timeslots.Any(t => t.Mc_Wait_List_Id == mcWait.TempMc_Wait_ListId);
+                bool isPartInMc = timeslots.Any(t => t.Mc_Wait_List_Id == mcWait.Mc_Wait_ListId);
 
                 result.Add(new TempMc_Wait_ListVM
                 {
@@ -25445,14 +25531,46 @@ namespace CWB.App.Controllers
                         var currentStart = allTimeSlots
                             .FirstOrDefault(t => t.Timeslot_ListId == startSlotId);
 
-                        if (currentStart != null)
+                        //if (currentStart != null)
+                        //{
+                        //    item.WaitTime = currentStart.Start_time
+                        //        .ToString("dd-MM-yyyy hh:mm tt");
+                        //}
+                        //else
+                        //{
+                        //    item.WaitTime = "-";
+                        //}
+                        var previousItem = mcwaits
+        .Where(w =>
+            w.Mc_Id == item.Mc_Id &&
+            w.Wait_Seq_No == item.Wait_Seq_No - 1)
+        .FirstOrDefault();
+
+                        if (currentStart != null && previousItem != null)
                         {
-                            item.WaitTime = currentStart.Start_time
-                                .ToString("dd-MM-yyyy hh:mm tt");
+                            var previousEnd = allTimeSlots
+                                .FirstOrDefault(t =>
+                                    t.Timeslot_ListId == previousItem.Plan_end_time_Id);
+
+                            if (previousEnd != null)
+                            {
+                                TimeSpan waitDuration =
+                                    currentStart.Start_time - previousEnd.End_time;
+
+                                if (waitDuration.TotalMinutes < 0)
+                                    waitDuration = TimeSpan.Zero;
+
+                                item.WaitTime =
+                                    $"{(int)waitDuration.TotalHours:D2}:{waitDuration.Minutes:D2}";
+                            }
+                            else
+                            {
+                                item.WaitTime = "00:00";
+                            }
                         }
                         else
                         {
-                            item.WaitTime = "-";
+                            item.WaitTime = "00:00";
                         }
                     }
                 }
@@ -25526,6 +25644,8 @@ namespace CWB.App.Controllers
 
                 //}
             }
+           
+
             return Ok(mcwaits);
         }
 
@@ -26301,7 +26421,7 @@ namespace CWB.App.Controllers
             //    })
             //    .Select(x => x.First())
             //    .ToList();
-
+            result = result .Where(x => x.QntyAvl > 0).ToList();
             return Ok(result);
         }
         [HttpGet]
@@ -26656,7 +26776,7 @@ namespace CWB.App.Controllers
             ProductionSimulationVM vm = new ProductionSimulationVM();
             var productions = allprductionwo.Where(x => x.For_Ref == 'N').ToList();
             var dates = timeslotlist.GroupBy(x => x.Start_time.Date).OrderBy(x => x.Key);
-
+            var consolidatedwomapping = await _woService.Getallconsolidationproductionwo();
             foreach (var day in dates)
             {
                 SimulationHeaderVM header = new SimulationHeaderVM();
@@ -26997,7 +27117,116 @@ namespace CWB.App.Controllers
                 }
                 else
                 {
-                    partRow.HasMatlReceiptMarker = false;
+
+                    // Get WO IDs from Consolidated WO Mapping
+                    var consolidatedMappings = consolidatedwomapping.Where(x=>x.CombinedWoId==item.Wo_Id);
+
+                    var mappedWoIds = consolidatedMappings
+                        .Select(x => x.WoId)
+                        .Distinct()
+                        .ToList();
+
+                    if (!mappedWoIds.Contains(item.Wo_Id))
+                        mappedWoIds.Add(item.Wo_Id);
+
+                    // Get all ProcPlans belonging to mapped WOs
+                    var combinedProcPlans = procPlanList
+                        .Where(x => mappedWoIds.Contains(x.WorkOrderId) &&
+                                    (x.PartType == "BOF" ||
+                                     x.PartType == "RawMaterial"))
+                        .ToList();
+
+                    // Combine same material
+                    var groupedProcPlans = combinedProcPlans
+                        .GroupBy(x => new
+                        {
+                            x.PartId,
+                            x.PartType
+                        })
+                        .Select(g => new
+                        {
+                            ProcPlans = g.ToList(),
+                            PartId = g.Key.PartId,
+                            PartType = g.Key.PartType,
+                            ReceiptDate = g.Min(x => x.CalcReceiptDate),
+                            Quantity = g.Sum(x => x.Calc_Proc_Qnty)
+                        })
+                        .OrderBy(x => x.ReceiptDate)
+                        .ToList();
+
+                    foreach (var group in groupedProcPlans)
+                    {
+                        var firstSlot =
+                            GetFirstSlotOfDay(group.ReceiptDate, timeslotlist);
+
+                        if (firstSlot == null)
+                            continue;
+
+                        long slotId = firstSlot.Timeslot_ListId;
+
+                        partRow.MatlReceiptMarkerLeft =
+                            (slotId - firstTimelineSlot) * slotWidth;
+
+                        partRow.HasMatlReceiptMarker = true;
+
+                        partRow.MatlReceiptPartNo =
+                            group.PartId.ToString();
+
+                        partRow.MatlReceiptPartType =
+                            group.PartType;
+
+                        partRow.MatlReceiptDateDisplay =
+                            group.ReceiptDate.ToString("dd/MM/yyyy");
+
+                        var matlPart =
+                            masterpartlist.FirstOrDefault(
+                                x => x.PartId == group.PartId);
+
+                        partRow.MatlReceiptPartNoDesc =
+                            matlPart != null
+                                ? matlPart.PartNo + " / " + matlPart.Description
+                                : group.PartId.ToString();
+
+                        partRow.MatlReceiptQnty =
+                            group.Quantity.ToString();
+
+                        // Get supplier
+                        var suppliers = new List<string>();
+
+                        foreach (var procPlan in group.ProcPlans)
+                        {
+                            var relations =
+                                await _woService.ProcPlanPartPurChaseRel(
+                                    procPlan.ProcPlanId);
+
+                            var relation = relations.FirstOrDefault();
+
+                            if (relation == null)
+                                continue;
+
+                            var purchase =
+                                await _masterService.GetPartPurchase(
+                                    (int)relation.PartPurchaseId);
+
+                            if (purchase != null)
+                            {
+                                var supplier =
+                                    companies.FirstOrDefault(
+                                        x => x.CompanyId == purchase.PSupplierId);
+
+                                if (supplier != null &&
+                                    !suppliers.Contains(supplier.CompanyName))
+                                {
+                                    suppliers.Add(supplier.CompanyName);
+                                }
+                            }
+                        }
+
+                        partRow.MatlReceiptSupplier =
+                            string.Join(", ", suppliers);
+
+                        partRow.MatlReceiptPoNo = "";
+                    }
                 }
                 vm.Parts.Add(partRow);
 

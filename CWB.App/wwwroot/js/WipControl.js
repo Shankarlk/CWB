@@ -59,7 +59,7 @@ function InwardPo() {
     showLoader();
   //  $("#preloaderblurred").show();
     api.getbulk("/WorkOrder/GetAllPodetails").then((data) => {
-        data = data.filter(item => item.status >= 2);
+        data = data.filter(item => item.status == 2);
         let totalSubCon = 0;
         let totalRawMaterial = 0;
         let totalBOF = 0;
