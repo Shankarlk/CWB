@@ -115,6 +115,12 @@ namespace CWB.App.Services.BusinessProcesses
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<SalesOrderVM>>.GetAsync(uri, headers);
         }
+        public async Task<IEnumerable<SO_Alloc_ListVM>> AllSoallocation()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbba/getallsoallocation/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<SO_Alloc_ListVM>>.GetAsync(uri, headers);
+        }
         public async Task<IEnumerable<SalesOrderVM>> GetSalesOrders(long customerOrderId)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbba/getsalesorders/{tenantId}/{customerOrderId}");

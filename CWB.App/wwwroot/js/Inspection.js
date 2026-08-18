@@ -652,7 +652,7 @@ $(document).ready(function () {
                 var qnty = parseInt($("#P6TotalInsp").val());
                 var P6PartId = parseInt($("#P6PartId").val());
                 var P6PoId = parseInt($("#P6PoId").val());
-                var P6WoId = parseInt($("#P6WoId").val());
+                var P6WoId = $("#P6WoId").val();
 
                 var qntyValue = 0;
                 $("#P6InwardGrid tbody tr").each(function () {
@@ -694,6 +694,7 @@ $(document).ready(function () {
                                     Output_Routing_Id: data[data.length - 1].routingId,
                                     Output_Opr_No: stepdata[data.length - 1].stepId,
                                     Wo_Id: P6WoId,
+                                    WoIdStr: P6WoId,
                                     PO_No_Id: P6PoId,
                                     Transaction_Id: 2,
                                     Qnty: qnty,
@@ -704,20 +705,21 @@ $(document).ready(function () {
                                 };
                                 api.post("/WorkOrder/PostInv_Trans_Log", rowData).then((Insdata) => {
                                     $("#P6MessageBox").text("Inspection Complete");
-                                    var InvMasterrowData = {
-                                        Part_NoId: P6PartId,
-                                        Routing_Id: data[data.length - 1].routingId,
-                                        Inv_Trans_Log_Id: Insdata.inv_Trans_LogId,
-                                        Opr_No_Id: stepdata[data.length - 1].stepId,
-                                        Current_QntOnHand: qnty,
-                                        Location_Id: 1
-                                    };
-                                    api.post("/WorkOrder/PostInventory_Master", InvMasterrowData).then((data) => {
-                                        accpet = 0;
+                                    //var InvMasterrowData = {
+                                    //    Part_NoId: P6PartId,
+                                    //    Routing_Id: data[data.length - 1].routingId,
+                                    //    Inv_Trans_Log_Id: Insdata.inv_Trans_LogId,
+                                    //    Opr_No_Id: stepdata[data.length - 1].stepId,
+                                    //    Current_QntOnHand: qnty,
+                                    //    Location_Id: 1
+                                    //};
+                                    //api.post("/WorkOrder/PostInventory_Master", InvMasterrowData).then((data) => {
+                                    //    accpet = 0;
 
-                                    }).catch((error) => {
-                                        console.log(error);
-                                    }); loadPO();
+                                    //}).catch((error) => {
+                                    //    console.log(error);
+                                    //}); 
+                                    loadPO();
                                 }).catch((error) => {
                                     console.log(error);
                                 });

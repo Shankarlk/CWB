@@ -1287,57 +1287,57 @@ namespace CWB.App.Controllers
                     }
 
                     DateTime currentSlotStart = shiftStart;
-                    //while (currentSlotStart < shiftEnd)
-                    //{
-                    //    DateTime currentSlotEnd = currentSlotStart.AddMinutes(60);
-                    //    if (currentSlotEnd > shiftEnd) break;
-
-                    //    bool isBreak = breakStart.HasValue && breakEnd.HasValue &&
-                    //                   currentSlotStart >= breakStart.Value && currentSlotStart < breakEnd.Value;
-
-                    //    await _woService.PostTimeslot_List(new Timeslot_ListVM
-                    //    {
-                    //        PlantId = plant.PlantId,
-                    //        Start_time = currentSlotStart,
-                    //        End_time = currentSlotEnd,
-                    //        Break_Slot = isBreak ? 'Y' : 'N'
-                    //    });
-
-                    //    currentSlotStart = currentSlotEnd;
-                    //}
                     while (currentSlotStart < shiftEnd)
                     {
                         DateTime currentSlotEnd = currentSlotStart.AddMinutes(60);
+                        if (currentSlotEnd > shiftEnd) break;
 
-                        if (currentSlotEnd > shiftEnd)
-                            break;
+                        bool isBreak = breakStart.HasValue && breakEnd.HasValue &&
+                                       currentSlotStart >= breakStart.Value && currentSlotStart < breakEnd.Value;
 
-                        // Do not create slot if the slot starts on a non-working day
-                        DateTime slotDate = currentSlotStart.Date;
-
-                        bool isHoliday = holidays.Any(h => h.HasValue && h.Value.Date == slotDate);
-                        bool isWeeklyOff =
-                            currentSlotStart.DayOfWeek.ToString() == wd.WeeklyOff1 ||
-                            currentSlotStart.DayOfWeek.ToString() == wd.WeeklyOff2;
-
-                        if (!isHoliday && !isWeeklyOff)
+                        await _woService.PostTimeslot_List(new Timeslot_ListVM
                         {
-                            bool isBreak = breakStart.HasValue &&
-                                           breakEnd.HasValue &&
-                                           currentSlotStart >= breakStart.Value &&
-                                           currentSlotStart < breakEnd.Value;
-
-                            await _woService.PostTimeslot_List(new Timeslot_ListVM
-                            {
-                                PlantId = plant.PlantId,
-                                Start_time = currentSlotStart,
-                                End_time = currentSlotEnd,
-                                Break_Slot = isBreak ? 'Y' : 'N'
-                            });
-                        }
+                            PlantId = plant.PlantId,
+                            Start_time = currentSlotStart,
+                            End_time = currentSlotEnd,
+                            Break_Slot = isBreak ? 'Y' : 'N'
+                        });
 
                         currentSlotStart = currentSlotEnd;
                     }
+                    //while (currentSlotStart < shiftEnd)
+                    //{
+                    //    DateTime currentSlotEnd = currentSlotStart.AddMinutes(60);
+
+                    //    if (currentSlotEnd > shiftEnd)
+                    //        break;
+
+                    //    // Do not create slot if the slot starts on a non-working day
+                    //    DateTime slotDate = currentSlotStart.Date;
+
+                    //    bool isHoliday = holidays.Any(h => h.HasValue && h.Value.Date == slotDate);
+                    //    bool isWeeklyOff =
+                    //        currentSlotStart.DayOfWeek.ToString() == wd.WeeklyOff1 ||
+                    //        currentSlotStart.DayOfWeek.ToString() == wd.WeeklyOff2;
+
+                    //    if (!isHoliday && !isWeeklyOff)
+                    //    {
+                    //        bool isBreak = breakStart.HasValue &&
+                    //                       breakEnd.HasValue &&
+                    //                       currentSlotStart >= breakStart.Value &&
+                    //                       currentSlotStart < breakEnd.Value;
+
+                    //        await _woService.PostTimeslot_List(new Timeslot_ListVM
+                    //        {
+                    //            PlantId = plant.PlantId,
+                    //            Start_time = currentSlotStart,
+                    //            End_time = currentSlotEnd,
+                    //            Break_Slot = isBreak ? 'Y' : 'N'
+                    //        });
+                    //    }
+
+                    //    currentSlotStart = currentSlotEnd;
+                    //}
                 }
             }
         }

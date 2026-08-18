@@ -28,7 +28,7 @@ namespace CWB.App.Services.BusinessProcesses
         Task<IEnumerable<CustomerOrderRowVM>> GetCustomerOrders();
         Task<IEnumerable<DeliveryScheduleVM>> GetSchedules(long customerOrderId);
         Task<IEnumerable<SO_Alloc_ListVM>> GetSOAllocationlistbyPartid(long partId);
-
+        Task<IEnumerable<SO_Alloc_ListVM>> AllSoallocation();
         Task<bool> AddSalesOrders(long customerOrderId);
         Task<SO_Alloc_ListVM> PostSOAllocation(SO_Alloc_ListVM soallocvm);
         Task<SalesOrderVM> PostSalesOrder(SalesOrderVM salesOrderVM);

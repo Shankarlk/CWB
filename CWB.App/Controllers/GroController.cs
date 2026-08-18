@@ -100,17 +100,21 @@ namespace CWB.App.Controllers
                 }
 
                 ISheet sheet = workbook.GetSheetAt(0);
+                //var custspecificdata1 = await _groservicee.GetallCustSpecificData();
+                //var custspecificdata = custspecificdata1.FirstOrDefault();
+                //long startingrowno;
+                //if(custspecificdata==null)
+                //{
+                //    startingrowno = 1;
+                //}
+                //else
+                //{
+                //    startingrowno = custspecificdata.Last_Upload_Row_No;
+                //}
                 var custspecificdata1 = await _groservicee.GetallCustSpecificData();
-                var custspecificdata = custspecificdata1.FirstOrDefault();
-                long startingrowno;
-                if(custspecificdata==null)
-                {
-                    startingrowno = 1;
-                }
-                else
-                {
-                    startingrowno = custspecificdata.Last_Upload_Row_No;
-                }
+                var custspecificdata = custspecificdata1?.FirstOrDefault();
+
+                long startingrowno = custspecificdata?.Last_Upload_Row_No ?? 1;
 
                 long lastRow = sheet.LastRowNum;
                 var groDataList = new List<Gro_DataVM>();

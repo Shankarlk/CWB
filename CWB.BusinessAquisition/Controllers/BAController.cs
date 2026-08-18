@@ -130,7 +130,15 @@ namespace BAapi.Controllers
             var pologs = await _baService.GetSchedules(tenantId, customerOrderId);
             return Ok(pologs);
         }
-
+        [HttpGet]
+        [Route(ApiRoutes.Aquisition.GetAllSoAllocation)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<SO_Alloc_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllSoAllocation(long tenantId )
+        {
+            var pologs = await _baService.GetAllSoAllocation(tenantId );
+            return Ok(pologs);
+        }
         [HttpGet]
         [Route(ApiRoutes.Aquisition.GetSoAllocationListbypartid)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<SO_Alloc_ListVM>))]

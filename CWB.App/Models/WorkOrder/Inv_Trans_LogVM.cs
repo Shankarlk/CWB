@@ -17,6 +17,7 @@ namespace CWB.App.Models.WorkOrder
         public long Output_Routing_Id { get; set; }
         public long Output_Opr_No { get; set; }
         public long Wo_Id { get; set; }
+        public string WoIdStr { get; set; }
         public long PO_No_Id { get; set; }
         public long Transaction_Id { get; set; }
         public decimal Qnty { get; set; }

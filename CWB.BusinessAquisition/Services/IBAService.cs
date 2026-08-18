@@ -16,6 +16,7 @@ namespace CWB.BusinessAquisition.Services
         Task<List<SalesOrderVM>> GetAllSalesOrders(long tenantId);
         Task<IEnumerable<DeliveryScheduleVM>> GetSchedules(long tenantId, long customerOrderId);
         Task<IEnumerable<SO_Alloc_ListVM>> GetSoAllocationListbypartid(long tenantId, long Partid);
+        Task<IEnumerable<SO_Alloc_ListVM>> GetAllSoAllocation(long tenantId);
         Task<SO_Alloc_ListVM> PostSOAllocation(SO_Alloc_ListVM soallocationVM);
         string HelloWorld();
         Task<SalesOrderVM> SalesOrder(SalesOrderVM salesOrderVm);

@@ -315,7 +315,7 @@ $(document).ready(function () {
         document.getElementById('preloader').style.display = 'block';
         document.getElementById('status').style.display = 'block';
         return $.ajax({
-            url: '/WorkOrder/PostIssueInvSubCon', // Replace with your controller
+            url: '/WorkOrder/PostIssueInv_Trans_Log', // Replace with your controller
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(selectedIds),

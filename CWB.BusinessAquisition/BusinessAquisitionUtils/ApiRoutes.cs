@@ -16,6 +16,7 @@
             public const string GetCustomerOrders = Base + "/getcustomerorders/{tenantId}";
             public const string GetSchedules = Base + "/getschedules/{tenantId}/{customerOrderId}";
             public const string GetSoAllocationListbypartid = Base + "/getsoallocationbypartid/{tenantId}/{partId}";
+            public const string GetAllSoAllocation = Base + "/getallsoallocation/{tenantId}";
             public const string PostSOAllocation = Base + "/postsoallocation";
             public const string AddSalesOrders = Base + "/addsalesorders/{tenantId}/{customerOrderId}";
             public const string HelloWorld = Base + "/helloworld/{tenantId}";

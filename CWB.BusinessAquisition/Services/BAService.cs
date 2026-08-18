@@ -332,6 +332,22 @@ namespace CWB.BusinessAquisition.Services
             }
             return new List<SO_Alloc_ListVM>();
         }
+        public async Task<IEnumerable<SO_Alloc_ListVM>> GetAllSoAllocation (long tenantId )
+        {
+            try
+            {
+                 
+                var soalloclist = _SO_AllocationRepository.GetRangeAsync(d => d.TenantId == tenantId  );
+                return _mapper.Map<IEnumerable<SO_Alloc_ListVM>>(soalloclist);
+            }
+            catch (Exception ex)
+            {
+                Exception exa = ex.InnerException;
+                string msg = ex.Message;
+            }
+            return new List<SO_Alloc_ListVM>();
+        }
+
         public async Task<SO_Alloc_ListVM> PostSOAllocation(SO_Alloc_ListVM soallocationVM)
         {
             try

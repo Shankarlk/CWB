@@ -41,5 +41,9 @@ namespace CWB.App.Models.WorkOrder
 
         public string IssueQntyDisplay { get; set; }
         public string QntyAvlDisplay { get; set; }
+
+        public string OprNoName { get; set; }
+        public string Supplier { get; set; }
+        public long Bal_Qnty { get; set; }
     }
 }
