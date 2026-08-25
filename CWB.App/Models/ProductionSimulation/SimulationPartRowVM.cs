@@ -20,7 +20,7 @@ namespace CWB.App.Models.ProductionSimulation
         public string PartNoColor { get; set; }
         public double SoCompletionMarkerLeft { get; set; }
         public bool HasSoCompletionMarker { get; set; }
-
+        public string PartNoTitle { get; set; }
         public string SoCustomer { get; set; }
         public string SoNo { get; set; }
         public string SoQnty { get; set; }

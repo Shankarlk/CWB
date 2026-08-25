@@ -271,6 +271,21 @@ function startGroUpload() {
                 $("#ProductCount").text(response.productCount);
 
                 alert("Upload Completed");
+                $("#preloaderblurred").show();
+                loadGroUploadSummary();
+                $("#preloaderblurred").hide();
+
+                $("#preloaderblurred").show();
+                loadDispatchAgeingSummary();
+                $("#preloaderblurred").hide();
+
+                $("#preloaderblurred").show();
+                loadDeliveryAgeingSummary();
+                $("#preloaderblurred").hide();
+
+                $("#preloaderblurred").show();
+                loadPendingCourierCount();
+                $("#preloaderblurred").hide();
             }
             else {
                 $("#preloaderblurred").hide();

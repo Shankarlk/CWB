@@ -3526,3 +3526,9 @@ Connected to database successfully! Connection string: server=db;port=3306;uid=r
 Connected to database successfully! Connection string: server=db;port=3306;uid=root;pwd=password;database=cwbtenant
 Connected to database successfully! Connection string: server=db;port=3306;uid=root;pwd=password;database=cwbtenant
 Connected to database successfully! Connection string: server=db;port=3306;uid=root;pwd=password;database=cwbtenant
+Connected to database successfully! Connection string: server=db;port=3306;uid=root;pwd=password;database=cwbtenant
+Connected to database successfully! Connection string: server=db;port=3306;uid=root;pwd=password;database=cwbtenant
+Connected to database successfully! Connection string: server=db;port=3306;uid=root;pwd=password;database=cwbtenant
+Connected to database successfully! Connection string: server=10.70.30.75;port=3306;uid=root;pwd=password;database=cwbtenant
+Connected to database successfully! Connection string: server=10.70.30.75;port=3306;uid=root;pwd=password;database=cwbtenant
+Connected to database successfully! Connection string: server=10.70.30.75;port=3306;uid=root;pwd=password;database=cwbtenant

@@ -105,6 +105,8 @@ $(document).ready(function () {
             success: function (res) {
                 alert(res.message);
                 console.log(res);
+                loadIssueShop();
+                loadMisCount();
                 document.getElementById('preloader').style.display = 'none';
                 document.getElementById('status').style.display = 'none';
             },
@@ -322,6 +324,8 @@ $(document).ready(function () {
             success: function (res) {
                 alert(res.message);
                 console.log(res);
+                loadIssueSubcon();
+                loadMisCount();
                 document.getElementById('preloader').style.display = 'none';
                 document.getElementById('status').style.display = 'none';
             },
@@ -497,19 +501,19 @@ function loadIssueShop() {
 
     api.getbulk("/workOrder/GetAllMatl_Issue_List").then((data) => {
 
-        let unique = [];
-        let seen = new Set();
+        //let unique = [];
+        //let seen = new Set();
 
-        for (let item of data) {
-            // Build unique key including opNo to allow different operations
-            let key = `${item.shop}|${item.woNumber}|${item.partNo}|${item.routingName}|${item.opNo}`;
+        //for (let item of data) {
+        //    // Build unique key including opNo to allow different operations
+        //    let key = `${item.shop}|${item.woNumber}|${item.partNo}|${item.routingName}|${item.opNo}`;
 
-            if (!seen.has(key)) {
-                seen.add(key);
-                unique.push(item);
-            }
-        }
-        if (unique.length === 0) {
+        //    if (!seen.has(key)) {
+        //        seen.add(key);
+        //        unique.push(item);
+        //    }
+        //}
+        if (data.length === 0) {
             // 2. Insert the "No Records Found" row
             // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
             const noRecordsRow = `
@@ -520,8 +524,8 @@ function loadIssueShop() {
                 </tr>`;
             $(tablebody).append(noRecordsRow);
         }
-        for (i = 0; i < unique.length; i++) {
-            $(tablebody).append(AppUtil.ProcessTemplateData("P1GridRow", unique[i]));
+        for (i = 0; i < data.length; i++) {
+            $(tablebody).append(AppUtil.ProcessTemplateData("P1GridRow", data[i]));
         }
         $("#preloaderblurred").hide();
     }).catch((error) => {

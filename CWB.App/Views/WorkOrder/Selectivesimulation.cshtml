@@ -108,79 +108,71 @@
                     </div>
                 </div>
                 <div class="timeline-wrapper">
-
                     <button id="btnPrev" class="timeline-arrow left">
                         <i class="fa fa-chevron-left"></i>
                     </button>
 
-                    <div class="timeline-wrapper">
+                    <div class="table-responsive" id="timelineContainer" style="max-height:650px; overflow:auto;">
 
-                        <button id="btnPrev" class="timeline-arrow left">
-                            <i class="fa fa-chevron-left"></i>
-                        </button>
+                        <table class="table table-bordered text-center align-middle mb-0">
 
-                        <div class="table-responsive" id="timelineContainer" style="max-height:650px; overflow:auto;">
+                            <thead>
+                                <tr id="dateHeader"></tr>
+                                <tr id="shiftHeader"></tr>
+                                <tr id="hourHeader"></tr>
+                            </thead>
 
-                            <table class="table table-bordered text-center align-middle mb-0">
+                            <tbody id="simulationBody"></tbody>
 
-                                <thead>
-                                    <tr id="dateHeader"></tr>
-                                    <tr id="shiftHeader"></tr>
-                                    <tr id="hourHeader"></tr>
-                                </thead>
-
-                                <tbody id="simulationBody"></tbody>
-
-                            </table>
-
-                        </div>
-
-                        <button id="btnNext" class="timeline-arrow right">
-                            <i class="fa fa-chevron-right"></i>
-                        </button>
+                        </table>
 
                     </div>
 
-                    <!-- Legend -->
-
-                    <div class="row mt-4">
-
-                        <!-- Left Side -->
-                        <div class="col-md-8">
-
-
-
-                            <div>VMC1 = Critical Routing Step (Operation)</div>
-
-                            <div>VMC1 * = Critical Routing Step (Operation) + Critical Setup</div>
-
-                            <div>Pride * = Critical Setup</div>
-
-                            <br>
-
-                            <div>Part Bookout Summary can be provided below</div>
-
-                        </div>
-
-
-
-
-                    </div>
+                    <button id="btnNext" class="timeline-arrow right">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
 
                 </div>
+
+                <!-- Legend -->
+
+                <div class="row mt-4">
+
+                    <!-- Left Side -->
+                    <div class="col-md-8">
+
+
+
+                        <div>VMC1 = Critical Routing Step (Operation)</div>
+
+                        <div>VMC1 * = Critical Routing Step (Operation) + Critical Setup</div>
+
+                        <div>Pride * = Critical Setup</div>
+
+                        <br>
+
+                        <div>Part Bookout Summary can be provided below</div>
+
+                    </div>
+
+
+
+
+                </div>
+
             </div>
         </div>
-
     </div>
+
+</div>
 </div>
 
 <template id="partSimulationRow">
 
     <tr>
 
-        <td style="background:{partNoColor};">{partNo}</td>
-
-        <td>{urgent}</td>
+        <td title="{partNoTitle}" style="position: sticky; left: 0px; z-index: 95; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; background:{partNoColor};">{partNo}</td>
+        <td style="position:sticky; left:160px; background:#f8f9fa; z-index:94;">{urgent}</td>
 
         <td colspan="{totalHours}" class="position-relative p-0" style="border: 0.5px solid #ced4da;">
 
@@ -240,20 +232,19 @@
         <div class="operation-tooltip tooltip-inhouse">
             <b>Tool Tip Content for M/c Bar</b><br>
             <span class="customer-line"><b>Part Sold to Customer:</b> {partSoldToCustomer}<br></span>
-            <b>Shop / Machine:</b> {shopMachine}<br>
-            <b>Part No / Desc:</b> {partNoDesc}<br>
-            <b>Routing No / Opr No:</b> {routingOprNo}<br>
-            <b>WO No:</b> {woNo}<br>
-            <b>Batch Qnty:</b> {batchQnty}<br>
-            <b>Start Date / Time:</b> {startDateTime}<br>
-            <b>End Date / Time:</b> {endDateTime}<br>
-            <b>Duration (Hrs):</b> {durationHours}<br>
-            <b>Floor to Floor Time (min):</b> {floorToFloorTime}<br>
-            <b>Setup Time (min):</b> {setupTime}<br>
+            <b>Shop / Machine:</b> <span class="tooltip-value">{shopMachine}</span><br>
+            <b>Part No / Desc:</b> <span class="tooltip-value">{partNoDesc}</span><br>
+            <b>Routing No / Opr No:</b> <span class="tooltip-value">{routingOprNo}</span><br>
+            <b>WO No:</b> <span class="tooltip-value">{woNo}</span><br>
+            <b>Batch Qnty:</b> <span class="tooltip-value">{batchQnty}</span><br>
+            <b>Start Date / Time:</b> <span class="tooltip-value">{startDateTime}</span><br>
+            <b>End Date / Time:</b> <span class="tooltip-value">{endDateTime}</span><br>
+            <b>Duration (Hrs):</b> <span class="tooltip-value">{durationHours}</span><br>
+            <b>Floor to Floor Time (min):</b> <span class="tooltip-value">{floorToFloorTime}</span><br>
+            <b>Setup Time (min):</b> <span class="tooltip-value">{setupTime}</span><br>
         </div>
 
         <div class="operation-tooltip tooltip-nonplan">
-            <b>Tool Tip Content (for Non Plan Work)</b><br>
             <u>Non Plan Work Details</u><br>
             <b>Shop / Machine:</b> {shopMachine}<br>
             <b>Start Date / Time:</b> {startDateTime}<br>
@@ -277,6 +268,7 @@
         width:{width}px;
         height:24px;
         background:{color};
+        outline: {delayOutline};
         color:#fff;
         line-height:24px;
         text-align:center;
@@ -284,20 +276,17 @@
         {displayLabel} - {operationName}
 
         <div class="operation-tooltip tooltip-inhouse">
-
-            <span class="assy-customer-line"><b>Assy Sold to Customer / Child Manufactured:</b> {assySoldToCustomer}<br></span>
-            <span class="part-customer-line"><b>Part Sold to Customer / Sub Assy / Child Manufactured Part (Common *)</b> {partSoldToCustomer}<br></span>
-            <b>Shop / Machine:</b> {shopMachine}<br>
-            <b>Part No / Desc:</b> {partNoDesc}<br>
-            <b>Routing No / Opr No:</b> {routingOprNo}<br>
-            <b>WO No:</b> {woNo}<br>
-            <b>Batch Qnty:</b> {batchQnty}<br>
-            <b>Start Date / Time:</b> {startDateTime}<br>
-            <b>End Date / Time:</b> {endDateTime}<br>
-            <b>Duration (Hrs):</b> {durationHours}<br>
-            <b>Floor to Floor Time (min):</b> {floorToFloorTime}<br>
-            <b>Setup Time (min):</b> {setupTime}<br>
-
+            <b><span class="tooltip-value">{customerLabel}</span> </b> <span class="tooltip-value">{customerValue}</span><br>
+            <b>Shop / Machine:</b> <span class="tooltip-value">{shopMachine}</span><br>
+            <b>Part No / Desc:</b> <span class="tooltip-value">{partNoDesc}</span><br>
+            <b>Routing No / Opr No:</b> <span class="tooltip-value">{routingOprNo}</span><br>
+            <b>WO No:</b> <span class="tooltip-value">{woNo}</span><br>
+            <b>Batch Qnty:</b> <span class="tooltip-value">{batchQnty}</span><br>
+            <b>Start Date / Time:</b> <span class="tooltip-value">{startDateTime}</span><br>
+            <b>End Date / Time:</b> <span class="tooltip-value">{endDateTime}</span><br>
+            <b>Duration (Hrs):</b> <span class="tooltip-value">{durationHours}</span><br>
+            <b>Floor to Floor Time (min):</b> <span class="tooltip-value">{floorToFloorTime}</span><br>
+            <b>Setup Time (min):</b> <span class="tooltip-value">{setupTime}</span><br>
         </div>
         <div class="operation-tooltip tooltip-subcon">
 
@@ -315,6 +304,9 @@
 
 
 <style>
+    .tooltip-value {
+        margin-left: 4px;
+    }
 
     .d-flex {
         display: flex !important;
@@ -331,21 +323,29 @@
         position: sticky;
         top: 0;
         background: #f5f6f7;
-        z-index: 50;
+        z-index: 70;
+        height: 28px;
+        padding: 0;
+        line-height: 28px;
+        font-size: 0.85rem;
     }
 
     #shiftHeader th {
         position: sticky;
-        top: 40px; /* height of Date row */
         background: #f5f6f7;
-        z-index: 49;
+        z-index: 60;
+        height: 28px;
+        padding: 0;
+        line-height: 28px;
+        font-size: 0.85rem;
     }
 
     #hourHeader th {
         position: sticky;
-        top: 80px; /* Date + Shift height */
         background: #f5f6f7;
-        z-index: 48;
+        z-index: 50;
+        font-size: 0.8rem;
+        line-height: 20px;
     }
 
     .timeline-wrapper {
@@ -386,7 +386,7 @@
         position: absolute;
         top: 4px;
         width: 36px;
-        height: 6px;
+        height: 45px;
         background: #000;
         cursor: pointer;
         z-index: 6;
@@ -417,14 +417,14 @@
 
 
 
-    /* Part View */
+    /* Part View
     .part-view #dateHeader th:first-child,
     .part-view #simulationBody td:first-child {
         position: sticky;
         left: 0;
         min-width: 160px;
         background: #f8f9fa;
-        z-index: 100;
+        z-index: 105;
     }
 
     .part-view #dateHeader th:nth-child(2),
@@ -433,9 +433,9 @@
         left: 160px;
         min-width: 80px;
         background: #f8f9fa;
-        z-index: 101;
+        z-index: 106;
         border-left: 1px solid #ced4da !important;
-    }
+    }*/
 
     /* Machine View */
     .machine-view #dateHeader th:first-child,
@@ -483,21 +483,6 @@
         background-color: white;
         background-image: repeating-linear-gradient( to right, rgba(0,0,0,.05) 0px, rgba(0,0,0,.05) 1px, transparent 1px, transparent 38px );
     }
-
-    #dateHeader th:first-child,
-    #dateHeader th:nth-child(2) {
-        top: 0;
-    }
-
-    #shiftHeader th:first-child,
-    #shiftHeader th:nth-child(2) {
-        top: 40px;
-    }
-
-    #hourHeader th:first-child,
-    #hourHeader th:nth-child(2) {
-        top: 80px;
-    }
 </style>
 
 
@@ -527,6 +512,11 @@
         white-space: nowrap;
     }
 
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+        table-layout: fixed;
+    }
     /* Only show the matching tooltip type for each bar type */
     .operation-bar[data-bartype="Inhouse"]:hover .tooltip-inhouse {
         display: block;
@@ -557,7 +547,7 @@
     .matl-receipt-marker {
         position: absolute;
         top: 4px;
-        height: 6px;
+        height: 45px;
         background: #fff;
         border: 2px solid #000;
         cursor: pointer;
@@ -589,8 +579,9 @@
     #sharedTooltip {
         position: fixed !important;
         display: none;
-        min-width: 220px;
-        max-width: 500px;
+        width: 350px;
+        min-width: 350px;
+        max-width: 350px;
         padding: 10px;
         background: #fff;
         color: #333;
@@ -602,6 +593,10 @@
         z-index: 2147483647 !important;
         pointer-events: none;
     }
+
+        #sharedTooltip .tooltip-value {
+            margin-left: 10px;
+        }
 
     .operation-bar .operation-tooltip {
         display: none !important;

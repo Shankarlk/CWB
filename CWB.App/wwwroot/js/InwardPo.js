@@ -460,7 +460,10 @@ $(document).ready(function () {
                         }
                         $("#P4MessageBox").text("Inwarding Complete");
 
-                        loadPO();
+                        //loadPO();
+                        setTimeout(function () {
+                            location.reload();
+                        }, 3000);
                     }
                 });
             } else {

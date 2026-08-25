@@ -51,5 +51,11 @@ namespace CWB.App.Models.ProductionSimulation
         public string DurationHours { get; set; }
         public string FloorToFloorTime { get; set; }
         public string SetupTime { get; set; }
+        public bool IsDelayed { get; set; }
+
+        public string DelayOutline { get; set; }
+
+        public string CustomerLabel { get; set; }
+        public string CustomerValue { get; set; }
     }
 }

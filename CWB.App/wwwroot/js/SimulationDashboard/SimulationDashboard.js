@@ -107,9 +107,9 @@ function scrollToToday() {
     });
 }
 
- 
+
 // FILTERING
- 
+
 
 function filterMachineSimulation() {
 
@@ -181,12 +181,46 @@ function filterPartSimulation() {
     });
 }
 
- 
+
+function updateStickyHeaderPositions() {
+
+    var $dateRow = $("#dateHeader");
+    var $shiftRow = $("#shiftHeader");
+    var $hourRow = $("#hourHeader");
+
+    var dateHeight = $dateRow.outerHeight() || 0;
+
+    // Date row
+    $dateRow.find("th").css("top", "0px");
+
+    // Shift row
+    if ($shiftRow.is(":visible")) {
+        $shiftRow.find("th").css(
+            "top",
+            dateHeight + "px"
+        );
+    }
+
+    // Hour row
+    if ($hourRow.is(":visible")) {
+
+        var shiftHeight = $shiftRow.is(":visible")
+            ? ($shiftRow.outerHeight() || 0)
+            : 0;
+
+        $hourRow.find("th").css(
+            "top",
+            (dateHeight + shiftHeight) + "px"
+        );
+    }
+}
+
 // HEADERS
- 
+
 
 function bindMachineHeader(headers) {
-
+    $("#timelineContainer table colgroup").remove();
+    $("#timelineContainer table").prepend(buildColgroup(headers, [160]));
     $("#dateHeader").html("");
     $("#shiftHeader").html("");
     $("#hourHeader").html("");
@@ -212,7 +246,7 @@ function bindMachineHeader(headers) {
                    position:sticky;
                    left:0;
                    background:#f8f9fa;
-                   z-index:100;">
+                   z-index:105;">
             Machine
         </th>
     `);
@@ -264,12 +298,17 @@ function bindMachineHeader(headers) {
                     `);
                 }
             }
+
         }
     }
+    requestAnimationFrame(function () {
+        updateStickyHeaderPositions();
+    });
 }
 
 function bindPartHeader(headers) {
-
+    $("#timelineContainer table colgroup").remove();
+    $("#timelineContainer table").prepend(buildColgroup(headers, [160, 80]));
     $("#dateHeader").html("");
     $("#shiftHeader").html("");
     $("#hourHeader").html("");
@@ -287,8 +326,30 @@ function bindPartHeader(headers) {
 
     var hw = getHourWidth();
 
-    $("#dateHeader").append('<th rowspan="3" style="min-width:160px;">Part No</th>');
-    $("#dateHeader").append('<th rowspan="3" style="min-width:80px;">Urgent</th>');
+    $("#dateHeader").append(`
+    <th rowspan="3"
+        style="width:160px;
+               min-width:160px;
+               max-width:160px;
+               position:sticky;
+               left:0px;
+               background:#f8f9fa;
+               z-index:103;">
+        Part No
+    </th>
+`);
+    $("#dateHeader").append(`
+    <th rowspan="3"
+        style="width:80px;
+               min-width:80px;
+               max-width:80px;
+               position:sticky;
+               left:160px;
+               background:#f8f9fa;
+               z-index:104;">
+        Urgent
+    </th>
+`);
 
     for (var i = 0; i < headers.length; i++) {
 
@@ -339,11 +400,14 @@ function bindPartHeader(headers) {
             }
         }
     }
+    requestAnimationFrame(function () {
+        updateStickyHeaderPositions();
+    });
 }
 
- 
+
 // DIVIDER LINES (day / shift / half-shift)
- 
+
 
 function getDayBoundaries(headers) {
     var boundaries = [];
@@ -429,7 +493,7 @@ function buildDividerHtml(headers) {
 
             if (dayBoundarySet[shiftBoundaries[s]]) continue;
 
-            var leftPx2 = shiftBoundaries[s] * hw;  
+            var leftPx2 = shiftBoundaries[s] * hw;
             html += `<div style="position:absolute;left:${leftPx2}px;top:0;height:100%;width:1px;background:#6c757d;z-index:1;pointer-events:none;"></div>`;
         }
     }
@@ -448,9 +512,9 @@ function buildDividerHtml(headers) {
     return html;
 }
 
- 
+
 // BODY BINDING (parts / machines) — scaled per currentDisplay
- 
+
 
 function bindPartSimulation(data) {
 
@@ -479,7 +543,9 @@ function bindPartSimulation(data) {
     var totalWidth = totalHours * hw;
 
     for (var i = 0; i < data.parts.length; i++) {
-
+        var rowHeight = 49;
+        var barHeight = 24;
+        var centeredTop = (rowHeight - barHeight) / 2;
         var operationsHtml = "";
 
         for (var j = 0; j < data.parts[i].operations.length; j++) {
@@ -489,14 +555,14 @@ function bindPartSimulation(data) {
             var scaledOp = Object.assign({}, op, {
                 left: op.left * scale,
                 width: op.width * scale,
-                top: 6
+                top: centeredTop
             });
 
             operationsHtml += AppUtil.ProcessTemplateData("partOperationTemplate", scaledOp);
 
             if (j < data.parts[i].operations.length - 1) {
                 var dividerLeft = (op.left + op.width) * scale;
-                operationsHtml += `<div style="position:absolute;left:${dividerLeft}px;top:6px;height:32px;width:1px;background:#fff;z-index:4;pointer-events:none;"></div>`;
+                operationsHtml += `<div style="position:absolute;left:${dividerLeft}px;top:${centeredTop - 4}px;height:${barHeight + 8}px;width:1px;background:#fff;z-index:4;pointer-events:none;"></div>`;
             }
         }
 
@@ -504,23 +570,7 @@ function bindPartSimulation(data) {
 
         var rowHeight = 49;
 
-        //var soMarker = "";
-        //if (data.parts[i].hasSoCompletionMarker) {
-        //    var markerLeft = data.parts[i].soCompletionMarkerLeft * scale;
-        //    var markerWidth = Math.max(36 * scale, 4);
-        //    soMarker = `
-        //<div class="so-completion-marker"
-        //     data-bartype="SoMarker"
-        //     style="left:${markerLeft}px; width:${markerWidth}px;">
-        //    <div class="tooltip-somarker">
-        //        <b>Customer:</b> ${data.parts[i].soCustomer || ""}<br>
-        //        <b>Part No / Desc:</b> ${data.parts[i].partNo || ""} / ${data.parts[i].description || ""}<br>
-        //        <b>SO No:</b> ${data.parts[i].soNo || ""}<br>
-        //        <b>Quantity:</b> ${data.parts[i].soQnty || ""}<br>
-        //        <b>Completion Date:</b> ${data.parts[i].soCompletionDateDisplay || ""}
-        //    </div>
-        //</div>`;
-        //}
+
         var soMarker = "";
 
         if (data.parts[i].hasSoCompletionMarker) {
@@ -572,7 +622,9 @@ function bindPartSimulation(data) {
 
         var row = {
             partNo: data.parts[i].partNo,
+            partNoTitle: data.parts[i].partNo,
             urgent: data.parts[i].isUrgent ? "Y" : "N",
+            partNoColor: data.parts[i].partNoColor,
             operations: operationsHtml + soMarker + matlMarker,
             soMarker: soMarker,
             rowHeight: rowHeight,
@@ -616,16 +668,23 @@ function bindMachineSimulation(data) {
 
     for (var i = 0; i < data.machines.length; i++) {
 
+        var rowHeight = 49;
+        var barHeight = 24;
+        var centeredTop = (rowHeight - barHeight) / 2;
         var operationsHtml = "";
 
         for (var j = 0; j < data.machines[i].operations.length; j++) {
 
             var op = data.machines[i].operations[j];
 
+            var barHeight = 24; // matches the height in your template
+            var rowHeight = 49;
+            var centeredTop = (rowHeight - barHeight) / 2;
+
             var scaledOp = Object.assign({}, op, {
                 left: op.left * scale,
                 width: op.width * scale,
-                top: 6
+                top: centeredTop
             });
 
             operationsHtml += AppUtil.ProcessTemplateData("machineOperationTemplate", scaledOp);
@@ -656,7 +715,7 @@ function bindMachineSimulation(data) {
     $('[data-bs-toggle="popover"]').popover({ html: true, trigger: 'hover' });
 }
 
- 
+
 function updateArrows() {
 
     var container = $("#timelineContainer");
@@ -681,7 +740,7 @@ $("#btnPrev").click(function () {
 });
 
 
- 
+
 
 function loadSelectedView() {
 
@@ -734,7 +793,7 @@ function loadSelectedView() {
 //        transform: 'translate(-50%, -100%)'
 //    });
 //});
- 
+
 $(document).on('mouseenter', '.operation-bar, .so-completion-marker, .matl-receipt-marker', function () {
 
     var $element = $(this);
@@ -839,7 +898,28 @@ $(document).on('mouseleave', '.operation-bar, .so-completion-marker, .matl-recei
 }
 );
 
+function buildColgroup(headers, firstColWidths) {
+    // firstColWidths = [160] for machine view, [160, 80] for part view
+    var hw = getHourWidth();
+    var html = "<colgroup>";
+
+    firstColWidths.forEach(function (w) {
+        html += `<col style="width:${w}px;">`;
+    });
+
+    for (var i = 0; i < headers.length; i++) {
+        var shifts = headers[i].shifts;
+        for (var j = 0; j < shifts.length; j++) {
+            var hrs = shifts[j].hours.length;
+            for (var k = 0; k < hrs; k++) {
+                html += `<col style="width:${hw}px;">`;
+            }
+        }
+    }
+
+    html += "</colgroup>";
+    return html;
+}
 
 
 
- 
