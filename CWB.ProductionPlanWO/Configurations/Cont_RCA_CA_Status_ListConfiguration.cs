@@ -24,7 +24,7 @@ namespace CWB.ProductionPlanWO.Configurations
             builder.HasData(
         new Cont_RCA_CA_Status_List { Id = 1, Status_Desc = "Not Uploaded" },
         new Cont_RCA_CA_Status_List { Id = 2, Status_Desc = "Uploaded" },
-        new Cont_RCA_CA_Status_List { Id = 3, Status_Desc = "Uploaded" },
+        new Cont_RCA_CA_Status_List { Id = 3, Status_Desc = "Accepted" },
         new Cont_RCA_CA_Status_List { Id = 4, Status_Desc = "Correct / Resubmit" }
     );
         }

@@ -12,7 +12,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <h3 style="padding: 10px;">Operations</h3>
+                            <h3 style="padding: 10px;">Production Planning</h3>
                         </div>
                         <!-- =============================  -->
                         @{
@@ -37,7 +37,7 @@
                                                 <h5 class="mb-3">Production Planning Flow</h5>
                                                 <div class="col-md-12">
                                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <a asp-controller="WorkOrder" asp-action="SoToWo" class="btn btn-outline-info flex-shrink-0"
+                                                        <a asp-controller="WorkOrder"  id="ConvertSoToWo" asp-action="SoToWo" class="btn btn-outline-info flex-shrink-0"
                                                            style="min-width: 200px;">
                                                             <h6>Convert SO to WO</h6>
                                                         </a>
@@ -81,7 +81,7 @@
                                             <h5 class="mb-3">Production Planning Flow</h5>
                                             <div class="col-md-12">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <a asp-controller="WorkOrder" asp-action="SoToWo" class="btn btn-outline-info flex-shrink-0"
+                                                    <a asp-controller="WorkOrder"  id="ConvertSoToWo" asp-action="SoToWo" class="btn btn-outline-info flex-shrink-0"
                                                        style="min-width: 200px;">
                                                         <h6>Convert SO to WO</h6>
                                                     </a>
@@ -134,7 +134,7 @@
                                                     </div>
                                                 </div>
                                             }
-                                    <div class="col-md-12">
+                                    @*<div class="col-md-12">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <a href="#" class="btn btn-outline-info flex-shrink-0" style="min-width: 200px;">
                                                 <h6>Select WO for Production</h6>
@@ -143,7 +143,7 @@
                                                 <span id="openWORs">0</span> WO ready for Production
                                             </h6>
                                         </div>
-                                    </div>
+                                    </div>*@
                                             @if (permissionResult.Any(r => r.Menu3 == "WIP Control"))
                                             {
                                     <div class="col-md-12">
@@ -178,7 +178,7 @@
                                                     </a>
                                                 </div>
                                             </div>
-                                            <div class="col-md-12">
+                                            @*<div class="col-md-12">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                                     <a href="#" class="btn btn-outline-info flex-shrink-0" style="min-width: 200px;">
                                                         <h6>Select WO for Production</h6>
@@ -187,7 +187,7 @@
                                                         <span id="openWORs">0</span> WO ready for Production
                                                     </h6>
                                                 </div>
-                                            </div>
+                                            </div>*@
                                             <div class="col-md-12">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                                     <a asp-controller="WorkOrder" asp-action="WipControl" class="btn btn-outline-info flex-shrink-0"
@@ -286,7 +286,14 @@
                                                         </tr>
                                                         <!-- ===========================  -->
                                                         <tr>
-                                                            <td><a href="#">Incoming Matl Past Due (# Parts)</a></td>
+                                                            <td><a href="#"  data-bs-toggle="modal"
+                                                                   data-bs-target="#POOpenModal">PO open(Incoming Material)</a></td>
+                                                            <td id="POopen">0</td>
+                                                        </tr>
+                                                        <!-- ===========================  -->
+                                                        <tr>
+                                                            <td><a href="#"  data-bs-toggle="modal"
+                                                                   data-bs-target="#IncomingMaterialModal">Incoming Matl Past Due (# Parts)</a></td>
                                                             <td id="IncMatl">0</td>
                                                         </tr>
                                                         <!-- ===========================  -->
@@ -972,6 +979,148 @@
 
     </div>
 </div>
+
+<div class="modal fade" id="POOpenModal" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="POOpenModalLabel" aria-hidden="true">
+
+    <div class="modal-dialog modal-xl-custom">
+
+        <div class="modal-content bxs-modal">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title" id="POOpenModalLabel">
+                    PO Open (Incoming Material)
+                </h5>
+
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+
+                    <div class="col-md-12">
+
+                        <div class="table-responsive table-he-250">
+
+                            <table id="POOpenGrid"
+                                   class="table table-sm table-bordered w-100 text-center">
+
+                                <thead class="table-info th-sti">
+
+                                    <tr class="table-border-bottom">
+
+                                        <th>PO Ref</th>
+                                        <th>PO Date</th>
+                                        <th>Supplier</th>
+                                        <th>Part No - Desc</th>
+                                        <th>PO Qnty</th>
+                                        <th>Unit</th>
+                                        <th>Proc Price</th>
+                                        <th>Agreed Receipt Date</th>
+                                        <th>Part Type</th>
+                                        <th>PO Type</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<div class="modal fade" id="IncomingMaterialModal"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1"
+     aria-labelledby="IncomingMaterialModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-xl-custom">
+
+        <div class="modal-content bxs-modal">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title" id="IncomingMaterialModalLabel">
+                    Incoming Material Past Due
+                </h5>
+
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+
+                    <div class="col-md-12">
+
+                        <div class="table-responsive table-he-250">
+
+                            <table id="IncomingMaterialGrid"
+                                   class="table table-sm table-bordered w-100 text-center">
+
+                                <thead class="table-info th-sti">
+
+                                    <tr class="table-border-bottom">
+
+                                        <th>PO Ref</th>
+                                        <th>PO Date</th>
+                                        <th>Supplier</th>
+                                        <th>Part No - Desc</th>
+                                        <th>PO Qnty</th>
+                                        <th>Unit</th>
+                                        <th>Proc Price</th>
+                                        <th>Agreed Receipt Date</th>
+                                        <th>Part Type</th>
+                                        <th>PO Type</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 <!-- end row -->
 <!-- end Container -->
 <!----content-page ends----->
@@ -1060,7 +1209,34 @@
         <td>{csEndDate}</td>
     </tr>
 </template>
-
+<template id="POGrid2Row">
+    <tr>
+        <td>{poReference}</td>
+        <td>{dateStr}</td>
+        <td>{supplier}</td>
+        <td>{partNo}</td>
+        <td>{poQnty}</td>
+        <td>{unit}</td>
+        <td>{procPrice}</td>
+        <td>{dateStr}</td>
+        <td>{partType}</td>
+        <td>{poType}</td>
+    </tr>
+</template>
+<template id="POPopupRow">
+    <tr>
+        <td>{poReference}</td>
+        <td>{dateStr}</td>
+        <td>{supplier}</td>
+        <td>{partNo}</td>
+        <td>{poQnty}</td>
+        <td>{unit}</td>
+        <td>{procPrice}</td>
+        <td>{dateStr}</td>
+        <td>{partType}</td>
+        <td>{poType}</td>
+    </tr>
+</template>
 @section Scripts {
     <script src="~/js/ProcessPlan.js"></script>
 }

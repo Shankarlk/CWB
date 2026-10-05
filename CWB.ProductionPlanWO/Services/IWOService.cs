@@ -17,6 +17,7 @@ namespace CWB.ProductionPlanWO.Services
         Task<IEnumerable<WoSubConSupplierVM>> GetAllWoSubCon(long tenantId);
         Task<IEnumerable<WorkOrdersVM>> AllParentChildWo(long ParentWoId, long tenantId);
         Task<IEnumerable<WOSOVM>> GetSoWo(long workOrderId);
+        Task<IEnumerable<WOSOVM>> GetallSoWo();
         Task<IEnumerable<ProcPlanPartPurChaseRelVM>> GetProcPurchase(long procPlanId);
         Task<List<ProcPlanPartPurChaseRelVM>> PostProcPurchase(List<ProcPlanPartPurChaseRelVM> woso);
         Task<WorkOrdersVM> GetSingleWO(long Id, long tenantId);

@@ -36,7 +36,13 @@ namespace CWB.BusinessAquisition.Configurations
             builder
               .Property(t => t.Dispatch_Complete)
               .HasColumnName("Dispatch_Complete");
-             
+            builder
+             .Property(t => t.Full_Qnty_Dispatched)
+             .HasColumnName("Full_Qnty_Dispatched");
+            builder
+             .Property(t => t.Ready_for_Dispatch)
+             .HasColumnName("Ready_for_Dispatch");
+
             builder
              .Property(t => t.Final_Dispatch_Qnty)
              .HasColumnName("Final_Dispatch_Qnty")

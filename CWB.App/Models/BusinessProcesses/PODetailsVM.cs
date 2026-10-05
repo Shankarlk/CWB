@@ -43,5 +43,13 @@ namespace CWB.App.Models.BusinessProcesses
         public char Inspection { get; set; }
         public string ProcPlanIds { get; set; }
         public string WoIdStr { get; set; }
+
+        //  for conatenation of Qnty and uom
+        public string QntyAlreadyRecorded { get; set; }
+        public string QntyRecordedToday { get; set; }
+        public string BalToReceive { get; set; }
+
+        public string TotalqtyDispatched { get; set; }
+        public string BalqtytobeDispatched {get;set;}
     }
 }

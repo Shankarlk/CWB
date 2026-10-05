@@ -16,7 +16,7 @@ namespace CWB.ProductionPlanWO.Domain
         public long RoutingStepSequence { get; set; }
         public long RoutingStepLocation { get; set; }
 
-
+        public long OprSequenceType { get; set; }
 
 
         public long Mode { get; set; }

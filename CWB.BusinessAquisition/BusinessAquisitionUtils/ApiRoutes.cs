@@ -41,6 +41,17 @@
             public const string CheckPartNo = Base + "/checkpartno/{partId}";
             public const string GetBAStatus = Base + "/getbastatus/{Id}";
             public const string GetBAAllStatus = Base + "/getallbastatus/{tenantId}";
+
+            //cust dispatch list apis
+            public const string GetAllCustDispList = Base + "/getallcustdispatchlist/{tenantId}";
+            public const string PostCustDispList = Base + "/postcustdispatch";
+            public const string PostCustDispListMultiple = Base + "/postmultiplecustdispatch";
+            public const string RemoveCustDispList = Base + "/removecustdispatch/{tenantId}/{custdispatchlistId}";
+
+            //Invoice Dispatch List Apis
+            public const string GetAllInvoiceDispatchList = Base + "/getallinvoicedisplist/{tenantId}";
+            public const string PostInvoiceDispList = Base + "/postinvoicedisplist";
+            public const string RemoveInvoiceDispList = Base + "/removeinvoicedisp/{tenantId}/{invoicedispatchlistid}";
         }
     }
 }

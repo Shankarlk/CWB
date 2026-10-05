@@ -1,10 +1,13 @@
 ﻿let g_selectedDispatchItems = [];
+var P12Data = [];
+var P12RedistributionRequired = false;
+var P12SelectedSoAllocId = 0;
 function loadSoDispatch() {
     $("#preloaderblurred").show();
     $('#SelectAllMGrid').prop("checked", false);
     api.getbulk("/WorkOrder/AllSODispatch").then((data) => {
-        data = data.filter(item => item.status === 1 || item.status === 2 );
-        data = data.filter(item => item.qntyOnHand >= 0 );
+      //  data = data.filter(item => item.status === 1 || item.status === 2 );
+        data = data.filter(item => item.qntyOnHand > 0 );
         data.sort((a, b) => {
             // Convert the date strings to Date objects for comparison
             const dateA = new Date(a.requiredByDate);
@@ -26,38 +29,103 @@ function loadSoDispatch() {
                 </tr>`;
             $(tablebody).append(noRecordsRow);
         }
+        console.log(data);
         for (i = 0; i < data.length; i++) {
-            if (data[i].invoiceNo.length > 0 && data[i].qntyOnHand === 0 ) {
-                continue;
-            }
+            //if (data[i].invoiceNo.length > 0 && data[i].qntyOnHand === 0 ) {
+            //    continue;
+            // }
+           
             $(tablebody).append(AppUtil.ProcessTemplateData("SOGridRow", data[i]));
         }
-        if (g_selectedDispatchItems.length > 0) {
+        //if (g_selectedDispatchItems.length > 0) {
 
-            // Create a temporary lookup map of the fresh server data, using the SO ID as the key
-            const freshDataMap = new Map(data.map(item => [item.salesOrderId, item]));
+        //    // Create a temporary lookup map of the fresh server data, using the SO ID as the key
+        //    const freshDataMap = new Map(data.map(item => [item.salesOrderId, item]));
 
-            // Filter the global array and replace old data with fresh data
-            g_selectedDispatchItems = g_selectedDispatchItems.map(oldItem => {
-                const freshItem = freshDataMap.get(parseInt(oldItem.soId));
-                oldItem.deispatchId = freshItem.dispatchId;
-                oldItem.invoiceNo = freshItem.invoiceNo;
-                oldItem.invoiceDate = freshItem.invoiceDate;
-                oldItem.dispatchDetail = freshItem.dispatchDetail;
-                // If the item still exists in the fresh server data, return the fresh data
-                // Otherwise, return null to be filtered out later.
-                return oldItem;
+        //    // Filter the global array and replace old data with fresh data
+        //    g_selectedDispatchItems = g_selectedDispatchItems.map(oldItem => {
+        //        const freshItem = freshDataMap.get(parseInt(oldItem.soId));
+        //        oldItem.deispatchId = freshItem.dispatchId;
+        //        oldItem.invoiceNo = freshItem.invoiceNo;
+        //        oldItem.invoiceDate = freshItem.invoiceDate;
+        //        oldItem.dispatchDetail = freshItem.dispatchDetail;
+        //        // If the item still exists in the fresh server data, return the fresh data
+        //        // Otherwise, return null to be filtered out later.
+        //        return oldItem;
 
-            }).filter(item => item !== null); // Remove items that no longer exist/qualify
+        //    }).filter(item => item !== null); // Remove items that no longer exist/qualify
 
-            console.log("g_selectedDispatchItems synchronized with latest server data.");
-            rebindP13Grid();
-        }
+        //    console.log("g_selectedDispatchItems synchronized with latest server data.");
+        //    rebindP13Grid();
+        //}
+        updateSODispatchActions();
+
+
         $("#preloaderblurred").hide();
     }).catch((error) => {
         $("#preloaderblurred").hide();
     });
 }
+
+function updateSODispatchActions() {
+
+    $("#SOGrid tbody tr").each(function () {
+
+        var row = $(this);
+
+        var finalDispQnty = parseFloat(
+            row.find(".remove-suggested-qnty").attr("data-findisqnty")
+        ) || 0;
+
+        var checkbox = row.find(".SOgridChks");
+
+        var removeSuggested = row.find(".remove-suggested-qnty");
+        var removeFinal = row.find(".remove-final-disp-qnty");
+
+
+        if (finalDispQnty === 0) {
+
+            // Final Dispatch Quantity is 0
+            // Disable SO checkbox
+            checkbox.prop("disabled", true);
+
+            // Show Remove Suggested Quantity
+            removeSuggested.show();
+
+            // Hide Remove Final Dispatch Quantity
+            removeFinal.hide();
+
+        } else {
+
+            // Final Dispatch Quantity is greater than 0
+            // Enable SO checkbox
+            checkbox.prop("disabled", false);
+
+            // Hide Remove Suggested Quantity
+            removeSuggested.hide();
+
+            // Show Remove Final Dispatch Quantity
+            removeFinal.show();
+        }
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function LoadCustDesc(CompanyOrSupplier) {//pass the element name
     var compSelect = $('#' + CompanyOrSupplier);//should be a select2 dropdown
     if (!compSelect.length)
@@ -75,7 +143,7 @@ function LoadCustDesc(CompanyOrSupplier) {//pass the element name
             compSelect.append(div_data);
         }
     }).catch((error) => {
-        //console.log(error);
+        //console.log(error);P14Save
     });
 }
 /**
@@ -132,32 +200,57 @@ function rebindP13Grid() {
 }
 
 $(document).ready(function () {
+    //$('#SelectAllMGrid').on('change', function () {
+    //    var isChecked = $(this).prop('checked');
+
+    //    // 2. Select all row checkboxes within the same table body
+    //    // and set their 'checked' property to match the header checkbox.
+    //    // We use the table ID (#SOGrid) and the row checkbox class (.SOgridChks) 
+    //    // to ensure we only target the correct checkboxes.
+    //    $('#SOGrid tbody input.SOgridChks').prop('checked', isChecked);
+    //});
+
+    //// OPTIONAL: Add functionality to uncheck the header checkbox 
+    //// if a *single* row checkbox is manually unchecked.
+    //$('#SOGrid tbody input.SOgridChks').on('change', function () {
+    //    var allChecked = true;
+
+    //    // Check if ALL row checkboxes are currently checked
+    //    $('#SOGrid tbody input.SOgridChks').each(function () {
+    //        if (!$(this).prop('checked')) {
+    //            allChecked = false;
+    //            return false; // Exit the loop early
+    //        }
+    //    });
+
+    //    // Update the state of the "Select All" checkbox
+    //    $('#SelectAllMGrid').prop('checked', allChecked);
+    //});
     $('#SelectAllMGrid').on('change', function () {
+
         var isChecked = $(this).prop('checked');
 
-        // 2. Select all row checkboxes within the same table body
-        // and set their 'checked' property to match the header checkbox.
-        // We use the table ID (#SOGrid) and the row checkbox class (.SOgridChks) 
-        // to ensure we only target the correct checkboxes.
-        $('#SOGrid tbody input.SOgridChks').prop('checked', isChecked);
+        $('#SOGrid tbody input.SOgridChks:not(:disabled)')
+            .prop('checked', isChecked);
     });
 
-    // OPTIONAL: Add functionality to uncheck the header checkbox 
-    // if a *single* row checkbox is manually unchecked.
-    $('#SOGrid tbody input.SOgridChks').on('change', function () {
-        var allChecked = true;
 
-        // Check if ALL row checkboxes are currently checked
-        $('#SOGrid tbody input.SOgridChks').each(function () {
-            if (!$(this).prop('checked')) {
-                allChecked = false;
-                return false; // Exit the loop early
-            }
-        });
+    $('#SOGrid tbody').on(
+        'change',
+        'input.SOgridChks:not(:disabled)',
+        function () {
 
-        // Update the state of the "Select All" checkbox
-        $('#SelectAllMGrid').prop('checked', allChecked);
-    });
+            var enabledCheckboxes =
+                $('#SOGrid tbody input.SOgridChks:not(:disabled)');
+
+            var allChecked =
+                enabledCheckboxes.length > 0 &&
+                enabledCheckboxes.filter(':checked').length ===
+                enabledCheckboxes.length;
+
+            $('#SelectAllMGrid').prop('checked', allChecked);
+        }
+    );
     loadSoDispatch();
     LoadCustDesc("SearchCustomer");
     LoadCustDesc("P13SearchCustomer");
@@ -229,6 +322,9 @@ $(document).ready(function () {
 
     });
     $('#popup12').on('show.bs.modal', function (event) {
+       
+        $("#P12FinQntyError").hide();
+        $("#P12FinQnty").css("border", "");
         var P12FinQnty = document.getElementById('P12FinQnty');
         P12FinQnty.style.border = '';
         var relatedTarget = $(event.relatedTarget);
@@ -239,45 +335,138 @@ $(document).ready(function () {
         var baldispqnty = relatedTarget.data("baldispqnty");
         var soid = relatedTarget.data("soid");
         var findisqnty = relatedTarget.data("findisqnty");
-
+        var qoh = relatedTarget.data("qoh");
+        var suggestedqty = relatedTarget.data("suggested");
+        var soallocationId = relatedTarget.data("soallocid");
         $("#P12PartNo").text(partn);
         $("#P12PartDesc").text(partdesc);
         $("#P12Po").text(pono);
         $("#P12Cust").text(customer);
         $("#P12BalQnty").text(baldispqnty);
-        $("#P12QoH").text(baldispqnty);
+        $("#P12QoH").text(qoh);
         $("#P12SoId").val(soid);
-        $("#P12FinQnty").val(findisqnty);
-
+        if (findisqnty > 0) {
+            $("#P12FinQnty").val(findisqnty);
+        }
+        else {
+            $("#P12FinQnty").val(suggestedqty);
+        }
+        
+        $("#P12SuggestedQnty").text(suggestedqty);
+        $("#P12SoAllocId").val(soallocationId);
+        
         $("#preloaderblurred").show();
         $('#SelectAllMGrid').prop("checked", false);
+        //api.getbulk("/WorkOrder/AllSODispatch").then((data) => {
+        //   // data = data.filter(item => item.status === 1 || item.status === 2);
+        //    data = data.filter(item => item.qntyOnHand > 0);
+        //    data = data.filter(item => item.partNo === partn);
+        //    data.sort((a, b) => {
+        //        // Convert the date strings to Date objects for comparison
+        //        const dateA = new Date(a.requiredByDate);
+        //        const dateB = new Date(b.requiredByDate);
+
+        //        // Compare: dateA - dateB sorts ascending (earliest first)
+        //        return dateA - dateB;
+        //    });
+        //    var tablebody = $("#P12Grid tbody");
+        //    $(tablebody).html("");
+        //    if (data.length <= 1) {
+        //        $("#P12GridDiv").hide();
+        //    } else {
+        //        $("#P12FinQnty").prop("disabled", true);
+        //        $("#P12Save").prop("disabled", true);
+        //        $("#P12GridDiv").show();
+        //    }
+        //    for (i = 0; i < data.length; i++) {
+        //        $(tablebody).append(AppUtil.ProcessTemplateData("P12GridRow", data[i]));
+        //    }
+        //    $("#preloaderblurred").hide();
+        //}).catch((error) => {
+        //    $("#preloaderblurred").hide();
+        //});
         api.getbulk("/WorkOrder/AllSODispatch").then((data) => {
-            data = data.filter(item => item.status === 1 || item.status === 2);
+
+            // 1. Filter records for this Part No
             data = data.filter(item => item.qntyOnHand > 0);
             data = data.filter(item => item.partNo === partn);
+
+            // 2. Sort by Required By Date
             data.sort((a, b) => {
-                // Convert the date strings to Date objects for comparison
                 const dateA = new Date(a.requiredByDate);
                 const dateB = new Date(b.requiredByDate);
-
-                // Compare: dateA - dateB sorts ascending (earliest first)
                 return dateA - dateB;
             });
+
+            // 3. Store fresh Popup 12 data
+            P12Data = data;
+
+            // 4. Reset redistribution flag
+            P12RedistributionRequired = false;
+
+            // 5. Determine whether redistribution is required
+            if (P12Data.length > 1) {
+
+                var allLinesHaveFullCoverage = P12Data.every(function (item) {
+
+                    var balanceQty = parseInt(item.balanceSOQty) || 0;
+                    var plannedQty = parseInt(item.suggestedDispQnty) || 0;
+
+                    return balanceQty === plannedQty;
+                });
+
+                // If even one line does not have full coverage
+                if (!allLinesHaveFullCoverage) {
+                    P12RedistributionRequired = true;
+                }
+            }
+
+            console.log("P12Data:", P12Data);
+            console.log(
+                "P12RedistributionRequired:",
+                P12RedistributionRequired
+            );
+
+            // 6. Populate Popup 12 grid
             var tablebody = $("#P12Grid tbody");
             $(tablebody).html("");
-            if (data.length <= 1) {
+
+            if (P12Data.length <= 1) {
+
+                // Single SO/PO -> no redistribution
                 $("#P12GridDiv").hide();
+
             } else {
+
+                // Multiple SO/PO -> show grid
                 $("#P12GridDiv").show();
+
+                // Do not allow direct editing until Edit is clicked
+                $("#P12FinQnty").prop("disabled", true);
+                $("#P12Save").prop("disabled", true);
             }
-            for (i = 0; i < data.length; i++) {
-                $(tablebody).append(AppUtil.ProcessTemplateData("P12GridRow", data[i]));
+
+            // 7. Bind grid
+            for (var i = 0; i < P12Data.length; i++) {
+
+                $(tablebody).append(
+                    AppUtil.ProcessTemplateData(
+                        "P12GridRow",
+                        P12Data[i]
+                    )
+                );
             }
+            calculateP12Redistribution();
             $("#preloaderblurred").hide();
+
         }).catch((error) => {
+
             $("#preloaderblurred").hide();
+
+            console.log(error);
         });
     });
+   
     $("#SearchSo").on("keyup", function () {
         var value = $(this).val().toLowerCase();
         $("#SOGrid tbody tr").filter(function () {
@@ -336,6 +525,24 @@ $(document).ready(function () {
         var value = $(this).val().toLowerCase();
         $("#P13Grid tbody tr").filter(function () {
             $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(value) > -1)
+        });
+        var $tableBody = $("#P13Grid tbody");
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $tableBody.append(noRecordsRow);
+        } else {
+            $tableBody.find(".norecordsfound").remove();
+        }
+    });
+    $("#P13Partno").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#P13Grid tbody tr").filter(function () {
+            $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
         });
         var $tableBody = $("#P13Grid tbody");
         if ($tableBody.find("tr:visible").length === 0) {
@@ -461,6 +668,7 @@ $(document).ready(function () {
             // Extract the data from the cells
             return {
                 soId: row.getAttribute('data-so-id'), // Primary identifier
+                soAllocListId: row.getAttribute('data-soallocid'),
                 salesOrderNumber: cells[1] ? cells[1].textContent.trim() : '',
                 customer: cells[2] ? cells[2].textContent.trim() : '',
                 poNo: cells[3] ? cells[3].textContent.trim() : '',
@@ -488,31 +696,15 @@ $(document).ready(function () {
             for (i = 0; i < dispatchData.length; i++) {
                 var group = dispatchData[i];
                 const row = `
-            <tr>
+            <tr data-soallocid="${group.soAllocListId}">
                 <td>${group.salesOrderNumber}</td>
                 <td>${group.customer}</td>
                 <td>${group.poNo}</td>
+                <td>${group.partNoDesc}</td>
+                <td>${group.totalSoQnty}</td>
+                <td>${group.balSoDispQnty}</td>
                 <td>${group.finalDispQnty}</td>
-                <td>${group.invoiceNo}</td>
-                <td>${group.invoiceDate}</td>
-                <td>${group.dispatchDetail}</td>
-                <td>
-                            <div class="dropdown float-center">
-                                <a href="#"
-                                   class="dropdown-toggle arrow-none card-drop"
-                                   data-bs-toggle="dropdown"
-                                   aria-expanded="false">
-                                    <i class="mdi mdi-dots-vertical"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    <a href="javascript:void(0);" 
-                                       class="dropdown-item" data-bs-toggle="modal" data-finaldispqnyt="${group.finalDispQnty}" data-pono="${group.poNo}" data-custid="${group.customerOrderId}" 
-data-customer="${group.customer}" data-sono="${group.salesOrderNumber}" data-invoicedate="${group.invoiceDate}" data-invoiceno="${group.invoiceNo}" data-partid="${group.partId}"
-data-partno="${group.partNoDesc}" data-soid="${group.soId}" data-dispatchfid="${group.deispatchId}" data-dispatchdetail="${group.dispatchDetail}"
-                                       data-bs-target="#popup14">Edit</a>
-                                </div>
-                            </div>
-                </td>
+
             </tr>
         `;
                 $(tablebody).append(row);
@@ -578,23 +770,30 @@ data-partno="${group.partNoDesc}" data-soid="${group.soId}" data-dispatchfid="${
     $("#P12Save").secureClick( function (event) {
         //var P12FinQnty = $("#P12FinQnty").val();
         var P12FinQnty = parseInt($("#P12FinQnty").val());
-        var P12BalQnty= parseInt($("#P12BalQnty").text());
-        var P12SoId = parseInt($("#P12SoId").val());
-        if (P12FinQnty === 0 || isNaN(P12FinQnty)) {
-            var newNamevalidate = document.getElementById('P12FinQnty');
-            newNamevalidate.style.border = '2px solid red';
+        //var P12BalQnty= parseInt($("#P12BalQnty").text());
+        //var P12SoId = parseInt($("#P12SoId").val());
+        var P12SoallocationId = parseInt($("#P12SoAllocId").val())
+        //if (P12FinQnty === 0 || isNaN(P12FinQnty)) {
+        //    var newNamevalidate = document.getElementById('P12FinQnty');
+        //    newNamevalidate.style.border = '2px solid red';
+        //    return false;
+        //} else {
+        //    var newNamevalidate = document.getElementById('P12FinQnty');
+        //    newNamevalidate.style.border = '';
+        //}
+        //if (P12FinQnty > P12BalQnty) {
+        //    alert("Qnty to Dispatch is greater than Bal Disp.Qnty.");
+        //    return false;
+        //}
+
+        if (!validateP12Quantity()) {
             return false;
-        } else {
-            var newNamevalidate = document.getElementById('P12FinQnty');
-            newNamevalidate.style.border = '';
         }
-        if (P12FinQnty > P12BalQnty) {
-            alert("Qnty to Dispatch is greater than Bal Disp.Qnty.");
-            return false;
-        }
+
+
         var formdata = {
-            SalesOrderId: P12SoId,
-            FinalDispQnty: P12FinQnty,
+            SO_Alloc_List_Id: P12SoallocationId,
+            Final_Dispatch_Qnty: P12FinQnty,
 
         };
         return api.post("/WorkOrder/UpdateSOFinDisp", formdata).then((data) => {
@@ -620,7 +819,7 @@ data-partno="${group.partNoDesc}" data-soid="${group.soId}" data-dispatchfid="${
 
             // 1. Extract Sales Order ID from the 'data-so-id' attribute on the <tr>
             var soId = row.data('so-id');
-
+            var soalloctionId = row.data('soallocid');
             // 2. Extract Suggested Quantity from the <th> with class 'suggested-qnty-value'
             var suggestedQntyText = row.find('.suggested-qnty-value').text().trim();
             var suggestedQnty = parseInt(suggestedQntyText);
@@ -631,17 +830,17 @@ data-partno="${group.partNoDesc}" data-soid="${group.soId}" data-dispatchfid="${
             var qntyOnHand = parseInt(qntyOnHandText);
 
             // Validation and data preparation
-            if (soId && !isNaN(suggestedQnty) ) {
+            if (soalloctionId && !isNaN(suggestedQnty) ) {
 
                 // Check if suggested quantity exceeds quantity on hand (basic client-side check)
                 if (suggestedQnty > qntyOnHand) {
-                    console.warn(`Skipping SO ${soId}: Suggested Quantity (${suggestedQnty}) exceeds Qnty On Hand (${qntyOnHand}).`);
+                    console.warn(`Skipping SOallocationID ${soalloctionId}: Suggested Quantity (${suggestedQnty}) exceeds Qnty On Hand (${qntyOnHand}).`);
                     return true; // continue to the next iteration
                 }
 
                 bulkUpdateData.push({
-                    SalesOrderId: parseInt(soId),
-                    FinalDispQnty: suggestedQnty // Use the suggested quantity for the final dispatch
+                    SO_Alloc_List_Id: parseInt(soalloctionId),
+                    Final_Dispatch_Qnty: suggestedQnty // Use the suggested quantity for the final dispatch
                 });
             }
         });
@@ -690,13 +889,548 @@ function EditP12(element) {
     var baldispqnty = relatedTarget.data("baldispqnty");
     var soid = relatedTarget.data("soid");
     var findisqnty = relatedTarget.data("findisqnty");
-
+    var qoh = relatedTarget.data("qoh");
+    var suggestedqty = relatedTarget.data("suggested");
+    var soallocationId = relatedTarget.data("soallocid");
     $("#P12PartNo").text(partn);
     $("#P12PartDesc").text(partdesc);
     $("#P12Po").text(pono);
     $("#P12Cust").text(customer);
     $("#P12BalQnty").text(baldispqnty);
-    $("#P12QoH").text(baldispqnty);
+    $("#P12QoH").text(qoh);
     $("#P12SoId").val(soid);
-    $("#P12FinQnty").val(findisqnty);
+    if (findisqnty > 0) {
+        $("#P12FinQnty").val(findisqnty);
+    }
+    else {
+        $("#P12FinQnty").val(suggestedqty);
+    }
+    /*$("#P12SuggestedQnty").text(suggestedqty);*/
+    $("#P12FinQnty").prop("disabled", false);
+    $("#P12Save").prop("disabled", false);
+    $("#P12SoAllocId").val(soallocationId);
+    P12SelectedSoAllocId =  parseInt(soallocationId) || 0;
+    validateP12Quantity();
+}
+$("#P13Save").on("click", function () {
+
+    if (!g_selectedDispatchItems ||
+        g_selectedDispatchItems.length === 0) {
+
+        alert("No dispatch records selected.");
+        return;
+    }
+
+    var selectedAllocations = g_selectedDispatchItems
+        .map(function (item) {
+            return {
+                SO_Alloc_List_Id: parseInt(item.soAllocListId) || 0,
+                SO_ID: parseInt(item.soId) || 0,
+                PartId: parseInt(item.partId) || 0,
+                Allocated_Qnty: parseInt(item.allocatedQnty) || 0,
+                SuggestedDispQnty: parseInt(item.suggestedDispQnty) || 0,
+                Final_Dispatch_Qnty: parseInt(item.finalDispatchQnty) || 0,
+                Ready_for_Dispatch: item.readyForDispatch || 'N',
+                Full_Qnty_Dispatched: item.fullQntyDispatched || 'N',
+                Dispatch_Complete: item.dispatchComplete || 'N'
+            };
+        })
+        .filter(function (item) {
+            return item.SO_Alloc_List_Id > 0;
+        });
+
+    $("#P13Save").prop("disabled", true);
+    $("#preloaderblurred").show();
+
+    return $.ajax({
+        type: "POST",
+        url: "/WorkOrder/ConfirmDispatchList",
+        contentType: "application/json; charset=utf-8",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        data: JSON.stringify(selectedAllocations),
+        dataType: "json",
+
+        success: function (response) {
+
+            console.log("Controller Response:", response);
+
+            if (response.success) {
+                alert(response.message);
+                $("#popup13").modal("hide");
+                loadSoDispatch();
+            } else {
+                alert(response.message || "Dispatch confirmation failed.");
+            }
+        },
+
+        error: function (xhr) {
+
+            console.error("P13 Save Error:", xhr);
+
+            alert("An error occurred while confirming dispatch.");
+        },
+
+        complete: function () {
+            $("#preloaderblurred").hide();
+            $("#P13Save").prop("disabled", false);
+        }
+    });
+});
+var selectedSOAllocListId = 0;
+var selectedSOAction = "";
+$(document).on("click", ".remove-suggested-qnty", function () {
+
+    var element = $(this);
+
+    var soAllocListId =
+        parseInt(element.attr("data-soallocid")) || 0;
+
+    var partNo =
+        element.attr("data-partn") || "";
+
+    var soNumber =
+        element.attr("data-sonumber") || "";
+
+    var finalDispQnty =
+        parseInt(element.attr("data-findisqnty")) || 0;
+
+
+    // Validate SO Allocation ID
+    if (soAllocListId <= 0) {
+
+        alert("SO Allocation List ID is invalid.");
+
+        return;
+    }
+
+
+    // Remove Suggested is allowed only when Final Disp Qnty = 0
+    if (finalDispQnty !== 0) {
+
+        alert(
+            "Remove Suggested Qnty is allowed only when Final Disp Qnty is 0."
+        );
+
+        return;
+    }
+
+
+    // Store selected allocation
+    selectedSOAllocListId = soAllocListId;
+
+    // Store selected action
+    selectedSOAction = "RemoveSuggested";
+
+
+    // Set confirmation message
+    $("#confirmSODispatchActionMessage").text(
+        "Are you sure you want to remove the Suggested Dispatch Quantity?"
+    );
+
+
+    // Display information
+    $("#confirmSODispatchPartNo").text(partNo);
+
+    $("#confirmSODispatchSONumber").text(soNumber);
+
+    $("#confirmSODispatchActionModal").modal("show");
+    // Open Bootstrap 5 modal
+   
+
+});
+$(document).on("click", ".remove-final-disp-qnty", function () {
+
+    var element = $(this);
+
+    var soAllocListId =
+        parseInt(element.attr("data-soallocid")) || 0;
+
+    var partNo =
+        element.attr("data-partn") || "";
+
+    var soNumber =
+        element.attr("data-sonumber") || "";
+
+    var finalDispQnty =
+        parseInt(element.attr("data-findisqnty")) || 0;
+
+
+    // Validate SO Allocation ID
+    if (soAllocListId <= 0) {
+
+        alert("SO Allocation List ID is invalid.");
+
+        return;
+    }
+
+
+    // Remove Final is allowed only when Final Disp Qnty > 0
+    if (finalDispQnty <= 0) {
+
+        alert(
+            "There is no Final Dispatch Quantity to remove."
+        );
+
+        return;
+    }
+
+
+    // Store selected allocation
+    selectedSOAllocListId = soAllocListId;
+
+    // Store selected action
+    selectedSOAction = "RemoveFinal";
+
+
+    // Set confirmation message
+    $("#confirmSODispatchActionMessage").text(
+        "Are you sure you want to reset the Final Dispatch Quantity to 0?"
+    );
+
+
+    // Display information
+    $("#confirmSODispatchPartNo").text(partNo);
+
+    $("#confirmSODispatchSONumber").text(soNumber);
+
+    $("#confirmSODispatchActionModal").modal("show");
+   
+
+});
+$(document).on("click", "#btnConfirmSODispatchAction", function () {
+
+    // Validate allocation ID
+    if (selectedSOAllocListId <= 0) {
+
+        alert("Invalid SO Allocation List ID.");
+
+        return;
+    }
+
+
+    // Validate action
+    if (selectedSOAction === "") {
+
+        alert("Invalid action.");
+
+        return;
+    }
+
+
+    // Create your existing ViewModel
+    var model = {
+        SO_Alloc_List_Id: selectedSOAllocListId
+    };
+
+
+    // Decide which controller to call
+    var url = "";
+
+    if (selectedSOAction === "RemoveSuggested") {
+
+        url = "/WorkOrder/RemoveSuggestedQnty";
+
+    }
+    else if (selectedSOAction === "RemoveFinal") {
+
+        url = "/WorkOrder/RemoveFinalDispQnty";
+
+    }
+    else {
+
+        alert("Invalid action.");
+
+        return;
+    }
+
+
+    // Disable button to prevent double click
+    var confirmButton =
+        $("#btnConfirmSODispatchAction");
+
+    confirmButton.prop("disabled", true);
+
+    confirmButton.text("Processing...");
+
+
+    $("#preloaderblurred").show();
+
+
+    // POST to controller
+    api.post(url, model)
+        .then(function (response) {
+
+            $("#preloaderblurred").hide();
+
+            confirmButton.prop("disabled", false);
+
+            confirmButton.text("Confirm");
+
+
+            if (response.success) {
+
+             
+                $("#confirmSODispatchActionModal").modal("hide");
+
+                // Clear selected values
+                selectedSOAllocListId = 0;
+                selectedSOAction = "";
+
+
+                // Reload SO Dispatch grid
+                loadSoDispatch();
+
+
+                alert(response.message);
+
+            }
+            else {
+
+                //alert(
+                //    response.message ||
+                //    "Operation failed."
+                //);
+            }
+
+        })
+        .catch(function (error) {
+
+            $("#preloaderblurred").hide();
+
+            confirmButton.prop("disabled", false);
+
+            confirmButton.text("Confirm");
+
+            console.error(error);
+
+            alert(
+                "An error occurred while processing the request."
+            );
+        });
+
+});
+$("#P12FinQnty").on("input", function () {
+    if ($("#P12FinQnty").prop("disabled")) {
+        return;
+    }
+
+    validateP12Quantity();
+    //var value = $(this).val().trim();
+    //var qtyToDispatch = parseInt(value);
+    //var balDispQnty = parseInt($("#P12BalQnty").text()) || 0;
+    //var qntyonhand = parseInt($("#P12QoH").text()) || 0;
+    //// Empty / invalid / zero
+    //if (value === "" || isNaN(qtyToDispatch) || qtyToDispatch <= 0) {
+
+    //    $("#P12FinQntyError").hide();
+    //    $(this).css("border", "");
+
+    //    // Keep Save disabled until valid quantity is entered
+    //    $("#P12Save").prop("disabled", true);
+
+    //    return;
+    //}
+
+    //// Greater than balance
+    //if (qtyToDispatch > balDispQnty || qtyToDispatch > qntyonhand) {
+
+    //    $("#P12FinQntyError").show();
+    //    $(this).css("border", "2px solid red");
+    //    $("#P12Save").prop("disabled", true);
+
+    //}
+    //else {
+
+    //    $("#P12FinQntyError").hide();
+    //    $(this).css("border", "");
+    //    $("#P12Save").prop("disabled", false);
+    //}
+});
+function calculateP12Redistribution() {
+
+    P12RedistributionRequired = false;
+
+    // Single line item = no redistribution
+    if (!P12Data || P12Data.length <= 1) {
+
+        $("#P12RedistributionRow").hide();
+        $("#P12QntyRedistribution").text(0);
+
+        return;
+    }
+
+    // Check whether every line has full coverage
+    var allCovered = P12Data.every(function (item) {
+
+        var balQty =
+            parseInt(item.balanceSOQty) || 0;
+
+        var plannedQty =
+            parseInt(item.suggestedDispQnty) || 0;
+
+        return balQty === plannedQty;
+    });
+
+    // All line items covered
+    if (allCovered) {
+
+        P12RedistributionRequired = false;
+
+        $("#P12RedistributionRow").hide();
+        $("#P12QntyRedistribution").text(0);
+
+        return;
+    }
+
+    // Redistribution required
+    P12RedistributionRequired = true;
+
+    var qoh =
+        parseInt(P12Data[0].qntyOnHand) || 0;
+
+    var totalFinalDispatchQty = P12Data.reduce(
+        function (sum, item) {
+            return sum +
+                (parseInt(item.final_Dispatch_Qnty) || 0);
+        },
+        0
+    );
+
+    var redistributionQty =
+        qoh - totalFinalDispatchQty;
+
+    if (redistributionQty < 0) {
+        redistributionQty = 0;
+    }
+
+    $("#P12QntyRedistribution").text(redistributionQty);
+    $("#P12RedistributionRow").show();
+}
+function validateP12Quantity() {
+
+    var P12FinQnty = parseInt($("#P12FinQnty").val()) || 0;
+    var P12BalQnty = parseInt($("#P12BalQnty").text()) || 0;
+    var P12SuggestedQnty = parseInt($("#P12SuggestedQnty").text()) || 0;
+    var P12QntyRedistribution = parseInt($("#P12QntyRedistribution").text()) || 0;
+
+    var errorLabel = $("#P12FinQntyError");
+    var input = $("#P12FinQnty");
+    var saveButton = $("#P12Save");
+
+    // Reset
+    errorLabel.hide();
+    errorLabel.text("");
+    input.css("border", "");
+
+    // --------------------------------------------------
+    // 1. Basic quantity validation
+    // --------------------------------------------------
+
+    if (isNaN(parseInt($("#P12FinQnty").val())) || P12FinQnty <= 0) {
+
+        errorLabel.text(
+            "Please enter a valid quantity to dispatch."
+        );
+
+        errorLabel.show();
+        input.css("border", "2px solid red");
+        saveButton.prop("disabled", true);
+
+        return false;
+    }
+
+    // --------------------------------------------------
+    // 2. Common Bal Disp Qty validation
+    // --------------------------------------------------
+
+    if (P12FinQnty > P12BalQnty) {
+
+        errorLabel.text(
+            "Quantity to Dispatch is greater than Bal Disp.Qnty. Please check and reenter."
+        );
+
+        errorLabel.show();
+        input.css("border", "2px solid red");
+        saveButton.prop("disabled", true);
+
+        return false;
+    }
+
+    // ==================================================
+    // FLOW 1 : NO REDISTRIBUTION REQUIRED
+    // ==================================================
+
+    if (!P12RedistributionRequired) {
+
+        saveButton.prop("disabled", false);
+
+        return true;
+    }
+
+    // ==================================================
+    // FLOW 2 : REDISTRIBUTION REQUIRED
+    // ==================================================
+
+    // --------------------------------------------------
+    // 3. If entered quantity is within Suggested Qty,
+    //    no redistribution is consumed.
+    // --------------------------------------------------
+
+    if (P12FinQnty <= P12SuggestedQnty) {
+
+        saveButton.prop("disabled", false);
+
+        return true;
+    }
+
+    // --------------------------------------------------
+    // 4. Calculate quantity required from redistribution
+    // --------------------------------------------------
+
+    var redistributionRequired =
+        P12FinQnty - P12SuggestedQnty;
+
+    // --------------------------------------------------
+    // 5. Check available redistribution quantity
+    // --------------------------------------------------
+
+    if (P12QntyRedistribution <= 0) {
+
+        errorLabel.text(
+            "There is no quantity available for redistribution. Please reduce the quantity or redistribute quantity from another SO / PO."
+        );
+
+        errorLabel.show();
+        input.css("border", "2px solid red");
+        saveButton.prop("disabled", true);
+
+        return false;
+    }
+
+    // --------------------------------------------------
+    // 6. Requested redistribution exceeds availability
+    // --------------------------------------------------
+
+    if (redistributionRequired > P12QntyRedistribution) {
+
+        errorLabel.text(
+            "Quantity available for redistribution is not sufficient for this dispatch. Please reduce the quantity or redistribute quantity from another SO / PO."
+        );
+
+        errorLabel.show();
+        input.css("border", "2px solid red");
+        saveButton.prop("disabled", true);
+
+        return false;
+    }
+
+    // --------------------------------------------------
+    // 7. Valid redistribution
+    // --------------------------------------------------
+
+    saveButton.prop("disabled", false);
+
+    return true;
 }

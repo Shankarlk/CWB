@@ -36,6 +36,9 @@ namespace CWB.ProductionPlanWO.Configurations
                .Property(b => b.RoutingStepLocation)
                .HasColumnName("RoutingStepLocation");
             builder
+               .Property(b => b.OprSequenceType)
+               .HasColumnName("OprSequenceType");
+            builder
                 .Property(b => b.Mode)
                 .HasColumnName("Mode");
             builder

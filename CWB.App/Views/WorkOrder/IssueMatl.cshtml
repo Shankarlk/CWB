@@ -139,10 +139,11 @@
                                             </th>
                                             <th>Shop</th>
                                             <th>Work Order # </th>
-                                            <th>Part No / Desc</th>
+                                            <th>Output Part No / Desc - Opr No</th>
                                             <th>Routing </th>
-                                            <th>Opr No </th>
+                                            @*<th>Opr No </th>*@
                                             <th>Bal WO Plan Qnty</th>
+                                            <th>Input Part No / Desc - Opr No</th>
                                             <th>Issue Qnty</th>
                                             <th>Qnty Avl</th>
                                             <th>Qnty Recd Confirm.</th>
@@ -270,10 +271,11 @@
                                             </th>
                                             <th>Subcon</th>
                                             <th>Work Order # </th>
-                                            <th>Part No / Desc</th>
+                                            <th>Output Part No / Desc - Opr No </th>
                                             <th>Routing </th>
-                                            <th>Opr No </th>
+                                            @*<th>Opr No </th>*@
                                             <th>Bal WO Plan Qnty</th>
+                                            <th>Input Part No / Desc - Opr No </th>
                                             <th>Issue Qnty</th>
                                             <th>Qnty Avl</th>
                                         </tr>
@@ -335,10 +337,12 @@
                                             <th>Shop</th>
                                             <th>Work Ref </th>
                                             <th>Machine</th>
-                                            <th>Part No / Desc</th>
+                                            <th>Output Part No / Desc - Opr No</th>
+                                            <th>Routing</th>
                                             <th>Seq No </th>
                                             <th>WO Qnty</th>
                                             <th>Bal To Bookout</th>
+                                            <th>Input Part No / Desc - Opr No</th>
                                             <th>Qnty W/f Processing</th>
                                             <th>Bal time for Avl Qnty Hrs</th>
                                             <th>Part in M/c</th>
@@ -391,12 +395,13 @@
                                         <tr class="table-border-bottom">
                                             <th>SubCon</th>
                                             <th>Work Ref </th>
-                                            <th>Part No / Desc</th>
-                                            <th>Starting Opr No</th>
+                                            <th>Output Part No / Desc - Opr No</th>
+                                            <th>Rotuing</th>
                                             <th>WO Qnty</th>
-                                            <th>Qnty Sent</th>
-                                            <th>Qnty Recd</th>
-                                            <th>Bal to Receive</th>
+                                            <th>Input Part No / Desc - Opr No</th>
+                                            <th>Qnty Sent(input part)</th>
+                                            <th>Qnty Recd(output part)</th>
+                                            <th>Bal to Receive(output part)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -424,10 +429,11 @@
         </td>
         <td>{shop}</td>
         <td>{woNumber}</td>
-        <td>{partNo}</td>
+        <td>{partNo} - {oprNoName}</td>
         <td>{routingName}</td>
-        <td>{oprNoName}</td>
+        @*<td>{oprNoName}</td>*@
         <td>{balWoQnty}</td>
+        <td>{inputPartNo} - {oprNoName}</td>
         <td>{issue_Qnty}</td>
         <td>{qntyAvl}</td>
         <td>{qntyRecdCnf}</td>
@@ -448,9 +454,9 @@
         <td>{routingName}</td>
         <td>{opNo}</td>
         <td>{balWoQnty}</td>
-        <td>{to_LocationStr}</td>
         <td>{from_LocationStr}</td>
-        <td>{bookOutQnty}</td>
+        <td>{to_LocationStr}</td>
+        <td>{issue_Qnty}</td>
         <td>{qntyRecdCnf}</td>
         <td hidden>{matl_Issue_ListId}</td>
     </tr>
@@ -466,10 +472,11 @@
         </td>
         <td>{supplier}</td>
         <td>{woNumber}</td>
-        <td>{partNo}</td>
+        <td>{partNo} - {oprNoName}</td>
         <td>{routingName}</td>
-        <td>{oprNoName}</td>
+        @*<td>{oprNoName}</td>*@
         <td>{bal_Qnty}</td>
+        <td>{inputPartNo} - {oprNoName}</td>
         <td>{issueQntyDisplay}</td>
         <td>{qntyAvlDisplay}</td>
         <td hidden>{matl_Issue_ListId}</td>
@@ -481,10 +488,12 @@
         <td>{shopName}</td>
         <td>{woNumber}</td>
         <td>{mcName}</td>
-        <td>{partNo}</td>
+        <td>{partNo} - {oprNoName}</td>
+        <td>{routingName}</td>
         <td>{wait_Seq_No}</td>
         <td>{woQnty}</td>
         <td>{bal_Qnty}</td>
+        <td>{inputPartNo} - {oprNoName}</td>
         <td>{qtyWfProcessing}</td>
         <td>{balTimeForAvlQtyHrs}</td>
         <td>{partInMc}</td>
@@ -494,9 +503,10 @@
     <tr>
         <td>{supplier}</td>
         <td>{woNumber}</td>
-        <td>{partNo}</td>
-        <td>{oprNoName}</td>
+        <td>{partNo} - {oprNoName}</td>
+        <td>{routingName}</td>
         <td>{plan_Qnty}</td>
+        <td>{inputPartNo} - {oprNoName}</td>
         <td>{qntySent}</td>
         <td>{qntyRecd}</td>
         <td>{balToReceive}</td>

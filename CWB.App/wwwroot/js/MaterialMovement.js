@@ -276,7 +276,7 @@ $(document).ready(function () {
             $("#E9Qnty").text(P16MisQnty);
         } else if (parseInt(P16MisQnty) === 0) {
             status = 1;
-            move = "N";
+            move = "Y";
             var formdata = {
                 inv_Trans_LogId: parseInt(P16id),
                 qnty_Mismatch: parseInt(P16MisQnty),
@@ -354,8 +354,8 @@ function loadInvLog() {
     var tablebody = $("#MoveGrid tbody");
     $(tablebody).html("");//empty tbody
 
-    api.getbulk("/workOrder/GetAllInv_Trans_Log").then((data) => {
-        data = data.filter(item => item.movement_Compl === "Y");
+    api.getbulk("/workOrder/ConfirmMaterialRecipt").then((data) => {
+        data = data.filter(item => item.movement_Compl == 'N');
         if (data.length === 0) {
             // 2. Insert the "No Records Found" row
             // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
@@ -384,3 +384,44 @@ function loadInvLog() {
     }).catch((error) => {
     });
 }
+
+function loadPopup17() {
+
+    var tablebody = $("#P17Grid tbody");
+
+    // Clear existing rows
+    $(tablebody).html("");
+
+    api.getbulk("/workOrder/ConfirmMaterialRecipt").then((data) => {
+
+        // Same filter as loadInvLog()
+        data = data.filter(item => item.movement_Compl == 'N');
+
+        if (data.length === 0) {
+
+            const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="6" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+
+            $(tablebody).append(noRecordsRow);
+            return;
+        }
+
+        // Load P17 rows
+        for (let i = 0; i < data.length; i++) {
+
+            $(tablebody).append(
+                AppUtil.ProcessTemplateData("P17GridRow", data[i])
+            );
+        }
+
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+$("#popup17").on("shown.bs.modal", function () {
+    loadPopup17();
+});

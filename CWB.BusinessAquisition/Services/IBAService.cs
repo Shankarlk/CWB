@@ -36,6 +36,22 @@ namespace CWB.BusinessAquisition.Services
         bool CheckPartNo(long partId);
         Task<BAStatusVM> GetBAStatus(long Id);
         Task<IEnumerable<BAStatusVM>> GetBAAllStatus();
+
+
+        Task<IEnumerable<Cust_Disp_ListVM>> GetAllCustDispList(long tenantId);
+        Task<Cust_Disp_ListVM> PostCustDispList(Cust_Disp_ListVM custDispListVM);
+        Task<IEnumerable<Cust_Disp_ListVM>> PostCustDispListMultiple(List<Cust_Disp_ListVM> custDispListVMs);
+        Task<bool> RemoveCustDispList(long tenantId, long custDispListId);
+
+        //invoice dispatch list
+
+        Task<IEnumerable<Invoice_Disp_ListVM>> GetAllInvoiceDispatchList(long tenantId);
+        Task<Invoice_Disp_ListVM> PostInvoiceDispList(Invoice_Disp_ListVM custDispListVM);
+        Task<bool> RemoveInvoiceDispList(long tenantId, long custDispListId);
+
+
+
+
         //Task<List<SalesOrderVM>> UpdateWoInSo(List<SalesOrderVM> sales);
         /*IEnumerable<CompanyTypeVM> GetCompanyTypes();
 

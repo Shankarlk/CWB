@@ -28,6 +28,10 @@ namespace CWB.App.Models.WorkOrder
         public DateTime Plan_Recpt_date { get; set; }
         public DateTime Act_Disp_date { get; set; }
         public DateTime Act_Recpt_date { get; set; }
+        public int QntySent { get; set; }
+        public int QntyRecd { get; set; }
+        public int BalToReceive { get; set; }
         public long TenantId { get; set; }
+        public string InputPartNo { get; set; }
     }
 }

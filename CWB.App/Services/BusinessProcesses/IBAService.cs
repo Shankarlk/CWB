@@ -44,5 +44,13 @@ namespace CWB.App.Services.BusinessProcesses
         Task<BAStatusVM> GetBAStatus(long Id);
         Task<bool> CheckPartNo(long partId);
         Task<string> HelloWorld();
+        //cust disp list 
+        Task<List<Cust_Disp_ListVM>> PostMultipleCustDispList(IEnumerable<Cust_Disp_ListVM> Cust_Disp_ListVMs);
+        Task<IEnumerable<Cust_Disp_ListVM>> AllCustomerDispatchList();
+        Task<Invoice_Disp_ListVM> PostInvoicedDispatchList(Invoice_Disp_ListVM soallocvm);
+        Task<IEnumerable<Invoice_Disp_ListVM>> AllInvoiceDispatchlist();
+        Task<bool> DeleteInvoiceDispatch(long invoicedispatchlistid);
+
+
     }
 }

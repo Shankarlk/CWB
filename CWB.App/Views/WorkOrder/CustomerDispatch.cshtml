@@ -1,0 +1,711 @@
+﻿<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-11">
+                            <h4>Customer Dispatch List</h4>
+                        </div>
+                        <div class="col-md-1 text-end">
+                            <a asp-action="WipControl" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                                X
+                            </a>
+                        </div>
+                        <!-- =============================  -->
+                        <div class="col-md-12">
+                            <!-- ================================  -->
+                            <div class="row">
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Customer</label>
+                                    <select class="form-select form-select-sm" aria-label="form-select-sm" id="SearchCustomer"
+                                            title="" data-plugin="tippy" data-tippy-placement="top">
+                                        <option value="">==========</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Customer PO No</label>
+                                    <input type="text" class="form-control form-control-sm" id="SearchPO">
+                                </div>
+                                <div class="col-md-2 mb-2">
+                                    <label class="form-label">Part No</label>
+                                    <input type="text" class="form-control form-control-sm" id="SearchPartNo">
+
+                                </div>
+                                <!-- ======================== -->
+                                <!-- ======================== -->
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="table-responsive table-he-250">
+                                            <table class="table table-sm table-bordered w-100 text-center" id="Dispatchgrid">
+                                                <thead class="  table-info th-sti">
+                                                    <tr class="table-border-bottom">
+                                                        <th>
+                                                            <input class="form-check-input " type="checkbox" title=""
+                                                                   data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                                                                   id="SelectAllMGrid">
+                                                        </th>
+
+                                                        <th>Customer</th>
+                                                        <th>PO No</th>
+                                                        <th>Part No / Desc</th>
+                                                        <th>Total SO Qnty </th>
+                                                        <th>Bal SO Disp Qnty </th>
+                                                        <th>Final Disp Qnty</th>
+                                                        <th>Inv.Det. Entered </th>
+                                                        <th>Data Confirmed </th>
+
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- -------------  -->
+                                                    <!-- -------------  -->
+                                                    <!-- -------------  -->
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <button class="btn btn-sm btn-primary" id="InvoiceEntry">
+                                        Enter Invoice Details for Selected Items
+                                    </button>
+                                    <button class="btn btn-sm btn-success"
+                                            id="ConfirmEnteredData">
+
+                                        Confirm Entered Data
+
+                                    </button>
+
+                                </div>
+                                <!-- =========== -->
+                            </div>
+                            <!-- =========== -->
+                            <!-- =============================================  -->
+                            <!-- =============  end row  ================  -->
+                            <!-- end accordion -->
+                        </div>
+                        <!-- =============================  -->
+                    </div>
+                </div>
+            </div>
+            <!-- end card body -->
+            <!-- ================= -->
+        </div>
+        <!-- end card -->
+        <!-- ======================================================================== -->
+    </div>
+    <!-- end col -->
+</div>
+
+<div class="modal fade"
+     id="InvoiceDetailsModal"
+     tabindex="-1"
+     aria-hidden="true"
+      data-bs-backdrop="static" data-bs-keyboard="false">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+                    Customer Invoice / Dispatch Details
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <!-- Customer Summary -->
+
+                <div class="row mb-3">
+
+                    <div class="col-md-12">
+
+                        <label class="fw-bold">Customer</label>
+
+                        <span id="InvoiceCustomer"
+                              class="ms-3">
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-12">
+
+                        <label class="fw-bold">
+                            No of Part Nos.
+                            <br />
+                            (No of Line Items)
+                        </label>
+
+                        <span id="InvoicePartCount"
+                              class="ms-3">
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <!-- Invoice Details -->
+
+                <div class="row mb-3">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Invoice No. <span class="text-danger">*</span>
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               id="InvoiceNo">
+
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Invoice Date <span class="text-danger">*</span>
+                        </label>
+
+                        <input type="date"
+                               class="form-control"
+                               id="InvoiceDate">
+
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-12">
+
+                        <label class="form-label">
+                            Dispatch Details
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               id="DispatchDetails">
+
+                    </div>
+                    <div id="InvoiceErrorMessage"
+                         class="alert alert-danger d-none">
+                    </div>
+                    <div class="container-sm text-end">
+                        <button type="button"
+                                class="btn btn-primary"
+                                id="InvoiceSave"
+                                disabled>
+                            Save
+                        </button>
+                    </div>
+
+                </div>
+
+                    <!-- Error Message -->
+
+                  
+
+                    <!-- Selected Items Grid -->
+
+                    <div class="table-responsive table-he-250">
+
+                        <table class="table table-sm table-bordered w-100 text-center"
+                               id="InvoiceSelectedGrid">
+
+                            <thead class="table-info th-sti">
+
+                                <tr class="table-border-bottom">
+                                    <th>PO No</th>
+                                    <th>Part No / Desc</th>
+                                    <th>Dispatch Qnty</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+           
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade"
+     id="EditInvoiceDetailsModal"
+     tabindex="-1"
+     aria-hidden="true"
+      data-bs-backdrop="static" data-bs-keyboard="false">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+                    Edit Customer Invoice / Dispatch Details
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <!-- Hidden Dispatch Details ID -->
+
+                <input type="hidden"
+                       id="EditDispatchDetailsId" />
+
+
+                <!-- Customer Information -->
+
+                <div class="row mb-3">
+
+                    <div class="col-md-12">
+
+                        <label class="fw-bold">
+                            Customer
+                        </label>
+
+                        <span id="EditInvoiceCustomer"
+                              class="ms-3">
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-12">
+
+                        <label class="fw-bold">
+                            No of Part Nos.
+                            <br />
+                            (No of Line Items)
+                        </label>
+
+                        <span id="EditInvoicePartCount"
+                              class="ms-3">
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <hr />
+
+
+                <!-- Editable Invoice Details -->
+
+                <div class="row mb-3">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Invoice No. *
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               id="EditInvoiceNo">
+
+                    </div>
+
+                    <div class="col-md-4">
+                    </div>
+
+                    <div class="col-md-4">
+                    </div>
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Invoice Date *
+                        </label>
+
+                        <input type="date"
+                               class="form-control"
+                               id="EditInvoiceDate">
+
+                    </div>
+
+                    <div class="col-md-4">
+                    </div>
+
+                    <div class="col-md-4">
+                    </div>
+
+                    <div class="col-md-12">
+
+                        <label class="form-label">
+                            Dispatch Details
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               id="EditDispatchDetails">
+
+                    </div>
+
+                </div>
+
+
+                <!-- Error Message -->
+
+                <div id="EditInvoiceErrorMessage"
+                     class="alert alert-danger d-none">
+                </div>
+
+                <div class="container-sm text-end">
+                    <button type="button"
+                            class="btn btn-primary"
+                            id="EditInvoiceSave"
+                            >
+
+                        Save
+
+                    </button>
+                </div>
+                <!-- Selected Line Items -->
+
+                <div class="table-responsive table-he-250">
+
+                    <table class="table table-sm table-bordered text-center"
+                           id="EditInvoiceSelectedGrid">
+
+                        <thead class="table-info th-sti">
+
+                            <tr class="table-border-bottom">
+                                <th>PO No</th>
+                                <th>Part No / Desc</th>
+                                <th>Dispatch Qnty</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+        
+
+        </div>
+
+    </div>
+
+</div>
+<div class="modal fade"
+     id="DeleteInvoiceDetailsModal"
+     tabindex="-1"
+     aria-hidden="true"
+      data-bs-backdrop="static" data-bs-keyboard="false">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+                    Customer Invoice / Dispatch Details to be Deleted
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <!-- Hidden Dispatch Details ID -->
+
+                <input type="hidden"
+                       id="DeleteDispatchDetailsId">
+
+
+                <!-- Customer Information -->
+
+                <div class="row mb-3">
+
+                    <div class="col-md-12">
+
+                        <label class="fw-bold">
+                            Customer
+                        </label>
+
+                        <span id="DeleteInvoiceCustomer"
+                              class="ms-3">
+                        </span>
+
+                    </div>
+
+                    <div class="col-md-12">
+
+                        <label class="fw-bold">
+                            No of Part Nos.
+                            <br />
+                            (No of Line Items)
+                        </label>
+
+                        <span id="DeleteInvoicePartCount"
+                              class="ms-3">
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <hr />
+
+
+                <!-- Readonly Invoice Details -->
+
+                <div class="row mb-3">
+
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Invoice No. *
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               id="DeleteInvoiceNo"
+                               disabled>
+
+                    </div>
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+
+                        <label class="form-label">
+                            Invoice Date *
+                        </label>
+
+                        <input type="date"
+                               class="form-control"
+                               id="DeleteInvoiceDate"
+                               disabled>
+
+                    </div>
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4"></div>
+
+                    <div class="col-md-12">
+
+                        <label class="form-label">
+                            Dispatch Details
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               id="DeleteDispatchDetails"
+                               disabled>
+
+                    </div>
+
+                </div>
+
+
+                    <!-- Error Message -->
+
+                    <div id="DeleteInvoiceErrorMessage"
+                         class="alert alert-danger d-none">
+                    </div>
+
+
+                    <!-- Linked Items -->
+
+                    <div class="table-responsive table-he-250">
+
+                        <table class="table table-sm table-bordered w-100 text-center"
+                               id="DeleteInvoiceSelectedGrid">
+
+                            <thead class="table-info th-sti">
+
+                                <tr class="table-border-bottom">
+                                    <th>PO No</th>
+                                    <th>Part No / Desc</th>
+                                    <th>Dispatch Qnty</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- Confirmation Message -->
+
+                    <div class="text-center mt-4">
+
+                        <strong>
+                            If Confirm Delete is Pressed Data will have to be re-entered and Confirmed to complete the Procedure
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+            <div class="modal-footer justify-content-center">
+
+                <button type="button"
+                        class="btn btn-primary"
+                        id="ConfirmDeleteInvoice">
+
+                    <i class="mdi mdi-check"></i>
+                    Confirm Delete
+
+                </button>
+
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                    <i class="mdi mdi-close"></i>
+                    Cancel
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<template id="DispatchgridRow">
+    <tr>
+        <th>
+            <input class="form-check-input DispatchgridChks" type="checkbox" title=""
+                   data-plugin="tippy" data-tippy-placement="top" placeholder=""
+                   data-customer="{customer}"
+                   data-po="{poNumber}"
+                   data-partno="{partNo}"
+                   data-partdesc="{partDesc}"
+                   data-dispqnty="{disp_Qnty}"
+                   data-custdispid="{cust_Disp_List_ID}"
+                   data-soid="{soId}"
+                   data-soallocid="{soAllocId}"
+                    data-invoice-entered="{invoice_Details_Entered}"
+                   data-data-confirmed="{data_Confirmed}">
+        </th>
+
+        <th>{customer}</th>
+        <th>{poNumber}</th>
+        <th>{partNo} / {partDesc}</th>
+        <th>{requiredQuantity}</th>
+        <th>{balanceSOQty}</th>
+        <th>{disp_Qnty}</th>
+        <th>{invoice_Details_Entered}</th>
+        <th>{data_Confirmed}</th>
+
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end DispatchActionMenu">
+                    <!-- item-->
+
+
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
+<template id="InvoiceSelectedGridRow">
+
+    <tr>
+        <td hidden>{cust_Disp_List_ID}</td>
+        <td>{poNumber}</td>
+
+        <td>{partNo} / {partDesc}</td>
+
+        <td>{disp_Qnty}</td>
+
+    </tr>
+
+</template>
+<template id="EditInvoiceSelectedGridRow">
+
+    <tr>
+
+        <td hidden>{cust_Disp_List_ID}</td>
+
+        <td>{poNumber}</td>
+
+        <td>{partNo} / {partDesc}</td>
+
+        <td>{disp_Qnty}</td>
+
+    </tr>
+
+</template>
+<template id="DeleteInvoiceSelectedGridRow">
+
+    <tr>
+
+        <td hidden>{cust_Disp_List_ID}</td>
+
+        <td>{poNumber}</td>
+
+        <td>{partNo} / {partDesc}</td>
+
+        <td>{disp_Qnty}</td>
+
+    </tr>
+
+</template>
+@section Scripts {
+    <script src="~/js/CustomerDispatch.js"></script>
+}

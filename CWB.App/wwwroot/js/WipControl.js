@@ -58,7 +58,7 @@ function loadPO() {
 function InwardPo() {
     showLoader();
   //  $("#preloaderblurred").show();
-    api.getbulk("/WorkOrder/GetAllPodetails").then((data) => {
+    api.getbulk("/WorkOrder/GetAllPodetailswithsubcon").then((data) => {
         data = data.filter(item => item.status == 2);
         let totalSubCon = 0;
         let totalRawMaterial = 0;
@@ -100,7 +100,7 @@ function loadNCLog() {
         let totalSubCon = 0;
         let totalRawMaterial = 0;
         let totalBOF = 0;
-
+        data = data.filter(x => x.nC_Log_status_Id === 1);
         for (let i = 0; i < data.length; i++) {
             if (data[i].partType === "SubCon") {
                 totalSubCon++; 
@@ -169,22 +169,29 @@ function copyPartData() {
     var data = ba_masterparts;
     //$('#SalesCustomerOrderId').val();
     var partId = data[selval].partId;
-    $.ajax({
-        type: "GET",
-        url: "/masters/CheckPartNoInDocList",
-        data: { partId: partId },
-        success: function (response) {
-            if (!response) {
-                alert("This Part Doesnot Have Required Document.");
-                return;
-            }
-            else {
-                $("#popup7PartNoField").val(data[selval].partNo + "/" + data[selval].description);
-                $("#Popup7partId").val(data[selval].partId);
-                document.getElementById("btn-close-ba-ExistingParts").click();
-            }
-        }
-    });
+    $("#popup7PartNoField").val(
+        data[selval].partNo + "/" + data[selval].description
+    );
+
+    $("#Popup7partId").val(data[selval].partId);
+
+    document.getElementById("btn-close-ba-ExistingParts").click();
+    //$.ajax({
+    //    type: "GET",
+    //    url: "/masters/CheckPartNoInDocList",
+    //    data: { partId: partId },
+    //    success: function (response) {
+    //        if (!response) {
+    //            alert("This Part Doesnot Have Required Document.");
+    //            return;
+    //        }
+    //        else {
+    //            $("#popup7PartNoField").val(data[selval].partNo + "/" + data[selval].description);
+    //            $("#Popup7partId").val(data[selval].partId);
+    //            document.getElementById("btn-close-ba-ExistingParts").click();
+    //        }
+    //    }
+    //});
 }
 function loadCustomers(CompanyOrSupplier) {//pass the element name
     var compSelect = $('#' + CompanyOrSupplier);//should be a select2 dropdown
@@ -278,6 +285,8 @@ $(document).ready(function () {
    InwardPo();
     loadNCLog();
     loadPO();
+    loadCustomerDispatchCount();
+    loadMisCount();
     $("#CustomerSel").on("change", function () {
         var selval = $(this).val().toLowerCase();
         LoadPOLines(selval);
@@ -475,3 +484,90 @@ $(document).ready(function () {
         //});
     });
 });
+function loadCustomerDispatchCount() {
+
+    api.getbulk("/WorkOrder/CustomerDispatchData")
+        .then(function (data) {
+
+            console.log("Customer Dispatch Data:", data);
+
+            var dispatchCount = data.length;
+
+            // Show count in both places
+            $("#dispatchCount").text(dispatchCount);
+            $("#dispatchPendingCount").text(dispatchCount);
+
+            var dispatchLink = $("#customerDispatchLink");
+
+            if (dispatchCount === 0) {
+
+                // Disable Dispatch
+                dispatchLink
+                    .addClass("disabled")
+                    .css({
+                        "pointer-events": "none",
+                        "opacity": "0.5",
+                        "cursor": "not-allowed"
+                    });
+
+                dispatchLink.attr("aria-disabled", "true");
+
+            } else {
+
+                // Enable Dispatch
+                dispatchLink
+                    .removeClass("disabled")
+                    .css({
+                        "pointer-events": "auto",
+                        "opacity": "1",
+                        "cursor": "pointer"
+                    });
+
+                dispatchLink.removeAttr("aria-disabled");
+            }
+
+        })
+        .catch(function (error) {
+
+            console.error("Customer Dispatch Count Error:", error);
+
+            // Optional: Disable if API fails
+            $("#customerDispatchLink")
+                .addClass("disabled")
+                .css({
+                    "pointer-events": "none",
+                    "opacity": "0.5"
+                });
+        });
+}
+function loadMisCount() {
+    $("#preloaderblurred").show();
+    api.getbulk("/workOrder/GetAllMatl_Issue_List").then((data) => {
+        let unique = [];
+        let seen = new Set();
+
+        for (let item of data) {
+            // Build unique key including opNo to allow different operations
+            let key = `${item.shop}|${item.woNumber}|${item.partNo}|${item.routingName}|${item.opNo}`;
+
+            if (!seen.has(key)) {
+                seen.add(key);
+                unique.push(item);
+            }
+        }
+        var datacount = unique.length;
+        $("#subcon").text(datacount);
+        
+        $("#preloaderblurred").hide();
+    }).catch((error) => {
+        $("#preloaderblurred").hide();
+    });
+    api.getbulk("/workOrder/GetAllIssueSubCon").then((data) => {
+        var datacount = data.length;
+        $("#shop").text(datacount);
+   
+        $("#preloaderblurred").hide();
+    }).catch((error) => {
+        $("#preloaderblurred").hide();
+    });
+}

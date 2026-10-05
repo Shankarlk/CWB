@@ -9,6 +9,7 @@ using CWB.App.Services.DocumentMagement;
 using CWB.App.Services.Masters;
 using CWB.App.Services.ProductionPlanWo;
 using CWB.App.Services.Routings;
+using CWB.App.Services.CompanySettings;
 using CWB.CommonUtils.Common;
 using CWB.Logging;
 using Microsoft.AspNetCore.Hosting;
@@ -31,6 +32,7 @@ namespace CWB.App.Controllers
     {
         private readonly ILoggerManager _logger;
         private readonly IMastersServices _mastersService;
+        private readonly IDepartmentService _departmentService;
         private readonly IBAService _baService;
         private readonly IMachineService _machineService;
         private readonly IDocMangService _docMangService;
@@ -39,7 +41,7 @@ namespace CWB.App.Controllers
         private readonly IWOService _woService;
         IHostingEnvironment _hostingEnvironment = null;
         public MastersController(ILoggerManager logger, IMachineService machineService, IMastersServices mastersService, IDocMangService docMangService,
-           IRoutingService routingService, IHostingEnvironment hostingEnvironment, IWOService woService
+           IRoutingService routingService, IHostingEnvironment hostingEnvironment, IWOService woService, IDepartmentService departmentService
             , IHttpContextAccessor httpContextAccessor, IOperationService operationService,
            IBAService baService)
         {
@@ -52,6 +54,7 @@ namespace CWB.App.Controllers
             _hostingEnvironment = hostingEnvironment;
             _woService = woService;
             _baService = baService;
+            _departmentService = departmentService;
 
         }
         public IActionResult Index()
@@ -468,6 +471,7 @@ namespace CWB.App.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ManufacturedPartNoDetail(ManufacturedPartNoDetailVM model)
         {
+            var stores = await _departmentService.GetAllStoresIDs();
             if(model.RevNo.Length == 0)
             {
                 model.RevNo = "0";
@@ -487,7 +491,8 @@ namespace CWB.App.Controllers
             {
                 var postinvmaster = new Inventory_MasterVM();
                 postinvmaster.Part_NoId = result.PartId;
-                postinvmaster.Location_Id = 0;
+                postinvmaster.Location_Id = stores.Stores_DirMatl_ID;
+                postinvmaster.Loc_Flag = "Internal";
                 postinvmaster.Dt_time = DateTime.Now;
                 var invmaster = await _woService.PostInventory_Master(postinvmaster);
             }
@@ -587,6 +592,7 @@ namespace CWB.App.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RawMaterialDetail(RawMaterialDetailVM model)
         {
+            var stores = await _departmentService.GetAllStoresIDs();
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -603,6 +609,8 @@ namespace CWB.App.Controllers
                 var postinvmaster = new Inventory_MasterVM();
                 postinvmaster.Part_NoId = result.PartId;
                 postinvmaster.Location_Id = 0;
+                postinvmaster.Location_Id = stores.Stores_DirMatl_ID;
+                postinvmaster.Loc_Flag = "Internal";
                 postinvmaster.Dt_time = DateTime.Now;
                 var invmaster = await _woService.PostInventory_Master(postinvmaster);
             }
@@ -2982,6 +2990,7 @@ namespace CWB.App.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> BoughtOutFinishDetail(BoughtOutFinishDetailVM model)
         {
+            var stores = await _departmentService.GetAllStoresIDs();
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -2997,7 +3006,8 @@ namespace CWB.App.Controllers
             {
                 var postinvmaster = new Inventory_MasterVM();
                 postinvmaster.Part_NoId = result.PartId;
-                postinvmaster.Location_Id = 0;
+                postinvmaster.Location_Id = stores.Stores_DirMatl_ID;
+                postinvmaster.Loc_Flag = "Internal";
                 postinvmaster.Dt_time = DateTime.Now;
                 var invmaster = await _woService.PostInventory_Master(postinvmaster);
             }

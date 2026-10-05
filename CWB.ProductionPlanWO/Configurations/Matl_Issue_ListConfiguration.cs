@@ -59,6 +59,9 @@ namespace CWB.ProductionPlanWO.Configurations
             builder
                .Property(b => b.To_Loc_Flag)
                .HasColumnName("To_Loc_Flag");
+            builder
+                .Property(b => b.Issued)
+                .HasColumnName("Issued");
             builder.ConfigureBase();
             builder.HasIndex(c => c.TenantId).HasDatabaseName("Matl_Issue_List_TenantId");
         }

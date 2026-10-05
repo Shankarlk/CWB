@@ -5,7 +5,7 @@ let PPartType = "";
 let partNo = "";
 function loadPO() {
     $("#preloaderblurred").show();
-    api.getbulk("/WorkOrder/GetAllPodetails").then((data) => {
+    api.getbulk("/WorkOrder/GetAllPodetailswithsubcon").then((data) => {
         data = data.filter(item => item.status == 2);
         var tablebody = $("#PoGrid1 tbody");
         $(tablebody).html("");
@@ -164,6 +164,13 @@ async function showPopup() {
 }
 
 $(document).ready(function () {
+    var today = new Date().toISOString().split('T')[0];
+
+    // Restrict future dates
+    $('#popupInwardDcDate').attr('max', today);
+    $('#popupInvDate').attr('max', today);
+    $('#popupInward2DcDate').attr('max', today);
+    $('#popupInward2InvDate').attr('max', today);
     loadSuppliers();
     loadPO();
     $("#searchPoNo").on("keyup", function () {
@@ -516,14 +523,14 @@ $(document).ready(function () {
             var newNamevalidate = document.getElementById('P5SuppCount');
             newNamevalidate.style.border = '';
         }
-        if (P5Comment.length === 0) {
-            var newNamevalidate = document.getElementById('P5Comment');
-            newNamevalidate.style.border = '2px solid red';
-            return false;
-        } else {
-            var newNamevalidate = document.getElementById('P5Comment');
-            newNamevalidate.style.border = '';
-        }
+        //if (P5Comment.length === 0) {
+        //    var newNamevalidate = document.getElementById('P5Comment');
+        //    newNamevalidate.style.border = '2px solid red';
+        //    return false;
+        //} else {
+        //    var newNamevalidate = document.getElementById('P5Comment');
+        //    newNamevalidate.style.border = '';
+        //}
         if (isNaN(P5InwDetailsId)) {
             P5InwDetailsId = 0;
         }
@@ -837,6 +844,13 @@ $(document).ready(function () {
         var parttype = relatedTarget.data("parttype");
         var docavl = relatedTarget.data("docavl");
         var poqntyrecd = relatedTarget.data("poqntyrecd");
+        var qtyalreadyrecorded = relatedTarget.data("qtyrecord");
+        var qtyrecordedtoday = relatedTarget.data("qtyrecordtoday");
+        var baltoreceive = relatedTarget.data("baltoreceive");
+        var totaldispatched = relatedTarget.data("totaldispatch");
+        var baltodispatch = relatedTarget.data("baltodispatch");
+
+
         var mismatch_Resolved = relatedTarget.data("mismatchresolved");
         if (mismatch_Resolved == undefined || mismatch_Resolved == null) {
             mismatch_Resolved = "-";
@@ -948,19 +962,18 @@ $(document).ready(function () {
       </a>`;
                         let rowHtml = $(`
                     <tr>
-                        <td>${poref || ''}</td>
-                        <td>${partNo || ''}</td>
-                        <td>${routname || ''}</td>
-                        <td>${opname || ''}</td>
+                        
+                        <td>${partNo || ''} / ${routname || ''} / ${opname || ''}</td>
+                      
                         <td>${poqnty || ''}</td>
-                        <td>${poqntyrecdstr || ''}</td>
-                        <td id="baltorectd22B">${poqnty - poqntyrecd }</td>
-                        <td id="alRecdC">${poqntytodayrecdstr || ''}</td>
-                        <td id="baltorectd2D">${poqntyrecdstr || ''}</td>
-                        <td>${baltorec || '0'}</td>
-                        <td>${units || ''}</td>
+                        <td>${totaldispatched || ''}</td>
+                        <td id="baltorectd22B">${baltodispatch }</td>
+                        <td id="alRecdC">${qtyalreadyrecorded || ''}</td>
+                        <td id="baltorectd2D">${qtyrecordedtoday || ''}</td>
+                        <td>${baltoreceive || '0'}</td>
+                        
                         <td>${docavl || ''}</td>
-                        <td id="tdpostatusid">${postatus}</td>
+                       
                         <td>${mismatch_Resolved}</td>
                         <td>
                             ${mismatch_Resolved === 'N'
@@ -1096,19 +1109,18 @@ $(document).ready(function () {
       </a>`;
                     let rowHtml = $(`
                     <tr>
-                        <td>${poref || ''}</td>
-                        <td>${partNo || ''}</td>
-                        <td>${routname || ''}</td>
-                        <td>${opname || ''}</td>
+                        
+                       <td>${partNo || ''} / ${routname || ''} / ${opname || ''}</td>
+                       
                         <td>${poqnty || ''}</td>
-                        <td>${poqntyrecdstr || ''}</td>
-                        <td id="baltorectd22">0</td>
-                        <td>${poqntyrecdstr || ''}</td>
-                        <td id="baltorectd2">${poqntytodayrecdstr || ''}</td>
-                        <td>${baltorec || '0'}</td>
-                        <td>${units || ''}</td>
+                        <td>${totaldispatched || ''}</td>
+                        <td id="baltorectd22">${baltodispatch || ''}</td>
+                        <td>${qtyalreadyrecorded || ''}</td>
+                        <td id="baltorectd2">${qtyrecordedtoday || ''}</td>
+                        <td>${baltoreceive || '0'}</td>
+                        
                         <td>${docavl || ''}</td>
-                        <td id="tdpostatusid">${postatus}</td>
+                        
                         <td>${mismatch_Resolved}</td>
                         <td>
                             ${mismatch_Resolved === 'N'
@@ -1191,6 +1203,9 @@ $(document).ready(function () {
         var units = relatedTarget.data("units");
         var docavl = relatedTarget.data("docavl");
         var poqntyrecd = relatedTarget.data("poqntyrecd");
+        var qtyalreadyrecorded = relatedTarget.data("qtyrecord");
+        var qtyrecordedtoday = relatedTarget.data("qtyrecordtoday");
+        var baltoreceive = relatedTarget.data("baltoreceive");
         var inwardDate = new Date();
         //calculateTotals();
         poQnty = poqnty;
@@ -1287,12 +1302,12 @@ $(document).ready(function () {
                     <tr>
                         <td>${partNo || ''}</td>
                         <td>${poqnty || ''}</td>
-                        <td>${poqntyrecdstr || ''}</td>
-                        <td id="baltorectd">${poqntytodayrecdstr || ''}</td>
-                        <td>${baltorec || '0'}</td>
-                        <td>${units || ''}</td>
+                        <td>${qtyalreadyrecorded || ''}</td>
+                        <td id="baltorectd">${qtyrecordedtoday || ''}</td>
+                        <td>${baltoreceive || '0'}</td>
+                        
                         <td>${docavl || ''}</td>
-                        <td id="tdpostatusid">${postatus}</td>
+                    
                         <td>
                             <div class="dropdown float-center">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
@@ -1403,12 +1418,12 @@ $(document).ready(function () {
                     <tr>
                         <td>${partNo || ''}</td>
                         <td>${poqnty || ''}</td>
-                        <td>${poqntyrecdstr || ''}</td>
-                        <td>${poqntytodayrecdstr || ''}</td>
-                        <td>${baltorec || '0'}</td>
-                        <td>${units || ''}</td>
+                        <td>${qtyalreadyrecorded || ''}</td>
+                        <td>${qtyrecordedtoday || ''}</td>
+                        <td>${baltoreceive || '0'}</td>
+                        
                         <td>${docavl || ''}</td>
-                        <td id="tdpostatusid">${postatus}</td>
+                        
                         <td>
                             <div class="dropdown float-center">
                                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">

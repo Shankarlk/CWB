@@ -261,7 +261,17 @@ $(document).ready(function () {
         GetAllSubConsP10(procid);
         LoadSupplierRM(parseInt(partid));
     });
+    $('#PoGridChk').on('change', function () {
 
+        var isChecked = $(this).is(':checked');
+
+        // Select / unselect all row checkboxes
+        $('#PoGrid1 tbody input[type="checkbox"]')
+            .prop('checked', isChecked);
+
+        // Recalculate total PO value
+        handleCheckboxChange();
+    });
     $("#P10AddNextDel").on("click", function () {
         $("#P10DelQnty").val('');
         $("#P10AgrDate").val('');

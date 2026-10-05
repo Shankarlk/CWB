@@ -270,5 +270,48 @@ namespace CWB.App.Services.BusinessProcesses
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<List<BAStatusVM>>.GetAsync(uri, headers);
         }
+
+        //cust dispatch list 
+
+        public async Task<List<Cust_Disp_ListVM>> PostMultipleCustDispList(IEnumerable<Cust_Disp_ListVM> Cust_Disp_ListVMs)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbba/postmultiplecustdispatch");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            foreach (var item in Cust_Disp_ListVMs)
+            {
+                item.TenantId = tenantId;
+            }
+            return await RestHelper<List<Cust_Disp_ListVM>>.PostAsync(uri, Cust_Disp_ListVMs, headers);
+        }
+
+        public async Task<IEnumerable<Cust_Disp_ListVM>> AllCustomerDispatchList()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbba/getallcustdispatchlist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Cust_Disp_ListVM>>.GetAsync(uri, headers);
+        }
+
+
+        public async Task<Invoice_Disp_ListVM> PostInvoicedDispatchList(Invoice_Disp_ListVM soallocvm)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbba/postinvoicedisplist");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            soallocvm.TenantId = tenantId;
+            return await RestHelper<Invoice_Disp_ListVM>.PostAsync(uri, soallocvm, headers);
+        }
+
+        public async Task<IEnumerable<Invoice_Disp_ListVM>> AllInvoiceDispatchlist()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbba/getallinvoicedisplist/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<Invoice_Disp_ListVM>>.GetAsync(uri, headers);
+        }
+
+        public async Task<bool> DeleteInvoiceDispatch(long invoicedispatchlistid)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbba/removeinvoicedisp/{tenantId}/{invoicedispatchlistid}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<bool>.GetAsync(uri, headers);
+        }
     }
 }

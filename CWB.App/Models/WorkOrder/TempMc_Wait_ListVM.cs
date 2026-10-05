@@ -73,5 +73,14 @@ namespace CWB.App.Models.WorkOrder
         public long QntyOffered { get; set; }
         public long Accepted { get; set; }
         public long NonConQnty { get; set; }
+        public string InputPartNo { get; set; }
+        public long InputPartId { get; set; }
+
+        public string PreviousOperationNo { get; set; }
+        public int AcceptedQtyPreviousOperation { get; set; }
+        public long PreviousActiveId { get; set; }
+        public char FirstOperation { get; set; }
+        public long MachineDepartmentId { get; set; }
+
     }
 }

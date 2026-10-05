@@ -313,7 +313,12 @@ namespace CWB.App.Controllers
                     {
                         PartId = workOrdersVM.PartId,
                         SO_ID = workOrdersVM.SalesOrderId,
-                        Allocated_Qnty = workOrdersVM.CalcWOQty
+                        Allocated_Qnty = workOrdersVM.CalcWOQty,
+                        Dispatch_Complete = 'N',
+                        Ready_for_Dispatch = 'N',
+                        Full_Qnty_Dispatched = 'N',
+                        FinalDispQnty = 0
+
 
                     };
                     var postsoallocation = await _baService.PostSOAllocation(co);
@@ -889,7 +894,11 @@ namespace CWB.App.Controllers
                     {
                         PartId = item.PartId,
                         SO_ID = item.SalesOrderId,
-                        Allocated_Qnty = item.CalcWOQty
+                        Allocated_Qnty = item.CalcWOQty,
+                        Dispatch_Complete = 'N',
+                        Ready_for_Dispatch = 'N',
+                        Full_Qnty_Dispatched = 'N',
+                        FinalDispQnty=0
 
                     };
                     var postsoallocation = await _baService.PostSOAllocation(co);
@@ -964,9 +973,11 @@ namespace CWB.App.Controllers
             List<Selected_Sales_OrderVM> selected_Sales_OrderVMs = new List<Selected_Sales_OrderVM>();
             List<WorkOrdersVM> workOrdersVMs = new List<WorkOrdersVM>();
             List<WorkOrdersVM> finalWOList = new List<WorkOrdersVM>();
-
+            var workorders = await _baService.AllWorkOrders();
             foreach (var workOrdersVM in listworkOrdersVM)
             {
+                var parentwo = workorders.Where(x => x.WOID == workOrdersVM.ParentWoId).FirstOrDefault();
+                workOrdersVM.Calc_Capacity_Reqd =(long)Math.Round((double)parentwo.Calc_Capacity_Reqd / listworkOrdersVM.Count());
                 workOrdersVM.IsSplit = 1;
 
                 ManufacturedPartNoDetailVM manuf = await _masterService.GetManufPart((int)workOrdersVM.PartId);
@@ -1471,6 +1482,10 @@ namespace CWB.App.Controllers
                         sovm.PartNo = impvm.PartNo;
                     }
                 }
+                if(sovm.Reorder=='Y')
+                {
+                    sovm.SONumber = "Reorder_" + sovm.SONumber;
+                }
             }
 
             return Ok(salesorders);
@@ -1588,6 +1603,7 @@ namespace CWB.App.Controllers
                         sovm.PartNo = impvm.PartNo;
                     }
                 }
+
             }
             return Ok(schedules);
         }

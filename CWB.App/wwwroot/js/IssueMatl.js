@@ -14,13 +14,13 @@
             }
         }
         var datacount = unique.length;
-        $("#PlanStore1").text('0');
+        $("#PlanStore1").text(datacount);
         $("#ReadStore1").text('0');
-        $("#PlanStore2").text(datacount);
+        $("#PlanStore2").text('0');
         $("#ReadStore2").text('0');
         $("#PlanStore3").text('0');
         $("#ReadStore3").text('0');
-        $("#PlanStore4").text('0');
+    //    $("#PlanStore4").text('0');
         $("#ReadStore4").text('0');
         $("#preloaderblurred").hide();
     }).catch((error) => {
@@ -28,7 +28,8 @@
     });
     api.getbulk("/workOrder/GetAllIssueSubCon").then((data) => {
         var datacount = data.length;
-        $("#PlanStore5").text(datacount);
+        $("#PlanStore4").text(datacount);
+        $("#PlanStore5").text('0');
         $("#ReadStore5").text('0');
         $("#preloaderblurred").hide();
     }).catch((error) => {
@@ -231,7 +232,7 @@ $(document).ready(function () {
         document.getElementById('preloader').style.display = 'block';
         document.getElementById('status').style.display = 'block';
         return $.ajax({
-            url: '/WorkOrder/PostIssueInv_Trans_Log', // Replace with your controller
+            url: '/WorkOrder/Movementstart', // Replace with your controller
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(selectedIds),
@@ -257,41 +258,120 @@ $(document).ready(function () {
         var isChecked = $(this).is(':checked');
         $('.P3gridChk').prop('checked', isChecked);
     });
+    //$("#P3Subcon").on("change", function () {
+    //    var selectedValue = $(this).val();
+    //    if (selectedValue == "0") {
+    //        $("#P3Grid tbody tr").show();
+    //        var $tableBody = $("#P3Grid tbody");
+    //        if ($tableBody.find("tr:visible").length === 0) {
+    //            const noRecordsRow = `
+    //            <tr class="norecordsfound">
+    //                <td colspan="20" style="text-align: center; color: #888;">
+    //                    <strong>No Records Found</strong>
+    //                </td>
+    //            </tr>`;
+    //            $tableBody.append(noRecordsRow);
+    //        } else {
+    //            $tableBody.find(".norecordsfound").remove();
+    //        }
+    //        return;
+    //    } else {
+    //        var selvallow = selectedValue.toLowerCase();
+    //        $("#P3Grid tbody tr").filter(function () {
+    //            $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(selvallow) > -1)
+    //        });
+    //        var $tableBody = $("#P3Grid tbody");
+    //        if ($tableBody.find("tr:visible").length === 0) {
+    //            const noRecordsRow = `
+    //            <tr class="norecordsfound">
+    //                <td colspan="20" style="text-align: center; color: #888;">
+    //                    <strong>No Records Found</strong>
+    //                </td>
+    //            </tr>`;
+    //            $tableBody.append(noRecordsRow);
+    //        } else {
+    //            $tableBody.find(".norecordsfound").remove();
+    //        }
+    //    }
+    //});
     $("#P3Subcon").on("change", function () {
+
         var selectedValue = $(this).val();
-        if (selectedValue == "0") {
-            $("#P3Grid tbody tr").show();
-            var $tableBody = $("#P3Grid tbody");
-            if ($tableBody.find("tr:visible").length === 0) {
-                const noRecordsRow = `
-                <tr class="norecordsfound">
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-                $tableBody.append(noRecordsRow);
-            } else {
-                $tableBody.find(".norecordsfound").remove();
-            }
-            return;
+
+        // Reset Select All and individual checkboxes
+        $("#P3SelectAll").prop("checked", false);
+        $(".P3gridChk").prop("checked", false);
+
+        // Enable only when a valid SubCon is selected
+        if (selectedValue == "0" || selectedValue == "") {
+
+            $("#P3SelectAll").prop("disabled", true);
+
         } else {
-            var selvallow = selectedValue.toLowerCase();
-            $("#P3Grid tbody tr").filter(function () {
-                $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(selvallow) > -1)
-            });
+
+            $("#P3SelectAll").prop("disabled", false);
+
+        }
+
+
+        // Existing filtering logic
+        if (selectedValue == "0") {
+
+            $("#P3Grid tbody tr").show();
+
             var $tableBody = $("#P3Grid tbody");
+
             if ($tableBody.find("tr:visible").length === 0) {
+
                 const noRecordsRow = `
                 <tr class="norecordsfound">
                     <td colspan="20" style="text-align: center; color: #888;">
                         <strong>No Records Found</strong>
                     </td>
                 </tr>`;
+
                 $tableBody.append(noRecordsRow);
+
             } else {
+
                 $tableBody.find(".norecordsfound").remove();
+
+            }
+
+            return;
+
+        } else {
+
+            var selvallow = selectedValue.toLowerCase();
+
+            $("#P3Grid tbody tr").filter(function () {
+
+                $(this).toggle(
+                    $(this.children[1]).text().toLowerCase().indexOf(selvallow) > -1
+                );
+
+            });
+
+            var $tableBody = $("#P3Grid tbody");
+
+            if ($tableBody.find("tr:visible").length === 0) {
+
+                const noRecordsRow = `
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+
+                $tableBody.append(noRecordsRow);
+
+            } else {
+
+                $tableBody.find(".norecordsfound").remove();
+
             }
         }
+
     });
     $('#P3Issue').secureClick( function () {
         let selectedIds = [];
@@ -501,18 +581,7 @@ function loadIssueShop() {
 
     api.getbulk("/workOrder/GetAllMatl_Issue_List").then((data) => {
 
-        //let unique = [];
-        //let seen = new Set();
-
-        //for (let item of data) {
-        //    // Build unique key including opNo to allow different operations
-        //    let key = `${item.shop}|${item.woNumber}|${item.partNo}|${item.routingName}|${item.opNo}`;
-
-        //    if (!seen.has(key)) {
-        //        seen.add(key);
-        //        unique.push(item);
-        //    }
-        //}
+        data = data.filter(x => x.issued === 'N');
         if (data.length === 0) {
             // 2. Insert the "No Records Found" row
             // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
@@ -563,6 +632,7 @@ function loadPartinSubcon() {
     $("#preloaderblurred").show();
 
     api.getbulk("/workOrder/GetPartsLoadedInSubCon").then((data) => {
+      
         if (data.length === 0) {
             // 2. Insert the "No Records Found" row
             // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
@@ -588,6 +658,7 @@ function loadIssueSubcon() {
     $("#preloaderblurred").show();
 
     api.getbulk("/workOrder/GetAllIssueSubCon").then((data) => {
+         
         if (data.length === 0) {
             // 2. Insert the "No Records Found" row
             // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
@@ -613,10 +684,11 @@ function loadIssueShopToStores(filters) {
     $(tablebody).html("");//empty tbody
     $("#preloaderblurred").show();
 
-    api.getbulk("/workOrder/GetAllMatl_Issue_List").then((data) => {
+    api.getbulk("/workOrder/MovementList").then((data) => {
         if (filters) {
             data = data.filter(item => item.from_LocationStr === filters);
         }
+        data = data.filter(x => x.issue_Mov_Compl === 'N');
         if (data.length === 0) {
             // 2. Insert the "No Records Found" row
             // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)

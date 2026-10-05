@@ -576,6 +576,7 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Location_Id, m => m.MapFrom(src => src.Location_Id))
           .ForMember(m => m.Inv_Trans_Log_Id, m => m.MapFrom(src => src.Inv_Trans_Log_Id))
           .ForMember(m => m.Loc_Flag, m => m.MapFrom(src => src.Loc_Flag))
+          .ForMember(m => m.Part_Status, m => m.MapFrom(src => src.Part_Status))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
             CreateMap<Inventory_Master, Inventory_MasterVM>()
@@ -588,6 +589,7 @@ namespace CWB.ProductionPlanWO.Utils
           .ForMember(m => m.Location_Id, m => m.MapFrom(src => src.Location_Id))
           .ForMember(m => m.Inv_Trans_Log_Id, m => m.MapFrom(src => src.Inv_Trans_Log_Id))
           .ForMember(m => m.Loc_Flag, m => m.MapFrom(src => src.Loc_Flag))
+           .ForMember(m => m.Part_Status, m => m.MapFrom(src => src.Part_Status))
           .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
             CreateMap<Part_StatusVM, Part_Status>()
           .ForMember(m => m.Id, m => m.MapFrom(src => src.Part_Status_Id))
@@ -1298,6 +1300,7 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(s => s.RoutingId, s => s.MapFrom(src => src.RoutingId))
             .ForMember(s => s.RoutingStepSequence, s => s.MapFrom(src => src.RoutingStepSequence))
             .ForMember(s => s.RoutingStepLocation, s => s.MapFrom(src => src.RoutingStepLocation))
+            .ForMember(s => s.OprSequenceType, s => s.MapFrom(src => src.OprSequenceType))
             .ForMember(s => s.Mode, s => s.MapFrom(src => src.Mode))
             .ForMember(s => s.Initial_Opr_TPT, s => s.MapFrom(src => src.Initial_Opr_TPT))
             .ForMember(s => s.Rolledup_Opr_TPT, s => s.MapFrom(src => src.Rolledup_Opr_TPT))
@@ -1320,6 +1323,7 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(s => s.RoutingId, s => s.MapFrom(src => src.RoutingId))
             .ForMember(s => s.RoutingStepSequence, s => s.MapFrom(src => src.RoutingStepSequence))
             .ForMember(s => s.RoutingStepLocation, s => s.MapFrom(src => src.RoutingStepLocation))
+              .ForMember(s => s.OprSequenceType, s => s.MapFrom(src => src.OprSequenceType))
             .ForMember(s => s.Mode, s => s.MapFrom(src => src.Mode))
             .ForMember(s => s.Initial_Opr_TPT, s => s.MapFrom(src => src.Initial_Opr_TPT))
             .ForMember(s => s.Rolledup_Opr_TPT, s => s.MapFrom(src => src.Rolledup_Opr_TPT))
@@ -1343,6 +1347,7 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(s => s.RoutingId, s => s.MapFrom(src => src.RoutingId))
             .ForMember(s => s.RoutingStepSequence, s => s.MapFrom(src => src.RoutingStepSequence))
             .ForMember(s => s.RoutingStepLocation, s => s.MapFrom(src => src.RoutingStepLocation))
+              .ForMember(s => s.OprSequenceType, s => s.MapFrom(src => src.OprSequenceType))
             .ForMember(s => s.Mode, s => s.MapFrom(src => src.Mode))
             .ForMember(s => s.Initial_Opr_TPT, s => s.MapFrom(src => src.Initial_Opr_TPT))
             .ForMember(s => s.Rolledup_Opr_TPT, s => s.MapFrom(src => src.Rolledup_Opr_TPT))
@@ -1366,6 +1371,7 @@ namespace CWB.ProductionPlanWO.Utils
              .ForMember(s => s.RoutingId, s => s.MapFrom(src => src.RoutingId))
             .ForMember(s => s.RoutingStepSequence, s => s.MapFrom(src => src.RoutingStepSequence))
             .ForMember(s => s.RoutingStepLocation, s => s.MapFrom(src => src.RoutingStepLocation))
+              .ForMember(s => s.OprSequenceType, s => s.MapFrom(src => src.OprSequenceType))
             .ForMember(s => s.Mode, s => s.MapFrom(src => src.Mode))
             .ForMember(s => s.Initial_Opr_TPT, s => s.MapFrom(src => src.Initial_Opr_TPT))
             .ForMember(s => s.Rolledup_Opr_TPT, s => s.MapFrom(src => src.Rolledup_Opr_TPT))
@@ -1539,6 +1545,7 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(s => s.From_Location, s => s.MapFrom(src => src.From_Location))
             .ForMember(s => s.From_Loc_Flag, s => s.MapFrom(src => src.From_Loc_Flag))
             .ForMember(s => s.To_Loc_Flag, s => s.MapFrom(src => src.To_Loc_Flag))
+            .ForMember(s => s.Issued, s => s.MapFrom(src => src.Issued))
             .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
             CreateMap<Matl_Issue_List, Matl_Issue_ListVM>()
             .ForMember(s => s.Matl_Issue_ListId, s => s.MapFrom(src => src.Id))
@@ -1554,6 +1561,7 @@ namespace CWB.ProductionPlanWO.Utils
               .ForMember(s => s.From_Loc_Flag, s => s.MapFrom(src => src.From_Loc_Flag))
             .ForMember(s => s.To_Loc_Flag, s => s.MapFrom(src => src.To_Loc_Flag))
             .ForMember(s => s.Issue_Mov_Compl, s => s.MapFrom(src => src.Issue_Mov_Compl))
+            .ForMember(s => s.Issued, s => s.MapFrom(src => src.Issued))
             .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
 
             CreateMap<Matl_Issue_SettingsVM, Matl_Issue_Settings>()

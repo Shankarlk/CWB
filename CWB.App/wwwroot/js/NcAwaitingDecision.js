@@ -487,12 +487,24 @@ $(document).ready(function () {
                     cont_RCA_CA_LogId: P14RCLogId,
                     cont_RCA_CA_Status_Id: 2
                 };
+                //api.post("/WorkOrder/UpdateCont_RCA_CA_log", rowdata).then((data) => {
+
+                //});
                 api.post("/WorkOrder/UpdateCont_RCA_CA_log", rowdata).then((data) => {
+
+                    api.post("/WorkOrder/CloseNCLog", {
+                        ncLogId: parseInt(P10NCLogId)
+                    }).then((data) => {
+
+                        loadNCLog();
+                      //  $("#popup10").modal("hide");
+
+                    });
 
                 });
             }
-            loadNCLog();
-            $("#popup10").modal("hide");
+           // loadNCLog();
+        $("#popup10").modal("hide");
         }).catch((error) => {
             console.log(error);
         });
@@ -519,14 +531,7 @@ $(document).ready(function () {
         if (P10CustDesignChk.checked) {
             P10CustDesignChkVal = 'Y';
         }
-        if (P10RequestToCustomer === 0) {
-            var newNamevalidate = document.getElementById('P10RequestToCustomer');
-            newNamevalidate.style.border = '2px solid red';
-            return false;
-        } else {
-            var newNamevalidate = document.getElementById('P10RequestToCustomer');
-            newNamevalidate.style.border = '';
-        }
+        
         if (P10RequestDecision === "2") {
             if (P10FeedbackConditionalAcceptance.length === 0) {
                 var newNamevalidate = document.getElementById('P10FeedbackConditionalAcceptance');
@@ -546,25 +551,39 @@ $(document).ready(function () {
                 var newNamevalidate = document.getElementById('P10NCInslvl1');
                 newNamevalidate.style.border = '';
             }
-        } 
-        if (isNaN(P10RequestedDate.getTime())) {
-            var newNamevalidate = document.getElementById('P10RequestedDate');
-            newNamevalidate.style.border = '2px solid red';
-            return false;
+        }
 
-            // or display an error message to the user
-        } else if (P10RequestedDate <= restrictDt) {
-            var newNamevalidate = document.getElementById('P10RequestedDate');
-            newNamevalidate.style.border = '2px solid red';
-            alert("Customer / Design Requested Date Should Be Greater Than Todays Date.");
-            return false;
-            // or display an error message to the user
+        if (P10CustDesignChk.checked) {
+
+            if (isNaN(P10RequestedDate.getTime())) {
+                var newNamevalidate = document.getElementById('P10RequestedDate');
+                newNamevalidate.style.border = '2px solid red';
+                return false;
+
+                // or display an error message to the user
+            } else if (P10RequestedDate <= restrictDt) {
+                var newNamevalidate = document.getElementById('P10RequestedDate');
+                newNamevalidate.style.border = '2px solid red';
+                alert("Customer / Design Requested Date Should Be Greater Than Todays Date.");
+                return false;
+                // or display an error message to the user
+            }
+            else {
+                formattedDate = P10RequestedDate.toISOString();
+                var newNamevalidate = document.getElementById('P10RequestedDate');
+                newNamevalidate.style.border = '';
+            }
+            if (P10RequestToCustomer === 0) {
+                var newNamevalidate = document.getElementById('P10RequestToCustomer');
+                newNamevalidate.style.border = '2px solid red';
+                return false;
+            } else {
+                var newNamevalidate = document.getElementById('P10RequestToCustomer');
+                newNamevalidate.style.border = '';
+            }
         }
-        else {
-            formattedDate = P10RequestedDate.toISOString();
-            var newNamevalidate = document.getElementById('P10RequestedDate');
-            newNamevalidate.style.border = '';
-        }
+
+
         if (Popup10Open >= 2) {
             if (isNaN(P10FeedbackReceiptDate.getTime())) {
                 var newNamevalidate = document.getElementById('P10FeedbackReceiptDate');

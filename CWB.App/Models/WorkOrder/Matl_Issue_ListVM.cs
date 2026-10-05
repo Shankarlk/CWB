@@ -45,5 +45,6 @@ namespace CWB.App.Models.WorkOrder
         public string OprNoName { get; set; }
         public string Supplier { get; set; }
         public long Bal_Qnty { get; set; }
+        public char Issued { get; set; }
     }
 }

@@ -376,6 +376,7 @@ $(window).on('load', function () {
     loadMcTimeListDetail();
    // $("#misgrid2").hide();
     $("#misgrid1").hide();
+    $("#DownloadWo").hide();
 });
 
 $(document).ready(function () {
@@ -2162,12 +2163,12 @@ $(document).ready(function () {
             if (partType !== "RawMaterial" && partType !== "BOF") {
                 return; // skip SubCon
             }
-            var combinedFlag = row.find("td:eq(23)").text(); // 🔥 CombinedProcPlan (adjust index) 
-            var childCount = parseInt(row.find("td:eq(22)").text()) || 1; // 🔥 ChildCount
+            var combinedFlag = row.find("td:eq(21)").text(); // 🔥 CombinedProcPlan (adjust index) 
+            var childCount = parseInt(row.find("td:eq(20)").text()) || 1; // 🔥 ChildCount
             var calcQty = parseInt(row.find("td:eq(8)").text()) || 0;
             var moq = parseInt(row.find("td:eq(11)").text()) || 0;
-            console.log("RAW TD:", row.find("td:eq(21)").html());
-            console.log("TEXT:", row.find("td:eq(21)").text());
+            console.log("RAW TD:", row.find("td:eq(19)").html());
+            console.log("TEXT:", row.find("td:eq(19)").text());
             var combinedIds = row.find(".combinedIds").text().trim();
             var rowData = {
                 procPlanId: parseInt(row.find("td:eq(1)").text()),
@@ -2178,7 +2179,7 @@ $(document).ready(function () {
                 moq: parseInt(row.find("td:eq(11)").text()),
                 uomid: 0,
                 workOrderId: parseInt(row.find("td:eq(2)").text()),
-              combinedIds: row.find("td:eq(21)").text()
+              combinedIds: row.find("td:eq(19)").text()
                
             };
 
@@ -2295,9 +2296,9 @@ $(document).ready(function () {
                 procPlanId: parseInt($(row).find("td:eq(1)").text()),
                 partId: parseInt($(row).find("td:eq(3)").text()),
                 poQnty: parseInt($(row).find("td:eq(8)").text()),
-                planPoReceiptDate: $(row).find("td:eq(17)").text(),
-                companyId: parseInt($(row).find("td:eq(18)").text()),
-                combinedIds: $(row).find("td:eq(21)").text()
+                planPoReceiptDate: $(row).find("td:eq(16)").text(),
+                companyId: parseInt($(row).find("td:eq(17)").text()),
+                combinedIds: $(row).find("td:eq(19)").text()
             };
             //if (rowData.plan_Proc_Qnty < rowData.moq) {
             //    rowData.plan_Proc_Qnty = rowData.moq;

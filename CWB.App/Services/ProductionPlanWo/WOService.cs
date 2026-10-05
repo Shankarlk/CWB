@@ -26,7 +26,12 @@ namespace CWB.App.Services.ProductionPlanWo
             _httpContextAccessor = httpContextAccessor;
             tenantId = long.Parse(AppUtil.GetTenantId(_httpContextAccessor.HttpContext.User));
         }
-
+        public async Task<IEnumerable<WOSOVM>> GetAllSoWoRel( )
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getallsowo");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<IEnumerable<WOSOVM>>.GetAsync(uri, headers);
+        }
         public async Task<IEnumerable<WOSOVM>> GetSoWoRel(long workOrderId)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getsowo/{workOrderId}");

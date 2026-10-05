@@ -328,22 +328,34 @@
                             </select>
                         </div>
                         <label class="form-label col-md-1 mb-2">From Location </label>
+                        @*<div class="col-md-2 mb-2">
+            <select class="form-select form-select-sm" id="SP2FromLoc" data-plugin="tippy"
+                    data-tippy-placement="top" data-tippy="">
+                <option value="0">--Select--</option>
+                <option value="SubCon">SubCon</option>
+                <option value="Stores">Stores</option>
+            </select>
+        </div>*@
                         <div class="col-md-2 mb-2">
-                            <select class="form-select form-select-sm" id="SP2FromLoc" data-plugin="tippy"
-                                    data-tippy-placement="top" data-tippy="">
-                                <option value="0">--Select--</option>
-                                <option value="SubCon">SubCon</option>
-                                <option value="Stores">Stores</option>
-                            </select>
+                            <input class="form-control form-control-sm"
+                                   type="text"
+                                   id="SP2FromLoc"
+                                   placeholder="From Location">
                         </div>
                         <label class="form-label col-md-1 mb-2">To Location </label>
+                        @*<div class="col-md-2 mb-2">
+            <select class="form-select form-select-sm" id="SP2ToLoc" data-plugin="tippy"
+                    data-tippy-placement="top" data-tippy="">
+                <option value="0">--Select--</option>
+                <option value="SubCon">SubCon</option>
+                <option value="Stores">Stores</option>
+            </select>
+        </div>*@
                         <div class="col-md-2 mb-2">
-                            <select class="form-select form-select-sm" id="SP2ToLoc" data-plugin="tippy"
-                                    data-tippy-placement="top" data-tippy="">
-                                <option value="0">--Select--</option>
-                                <option value="SubCon">SubCon</option>
-                                <option value="Stores">Stores</option>
-                            </select>
+                            <input class="form-control form-control-sm"
+                                   type="text"
+                                   id="SP2ToLoc"
+                                   placeholder="To Location">
                         </div>
                         <label class="form-label col-md-1 mb-2">WO ID </label>
                         <div class="col-md-2 mb-2">
@@ -379,6 +391,11 @@
                                 <option value="1">Less</option>
                                 <option value="2">Extra</option>
                             </select>
+                        </div>
+                        <div class="col-md-2 mb-2">
+                            <button type="button" class="btn btn-primary btn-sm" id="btnSP2ClearFilters">
+                                <i class="mdi mdi-filter-remove"></i> Clear Filters
+                            </button>
                         </div>
                     </div>
 
@@ -547,12 +564,16 @@
                         </div>
                         <label class="form-label col-md-1 mb-2">Location </label>
                         <div class="col-md-3 mb-2">
-                            <select class="form-select form-select-sm" id="P5SLoc" data-plugin="tippy"
-                                    data-tippy-placement="top" data-tippy="">
-                                <option id="mp-bf" value="0">--Select--</option>
-                                <option id="mp-bf" value="1">Inhouse</option>
-                                <option id="mp-bf" value="2">Stores</option>
-                            </select>
+                            @*<select class="form-select form-select-sm" id="P5SLoc" data-plugin="tippy"
+                data-tippy-placement="top" data-tippy="">
+            <option id="mp-bf" value="0">--Select--</option>
+            <option id="mp-bf" value="1">Inhouse</option>
+            <option id="mp-bf" value="2">Stores</option>
+        </select>*@
+                            <input class="form-control form-control-sm"
+                                   type="text"
+                                   id="P5SLoc"
+                                   placeholder="Location">
                         </div>
                     </div>
 
@@ -1312,6 +1333,9 @@
         <td>{partStatus}</td>
         <td>{qntyStr}</td>
         <td>{misMatchStatus}</td>
+        <td hidden>{ready_for_issue}</td>
+        <td hidden>{movement_Started}</td>
+        <td hidden>{movement_Compl}</td>
         <td>
             <div class="dropdown float-center">
                 <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown"

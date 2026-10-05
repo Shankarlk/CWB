@@ -38,5 +38,6 @@ namespace CWB.ProductionPlanWO.ViewModels
 
         public string From_Loc_Flag { get; set; }
         public string To_Loc_Flag { get; set; }
+        public char Issued { get; set; }
     }
 }

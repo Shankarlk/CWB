@@ -180,6 +180,8 @@ namespace CWB.BusinessAquisition.Utils
                .ForMember(m => m.Allocation_Date, m => m.MapFrom(src => src.Allocation_Date))
                .ForMember(m => m.Allocated_Qnty, m => m.MapFrom(src => src.Allocated_Qnty))
                .ForMember(m => m.Dispatch_Complete, m => m.MapFrom(src => src.Dispatch_Complete))
+               .ForMember(m => m.Ready_for_Dispatch, m => m.MapFrom(src => src.Ready_for_Dispatch))
+               .ForMember(m => m.Full_Qnty_Dispatched, m => m.MapFrom(src => src.Full_Qnty_Dispatched))
                .ForMember(m => m.Final_Dispatch_Qnty, m => m.MapFrom(src => src.Final_Dispatch_Qnty))
                .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
             CreateMap<SO_Alloc_ListVM, SO_Alloc_List>()
@@ -189,8 +191,42 @@ namespace CWB.BusinessAquisition.Utils
                .ForMember(m => m.Allocation_Date, m => m.MapFrom(src => src.Allocation_Date))
                .ForMember(m => m.Allocated_Qnty, m => m.MapFrom(src => src.Allocated_Qnty))
                .ForMember(m => m.Dispatch_Complete, m => m.MapFrom(src => src.Dispatch_Complete))
+               .ForMember(m => m.Ready_for_Dispatch, m => m.MapFrom(src => src.Ready_for_Dispatch))
+               .ForMember(m => m.Full_Qnty_Dispatched, m => m.MapFrom(src => src.Full_Qnty_Dispatched))
                .ForMember(m => m.Final_Dispatch_Qnty, m => m.MapFrom(src => src.Final_Dispatch_Qnty))
-               .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId)); 
+               .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+
+            CreateMap<Cust_Disp_List, Cust_Disp_ListVM>()
+              .ForMember(m => m.Cust_Disp_List_ID, m => m.MapFrom(src => src.Id))
+              .ForMember(m => m.SO_ID, m => m.MapFrom(src => src.SO_ID))
+              .ForMember(m => m.PartId, m => m.MapFrom(src => src.PartId))
+              .ForMember(m => m.CreationDate, m => m.MapFrom(src => src.CreationDate))
+              .ForMember(m => m.Disp_Qnty, m => m.MapFrom(src => src.Disp_Qnty))
+              .ForMember(m => m.Dispatch_Complete, m => m.MapFrom(src => src.Dispatch_Complete))
+              .ForMember(m => m.Invoice_Details_Entered, m => m.MapFrom(src => src.Invoice_Details_Entered))
+              .ForMember(m => m.Data_Confirmed, m => m.MapFrom(src => src.Data_Confirmed))
+              
+              .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+            CreateMap<Cust_Disp_ListVM, Cust_Disp_List>()
+              .ForMember(m => m.Id, m => m.MapFrom(src => src.Cust_Disp_List_ID))
+               .ForMember(m => m.SO_ID, m => m.MapFrom(src => src.SO_ID))
+              .ForMember(m => m.PartId, m => m.MapFrom(src => src.PartId))
+              .ForMember(m => m.CreationDate, m => m.MapFrom(src => src.CreationDate))
+              .ForMember(m => m.Disp_Qnty, m => m.MapFrom(src => src.Disp_Qnty))
+              .ForMember(m => m.Dispatch_Complete, m => m.MapFrom(src => src.Dispatch_Complete))
+              .ForMember(m => m.Invoice_Details_Entered, m => m.MapFrom(src => src.Invoice_Details_Entered))
+              .ForMember(m => m.Data_Confirmed, m => m.MapFrom(src => src.Data_Confirmed))
+               .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+            CreateMap<Invoice_Disp_List, Invoice_Disp_ListVM>()
+              .ForMember(m => m.Invoice_Disp_List_Id, m => m.MapFrom(src => src.Id))
+              .ForMember(m => m.Dispatch_Detail_Id, m => m.MapFrom(src => src.Dispatch_Detail_Id))
+              .ForMember(m => m.Cust_Disp_List_Id, m => m.MapFrom(src => src.Cust_Disp_List_Id))
+              .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
+            CreateMap<Invoice_Disp_ListVM, Invoice_Disp_List>()
+               .ForMember(m => m.Id, m => m.MapFrom(src => src.Invoice_Disp_List_Id))
+               .ForMember(m => m.Dispatch_Detail_Id, m => m.MapFrom(src => src.Dispatch_Detail_Id))
+               .ForMember(m => m.Cust_Disp_List_Id, m => m.MapFrom(src => src.Cust_Disp_List_Id))
+               .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
             CreateMap<BAStatusVM, BAStatus>()
               .ForMember(m => m.Id, m => m.MapFrom(src => src.StatusId))
               .ForMember(m => m.Status, m => m.MapFrom(src => src.Status));

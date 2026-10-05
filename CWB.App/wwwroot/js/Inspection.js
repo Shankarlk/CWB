@@ -1,5 +1,52 @@
 ﻿let archive = 0;
 let accpet = 0;
+var P7TempNcList = [];
+function loadStoresLocation() {
+
+    $.ajax({
+        type: "GET",
+        url: "/WorkOrder/GetStoresLocation",
+        dataType: "json",
+
+        success: function (data) {
+
+            var ddl = $("#P7NcLocation");
+
+            ddl.empty();
+
+            ddl.append(
+                $("<option>", {
+                    value: "0",
+                    text: "Choose Location"
+                })
+            );
+
+            if (data && data.length > 0) {
+
+                $.each(data, function (index, item) {
+
+                    ddl.append(
+                        $("<option>", {
+                            value: item.id,
+                            text: item.name
+                        })
+                    );
+
+                });
+
+                // Automatically select first Stores location
+                ddl.val(data[0].id);
+            }
+        },
+
+        error: function () {
+            console.log("Unable to load Stores location.");
+        }
+    });
+}
+
+
+
 function loadPO() {
     api.getbulk("/WorkOrder/GetAllInw_Recpt_HeaderInsp").then((data) => {
         data = data.filter(item => item.status >= 3);
@@ -124,7 +171,7 @@ function loadNclog(inwheaderid) {
 $(document).ready(function () {
     loadPO();
     loadSuppliers();
-
+    loadStoresLocation();
     $('#P6NcCnfChk').change(function () {
         if ($(this).is(':checked')) {
             $("#P6Exit").prop("disabled", false);
@@ -283,11 +330,11 @@ $(document).ready(function () {
         } else {
             $("#P7NcDesclaredBySup").prop("checked", false);
         }
-        if (parttype == "SubCon") {
-            $("#P7NcLocation").val(1);
-        } else {
-            $("#P7NcLocation").val(2);
-        }
+        //if (parttype == "SubCon") {
+        //    $("#P7NcLocation").val(1);
+        //} else {
+        //    $("#P7NcLocation").val(2);
+        //}
         $("#P7BallonNo").val(balno);
         $("#P7NcBallonDesc").val(baldesc);
         $("#P7NcDesc").val(ncdes);
@@ -648,8 +695,8 @@ $(document).ready(function () {
                 }).catch((error) => {
                 });
             } else {
-
-                var qnty = parseInt($("#P6TotalInsp").val());
+                
+                var qnty = parseInt($("#P6TbInspTotal").val());
                 var P6PartId = parseInt($("#P6PartId").val());
                 var P6PoId = parseInt($("#P6PoId").val());
                 var P6WoId = $("#P6WoId").val();
@@ -1397,3 +1444,32 @@ function loadVendorDoc(inw_Recpt_HeaderId) {
         console.log(error);
     });
 }
+//function loadP7TempNcGrid() {
+
+//    var tbody = $("#P7NcGrid tbody");
+
+//    tbody.html("");
+
+//    if (P7TempNcList.length === 0) {
+
+//        tbody.append(`
+//            <tr>
+//                <td colspan="10" style="text-align:center;color:#888;">
+//                    <strong>No Records Found</strong>
+//                </td>
+//            </tr>
+//        `);
+
+//        return;
+//    }
+
+//    for (var i = 0; i < P7TempNcList.length; i++) {
+
+//        tbody.append(
+//            AppUtil.ProcessTemplateData(
+//                "P7NcGridRow",
+//                P7TempNcList[i]
+//            )
+//        );
+//    }
+//}

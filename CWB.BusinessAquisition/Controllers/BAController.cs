@@ -31,7 +31,7 @@ namespace BAapi.Controllers
         [Route(ApiRoutes.Aquisition.GetPOLogs)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<POLogVM>))]
         [Authorize(Roles = Roles.ADMIN)]
-        public async Task<IActionResult> GetPOLogs(long tenantId,long customerOrderId)
+        public async Task<IActionResult> GetPOLogs(long tenantId, long customerOrderId)
         {
             var pologs = await _baService.GetPOLogs(tenantId, customerOrderId);
             return Ok(pologs);
@@ -41,9 +41,9 @@ namespace BAapi.Controllers
         [Route(ApiRoutes.Aquisition.GetSalesOrders)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<SalesOrderVM>))]
         [Authorize(Roles = Roles.ADMIN)]
-        public async Task<IActionResult> GetSalesOrders(long tenantId,long customerOrderId)
+        public async Task<IActionResult> GetSalesOrders(long tenantId, long customerOrderId)
         {
-            var pologs = await _baService.GetSalesOrders(tenantId,customerOrderId);
+            var pologs = await _baService.GetSalesOrders(tenantId, customerOrderId);
             return Ok(pologs);
         }
         [HttpGet]
@@ -60,9 +60,9 @@ namespace BAapi.Controllers
         [Route(ApiRoutes.Aquisition.GetSingleSalesOrder)]
         [Produces(AppContentTypes.ContentType, Type = typeof(SalesOrderVM))]
         [Authorize(Roles = Roles.ADMIN)]
-        public async Task<IActionResult> GetSingleSalesOrder(long tenantId,long salesOrderId)
+        public async Task<IActionResult> GetSingleSalesOrder(long tenantId, long salesOrderId)
         {
-            var pologs = await _baService.GetSingleSalesOrder(tenantId,salesOrderId);
+            var pologs = await _baService.GetSingleSalesOrder(tenantId, salesOrderId);
             return Ok(pologs);
         }
 
@@ -97,10 +97,10 @@ namespace BAapi.Controllers
         {
             var salesOrders = await _baService.GetSalesOrders(tenantId, customerOrderId);
             List<long> partIds = new List<long>();
-            
-            foreach(SalesOrderVM so in salesOrders)
+
+            foreach (SalesOrderVM so in salesOrders)
             {
-                if(!partIds.Contains(so.PartId))
+                if (!partIds.Contains(so.PartId))
                 {
                     partIds.Add(so.PartId);
                 }
@@ -125,7 +125,7 @@ namespace BAapi.Controllers
         [Route(ApiRoutes.Aquisition.GetSchedules)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<DeliveryScheduleVM>))]
         [Authorize(Roles = Roles.ADMIN)]
-        public async Task<IActionResult> GetSchedules(long tenantId,long customerOrderId)
+        public async Task<IActionResult> GetSchedules(long tenantId, long customerOrderId)
         {
             var pologs = await _baService.GetSchedules(tenantId, customerOrderId);
             return Ok(pologs);
@@ -134,9 +134,9 @@ namespace BAapi.Controllers
         [Route(ApiRoutes.Aquisition.GetAllSoAllocation)]
         [Produces(AppContentTypes.ContentType, Type = typeof(List<SO_Alloc_ListVM>))]
         [Authorize(Roles = Roles.ADMIN)]
-        public async Task<IActionResult> GetAllSoAllocation(long tenantId )
+        public async Task<IActionResult> GetAllSoAllocation(long tenantId)
         {
-            var pologs = await _baService.GetAllSoAllocation(tenantId );
+            var pologs = await _baService.GetAllSoAllocation(tenantId);
             return Ok(pologs);
         }
         [HttpGet]
@@ -196,7 +196,7 @@ namespace BAapi.Controllers
         [HttpGet]
         [Route(ApiRoutes.Aquisition.AddSalesOrders)]
         [Produces(AppContentTypes.ContentType, Type = typeof(DeliveryScheduleVM))]
-        public async Task<bool> AddSalesOrders(long tenantId,long customerOrderId)
+        public async Task<bool> AddSalesOrders(long tenantId, long customerOrderId)
         {
             var pologs = await _baService.AddSalesOrders(tenantId, customerOrderId);
             return pologs;
@@ -215,7 +215,7 @@ namespace BAapi.Controllers
         [HttpPost]
         [Route(ApiRoutes.Aquisition.PostDeliverySchedule)]
         [Produces(AppContentTypes.ContentType, Type = typeof(DeliveryScheduleVM))]
-        public async Task<DeliveryScheduleVM> DeliverySchedule (DeliveryScheduleVM deliveryScheduleVM)
+        public async Task<DeliveryScheduleVM> DeliverySchedule(DeliveryScheduleVM deliveryScheduleVM)
         {
             var pologs = await _baService.DeliverySchedule(deliveryScheduleVM);
             return pologs;
@@ -265,19 +265,19 @@ namespace BAapi.Controllers
             return aggregatevm;
         }
 
-            /*
-             * public const string RemoveSalesOrder = Base + "/removesalesorder/{tenantId}/{salesOrderId}";
-                public const string RemoveCustomerOder = Base + "/removecustomerorder/{tenantId}/{customerOrderId}";
-                public const string RemoveDeliverSchedule = Base + "/removedeliveryschedule/{tenantId}/{scheduleId}";
-                public const string RemoveOrderStatus = Base + "/removeorderstatus/{tenantId}/{orderStatusId}";
+        /*
+         * public const string RemoveSalesOrder = Base + "/removesalesorder/{tenantId}/{salesOrderId}";
+            public const string RemoveCustomerOder = Base + "/removecustomerorder/{tenantId}/{customerOrderId}";
+            public const string RemoveDeliverSchedule = Base + "/removedeliveryschedule/{tenantId}/{scheduleId}";
+            public const string RemoveOrderStatus = Base + "/removeorderstatus/{tenantId}/{orderStatusId}";
 
-             */
+         */
 
 
-            [HttpGet]
+        [HttpGet]
         [Route(ApiRoutes.Aquisition.RemoveSalesOrder)]
         [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
-        public async Task<bool> RemoveSalesOrder(long tenantId,long salesOrderId)
+        public async Task<bool> RemoveSalesOrder(long tenantId, long salesOrderId)
         {
             var pologs = await _baService.RemoveSalesOrder(tenantId, salesOrderId);
             return pologs;
@@ -300,7 +300,7 @@ namespace BAapi.Controllers
             var pologs = await _baService.RemoveDeliverySchedule(tenantId, scheduleId);
             return pologs;
         }
-        
+
         [HttpGet]
         [Route(ApiRoutes.Aquisition.RemoveOrderStatus)]
         [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
@@ -336,6 +336,68 @@ namespace BAapi.Controllers
             var bastatus = await _baService.GetBAAllStatus();
             return Ok(bastatus);
         }
+        [HttpGet]
+        [Route(ApiRoutes.Aquisition.GetAllCustDispList)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Cust_Disp_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllCustDispList(long tenantId)
+        {
+            var pologs = await _baService.GetAllCustDispList(tenantId);
+            return Ok(pologs);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Aquisition.PostCustDispList)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Cust_Disp_ListVM))]
+        public async Task<Cust_Disp_ListVM> PostCustDispList(Cust_Disp_ListVM soallocationvm)
+        {
+            var pologs = await _baService.PostCustDispList(soallocationvm);
+            return pologs;
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Aquisition.RemoveCustDispList)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<bool> RemoveCustDispList(long tenantId, long custdispatchlistId)
+        {
+            var pologs = await _baService.RemoveCustDispList(tenantId, custdispatchlistId);
+            return pologs;
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Aquisition.PostCustDispListMultiple)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Cust_Disp_ListVM))]
+        public async Task<IActionResult> PostCustDispListMultiple([FromBody] List<Cust_Disp_ListVM> workOrdersVM)
+        {
+            var result = await _baService.PostCustDispListMultiple(workOrdersVM);
+            return Ok(result);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Aquisition.GetAllInvoiceDispatchList)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<Invoice_Disp_ListVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetAllInvoiceDispatchList(long tenantId)
+        {
+            var pologs = await _baService.GetAllInvoiceDispatchList(tenantId);
+            return Ok(pologs);
+        }
+        [HttpPost]
+        [Route(ApiRoutes.Aquisition.PostInvoiceDispList)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(Invoice_Disp_ListVM))]
+        public async Task<Invoice_Disp_ListVM> PostInvoiceDispList(Invoice_Disp_ListVM soallocationvm)
+        {
+            var pologs = await _baService.PostInvoiceDispList(soallocationvm);
+            return pologs;
+        }
+        [HttpGet]
+        [Route(ApiRoutes.Aquisition.RemoveInvoiceDispList)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<bool> RemoveInvoiceDispList(long tenantId, long invoicedispatchlistid)
+        {
+            var pologs = await _baService.RemoveInvoiceDispList(tenantId, invoicedispatchlistid);
+            return pologs;
 
+
+
+
+
+        }
     }
 }

@@ -15,6 +15,8 @@ namespace CWB.BusinessAquisition.Domain
         public int Allocated_Qnty { get; set; }
 
         public char Dispatch_Complete    { get; set; }
+        public char Full_Qnty_Dispatched { get; set; }
+        public char Ready_for_Dispatch { get; set; }
         public int Final_Dispatch_Qnty { get; set; }
         public long TenantId { get; set; }
     }

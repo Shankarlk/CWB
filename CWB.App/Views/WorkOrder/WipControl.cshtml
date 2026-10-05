@@ -269,8 +269,8 @@
                                         <div class="table-responsive">
                                             <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
                                                 <tbody>
-                                                    <tr><td style="border: 1px solid black;">Sub Con</td><td style="border: 1px solid black;">0</td></tr>
-                                                    <tr><td style="border: 1px solid black;">Inhouse</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">Sub Con</td><td id="shop" style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">Inhouse</td><td id="subcon" style="border: 1px solid black;">0</td></tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -390,7 +390,7 @@
                                         <div class="table-responsive">
                                             <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
                                                 <tbody>
-                                                    <tr><td style="border: 1px solid black;">0</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">0</td>@*<td style="border: 1px solid black;">0</td>*@</tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -424,7 +424,7 @@
                                         <div class="table-responsive">
                                             <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
                                                 <tbody>
-                                                    <tr><td style="border: 1px solid black;">0</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">0</td>@*<td style="border: 1px solid black;">0</td>*@</tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -458,7 +458,7 @@
                                         <div class="table-responsive mt-1">
                                             <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
                                                 <tbody>
-                                                    <tr><td style="border: 1px solid black;">0</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">0</td>@*<td style="border: 1px solid black;">0</td>*@</tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -476,7 +476,7 @@
                                         <div class="table-responsive mt-1">
                                             <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
                                                 <tbody>
-                                                    <tr><td style="border: 1px solid black;">0</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td style="border: 1px solid black;">0</td>@*<td style="border: 1px solid black;">0</td>*@</tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -485,16 +485,19 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="text-center btn btn-outline-info w-100 mb-2">
-                                            <a>
-                                                <h6>Dispatch</h6>
-                                            </a>
+                                            
+                                                <a id="customerDispatchLink" asp-controller="WorkOrder" asp-action="CustomerDispatch">
+                                                    <h6>Dispatch</h6>
+                                                </a>
+                                               
+                                             
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="table-responsive mt-1">
                                             <table class="table table-sm table-bordered mb-3 text-center tableFixHead w-100">
                                                 <tbody>
-                                                    <tr><td style="border: 1px solid black;">0</td><td style="border: 1px solid black;">0</td></tr>
+                                                    <tr><td  id="dispatchCount" style="border: 1px solid black;">0</td>@*<td style="border: 1px solid black;">0</td>*@</tr>
                                                 </tbody>
                                             </table>
                                         </div>

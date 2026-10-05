@@ -3,7 +3,36 @@ let partType = "ManufacturedPart";
 let status = "Active";
 
 const FILTER_KEY = "ItemMaster_SearchFilters";
+var modalStack = [];
+$(document).on("show.bs.modal", ".modal", function () {
 
+    var currentModal = $(this);
+
+    if (modalStack.length > 0) {
+
+        modalStack[modalStack.length - 1]
+            .find(".modal-content")
+            .addClass("modal-stack-blur");
+
+    }
+
+    modalStack.push(currentModal);
+
+});
+
+$(document).on("hidden.bs.modal", ".modal", function () {
+
+    modalStack.pop();
+
+    if (modalStack.length > 0) {
+
+        modalStack[modalStack.length - 1]
+            .find(".modal-content")
+            .removeClass("modal-stack-blur");
+
+    }
+
+});
 function saveItemMasterFilters() {
     const filters = {
         MasterPart: $("#MasterPart").val(),

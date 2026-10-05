@@ -119,8 +119,8 @@ function landingPage() {
             console.error("Error loading PO details:", error);
         });
         api.getbulk("/WorkOrder/AllSODispatch").then((data) => {
-            data = data.filter(item => item.status === 1 || item.status === 2);
-            data = data.filter(item => item.qntyOnHand >= 0);
+           // data = data.filter(item => item.status === 1 || item.status === 2);
+            data = data.filter(item => item.qntyOnHand > 0);
             $("#openSODs").text(data.length);
             if (data.length === 0) {
                 const anchorTag = document.getElementById('openSODsBtn');
@@ -478,6 +478,7 @@ $(document).ready(function () {
     WOAwait();
     WOMatlload();
     CustomerMisLoad();
+    loadPO();
     $('#SoWoPendingPop').on('shown.bs.modal', function (event) {
         SoWoPending();
     });
@@ -487,6 +488,15 @@ $(document).ready(function () {
         $("#SelCustomer").text(customer)
         CustomerSoLoad(customer);
     });
+    $('#POOpenModal').on('shown.bs.modal', function (event) {
+        loadPOdata();
+    });
+    $('#IncomingMaterialModal').on('shown.bs.modal', function (event) {
+        loadPOdata();
+    });
+
+
+
     $('#WOrelWait').on('shown.bs.modal', function (event) {
         woWait();
     });
@@ -511,6 +521,30 @@ $(document).ready(function () {
     $('#WOTotalPop').on('shown.bs.modal', function (event) {
         WoTotal();
     });
+    $.ajax({
+        url: '/WorkOrder/CheckSalesOrdersForWO',
+        type: 'GET',
+        success: function (data) {
+
+            if (data.allHaveWorkOrder) {
+
+                // All SOs have WO
+                $("#ConvertSoToWo")
+                    .addClass("disabled")
+                    .css("pointer-events", "none");
+
+            } else {
+
+                // At least one SO does not have WO
+                $("#ConvertSoToWo")
+                    .removeClass("disabled")
+                    .css("pointer-events", "auto");
+            }
+        },
+        error: function () {
+            console.log("Error checking Sales Orders.");
+        }
+    });
     //$("#simulation").on("click", function () {
     //    $.ajax({
     //        type: "POST",
@@ -523,3 +557,144 @@ $(document).ready(function () {
     //    });
     //});
 });
+function loadPO() {
+    api.getbulk("/WorkOrder/GetAllPodetails").then((data) => {
+
+        // PO Open (Incoming Material)
+        // Status == 2
+        const poOpenCount = data.filter(x => x.status == 2).length;
+        $("#POopen").text(poOpenCount);
+
+
+        // Incoming Material Past Due
+        // Status == 2 AND Today > PlanPoReceiptDate
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const pastDueCount = data.filter(x => {
+
+            if (x.status != 2 || !x.planPoReceiptDate) {
+                return false;
+            }
+
+            const planDate = new Date(x.planPoReceiptDate);
+            planDate.setHours(0, 0, 0, 0);
+
+            return today > planDate;
+
+        }).length;
+
+        $("#IncMatl").text(pastDueCount);
+
+    }).catch((error) => {
+        console.error("Error loading PO details:", error);
+
+        $("#POopen").text(0);
+        $("#IncMatl").text(0);
+    });
+}
+function loadPOdata() {
+
+    api.getbulk("/WorkOrder/GetAllPodetails").then((data) => {
+
+        // ==========================================
+        // PO OPEN
+        // ==========================================
+
+        const poOpenList = data.filter(x => x.status == 2);
+
+         
+
+
+        // ==========================================
+        // PAST DUE
+        // ==========================================
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const pastDueList = data.filter(x => {
+
+            if (x.status != 2 || !x.planPoReceiptDate) {
+                return false;
+            }
+
+            const planDate = new Date(x.planPoReceiptDate);
+            planDate.setHours(0, 0, 0, 0);
+
+            return today > planDate;
+        });
+
+        
+
+
+        // ==========================================
+        // PO OPEN POPUP TABLE
+        // ==========================================
+
+        const poOpenBody = $("#POOpenGrid tbody");
+
+        poOpenBody.html("");
+
+        if (poOpenList.length === 0) {
+
+            poOpenBody.append(`
+                <tr>
+                    <td colspan="10"
+                        style="text-align:center;color:#888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>
+            `);
+
+        } else {
+
+            for (let i = 0; i < poOpenList.length; i++) {
+
+                poOpenBody.append(
+                    AppUtil.ProcessTemplateData(
+                        "POPopupRow",
+                        poOpenList[i]
+                    )
+                );
+            }
+        }
+
+
+        // ==========================================
+        // PAST DUE POPUP TABLE
+        // ==========================================
+
+        const pastDueBody = $("#IncomingMaterialGrid tbody");
+
+        pastDueBody.html("");
+
+        if (pastDueList.length === 0) {
+
+            pastDueBody.append(`
+                <tr>
+                    <td colspan="10"
+                        style="text-align:center;color:#888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>
+            `);
+
+        } else {
+
+            for (let i = 0; i < pastDueList.length; i++) {
+
+                pastDueBody.append(
+                    AppUtil.ProcessTemplateData(
+                        "POPopupRow",
+                        pastDueList[i]
+                    )
+                );
+            }
+        }
+
+    }).catch((error) => {
+
+        console.error("Error loading PO details:", error);
+    });
+}

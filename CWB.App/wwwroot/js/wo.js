@@ -186,7 +186,7 @@ $(document).ready(function () {
             $('#btnAG').prop('disabled', true);
         }
     });
-
+    $('#SubConGridDivP3').hide();
     function handleCheckboxChange() {
         var checkboxes = $("#SalesOrders1 tbody input[type='checkbox']:checked"); // Select checked checkboxes
         var partIdSet = new Set(); // To store unique part IDs of the selected rows
@@ -201,11 +201,11 @@ $(document).ready(function () {
         // Determine the button state based on the number of selected checkboxes and unique part IDs
         if (checkboxes.length === 1 || partIdSet.size === 1) {
             $('#btnGW').prop('disabled', false); // Enable the button
-            $('#btnAG').prop('disabled', false);
+            $('#btnAG').prop('disabled', true);
         }
         else if (checkboxes.length > 1) {
             $('#btnGW').prop('disabled', true); // Disable the btnGW button
-            $('#btnAG').prop('disabled', false); // Enable the btnAG button
+            $('#btnAG').prop('disabled', true); // Enable the btnAG button
         }
         else {
             $('#btnGW').prop('disabled', true); // Disable the button
@@ -587,7 +587,38 @@ $(document).ready(function () {
             $("#SalesOrders1 tbody").find(".norecordsfound").remove();
         }
     });
+    $('#chkReorderItem').on('click', function () {
+        var $tableBody = $("#SalesOrders1 tbody");
 
+        // Remove old "No Records"
+        $tableBody.find(".norecordsfound").remove();
+
+        if ($(this).is(':checked')) {
+
+            $("#SalesOrders1 tbody tr").each(function () {
+                let reorder =
+                    $(this).children().eq(13).text().trim().toUpperCase();
+
+                // show only Y
+                $(this).toggle(reorder === "Y");
+            });
+
+            // No records check
+            if ($tableBody.find("tr:visible").length === 0) {
+                $tableBody.append(`
+                <tr class="norecordsfound">
+                    <td colspan="20" style="text-align:center; color:#888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>
+            `);
+            }
+
+        } else {
+            // Show all rows
+            $("#SalesOrders1 tbody tr").show();
+        }
+    });
     $("#SearchSoDateTo").on("change", function () {
         var fromDate = $("#SearchSoDateFr").val().split("/").reverse().join("-");
         var toDate = $("#SearchSoDateTo").val().split("/").reverse().join("-");
@@ -1952,7 +1983,7 @@ $(document).ready(function () {
             //$('#NewEndOpNo').prop("disabled", false);
             //-----new 
             $("#popup3NewdivRouting").show().addClass("row");
-            $("#SubConGridDivP3").show();
+            $("#SubConGridDivP3").hide();
             api.getbulk("/WorkOrder/GetRoutings?manufPartId=" + parseInt(partId)).then((data) => {
                 //console.log(data);
                 const selectElement = $('#NewRouting');
@@ -2084,6 +2115,7 @@ $(document).ready(function () {
         P20DelQnty.style.border = '';
         var popup7BuildToStockQnty = document.getElementById('popup7BuildToStockQnty');
         popup7BuildToStockQnty.style.border = '';
+        $("#SubConGridDivP7").hide();
     });
 
     $('#popup7Routing').on('change', (e) => {
@@ -2724,7 +2756,7 @@ function copyPartData() {
             } else {
                 $("#Popup7partType").val(1);
                 $("#popup7divRouting").show().addClass("row");
-                $("#SubConGridDivP7").show();
+                $("#SubConGridDivP7").hide();
                 api.getbulk("/WorkOrder/GetRoutings?manufPartId=" + parseInt(partId)).then((data) => {
                     console.log(data);
                     const selectElement = $('#popup7Routing');
@@ -3525,7 +3557,7 @@ function OpenEditWOPopup(wo) {
     if (parseInt(wo.partType) === 1) {
 
         $("#popup3divRouting").show().addClass("row");
-        $("#SubConGridDivP3").show();
+        $("#SubConGridDivP3").hide();
 
         api.getbulk(
             "/WorkOrder/GetRoutings?manufPartId=" +

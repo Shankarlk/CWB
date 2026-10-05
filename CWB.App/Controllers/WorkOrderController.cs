@@ -176,34 +176,66 @@ namespace CWB.App.Controllers
         {
             return View();
         }
-
-        
+        [Route("~/C^&@#DTY")]
+        public IActionResult CustomerDispatch()
+        {
+            return View();
+        }
         [Route("~/S$%^D#$!D")]
         public IActionResult Selectivesimulation()
         {
             return View();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> CheckSalesOrdersForWO()
+        {
+            var salesorders = await _baService.AllSalesOrders();
 
+            bool allHaveWorkOrder = salesorders.Any()
+                && salesorders.All(x => x.WorkOrderId > 0);
+
+            return Ok(new
+            {
+                allHaveWorkOrder = allHaveWorkOrder
+            });
+        }
         [HttpGet]
         public async Task<IActionResult> AllSalesOrders()
         {
             var getstores = await _departmentService.GetAllStoresIDs();
             var soallocations = await _baService.AllSoallocation();
             var salesorders = await _baService.AllSalesOrders();
+            var getallsoorelation = await _woService.GetAllSoWoRel();
             var masterparts = await _masterService.MasterPartList();
             var customer = await _baService.GetCustomerOrders();
             var allocationDict = soallocations.Where(x => x.Dispatch_Complete == 'N').GroupBy(x => x.SO_ID ).ToDictionary(  g => g.Key,  g => g.Sum(x => x.Allocated_Qnty));
-            salesorders = salesorders.Where(so =>   {       
-                if (allocationDict.TryGetValue(so.SalesOrderId, out var allocatedQty))
-                     {
-                         return allocatedQty < so.RequiredQuantity;
-                     }
+            salesorders = salesorders
+        .Where(so =>
+        {
+            // SO already converted to WO
+            bool workOrderAlreadyCreated = getallsoorelation
+                .Any(x => x.SalesOrderId == so.SalesOrderId);
 
-                     // No allocation for this SO → show it
-                     return true;
-                 })
-                 .ToList();
+            if (workOrderAlreadyCreated)
+            {
+                return false;
+            }
+
+            // SO fully allocated
+            if (allocationDict.TryGetValue(
+                    so.SalesOrderId,
+                    out var allocatedQty))
+            {
+                if (allocatedQty >= so.RequiredQuantity)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        })
+        .ToList();
             //   var soallocations = await _baService.
             foreach (SalesOrderVM sovm in salesorders)
             {
@@ -233,7 +265,10 @@ namespace CWB.App.Controllers
 
                 if (sovm.QntyOnHand < 0)
                     sovm.QntyOnHand = 0;
-
+                if(sovm.Reorder=='Y')
+                {
+                    sovm.SONumber = "Reorder_" + sovm.SONumber;
+                }
                  
                 sovm.BalanceSOQty = sovm.RequiredQuantity - sovm.ActQuantity;
                 foreach (ItemMasterPartVM impvm in masterparts)
@@ -306,20 +341,21 @@ namespace CWB.App.Controllers
             return Ok(soallocations);
         }
         [HttpPost]
-        public async Task<IActionResult> UpdateSOFinDisp(SalesOrderVM masterDocListVM)
+        public async Task<IActionResult> UpdateSOFinDisp(SO_Alloc_ListVM masterDocListVM)
         {
-            var mc_Wait_Lists = await _baService.AllSalesOrders();
-            var mcWait = mc_Wait_Lists.Where(m => m.SalesOrderId == masterDocListVM.SalesOrderId).FirstOrDefault();
+            //var mc_Wait_Lists = await _baService.AllSalesOrders();
+            var allsoallocations = await _baService.AllSoallocation();
+            var mcWait = allsoallocations.Where(m => m.SO_Alloc_List_Id == masterDocListVM.SO_Alloc_List_Id).FirstOrDefault();
             if (mcWait != null)
             {
-                mcWait.FinalDispQnty = masterDocListVM.FinalDispQnty;
-                var result = await _baService.PostSalesOrder(mcWait);
+                mcWait.Final_Dispatch_Qnty = masterDocListVM.Final_Dispatch_Qnty;
+                var result = await _baService.PostSOAllocation(mcWait);
                 return Ok(result);
             }
             return Ok("Not Found SalesOrder");
         }
         [HttpPost]
-        public async Task<IActionResult> UpdateSOFinDispBulk([FromBody] List<SalesOrderVM> salesOrderUpdates)
+        public async Task<IActionResult> UpdateSOFinDispBulk([FromBody] List<SO_Alloc_ListVM> salesOrderUpdates)
         {
             // 1. Initialize a list to track successful updates or errors
             var results = new List<object>();
@@ -328,204 +364,1414 @@ namespace CWB.App.Controllers
             {
                 return BadRequest("No sales order data provided for bulk update.");
             }
+            var mc_Wait_Lists = await _baService.AllSoallocation();
 
             // 2. Loop through every item in the received list
             foreach (var updateItem in salesOrderUpdates)
             {
                 // 3. Find the existing Sales Order (similar to your single-item logic)
-                var mc_Wait_Lists = await _baService.AllSalesOrders();
+               
                 var mcWait = mc_Wait_Lists
-                    .Where(m => m.SalesOrderId == updateItem.SalesOrderId)
+                    .Where(m => m.SO_Alloc_List_Id == updateItem.SO_Alloc_List_Id)
                     .FirstOrDefault();
 
                 if (mcWait != null)
                 {
                     // 4. Apply the new dispatched quantity
-                    mcWait.FinalDispQnty = updateItem.FinalDispQnty;
+                    mcWait.Final_Dispatch_Qnty = updateItem.Final_Dispatch_Qnty;
 
                     // 5. Save the change
-                    var result = await _baService.PostSalesOrder(mcWait); // Assuming PostSalesOrder handles the update
+                    var result = await _baService.PostSOAllocation(mcWait); // Assuming PostSalesOrder handles the update
 
-                    results.Add(new { SalesOrderId = mcWait.SalesOrderId, Status = "Updated", ServiceResult = result });
+                    results.Add(new { SoAllocationId = mcWait.SO_Alloc_List_Id, Status = "Updated", ServiceResult = result });
                 }
                 else
                 {
-                    results.Add(new { SalesOrderId = updateItem.SalesOrderId, Status = "Not Found" });
+                    results.Add(new { SoAllocationId = mcWait.SO_Alloc_List_Id, Status = "Not Found" });
                 }
             }
 
             // 6. Return a summary of all operations
             return Ok(results);
         }
+        //  [HttpGet]
+        //public async Task<IActionResult> AllSODispatcholdcode(int? take = null)
+        //{
+        //    var salesorders = await _baService.AllSalesOrders();
+        //    var masterparts = await _masterService.MasterPartList();
+        //    var customer = await _baService.GetCustomerOrders();
+        //    var trans = await _woService.GetAllInv_Trans_Log();
+        //   // var allsoallocation =
+        //    var DispatchDetails = await _woService.GetAllDispatchDetails();
+        //    if (take.HasValue)
+        //        salesorders = salesorders.Take(take.Value).ToList();
+        //    foreach (SalesOrderVM sovm in salesorders)
+        //    {
+        //        foreach (ItemMasterPartVM impvm in masterparts)
+        //        {
+        //            if (sovm.PartId == impvm.PartId)
+        //            {
+        //                ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart((int)sovm.PartId);
+        //                var bastatus = await _baService.GetBAStatus(sovm.Status);
+        //                sovm.StrStatus = bastatus.Status;
+        //                sovm.PartNo = impvm.PartNo;
+        //                sovm.PartDesc = impvm.Description;
+        //                double maxBuildableQty = double.MaxValue;
+        //                if (impvm.MasterPartType == "ManufacturedPart")
+        //                {
+        //                    var mpmakefromlists = await _masterService.GetMPMakeFromListByPartId(mf.ManufacturedPartNoDetailId.ToString());
+
+        //                    foreach (var component in mpmakefromlists)
+        //                    {
+        //                        // 1. Total Weight On Hand for the Component
+        //                        decimal componentOnHandWeight = CalculateOnHand((int)component.MPPartId, trans);
+
+        //                        // 2. Required Weight to build ONE unit of the final product
+        //                        // ASSUMPTION: InputWeight is the property holding the required weight per unit
+        //                        decimal requiredWeight = Convert.ToDecimal(component.InputWeight);
+
+        //                        if (requiredWeight > 0)
+        //                        {
+        //                            // 3. Calculate how many final products can be built: Floor(On Hand Weight / Required Weight)
+        //                            // Use Math.Floor to ensure we only count complete units
+        //                            double availableBasedOnComponent = Math.Floor((double)(componentOnHandWeight / requiredWeight));
+
+        //                            // 4. Update the bottleneck component (find the minimum buildable quantity)
+        //                            maxBuildableQty = Math.Min(maxBuildableQty, availableBasedOnComponent);
+        //                        }
+        //                    }
+        //                }
+        //                else // Handle the BOM case (assuming this is a purchased part that uses a BOM for assembly)
+        //                {
+        //                    // ASSUMPTION: This returns a list of components and their required quantities
+        //                    var bomlsts = await _masterService.BOMS(mf.ManufacturedPartNoDetailId.ToString());
+
+        //                    foreach (var component in bomlsts)
+        //                    {
+        //                        decimal componentOnHandUnits = CalculateOnHand((int)component.BOMPartId, trans);
+
+        //                        // ASSUMPTION: Quantity is the property holding the amount needed
+        //                        decimal requiredUnits = component.Quantity;
+
+        //                        if (requiredUnits > 0)
+        //                        {
+        //                            double availableBasedOnComponent = Math.Floor((double)(componentOnHandUnits / requiredUnits));
+        //                            maxBuildableQty = Math.Min(maxBuildableQty, availableBasedOnComponent);
+        //                        }
+        //                    }
+        //                }
+        //                if (maxBuildableQty == double.MaxValue)
+        //                {
+        //                    // No components defined
+        //                    sovm.QntyOnHand = 0;
+        //                }
+        //                else
+        //                {
+        //                    sovm.QntyOnHand = (long)maxBuildableQty;
+        //                }
+        //            }
+        //        }
+        //        foreach (CustomerOrderVM cu in customer)
+        //        {
+        //            if (sovm.CustomerOrderId == cu.CustomerOrderId)
+        //            {
+        //                sovm.Customer = cu.CustomerName;
+        //                sovm.PoNumber = cu.PONumber;
+        //            }
+        //        }
+        //    }
+        //    var partsToAllocate = salesorders
+        //.GroupBy(so => so.PartId)
+        //.ToList();
+
+        //    foreach (var partGroup in partsToAllocate)
+        //    {
+        //        // 2a. Find the Total Buildable Stock for this PartId
+        //        // The total resource is the maximum QntyOnHand calculated in Phase 1 (since all SOs for the same part share the same components/bottleneck).
+        //        long totalBuildableStock = partGroup.Max(so => so.QntyOnHand);
+
+        //        // 2b. Calculate the total quantity ALREADY RESERVED/DISPATCHED by ALL SOs of this part.
+        //        long totalReservedQuantity = partGroup.Sum(so => so.FinalDispQnty);
+
+        //        // 2c. Calculate the FINAL QOH (Available for Dispatch)
+        //        // Available QOH = Total Buildable Stock - Total Reserved
+        //        long finalAvailableQOH = totalBuildableStock - totalReservedQuantity;
+
+        //        // Ensure the QOH doesn't go negative
+        //        if (finalAvailableQOH < 0) finalAvailableQOH = 0;
+
+        //        // ---------------------------------------------------------------------
+
+        //        // --- PHASE 3: Apply FINAL QOH and Perform Suggested Allocation ---
+
+        //        // 3a. Update the QntyOnHand for ALL SOs in this group to reflect the FINAL available stock.
+        //        // This addresses your requirement: "if the FinalDispQnty of the so is 50 then the qntyonhand should be 50 [100-50] not 100"
+        //        foreach (var so in partGroup)
+        //        {
+        //            so.QntyOnHand = finalAvailableQOH;
+        //        }
+
+        //        // 3b. Use the FINAL QOH as the running stock for the Suggested Allocation.
+        //        long runningStockForAllocation = finalAvailableQOH;
+
+        //        // 3c. Order SOs by earliest RequiredByDate, and filter to only allocate NEW quantities.
+        //        var sortedSOsForAllocation = partGroup
+        //            .Where(so => so.FinalDispQnty == 0) // Only allocate to SOs not yet dispatched
+        //            .OrderBy(so => so.RequiredByDate);
+
+        //        // 3d. Perform the allocation for non-dispatched SOs
+        //        foreach (var so in sortedSOsForAllocation)
+        //        {
+        //            long soRequired = so.RequiredQuantity;
+
+        //            long suggestedQty = Math.Min(runningStockForAllocation, soRequired);
+
+        //            so.SuggestedDispQnty = (int)suggestedQty;
+
+        //            runningStockForAllocation -= suggestedQty;
+
+        //            if (runningStockForAllocation <= 0)
+        //            {
+        //                break;
+        //            }
+        //        }
+        //    }
+
+        //    List<SalesOrderVM> ressultSos = new List<SalesOrderVM>();
+        //    foreach (var sovm in salesorders)
+        //    {
+        //        var dispatchDetail = DispatchDetails.Where(d => d.SaleOrderId == sovm.SalesOrderId).ToList();
+
+        //        if (dispatchDetail.Count() > 0 && sovm.QntyOnHand == 0)
+        //        {
+        //            continue;
+        //        }
+        //        else
+        //        {
+        //            if (dispatchDetail.Count() > 0)
+        //            {
+        //                sovm.DispatchId = dispatchDetail.First().DispatchDetailsId;
+        //                sovm.InvoiceNo = dispatchDetail.First().InvoiceNo;
+        //                sovm.InvoiceDate = dispatchDetail.First().InvoiceDate.ToString("dd-MM-yyyy");
+        //                sovm.DispatchDetail = dispatchDetail.First().DispatchDetail;
+        //            }
+        //            ressultSos.Add(sovm);
+        //        }
+        //    }
+        //    return Ok(ressultSos);
+        //}
+        [HttpGet]
+        public async Task<IActionResult> CheckInvoiceNo(string invoiceNo)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(invoiceNo))
+                {
+                    return Ok(new
+                    {
+                        exists = false
+                    });
+                }
+
+                var dispatchDetails = await _woService.GetAllDispatchDetails();
+
+                bool exists = dispatchDetails.Any(x =>
+                    !string.IsNullOrWhiteSpace(x.InvoiceNo) &&
+                    x.InvoiceNo.Trim().Equals(
+                        invoiceNo.Trim(),
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                );
+
+                return Ok(new
+                {
+                    exists = exists
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> SaveCustomerDispatchInvoice(CustomerDispatchInvoiceVM model)
+        {
+            try
+            {
+                if (model == null)
+                {
+                    return BadRequest("Invalid request.");
+                }
+
+                if (string.IsNullOrWhiteSpace(model.InvoiceNo))
+                {
+                    return BadRequest("Invoice No is required.");
+                }
+
+                if (model.InvoiceDate == DateTime.MinValue)
+                {
+                    return BadRequest("Invoice Date is required.");
+                }
+
+                if (model.CustDispListIds == null ||
+                    model.CustDispListIds.Count == 0)
+                {
+                    return BadRequest("No dispatch items selected.");
+                }
+
+                // ==========================================
+                // STEP 1: Check Invoice Number Uniqueness
+                // ==========================================
+
+                var allDispatchDetails =
+                    await _woService.GetAllDispatchDetails();
+
+                bool invoiceExists = allDispatchDetails.Any(x =>
+                    !string.IsNullOrWhiteSpace(x.InvoiceNo) &&
+                    x.InvoiceNo.Trim().Equals(
+                        model.InvoiceNo.Trim(),
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                );
+
+                if (invoiceExists)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Invoice No already exists."
+                    });
+                }
+
+                // ==========================================
+                // STEP 2: Create Dispatch Details Record
+                // ==========================================
+                var customerdispatchlist = await _baService.AllCustomerDispatchList();
+                var dispatchDetails = new DispatchDetailsVM
+                {
+                    InvoiceNo = model.InvoiceNo.Trim(),
+
+                    InvoiceDate = model.InvoiceDate,
+
+                    DispatchDetail = model.DispatchDetails,
+                     
+
+                    NoOfParts = model.NoOfParts
+                };
+
+                // Save Dispatch Details
+                var dispatchDetailsId =
+                    await _woService.PostDispatchDetails(dispatchDetails);
+
+
+                // ==========================================
+                // STEP 3: Update Customer Dispatch List
+                // ==========================================
+
+                foreach (var custDispListId in model.CustDispListIds)
+                {
+                    //post inv details entered Y 
+
+                    var getdata = customerdispatchlist.Where(x => x.Cust_Disp_List_ID == custDispListId).FirstOrDefault();
+                    if(getdata!=null)
+                    {
+                        getdata.Invoice_Details_Entered = 'Y';
+                        await _baService.PostMultipleCustDispList( new List<Cust_Disp_ListVM>{ getdata });
+
+                        var data = new Invoice_Disp_ListVM();
+                        data.Dispatch_Detail_Id = dispatchDetailsId.DispatchDetailsId;
+                        data.Cust_Disp_List_Id = getdata.Cust_Disp_List_ID;
+                        await _baService.PostInvoicedDispatchList(data);
+                    }
+                     
+                }
+
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Invoice details saved successfully.",
+                    dispatchDetailsId = dispatchDetailsId
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetEditCustomerDispatchInvoice(
+    long custDispListId)
+        {
+            try
+            {
+                var salesorders = await _baService.AllSalesOrders();
+                var masterparts = await _masterService.MasterPartList();
+                var customers = await _baService.GetCustomerOrders();
+
+                var salesOrderLookup = salesorders.GroupBy(x => x.SalesOrderId).ToDictionary(g => g.Key, g => g.First());
+                var partLookup = masterparts.GroupBy(x => x.PartId).ToDictionary(g => g.Key, g => g.First());
+                var customerOrderLookup = customers.GroupBy(x => x.CustomerOrderId).ToDictionary(g => g.Key, g => g.First());
+                // ==========================================
+                // STEP 1: Get Invoice Dispatch List
+                // ==========================================
+
+                var allInvoiceDispList = await _baService.AllInvoiceDispatchlist();
+
+                var invoiceDispList = allInvoiceDispList.FirstOrDefault(x =>x.Cust_Disp_List_Id == custDispListId);
+
+                if (invoiceDispList == null)
+                {
+                    return NotFound("Invoice Dispatch List not found.");
+                }
+
+
+                // ==========================================
+                // STEP 2: Get Dispatch Details ID
+                // ==========================================
+
+                long dispatchDetailsId =
+                    invoiceDispList.Dispatch_Detail_Id;
+
+
+                // ==========================================
+                // STEP 3: Get Dispatch Details
+                // ==========================================
+
+                var allDispatchDetails =            await _woService.GetAllDispatchDetails();
+
+                var dispatchDetails = allDispatchDetails
+                    .FirstOrDefault(x =>
+                        x.DispatchDetailsId == dispatchDetailsId);
+
+                if (dispatchDetails == null)
+                {
+                    return NotFound("Dispatch Details not found.");
+                }
+
+
+                // ==========================================
+                // STEP 4: Get All Linked Invoice Dispatch List
+                // ==========================================
+
+                var linkedInvoiceDispList = allInvoiceDispList.Where(x => x.Dispatch_Detail_Id == dispatchDetailsId).ToList();
+
+
+                // ==========================================
+                // STEP 5: Get Customer Dispatch List Data
+                // ==========================================
+
+                var allCustomerDispatchList =
+                    await _baService.AllCustomerDispatchList();
+
+
+                var selectedItems = new List<CustDispInvoiceLineVM>();
+
+                foreach (var invoiceItem in linkedInvoiceDispList)
+                {
+                    var custDispItem = allCustomerDispatchList
+                        .FirstOrDefault(x =>
+                            x.Cust_Disp_List_ID ==
+                            invoiceItem.Cust_Disp_List_Id);
+                    if (!salesOrderLookup.TryGetValue(custDispItem.SO_ID, out var so))
+                    {
+                        continue;
+                    }
+                    // 2. Find Part using SalesOrder.PartId
+                    partLookup.TryGetValue(so.PartId, out var part);
+                    // 3. Find Customer Order using SalesOrder.CustomerOrderId
+                    customerOrderLookup.TryGetValue(so.CustomerOrderId, out var customerOrder);
+
+
+                    if (custDispItem != null)
+                    {
+                        selectedItems.Add(new CustDispInvoiceLineVM
+                        {
+                            Cust_Disp_List_ID =
+                                custDispItem.Cust_Disp_List_ID,
+
+                            PoNumber = customerOrder?.PONumber ?? "",
+
+                            PartNo = part?.PartNo ?? "",
+
+                            PartDesc = part?.Description ?? "",
+
+                            Disp_Qnty = custDispItem.Disp_Qnty,
+                            Customer= customerOrder.CustomerName ?? ""
+                        });
+                    }
+                }
+
+
+                // ==========================================
+                // STEP 6: Get Customer Name
+                // ==========================================
+
+                string customer = "";
+
+                if (selectedItems.Any())
+                {
+                    customer = selectedItems.First().Customer;
+                }
+
+
+                // ==========================================
+                // STEP 7: Prepare Response
+                // ==========================================
+
+                var result = new EditCustomerDispatchInvoiceVM
+                {
+                    DispatchDetailsId = dispatchDetailsId,
+
+                    Customer = customer,
+
+                    InvoiceNo = dispatchDetails.InvoiceNo,
+
+                    InvoiceDate = dispatchDetails.InvoiceDate,
+
+                    DispatchDetails = dispatchDetails.DispatchDetail,
+
+                    NoOfParts = linkedInvoiceDispList.Count,
+
+                    SelectedItems = selectedItems
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> CheckEditInvoiceNo( string invoiceNo, long dispatchDetailsId)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(invoiceNo))
+                {
+                    return Ok(new
+                    {
+                        exists = false
+                    });
+                }
+
+                var dispatchDetails =
+                    await _woService.GetAllDispatchDetails();
+
+                bool invoiceExists = dispatchDetails.Any(x =>
+                    !string.IsNullOrWhiteSpace(x.InvoiceNo) &&
+                    x.InvoiceNo.Trim().Equals(
+                        invoiceNo.Trim(),
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                    &&
+                    x.DispatchDetailsId != dispatchDetailsId
+                );
+
+                return Ok(new
+                {
+                    exists = invoiceExists
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateCustomerDispatchInvoice( DispatchDetailsVM model)
+        {
+            try
+            {
+                if (model == null)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Invalid request."
+                    });
+                }
+
+                if (model.DispatchDetailsId <= 0)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Invalid Dispatch Details ID."
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(model.InvoiceNo))
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Invoice No is required."
+                    });
+                }
+
+                if (model.InvoiceDate == DateTime.MinValue)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Invoice Date is required."
+                    });
+                }
+
+
+                // ==========================================
+                // Check Invoice No Uniqueness
+                // ==========================================
+
+                var allDispatchDetails =
+                    await _woService.GetAllDispatchDetails();
+
+                bool invoiceExists = allDispatchDetails.Any(x =>
+                    !string.IsNullOrWhiteSpace(x.InvoiceNo) &&
+                    x.InvoiceNo.Trim().Equals(
+                        model.InvoiceNo.Trim(),
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                    &&
+                    x.DispatchDetailsId != model.DispatchDetailsId
+                );
+
+                if (invoiceExists)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Invoice No already exists."
+                    });
+                }
+
+
+                // ==========================================
+                // Get Existing Record
+                // ==========================================
+
+                var existingDispatchDetails =
+                    allDispatchDetails.FirstOrDefault(x =>
+                        x.DispatchDetailsId == model.DispatchDetailsId);
+
+                if (existingDispatchDetails == null)
+                {
+                    return NotFound(new
+                    {
+                        success = false,
+                        message = "Dispatch Details record not found."
+                    });
+                }
+
+
+                // ==========================================
+                // Update Only Editable Fields
+                // ==========================================
+
+                existingDispatchDetails.InvoiceNo =
+                    model.InvoiceNo.Trim();
+
+                existingDispatchDetails.InvoiceDate =
+                    model.InvoiceDate;
+
+                existingDispatchDetails.DispatchDetail =
+                    model.DispatchDetail;
+
+
+                // ==========================================
+                // Save Existing Record
+                // ==========================================
+
+                await _woService.PostDispatchDetails(
+                    existingDispatchDetails
+                );
+
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Invoice details updated successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteCustomerDispatchInvoice( DispatchDetailsVM model)
+        {
+            try
+            {
+                if (model == null || model.DispatchDetailsId <= 0)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Invalid Dispatch Details ID."
+                    });
+                }
+
+
+                // ==========================================
+                // STEP 1: Get All Invoice Dispatch List Records
+                // ==========================================
+
+                var allInvoiceDispList =
+                    await _baService.AllInvoiceDispatchlist();
+
+
+                var linkedInvoiceDispList =
+                    allInvoiceDispList
+                    .Where(x =>
+                        x.Dispatch_Detail_Id == model.DispatchDetailsId)
+                    .ToList();
+
+
+                if (!linkedInvoiceDispList.Any())
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "No linked invoice records found."
+                    });
+                }
+
+
+                // ==========================================
+                // STEP 2: Get All Customer Dispatch List Records
+                // ==========================================
+
+                var customerdispatchlist =
+                    await _baService.AllCustomerDispatchList();
+
+
+                var updateList = new List<Cust_Disp_ListVM>();
+
+
+                foreach (var invoiceItem in linkedInvoiceDispList)
+                {
+                    var getdata = customerdispatchlist
+                        .FirstOrDefault(x =>
+                            x.Cust_Disp_List_ID ==
+                            invoiceItem.Cust_Disp_List_Id);
+
+
+                    if (getdata != null)
+                    {
+                        // Reset Invoice Details Flag
+
+                        getdata.Invoice_Details_Entered = 'N';
+
+                        updateList.Add(getdata);
+                    }
+                }
+
+
+                // ==========================================
+                // STEP 3: Update Cust_Disp_List Records
+                // ==========================================
+
+                if (updateList.Any())
+                {
+                    await _baService.PostMultipleCustDispList(
+                        updateList
+                    );
+                }
+
+
+                // ==========================================
+                // STEP 4: Delete Invoice_Disp_List Records
+                // ==========================================
+
+                foreach (var invoiceItem in linkedInvoiceDispList)
+                {
+                    await _baService.DeleteInvoiceDispatch(invoiceItem.Invoice_Disp_List_Id);
+                }
+
+
+                // ==========================================
+                // STEP 5: Delete Dispatch Details Record
+                // ==========================================
+
+                await _woService.DeleteDispatchDetails( model.DispatchDetailsId);
+
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Invoice details deleted successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ConfirmEnteredCustomerDispatchData()
+        {
+            try
+            {
+                var masterparts = await _masterService.MasterPartList();
+                // ==========================================
+                // STEP 1: Load All Customer Dispatch Records
+                // ==========================================
+
+                var allCustDispList =
+                    await _baService.AllCustomerDispatchList();
+
+
+                // ==========================================
+                // STEP 2: Get Pending Records Only
+                // Invoice Entered = Y
+                // Data Confirmed = N
+                // ==========================================
+
+                var pendingRecords = allCustDispList
+                    .Where(x =>
+                        x.Invoice_Details_Entered == 'Y' &&
+                        x.Data_Confirmed == 'N'
+                    )
+                    .ToList();
+
+
+                if (!pendingRecords.Any())
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        message = "No pending entered dispatch data found."
+                    });
+                }
+
+
+                // ==========================================
+                // STEP 3: Load Required Master Data
+                // ==========================================
+
+                var allSOList =
+                    await _baService.AllSalesOrders();
+
+                var allSOAllocList =
+                    await _baService.AllSoallocation();
+
+                var allInventoryMaster =
+                    await _woService.GetAllInventory_Master();
+
+
+                // ==========================================
+                // STEP 4: Prepare Update Lists
+                // ==========================================
+
+                var custDispUpdateList =
+                    new List<Cust_Disp_ListVM>();
+
+                var soUpdateList =
+                    new List<SalesOrderVM>();
+
+                var soAllocUpdateList =
+                    new List<SO_Alloc_ListVM>();
+
+                var inventoryUpdateList =
+                    new List<Inventory_MasterVM>();
+
+
+                // ==========================================
+                // STEP 5: Process Every Pending Record
+                // ==========================================
+
+                foreach (var custDisp in pendingRecords)
+                {
+
+                    // --------------------------------------
+                    // A. Set Dispatch Flags
+                    // --------------------------------------
+
+                    custDisp.Data_Confirmed = 'Y';
+
+                    custDisp.Dispatch_Complete = 'Y';
+
+
+                    // --------------------------------------
+                    // B. Update SO Actual Quantity
+                    // --------------------------------------
+
+                    var soList = allSOList
+                        .FirstOrDefault(x =>
+                            x.SalesOrderId == custDisp.SO_ID);
+
+
+                    if (soList != null)
+                    {
+                        soList.ActQuantity += custDisp.Disp_Qnty;
+
+
+                        // ----------------------------------
+                        // C. Check Full / Partial Dispatch
+                        // ----------------------------------
+
+                        decimal remainingQty =
+                            soList.RequiredQuantity -
+                            soList.ActQuantity;
+
+
+                        if (remainingQty <= 0)
+                        {
+                            // Fully Dispatched
+
+                            //  soList.Ac =                             DateTime.Today; actual completed is missing
+
+                            soList.Status = 5;
+
+
+                            // Update Allocation
+
+                            var soAlloc = allSOAllocList.Where(s => s.SO_ID == custDisp.SO_ID).ToList();
+                                
+                            foreach(var data in soAlloc)
+                            {
+                                if (data != null)
+                                {
+                                    data.Full_Qnty_Dispatched = 'Y';
+
+                                    soAllocUpdateList.Add(data);
+                                }
+                            }
+                            
+
+                        }
+                        else
+                        {
+                            // Partially Dispatched
+
+                          //  soList.Status 9;    
+                        }
+
+
+                        soUpdateList.Add(soList);
+                    }
+
+                    var department = await _departmentService.GetAllStoresIDs();
+                    // --------------------------------------
+                    // D. Update Inventory Master
+                    // --------------------------------------
+
+                    var inventory = allInventoryMaster
+                        .FirstOrDefault(x =>
+                            x.Part_NoId == custDisp.PartId && x.Opr_No_Id==0 && x.Routing_Id==0 && x.Location_Id==department.Stores_DirMatl_ID && x.Loc_Flag=="Internal" );
+
+
+                    if (inventory == null)
+                    {
+                        throw new Exception(
+                            $"Inventory not found for Part ID {custDisp.PartId}"
+                        );
+                    }
+
+
+                    if (inventory.Current_QntOnHand < custDisp.Disp_Qnty)
+                    {
+                        throw new Exception(
+                            $"Insufficient inventory for Part ID {custDisp.PartId}"
+                        );
+                    }
+
+
+                    inventory.Current_QntOnHand -= custDisp.Disp_Qnty;
+
+
+                    inventoryUpdateList.Add(inventory);
+
+
+                    // --------------------------------------
+                    // E. Add Customer Dispatch to Update List
+                    // --------------------------------------
+
+                    custDispUpdateList.Add(custDisp);
+                    // reoerder logic  implementation for each partid sold to customer 
+
+                    var part = masterparts.Where(x => x.PartId == custDisp.PartId).FirstOrDefault();
+                    if (part!=null && (part.MasterPartType== "ManufacturedPart" || part.MasterPartType== "Assembly"))
+                    {
+                        var manufacturedpart = await _masterService.GetManufPart((int)part.PartId);
+                        // part sold to cutomer 
+                        if(manufacturedpart.FinalPartNosoldtoCustomer==1)
+                        {
+                            if( Convert.ToInt32(manufacturedpart.ReorderLevel)>0 && Convert.ToInt32(manufacturedpart.ReorderQnty) >0)
+                            {
+                                //check whether reorder so already exists 
+                                var reorderso = allSOList.Where(x => x.PartId == part.PartId && x.Reorder == 'Y' ).FirstOrDefault();
+                                if(reorderso != null)
+                                {
+                                    //reorder already exists no action
+                                }
+                                else
+                                {
+                                    var inventoryforreorder = allInventoryMaster.FirstOrDefault(x => x.Part_NoId == custDisp.PartId && x.Opr_No_Id == 0 && x.Routing_Id == 0 &&
+                                    x.Location_Id == department.Stores_DirMatl_ID && x.Loc_Flag == "Internal");
+                                    var soallocation = await _baService.GetSOAllocationlistbyPartid(custDisp.PartId);
+                                    var soallocationnotreadyfordisaptch = soallocation.Where(x => x.Ready_for_Dispatch == 'N').ToList();
+                                    var totalAllocatedQuantity = soallocationnotreadyfordisaptch.Sum(x => x.Allocated_Qnty);
+                                    var unallocatedqnty = Convert.ToInt32(inventoryforreorder.Current_QntOnHand) - totalAllocatedQuantity;
+                                    if(unallocatedqnty<=0)
+                                    {
+                                        unallocatedqnty = 0;
+                                    }
+                                    if(unallocatedqnty  < Convert.ToInt32(manufacturedpart.ReorderLevel))
+                                    {
+                                        var getso = allSOList.Where(x => x.SalesOrderId == custDisp.SO_ID).FirstOrDefault();
+                                        var reordersaleorder = new SalesOrderVM();
+                                        reordersaleorder.CustomerOrderId = getso.CustomerOrderId;
+                                        reordersaleorder.WorkOrderId = 0;
+                                        reordersaleorder.WorkOrderNo = "";
+                                        reordersaleorder.RequiredByDate = DateTime.Now.AddDays(30);
+                                        reordersaleorder.SODate = DateTime.Now;
+                                        reordersaleorder.PartId = custDisp.PartId;
+                                        reordersaleorder.RequiredQuantity = Convert.ToInt32(manufacturedpart.ReorderQnty);
+                                        reordersaleorder.ActQuantity = 0;
+                                        reordersaleorder.Status = 1;
+                                        reordersaleorder.BalanceSOQty = 0;
+                                        reordersaleorder.Plan = 0;
+                                        reordersaleorder.Matl = 0;
+                                        reordersaleorder.WIP = 0;
+                                        reordersaleorder.SuggestedDispQnty = 0;
+                                        reordersaleorder.FinalDispQnty = 0;
+                                        reordersaleorder.Reorder = 'Y';
+
+                                        await _baService.PostSalesOrder(reordersaleorder);
+
+
+                                        //trigger reorder saleorder
+
+                                    }
+                                    else
+                                    {
+                                        //reorder level not reached 
+                                    }
+                                    //exit
+                                }
+
+                            }
+                            else
+                            {
+                                // not categorized as reorder part
+                            }
+
+
+
+                        }
+
+
+                    }
+
+
+
+
+                }
+
+
+                // ==========================================
+                // STEP 6: Save Customer Dispatch Updates
+                // ==========================================
+
+                if (custDispUpdateList.Any())
+                {
+                    await _baService.PostMultipleCustDispList(
+                        custDispUpdateList
+                    );
+                }
+
+
+                // ==========================================
+                // STEP 7: Save SO Updates
+                // ==========================================
+
+                if (soUpdateList.Any())
+                {
+                    foreach(var data in soUpdateList)
+                    {
+                        await _baService.PostSalesOrder(data);
+                    }
+                   
+                }
+
+
+                // ==========================================
+                // STEP 8: Save SO Allocation Updates
+                // ==========================================
+
+                if (soAllocUpdateList.Any())
+                {
+                    foreach (var data in soAllocUpdateList)
+                    {
+                        await _baService.PostSOAllocation(data);
+                    }
+                }
+
+
+                // ==========================================
+                // STEP 9: Save Inventory Updates
+                // ==========================================
+
+                if (inventoryUpdateList.Any())
+                {
+                    foreach (var data in inventoryUpdateList)
+                    {
+                        await _woService.PostInventory_Master(data);
+                    }
+                }
+
+
+                return Ok(new
+                {
+                    success = true,
+                    message =
+                        $"{pendingRecords.Count} dispatch record(s) confirmed successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> AllSODispatch(int? take = null)
+        {
+            var soallocations = await _baService.AllSoallocation();
+            var salesorders = await _baService.AllSalesOrders();
+            var masterparts = await _masterService.MasterPartList();
+            var customer = await _baService.GetCustomerOrders();
+            var allocationList = soallocations.Where(x => x.Allocated_Qnty > 0 && x.Ready_for_Dispatch == 'N' && x.Full_Qnty_Dispatched == 'N').ToList();
+            var salesOrderLookup = salesorders.GroupBy(x => x.SalesOrderId).ToDictionary(g => g.Key, g => g.First());
+            var partLookup = masterparts.GroupBy(x => x.PartId).ToDictionary(g => g.Key, g => g.First());
+            var customerOrderLookup = customer.GroupBy(x => x.CustomerOrderId).ToDictionary(g => g.Key, g => g.First());
+            var allocatedQtyByPart = allocationList.GroupBy(x => x.PartId).ToDictionary( g => g.Key, g => g.Sum(x => x.Allocated_Qnty) );
+            var result = new List<SO_Alloc_ListVM>();
+
+            foreach (var allocation in allocationList)
+            {
+                if (!salesOrderLookup.TryGetValue(allocation.SO_ID, out var so))
+                { 
+                    continue;
+                } 
+                // 2. Find Part using SalesOrder.PartId
+                partLookup.TryGetValue(so.PartId, out var part); 
+                // 3. Find Customer Order using SalesOrder.CustomerOrderId
+                customerOrderLookup.TryGetValue( so.CustomerOrderId, out var customerOrder);
+                allocatedQtyByPart.TryGetValue(allocation.PartId, out var qtyOnHand);
+                var item = new SO_Alloc_ListVM
+                {
+                    SO_Alloc_List_Id = allocation.SO_Alloc_List_Id,
+                    SO_ID = allocation.SO_ID,
+                    SalesOrderId=allocation.SO_ID,
+                    PartId = allocation.PartId,
+                    Allocation_Date = allocation.Allocation_Date,
+                    Allocated_Qnty = allocation.Allocated_Qnty,
+                    SuggestedDispQnty=allocation.Allocated_Qnty,
+                    FinalDispQnty=allocation.FinalDispQnty,
+                    Dispatch_Complete = allocation.Dispatch_Complete,
+                    Ready_for_Dispatch = allocation.Ready_for_Dispatch,
+                    Full_Qnty_Dispatched = allocation.Full_Qnty_Dispatched,
+                    Final_Dispatch_Qnty = allocation.Final_Dispatch_Qnty,
+                    // From Sales Order / Part Master
+                    PartNo = part?.PartNo ?? "",
+                    PartDesc = part?.Description ?? "",
+                    // From Customer Order Customer = customerOrder?.CustomerName ?? "",
+                    PoNumber = customerOrder?.PONumber ?? "",
+                    Customer= customerOrder.CustomerName??"",
+                    RequiredQuantity=so.RequiredQuantity,
+                    SONumber=so.SONumber??"",
+                    BalanceSOQty=so.RequiredQuantity-so.ActQuantity,
+                    QntyOnHand=qtyOnHand,
+                    RequiredByDate=so.RequiredByDate
+                }; 
+                result.Add(item);
+            }
+             
+            return Ok(result);
+        }
+        //remove Suggested Qnty from So allocation
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveSuggestedQnty(SO_Alloc_ListVM model)
+        {
+            try
+            {
+                var soallocations = await _baService.AllSoallocation();
+                var allocation = soallocations.Where(x => x.SO_Alloc_List_Id == model.SO_Alloc_List_Id).FirstOrDefault();
+                if (allocation == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Invalid request."
+                    });
+                }
+
+                if (allocation.SO_Alloc_List_Id <= 0)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Invalid SO Allocation List ID."
+                    });
+                }
+
+                allocation.Allocated_Qnty = 0;
+                await _baService.PostSOAllocation(allocation);
+                // Your logic here
+                // model.SO_Alloc_List_Id
+
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Suggested Dispatch Quantity removed successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+        //reset Final Dispatch qty =0 
+        [HttpPost]
+        public async Task<IActionResult> RemoveFinalDispQnty(SO_Alloc_ListVM model)
+        {
+            try
+            {
+                var soallocations = await _baService.AllSoallocation();
+                var allocation = soallocations.Where(x => x.SO_Alloc_List_Id == model.SO_Alloc_List_Id).FirstOrDefault();
+                if (allocation == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Invalid request."
+                    });
+                }
+
+                if (allocation.SO_Alloc_List_Id <= 0)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Invalid SO Allocation List ID."
+                    });
+                }
+
+                allocation.Final_Dispatch_Qnty = 0;
+                await _baService.PostSOAllocation(allocation);
+                // Your logic here
+                // model.SO_Alloc_List_Id
+
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Final Dispatch Quantity removed successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ConfirmDispatchList([FromBody]List<SO_Alloc_ListVM> selectedAllocations)
+        {
+            try
+            {
+                if (selectedAllocations == null ||
+                    selectedAllocations.Count == 0)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "No dispatch records received."
+                    });
+                }
+
+                var selectedIds = selectedAllocations
+                    .Where(x => x.SO_Alloc_List_Id > 0)
+                    .Select(x => x.SO_Alloc_List_Id)
+                    .Distinct()
+                    .ToList();
+
+                if (selectedIds.Count == 0)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "No valid SO Allocation List IDs received."
+                    });
+                }
+
+                // 1. Get all eligible SO Allocation List records
+                var allAllocations = await _baService.AllSoallocation();
+
+                var eligibleAllocations = allAllocations
+                    .Where(x =>
+                        x.Allocated_Qnty > 0 &&
+                        x.Ready_for_Dispatch == 'N' &&
+                        x.Full_Qnty_Dispatched == 'N')
+                    .ToList();
+
+
+                // =====================================================
+                // 2. SELECTED RECORDS
+                // Ready_For_Dispatch = Y
+                // Insert into Cust_Disp_List
+                // =====================================================
+
+                var selectedRecords = eligibleAllocations
+                    .Where(x => selectedIds.Contains(x.SO_Alloc_List_Id))
+                    .ToList();
+                var custdispatchList = new List<Cust_Disp_ListVM>();
+                foreach (var item in selectedRecords)
+                {
+                    item.Ready_for_Dispatch = 'Y';
+
+                    // Update SO_Alloc_List
+                    await _baService.PostSOAllocation(item);
+
+                //Insert one Cust_Disp_List record
+                // Your actual Cust_Disp_List VM/ entity mapping goes here.
+
+    
+                    var custDisp = new Cust_Disp_ListVM
+                    {
+
+                        SO_ID = item.SO_ID,
+                        PartId = item.PartId,
+                        Disp_Qnty = item.Final_Dispatch_Qnty,
+                        Invoice_Details_Entered = 'N',
+                        Dispatch_Complete='N',
+                        Data_Confirmed='N'
+
+
+                     };
+                    custdispatchList.Add(custDisp);
+                    //
+                    // await _baService.PostCustDispList(custDispList);
+                }
+
+                await _baService.PostMultipleCustDispList(custdispatchList);
+                // =====================================================
+                // 3. UNSELECTED RECORDS
+                // Records still having Ready_For_Dispatch = N
+                // Final_Dispatch_Qnty = 0
+                // =====================================================
+
+                var unselectedRecords = eligibleAllocations
+                    .Where(x =>
+                        x.Ready_for_Dispatch == 'N' &&
+                        !selectedIds.Contains(x.SO_Alloc_List_Id))
+                    .ToList();
+
+                foreach (var item in unselectedRecords)
+                {
+                    item.Final_Dispatch_Qnty = 0;
+
+                    await _baService.PostSOAllocation(item);
+                }
+
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Dispatch list confirmed successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+        //customer Dispatch list Data loading ui 5 Dispatch Button
+
+        [HttpGet]
+        public async Task<IActionResult> CustomerDispatchData()
         {
             var salesorders = await _baService.AllSalesOrders();
             var masterparts = await _masterService.MasterPartList();
             var customer = await _baService.GetCustomerOrders();
-            var trans = await _woService.GetAllInv_Trans_Log();
-            var DispatchDetails = await _woService.GetAllDispatchDetails();
-            if (take.HasValue)
-                salesorders = salesorders.Take(take.Value).ToList();
-            foreach (SalesOrderVM sovm in salesorders)
+            var customerdispatchlist = await _baService.AllCustomerDispatchList();
+            var data = customerdispatchlist.Where(x => x.Dispatch_Complete == 'N').ToList();
+
+            //lookups
+            var salesOrderLookup = salesorders.GroupBy(x => x.SalesOrderId).ToDictionary(g => g.Key, g => g.First());
+            var partLookup = masterparts.GroupBy(x => x.PartId).ToDictionary(g => g.Key, g => g.First());
+            var customerOrderLookup = customer.GroupBy(x => x.CustomerOrderId).ToDictionary(g => g.Key, g => g.First());
+            foreach (var item  in data)
             {
-                foreach (ItemMasterPartVM impvm in masterparts)
-                {
-                    if (sovm.PartId == impvm.PartId)
-                    {
-                        ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart((int)sovm.PartId);
-                        var bastatus = await _baService.GetBAStatus(sovm.Status);
-                        sovm.StrStatus = bastatus.Status;
-                        sovm.PartNo = impvm.PartNo;
-                        sovm.PartDesc = impvm.Description;
-                        double maxBuildableQty = double.MaxValue;
-                        if (impvm.MasterPartType == "ManufacturedPart")
-                        {
-                            var mpmakefromlists = await _masterService.GetMPMakeFromListByPartId(mf.ManufacturedPartNoDetailId.ToString());
-
-                            foreach (var component in mpmakefromlists)
-                            {
-                                // 1. Total Weight On Hand for the Component
-                                decimal componentOnHandWeight = CalculateOnHand((int)component.MPPartId, trans);
-
-                                // 2. Required Weight to build ONE unit of the final product
-                                // ASSUMPTION: InputWeight is the property holding the required weight per unit
-                                decimal requiredWeight = Convert.ToDecimal(component.InputWeight);
-
-                                if (requiredWeight > 0)
-                                {
-                                    // 3. Calculate how many final products can be built: Floor(On Hand Weight / Required Weight)
-                                    // Use Math.Floor to ensure we only count complete units
-                                    double availableBasedOnComponent = Math.Floor((double)(componentOnHandWeight / requiredWeight));
-
-                                    // 4. Update the bottleneck component (find the minimum buildable quantity)
-                                    maxBuildableQty = Math.Min(maxBuildableQty, availableBasedOnComponent);
-                                }
-                            }
-                        }
-                        else // Handle the BOM case (assuming this is a purchased part that uses a BOM for assembly)
-                        {
-                            // ASSUMPTION: This returns a list of components and their required quantities
-                            var bomlsts = await _masterService.BOMS(mf.ManufacturedPartNoDetailId.ToString());
-
-                            foreach (var component in bomlsts)
-                            {
-                                decimal componentOnHandUnits = CalculateOnHand((int)component.BOMPartId, trans);
-
-                                // ASSUMPTION: Quantity is the property holding the amount needed
-                                decimal requiredUnits = component.Quantity;
-
-                                if (requiredUnits > 0)
-                                {
-                                    double availableBasedOnComponent = Math.Floor((double)(componentOnHandUnits / requiredUnits));
-                                    maxBuildableQty = Math.Min(maxBuildableQty, availableBasedOnComponent);
-                                }
-                            }
-                        }
-                        if (maxBuildableQty == double.MaxValue)
-                        {
-                            // No components defined
-                            sovm.QntyOnHand = 0;
-                        }
-                        else
-                        {
-                            sovm.QntyOnHand = (long)maxBuildableQty;
-                        }
-                    }
-                }
-                foreach (CustomerOrderVM cu in customer)
-                {
-                    if (sovm.CustomerOrderId == cu.CustomerOrderId)
-                    {
-                        sovm.Customer = cu.CustomerName;
-                        sovm.PoNumber = cu.PONumber;
-                    }
-                }
-            }
-            var partsToAllocate = salesorders
-        .GroupBy(so => so.PartId)
-        .ToList();
-
-            foreach (var partGroup in partsToAllocate)
-            {
-                // 2a. Find the Total Buildable Stock for this PartId
-                // The total resource is the maximum QntyOnHand calculated in Phase 1 (since all SOs for the same part share the same components/bottleneck).
-                long totalBuildableStock = partGroup.Max(so => so.QntyOnHand);
-
-                // 2b. Calculate the total quantity ALREADY RESERVED/DISPATCHED by ALL SOs of this part.
-                long totalReservedQuantity = partGroup.Sum(so => so.FinalDispQnty);
-
-                // 2c. Calculate the FINAL QOH (Available for Dispatch)
-                // Available QOH = Total Buildable Stock - Total Reserved
-                long finalAvailableQOH = totalBuildableStock - totalReservedQuantity;
-
-                // Ensure the QOH doesn't go negative
-                if (finalAvailableQOH < 0) finalAvailableQOH = 0;
-
-                // ---------------------------------------------------------------------
-
-                // --- PHASE 3: Apply FINAL QOH and Perform Suggested Allocation ---
-
-                // 3a. Update the QntyOnHand for ALL SOs in this group to reflect the FINAL available stock.
-                // This addresses your requirement: "if the FinalDispQnty of the so is 50 then the qntyonhand should be 50 [100-50] not 100"
-                foreach (var so in partGroup)
-                {
-                    so.QntyOnHand = finalAvailableQOH;
-                }
-
-                // 3b. Use the FINAL QOH as the running stock for the Suggested Allocation.
-                long runningStockForAllocation = finalAvailableQOH;
-
-                // 3c. Order SOs by earliest RequiredByDate, and filter to only allocate NEW quantities.
-                var sortedSOsForAllocation = partGroup
-                    .Where(so => so.FinalDispQnty == 0) // Only allocate to SOs not yet dispatched
-                    .OrderBy(so => so.RequiredByDate);
-
-                // 3d. Perform the allocation for non-dispatched SOs
-                foreach (var so in sortedSOsForAllocation)
-                {
-                    long soRequired = so.RequiredQuantity;
-
-                    long suggestedQty = Math.Min(runningStockForAllocation, soRequired);
-
-                    so.SuggestedDispQnty = (int)suggestedQty;
-
-                    runningStockForAllocation -= suggestedQty;
-
-                    if (runningStockForAllocation <= 0)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            List<SalesOrderVM> ressultSos = new List<SalesOrderVM>();
-            foreach (var sovm in salesorders)
-            {
-                var dispatchDetail = DispatchDetails.Where(d => d.SaleOrderId == sovm.SalesOrderId).ToList();
-
-                if (dispatchDetail.Count() > 0 && sovm.QntyOnHand == 0)
+                if (!salesOrderLookup.TryGetValue(item.SO_ID, out var so))
                 {
                     continue;
                 }
-                else
-                {
-                    if (dispatchDetail.Count() > 0)
-                    {
-                        sovm.DispatchId = dispatchDetail.First().DispatchDetailsId;
-                        sovm.InvoiceNo = dispatchDetail.First().InvoiceNo;
-                        sovm.InvoiceDate = dispatchDetail.First().InvoiceDate.ToString("dd-MM-yyyy");
-                        sovm.DispatchDetail = dispatchDetail.First().DispatchDetail;
-                    }
-                    ressultSos.Add(sovm);
-                }
-            }
-            return Ok(ressultSos);
-        }
-        // --- Start of logic inside AllSODispatch method ---
+                // 2. Find Part using SalesOrder.PartId
+                partLookup.TryGetValue(so.PartId, out var part);
+                // 3. Find Customer Order using SalesOrder.CustomerOrderId
+                customerOrderLookup.TryGetValue(so.CustomerOrderId, out var customerOrder);
+                item.Customer = customerOrder.CustomerName;
+                item.PoNumber = customerOrder.PONumber;
 
-        // Helper function to calculate Qty On Hand for a single part ID
-        decimal CalculateOnHand(int partId, IEnumerable<Inv_Trans_LogVM> trans)
+                item.PartNo = part.PartNo ?? "";
+                item.PartDesc = part.Description ?? "";
+                item.RequiredQuantity = so.RequiredQuantity;
+                item.BalanceSOQty = so.RequiredQuantity - so.ActQuantity;
+
+
+            }
+            return Ok(data);
+        }
+
+
+
+
+
+
+
+            // --- Start of logic inside AllSODispatch method ---
+
+            // Helper function to calculate Qty On Hand for a single part ID
+            decimal CalculateOnHand(int partId, IEnumerable<Inv_Trans_LogVM> trans)
         {
             decimal onHandWeight = 0;
 
@@ -10527,6 +11773,245 @@ namespace CWB.App.Controllers
             }
             return Ok(procdutionpost);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPodetailswithsubcon()
+        {
+            var materialiisuelist = await _woService.GetAllMatl_Issue_List();
+            var materialforsubcon = materialiisuelist.Where(x => x.From_Loc_Flag == "Int" && x.To_Loc_Flag == "Ext").ToList();
+            var invnetorytranslogs = await _woService.GetAllInv_Trans_Log();
+            var procdutionpost = await _woService.GetAllPodetails();
+            var resultList = await _woService.GetAllProcPlan();
+            var inv_Mismatch_Lists = await _woService.GetAllInv_Mismatch_List();
+            var doclist = await _woService.GetAllInWardDocList();
+            List<PODetailsVM> woSubs = new List<PODetailsVM>();
+            var companies = await _masterService.GetCompanies();
+            var masterparts = await _masterService.MasterPartList();
+            var uoms = await _masterService.GetUOMs();
+            var uomDict = uoms.ToDictionary(uom => uom.UOMId, uom => uom.Name);
+            foreach (var item in procdutionpost)
+            {
+                foreach (ContactsVM mobj in companies)
+                {
+                    if (item.CompanyId == mobj.CompanyId)
+                    {
+                        item.Supplier = mobj.CompanyName;
+                    }
+                }
+                bool includeItem = true;
+
+                // Find ProcPlan for this PO detail
+                var procPlan = resultList
+                    .FirstOrDefault(x => x.ProcPlanId == item.ProcPlanId);
+
+                // Find Master Part
+                var masterPart = masterparts
+                    .FirstOrDefault(x => x.PartId == item.PartId);
+
+                if (masterPart != null)
+                {
+                    item.PartNo = masterPart.PartNo + " / " + masterPart.Description;
+
+                    // Get Purchase Price
+                    var mp = await _masterService.PartPurchasesFor((int)item.PartId);
+
+                    if (mp != null && mp.Count() > 0)
+                    {
+                        item.ProcPrice = mp.FirstOrDefault().Price;
+                    }
+
+                    // ManufacturedPart means SubCon
+                    if (masterPart.MasterPartType == "ManufacturedPart")
+                    {
+                        item.PartType = "SubCon";
+
+                        // Backtrack to ProcPlan -> WorkOrder
+                        if (procPlan != null)
+                        {
+                            var workOrderId = procPlan.WorkOrderId;
+
+                            // Fetch inventory transaction logs
+                            var invTransLogs = invnetorytranslogs.Where(x=>x.Wo_Id==workOrderId && x.Transaction_Id==6).FirstOrDefault();
+
+                            // TransactionId = 6 means material issued to subcontractor
+                            
+
+                            // If material is NOT issued to subcon, exclude this item
+                            if (invTransLogs==null)
+                            {
+                                includeItem = false;
+                            }
+                        }
+                        else
+                        {
+                            // No ProcPlan found, exclude SubCon item
+                            includeItem = false;
+                        }
+                    }
+                    else
+                    {
+                        item.PartType = masterPart.MasterPartType;
+                    }
+                }
+
+                // Add only valid items
+                if (includeItem)
+                {
+                    // Existing processing
+                    item.DateStr = item.PlanPoReceiptDate.ToString("dd-MM-yyyy");
+                    item.NoOfLine = "1";
+                    item.NoOfOpenLine = "1";
+                    item.NoOfPastLine = "0";
+
+                    if (item.Status == 1)
+                    {
+                        item.StatusStr = "Not Approved";
+                    }
+                    else if (item.Status == 2)
+                    {
+                        item.StatusStr = "PO Approved";
+                    }
+                    else if (item.Status == 3)
+                    {
+                        item.StatusStr = "Completed";
+                    }
+
+                    item.PoType = "Prodn";
+
+                    if(item.PartType== "SubCon")
+                    {
+                        var manufacturedpart = await _masterService.GetManufPart((int) item.PartId);
+                        uomDict.TryGetValue(manufacturedpart.UOMId, out var uommf);
+                        if(manufacturedpart!=null)
+                        {
+                            item.QntyAlreadyRecorded = "0" + " "+ uommf;
+                            item.QntyRecordedToday = "0" + " " + uommf;
+                            item.BalToReceive = Convert.ToString(item.PoQnty) + " " + uommf;
+                            item.Unit = uommf;
+                        }
+                        else
+                        {
+                            item.QntyAlreadyRecorded = "0" + " Nos";
+                            item.QntyRecordedToday = "0" + " Nos";
+                            item.BalToReceive = Convert.ToString(item.PoQnty) + " Nos";
+                            item.Unit = "Nos";
+                        }
+                        var procplan = resultList.Where(x => x.ProcPlanId == item.ProcPlanId).FirstOrDefault();
+                        var material = materialforsubcon.Where(x => x.WO_Id == procplan.WorkOrderId).FirstOrDefault();
+                        var inputpart= masterparts.FirstOrDefault(x => x.PartId == material.Input_PartId);
+                        if(inputpart.MasterPartType== "RawMaterial")
+                        {
+                            var rawmterialtype = await _masterService.GetRMTypes();
+                            var rawmaterial = await _masterService.GetRMPart((int)inputpart.PartId);
+                            var getrmtypebyrawmaterial = rawmterialtype.Where(x => x.RawMaterialTypeId == rawmaterial.RawMaterialTypeId).FirstOrDefault();
+                            if (getrmtypebyrawmaterial.MultiplePartsMadeFrom1InputRM == 'Y')
+                            {
+                                item.TotalqtyDispatched =
+                                    Math.Truncate(material.Issue_Qnty).ToString()
+                                    + " " + getrmtypebyrawmaterial.Name;
+
+                                item.BalqtytobeDispatched =
+                                    "0 " + getrmtypebyrawmaterial.Name;
+                            }
+                            else
+                            {
+                                item.TotalqtyDispatched =
+                                    Math.Truncate(material.Issue_Qnty).ToString();
+
+                                item.BalqtytobeDispatched = "0";
+                            }
+
+
+                        }
+
+                    }
+                    else if (item.PartType== "BOF")
+                    { 
+                        var boughtoutfinishdetail = await _masterService.GetBOFPart((int)item.PartId);
+                        uomDict.TryGetValue(boughtoutfinishdetail.UOMId, out var uombof);
+                        if(boughtoutfinishdetail != null)
+                        {
+                            item.QntyAlreadyRecorded = "0" + " " + uombof;
+                            item.QntyRecordedToday = "0" + " " + uombof;
+                            item.BalToReceive = Convert.ToString(item.PoQnty) + " " + uombof;
+                            item.Unit = uombof;
+                        }
+                        else
+                        {
+                            item.QntyAlreadyRecorded = "0" + " Nos";
+                            item.QntyRecordedToday = "0" + " Nos";
+                            item.BalToReceive = Convert.ToString(item.PoQnty) + " Nos";
+                            item.Unit = "Nos";
+                        }
+
+                    }
+                    else if (item.PartType== "RawMaterial")
+                    {
+                        var rawmaterial = await _masterService.GetRMPart((int)item.PartId);
+                        uomDict.TryGetValue(rawmaterial.UOMId, out var uomrm);
+                        if(rawmaterial != null)
+                        {
+                            item.QntyAlreadyRecorded = "0" + " " + uomrm;
+                            item.QntyRecordedToday = "0" + " " + uomrm;
+                            item.BalToReceive = Convert.ToString(item.PoQnty) + " " + uomrm;
+                            item.Unit = uomrm;
+                        }
+                        else
+                        {
+                            item.QntyAlreadyRecorded = "0" + " Nos";
+                            item.QntyRecordedToday = "0" + " Nos";
+                            item.BalToReceive = Convert.ToString(item.PoQnty) + " Nos";
+                            item.Unit = "Nos";
+                        }
+
+                    }
+
+
+
+                  
+
+                    foreach (var doc in doclist)
+                    {
+                        item.DocStatus = doc.Mandatory.ToString();
+                    }
+
+                    foreach (var proc in resultList)
+                    {
+                        if (item.ProcPlanId == proc.ProcPlanId)
+                        {
+                            if (item.PoQnty < proc.Plan_Proc_Qnty)
+                            {
+                                item.QntyRed = "Y";
+                            }
+
+                            if (item.PlanPoReceiptDate < proc.PlanReceiptDate)
+                            {
+                                item.DateRed = "Y";
+                            }
+                        }
+                    }
+
+                    var invmistach = inv_Mismatch_Lists
+                        .Where(i => i.PO_Ref == item.PoDetailsId)
+                        .FirstOrDefault();
+
+                    if (invmistach != null)
+                    {
+                        item.Mismatch_Resolved = invmistach.Resolved;
+                    }
+                    else
+                    {
+                        item.Mismatch_Resolved = '-';
+                    }
+
+                    // Add to final list
+                    woSubs.Add(item);
+                }
+            }
+
+            return Ok(woSubs);
+            //return Ok(procdutionpost);
+        }
         [HttpGet]
         public async Task<IActionResult> GetAllInvMaster()
         {
@@ -10596,7 +12081,8 @@ namespace CWB.App.Controllers
             var result = await _woService.GetAllInventory_Master();
             var masterparts = await _masterService.MasterPartList();
             var inv_Trans = await _woService.GetAllInv_Trans_Log();
-
+            var departments = await _departmentService.GetDepartments(13);
+            var companies = await _masterService.GetCompanies();
             /* -------- Lookups -------- */
 
             var masterPartDict = masterparts.ToDictionary(x => x.PartId);
@@ -10635,7 +12121,21 @@ namespace CWB.App.Controllers
                     manufPartCache.TryAdd(partId, mf);
                 }
 
-                item.LocationStr = "Inhouse";
+                if(item.Loc_Flag=="Internal")
+                {
+                    var dept = departments.Where(x => x.DepartmentId == item.Location_Id).FirstOrDefault();
+                    item.LocationStr = dept.Name + "-"+"Inhouse";
+                
+                }
+                else if (item.Loc_Flag== "External")
+                {
+                    var company = companies.Where(x => x.CompanyId == item.Location_Id).FirstOrDefault();
+                    item.LocationStr = company.CompanyName+"-"+"Subcon";
+                }
+
+
+
+                //item.LocationStr = "Inhouse";
 
                 if (mf != null)
                 {
@@ -10671,12 +12171,12 @@ namespace CWB.App.Controllers
                         if (step != null)
                         {
                             item.OpName = step.StepNumber;
-                            item.LocationStr = step.StepLocation switch
-                            {
-                                "1" => "Inhouse",
-                                "2" => "SubCon",
-                                _ => "Company"
-                            };
+                            //item.LocationStr = step.StepLocation switch
+                            //{
+                            //    "1" => "Inhouse",
+                            //    "2" => "SubCon",
+                            //    _ => "Company"
+                            //};
                         }
                     }
                 }
@@ -10700,6 +12200,194 @@ namespace CWB.App.Controllers
             return Ok(result);
 
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllInvMasterFirstTime()
+        {
+            //var result = await _woService.GetAllInventory_Master();
+            //var masterparts = await _masterService.MasterPartList();
+            //var companies = await _masterService.GetCompanies();
+            //var inv_Trans = await _woService.GetAllInv_Trans_Log();
+            //foreach (var item in result)
+            //{
+            //    foreach (ItemMasterPartVM imp in masterparts)
+            //    {
+            //        if (item.Part_NoId == imp.PartId)
+            //        {
+            //            item.PartNoStr = imp.PartNo;
+            //            item.PartDescStr = imp.Description;
+            //            item.PartTypeStr = imp.MasterPartType;
+            //            item.CompanyStr = imp.Company;
+            //        }
+            //    }
+            //    ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart(Convert.ToInt32(item.Part_NoId));
+            //    var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+            //    var sortedList = resultList.Where(x => x.RoutingId == item.Routing_Id).FirstOrDefault();
+            //    item.LocationStr = "Inhouse";
+            //    if (sortedList != null)
+            //    {
+            //        item.RoutName = sortedList.RoutingName + " / ";
+            //        var routingSteps = await _routingService.RoutingSteps(sortedList.RoutingId);
+            //        var steps = routingSteps.Where(s=>s.StepId== item.Opr_No_Id).FirstOrDefault();
+            //        if(steps != null)
+            //        {
+            //            item.OpName = steps.StepNumber;
+            //            if (steps.StepLocation == 1.ToString())
+            //            {
+            //                item.LocationStr = "Inhouse";
+            //            }
+            //            else if (steps.StepLocation == 2.ToString())
+            //            {
+            //                item.LocationStr = "SubCon";
+            //            }
+            //            else
+            //            {
+            //                item.LocationStr = "Company";
+            //            }
+            //        }
+            //    }
+            //    var inv_Tran = inv_Trans.Where(i => i.Input_Part_NoId == item.Part_NoId || i.Output_Part_No == item.Part_NoId).FirstOrDefault();
+            //    if(inv_Tran != null)
+            //    {
+            //        if (inv_Tran.Part_Status == 1)
+            //        {
+            //            item.PartStatus = "Accepted";
+            //        }
+            //        else if (inv_Tran.Part_Status == 2)
+            //        {
+            //            item.PartStatus = "Rework";
+            //        }
+            //        else
+            //        {
+            //            item.PartStatus = "Rejected";
+            //        }
+            //    }
+            //    item.DateStr = item.Dt_time.ToString("dd-MM-yyyy");
+            //    item.Qnty = Convert.ToInt64(item.Current_QntOnHand);
+            //}
+            //return Ok(result);
+
+            var result = await _woService.GetAllInventory_Master();
+            var masterparts = await _masterService.MasterPartList();
+            var inv_Trans = await _woService.GetAllInv_Trans_Log();
+            var departments = await _departmentService.GetDepartments(13);
+            var companies = await _masterService.GetCompanies();
+            /* -------- Lookups -------- */
+
+            var masterPartDict = masterparts.ToDictionary(x => x.PartId);
+
+            var invTranDict = inv_Trans
+                .GroupBy(x => x.Input_Part_NoId != 0
+                    ? x.Input_Part_NoId
+                    : x.Output_Part_No)
+                .ToDictionary(g => g.Key, g => g.First());
+
+            /* -------- Caches -------- */
+
+            var manufPartCache = new Dictionary<long, ManufacturedPartNoDetailVM>();
+            var routingCache = new Dictionary<int, List<RoutingVM>>();
+            var routingStepCache = new Dictionary<int, List<RoutingStepVM>>();
+
+            /* -------- Main Loop -------- */
+
+            foreach (var item in result)
+            {
+                long partId = item.Part_NoId;
+
+                /* -------- Master Part -------- */
+                if (masterPartDict.TryGetValue(partId, out var imp))
+                {
+                    item.PartNoStr = imp.PartNo;
+                    item.PartDescStr = imp.Description;
+                    item.PartTypeStr = imp.MasterPartType;
+                    item.CompanyStr = imp.Company;
+                }
+
+                /* -------- Manufactured Part -------- */
+                if (!manufPartCache.TryGetValue(partId, out var mf))
+                {
+                    mf = await _masterService.GetManufPart((int)partId);
+                    manufPartCache.TryAdd(partId, mf);
+                }
+
+                if (item.Loc_Flag == "Internal")
+                {
+                    var dept = departments.Where(x => x.DepartmentId == item.Location_Id).FirstOrDefault();
+                    item.LocationStr = dept.Name + "-" + "Inhouse";
+
+                }
+                else if (item.Loc_Flag == "External")
+                {
+                    var company = companies.Where(x => x.CompanyId == item.Location_Id).FirstOrDefault();
+                    item.LocationStr = company.CompanyName + "-" + "Subcon";
+                }
+
+
+
+                //item.LocationStr = "Inhouse";
+
+                if (mf != null)
+                {
+                    /* -------- Routings -------- */
+                    if (!routingCache.TryGetValue(mf.ManufacturedPartNoDetailId, out var routings))
+                    {
+                        routings = (await _routingService
+                            .Routings(mf.ManufacturedPartNoDetailId))
+                            .ToList();
+
+                        routingCache.TryAdd(mf.ManufacturedPartNoDetailId, routings);
+                    }
+
+                    var selectedRouting = routings
+                        .FirstOrDefault(r => r.RoutingId == item.Routing_Id);
+
+                    if (selectedRouting != null)
+                    {
+                        item.RoutName = selectedRouting.RoutingName + " / ";
+
+                        /* -------- Routing Steps -------- */
+                        if (!routingStepCache.TryGetValue(selectedRouting.RoutingId, out var steps))
+                        {
+                            steps = (await _routingService
+                                .RoutingSteps(selectedRouting.RoutingId))
+                                .ToList();
+
+                            routingStepCache.TryAdd(selectedRouting.RoutingId, steps);
+                        }
+
+                        var step = steps.FirstOrDefault(s => s.StepId == item.Opr_No_Id);
+
+                        if (step != null)
+                        {
+                            item.OpName = step.StepNumber;
+                            //item.LocationStr = step.StepLocation switch
+                            //{
+                            //    "1" => "Inhouse",
+                            //    "2" => "SubCon",
+                            //    _ => "Company"
+                            //};
+                        }
+                    }
+                }
+
+                /* -------- Inventory Status -------- */
+                if (invTranDict.TryGetValue(partId, out var invTran))
+                {
+                    item.PartStatus = invTran.Part_Status switch
+                    {
+                        1 => "Accepted",
+                        2 => "Rework",
+                        _ => "Rejected"
+                    };
+                }
+
+                /* -------- Final -------- */
+                item.DateStr = item.Dt_time.ToString("dd-MM-yyyy");
+                item.Qnty = Convert.ToInt64(item.Current_QntOnHand);
+            }
+            result = result.Where(x => x.Opr_No_Id == 0 && x.Routing_Id == 0).ToList();
+            return Ok(result);
+
+        }
         [HttpPost]
         public async Task<IActionResult> UpdateInvMasterFirst(Inventory_MasterVM masterDocListVM)
         {
@@ -10707,9 +12395,12 @@ namespace CWB.App.Controllers
             var update = findInv.Where(i => i.Inventory_MasterId == masterDocListVM.Inventory_MasterId).FirstOrDefault();
             if (update != null)
             {
+                var stores = await _departmentService.GetAllStoresIDs();
                 update.Current_QntOnHand = masterDocListVM.Current_QntOnHand;
                 update.ReasonDesc = masterDocListVM.ReasonDesc;
-                update.Location_Id = masterDocListVM.Location_Id;
+                update.Location_Id = stores.Stores_DirMatl_ID;
+                update.Loc_Flag = "Internal";
+                //update.Location_Id = masterDocListVM.Location_Id;
                 var result = await _woService.PostInventory_Master(update);
                 return Ok(result);
             }
@@ -10734,7 +12425,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetAllInv_Master_Log(long invmasterid)
         {
             var results = await _woService.GetAllInv_Master_Log();
-            var result = results.Where(i => i.Inv_mast_ID == invmasterid).ToList();
+            var result = results.Where(i => i.Inv_mast_ID == invmasterid && i.Field_Changed !=null).ToList();
             foreach (var item in result)
             {
                 item.DateStr = item.Dt_time.ToString("dd-MM-yyyy");
@@ -10750,6 +12441,9 @@ namespace CWB.App.Controllers
             var result = await _woService.GetAllInv_Trans_Log();
             var masterparts = await _masterService.MasterPartList();
             var prodwos = await _woService.AllProductionPlan_Wo();
+
+            var departments = await _departmentService.GetDepartments(13);
+            var companies = await _masterService.GetCompanies();
             foreach (var item in result)
             {
                 foreach (var m in masterparts)
@@ -10772,39 +12466,50 @@ namespace CWB.App.Controllers
                     {
                         item.OutPutRoutingName = resultList.Where(r => r.RoutingId == item.Output_Routing_Id).FirstOrDefault().RoutingName;
                         var step = await _routingService.RoutingSteps((int)item.Output_Routing_Id);
-                        item.OutputOprNo = step.FirstOrDefault().StepNumber;
-                        if (step.FirstOrDefault().StepLocation == 1.ToString())
-                        {
-                            item.FromSender = "Inhouse";
-                        }
-                        else if (step.FirstOrDefault().StepLocation == 2.ToString())
-                        {
-                            item.FromSender = "SubCon";
-                        }
-                        else
-                        {
-                            item.FromSender = "Company";
-                        }
+                        var outoprno = step.Where(x => x.StepId == item.Output_Opr_No).FirstOrDefault();
+                        item.OutputOprNo = outoprno.StepNumber;
+                        
                     }
                     if (item.Input_Routing_Id != 0)
                     {
                         item.InPutRoutingName = resultList.Where(r => r.RoutingId == item.Input_Routing_Id).FirstOrDefault().RoutingName;
                         var step = await _routingService.RoutingSteps((int)item.Input_Routing_Id);
-                        item.InputOprNo = step.FirstOrDefault().StepNumber;
-                        if (step.FirstOrDefault().StepLocation == 1.ToString())
-                        {
-                            item.FromSender = "Inhouse";
-                        }
-                        else if (step.FirstOrDefault().StepLocation == 2.ToString())
-                        {
-                            item.FromSender = "SubCon";
-                        }
-                        else
-                        {
-                            item.FromSender = "Company";
-                        }
+                        var inputoprno= step.Where(x => x.StepId == item.Input_Opr_No).FirstOrDefault();
+                        item.InputOprNo = inputoprno.StepNumber;
+                       
                     }
                 }
+                if(item.From_Loc_Flag=="Internal")
+                {
+                    var dept = departments.Where(x => x.DepartmentId == item.From_Location_Id).FirstOrDefault();
+                    item.FromSender = dept.Name;
+                }
+                else if(item.From_Loc_Flag == "External")
+                {
+                    var company = companies.Where(x => x.CompanyId == item.From_Location_Id).FirstOrDefault();
+                    item.FromSender = company.CompanyName;
+                }
+                else
+                {
+                    item.FromSender = "-";
+                }
+                if (item.To_Loc_Flag == "Internal")
+                {
+                    var dept = departments.Where(x => x.DepartmentId == item.To_Location_Id).FirstOrDefault();
+                    item.ToSender = dept.Name;
+                }
+                else if (item.To_Loc_Flag == "External")
+                {
+                    var company = companies.Where(x => x.CompanyId == item.To_Location_Id).FirstOrDefault();
+                    item.ToSender =  company.CompanyName;
+                }
+                else
+                {
+                    item.ToSender = "-";
+                }
+
+
+
                 if (item.Part_Status == 1)
                 {
                     item.PartStatus = "Accepted";
@@ -10832,7 +12537,7 @@ namespace CWB.App.Controllers
                 ClaimsPrincipal userClaim = HttpContext.User;
                 string fullName = AppUtil.GetFullName(userClaim);
                 item.UserName = fullName;
-                item.ToSender = "Stores";
+               // item.ToSender = "Stores";
                 item.Dt_timeStr = item.Dt_time.ToString("dd-MM-yyyy");
                 item.QntyStr = Convert.ToInt64(item.Qnty);
                 var prodwo = prodwos.Where(wo => wo.WoId == item.Wo_Id).FirstOrDefault();
@@ -10912,7 +12617,7 @@ namespace CWB.App.Controllers
                 var shopInspLogs = shopInspLogsTask.Result;
 
                 var cmpsInProgress = productions
-                    .Where(p => p.PartType == 1 && p.Status != 8)
+                    .Where(p => p.PartType == 1 && p.Status != 8 && p.For_Ref=='N')
                     .ToList();
 
                 // Create Dictionaries for O(1) access
@@ -11422,7 +13127,7 @@ namespace CWB.App.Controllers
                 // 2. Filter for Active Assembly Work Orders (Status != 8 i.e., not closed)
                 // Assuming PartType == 2 indicates Assembly based on your existing ProcPlan logic
                 var assemblyWOs = productions
-                    .Where(p => p.PartType == 2 && p.Status != 8)
+                    .Where(p => p.PartType == 2 && p.Status != 8 && p.For_Ref=='N')
                     .ToList();
 
                 // 3. Create Lookups for performance
@@ -11441,8 +13146,17 @@ namespace CWB.App.Controllers
 
                     // --- Transactions for this WO ---
                     //var woTransactions = allTransLogs.Where(t => t.Wo_Id == wo.ProductionPlanId).ToList();
-                    var procplanwo = procplan.Where(p => p.WorkOrderId == wo.ProductionPlanId).FirstOrDefault();
-                    var woTransactions = allTransLogs.Where(n => (n.Input_Part_NoId == procplanwo.PartId || n.Output_Part_No == procplanwo.PartId)).ToList();
+                    var procplanwo = procplan.Where(p => p.WorkOrderId == wo.WoId).FirstOrDefault();
+                    //var woTransactions = allTransLogs.Where(n => (n.Input_Part_NoId == procplanwo.PartId || n.Output_Part_No == procplanwo.PartId)).ToList();
+                    var woTransactions = new List<Inv_Trans_LogVM>();
+
+                    if (procplanwo != null)
+                    {
+                        woTransactions = allTransLogs
+                            .Where(n => n.Input_Part_NoId == procplanwo.PartId ||
+                                        n.Output_Part_No == procplanwo.PartId)
+                            .ToList();
+                    }
 
                     // --- Calculate Data Points based on Image Logic ---
 
@@ -11556,7 +13270,7 @@ namespace CWB.App.Controllers
                 var procplan = procplanTask.Result;
 
                 // 2. Get Specific Work Order
-                var wo = productions.FirstOrDefault(w => w.ProductionPlanId == woId);
+                var wo = productions.FirstOrDefault(w => w.WoId == woId);
                 if (wo == null) return NotFound("Work Order not found");
 
                 // 3. Get Master Part Details
@@ -11594,7 +13308,7 @@ namespace CWB.App.Controllers
 
                     // B. Transaction Qnty (Total Issued to this WO)
                     // Filtering for Transaction_Id 5 (Issue Shop) or 6 (Issue SubCon)
-                    var procplanwo = procplan.Where(p => p.WorkOrderId == wo.ProductionPlanId).FirstOrDefault();
+                    var procplanwo = procplan.Where(p => p.WorkOrderId == wo.WoId).FirstOrDefault();
                     var issuedQty = allTransLogs
                         .Where(t => (t.Transaction_Id == 1 || t.Transaction_Id == 2)
                                     && (t.Input_Part_NoId == procplanwo.PartId || t.Output_Part_No == procplanwo.PartId))
@@ -12138,6 +13852,7 @@ namespace CWB.App.Controllers
                     WoId = uniqwoid,
                     SalesOrderId = salersorderId,
                     CalcWOQty = quantityPerDay,
+                    PlanWOQnty=quantityPerDay,
                     PlanCompletionDate = currentDate,
                     PartId = partId,
                     PartType = partType,
@@ -12148,8 +13863,17 @@ namespace CWB.App.Controllers
                     RoutingId = selectedwoid.RoutingId,
                     StartingOpNo = selectedwoid.StartingOpNo,
                     EndingOpNo = selectedwoid.EndingOpNo,
-                    SplitParentWoId = woid
-                };
+                    SplitParentWoId = woid,
+                    Parentlevel=selectedwoid.Parentlevel,
+                    Sim_Seq_No=selectedwoid.Sim_Seq_No,
+                    Status=selectedwoid.Status,
+                    TestData = selectedwoid.TestData,
+                    Calc_Capacity_Reqd= (long)Math.Round((double)selectedwoid.Calc_Capacity_Reqd / numDays),
+                    WOLevel= selectedwoid.WOLevel,
+                    Consolidation_Flag=selectedwoid.Consolidation_Flag
+                    
+
+            };
                 previousWorkdays.Add(dailywo);
             }
             //var postWO = await _baService.MultiplePostWO(previousWorkdays);
@@ -12191,34 +13915,10 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> ProductionPlanPost(ProductionPlan_WoVM production)
         {
+            var upproductions = await _woService.AllProductionWoReadForProd();
+            var updatewo = upproductions.Where(x => x.WONumber == production.WONumber).FirstOrDefault();
             List<ProductionPlan_WoVM> productions = new List<ProductionPlan_WoVM>();
-            if (production.PartType == 1)
-            {
-                production.Parentlevel = 'N';
-            }
-            else
-            {
-                var mpBOM = await _masterService.BOMS(production.PartId.ToString());
-                if (mpBOM != null && mpBOM.Any())
-                {
-                    foreach (var bom in mpBOM)
-                    {
-                        var assy = await _masterService.GetManufPart((int)bom.BOMPartId);
-                        if (assy != null)
-                        {
-                            production.Parentlevel = 'Y';
-                        }
-                        else
-                        {
-                            production.Parentlevel = 'N';
-                        }
-                    }
-                }
-                else
-                {
-                    production.Parentlevel = 'Y';
-                }
-            }
+            production.Parentlevel = updatewo.Parentlevel;
             productions.Add(production);
             var procdutionpost = await _woService.ProductionPlanWoPost(productions);
             return Ok(procdutionpost);
@@ -12747,6 +14447,8 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> PostNC_Decision_Log(NC_Decision_LogVM masterDocListVM)
         {
+
+            var nclogs = await _woService.GetAllNcLog();
             var result = await _woService.PostNC_Decision_Log(masterDocListVM);
             if (result.NC_Disp_Deci_Lvl2_Id == 4 || result.NC_Disp_Deci_Lvl1_Id == 4)
             {
@@ -12754,6 +14456,16 @@ namespace CWB.App.Controllers
                 rwkadd.NC_Log_Id = result.NcLogId;
                 var postrwk = await _woService.PostRwk_List(rwkadd);
             }
+            if(result.NC_Disp_Deci_Lvl1_Id !=3 || result.NC_Disp_Deci_Lvl1_Id != 4)
+            {
+                var getnclog = nclogs.Where(x => x.Insp_Outcome_Details_Id == result.NcLogId).FirstOrDefault();
+                if(getnclog!=null)
+                {
+                    getnclog.NC_Log_status_Id = 2;
+                    await _woService.PostNcLog(getnclog);
+                }
+            }
+
             return Ok(result);
         }
         [HttpGet]
@@ -12781,6 +14493,21 @@ namespace CWB.App.Controllers
             return Ok(result);
         }
         [HttpPost]
+        public async Task<IActionResult> CloseNCLog(long ncLogId)
+        {
+             var find = await _woService.GetAllNcLog();
+            var finbyid = find.Where(x => x.Insp_Outcome_Details_Id == ncLogId).FirstOrDefault();
+            finbyid.NC_Log_status_Id = 2;
+            await _woService.PostNcLog(finbyid);
+
+            // Example:
+            // var ncLog = await _woService.GetNCLogById(ncLogId);
+            // ncLog.Status = 2;
+            // await _woService.UpdateNCLog(ncLog);
+
+            return Ok();
+        }
+        [HttpPost]
         public async Task<IActionResult> PostCont_RCA_CA_log(Cont_RCA_CA_LogVM masterDocListVM)
         {
             var result = await _woService.PostCont_RCA_CA_Log(masterDocListVM);
@@ -12795,6 +14522,7 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> PostInv_Trans_Log(Inv_Trans_LogVM masterDocListVM)
         {
+            
             var inputreservelist = await _woService.GetallInputreservelist();
             var subconlist = await _woService.GetAllSubCon_List();
             var operationlist = await _woService.GetAllOpr_List();
@@ -12809,7 +14537,136 @@ namespace CWB.App.Controllers
                 masterDocListVM.From_Loc_Flag = "N/A";
                 masterDocListVM.To_Loc_Flag = "Internal";
                 masterDocListVM.To_Location_Id = deptstoresid.Stores_DirMatl_ID;
+                masterDocListVM.Part_Status = 1;
+                masterDocListVM.Input_Part_NoId = masterDocListVM.Output_Part_No;
+                masterDocListVM.Output_Part_No = 0;
+                //transactionlog for RM//BOF
+                var transresult = await _woService.PostInv_Trans_Log(masterDocListVM);
+                //allocation checking for RM/BOF
+                if(transresult.Transaction_Id==1)
+                {
+
+                    if (transresult.PO_No_Id > 0)
+                    {
+                        var podetailtask = await _woService.GetAllPodetails();
+                        var filtertask = podetailtask.Where(x => x.PoDetailsId == transresult.PO_No_Id);
+                        await _woService.UpdateInspection(filtertask);
+                    }
+                    var porecord = podetails.Where(x => x.PoDetailsId == transresult.PO_No_Id).FirstOrDefault();
+
+                    if (porecord != null && !string.IsNullOrWhiteSpace(porecord.ProcPlanIds))
+                    {
+                        var procPlanIds = porecord.ProcPlanIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => long.Parse(x.Trim())).ToList();
+
+                        if (procPlanIds.Count == 1)
+                        {
+                            var procPlan = procplans
+                                .FirstOrDefault(x => x.ProcPlanId == procPlanIds[0]);
+
+                            if (procPlan != null)
+                            {
+                                // Get WO + Part combination
+                                var woId = procPlan.WorkOrderId;
+                                var partId = procPlan.PartId;
+
+                                var allocation = inputreservelist.FirstOrDefault(x => x.WO_Id == woId && x.PartId == partId && x.Allocation_done == 'N');
+                                if (allocation != null)
+                                {
+                                    allocation.Allocation_done = 'Y';
+                                    allocation.Qnty_Recd = allocation.Plan_Alloc_Qnty;
+                                    await _woService.PostInputReservelist(new List<Input_Resrv_ListVM> { allocation });
+
+                                }
+
+                            }
+                        }
+                        if (procPlanIds.Count > 1)
+                        {
+                            var selectedProcPlans = procplans.Where(x => procPlanIds.Contains(x.ProcPlanId)).ToList();
+                            var getwoidid = consolidated.Where(x => x.WoId == selectedProcPlans.First().WorkOrderId).FirstOrDefault();
+                            if(getwoidid!=null)
+                            {
+                                var woId = getwoidid.CombinedWoId;
+                                var partId = selectedProcPlans.First().PartId;
+                                var allocation = inputreservelist.FirstOrDefault(x => x.WO_Id == woId && x.PartId == partId && x.Allocation_done == 'N');
+                                if (allocation != null)
+                                {
+                                    allocation.Allocation_done = 'Y';
+                                    allocation.Qnty_Recd = allocation.Plan_Alloc_Qnty;
+                                    await _woService.PostInputReservelist(new List<Input_Resrv_ListVM> { allocation });
+                                }
+                            }
+                            else
+                            {
+                                foreach(var alloc in selectedProcPlans)
+                                {
+                                    var woId = alloc.WorkOrderId;
+                                    var partId =alloc.PartId;
+                                    var allocation = inputreservelist.FirstOrDefault(x => x.WO_Id == woId && x.PartId == partId && x.Allocation_done == 'N');
+                                    if (allocation != null)
+                                    {
+                                        allocation.Allocation_done = 'Y';
+                                        allocation.Qnty_Recd = allocation.Plan_Alloc_Qnty;
+                                        await _woService.PostInputReservelist(new List<Input_Resrv_ListVM> { allocation });
+                                    }
+                                }
+                            }
+                           
+
+                        }
+
+
+
+                        // Continue allocation logic
+                    }
+
+                    //inventory handling
+                    var inv = await _woService.GetAllInventory_MasterBypartid(
+                        transresult.To_Location_Id,
+                        0,
+                        0,
+                        transresult.Input_Part_NoId
+                    );
+
+                    if (inv.Any())
+                    {
+                        var invbypartid = inv.First();
+
+                        invbypartid.Current_QntOnHand =
+                            invbypartid.Current_QntOnHand + transresult.Qnty;
+                        invbypartid.Part_Status = transresult.Part_Status;
+                        await _woService.PostInventory_Master(invbypartid);
+                    }
+                    else
+                    {
+                        Inventory_MasterVM newentry = new Inventory_MasterVM()
+                        {
+                            Part_NoId = transresult.Input_Part_NoId,
+                            Routing_Id = 0,
+                            Inv_Trans_Log_Id = transresult.Inv_Trans_LogId,
+                            Opr_No_Id = 0,
+                            Current_QntOnHand = transresult.Qnty,
+                            Location_Id = transresult.To_Location_Id,
+                            Loc_Flag = "Internal",
+                            Part_Status = transresult.Part_Status
+                        };
+
+                        await _woService.PostInventory_Master(newentry);
+                    }
+
+                }
+               
+
+
+
+
+
+
+
+
+
             }
+           
             if (masterDocListVM.Transaction_Id == 2)
             {
                 var deptstoresid = await _departmentService.GetAllStoresIDs();
@@ -12817,240 +14674,270 @@ namespace CWB.App.Controllers
                 masterDocListVM.From_Loc_Flag = "External";
                 masterDocListVM.To_Loc_Flag = "Internal";
                 masterDocListVM.To_Location_Id = deptstoresid.Stores_DirMatl_ID;
-                var po = podetails.Where(x => x.PoDetailsId == masterDocListVM.PO_No_Id).FirstOrDefault();
 
+                var po = podetails.FirstOrDefault(x => x.PoDetailsId == masterDocListVM.PO_No_Id);
+                var procplan = procplans.FirstOrDefault(x => x.ProcPlanId == po.ProcPlanId);
+                var productionWo = allprductionwo.FirstOrDefault(x =>x.WoId == long.Parse(masterDocListVM.WoIdStr));
+                var subconoperation = subconlist.FirstOrDefault(x => x.Wo_Id == productionWo.WoId &&x.Opr_No == procplan.StartingOpNO);
 
-                var procplan = procplans.Where(x => x.ProcPlanId == po.ProcPlanId).FirstOrDefault();
-                var productionWo = allprductionwo.FirstOrDefault(x => x.WoId == long.Parse(masterDocListVM.WoIdStr));
+          
 
-
-                masterDocListVM.Input_Part_NoId = productionWo.Input_Part_No;
-                masterDocListVM.Input_Routing_Id = productionWo.RoutingId;
+                masterDocListVM.Input_Part_NoId =  productionWo.Input_Part_No;
+                masterDocListVM.Input_Routing_Id =productionWo.RoutingId;
                 masterDocListVM.Input_Opr_No = procplan.StartingOpNO;
-
                 masterDocListVM.Output_Part_No =productionWo.PartId;
-                masterDocListVM.Output_Opr_No = procplan.StartingOpNO;
-                masterDocListVM.Output_Routing_Id = productionWo.RoutingId;
-
-
-                var subconoperation = subconlist.Where(x => x.Wo_Id == long.Parse(masterDocListVM.WoIdStr) && x.Opr_No == procplan.StartingOpNO).FirstOrDefault();
-
-
+                masterDocListVM.Output_Opr_No =procplan.StartingOpNO;
+                masterDocListVM.Output_Routing_Id =productionWo.RoutingId;
+                masterDocListVM.Part_Status = 1;
                 masterDocListVM.From_Location_Id = subconoperation.Supplier_Id;
-                masterDocListVM.Wo_Id = long.Parse(masterDocListVM.WoIdStr);
+                masterDocListVM.Wo_Id = productionWo.WoId;
 
+                
 
+                var transresult =  await _woService.PostInv_Trans_Log(masterDocListVM);
 
-                 
-
-
-
-
-
-
-
-            }
-
-
-
-
-
-
-            // INSERT ONLY ONCE
-            var result = await _woService.PostInv_Trans_Log(masterDocListVM);
-            //allocation checking for RM/BOF
-            if (result.Transaction_Id == 1)
-            {
-
-
-                var porecord = podetails.Where(x => x.PoDetailsId == result.PO_No_Id).FirstOrDefault();
-
-                if (porecord != null && !string.IsNullOrWhiteSpace(porecord.ProcPlanIds))
-                {
-                    var procPlanIds = porecord.ProcPlanIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => long.Parse(x.Trim())).ToList();
-
-                    if (procPlanIds.Count == 1)
-                    {
-                        var procPlan = procplans
-                            .FirstOrDefault(x => x.ProcPlanId == procPlanIds[0]);
-
-                        if (procPlan != null)
-                        {
-                            // Get WO + Part combination
-                            var woId = procPlan.WorkOrderId;
-                            var partId = procPlan.PartId;
-
-                            var allocation = inputreservelist.FirstOrDefault(x => x.WO_Id == woId && x.PartId == partId && x.Allocation_done == 'N');
-                            if (allocation != null )
-                            {
-                                allocation.Allocation_done = 'Y';
-                                allocation.Qnty_Recd = allocation.Plan_Alloc_Qnty;
-                                await _woService.PostInputReservelist(new List<Input_Resrv_ListVM> { allocation });
-
-                            }
-
-                        }
-                    }
-                    if (procPlanIds.Count > 1)
-                    {
-                        var selectedProcPlans = procplans.Where(x => procPlanIds.Contains(x.ProcPlanId)).ToList();
-                        var getwoidid = consolidated.Where(x => x.WoId == selectedProcPlans.First().WorkOrderId).FirstOrDefault();
-                        var woId = getwoidid.CombinedWoId;
-                        var partId = selectedProcPlans.First().PartId;
-                        var allocation = inputreservelist.FirstOrDefault(x => x.WO_Id == woId && x.PartId == partId && x.Allocation_done == 'N');
-                        if (allocation != null)
-                        {
-                            allocation.Allocation_done = 'Y';
-                            allocation.Qnty_Recd = allocation.Plan_Alloc_Qnty;
-                            await _woService.PostInputReservelist(new List<Input_Resrv_ListVM> { allocation });
-                        }
-
-                    }
-
-
-
-                    // Continue allocation logic
-                }
-
-
-            }
-
-            //allocation checking for subcon
-            if(result.Transaction_Id==2)
-            { 
-                   var productionwo = allprductionwo.FirstOrDefault(x => x.WoId == long.Parse(masterDocListVM.WoIdStr));
-                if (productionwo != null)
-                {
-                    var parentwo = allprductionwo.FirstOrDefault(x => x.Input_Part_No == productionwo.Input_Part_No && x.For_Ref == 'N');
-                    if(parentwo !=null)
-                    {
-                        var woId = parentwo.WoId;
-                        var partId = productionwo.PartId;
-                        var allocation = inputreservelist.FirstOrDefault(x => x.WO_Id == woId && x.PartId == partId && x.Allocation_done == 'N');
-                        if (allocation != null)
-                        {
-                            allocation.Allocation_done = 'Y';
-                            allocation.Qnty_Recd = allocation.Plan_Alloc_Qnty;
-                            await _woService.PostInputReservelist(new List<Input_Resrv_ListVM> { allocation });
-
-                        }
-                    }
-                   
-
-                }
                
 
-
-            }
-
-
-
-
-
-
-
-            // Inventory handling
-            if (result.Transaction_Id == 1)
-            {
-                var inv = await _woService.GetAllInventory_MasterBypartid(
-                    result.To_Location_Id,
-                    0,
-                    0,
-                    result.Output_Part_No
-                );
-
-                if (inv.Any())
+                if (transresult.PO_No_Id > 0)
                 {
-                    var invbypartid = inv.First();
-
-                    invbypartid.Current_QntOnHand =
-                        invbypartid.Current_QntOnHand + result.Qnty;
-
-                    await _woService.PostInventory_Master(invbypartid);
+                    var podetailtask =  await _woService.GetAllPodetails();
+                    var filtertask =  podetailtask.Where(x =>  x.PoDetailsId == transresult.PO_No_Id);
+                    await _woService.UpdateInspection(filtertask);
                 }
+
+               
+
+                var wooperations = operationlist.Where(x => x.Wo_Id == productionWo.WoId).OrderBy(x => x.RoutingStepSequence).ToList();
+
+                var currentOperation = wooperations.FirstOrDefault(x =>x.Opr_No == procplan.StartingOpNO);
+                currentOperation.Act_Qnty = (int)transresult.Qnty;
+                await _woService.PostOpr_List(currentOperation);
+                //if (currentOperation == null)
+                //    return;
+
+                // ============================================================
+                // CHECK WHETHER THIS IS LAST OPERATION
+                // ============================================================
+
+                var lastOperation =   wooperations.LastOrDefault();
+                     bool isLastOperation =   lastOperation != null &&   currentOperation.Opr_No ==lastOperation.Opr_No;
+
+                // ============================================================
+                // UPDATE SUBCON OPERATION ACTUAL QUANTITY
+                // ============================================================
+
+                subconoperation.Act_Qnty =   (int)transresult.Qnty;
+
+                await _woService.PostSubCon_List(subconoperation);
+
+                // ============================================================
+                // NOT LAST OPERATION
+                // ============================================================
+
+                if (!isLastOperation)
+                {
+                    // --------------------------------------------------------
+                    // SubCon output remains in inventory against this
+                    // operation's Output Opr No and Routing Id.
+                    // --------------------------------------------------------
+
+                    var inv = await _woService.GetAllInventory_MasterBypartid(
+                        transresult.To_Location_Id,
+                        transresult.Output_Opr_No,
+                        transresult.Output_Routing_Id,
+                        transresult.Output_Part_No);
+
+                    if (inv.Any())
+                    {
+                        var invbypartid = inv.First();
+
+                        invbypartid.Current_QntOnHand += transresult.Qnty;
+                        invbypartid.Part_Status =transresult.Part_Status;
+
+                        await _woService.PostInventory_Master(invbypartid);
+                    }
+                    else
+                    {
+                        var newentry = new Inventory_MasterVM()
+                        {
+                            Part_NoId =  transresult.Output_Part_No,
+                            Routing_Id =transresult.Output_Routing_Id,
+                            Inv_Trans_Log_Id = transresult.Inv_Trans_LogId,
+                            Opr_No_Id =      transresult.Output_Opr_No,
+                            Current_QntOnHand =transresult.Qnty,
+                            Location_Id =   transresult.To_Location_Id,
+                            Loc_Flag = "Internal",
+                            Part_Status =  transresult.Part_Status
+                        };
+
+                        await _woService.PostInventory_Master( newentry);
+                    }
+                }
+
+                // ============================================================
+                // LAST OPERATION
+                // ============================================================
+
                 else
                 {
-                    Inventory_MasterVM newentry = new Inventory_MasterVM()
+                    // --------------------------------------------------------
+                    // ONLY HERE DO WE CHECK INPUT RESERVE ALLOCATION
+                    // --------------------------------------------------------
+
+                    var pendingAllocations = inputreservelist.Where(x =>x.PartId == productionWo.PartId && x.Allocation_done == 'N').OrderBy(x => x.WO_Id).ToList();
+
+                    if (pendingAllocations.Any())
                     {
-                        Part_NoId = result.Output_Part_No,
-                        Routing_Id = 0,
-                        Inv_Trans_Log_Id = result.Inv_Trans_LogId,
-                        Opr_No_Id = 0,
-                        Current_QntOnHand = result.Qnty,
-                        Location_Id = result.To_Location_Id,
-                        Loc_Flag = "Internal"
-                    };
+                        var allocationList = new List<Input_Resrv_ListVM>();
 
-                    await _woService.PostInventory_Master(newentry);
-                }
-            }
-            if (result.Transaction_Id == 2)
-            {
-                var inv = await _woService.GetAllInventory_MasterBypartid(
-                    result.To_Location_Id,
-                    result.Output_Opr_No,
-                    result.Output_Routing_Id,
-                    result.Output_Part_No
-                );
+                        // ====================================================
+                        // NORMAL WO
+                        // ====================================================
 
-                if (inv.Any())
-                {
-                    var invbypartid = inv.First();
+                        if (productionWo.Combined != 'Y')
+                        {
+                            var allocationToUpdate = pendingAllocations.First();
 
-                    invbypartid.Current_QntOnHand =
-                        invbypartid.Current_QntOnHand + result.Qnty;
+                            if (Convert.ToDecimal(transresult.Qnty) >=    Convert.ToDecimal(allocationToUpdate.Plan_Alloc_Qnty))
+                            {
+                                allocationToUpdate.Allocation_done = 'Y';
+                                allocationToUpdate.Qnty_Recd = allocationToUpdate.Plan_Alloc_Qnty;
+                                allocationToUpdate.Bal_to_Issue = 0;
+                                allocationList.Add(allocationToUpdate);
 
-                    await _woService.PostInventory_Master(invbypartid);
-                }
-                else
-                {
-                    Inventory_MasterVM newentry = new Inventory_MasterVM()
+                                await _woService.PostInputReservelist(allocationList);
+                            }
+                        }
+
+                        // ====================================================
+                        // COMBINED WO
+                        // ====================================================
+
+                        else
+                        {
+                            var consolidatedrecords =    await _woService.Getallconsolidationproductionwo();
+                            var recordcount =    consolidatedrecords.Where(x => x.CombinedWoId ==productionWo.WoId).ToList();
+                           var consolidatedCount = recordcount.Count;
+
+                            // Take only the allocations corresponding
+                            // to the consolidated WO records.
+                            var allocationsToCheck =  pendingAllocations.Take(consolidatedCount).ToList();
+
+                            if (allocationsToCheck.Count == consolidatedCount)
+                            {
+                                var totalPlanAllocQty = allocationsToCheck.Sum(x =>Convert.ToDecimal(x.Plan_Alloc_Qnty));
+
+                                var receivedQty = Convert.ToDecimal(transresult.Qnty);
+
+                                if (receivedQty >= totalPlanAllocQty)
+                                {
+                                    foreach (var allocation in allocationsToCheck)
+                                    {
+                                        allocation.Allocation_done ='Y';
+                                        allocation.Qnty_Recd =allocation.Plan_Alloc_Qnty;
+                                        allocation.Bal_to_Issue = 0;
+
+                                        allocationList.Add(allocation);
+                                    }
+
+                                    if (allocationList.Any())
+                                    {
+                                        await _woService.PostInputReservelist(allocationList);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    var inv = await _woService.GetAllInventory_MasterBypartid(
+                       transresult.To_Location_Id,
+                        0,
+                        0,
+                       transresult.Output_Part_No);
+
+                    if (inv.Any())
                     {
-                        Part_NoId = result.Output_Part_No,
-                        Routing_Id = result.Output_Routing_Id,
-                        Inv_Trans_Log_Id = result.Inv_Trans_LogId,
-                        Opr_No_Id = result.Output_Opr_No,
-                        Current_QntOnHand = result.Qnty,
-                        Location_Id = result.To_Location_Id,
-                        Loc_Flag = "Internal"
-                    };
+                        var invbypartid = inv.First();
 
-                    await _woService.PostInventory_Master(newentry);
-                }
-            }
-            if (result.Transaction_Id == 7)
-            {
-                var saleorders = await _baService.AllSalesOrders();
-                var matchedOrders = saleorders.Where(so =>
-       so.PartId == result.Input_Part_NoId ||
-       so.PartId == result.Output_Part_No
-   ).ToList();
+                        invbypartid.Current_QntOnHand += transresult.Qnty;
+                        invbypartid.Part_Status =   transresult.Part_Status;
 
-                foreach (var so in matchedOrders)
-                {
-                    SalesOrderVM salesOrderVM = new SalesOrderVM()
+                        await _woService.PostInventory_Master( invbypartid);
+                    }
+                    else
                     {
-                        SalesOrderId = so.SalesOrderId,
-                        WorkOrderId = so.WorkOrderId,   // keep existing
-                        WorkOrderNo = so.WorkOrderNo,
-                        Status = 4
-                    };
+                        var newentry = new Inventory_MasterVM()
+                        {
+                            Part_NoId = transresult.Output_Part_No,
+                            Routing_Id =0,
+                            Inv_Trans_Log_Id = transresult.Inv_Trans_LogId,
+                            Opr_No_Id =0,
+                            Current_QntOnHand =  transresult.Qnty,
+                            Location_Id =  transresult.To_Location_Id,
+                            Loc_Flag = "Internal",
+                            Part_Status = transresult.Part_Status
+                        };
 
-                    await _baService.PostSalesOrder(salesOrderVM);
+                        await _woService.PostInventory_Master( newentry);
+                    }
+                    
                 }
-            }
-            if (result.PO_No_Id > 0)
-            {
-                var podetailtask = await _woService.GetAllPodetails();
-                var filtertask = podetailtask.Where(x => x.PoDetailsId == result.PO_No_Id);
-                await _woService.UpdateInspection(filtertask);
+
+
+                var firstOperation = wooperations.FirstOrDefault();
+
+                bool isFirstOperation =
+                    firstOperation != null &&
+                    currentOperation != null &&
+                    currentOperation.Opr_No == firstOperation.Opr_No;
+
+                var intranslogs = await _woService.GetAllInv_Trans_Log();
+                var inmaster = await _woService.GetAllInventory_Master();
+                if (isFirstOperation)
+                {
+                    // ---------------------------------------------------------
+                    // FIRST OPERATION
+                    // Get Transaction 6 for this WO
+                    // ---------------------------------------------------------
+
+                    var transaction6List = intranslogs
+                        .Where(x =>
+                            x.Wo_Id == productionWo.WoId &&
+                            x.Transaction_Id == 6)
+                        .ToList();
+
+                    foreach (var transaction6 in transaction6List)
+                    {
+                        // Find Inventory Master using Inv_Trans_Log_Id
+                        var invMaster = inmaster.Where(x=>x.Inv_Trans_Log_Id==transaction6.Inv_Trans_LogId).FirstOrDefault();
+
+                        if (invMaster != null)
+                        {
+                            invMaster.Current_QntOnHand = invMaster.Current_QntOnHand- transaction6.Qnty;
+
+                            await _woService.PostInventory_Master(invMaster);
+                        }
+                    }
+                }
+
+
+
+
+
+
+
             }
 
-            return Ok(result);
+
+
+
+
+
+            return Ok();
         }
         [HttpPost]
         public async Task<IActionResult> UpdateInv_Trans_Log(Inv_Trans_LogVM masterDocListVM)
         {
+            var matissuelist = await _woService.GetAllMatl_Issue_List();
             var result = await _woService.GetAllInv_Trans_Log();
             var inv = result.Where(i => i.Inv_Trans_LogId == masterDocListVM.Inv_Trans_LogId).FirstOrDefault();
             inv.Movement_Compl = masterDocListVM.Movement_Compl;
@@ -13058,11 +14945,21 @@ namespace CWB.App.Controllers
             inv.Qnty_mismatch_status = masterDocListVM.Qnty_mismatch_status;
             inv.Qnty_Mismatch_Comment = masterDocListVM.Qnty_Mismatch_Comment;
             var post = await _woService.PostInv_Trans_Log(inv);
+            if(post.Transaction_Id==5)
+            { 
+            var getmaterial = matissuelist.Where(x => x.WO_Id == post.Wo_Id && x.Input_PartId == post.Input_Part_NoId).First();
+                if(getmaterial!=null)
+                {
+                    getmaterial.Issue_Mov_Compl = 'Y';
+                    await _woService.PostMatl_Issue_List(getmaterial);
+                }
+            }
             return Ok(post);
         }
         [HttpPost]
         public async Task<IActionResult> UpdateMultipleInv_Trans_Log([FromBody] IEnumerable<Inv_Trans_LogVM> masterDocListVM)
         {
+            var matissuelist = await _woService.GetAllMatl_Issue_List();
             var result = await _woService.GetAllInv_Trans_Log();
             foreach (var item in masterDocListVM)
             {
@@ -13072,13 +14969,22 @@ namespace CWB.App.Controllers
                 inv.Qnty_mismatch_status = item.Qnty_mismatch_status;
                 inv.Qnty_Mismatch_Comment = item.Qnty_Mismatch_Comment;
                 var post = await _woService.PostInv_Trans_Log(inv);
-
+                if (post.Transaction_Id == 5)
+                {
+                    var getmaterial = matissuelist.Where(x => x.WO_Id == post.Wo_Id && x.Input_PartId == post.Input_Part_NoId).First();
+                    if (getmaterial != null)
+                    {
+                        getmaterial.Issue_Mov_Compl = 'Y';
+                        await _woService.PostMatl_Issue_List(getmaterial);
+                    }
+                }
             }
             return Ok(masterDocListVM);
         }
         [HttpGet]
         public async Task<IActionResult> GetAllInv_Trans_Log()
         {
+            
             var result = await _woService.GetAllInv_Trans_Log();
             var masterparts = await _masterService.MasterPartList();
             foreach (var item in result)
@@ -13098,26 +15004,28 @@ namespace CWB.App.Controllers
                         item.PartNo = m.PartNo + " / " + m.Description;
                     }
                 }
-                ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart(Convert.ToInt32(item.Output_Part_No));
-                var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
-                if (item.Output_Routing_Id != 0)
-                {
-                    item.RoutingName = resultList.Where(r => r.RoutingId == item.Output_Routing_Id).FirstOrDefault().RoutingName;
-                    var step = await _routingService.RoutingSteps((int)item.Output_Routing_Id);
-                    item.OprNo = step.FirstOrDefault().StepNumber;
-                    if (step.FirstOrDefault().StepLocation == 1.ToString())
+                // ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart(Convert.ToInt32(item.Output_Part_No));
+                // var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                var route = await _routingService.GetRouting((int)item.Input_Routing_Id);
+
+                    if (item.Output_Routing_Id != 0)
                     {
-                        item.FromSender = "Inhouse";
+                        item.RoutingName = route.RoutingName;
+                        var step = await _routingService.RoutingSteps((int)item.Output_Routing_Id);
+                        item.OprNo = step.FirstOrDefault().StepNumber;
+                        if (step.FirstOrDefault().StepLocation == 1.ToString())
+                        {
+                            item.FromSender = "Inhouse";
+                        }
+                        else if (step.FirstOrDefault().StepLocation == 2.ToString())
+                        {
+                            item.FromSender = "SubCon";
+                        }
+                        else
+                        {
+                            item.FromSender = "Company";
+                        }
                     }
-                    else if (step.FirstOrDefault().StepLocation == 2.ToString())
-                    {
-                        item.FromSender = "SubCon";
-                    }
-                    else
-                    {
-                        item.FromSender = "Company";
-                    }
-                }
                 if (item.Part_Status == 1)
                 {
                     item.PartStatus = "Accepted";
@@ -13145,6 +15053,111 @@ namespace CWB.App.Controllers
                 item.ToSender = "Stores";
             }
             return Ok(result);
+        }
+        [HttpGet]
+        public async Task<IActionResult> ConfirmMaterialRecipt()
+        {
+            var departments = await _departmentService.GetDepartments(3);
+            var result = await _woService.GetAllInv_Trans_Log();
+            var filteredResult = result
+    .Where(x => x.From_Loc_Flag == "Internal" &&
+                x.To_Loc_Flag == "Internal" && ( x.Transaction_Id==5 || x.Transaction_Id==8 ))
+    .ToList();
+            var masterparts = await _masterService.MasterPartList();
+            foreach (var item in filteredResult)
+            {
+                if (item.Output_Part_No == 0)
+                {
+                    item.Output_Part_No = item.Input_Part_NoId;
+                }
+                if (item.Output_Routing_Id == 0)
+                {
+                    item.Output_Routing_Id = item.Input_Routing_Id;
+                }
+                foreach (var m in masterparts)
+                {
+                    if (item.Output_Part_No == m.PartId)
+                    {
+                        item.PartNo = m.PartNo + " / " + m.Description;
+                    }
+                }
+                // ManufacturedPartNoDetailVM mf = await _masterService.GetManufPart(Convert.ToInt32(item.Output_Part_No));
+                // var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
+                var route = await _routingService.GetRouting((int)item.Input_Routing_Id);
+                if(item.Transaction_Id==8)
+                {
+                    if (item.Output_Routing_Id != 0)
+                    {
+                        item.RoutingName = route.RoutingName;
+                        var step = await _routingService.RoutingSteps((int)item.Output_Routing_Id);
+                        if (item.Output_Opr_No != 0)
+                        {
+                            var outoprno = step.Where(x => x.StepId == item.Output_Opr_No).FirstOrDefault();
+                            item.OprNo = outoprno.StepNumber;
+                        }
+
+
+                    }
+                }
+                if(item.Transaction_Id==5)
+                {
+                    if (item.Input_Routing_Id != 0)
+                    {
+                        item.RoutingName = route.RoutingName;
+                        var step = await _routingService.RoutingSteps((int)item.Input_Routing_Id);
+                        if (item.Input_Opr_No != 0)
+                        {
+                            var outoprno = step.Where(x => x.StepId == item.Input_Opr_No).FirstOrDefault();
+                            item.OprNo = outoprno.StepNumber;
+                        }
+
+
+                    }
+                }
+                
+                //if (item.Input_Routing_Id != 0  )
+                //{
+                //    item.InPutRoutingName = route.RoutingName;
+                //    var step = await _routingService.RoutingSteps((int)item.Input_Routing_Id);
+                //    if(item.Input_Opr_No != 0)
+                //    {
+                //        var inputoprno = step.Where(x => x.StepId == item.Input_Opr_No).FirstOrDefault();
+                //        item.InputOprNo = inputoprno.StepNumber;
+                //    }
+                   
+
+                //}
+                var fromdepartment = departments.Where(x => x.DepartmentId == item.From_Location_Id).FirstOrDefault();
+                item.FromSender = fromdepartment.Name;
+                var todepartment= departments.Where(x => x.DepartmentId == item.To_Location_Id).FirstOrDefault();
+                item.ToSender = todepartment.Name;
+                if (item.Part_Status == 1)
+                {
+                    item.PartStatus = "Accepted";
+                }
+                else if (item.Part_Status == 2)
+                {
+                    item.PartStatus = "Rework";
+                }
+                else
+                {
+                    item.PartStatus = "Rejected";
+                }
+                if (item.Qnty_mismatch_status == 1)
+                {
+                    item.MisMatchStatus = "None";
+                }
+                else if (item.Qnty_mismatch_status == 2)
+                {
+                    item.MisMatchStatus = "Open";
+                }
+                else if (item.Qnty_mismatch_status == 3)
+                {
+                    item.MisMatchStatus = "Corrected";
+                }
+                //item.ToSender = "Stores";
+            }
+            return Ok(filteredResult);
         }
         [HttpPost]
         public async Task<IActionResult> PostInventory_Master(Inventory_MasterVM masterDocListVM)
@@ -13380,10 +15393,56 @@ namespace CWB.App.Controllers
                     // var mp = await _masterService.PartPurchasesFor((int)item.PartId);
                     // item.ProcPrice = mp.FirstOrDefault()?.Price;
                 }
+                if (item.PartType == "SubCon")
+                {
+                    var manufacturedpart = await _masterService.GetManufPart((int)item.PartId);
+                    uomDict.TryGetValue(manufacturedpart.UOMId, out var uommf);
+                    if (manufacturedpart != null)
+                    {
+                       
+                        item.Unit = uommf;
+                    }
+                    else
+                    {
+                       
+                        item.Unit = "Nos";
+                    }
 
-                // UOM (hardcoded to 1 in your code)
-                if (uomDict.TryGetValue(1, out var uomName))
-                    item.Unit = uomName;
+
+                }
+                else if (item.PartType == "BOF")
+                {
+                    var boughtoutfinishdetail = await _masterService.GetBOFPart((int)item.PartId);
+                    uomDict.TryGetValue(boughtoutfinishdetail.UOMId, out var uombof);
+                    if (boughtoutfinishdetail != null)
+                    {
+                         
+                        item.Unit = uombof;
+                    }
+                    else
+                    {
+                      
+                        item.Unit = "Nos";
+                    }
+
+                }
+                else if (item.PartType == "RawMaterial")
+                {
+                    var rawmaterial = await _masterService.GetRMPart((int)item.PartId);
+                    uomDict.TryGetValue(rawmaterial.UOMId, out var uomrm);
+                    if (rawmaterial != null)
+                    {
+                        
+                        item.Unit = uomrm;
+                    }
+                    else
+                    {
+                         
+                        item.Unit = "Nos";
+                    }
+
+                }
+                
 
                 // ProcPlan check
                 if (procPlanDict.TryGetValue(item.ProcPlanId, out var proc))
@@ -13569,7 +15628,11 @@ namespace CWB.App.Controllers
             var rcclog = await _woService.GetAllCont_RCA_CA_log();
             var ncdisplog = await _woService.GetAllNC_Decision_Log();
             var inw = await _woService.GetAllInw_Recpt_Details();
-            foreach (var item in result)
+            var uoms = await _masterService.GetUOMs();
+            var uomDict = uoms.ToDictionary(uom => uom.UOMId, uom => uom.Name);
+            var mcwaitlist = await _woService.GetAllMc_Wait_List();
+
+            foreach (var item in result.Where(x=>x.NC_Log_status_Id==1))
             {
                 foreach (var m in masterparts)
                 {
@@ -13586,20 +15649,81 @@ namespace CWB.App.Controllers
                         }
                     }
                 }
-                item.Unit = "Nos";
+                if (item.PartType == "SubCon")
+                {
+                    var manufacturedpart = await _masterService.GetManufPart((int)item.Inw_Recpt_Part_No_Id);
+                    uomDict.TryGetValue(manufacturedpart.UOMId, out var uommf);
+                    if (manufacturedpart != null)
+                    {
+
+                        item.Unit = uommf;
+                    }
+                    else
+                    {
+
+                        item.Unit = "Nos";
+                    }
+
+
+                }
+                else if (item.PartType == "BOF")
+                {
+                    var boughtoutfinishdetail = await _masterService.GetBOFPart((int)item.Inw_Recpt_Part_No_Id);
+                    uomDict.TryGetValue(boughtoutfinishdetail.UOMId, out var uombof);
+                    if (boughtoutfinishdetail != null)
+                    {
+
+                        item.Unit = uombof;
+                    }
+                    else
+                    {
+
+                        item.Unit = "Nos";
+                    }
+
+                }
+                else if (item.PartType == "RawMaterial")
+                {
+                    var rawmaterial = await _masterService.GetRMPart((int)item.Inw_Recpt_Part_No_Id);
+                    uomDict.TryGetValue(rawmaterial.UOMId, out var uomrm);
+                    if (rawmaterial != null)
+                    {
+
+                        item.Unit = uomrm;
+                    }
+                    else
+                    {
+
+                        item.Unit = "Nos";
+                    }
+
+                }
+
+
+                if(item.McWaitId>0)
+                {
+                    var macwait = mcwaitlist.Where(x => x.Mc_Wait_ListId == item.McWaitId).FirstOrDefault();
+                    var getroutingstep = await _routingService.GetStep((int)macwait.Opr_No_Id);
+                    var getrouting = await _routingService.GetRouting((int)getroutingstep.RoutingId);
+                    item.Inw_Recpt_Part_No_Name = item.Inw_Recpt_Part_No_Name + "/"+getrouting.RoutingName + "/"+getroutingstep.StepNumber;
+                }
                 item.NcDateStr = item.NcDate.ToString("dd/MM/yyyy");
 
                 if (Convert.ToInt32(item.Storage_Location) == 1)
                 {
-                    item.LocationName = "Shop";
+
+                    var location = loc.Where(x => x.DepartmentId == Convert.ToInt64(item.Storage_Location)).FirstOrDefault();
+                    item.LocationName = location.Name;
                 }
                 else if (Convert.ToInt32(item.Storage_Location) == 3)
                 {
-                    item.LocationName = "Customers";
+                    
+                    item.LocationName ="Customer";
                 }
                 else
                 {
-                    item.LocationName = "Stores";
+                    var location = loc.Where(x => x.DepartmentId == Convert.ToInt64(item.Storage_Location)).FirstOrDefault();
+                    item.LocationName = location.Name;
                 }
                 DateTime today = DateTime.Today;
                 int daysElapsed = (today - item.NcDate).Days;
@@ -13651,7 +15775,9 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> PostInspNcLog([FromBody] Insp_Outcome_DetailsVM procPlanVMs)
         {
-            //procPlanVMs.Customer_NC_Ref = "inputdatapart";
+            procPlanVMs.Customer_NC_Ref = "inputdatapart";
+            //var stores = await _departmentService.GetAllStoresIDs();
+            //procPlanVMs.Storage_Location = Convert.ToString(stores.Stores_DirMatl_ID);
             var result = await _woService.PostNcLog(procPlanVMs);
             return Ok(result);
         }
@@ -15022,7 +17148,7 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetNotAvlMcTimeslot()
         {
-            var getMCList = await _woService.GetAllMc_Timeslot_List();
+            var getMCList = await _woService.GetAllTempMc_Timeslot_List();
             var result = getMCList.Where(m => m.Slot_Not_Avl == 'Y').ToList();
 
             if (!result.Any())
@@ -15076,15 +17202,39 @@ namespace CWB.App.Controllers
                 .Where(t => t.End_time >= masterDocListVM.GetEndTime)
                 .OrderBy(t => t.End_time)
                 .FirstOrDefault();
-            masterDocListVM.Timeslot_List_Id = getStTimeSlotList.Timeslot_ListId;
-            masterDocListVM.EndTimeslot_List_Id = getEndTimeSlotList.Timeslot_ListId;
-            var result = await _woService.PostMc_Timeslot_List(masterDocListVM);
+            var tempMcSlot = new TempMc_Timeslot_ListVM
+            {
+                Mc_Id = masterDocListVM.Mc_Id,
+
+                Timeslot_List_Id = getStTimeSlotList.Timeslot_ListId,
+
+                EndTimeslot_List_Id = getEndTimeSlotList.Timeslot_ListId,
+
+                // No machine wait is associated with non-availability
+                Mc_Wait_List_Id = 0,
+
+                Slot_Not_Avl = 'Y',
+
+                Not_Avl_reason = masterDocListVM.Not_Avl_reason,
+
+                // IMPORTANT:
+                // Use a separate allocation value for machine non-availability.
+                Allocation = 6//machine not available status
+            };
+
+            var result = await _woService.PostTempMc_Timeslot_List(tempMcSlot);
+
             return Ok(result);
+            //masterDocListVM.Timeslot_List_Id = getStTimeSlotList.Timeslot_ListId;
+            //masterDocListVM.EndTimeslot_List_Id = getEndTimeSlotList.Timeslot_ListId;
+            //var result = await _woService.PostMc_Timeslot_List(masterDocListVM);
+            //return Ok(result);
         }
         [HttpPost]
         public async Task<IActionResult> UpdateSetupMc_Wait_List(Mc_Wait_ListVM masterDocListVM)
         {
             var mc_Wait_Lists = await _woService.GetAllMc_Wait_List();
+            var allproductionwo = await _woService.AllProductionPlan_Wo();
             var mcWait = mc_Wait_Lists.Where(m => m.Mc_Wait_ListId == masterDocListVM.Mc_Wait_ListId).FirstOrDefault();
             if (mcWait != null)
             {
@@ -15093,6 +17243,17 @@ namespace CWB.App.Controllers
                 long LoggedId = long.Parse(AppUtil.GetTenantId(userClaim));
                 mcWait.Setup_start_time_entry = LoggedId;
                 var result = await _woService.PostMc_Wait_List(mcWait);
+                var getwo = allproductionwo.Where(x => x.WoId == mcWait.Wo_Id).FirstOrDefault();
+                if(getwo!=null)
+                {
+                    //update status to wip
+                    getwo.Status = 5;
+                    await _woService.ProductionPlanWoPost(new List<ProductionPlan_WoVM> { getwo });
+
+                }
+
+
+
                 return Ok(result);
             }
             return Ok("Not Found McWait");
@@ -15263,100 +17424,11 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllMatl_Issue_List()
         {
-            //// 1. Parallel Fetch: Transaction Data + Master Data + Lookups
-            //// We add bulk fetches for Manufactured Parts, Routings, and Routing Steps here.
-            //var matlIssueTask = _woService.GetAllMatlIssueListForShop();
-            //var tempOprTask = _woService.GetAllOpr_List();
-            //var deptTask = _departmentService.GetDepartments(1);
-            //var masterPartsTask = _masterService.MasterPartList();
-
-            //// New Bulk Tasks
-            //var allManufPartsTask = _masterService.GetAllManufacturedPartNoDetailList();
-            //var allRoutingsTask = _routingService.AllRoutings();
-            //var allRoutingStepsTask = _routingService.AllRoutingSteps();
-
-            //await Task.WhenAll(
-            //    matlIssueTask,
-            //    tempOprTask,
-            //    deptTask,
-            //    masterPartsTask,
-            //    allManufPartsTask,
-            //    allRoutingsTask,
-            //    allRoutingStepsTask
-            //);
-
-            //var resultList = matlIssueTask.Result.ToList();
-            //if (!resultList.Any()) return Ok(resultList);
-
-            //// 2. Prepare Efficient Lookups (O(1) Access)
-            //var tempOprs = tempOprTask.Result.ToDictionary(t => t.Opr_ListId);
-            //var depts = deptTask.Result.ToDictionary(d => d.DepartmentId);
-            //var masterParts = masterPartsTask.Result.ToDictionary(m => m.PartId);
-
-            //// Lookup: PartId -> ManufacturedPartNoDetailVM
-            //// Used to replace _masterService.GetManufPart((int)item.PartId)
-            //var manufPartLookup = allManufPartsTask.Result
-            //                        .GroupBy(m => m.PartId)
-            //                        .ToDictionary(g => g.Key, g => g.First());
-
-            //// Lookup: ManufacturedPartNoDetailId -> List of Routings
-            //// Used to replace _routingService.Routings(mf.ManufacturedPartNoDetailId)
-            //var routingsByManufId = allRoutingsTask.Result.ToLookup(r => r.ManufacturedPartId);
-
-            //// Lookup: RoutingId -> List of RoutingSteps
-            //// Used to replace _routingService.RoutingSteps((int)item.RoutingId)
-            //var stepsByRoutingId = allRoutingStepsTask.Result.ToLookup(s => s.RoutingId);
-
-            //// 3. Enrich Data (Memory Access Only)
-            //foreach (var item in resultList)
-            //{
-            //    // A. Departments & Shop Name
-            //    var todept = depts.ContainsKey(item.To_Location) ? depts[item.To_Location].Name : "Stores";
-            //    var fromdept = depts.ContainsKey(item.From_Location) ? depts[item.From_Location].Name : "Stores";
-
-            //    item.To_LocationStr = todept;
-            //    item.From_LocationStr = fromdept;
-
-            //    if (todept != "Stores") item.Shop = todept;
-            //    else if (fromdept != "Stores") item.Shop = fromdept;
-
-            //    // B. Part No
-            //    if (masterParts.TryGetValue(item.PartId, out var part))
-            //    {
-            //        item.PartNo = (part.PartNo ?? "") + " / " + part.Description;
-            //    }
-
-            //    // C. Routing & OpNo
-            //    if (tempOprs.TryGetValue(item.Part_Ref, out var tempOpr))
-            //    {
-            //        // OPTIMIZATION: Retrieve ManufPart from dictionary
-            //        if (manufPartLookup.TryGetValue((int)item.PartId, out var mf))
-            //        {
-            //            // OPTIMIZATION: Retrieve Routings from Lookup (No DB Call)
-            //            var routingList = routingsByManufId[mf.ManufacturedPartNoDetailId];
-            //            var routing = routingList.FirstOrDefault(r => r.RoutingId == item.RoutingId);
-            //            item.RoutingName = routing?.RoutingName;
-
-            //            // OPTIMIZATION: Retrieve RoutingSteps from Lookup (No DB Call)
-            //            // Note: Using Lookup key prevents iterating through all steps in the system
-            //            var routSteps = stepsByRoutingId[(int)item.RoutingId];
-            //            var step = routSteps.FirstOrDefault(s => s.StepId == tempOpr.Opr_No);
-            //            item.OpNo = step?.StepNumber ?? "";
-            //        }
-            //    }
-            //}
-
-            //// 4. Grouping Logic
-            //var groupedResult = resultList
-            //    .GroupBy(x => new { x.PartNo, x.Issue_Qnty, x.IssueMovDtStr, x.OpNo, x.WoNumber })
-            //    .Select(g => g.First())
-            //    .ToList();
-
-            //return Ok(groupedResult);
+           
             var result = (await _woService.GetAllMatl_Issue_List())
                 .Where(x =>
                     x.From_Loc_Flag == "Int" &&
-                    x.To_Loc_Flag == "Int" && x.Issue_Mov_Compl == 'N')
+                    x.To_Loc_Flag == "Int")
                 .ToList();
 
             var productions = await _woService.AllProductionPlan_Wo();
@@ -15471,6 +17543,7 @@ namespace CWB.App.Controllers
                 if (routingStep != null)
                 {
                     item.OprNoName = routingStep.StepNumber;
+                    item.OpNo = routingStep.StepNumber;
                 }
 
                 // -------------------------------------------------------
@@ -15612,6 +17685,273 @@ namespace CWB.App.Controllers
 
             return Ok(result);
         }
+
+
+        public async Task<IActionResult> MovementList()
+        {
+
+            var result = (await _woService.GetAllMatl_Issue_List())
+                .Where(x =>
+                    x.From_Loc_Flag == "Int" &&
+                    x.To_Loc_Flag == "Int" && x.Issued=='Y')
+                .ToList();
+
+            var productions = await _woService.AllProductionPlan_Wo();
+            var masterparts = await _masterService.MasterPartList();
+            var companies = await _masterService.GetCompanies();
+            var stores = await _departmentService.GetAllStoresIDs();
+            var depts = await _departmentService.GetDepartments(1);
+            var oprs = await _woService.GetAllOpr_List();
+            var rawmaterials = await _masterService.GetAllRMPart();
+            var uoms = await _masterService.GetUOMs();
+
+            foreach (var item in result)
+            {
+                // -------------------------------------------------------
+                // Production WO
+                // -------------------------------------------------------
+                var pwo = productions.FirstOrDefault(p =>
+                    p.WoId == item.WO_Id);
+
+                if (pwo == null || pwo.Status == 8)
+                    continue;
+
+                item.WoNumber = pwo.WONumber;
+
+                // -------------------------------------------------------
+                // Operation
+                // Important: check both WO and Operation No
+                // -------------------------------------------------------
+                var opr = oprs.FirstOrDefault(x =>
+                    x.Wo_Id == item.WO_Id &&
+                    x.Opr_No == item.Part_Ref);
+
+                if (opr == null)
+                    continue;
+
+                // -------------------------------------------------------
+                // Issue Quantity
+                // Now comes from Matl_Issue_List
+                // NOT CalcWOQty
+                // -------------------------------------------------------
+                item.Bal_Qnty = pwo.PlanWOQnty;
+
+                // -------------------------------------------------------
+                // Supplier
+                // To_Location contains SupplierId
+                // -------------------------------------------------------
+                var supplier = companies.FirstOrDefault(c =>
+                    c.CompanyId == item.To_Location);
+
+                item.Supplier = supplier?.CompanyName ?? "";
+
+                // -------------------------------------------------------
+                // Finished Part
+                // -------------------------------------------------------
+                var finishedPart = masterparts.FirstOrDefault(x =>
+                    x.PartId == pwo.PartId);
+
+                if (finishedPart != null)
+                {
+                    item.PartNo =
+                        finishedPart.PartNo + " / " +
+                        finishedPart.Description;
+                }
+
+                // -------------------------------------------------------
+                // Input Material
+                // -------------------------------------------------------
+                var inputPart = masterparts.FirstOrDefault(x =>
+                    x.PartId == item.Input_PartId);
+
+                if (inputPart != null)
+                {
+                    item.InputPartNo =
+                        inputPart.PartNo + " / " +
+                        inputPart.Description;
+                }
+
+                // -------------------------------------------------------
+                // Manufacturing Part
+                // -------------------------------------------------------
+                var mf = await _masterService.GetManufPart(
+                    (int)pwo.PartId);
+
+                if (mf == null)
+                    continue;
+
+                // -------------------------------------------------------
+                // Routing
+                // -------------------------------------------------------
+                var routingList =
+                    await _routingService.Routings(
+                        mf.ManufacturedPartNoDetailId);
+
+                var routing = routingList.FirstOrDefault(r =>
+                    r.RoutingId == pwo.RoutingId);
+
+                if (routing != null)
+                {
+                    item.RoutingName = routing.RoutingName;
+                }
+
+                // -------------------------------------------------------
+                // Operation Number
+                // -------------------------------------------------------
+                var routingSteps =
+                    await _routingService.RoutingSteps(
+                        (int)pwo.RoutingId);
+
+                var routingStep = routingSteps.FirstOrDefault(r =>
+                    r.StepId == item.Part_Ref);
+
+                if (routingStep != null)
+                {
+                    item.OprNoName = routingStep.StepNumber;
+                    item.OpNo = routingStep.StepNumber;
+                }
+
+                // -------------------------------------------------------
+                // Raw Material / UOM
+                // -------------------------------------------------------
+                var rm = rawmaterials.FirstOrDefault(x =>
+                    x.PartId == item.Input_PartId);
+
+                var uom = rm != null
+                    ? uoms.FirstOrDefault(x => x.UOMId == rm.UOMId)
+                    : null;
+
+                // -------------------------------------------------------
+                // Available Inventory
+                // Direct Material Stores
+                // -------------------------------------------------------
+                var invpart =
+                    await _woService.GetAllInventory_MasterBypartid(
+                        stores.Stores_DirMatl_ID,
+                        0,
+                        0,
+                        item.Input_PartId);
+
+                decimal availableQty = 0;
+
+                if (invpart != null)
+                {
+                    var qty = invpart.FirstOrDefault();
+
+                    if (qty != null)
+                    {
+                        availableQty = qty.Current_QntOnHand;
+                    }
+                }
+
+                // -------------------------------------------------------
+                // Raw Material Kgs -> Nos conversion
+                // -------------------------------------------------------
+                bool convertedToNos = false;
+
+                if (finishedPart?.MasterPartType == "ManufacturedPart" &&
+                    inputPart?.MasterPartType == "RawMaterial" &&
+                    rm != null &&
+                    uom != null)
+                {
+                    var mpmakefromlist =
+                        await _masterService.GetMPMakeFromListByPartId(
+                            mf.ManufacturedPartNoDetailId.ToString());
+
+                    var makeFrom =
+                        mpmakefromlist.FirstOrDefault(x =>
+                            x.MPPartId == item.Input_PartId);
+
+                    if (makeFrom != null &&
+                        Convert.ToInt32(makeFrom.QuantityPerInput) > 1 &&
+                        Convert.ToDecimal(rm.RawMaterialWeight) > 0 &&
+                        uom.Name == "Kgs")
+                    {
+                        var weight =
+                            Convert.ToDecimal(rm.RawMaterialWeight);
+
+                        // Issue quantity in Nos
+                        item.Issue_Qnty =
+                            Math.Ceiling(item.Issue_Qnty / weight);
+
+
+
+                        item.QntyAvl =
+                            (long)Math.Ceiling(
+                                availableQty / weight);
+
+                        item.IssueQntyDisplay =
+                            $"{item.Issue_Qnty:0} Nos";
+
+                        item.QntyAvlDisplay =
+                            $"{item.QntyAvl:0} Nos";
+
+                        convertedToNos = true;
+                    }
+                }
+
+                // -------------------------------------------------------
+                // Normal quantity
+                // -------------------------------------------------------
+                if (!convertedToNos)
+                {
+                    item.IssueQntyDisplay =
+                        $"{item.Issue_Qnty:0} {uom?.Name}";
+
+                    item.QntyAvl =
+                        (long)availableQty;
+
+                    item.QntyAvlDisplay =
+                        $"{item.QntyAvl:0} {uom?.Name}";
+                }
+
+                // -------------------------------------------------------
+                // From Location
+                // -------------------------------------------------------
+                if (item.From_Loc_Flag == "Int")
+                {
+                    item.From_LocationStr =
+                        depts.FirstOrDefault(x =>
+                            x.DepartmentId == item.From_Location)?.Name
+                        ?? "Stores";
+                }
+
+                // -------------------------------------------------------
+                // To Location / Supplier
+                // -------------------------------------------------------
+                if (item.To_Loc_Flag == "Int")
+                {
+                    item.To_LocationStr =
+                         depts.FirstOrDefault(x =>
+                            x.DepartmentId == item.To_Location)?.Name
+                        ?? "Stores";
+                }
+
+                // For SubCon screen
+                item.Shop = item.To_LocationStr;
+
+                // -------------------------------------------------------
+                // WO Quantity
+                // -------------------------------------------------------
+                item.BalWoQnty =
+                    pwo.CalcWOQty.ToString();
+
+                item.BookOutQnty = 0;
+
+                item.IssueMovDtStr =
+                    item.Issue_Mov_date.ToString("dd-MM-yyyy");
+                item.QntyRecdCnf = "Not Confirmed";
+            }
+
+            // Only show material where stock is available
+            //result = result
+            //    .Where(x => x.QntyAvl > 0)
+            //    .ToList();
+
+            return Ok(result);
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> PostIssueInv_Trans_Log([FromBody] List<int> selectedMatlIds)
         {
@@ -15657,9 +17997,11 @@ namespace CWB.App.Controllers
                                     invdata.Transaction_Id = 6;
                                     invdata.From_Loc_Flag = "Internal";
                                     invdata.To_Loc_Flag = "External";
+                                    invdata.Part_Status = 1;
                                     invdata.Input_Part_NoId = matl_Issue_List.Input_PartId;
                                     invdata.Input_Routing_Id = firstoperation.RoutingId;
                                     invdata.Input_Opr_No = firstoperation.Opr_No;
+
                                     invdata.Movement_Started = 'Y';
                                     invdata.Movement_Compl = 'Y';
                                     var result = await _woService.PostInv_Trans_Log(invdata);
@@ -15676,6 +18018,7 @@ namespace CWB.App.Controllers
                                             {
                                                 invbypartid.Current_QntOnHand =
                                                     invbypartid.Current_QntOnHand - result.Qnty;
+                                                invbypartid.Part_Status = result.Part_Status;
 
                                                 await _woService.PostInventory_Master(invbypartid);
                                                 var invMaster = new Inventory_MasterVM();
@@ -15685,13 +18028,14 @@ namespace CWB.App.Controllers
                                                 invMaster.Current_QntOnHand = result.Qnty;
                                                 invMaster.Location_Id = result.To_Location_Id;
                                                 invMaster.Inv_Trans_Log_Id = result.Inv_Trans_LogId;
+                                                invMaster.Part_Status = result.Part_Status;
                                                 invMaster.Loc_Flag = "External";
                                                 var inmaster = await _woService.PostInventory_Master(invMaster);
 
-                                                matl_Issue_List.Issue_Mov_Compl = 'Y';
+                                                matl_Issue_List.Issued = 'Y';
                                                 await _woService.PostMatl_Issue_List(matl_Issue_List);
 
-                                                return Json(new { message = "Material Issued to SUbcon." });
+                                               // return Json(new { message = "Material Issued to SUbcon." });
                                             }
                                             else
                                             {
@@ -15725,7 +18069,7 @@ namespace CWB.App.Controllers
 
 
                         }
-                        else if (firstoperation.RoutingStepSequence==1)
+                        else if (firstoperation.RoutingStepLocation == 1)
                         {
                             //isse to shop
                             if (matl_Issue_List.From_Loc_Flag == "Int" && matl_Issue_List.To_Loc_Flag == "Int")
@@ -15745,11 +18089,13 @@ namespace CWB.App.Controllers
                                     invdata.Transaction_Id = 5;
                                     invdata.From_Loc_Flag = "Internal";
                                     invdata.To_Loc_Flag = "Internal";
+                                    invdata.Part_Status = 1;
                                     invdata.Input_Part_NoId = matl_Issue_List.Input_PartId;
                                     invdata.Input_Routing_Id = firstoperation.RoutingId;
                                     invdata.Input_Opr_No = firstoperation.Opr_No;
-                                    invdata.Movement_Started = 'Y';
-                                    invdata.Movement_Compl = 'Y';
+                                    invdata.Ready_for_issue = 'Y';
+                                    invdata.Movement_Started = 'N';
+                                    invdata.Movement_Compl = 'N';
                                     var result = await _woService.PostInv_Trans_Log(invdata);
                                     if (result.Transaction_Id == 5)
                                     {
@@ -15763,7 +18109,7 @@ namespace CWB.App.Controllers
                                             {
                                                 invbypartid.Current_QntOnHand =
                                                     invbypartid.Current_QntOnHand - result.Qnty;
-
+                                                invbypartid.Part_Status = result.Part_Status;
                                                 await _woService.PostInventory_Master(invbypartid);
                                                 var invMaster = new Inventory_MasterVM();
                                                 invMaster.Part_NoId = result.Input_Part_NoId;
@@ -15773,11 +18119,12 @@ namespace CWB.App.Controllers
                                                 invMaster.Location_Id = result.To_Location_Id;
                                                 invMaster.Loc_Flag = "Internal";
                                                 invMaster.Inv_Trans_Log_Id = result.Inv_Trans_LogId;
+                                                invMaster.Part_Status = result.Part_Status;
                                                 var inmaster = await _woService.PostInventory_Master(invMaster);
 
-                                                matl_Issue_List.Issue_Mov_Compl = 'Y';
+                                                matl_Issue_List.Issued = 'Y';
                                                 await _woService.PostMatl_Issue_List(matl_Issue_List);
-                                                return Json(new { message = "Material Issued to Shop." });
+                                              //  return Json(new { message = "Material Issued to Shop." });
 
                                             }
                                             else
@@ -15830,6 +18177,50 @@ namespace CWB.App.Controllers
                 return Json(new { message = "Material Issue Failed ." });
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Movementstart([FromBody] List<int> selectedMatlIds)
+        {
+            try
+            {
+               
+                var matl_Issue_Lists = await _woService.GetAllMatl_Issue_List();
+                var translogs = await _woService.GetAllInv_Trans_Log();
+                // var materialprocurement = await _woService.
+                foreach (var item in selectedMatlIds)
+                {
+
+                    var matl_Issue_List = matl_Issue_Lists.Where(m => m.Matl_Issue_ListId == item).FirstOrDefault();
+                    var getissuetoshoplog = translogs.Where(x => x.Wo_Id == matl_Issue_List.WO_Id && x.Input_Part_NoId == matl_Issue_List.Input_PartId && x.Transaction_Id == 5).FirstOrDefault();
+                    if(getissuetoshoplog.Movement_Started=='Y')
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        getissuetoshoplog.Movement_Started = 'Y';
+                        await _woService.PostInv_Trans_Log(getissuetoshoplog);
+                    }
+
+                 }
+                return Json(new { message = "Material Movement Started ." });
+            }
+            catch (Exception)
+            {
+
+                return Json(new { message = "Material Movement Failed ." });
+            }
+        }
+
+
+
+
+
+
+
+
+
+
         //[HttpGet]
         //public async Task<IActionResult> GetAllIssueSubCon()
         //{
@@ -15866,7 +18257,7 @@ namespace CWB.App.Controllers
             var result = (await _woService.GetAllMatl_Issue_List())
                 .Where(x =>
                     x.From_Loc_Flag == "Int" &&
-                    x.To_Loc_Flag == "Ext" &&x.Issue_Mov_Compl=='N')
+                    x.To_Loc_Flag == "Ext" &&x.Issued =='N')
                 .ToList();
 
             var productions = await _woService.AllProductionPlan_Wo();
@@ -16197,6 +18588,66 @@ namespace CWB.App.Controllers
                 return Json(new { message = "SubCon Issue Failed." });
             }
         }
+        //[HttpGet]
+        //public async Task<IActionResult> GetPartsLoadedInShop()
+        //{
+        //    var result = new List<TempMc_Wait_ListVM>();
+
+        //    var waitList = await _woService.GetAllMc_Wait_List();
+        //    var timeslots = await _woService.GetAllMc_Timeslot_List();
+        //    var allTimeslots = await _woService.GetAllTimeslot_List();
+        //    var parts = await _masterService.MasterPartList();
+        //    var machines = await _machineService.GetMachinesList();
+        //    var shops = await _departmentService.GetDepartments(1);
+        //    var allWO = await _woService.AllProductionPlan_Wo();
+
+        //    foreach (var mcWait in waitList)
+        //    {
+        //        var wo = allWO.FirstOrDefault(p => p.WoId == mcWait.Wo_Id);
+        //        if (wo == null || wo.Status == 8)
+        //            continue;
+        //        var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
+        //        var machine = machines.FirstOrDefault(m => m.MachineId == mcWait.Mc_Id);
+        //        var shop = shops.FirstOrDefault(s => s.DepartmentId == machine.ShopId);
+
+        //        var routing = await _routingService.RoutingSteps((int)wo.RoutingId);
+        //        var routingstep = routing.FirstOrDefault(r => r.StepId == mcWait.Opr_No_Id);
+        //        var stepMachines = await _routingService.StepMachines((int)routingstep.StepId);
+        //        var step = stepMachines.FirstOrDefault(sm => sm.PreferredMachine == 1)
+        //                       ?? stepMachines.FirstOrDefault();
+
+        //        // --- Calculate Bookout & Issue ---
+        //        var matlIssue = await _woService.GetAllMatl_Issue_List();
+        //        decimal dissuedQty = matlIssue.FirstOrDefault(m => m.Part_Ref == mcWait.Opr_No_Id)?.Issue_Qnty ?? wo.CalcWOQty;
+        //        long issuedQty = (long)dissuedQty;
+        //        int bookedQty = 0;//await _woService.GetTotalBookoutQty(mcWait.Wo_Id, mcWait.Opr_No_Id) 
+        //        int balanceToBookout = Math.Max(wo.CalcWOQty - bookedQty, 0);
+        //        int wipQty = Math.Max((int)issuedQty - bookedQty, 0);
+
+        //        TimeSpan cycleTime = TimeSpan.TryParse(step?.FloorToFloorTime, out var ct) ? ct : TimeSpan.Zero;
+        //        TimeSpan setupTime = TimeSpan.TryParse(step?.SetupTime, out var st) ? st : TimeSpan.Zero;
+        //        TimeSpan timePerPart = cycleTime + setupTime;
+        //        TimeSpan totalTimeRequired = TimeSpan.FromTicks(timePerPart.Ticks * wipQty);
+
+        //        bool isPartInMc = timeslots.Any(t => t.Mc_Wait_List_Id == mcWait.Mc_Wait_ListId);
+
+        //        result.Add(new TempMc_Wait_ListVM
+        //        {
+        //            ShopName = shop?.Name ?? "",
+        //            WoNumber = wo?.WONumber ?? "",
+        //            McName = machine?.Name ?? "",
+        //            PartNo = part?.PartNo + " / " + part?.Description,
+        //            Wait_Seq_No = mcWait.Wait_Seq_No,
+        //            WoQnty = wo?.CalcWOQty.ToString() ?? "0",
+        //            Bal_Qnty = balanceToBookout,
+        //            QtyWfProcessing = wipQty,
+        //            BalTimeForAvlQtyHrs = $"{(int)totalTimeRequired.TotalHours:D2}:{totalTimeRequired.Minutes:D2}",
+        //            PartInMc = "-"
+        //        });
+        //    }
+
+        //    return Ok(result);
+        //}
         [HttpGet]
         public async Task<IActionResult> GetPartsLoadedInShop()
         {
@@ -16210,100 +18661,453 @@ namespace CWB.App.Controllers
             var shops = await _departmentService.GetDepartments(1);
             var allWO = await _woService.AllProductionPlan_Wo();
 
+            // Load material issues once
+            var matlIssue = await _woService.GetAllMatl_Issue_List();
+
             foreach (var mcWait in waitList)
             {
-                var wo = allWO.FirstOrDefault(p => p.WoId == mcWait.Wo_Id);
+                var wo = allWO.FirstOrDefault(p =>
+                    p.WoId == mcWait.Wo_Id);
+
                 if (wo == null || wo.Status == 8)
                     continue;
-                var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
-                var machine = machines.FirstOrDefault(m => m.MachineId == mcWait.Mc_Id);
-                var shop = shops.FirstOrDefault(s => s.DepartmentId == machine.ShopId);
+                if (mcWait.Wait_Seq_No == -1)
+                    continue;
+                if (mcWait.Setup_Start_time == null)
+                    continue;
+                // -------------------------------------------------------
+                // Output Part
+                // -------------------------------------------------------
+                var part = parts.FirstOrDefault(p =>
+                    p.PartId == wo.PartId);
 
-                var routing = await _routingService.RoutingSteps((int)wo.RoutingId);
-                var routingstep = routing.FirstOrDefault(r => r.StepId == mcWait.Opr_No_Id);
-                var stepMachines = await _routingService.StepMachines((int)routingstep.StepId);
-                var step = stepMachines.FirstOrDefault(sm => sm.PreferredMachine == 1)
-                               ?? stepMachines.FirstOrDefault();
+                // -------------------------------------------------------
+                // Machine / Shop
+                // -------------------------------------------------------
+                var machine = machines.FirstOrDefault(m =>
+                    m.MachineId == mcWait.Mc_Id);
 
-                // --- Calculate Bookout & Issue ---
-                var matlIssue = await _woService.GetAllMatl_Issue_List();
-                decimal dissuedQty = matlIssue.FirstOrDefault(m => m.Part_Ref == mcWait.Opr_No_Id)?.Issue_Qnty ?? wo.CalcWOQty;
-                long issuedQty = (long)dissuedQty;
-                int bookedQty = 0;//await _woService.GetTotalBookoutQty(mcWait.Wo_Id, mcWait.Opr_No_Id) 
-                int balanceToBookout = Math.Max(wo.CalcWOQty - bookedQty, 0);
-                int wipQty = Math.Max((int)issuedQty - bookedQty, 0);
+                var shop = machine != null
+                    ? shops.FirstOrDefault(s =>
+                        s.DepartmentId == machine.ShopId)
+                    : null;
 
-                TimeSpan cycleTime = TimeSpan.TryParse(step?.FloorToFloorTime, out var ct) ? ct : TimeSpan.Zero;
-                TimeSpan setupTime = TimeSpan.TryParse(step?.SetupTime, out var st) ? st : TimeSpan.Zero;
-                TimeSpan timePerPart = cycleTime + setupTime;
-                TimeSpan totalTimeRequired = TimeSpan.FromTicks(timePerPart.Ticks * wipQty);
+                // -------------------------------------------------------
+                // Routing
+                // -------------------------------------------------------
+                var routingSteps = await _routingService.RoutingSteps(
+                    (int)wo.RoutingId);
 
-                bool isPartInMc = timeslots.Any(t => t.Mc_Wait_List_Id == mcWait.Mc_Wait_ListId);
+                var routingStep = routingSteps.FirstOrDefault(r =>
+                    r.StepId == mcWait.Opr_No_Id);
 
+                string oprNoName = routingStep?.StepNumber ?? "-";
+
+                // -------------------------------------------------------
+                // Routing Name
+                // -------------------------------------------------------
+                string routingName = "-";
+
+                var mf = await _masterService.GetManufPart(
+                    (int)wo.PartId);
+
+                if (mf != null)
+                {
+                    var routingList = await _routingService.Routings(
+                        mf.ManufacturedPartNoDetailId);
+
+                    var routingMaster = routingList.FirstOrDefault(r =>
+                        r.RoutingId == wo.RoutingId);
+
+                    if (routingMaster != null)
+                    {
+                        routingName = routingMaster.RoutingName;
+                    }
+                }
+
+                // -------------------------------------------------------
+                // Step Machine
+                // -------------------------------------------------------
+                var stepMachines = routingStep != null
+     ? await _routingService.StepMachines((int)routingStep.StepId)
+     : Enumerable.Empty<RoutingStepMachineVM>();
+
+                var step = stepMachines.FirstOrDefault(sm =>
+                    sm.MachineId == mcWait.Mc_Id);
+
+                // -------------------------------------------------------
+                // Material Issue for this WO + Operation
+                //
+                // Get ALL issued material parts for this operation.
+                // -------------------------------------------------------
+                var operationMaterialIssues = matlIssue
+                    .Where(m =>
+                        m.WO_Id == mcWait.Wo_Id &&
+                        m.Part_Ref == mcWait.Opr_No_Id &&
+                        m.Issued == 'Y')
+                    .ToList();
+
+                // -------------------------------------------------------
+                // Input Part
+                //
+                // If material issue exists:
+                //      concatenate all Input_PartId part numbers
+                //
+                // If no material issue exists:
+                //      use WO PartId
+                // -------------------------------------------------------
+                string inputPartNo;
+
+                if (operationMaterialIssues.Any())
+                {
+                    var inputPartIds = operationMaterialIssues
+                        .Select(x => x.Input_PartId)
+                        .Distinct()
+                        .ToList();
+
+                    var inputParts = parts
+                        .Where(p => inputPartIds.Contains((long)p.PartId))
+                        .ToList();
+
+                    inputPartNo = string.Join(
+                        ", ",
+                        inputParts.Select(p =>
+                            p.PartNo + " / " + p.Description));
+                }
+                else
+                {
+                     
+                    inputPartNo = part != null
+                        ? part.PartNo + " / " + part.Description
+                        : "";
+                }
+
+                // -------------------------------------------------------
+                // Calculate Bookout & Issue
+                // -------------------------------------------------------
+
+                // For this WO + Operation
+                decimal issuedQty = operationMaterialIssues.Any()
+                    ? operationMaterialIssues.Sum(x => x.Issue_Qnty)
+                    : wo.CalcWOQty;
+
+                int issuedQtyInt = (int)issuedQty;
+
+                int bookedQty = 0;
+                // await _woService.GetTotalBookoutQty(
+                //     mcWait.Wo_Id,
+                //     mcWait.Opr_No_Id);
+
+                int balanceToBookout =
+                    Math.Max(wo.CalcWOQty - bookedQty, 0);
+
+                int wipQty =
+                    Math.Max(issuedQtyInt - bookedQty, 0);
+
+                // -------------------------------------------------------
+                // Time Calculation
+                // -------------------------------------------------------
+                TimeSpan cycleTime =
+                    TimeSpan.TryParse(
+                        step?.FloorToFloorTime,
+                        out var ct)
+                        ? ct
+                        : TimeSpan.Zero;
+
+                TimeSpan setupTime =
+                    TimeSpan.TryParse(
+                        step?.SetupTime,
+                        out var st)
+                        ? st
+                        : TimeSpan.Zero;
+
+                TimeSpan timePerPart =
+                    cycleTime + setupTime;
+
+                TimeSpan totalTimeRequired =
+                    TimeSpan.FromTicks(
+                        timePerPart.Ticks * wipQty);
+
+                // -------------------------------------------------------
+                // Check Part In Machine
+                // -------------------------------------------------------
+                bool isPartInMc = timeslots.Any(t =>
+                    t.Mc_Wait_List_Id ==
+                    mcWait.Mc_Wait_ListId);
+
+                // -------------------------------------------------------
+                // Result
+                // -------------------------------------------------------
                 result.Add(new TempMc_Wait_ListVM
                 {
                     ShopName = shop?.Name ?? "",
-                    WoNumber = wo?.WONumber ?? "",
+
+                    WoNumber = wo.WONumber,
+
                     McName = machine?.Name ?? "",
-                    PartNo = part?.PartNo + " / " + part?.Description,
+
+                    // Output Part
+                    PartNo = part != null
+                        ? part.PartNo + " / " + part.Description
+                        : "",
+
+                    // Input Part(s)
+                    InputPartNo = inputPartNo,
+
+                    // Routing
+                    RoutingName = routingName,
+
+                    // Operation
+                    OprNoName = oprNoName,
+
                     Wait_Seq_No = mcWait.Wait_Seq_No,
-                    WoQnty = wo?.CalcWOQty.ToString() ?? "0",
+
+                    WoQnty = wo.CalcWOQty.ToString(),
+
                     Bal_Qnty = balanceToBookout,
+
                     QtyWfProcessing = wipQty,
-                    BalTimeForAvlQtyHrs = $"{(int)totalTimeRequired.TotalHours:D2}:{totalTimeRequired.Minutes:D2}",
-                    PartInMc = "-"
+
+                    BalTimeForAvlQtyHrs =
+                        $"{(int)totalTimeRequired.TotalHours:D2}:" +
+                        $"{totalTimeRequired.Minutes:D2}",
+
+                    PartInMc = isPartInMc ? "Yes" : "-"
                 });
             }
 
             return Ok(result);
         }
+        //[HttpGet]
+        //public async Task<IActionResult> GetPartsLoadedInSubCon()
+        //{
+        //    var subconWos = await _woService.GetAllSubCon_List();
+        //    var woList = await _woService.AllProductionPlan_Wo();
+        //    var companies = await _masterService.GetCompanies();
+        //    var parts = await _masterService.MasterPartList();
+        //    var transactions = await _woService.GetAllInv_Trans_Log();
+        //    var Materialforsubcon = (await _woService.GetAllMatl_Issue_List())
+        //        .Where(x =>
+        //            x.From_Loc_Flag == "Int" &&
+        //            x.To_Loc_Flag == "Ext"  &&x.Issued=='Y')
+        //        .ToList();
+        //    var oprs = await _woService.GetAllOpr_List();
+        //    var result = new List<SubCon_ListVM>();
+
+        //    foreach (var item in subconWos)
+        //    {
+        //        var wo = woList.FirstOrDefault(p => p.WoId == item.Wo_Id);
+
+        //        if (wo == null || wo.Status == 8)
+        //            continue;
+        //        var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
+        //        var company = companies.FirstOrDefault(c => c.CompanyId == item.Supplier_Id);
+
+        //        // Sum qty sent and qty received from Inv_Transaction_Log
+        //        int qtySent = (int)transactions
+        //            .Where(t => t.Wo_Id == item.Wo_Id && t.Input_Opr_No == item.Opr_No)
+        //            .Sum(t => t.Qnty);
+
+        //        int qtyRecd = (int)transactions
+        //            .Where(t => t.Wo_Id == item.Wo_Id && t.Input_Opr_No == item.Opr_No)
+        //            .Sum(t => t.Qnty);
+
+        //        string oprNoName = "-";
+
+        //        if (wo != null)
+        //        {
+        //            var routingSteps = await _routingService.RoutingSteps((int)wo.RoutingId);
+        //            oprNoName = routingSteps.FirstOrDefault(r => r.StepId == item.Opr_No)?.StepNumber ?? "-";
+        //        }
+        //        var partno = part?.PartNo ?? "" + " / " + part?.Description ?? "";
+        //        result.Add(new SubCon_ListVM
+        //        {
+        //            Supplier = company?.CompanyName ?? "Unknown",
+        //            WoNumber = wo?.WONumber ?? item.Wo_Id.ToString(),
+        //            PartNo = partno ?? "Unknown",
+        //            OprNoName = oprNoName,
+        //            Plan_Qnty = wo?.CalcWOQty ?? 0,
+        //            QntySent = qtySent,
+        //            QntyRecd = qtyRecd,
+        //            BalToReceive = qtySent - qtyRecd
+        //        });
+        //    }
+
+        //    return Ok(result);
+        //}
         [HttpGet]
         public async Task<IActionResult> GetPartsLoadedInSubCon()
         {
-            var subconWos = await _woService.GetAllTempSubCon_List();
+            var subconWos = await _woService.GetAllSubCon_List();
             var woList = await _woService.AllProductionPlan_Wo();
             var companies = await _masterService.GetCompanies();
             var parts = await _masterService.MasterPartList();
             var transactions = await _woService.GetAllInv_Trans_Log();
 
-            var result = new List<TempSubCon_ListVM>();
+            var Materialforsubcon = (await _woService.GetAllMatl_Issue_List())
+                .Where(x =>
+                    x.From_Loc_Flag == "Int" &&
+                    x.To_Loc_Flag == "Ext" &&
+                    x.Issued == 'Y')
+                .ToList();
+
+            var oprs = await _woService.GetAllOpr_List();
+
+            var result = new List<SubCon_ListVM>();
 
             foreach (var item in subconWos)
             {
-                var wo = woList.FirstOrDefault(p => p.WoId == item.Wo_Id);
+                var wo = woList.FirstOrDefault(p =>
+                    p.WoId == item.Wo_Id);
 
                 if (wo == null || wo.Status == 8)
                     continue;
-                var part = parts.FirstOrDefault(p => p.PartId == wo.PartId);
-                var company = companies.FirstOrDefault(c => c.CompanyId == item.Supplier_Id);
 
-                // Sum qty sent and qty received from Inv_Transaction_Log
-                int qtySent = (int)transactions
-                    .Where(t => t.Wo_Id == item.Wo_Id && t.Input_Opr_No == item.Opr_No)
-                    .Sum(t => t.Qnty);
+                // -------------------------------------------------------
+                // Output Part
+                // This is always the WO PartId
+                // -------------------------------------------------------
+                var outputPart = parts.FirstOrDefault(p =>
+                    p.PartId == wo.PartId);
 
-                int qtyRecd = (int)transactions
-                    .Where(t => t.Wo_Id == item.Wo_Id && t.Input_Opr_No == item.Opr_No)
-                    .Sum(t => t.Qnty);
+                string outputPartNo = "";
 
+                if (outputPart != null)
+                {
+                    outputPartNo =
+                        outputPart.PartNo + " / " +
+                        outputPart.Description;
+                }
+
+                // -------------------------------------------------------
+                // Material Issue for this WO + Operation
+                // -------------------------------------------------------
+                var materialIssue = Materialforsubcon.FirstOrDefault(x =>
+                    x.WO_Id == item.Wo_Id &&
+                    x.Part_Ref == item.Opr_No);
+
+                // -------------------------------------------------------
+                // Input Part
+                //
+                // If material issue exists for this operation:
+                //      Input Part = Material Issue Input_PartId
+                //
+                // Otherwise:
+                //      Input Part = WO PartId
+                // -------------------------------------------------------
+                long inputPartId;
+
+                if (materialIssue != null)
+                {
+                    inputPartId = materialIssue.Input_PartId;
+                }
+                else
+                {
+                    inputPartId = wo.PartId;
+                }
+
+                var inputPart = parts.FirstOrDefault(p =>
+                    p.PartId == inputPartId);
+
+                string inputPartNo = "";
+
+                if (inputPart != null)
+                {
+                    inputPartNo =
+                        inputPart.PartNo + " / " +
+                        inputPart.Description;
+                }
+
+                // -------------------------------------------------------
+                // Company / Supplier
+                // -------------------------------------------------------
+                var company = companies.FirstOrDefault(c =>
+                    c.CompanyId == item.Supplier_Id);
+
+                // -------------------------------------------------------
+                // Routing
+                // -------------------------------------------------------
+                string routingName = "-";
                 string oprNoName = "-";
 
-                if (wo != null)
+                if (wo.RoutingId > 0)
                 {
-                    var routingSteps = await _routingService.RoutingSteps((int)wo.RoutingId);
-                    oprNoName = routingSteps.FirstOrDefault(r => r.StepId == item.Opr_No)?.StepNumber ?? "-";
+                    // Get Routing
+                    var mf = await _masterService.GetManufPart(
+                        (int)wo.PartId);
+
+                    if (mf != null)
+                    {
+                        var routingList = await _routingService.Routings(
+                            mf.ManufacturedPartNoDetailId);
+
+                        var routing = routingList.FirstOrDefault(r =>
+                            r.RoutingId == wo.RoutingId);
+
+                        if (routing != null)
+                        {
+                            routingName = routing.RoutingName;
+                        }
+                    }
+
+                    // Get Routing Step / Operation
+                    var routingSteps = await _routingService.RoutingSteps(
+                        (int)wo.RoutingId);
+
+                    var routingStep = routingSteps.FirstOrDefault(r =>
+                        r.StepId == item.Opr_No);
+
+                    if (routingStep != null)
+                    {
+                        oprNoName = routingStep.StepNumber;
+                    }
                 }
-                var partno = part?.PartNo ?? "" + " / " + part?.Description ?? "";
-                result.Add(new TempSubCon_ListVM
+
+                // -------------------------------------------------------
+                // Quantity Sent
+                // -------------------------------------------------------
+                int qtySent = (int)transactions
+                    .Where(t =>
+                        t.Wo_Id == item.Wo_Id &&
+                        t.Input_Opr_No == item.Opr_No && t.Transaction_Id==6)
+                    .Sum(t => t.Qnty);
+                if(qtySent==0)
+                {
+                    continue;
+                }
+                // -------------------------------------------------------
+                // Quantity Received
+                // -------------------------------------------------------
+                int qtyRecd = (int)item.Act_Qnty;
+
+                // -------------------------------------------------------
+                // Result
+                // -------------------------------------------------------
+                result.Add(new SubCon_ListVM
                 {
                     Supplier = company?.CompanyName ?? "Unknown",
-                    WoNumber = wo?.WONumber ?? item.Wo_Id.ToString(),
-                    PartNo = partno ?? "Unknown",
+
+                    WoNumber = wo.WONumber,
+
+                    // Output Part
+                    PartNo = outputPartNo,
+
+                    // Input Part
+                    InputPartNo = inputPartNo,
+
+                    // Operation
                     OprNoName = oprNoName,
-                    Plan_Qnty = wo?.CalcWOQty ?? 0,
+
+                    // Routing
+                    RoutingName = routingName,
+
+                    Plan_Qnty = wo.PlanWOQnty,
+
                     QntySent = qtySent,
+
                     QntyRecd = qtyRecd,
-                    BalToReceive = qtySent - qtyRecd
+
+                    BalToReceive = (int)item.Plan_Qnty - (int)item.Act_Qnty
                 });
             }
 
@@ -16313,7 +19117,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetAllSetUpCnfList()
         {
             // 2. Start all parallel tasks
-            var cnfListTask = _woService.GetAllSetUpCnfList();
+            var cnfListTask = _woService.GetAllSetUpCnfList();//same apis used for loading setup start,setupconfirmation and bookout
             var partsTask = _masterService.MasterPartList();
             var machinesTask = _machineService.GetMachinesList();
             // var shopsTask = _departmentService.GetDepartments(1); // Not strictly needed if MachineVM has ShopName, but kept if needed
@@ -16324,13 +19128,13 @@ namespace CWB.App.Controllers
 
             await Task.WhenAll(cnfListTask, partsTask, machinesTask, allWOTask, allMfTask, allRoutingTask, allRoutingStepsTask);
 
-            var resultList = cnfListTask.Result.ToList();
+            var resultList = cnfListTask.Result.Where(x=>x.Setup_Start_time==null).ToList();
             if (!resultList.Any()) return Ok(resultList);
 
             // 3. Create Lookups
             var parts = partsTask.Result.ToDictionary(x => x.PartId);
             var machines = machinesTask.Result.ToDictionary(x => x.MachineId);
-            var allWO = allWOTask.Result.ToDictionary(x => x.ProductionPlanId);
+            var allWO = allWOTask.Result.ToDictionary(x => x.WoId);
 
             // Efficient Routing Lookups
             var mfDict = allMfTask.Result.GroupBy(x => x.PartId).ToDictionary(g => g.Key, g => g.First());
@@ -16471,7 +19275,7 @@ namespace CWB.App.Controllers
         {
             // . Start all data fetch tasks in parallel (Faster Performance)
             //    We fetch the API result and all necessary master data at the same time.
-            var setupListTask = _woService.GetAllSetUpApprolList();
+            var setupListTask = _woService.GetAllSetUpCnfList();//same apis used for loading setup start,setupconfirmation and bookout
             var machinesTask = _machineService.GetMachinesList();
             var partsTask = _masterService.MasterPartList();
             var allWOTask = _woService.AllProductionPlan_Wo();
@@ -16484,13 +19288,13 @@ namespace CWB.App.Controllers
             // Await all tasks
             await Task.WhenAll(setupListTask, machinesTask, partsTask, allWOTask, allRoutingsTask, allRoutingStepsTask, allStepMachinesTask);
 
-            var resultList = setupListTask.Result.ToList();
+            var resultList = setupListTask.Result.Where(x=>x.Setup_Start_time!=null && x.Setup_Apprvl_time==null).ToList();
             if (!resultList.Any()) return Ok(resultList);
 
             // 3. Create Dictionaries/Lookups for O(1) Access
             var machines = machinesTask.Result.ToDictionary(m => m.MachineId);
             var parts = partsTask.Result.ToDictionary(p => p.PartId);
-            var workOrders = allWOTask.Result.ToDictionary(w => w.ProductionPlanId);
+            var workOrders = allWOTask.Result.ToDictionary(w => w.WoId);
 
             var routings = allRoutingsTask.Result.ToDictionary(r => r.RoutingId);
             // Use ToLookup for one-to-many relationships (Routing -> Steps)
@@ -16500,6 +19304,7 @@ namespace CWB.App.Controllers
             // 4. Populate the missing fields using the local master data
             foreach (var item in resultList)
             {
+                item.SetUpTimeStr= item.Setup_Start_time?.ToString("hh:mm tt") ?? "";
                 // A. Populate Machine & Shop Name
                 if (machines.TryGetValue(item.Mc_Id, out var machine))
                 {
@@ -16630,17 +19435,17 @@ namespace CWB.App.Controllers
                 if (!machines.TryGetValue(mcWait.Mc_Id, out var machine)) continue;
 
                 // B. Translog Logic (Replaces the slow FirstOrDefault)
-                Inv_Trans_LogVM translog = null;
+                //Inv_Trans_LogVM translog = null;
 
-                // Try Input Part ID
-                if (!translogInputIndex.TryGetValue(wo.PartId, out translog))
-                {
-                    // Fallback: Try Output Part ID
-                    translogOutputIndex.TryGetValue(wo.PartId, out translog);
-                }
+                //// Try Input Part ID
+                //if (!translogInputIndex.TryGetValue(wo.PartId, out translog))
+                //{
+                //    // Fallback: Try Output Part ID
+                //    translogOutputIndex.TryGetValue(wo.PartId, out translog);
+                //}
 
-                // If still null, skip
-                if (translog == null) continue;
+                //// If still null, skip
+                //if (translog == null) continue;
 
                 // C. Standard Data Mapping
                 var part = parts.GetValueOrDefault(wo.PartId);
@@ -16677,10 +19482,10 @@ namespace CWB.App.Controllers
                     WoQnty = wo?.CalcWOQty.ToString() ?? "0",
                     Plan_Qnty = mcWait.Plan_Qnty,
                     ActiveId = mcWait.Mc_Wait_ListId,
-                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString(),
+                    MatlIssued = mcWait.MatlIssued,
                     PlanStartStr = currentStart?.ToString("hh:mm tt") ?? "",
                     SetUpTimeStr = mcWait.Setup_Start_time?.ToString("hh:mm tt") ?? "",
-                    MatlReceptTime = translog.Dt_time.ToString("hh:mm tt"),
+                    MatlReceptTime = "",
                     PlannedSetupTime = plannedSetupTime,
                     Rework_Wo = 'N'
                 });
@@ -16824,8 +19629,10 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> GetAllBookOutList()
         {
             // 2. Start all parallel tasks
-            var bookOutListTask = _woService.GetAllBookOutList();
-
+            var bookOutListTask = _woService.GetAllSetUpCnfList();//same apis used for loading setup start,setupconfirmation and bookout;
+            var operationstask = _woService.GetAllOpr_List();
+            var mcwaittask = _woService.GetAllMc_Wait_List();
+            var MaterialIssuetask = _woService.GetAllMatl_Issue_List();
             var partsTask = _masterService.MasterPartList();
             var machinesTask = _machineService.GetMachinesList();
             // var shopsTask = _departmentService.GetDepartments(1); // Optional if MachineVM has ShopName
@@ -16838,26 +19645,31 @@ namespace CWB.App.Controllers
             var allRoutingStepsTask = _routingService.AllRoutingSteps();
 
             await Task.WhenAll(
-                bookOutListTask, partsTask, machinesTask, uomTask,
+                bookOutListTask, operationstask, mcwaittask,
+    MaterialIssuetask, partsTask, machinesTask, uomTask,
                 allWOTask, allMfTask, allRoutingTask, allRoutingStepsTask
             );
 
-            var resultList = bookOutListTask.Result.ToList();
+            var resultList = bookOutListTask.Result.Where(x=>x.Setup_Start_time!=null && x.Setup_Apprvl_time !=null && x.Bal_Qnty>0).ToList();
             if (!resultList.Any()) return Ok(resultList);
 
             // 3. Create Lookups
             var parts = partsTask.Result.ToDictionary(p => p.PartId);
             var machines = machinesTask.Result.ToDictionary(m => m.MachineId);
             var uoms = uomTask.Result.ToDictionary(u => u.UOMId);
-            var allWO = allWOTask.Result.ToDictionary(w => w.ProductionPlanId);
+            var allWO = allWOTask.Result.ToDictionary(w => w.WoId);
 
             var mfDict = allMfTask.Result.GroupBy(x => x.PartId).ToDictionary(g => g.Key, g => g.First());
             var routingDict = allRoutingTask.Result.ToLookup(x => x.ManufacturedPartId);
             var routingStepDict = allRoutingStepsTask.Result.ToLookup(x => x.RoutingId);
+            var operations = operationstask.Result.GroupBy(x => x.Wo_Id).ToDictionary(g => g.Key, g => g.ToList());
 
+            var materialIssues = MaterialIssuetask.Result.GroupBy(x => x.WO_Id).ToDictionary(g => g.Key, g => g.ToList());
+            var mcWaitDict = mcwaittask.Result .GroupBy(x => new { x.Wo_Id, x.Opr_No_Id }).ToDictionary(  g => g.Key,   g => g.First());
             // 4. Enrich Data
             foreach (var item in resultList)
             {
+                item.SetUpTimeStr = item.Setup_Apprvl_time?.ToString("hh:mm tt") ?? "";
                 // A. Machine & Shop
                 if (machines.TryGetValue(item.Mc_Id, out var machine))
                 {
@@ -16894,6 +19706,95 @@ namespace CWB.App.Controllers
                     var step = routingStepDict[wo.RoutingId].FirstOrDefault(r => r.StepId == item.Opr_No_Id);
                     item.OprNoName = step?.StepNumber ?? "";
                 }
+                // ---------------------------------------------------------
+                // Input Part No - Operation Wise
+                // ---------------------------------------------------------
+
+                item.InputPartNo = "";
+
+                if (operations.TryGetValue(wo.WoId, out var woOperations))
+                {
+                    var orderedOperations = woOperations
+                        .OrderBy(x => x.RoutingStepSequence)
+                        .ToList();
+
+                    var currentIndex = orderedOperations.FindIndex(
+                        x => x.Opr_No == item.Opr_No_Id
+                    );
+
+                    bool isFirstOperation = currentIndex == 0;
+
+                    if (isFirstOperation)
+                    {
+                        // First Operation
+                        if (wo.PartType == 1)
+                        {
+                            // Normal manufactured part
+                            // Input Part comes from Material Issue List
+
+                            if (materialIssues.TryGetValue(wo.WoId, out var woMaterialIssues))
+                            {
+                                var materialIssue = woMaterialIssues.FirstOrDefault();
+
+                                if (materialIssue != null &&
+                                    parts.TryGetValue(materialIssue.Input_PartId, out var inputPart))
+                                {
+                                    item.InputPartNo =
+                                        $"{inputPart.PartNo} / {inputPart.Description}";
+                                }
+                            }
+                        }
+                        else if (wo.PartType == 2)
+                        {
+                            // Assembly first operation - client clarification pending
+                            item.InputPartNo = "";
+                        }
+
+                        // First operation has no previous operation
+                        item.PreviousOperationNo = "";
+                        item.AcceptedQtyPreviousOperation = 0;
+                        item.PreviousActiveId = item.ActiveId;
+                        item.FirstOperation = 'Y';
+                    }
+                    else if (currentIndex > 0)
+                    {
+                        // Subsequent Operation
+                        if (parts.TryGetValue(wo.PartId, out var inputPart))
+                        {
+                            item.InputPartNo =
+                                $"{inputPart.PartNo} / {inputPart.Description}";
+                        }
+
+                        // Previous operation
+                        var previousOperation = orderedOperations[currentIndex - 1];
+                        var previousstep = routingStepDict[wo.RoutingId].FirstOrDefault(r => r.StepId == previousOperation.Opr_No);
+                        item.PreviousOperationNo =previousstep?.StepNumber ?? "";
+
+                        item.AcceptedQtyPreviousOperation = previousOperation.Act_Qnty;
+                        var previousKey = new
+                        {
+                            Wo_Id = wo.WoId,
+                            Opr_No_Id = previousOperation.Opr_No
+                        };
+
+                        if (mcWaitDict.TryGetValue(previousKey, out var previousMcWait))
+                        {
+                            item.PreviousActiveId =
+                                previousMcWait.Mc_Wait_ListId;
+                        }
+                        else
+                        {
+                            // Fallback if previous MC Wait record not found
+                            item.PreviousActiveId = item.ActiveId;
+                        }
+                        item.FirstOperation = 'N';
+
+
+                    }
+                }
+
+                var getmachine = await _machineService.GetMachine(item.Mc_Id);
+                item.MachineDepartmentId = getmachine.MachineDepartmentId;
             }
 
             return Ok(resultList);
@@ -16903,14 +19804,1872 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateQntyMc_Wait_List(Mc_Wait_ListVM masterDocListVM)
         {
+           
+            var getstores = await _departmentService.GetAllStoresIDs();
+            var allproductionwo = await _woService.AllProductionPlan_Wo();
+            var operations = await _woService.GetAllOpr_List();
+            var wowaitlist = await _woService.GetAllWO_Wait_List();
+            var translogs = await _woService.GetAllInv_Trans_Log();
+            var invmaster = await _woService.GetAllInventory_Master();
             var mc_Wait_Lists = await _woService.GetAllMc_Wait_List();
             var mcWait = mc_Wait_Lists.Where(m => m.Mc_Wait_ListId == masterDocListVM.Mc_Wait_ListId).FirstOrDefault();
             if (mcWait != null)
             {
+                var wooperations = operations.Where(x => x.Wo_Id == mcWait.Wo_Id && x.RoutingStepLocation == 1).OrderBy(x => x.RoutingStepSequence).ToList();
+
+                if (wooperations.Count == 1)
+                {
+                    //directly bookout from shop
+                    //transactionid 8
+                    var wopart = allproductionwo.Where(x => x.WoId == mcWait.Wo_Id).FirstOrDefault();
+                    if(wopart.PartType==1)
+                    {
+                        var gettranslog = translogs.Where(x => x.Wo_Id == mcWait.Wo_Id && x.Transaction_Id == 5).FirstOrDefault();
+                        var getinvrecord = invmaster.Where(x => x.Inv_Trans_Log_Id == gettranslog.Inv_Trans_LogId).FirstOrDefault();
+                        //first subtract from inventory master
+
+                        getinvrecord.Current_QntOnHand = getinvrecord.Current_QntOnHand-gettranslog.Qnty;
+                        if(getinvrecord.Current_QntOnHand<=0)
+                        {
+                            getinvrecord.Current_QntOnHand = 0;
+                        }
+                        await _woService.PostInventory_Master(getinvrecord);
+
+
+
+
+
+
+
+                        //for single operation direct bookout
+
+                        var invtrans = new Inv_Trans_LogVM();
+                        invtrans.Transaction_Id = 8;
+                        invtrans.Input_Part_NoId = gettranslog.Input_Part_NoId;
+                        invtrans.Input_Routing_Id = gettranslog.Input_Routing_Id;
+                        invtrans.Input_Opr_No = gettranslog.Input_Opr_No;
+                        invtrans.From_Loc_Flag = "Internal";
+                        invtrans.From_Location_Id = gettranslog.To_Location_Id;
+                        invtrans.Wo_Id = gettranslog.Wo_Id;
+                        invtrans.Output_Part_No = wopart.PartId;
+                        invtrans.Output_Routing_Id = 0;
+                        invtrans.Output_Opr_No= 0;
+                        invtrans.Qnty = masterDocListVM.Accepted;
+                        invtrans.To_Loc_Flag = "Internal";
+                        invtrans.To_Location_Id = getstores.Stores_DirMatl_ID;
+                        invtrans.Part_Status = 1;
+                        invtrans.Movement_Started = 'N';
+                        invtrans.Movement_Compl = 'N';
+
+                       var transresult= await _woService.PostInv_Trans_Log(invtrans);
+                        var inv = await _woService.GetAllInventory_MasterBypartidWithFlag("Internal", invtrans.To_Location_Id, 0, 0, wopart.PartId);
+                        if (inv.Any())
+                        {
+                            var invbypartid = inv.First();
+
+                            if (invbypartid!=null)
+                            {
+                                invbypartid.Current_QntOnHand =
+                                    invbypartid.Current_QntOnHand + transresult.Qnty;
+                                invbypartid.Part_Status = transresult.Part_Status;
+
+                                await _woService.PostInventory_Master(invbypartid);
+                                 
+
+                                
+
+                                
+                            }
+                            
+                        }
+                        else
+                        {
+                            var invMaster = new Inventory_MasterVM();
+                            invMaster.Part_NoId = wopart.PartId;
+                            invMaster.Routing_Id = 0;
+                            invMaster.Opr_No_Id = 0;
+                            invMaster.Current_QntOnHand = transresult.Qnty;
+                            invMaster.Location_Id = transresult.To_Location_Id;
+                            invMaster.Inv_Trans_Log_Id = transresult.Inv_Trans_LogId;
+                            invMaster.Loc_Flag = "Internal";
+                            invMaster.Part_Status = transresult.Part_Status;
+                            var inmaster = await _woService.PostInventory_Master(invMaster);
+                        }
+
+
+
+                    }
+                    
+                    else if (wopart.PartType == 2)
+                    {
+                        // Get all Transaction Id = 5 records for this WO
+                        var gettranslogs = translogs
+                            .Where(x => x.Wo_Id == mcWait.Wo_Id && x.Transaction_Id == 5)
+                            .ToList();
+
+                        if (gettranslogs.Any())
+                        {
+                            // First input part / first transaction record
+                            var firstTransLog = gettranslogs.First();
+
+                            // ---------------------------------------------------------
+                            // 1. Subtract inventory for ALL input parts
+                            // ---------------------------------------------------------
+
+                            foreach (var transLog in gettranslogs)
+                            {
+                                var getinvrecord = invmaster
+                                    .FirstOrDefault(x => x.Inv_Trans_Log_Id == transLog.Inv_Trans_LogId);
+
+                                if (getinvrecord != null)
+                                {
+                                    getinvrecord.Current_QntOnHand = getinvrecord.Current_QntOnHand - transLog.Qnty; ;
+
+                                    await _woService.PostInventory_Master(getinvrecord);
+                                }
+                            }
+
+                            // ---------------------------------------------------------
+                            // 2. Single direct bookout transaction
+                            //    Use FIRST input part transaction details
+                            // ---------------------------------------------------------
+
+                            var invtrans = new Inv_Trans_LogVM();
+
+                            invtrans.Transaction_Id = 8;
+
+                            // First input part details
+                            invtrans.Input_Part_NoId = firstTransLog.Input_Part_NoId;
+                            invtrans.Input_Routing_Id = firstTransLog.Input_Routing_Id;
+                            invtrans.Input_Opr_No = firstTransLog.Input_Opr_No;
+
+                            invtrans.From_Loc_Flag = "Internal";
+                            invtrans.From_Location_Id = firstTransLog.To_Location_Id;
+
+                            invtrans.Wo_Id = firstTransLog.Wo_Id;
+
+                            // Output part
+                            invtrans.Output_Part_No = wopart.PartId;
+                            invtrans.Output_Routing_Id = 0;
+                            invtrans.Output_Opr_No = 0;
+
+                            invtrans.Qnty = masterDocListVM.Accepted;
+
+                            invtrans.To_Loc_Flag = "Internal";
+                            invtrans.To_Location_Id = getstores.Stores_DirMatl_ID;
+
+                            invtrans.Part_Status = 1;
+                            invtrans.Movement_Started = 'N';
+                            invtrans.Movement_Compl = 'N';
+
+                            var transresult = await _woService.PostInv_Trans_Log(invtrans);
+
+                            // ---------------------------------------------------------
+                            // 3. Add output part into inventory
+                            // ---------------------------------------------------------
+
+                            var inv = await _woService.GetAllInventory_MasterBypartidWithFlag(
+                                "Internal",
+                                invtrans.To_Location_Id,
+                                0,
+                                0,
+                                wopart.PartId
+                            );
+
+                            if (inv.Any())
+                            {
+                                var invbypartid = inv.First();
+
+                                invbypartid.Current_QntOnHand =
+                                    invbypartid.Current_QntOnHand + transresult.Qnty;
+
+                                invbypartid.Part_Status = transresult.Part_Status;
+
+                                await _woService.PostInventory_Master(invbypartid);
+                            }
+                            else
+                            {
+                                var invMaster = new Inventory_MasterVM();
+
+                                invMaster.Part_NoId = wopart.PartId;
+                                invMaster.Routing_Id = 0;
+                                invMaster.Opr_No_Id = 0;
+                                invMaster.Current_QntOnHand = transresult.Qnty;
+                                invMaster.Location_Id = transresult.To_Location_Id;
+                                invMaster.Inv_Trans_Log_Id = transresult.Inv_Trans_LogId;
+                                invMaster.Loc_Flag = "Internal";
+                                invMaster.Part_Status = transresult.Part_Status;
+
+                                await _woService.PostInventory_Master(invMaster);
+                            }
+                        }
+                    }
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+                }
+
+                else
+                {
+                    var firstoperation = wooperations.FirstOrDefault();
+                    var lastoperation = wooperations.LastOrDefault();
+                    var currentOperation = wooperations.FirstOrDefault(x => x.Opr_No == mcWait.Opr_No_Id);
+
+                    //if (currentOperation == null)
+                    //{
+                    //    continue;
+                    //}
+                        
+
+                    bool isFirstOperation =
+                        currentOperation.Opr_No == firstoperation.Opr_No;
+
+                    bool isLastOperation =
+                        currentOperation.Opr_No == lastoperation.Opr_No;
+                    if (isFirstOperation)
+                    {
+                        var wopart = allproductionwo.Where(x => x.WoId == mcWait.Wo_Id).FirstOrDefault();
+                        if (wopart.PartType == 1)
+                        {
+                            //after interlocking the makefrom then subtraction using makefrom can be done dynamically
+                            var nextOperation = wooperations.Where(x => x.RoutingStepSequence > currentOperation.RoutingStepSequence).OrderBy(x => x.RoutingStepSequence).FirstOrDefault();
+                            var nextoperationmachine = mc_Wait_Lists.Where(x => x.Wo_Id == mcWait.Wo_Id && x.Opr_No_Id == nextOperation.Opr_No).FirstOrDefault();
+                            var machine = await _machineService.GetMachine(nextoperationmachine.Mc_Id);
+
+
+
+
+                            var gettranslog = translogs.Where(x => x.Wo_Id == mcWait.Wo_Id && x.Transaction_Id == 5).FirstOrDefault();
+                            var getinvrecord = invmaster.Where(x => x.Inv_Trans_Log_Id == gettranslog.Inv_Trans_LogId).FirstOrDefault();
+                            //first subtract from inventory master
+
+                            getinvrecord.Current_QntOnHand = getinvrecord.Current_QntOnHand - gettranslog.Qnty; 
+                            if(getinvrecord.Current_QntOnHand<=0)
+                            {
+                                getinvrecord.Current_QntOnHand = 0;
+                            }
+                            await _woService.PostInventory_Master(getinvrecord);
+
+
+
+
+
+
+
+                            //for single operation direct bookout
+
+                            var invtrans = new Inv_Trans_LogVM();
+                            invtrans.Transaction_Id = 7;
+                            invtrans.Input_Part_NoId = gettranslog.Input_Part_NoId;
+                            invtrans.Input_Routing_Id = gettranslog.Input_Routing_Id;
+                            invtrans.Input_Opr_No = gettranslog.Input_Opr_No;
+                            invtrans.From_Loc_Flag = "Internal";
+                            invtrans.From_Location_Id = gettranslog.To_Location_Id;
+                            invtrans.Wo_Id = gettranslog.Wo_Id;
+                            invtrans.Output_Part_No = wopart.PartId;
+                            invtrans.Output_Routing_Id = gettranslog.Input_Routing_Id;
+                            invtrans.Output_Opr_No =mcWait.Opr_No_Id;
+                            invtrans.Qnty = masterDocListVM.Accepted;
+                            invtrans.To_Loc_Flag = "Internal";
+                            invtrans.To_Location_Id = machine.MachineDepartmentId;
+                            invtrans.Part_Status = 1;
+                            invtrans.Movement_Started = 'Y';
+                            invtrans.Movement_Compl = 'Y';
+
+                            var transresult = await _woService.PostInv_Trans_Log(invtrans);
+                            var inv = await _woService.GetAllInventory_MasterBypartidWithFlag("Internal", invtrans.To_Location_Id, transresult.Output_Opr_No, transresult.Output_Routing_Id, wopart.PartId);
+                            if (inv.Any())
+                            {
+                                var invbypartid = inv.First();
+
+                                if (invbypartid != null)
+                                {
+                                    invbypartid.Current_QntOnHand =
+                                        invbypartid.Current_QntOnHand + transresult.Qnty;
+                                    invbypartid.Part_Status = transresult.Part_Status;
+                                    await _woService.PostInventory_Master(invbypartid);
+
+
+
+
+
+                                }
+
+                            }
+                            else
+                            {
+                                var invMaster = new Inventory_MasterVM();
+                                invMaster.Part_NoId = wopart.PartId;
+                                invMaster.Routing_Id = transresult.Output_Routing_Id;
+                                invMaster.Opr_No_Id = transresult.Output_Opr_No;
+                                invMaster.Current_QntOnHand = transresult.Qnty;
+                                invMaster.Location_Id = transresult.To_Location_Id;
+                                invMaster.Inv_Trans_Log_Id = transresult.Inv_Trans_LogId;
+                                invMaster.Loc_Flag = "Internal";
+                                invMaster.Part_Status = transresult.Part_Status;
+                                var inmaster = await _woService.PostInventory_Master(invMaster);
+                            }
+                        }
+                        if (wopart.PartType == 2)
+                        {
+                            //after interlocking bomlist subtracting of bom parts can be done dynamically
+                            // ============================================================
+                            // FIRST OPERATION - MULTIPLE INPUT PARTS
+                            // ============================================================
+
+                            // Get ALL Transaction_Id = 5 records for this WO
+                            var firstInputTransLogs = translogs
+                                .Where(x =>
+                                    x.Wo_Id == mcWait.Wo_Id &&
+                                    x.Transaction_Id == 5)
+                                .ToList();
+
+                           
+
+                            // ------------------------------------------------------------
+                            // 1. SUBTRACT ALL INPUT PART INVENTORIES
+                            // ------------------------------------------------------------
+
+                            foreach (var inputTransLog in firstInputTransLogs)
+                            {
+                                var inputInventory = invmaster
+                                    .FirstOrDefault(x =>
+                                        x.Inv_Trans_Log_Id == inputTransLog.Inv_Trans_LogId);
+
+                                if (inputInventory != null)
+                                {
+                                    inputInventory.Current_QntOnHand = inputInventory.Current_QntOnHand-inputTransLog.Qnty;
+                                    if(inputInventory.Current_QntOnHand<=0)
+                                    {
+                                        inputInventory.Current_QntOnHand = 0;
+                                    }
+                                    await _woService.PostInventory_Master(inputInventory);
+                                }
+                            }
+
+                            // ------------------------------------------------------------
+                            // 2. FIRST INPUT PART
+                            //
+                            // Transaction 7 will carry the FIRST input part only.
+                            // ------------------------------------------------------------
+
+                            var firstInputTransLog = firstInputTransLogs.First();
+
+                            // ------------------------------------------------------------
+                            // 3. FIND NEXT OPERATION
+                            // ------------------------------------------------------------
+
+                            var nextOperation = wooperations
+                                .Where(x =>
+                                    x.RoutingStepSequence >
+                                    currentOperation.RoutingStepSequence)
+                                .OrderBy(x =>
+                                    x.RoutingStepSequence)
+                                .FirstOrDefault();
+
+                            
+
+                            // ------------------------------------------------------------
+                            // 4. FIND NEXT OPERATION MC WAIT
+                            // ------------------------------------------------------------
+
+                            var nextOperationMachineWait = mc_Wait_Lists
+                                .FirstOrDefault(x =>
+                                    x.Wo_Id == mcWait.Wo_Id &&
+                                    x.Opr_No_Id == nextOperation.Opr_No);
+
+                           
+
+                            // ------------------------------------------------------------
+                            // 5. GET NEXT MACHINE
+                            // ------------------------------------------------------------
+
+                            var nextMachine =
+                                await _machineService.GetMachine(
+                                    nextOperationMachineWait.Mc_Id);
+
+                             
+
+                            // ------------------------------------------------------------
+                            // 6. CREATE TRANSACTION 7
+                            // ------------------------------------------------------------
+
+                            var invtrans = new Inv_Trans_LogVM();
+
+                            invtrans.Transaction_Id = 7;
+
+                            // FIRST input part only
+                            invtrans.Input_Part_NoId =
+                                firstInputTransLog.Input_Part_NoId;
+
+                            invtrans.Input_Routing_Id =
+                                firstInputTransLog.Input_Routing_Id;
+
+                            invtrans.Input_Opr_No =
+                                firstInputTransLog.Input_Opr_No;
+
+                            invtrans.From_Loc_Flag = "Internal";
+
+                            invtrans.From_Location_Id =
+                                firstInputTransLog.To_Location_Id;
+
+                            invtrans.Wo_Id =
+                                mcWait.Wo_Id;
+
+                            // Current WO output
+                            invtrans.Output_Part_No =
+                                wopart.PartId;
+
+                            invtrans.Output_Routing_Id =
+                                nextOperation.RoutingId;
+
+                            invtrans.Output_Opr_No =
+                                mcWait.Opr_No_Id;
+
+                            // Quantity produced by current operation
+                            invtrans.Qnty =
+                                masterDocListVM.Accepted;
+
+                            invtrans.To_Loc_Flag = "Internal";
+
+                            // Next operation machine
+                            invtrans.To_Location_Id =
+                                nextMachine.MachineDepartmentId;
+
+                            invtrans.Part_Status = 1;
+
+                            invtrans.Movement_Started = 'Y';
+                            invtrans.Movement_Compl = 'Y';
+
+                            var transresult =
+                                await _woService.PostInv_Trans_Log(invtrans);
+
+                            // ------------------------------------------------------------
+                            // 7. ADD OUTPUT TO NEXT MACHINE INVENTORY
+                            // ------------------------------------------------------------
+
+                            var nextInventory =
+                                await _woService.GetAllInventory_MasterBypartidWithFlag(
+                                    "Internal",
+                                    transresult.To_Location_Id,
+                                    transresult.Output_Opr_No,
+                                    transresult.Output_Routing_Id,
+                                    wopart.PartId);
+
+                            if (nextInventory.Any())
+                            {
+                                var invRecord = nextInventory.First();
+
+                                invRecord.Current_QntOnHand +=
+                                    transresult.Qnty;
+
+                                invRecord.Part_Status =
+                                    transresult.Part_Status;
+
+                                await _woService.PostInventory_Master(invRecord);
+                            }
+                            else
+                            {
+                                var invMaster = new Inventory_MasterVM();
+
+                                invMaster.Part_NoId =
+                                    wopart.PartId;
+
+                                invMaster.Routing_Id =
+                                    transresult.Output_Routing_Id;
+
+                                invMaster.Opr_No_Id =
+                                    transresult.Output_Opr_No;
+
+                                invMaster.Current_QntOnHand =
+                                    transresult.Qnty;
+
+                                invMaster.Location_Id =
+                                    transresult.To_Location_Id;
+
+                                invMaster.Inv_Trans_Log_Id =
+                                    transresult.Inv_Trans_LogId;
+
+                                invMaster.Loc_Flag = "Internal";
+
+                                invMaster.Part_Status =
+                                    transresult.Part_Status;
+
+                                await _woService.PostInventory_Master(invMaster);
+                            }
+                        }
+
+
+
+
+
+                    }
+                    else if (isLastOperation)
+                    {
+                        var wopart = allproductionwo.FirstOrDefault(x => x.WoId == mcWait.Wo_Id);
+                        if (wopart.PartType == 1)
+                        {
+                            //if (wopart == null)
+                            //    continue;
+
+
+                            // --------------------------------------------------------
+                            // Find previous operation
+                            // --------------------------------------------------------
+
+                            var previousOperation = wooperations.Where(x => x.RoutingStepSequence < currentOperation.RoutingStepSequence).OrderByDescending(x => x.RoutingStepSequence)
+                                .FirstOrDefault();
+
+                            //if (previousOperation == null)
+                            //    continue;
+
+
+                            // --------------------------------------------------------
+                            // Find transaction created by previous operation
+                            // --------------------------------------------------------
+
+                            var previousTransLog = translogs.Where(x => x.Wo_Id == mcWait.Wo_Id && x.Output_Opr_No == previousOperation.Opr_No && x.Output_Routing_Id == previousOperation.RoutingId).OrderByDescending(x =>
+                                      x.Inv_Trans_LogId).FirstOrDefault();
+
+                            //if (previousTransLog == null)
+                            //    continue;
+
+
+                            // --------------------------------------------------------
+                            // Quantity to book out
+                            // --------------------------------------------------------
+
+                            var bookoutQty =
+                                masterDocListVM.Accepted;
+
+                            //if (bookoutQty <= 0)
+                            //    continue;
+
+
+                            // --------------------------------------------------------
+                            // Find previous inventory
+                            // --------------------------------------------------------
+
+                            var previousInventory = invmaster.FirstOrDefault(x =>
+                            x.Part_NoId == previousTransLog.Output_Part_No &&
+                            x.Routing_Id == previousOperation.RoutingId &&
+                            x.Opr_No_Id == previousOperation.Opr_No &&
+                            x.Location_Id == previousTransLog.To_Location_Id &&
+                            x.Loc_Flag == "Internal");
+
+                            //if (previousInventory == null)
+                            //    continue;
+
+
+                            // --------------------------------------------------------
+                            // SUBTRACT FROM PREVIOUS MACHINE LOCATION
+                            // --------------------------------------------------------
+
+                            previousInventory.Current_QntOnHand =
+                                previousInventory.Current_QntOnHand -
+                                bookoutQty;
+
+                            if (previousInventory.Current_QntOnHand < 0)
+                                previousInventory.Current_QntOnHand = 0;
+
+                            await _woService.PostInventory_Master(
+                                previousInventory);
+
+
+                            // --------------------------------------------------------
+                            // LAST OPERATION → SHOP / STORE
+                            //
+                            // Transaction 8
+                            // --------------------------------------------------------
+
+                            var invtrans = new Inv_Trans_LogVM();
+
+                            invtrans.Transaction_Id = 8;
+
+                            invtrans.Input_Part_NoId = previousTransLog.Output_Part_No;
+
+                            invtrans.Input_Routing_Id = currentOperation.RoutingId;
+
+                            invtrans.Input_Opr_No = previousOperation.Opr_No;
+
+                            invtrans.From_Loc_Flag = "Internal";
+
+                            invtrans.From_Location_Id = previousTransLog.To_Location_Id;
+
+                            invtrans.Wo_Id = mcWait.Wo_Id;
+
+                            invtrans.Output_Part_No =
+                                wopart.PartId;
+
+                            invtrans.Output_Routing_Id =0;
+
+                            invtrans.Output_Opr_No =
+                                0;
+
+                            invtrans.Qnty =
+                                bookoutQty;
+
+                            invtrans.To_Loc_Flag = "Internal";
+
+                            invtrans.To_Location_Id =
+                                getstores.Stores_DirMatl_ID;
+
+                            invtrans.Part_Status = 1;
+
+                            invtrans.Movement_Started = 'N';
+                            invtrans.Movement_Compl = 'N';
+
+
+                            var transresult =
+                                await _woService.PostInv_Trans_Log(invtrans);
+
+
+                            // --------------------------------------------------------
+                            // ADD TO STORE INVENTORY
+                            // --------------------------------------------------------
+
+                            var inv = await _woService
+                                .GetAllInventory_MasterBypartidWithFlag(
+                                    "Internal",
+                                    invtrans.To_Location_Id,
+                                    0,
+                                    0,
+                                    wopart.PartId);
+
+
+                            if (inv.Any())
+                            {
+                                var invRecord = inv.First();
+
+                                invRecord.Current_QntOnHand +=
+                                    transresult.Qnty;
+
+                                await _woService.PostInventory_Master(
+                                    invRecord);
+                            }
+                            else
+                            {
+                                var newInventory = new Inventory_MasterVM();
+
+                                newInventory.Part_NoId =
+                                    wopart.PartId;
+
+                                newInventory.Routing_Id =
+                                    0;
+
+                                newInventory.Opr_No_Id =
+                                    0;
+
+                                newInventory.Current_QntOnHand =
+                                    transresult.Qnty;
+
+                                newInventory.Location_Id =
+                                    transresult.To_Location_Id;
+
+                                newInventory.Inv_Trans_Log_Id =
+                                    transresult.Inv_Trans_LogId;
+
+                                newInventory.Loc_Flag = "Internal";
+
+                                await _woService.PostInventory_Master(
+                                    newInventory);
+                            }
+                        }
+                        if (wopart.PartType == 2)
+                        {
+                            // ============================================================
+                            // LAST OPERATION - PART TYPE 2
+                            // ============================================================
+
+                            var previousOperation = wooperations
+                                .Where(x =>
+                                    x.RoutingStepSequence <
+                                    currentOperation.RoutingStepSequence)
+                                .OrderByDescending(x =>
+                                    x.RoutingStepSequence)
+                                .FirstOrDefault();
+
+                            
+
+                            // ============================================================
+                            // FIND PREVIOUS OPERATION TRANSACTION
+                            // ============================================================
+
+                            var previousTransLog = translogs
+                                .Where(x =>
+                                    x.Wo_Id == mcWait.Wo_Id &&
+                                    x.Output_Opr_No == previousOperation.Opr_No &&
+                                    x.Output_Routing_Id == previousOperation.RoutingId)
+                                .OrderByDescending(x =>
+                                    x.Inv_Trans_LogId)
+                                .FirstOrDefault();
+ 
+
+                            // ============================================================
+                            // QUANTITY
+                            // ============================================================
+
+                            var bookoutQty =
+                                masterDocListVM.Accepted;
+
+
+                            // ============================================================
+                            // FIND PREVIOUS INVENTORY
+                            // ============================================================
+
+                            var previousInventory = invmaster.FirstOrDefault(x =>
+                           x.Part_NoId == previousTransLog.Output_Part_No &&
+                           x.Routing_Id == previousOperation.RoutingId &&
+                           x.Opr_No_Id == previousOperation.Opr_No &&
+                           x.Location_Id == previousTransLog.To_Location_Id &&
+                           x.Loc_Flag == "Internal");
+
+
+
+                            // ============================================================
+                            // SUBTRACT PREVIOUS OPERATION INVENTORY
+                            // ============================================================
+
+                            previousInventory.Current_QntOnHand =
+                                previousInventory.Current_QntOnHand -
+                                bookoutQty;
+
+                            if (previousInventory.Current_QntOnHand < 0)
+                                previousInventory.Current_QntOnHand = 0;
+
+                            await _woService.PostInventory_Master(
+                                previousInventory);
+
+                            // ============================================================
+                            // CREATE TRANSACTION 8
+                            // ============================================================
+
+                            var invtrans = new Inv_Trans_LogVM();
+
+                            invtrans.Transaction_Id = 8;
+
+                            // Previous operation output becomes input
+                            invtrans.Input_Part_NoId =
+                                previousTransLog.Output_Part_No;
+
+                            invtrans.Input_Routing_Id =
+                                previousOperation.RoutingId;
+
+                            invtrans.Input_Opr_No =
+                                previousOperation.Opr_No;
+
+                            invtrans.From_Loc_Flag = "Internal";
+
+                            invtrans.From_Location_Id =
+                                previousTransLog.To_Location_Id;
+
+                            invtrans.Wo_Id =
+                                mcWait.Wo_Id;
+
+                            // Final output
+                            invtrans.Output_Part_No =
+                                wopart.PartId;
+
+                            invtrans.Output_Routing_Id = 0;
+
+                            invtrans.Output_Opr_No = 0;
+
+                            invtrans.Qnty =
+                                bookoutQty;
+
+                            invtrans.To_Loc_Flag = "Internal";
+
+                            invtrans.To_Location_Id =
+                                getstores.Stores_DirMatl_ID;
+
+                            invtrans.Part_Status = 1;
+
+                            invtrans.Movement_Started = 'N';
+                            invtrans.Movement_Compl = 'N';
+
+                            var transresult =
+                                await _woService.PostInv_Trans_Log(invtrans);
+
+                            // ============================================================
+                            // ADD FINAL OUTPUT TO STORE
+                            // ============================================================
+
+                            var inv =
+                                await _woService.GetAllInventory_MasterBypartidWithFlag(
+                                    "Internal",
+                                    invtrans.To_Location_Id,
+                                    0,
+                                    0,
+                                    wopart.PartId);
+
+                            if (inv.Any())
+                            {
+                                var invRecord = inv.First();
+
+                                invRecord.Current_QntOnHand +=
+                                    transresult.Qnty;
+
+                                invRecord.Part_Status =
+                                    transresult.Part_Status;
+
+                                await _woService.PostInventory_Master(
+                                    invRecord);
+                            }
+                            else
+                            {
+                                var newInventory = new Inventory_MasterVM();
+
+                                newInventory.Part_NoId =
+                                    wopart.PartId;
+
+                                newInventory.Routing_Id = 0;
+
+                                newInventory.Opr_No_Id = 0;
+
+                                newInventory.Current_QntOnHand =
+                                    transresult.Qnty;
+
+                                newInventory.Location_Id =
+                                    transresult.To_Location_Id;
+
+                                newInventory.Inv_Trans_Log_Id =
+                                    transresult.Inv_Trans_LogId;
+
+                                newInventory.Loc_Flag = "Internal";
+
+                                newInventory.Part_Status =
+                                    transresult.Part_Status;
+
+                                await _woService.PostInventory_Master(
+                                    newInventory);
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        // Middle operations pending
+                        var wopart = allproductionwo
+        .FirstOrDefault(x => x.WoId == mcWait.Wo_Id);
+
+                      
+
+                        if (wopart.PartType == 1)
+                        {
+                             
+
+
+                            // ============================================================
+                            // 1. FIND PREVIOUS OPERATION
+                            // ============================================================
+
+                            var previousOperation = wooperations
+                                .Where(x =>
+                                    x.RoutingStepSequence <
+                                    currentOperation.RoutingStepSequence)
+                                .OrderByDescending(x =>
+                                    x.RoutingStepSequence)
+                                .FirstOrDefault();
+
+                            
+
+
+                            // ============================================================
+                            // 2. FIND PREVIOUS OPERATION TRANSACTION
+                            // ============================================================
+
+                            var previousTransLog = translogs
+                                .Where(x =>
+                                    x.Wo_Id == mcWait.Wo_Id &&
+                                    x.Output_Opr_No == previousOperation.Opr_No &&
+                                    x.Output_Routing_Id == previousOperation.RoutingId)
+                                .OrderByDescending(x =>
+                                    x.Inv_Trans_LogId)
+                                .FirstOrDefault();
+
+
+
+
+                            // ============================================================
+                            // 3. FIND PREVIOUS OPERATION INVENTORY
+                            // ============================================================
+
+                            var previousInventory = invmaster.FirstOrDefault(x =>
+                            x.Part_NoId == previousTransLog.Output_Part_No &&
+                            x.Routing_Id == previousOperation.RoutingId &&
+                            x.Opr_No_Id == previousOperation.Opr_No &&
+                            x.Location_Id == previousTransLog.To_Location_Id &&
+                            x.Loc_Flag == "Internal");
+
+
+
+
+                            // ============================================================
+                            // 4. QUANTITY TO MOVE
+                            // ============================================================
+
+                            var moveQty = masterDocListVM.Accepted;
+
+                            
+
+                            // ============================================================
+                            // 5. SUBTRACT FROM PREVIOUS OPERATION INVENTORY
+                            // ============================================================
+
+                            previousInventory.Current_QntOnHand =
+                                previousInventory.Current_QntOnHand - moveQty;
+
+                            if (previousInventory.Current_QntOnHand < 0)
+                                previousInventory.Current_QntOnHand = 0;
+
+                            await _woService.PostInventory_Master(
+                                previousInventory);
+
+
+                            // ============================================================
+                            // 6. FIND NEXT OPERATION
+                            // ============================================================
+
+                            var nextOperation = wooperations
+                                .Where(x =>
+                                    x.RoutingStepSequence >
+                                    currentOperation.RoutingStepSequence)
+                                .OrderBy(x =>
+                                    x.RoutingStepSequence)
+                                .FirstOrDefault();
+
+                            
+
+
+                            // ============================================================
+                            // 7. FIND MC_WAIT RECORD FOR NEXT OPERATION
+                            // ============================================================
+
+                            var nextMcWait = mc_Wait_Lists
+                                .FirstOrDefault(x =>
+                                    x.Wo_Id == mcWait.Wo_Id &&
+                                    x.Opr_No_Id == nextOperation.Opr_No);
+
+                             
+
+
+                            // ============================================================
+                            // 8. GET NEXT OPERATION MACHINE
+                            // ============================================================
+
+                            var nextOperationMachine =
+                                await _machineService.GetMachine(nextMcWait.Mc_Id);
+
+                            
+
+
+                            // ============================================================
+                            // 9. NEXT MACHINE LOCATION
+                            // ============================================================
+
+                            var nextMachineLocation =
+                                nextOperationMachine.MachineDepartmentId;
+
+
+                            // ============================================================
+                            // 10. CREATE TRANSACTION
+                            //
+                            // Previous Machine Location
+                            //              ↓
+                            //       Current/Next Machine
+                            //
+                            // Transaction 7
+                            // ============================================================
+
+                            var invtrans = new Inv_Trans_LogVM();
+
+                            invtrans.Transaction_Id = 7;
+
+                            // Part coming from previous operation
+                            invtrans.Input_Part_NoId =
+                                previousTransLog.Output_Part_No;
+
+                            invtrans.Input_Routing_Id =
+                                previousOperation.RoutingId;
+
+                            invtrans.Input_Opr_No =
+                                previousOperation.Opr_No;
+
+                            // Previous operation location
+                            invtrans.From_Loc_Flag = "Internal";
+
+                            invtrans.From_Location_Id =
+                                previousTransLog.To_Location_Id;
+
+                            invtrans.Wo_Id =
+                                mcWait.Wo_Id;
+
+                            // Part going to next operation
+                            invtrans.Output_Part_No =
+                                wopart.PartId;
+
+                            invtrans.Output_Routing_Id =
+                                nextOperation.RoutingId;
+
+                            invtrans.Output_Opr_No =
+                                mcWait.Opr_No_Id;
+
+                            invtrans.Qnty =
+                                moveQty;
+
+                            invtrans.To_Loc_Flag = "Internal";
+
+                            // IMPORTANT:
+                            // Next operation machine location
+                            invtrans.To_Location_Id =
+                                nextMachineLocation;
+
+                            invtrans.Part_Status = 1;
+
+                            invtrans.Movement_Started = 'Y';
+                            invtrans.Movement_Compl = 'Y';
+
+
+                            // ============================================================
+                            // 11. POST TRANSACTION
+                            // ============================================================
+
+                            var transresult =
+                                await _woService.PostInv_Trans_Log(invtrans);
+
+
+                            // ============================================================
+                            // 12. FIND NEXT MACHINE INVENTORY
+                            // ============================================================
+
+                            var nextInventory = await _woService
+                                .GetAllInventory_MasterBypartidWithFlag(
+                                    "Internal",
+                                    transresult.To_Location_Id,
+                                    transresult.Output_Opr_No,
+                                    transresult.Output_Routing_Id,
+                                    wopart.PartId);
+
+
+                            // ============================================================
+                            // 13. UPDATE EXISTING INVENTORY
+                            // ============================================================
+
+                            if (nextInventory.Any())
+                            {
+                                var invRecord = nextInventory.First();
+
+                                invRecord.Current_QntOnHand +=
+                                    transresult.Qnty;
+                                invRecord.Part_Status = transresult.Part_Status;
+                                await _woService.PostInventory_Master(
+                                    invRecord);
+                            }
+                            // ============================================================
+                            // 14. CREATE NEW INVENTORY
+                            // ============================================================
+                            else
+                            {
+                                var invMaster = new Inventory_MasterVM();
+
+                                invMaster.Part_NoId =
+                                    wopart.PartId;
+
+                                invMaster.Routing_Id =
+                                    transresult.Output_Routing_Id;
+
+                                invMaster.Opr_No_Id =
+                                    transresult.Output_Opr_No;
+
+                                invMaster.Current_QntOnHand =
+                                    transresult.Qnty;
+
+                                invMaster.Location_Id =
+                                    transresult.To_Location_Id;
+
+                                invMaster.Inv_Trans_Log_Id =
+                                    transresult.Inv_Trans_LogId;
+
+                                invMaster.Loc_Flag = "Internal";
+                                invMaster.Part_Status = transresult.Part_Status;
+
+                                await _woService.PostInventory_Master(
+                                    invMaster);
+                            }
+
+
+
+                        }
+                        if (wopart.PartType == 2)
+                        {
+                            // ========================================================
+                            // 1. FIND PREVIOUS OPERATION
+                            // ========================================================
+
+                            var previousOperation = wooperations
+                                .Where(x =>
+                                    x.RoutingStepSequence <
+                                    currentOperation.RoutingStepSequence)
+                                .OrderByDescending(x =>
+                                    x.RoutingStepSequence)
+                                .FirstOrDefault();
+
+                            
+
+                            // ========================================================
+                            // 2. FIND PREVIOUS OPERATION TRANSACTION
+                            // ========================================================
+
+                            var previousTransLog = translogs
+                                .Where(x =>
+                                    x.Wo_Id == mcWait.Wo_Id &&
+                                    x.Output_Opr_No == previousOperation.Opr_No &&
+                                    x.Output_Routing_Id == previousOperation.RoutingId)
+                                .OrderByDescending(x =>
+                                    x.Inv_Trans_LogId)
+                                .FirstOrDefault();
+
+
+
+                            // ========================================================
+                            // 3. FIND PREVIOUS OPERATION INVENTORY
+                            // ========================================================
+
+                            var previousInventory = invmaster.FirstOrDefault(x =>
+                            x.Part_NoId == previousTransLog.Output_Part_No &&
+                            x.Routing_Id == previousOperation.RoutingId &&
+                            x.Opr_No_Id == previousOperation.Opr_No &&
+                            x.Location_Id == previousTransLog.To_Location_Id &&
+                            x.Loc_Flag == "Internal");
+
+
+
+                            // ========================================================
+                            // 4. QUANTITY FROM PREVIOUS OPERATION
+                            //
+                            // Previous operation's actual quantity becomes
+                            // input quantity for this operation.
+                            // ========================================================
+
+                            var moveQty =
+                                masterDocListVM.Accepted;
+
+                            
+
+                            // ========================================================
+                            // 5. SUBTRACT PREVIOUS OPERATION INVENTORY
+                            // ========================================================
+
+                            previousInventory.Current_QntOnHand =
+                                previousInventory.Current_QntOnHand - moveQty;
+
+                            if (previousInventory.Current_QntOnHand < 0)
+                                previousInventory.Current_QntOnHand = 0;
+
+                            await _woService.PostInventory_Master(
+                                previousInventory);
+
+                            // ========================================================
+                            // 6. FIND NEXT OPERATION
+                            // ========================================================
+
+                            var nextOperation = wooperations
+                                .Where(x =>
+                                    x.RoutingStepSequence >
+                                    currentOperation.RoutingStepSequence)
+                                .OrderBy(x =>
+                                    x.RoutingStepSequence)
+                                .FirstOrDefault();
+
+                             
+
+                            // ========================================================
+                            // 7. FIND NEXT MC WAIT
+                            // ========================================================
+
+                            var nextMcWait = mc_Wait_Lists
+                                .FirstOrDefault(x =>
+                                    x.Wo_Id == mcWait.Wo_Id &&
+                                    x.Opr_No_Id == nextOperation.Opr_No);
+
+                          
+
+                            // ========================================================
+                            // 8. GET NEXT MACHINE
+                            // ========================================================
+
+                            var nextOperationMachine =
+                                await _machineService.GetMachine(
+                                    nextMcWait.Mc_Id);
+
+                           
+
+                            var nextMachineLocation =
+                                nextOperationMachine.MachineDepartmentId;
+
+                            // ========================================================
+                            // 9. CREATE TRANSACTION 7
+                            // ========================================================
+
+                            var invtrans = new Inv_Trans_LogVM();
+
+                            invtrans.Transaction_Id = 7;
+
+                            // Output from previous operation becomes input
+                            invtrans.Input_Part_NoId =
+                                previousTransLog.Output_Part_No;
+
+                            invtrans.Input_Routing_Id =
+                                previousOperation.RoutingId;
+
+                            invtrans.Input_Opr_No =
+                                previousOperation.Opr_No;
+
+                            invtrans.From_Loc_Flag = "Internal";
+
+                            invtrans.From_Location_Id =
+                                previousTransLog.To_Location_Id;
+
+                            invtrans.Wo_Id =
+                                mcWait.Wo_Id;
+
+                            // Current WO part
+                            invtrans.Output_Part_No =
+                                wopart.PartId;
+
+                            invtrans.Output_Routing_Id =
+                                nextOperation.RoutingId;
+
+                            invtrans.Output_Opr_No =
+                                mcWait.Opr_No_Id;
+
+                            // Actual quantity of current operation
+                            invtrans.Qnty =
+                                moveQty;
+
+                            invtrans.To_Loc_Flag = "Internal";
+
+                            invtrans.To_Location_Id =
+                                nextMachineLocation;
+
+                            invtrans.Part_Status = 1;
+
+                            invtrans.Movement_Started = 'Y';
+                            invtrans.Movement_Compl = 'Y';
+
+                            var transresult =
+                                await _woService.PostInv_Trans_Log(invtrans);
+
+                            // ========================================================
+                            // 10. ADD TO NEXT MACHINE INVENTORY
+                            // ========================================================
+
+                            var nextInventory =
+                                await _woService.GetAllInventory_MasterBypartidWithFlag(
+                                    "Internal",
+                                    transresult.To_Location_Id,
+                                    transresult.Output_Opr_No,
+                                    transresult.Output_Routing_Id,
+                                    wopart.PartId);
+
+                            if (nextInventory.Any())
+                            {
+                                var invRecord =
+                                    nextInventory.First();
+
+                                invRecord.Current_QntOnHand +=
+                                    transresult.Qnty;
+
+                                invRecord.Part_Status =
+                                    transresult.Part_Status;
+
+                                await _woService.PostInventory_Master(
+                                    invRecord);
+                            }
+                            else
+                            {
+                                var invMaster = new Inventory_MasterVM();
+
+                                invMaster.Part_NoId =
+                                    wopart.PartId;
+
+                                invMaster.Routing_Id =
+                                    transresult.Output_Routing_Id;
+
+                                invMaster.Opr_No_Id =
+                                    transresult.Output_Opr_No;
+
+                                invMaster.Current_QntOnHand =
+                                    transresult.Qnty;
+
+                                invMaster.Location_Id =
+                                    transresult.To_Location_Id;
+
+                                invMaster.Inv_Trans_Log_Id =
+                                    transresult.Inv_Trans_LogId;
+
+                                invMaster.Loc_Flag = "Internal";
+
+                                invMaster.Part_Status =
+                                    transresult.Part_Status;
+
+                                await _woService.PostInventory_Master(
+                                    invMaster);
+                            }
+                        }
+
+
+
+                    }
+
+
+
+
+
+
+                }
+
                 mcWait.NonConQnty = masterDocListVM.NonConQnty;
                 mcWait.Accepted = masterDocListVM.Accepted;
                 mcWait.QntyOffered = masterDocListVM.QntyOffered;
+                mcWait.Bal_Qnty = mcWait.Bal_Qnty - masterDocListVM.Accepted;
+                mcWait.Act_Qnty = mcWait.Act_Qnty + masterDocListVM.Accepted;
+
+
                 var result = await _woService.PostMc_Wait_List(mcWait);
+
+                if (result != null && result.Bal_Qnty <= 0)
+                {
+                    var wo = allproductionwo.Where(x => x.WoId == mcWait.Wo_Id).FirstOrDefault();
+                    var now = DateTime.Now;
+
+                    // --------------------------------------------------------
+                    // 1. Current MC Wait record is completed
+                    // --------------------------------------------------------
+
+                    result.Wait_Seq_No = -1;
+                    result.Act_End_time = now;
+
+                    // Save the current record with Seq = -1
+                    result = await _woService.PostMc_Wait_List(result);
+
+
+                    //--------------------------------------------------------
+                    //2.Update Operation List
+
+
+                    // Match using:
+                    //      WO Id
+                    //      Operation No
+                    // --------------------------------------------------------
+
+                    var currentOperation = operations
+                        .FirstOrDefault(x =>
+                            x.Wo_Id == result.Wo_Id &&
+                            x.Opr_No == result.Opr_No_Id);
+
+                    if (currentOperation != null)
+                    {
+                        var latestMcWaitLists = await _woService.GetAllMc_Wait_List();
+
+                        var operationMcWaitLists = latestMcWaitLists
+                            .Where(x =>
+                                x.Wo_Id == result.Wo_Id &&
+                                x.Opr_No_Id == result.Opr_No_Id)
+                            .ToList();
+
+                        // Calculate total actual quantity for this operation
+                        // across all simultaneous machines.
+                        currentOperation.Act_Qnty = (int)operationMcWaitLists
+                            .Sum(x => x.Act_Qnty);
+
+
+
+                        currentOperation.Setup_Start_time = operationMcWaitLists
+      .Where(x => x.Setup_Start_time > DateTime.MinValue).Select(x => x.Setup_Start_time.Value)
+      .DefaultIfEmpty(DateTime.MinValue)
+      .Min();
+
+                        // Latest actual completion across all machines
+                        currentOperation.Act_End_time = operationMcWaitLists
+                            .Where(x => x.Act_End_time > DateTime.MinValue)
+                            .Select(x => x.Act_End_time.Value)
+                            .DefaultIfEmpty(DateTime.MinValue)
+                            .Max();
+
+                        await _woService.PostOpr_List(currentOperation);
+                        //currentOperation.
+
+
+
+                        var lastOperation = operations.Where(x=>x.Wo_Id==result.Wo_Id).OrderByDescending(x => x.RoutingStepSequence).FirstOrDefault();
+
+                        if (lastOperation != null &&
+                            currentOperation.Opr_No == lastOperation.Opr_No)
+                        {
+                            // ========================================================
+                            // CURRENT OPERATION IS LAST OPERATION
+                            // ========================================================
+
+                            // Get all allocation records
+                            var allAllocations =
+                                await _woService.GetallInputreservelistbypartid(wo.PartId);
+
+                            // ========================================================
+                            // Get allocations for this PartId which are NOT allocated
+                            // ========================================================
+
+                            var pendingAllocations = allAllocations
+                                .Where(x =>
+                                    x.PartId == wo.PartId &&
+                                    x.Allocation_done == 'N')
+                                .OrderBy(x => x.WO_Id)
+                                .ToList();
+
+                            // ========================================================
+                            // Allocate the first WO
+                            // ========================================================
+
+                            if (pendingAllocations.Any())
+                            {
+                                
+                                if(wo.Combined!='Y')
+                                {
+                                    var allocationToUpdate = pendingAllocations.First();
+
+                                    // Mark allocation as done
+                                    if (Convert.ToDecimal(result.Act_Qnty) >= Convert.ToDecimal(allocationToUpdate.Plan_Alloc_Qnty))
+                                    {
+                                        allocationToUpdate.Allocation_done = 'Y';
+                                        allocationToUpdate.Bal_to_Issue = 0;
+                                        var allocationList = new List<Input_Resrv_ListVM>();
+                                        allocationList.Add(allocationToUpdate);
+
+
+                                        await _woService.PostInputReservelist(allocationList);
+                                    }
+                                }
+                                else
+                                {
+                                    var consolidatedrecords = await _woService.Getallconsolidationproductionwo();
+                                    var recordcount = consolidatedrecords.Where(x => x.CombinedWoId == wo.WoId).ToList();
+                                    var consolidatedCount = recordcount.Count;
+                                    var allocationsToCheck = pendingAllocations.Take(consolidatedCount).ToList();
+                                    var totalPlanAllocQty = allocationsToCheck.Sum(x => Convert.ToDecimal(x.Plan_Alloc_Qnty)); 
+                                    var bookedOutQty = Convert.ToDecimal(result.Act_Qnty);
+                                    if (bookedOutQty >= totalPlanAllocQty)
+                                    {
+                                        var allocationList = new List<Input_Resrv_ListVM>(); 
+                                        foreach (var allocation in allocationsToCheck)
+                                        { 
+                                            allocation.Allocation_done = 'Y'; 
+                                            allocation.Bal_to_Issue = 0; allocationList.Add(allocation); 
+                                        }
+                                        if (allocationList.Any()) 
+                                        {
+                                            await _woService.PostInputReservelist( allocationList);
+                                        }
+                                    }
+
+                                }
+                               
+                                
+                            }
+                            var alloperations = operations.Where(x => x.Wo_Id == result.Wo_Id).OrderBy(x => x.RoutingStepSequence).ToList();
+                            wo.ActStartDate = alloperations.First().Setup_Start_time;
+                            wo.ActCompletionDate = alloperations.Last().Act_End_time;
+                            wo.Status = 6;
+                            await _woService.ProductionPlanWoPost(new List<ProductionPlan_WoVM> { wo });
+
+
+
+                            //so allocations for both combined and individual wo and so  since it is a parent part solde to customer
+                            if(wo.Combined_WO!='Y')
+                            {
+                                if(wo.Parentlevel=='Y')
+                                {
+                                    var allsoalloclist = await _baService.GetSOAllocationlistbyPartid(wo.PartId);
+                                    var wosos = await _woService.GetSoWoRel(wo.WoId);
+
+                                    int bookoutRemainingQty = (int)result.Act_Qnty;
+
+                                    // ---------------------------------------------------------
+                                    // 1. Load all Sales Orders connected to this Work Order
+                                    // ---------------------------------------------------------
+                                    var soList = new List<SalesOrderVM>();
+
+                                    foreach (var woso in wosos)
+                                    {
+                                        var so = await _baService.GetOneSO(woso.SalesOrderId);
+
+                                        if (so != null)
+                                        {
+                                            soList.Add(so);
+                                        }
+                                    }
+
+                                    // ---------------------------------------------------------
+                                    // 2. Allocate oldest RequiredByDate SO first
+                                    // ---------------------------------------------------------
+                                    soList = soList
+                                        .OrderBy(x => x.RequiredByDate)
+                                        .ToList();
+
+                                    // ---------------------------------------------------------
+                                    // 3. Distribute the bookout quantity
+                                    // ---------------------------------------------------------
+                                    foreach (var sos in soList)
+                                    {
+                                        // Nothing left from the current bookout
+                                        if (bookoutRemainingQty <= 0)
+                                            break;
+
+                                        // -----------------------------------------------------
+                                        // Previous allocation already made for this SO
+                                        // -----------------------------------------------------
+                                        int previouslyAllocatedQty = allsoalloclist
+                                            .Where(x => x.SO_ID == sos.SalesOrderId)
+                                            .Sum(x => x.Allocated_Qnty);
+
+                                        // -----------------------------------------------------
+                                        // How much does this SO still require?
+                                        // -----------------------------------------------------
+                                        int remainingSOQty =
+                                            sos.RequiredQuantity - previouslyAllocatedQty;
+
+                                        // SO already completely allocated
+                                        if (remainingSOQty <= 0)
+                                            continue;
+
+                                        // -----------------------------------------------------
+                                        // Allocate only what this SO requires
+                                        // -----------------------------------------------------
+                                        int allocateQty = Math.Min(
+                                            bookoutRemainingQty,
+                                            remainingSOQty
+                                        );
+
+                                        if (allocateQty <= 0)
+                                            continue;
+
+                                        // -----------------------------------------------------
+                                        // 4. Create SO Allocation record
+                                        // -----------------------------------------------------
+                                        SO_Alloc_ListVM allocation = new SO_Alloc_ListVM()
+                                        {
+                                            PartId = sos.PartId,
+                                            SO_ID = sos.SalesOrderId,
+                                            Allocated_Qnty = allocateQty,
+                                            Dispatch_Complete = 'N',
+                                            Ready_for_Dispatch = 'N',
+                                            Full_Qnty_Dispatched = 'N',
+                                            FinalDispQnty = 0
+                                        };
+
+                                        await _baService.PostSOAllocation(allocation);
+
+                                        // -----------------------------------------------------
+                                        // 5. Update Sales Order actual quantity
+                                        // -----------------------------------------------------
+                                        //sos.ActQuantity += allocateQty;
+
+                                        //// Prevent actual quantity from exceeding required quantity
+                                        //if (sos.ActQuantity > sos.RequiredQuantity)
+                                        //{
+                                        //    sos.ActQuantity = sos.RequiredQuantity;
+                                        //}
+
+                                        //// -----------------------------------------------------
+                                        //// 6. Update SO balance quantity
+                                        //// -----------------------------------------------------
+                                        //sos.BalanceSOQty =
+                                        //    sos.RequiredQuantity - sos.ActQuantity;
+
+                                        //if (sos.BalanceSOQty < 0)
+                                        //{
+                                        //    sos.BalanceSOQty = 0;
+                                        //}
+
+                                        //// -----------------------------------------------------
+                                        //// 7. Update SO status
+                                        //// -----------------------------------------------------
+                                        //if (sos.BalanceSOQty == 0)
+                                        //{
+                                        //    // SO completely fulfilled
+                                        //    sos.Status = 5;
+
+                                        //   // sos. = DateTime.Now;
+                                        //}
+                                        //else
+                                        //{
+                                        //    // Partial SO completion
+                                        //    // Keep your existing partial/in-progress status here
+                                        //}
+
+                                        //await _baService.PostSalesOrder(sos);
+
+                                        // -----------------------------------------------------
+                                        // 8. Reduce remaining bookout quantity
+                                        // -----------------------------------------------------
+                                        bookoutRemainingQty -= allocateQty;
+                                    }
+
+                                    // ---------------------------------------------------------
+                                    // 9. If quantity is still remaining, it was not required
+                                    //    by any linked Sales Order.
+                                    // ---------------------------------------------------------
+                                    if (bookoutRemainingQty > 0)
+                                    {
+                                        // Optional:
+                                        // Handle excess/unallocated production quantity here.
+                                    }
+
+
+
+
+                                    //get wosorel 
+                                    //if only one so one wo one implementation
+                                    //if one wo multiple so Different/multiple implementation implementation
+
+                                    //so allocation normal  
+                                }
+                            }
+                            else
+                            {
+                                var consolidatedrecords = await _woService.Getallconsolidationproductionwo();
+                                var recordcount = consolidatedrecords.Where(x => x.CombinedWoId == wo.WoId).ToList();
+
+                                foreach(var data in recordcount)
+                                {
+                                    var production= allproductionwo.Where(x => x.WoId == data.WoId).FirstOrDefault();
+                                    if(production.Parentlevel=='Y')
+                                    {
+
+                                        var allsoalloclist = await _baService.GetSOAllocationlistbyPartid(production.PartId);
+                                        var wosos = await _woService.GetSoWoRel(production.WoId);
+
+                                        int bookoutRemainingQty = (int)result.Act_Qnty;
+
+                                        // ---------------------------------------------------------
+                                        // 1. Load all Sales Orders connected to this Work Order
+                                        // ---------------------------------------------------------
+                                        var soList = new List<SalesOrderVM>();
+
+                                        foreach (var woso in wosos)
+                                        {
+                                            var so = await _baService.GetOneSO(woso.SalesOrderId);
+
+                                            if (so != null)
+                                            {
+                                                soList.Add(so);
+                                            }
+                                        }
+
+                                        // ---------------------------------------------------------
+                                        // 2. Allocate oldest RequiredByDate SO first
+                                        // ---------------------------------------------------------
+                                        soList = soList
+                                            .OrderBy(x => x.RequiredByDate)
+                                            .ToList();
+
+                                        // ---------------------------------------------------------
+                                        // 3. Distribute the bookout quantity
+                                        // ---------------------------------------------------------
+                                        foreach (var sos in soList)
+                                        {
+                                            // Nothing left from the current bookout
+                                            if (bookoutRemainingQty <= 0)
+                                                break;
+
+                                            // -----------------------------------------------------
+                                            // Previous allocation already made for this SO
+                                            // -----------------------------------------------------
+                                            int previouslyAllocatedQty = allsoalloclist
+                                                .Where(x => x.SO_ID == sos.SalesOrderId)
+                                                .Sum(x => x.Allocated_Qnty);
+
+                                            // -----------------------------------------------------
+                                            // How much does this SO still require?
+                                            // -----------------------------------------------------
+                                            int remainingSOQty =
+                                                sos.RequiredQuantity - previouslyAllocatedQty;
+
+                                            // SO already completely allocated
+                                            if (remainingSOQty <= 0)
+                                                continue;
+
+                                            // -----------------------------------------------------
+                                            // Allocate only what this SO requires
+                                            // -----------------------------------------------------
+                                            int allocateQty = Math.Min(
+                                                bookoutRemainingQty,
+                                                remainingSOQty
+                                            );
+
+                                            if (allocateQty <= 0)
+                                                continue;
+
+                                            // -----------------------------------------------------
+                                            // 4. Create SO Allocation record
+                                            // -----------------------------------------------------
+                                            SO_Alloc_ListVM allocation = new SO_Alloc_ListVM()
+                                            {
+                                                PartId = sos.PartId,
+                                                SO_ID = sos.SalesOrderId,
+                                                Allocated_Qnty = allocateQty,
+                                                Dispatch_Complete = 'N',
+                                                Final_Dispatch_Qnty = 0
+                                            };
+
+                                            await _baService.PostSOAllocation(allocation);
+
+                                            // -----------------------------------------------------
+                                            // 5. Update Sales Order actual quantity
+                                            // -----------------------------------------------------
+                                            sos.ActQuantity += allocateQty;
+
+                                            // Prevent actual quantity from exceeding required quantity
+                                            if (sos.ActQuantity > sos.RequiredQuantity)
+                                            {
+                                                sos.ActQuantity = sos.RequiredQuantity;
+                                            }
+
+                                            // -----------------------------------------------------
+                                            // 6. Update SO balance quantity
+                                            // -----------------------------------------------------
+                                            sos.BalanceSOQty =
+                                                sos.RequiredQuantity - sos.ActQuantity;
+
+                                            if (sos.BalanceSOQty < 0)
+                                            {
+                                                sos.BalanceSOQty = 0;
+                                            }
+
+                                            // -----------------------------------------------------
+                                            // 7. Update SO status
+                                            // -----------------------------------------------------
+                                            if (sos.BalanceSOQty == 0)
+                                            {
+                                                // SO completely fulfilled
+                                                sos.Status = 5;
+
+                                                // sos. = DateTime.Now;
+                                            }
+                                            else
+                                            {
+                                                // Partial SO completion
+                                                // Keep your existing partial/in-progress status here
+                                            }
+
+                                            await _baService.PostSalesOrder(sos);
+
+                                            // -----------------------------------------------------
+                                            // 8. Reduce remaining bookout quantity
+                                            // -----------------------------------------------------
+                                            bookoutRemainingQty -= allocateQty;
+                                        }
+
+                                        // ---------------------------------------------------------
+                                        // 9. If quantity is still remaining, it was not required
+                                        //    by any linked Sales Order.
+                                        // ---------------------------------------------------------
+                                        if (bookoutRemainingQty > 0)
+                                        {
+                                            // Optional:
+                                            // Handle excess/unallocated production quantity here.
+                                        }
+
+                                        //get wosorel 
+                                        //if only one so one wo one implementation
+                                        //if one wo multiple so Different/multiple implementation implementation
+
+                                        //so allocation normal  
+                                    }
+
+                                }
+
+
+
+                            }
+
+
+
+                        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    }
+                    mc_Wait_Lists = await _woService.GetAllMc_Wait_List();
+
+                    // --------------------------------------------------------
+                    // 3. Get ALL wait records for this machine
+                    // --------------------------------------------------------
+
+                    var allMachineWaitList = mc_Wait_Lists
+                        .Where(x =>
+                            x.Mc_Id == result.Mc_Id 
+                     )
+                        .OrderBy(x => x.Wait_Seq_No)
+                        .ToList();
+
+
+                    // --------------------------------------------------------
+                    // 4. Take only active records
+                    //
+                    // Completed record has Seq_No = -1,
+                    // so don't include it in resequencing.
+                    // --------------------------------------------------------
+
+                    var activeMachineWaitList = allMachineWaitList
+                        .Where(x => x.Wait_Seq_No >= 0)
+                        .OrderBy(x => x.Wait_Seq_No)
+                        .ToList();
+
+
+                    // --------------------------------------------------------
+                    // 5. Recalculate Wait_Seq_No
+                    //
+                    // 0, 1, 2, 3...
+                    // --------------------------------------------------------
+
+                    long newSeqNo = 0;
+
+                    foreach (var wait in activeMachineWaitList)
+                    {
+                        wait.Wait_Seq_No = newSeqNo;
+
+                        await _woService.PostMc_Wait_List(wait);
+
+                        newSeqNo++;
+                    }
+                }
+
+
+
                 return Ok(result);
             }
             return Ok("Not Found McWait");
@@ -16930,9 +21689,10 @@ namespace CWB.App.Controllers
             await Task.WhenAll(cnfTask, approvalTask, bookoutTask, machinesTask);
 
             // 3. Extract Results
-            var waitingList = cnfTask.Result.ToList();
-            var approvalList = approvalTask.Result.ToList();
-            var bookoutList = bookoutTask.Result.ToList();
+            // same apis used for all wait ,aprroval and bookout
+            var waitingList = cnfTask.Result.Where(x=>x.Setup_Start_time==null).ToList();
+            var approvalList = cnfTask.Result.Where(x => x.Setup_Start_time != null && x.Setup_Apprvl_time==null).ToList();
+            var bookoutList = cnfTask.Result.Where(x => x.Setup_Start_time != null && x.Setup_Apprvl_time != null && x.Bal_Qnty>0).ToList();
 
             // 4. Create Machine Lookup for Shop Names (O(1) access)
             var machines = machinesTask.Result.ToDictionary(m => m.MachineId, m => m.Shop);
@@ -18037,6 +22797,7 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> SimulateWO(double cushionPercent = 10)
         {
+            //var machinenonavailability = await _woService.getmc
             var bomlist = await _woService.GetAllBomlist();
             var getprocplan = await _woService.GetAllProcPlan();
             var consolidatewomapping = await _woService.Getallconsolidationproductionwo();
@@ -18077,7 +22838,7 @@ namespace CWB.App.Controllers
                 while (true)
                 {
                     allTimeslots = await _woService.GetAllTimeslot_List();
-                    allactivemctimeslots = await _woService.GetAllMc_Timeslot_List();
+                    allMcTimeslots = await _woService.GetAllTempMc_Timeslot_List();
 
                     var plantSlots = allTimeslots
                         .Where(x => x.PlantId == machine.MachinePlantId &&
@@ -18127,7 +22888,7 @@ namespace CWB.App.Controllers
 
                     foreach (var slot in plantSlots)
                     {
-                        bool occupied = allactivemctimeslots.Any(x => x.Mc_Id == np.Mc_Id && x.Allocation == 3 &&
+                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == np.Mc_Id && (x.Allocation == 2||x.Allocation==6) &&
                         slot.Timeslot_ListId >= x.Timeslot_List_Id && slot.Timeslot_ListId <= x.EndTimeslot_List_Id);
                         if (occupied)
                         {                    // break the sequence 
@@ -18170,34 +22931,34 @@ namespace CWB.App.Controllers
 
 
 
-                var mcWait = new Mc_Wait_ListVM
+                var mcWait = new TempMc_Wait_ListVM
                 {
                     Wo_Id = 0,
                     Non_Plan_Wk = 'Y',
                     Non_Plan_wk_Id = np.Non_Plan_Wk_ListId,
                     Opr_No_Id = 0,
                     Mc_Id = np.Mc_Id,
-                    Wait_Seq_No = await CalculateNextWaitSeqNo(np.Mc_Id),
+                    Wait_Seq_No = await CalculateNextTempWaitSeqNo(np.Mc_Id),
                     Plan_start_time_Id = availableTimeslots.First().Timeslot_ListId,
                     Plan_end_time_Id = availableTimeslots.Last().Timeslot_ListId,
                     Mc_TPT = durationInMinutes,
                     Mode = 9, // Non-Plan mode
                     Plan_Qnty = 0
                 };
-                mcWait = await _woService.PostMc_Wait_List(mcWait);
+                mcWait = await _woService.PostTempMc_Wait_List(mcWait);
 
                 // Allocate in Mc_Timeslot_List
-                var newMcSlot = new Mc_Timeslot_ListVM
+                var newMcSlot = new TempMc_Timeslot_ListVM
                 {
                     Mc_Id = np.Mc_Id,
                     Timeslot_List_Id = availableTimeslots.First().Timeslot_ListId,
                     EndTimeslot_List_Id = availableTimeslots.Last().Timeslot_ListId,
-                    Mc_Wait_List_Id = mcWait.Mc_Wait_ListId,
-                    Allocation = 3, // Non-plan work//direct allocation
+                    Mc_Wait_List_Id = mcWait.TempMc_Wait_ListId,
+                    Allocation = 2, // Non-plan work//indirect allocation
                     Slot_Not_Avl = 'N',
                     Not_Avl_reason = 0
                 };
-                await _woService.PostMc_Timeslot_List(newMcSlot);
+                await _woService.PostTempMc_Timeslot_List(newMcSlot);
 
                 // Mark the non-plan record as allocated
                 np.Allocated = 'Y';
@@ -18303,7 +23064,7 @@ namespace CWB.App.Controllers
                             RoutingId = current.RoutingId,
                             RoutingStepLocation = Convert.ToInt64(current.StepLocation),
                             RoutingStepSequence = current.StepSequence,
-
+                            OprSequenceType=current.StepNextSequence,
                             Mode = 1,
                             Rework_Wo = 'N',
                             NC_Log_Ref = 0,
@@ -18900,7 +23661,7 @@ namespace CWB.App.Controllers
 
                                     foreach (var slot in plantSlots)
                                     {
-                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && x.Allocation == 2 &&
+                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && (x.Allocation == 2 || x.Allocation == 6) &&
                                         slot.Timeslot_ListId >= x.Timeslot_List_Id && slot.Timeslot_ListId <= x.EndTimeslot_List_Id);
                                         if (occupied)
                                         {                    // break the sequence 
@@ -19301,7 +24062,7 @@ namespace CWB.App.Controllers
 
             //master step2 fetch those cmps which have makefrom  as RM or BOF
             //then send this for simulation
-            var wowtihstatus = productions.Where(x => x.Status == 3 && x.PartType == 1 && x.For_Ref == 'N' &&x.Freeze==0).OrderBy(x => x.Sim_Seq_No).ThenBy(x => x.Calc_Capacity_Reqd).ToList();//makefrom  as RM or BOF
+            var wowtihstatus = productions.Where(x => (x.Status == 3 ||x.Status==10)&& x.PartType == 1 && x.For_Ref == 'N' &&x.Freeze==0).OrderBy(x => x.Sim_Seq_No).ThenBy(x => x.Calc_Capacity_Reqd).ToList();//makefrom  as RM or BOF
             List<ProductionPlan_WoVM> filterList = new List<ProductionPlan_WoVM>();
             foreach (var item in wowtihstatus)
             {
@@ -19334,17 +24095,26 @@ namespace CWB.App.Controllers
                     var woResult = await _woService.PostTempWo_Wait_List(addData);
                     readyWOs.Add(woResult);
                     var procplan = getprocplan.Where(x => x.WorkOrderId == item.WoId).FirstOrDefault();
-                    DateTime? nextWorkingDate;
-                    if(procplan!=null)
+                    DateTime? nextWorkingDate=null;
+                    if(item.Status==3)
                     {
-                        nextWorkingDate = await GetNextWorkingDate(wd, procplan.CalcReceiptDate, holidayList); 
+                        if (procplan != null)
+                        {
+                            nextWorkingDate = await GetNextWorkingDate(wd, procplan.CalcReceiptDate, holidayList);
+                        }
+                        else
+                        {
+                            var combinedwo = consolidatewomapping.Where(x => x.CombinedWoId == item.WoId).ToList();
+                            var combinedprocplan = getprocplan.Where(x => x.WorkOrderId == combinedwo.First().WoId).FirstOrDefault();
+                            nextWorkingDate = await GetNextWorkingDate(wd, combinedprocplan.CalcReceiptDate, holidayList);
+                        }
                     }
-                    else
+                    else if(item.Status==10)
                     {
-                        var combinedwo = consolidatewomapping.Where(x => x.CombinedWoId == item.WoId).ToList();
-                        var combinedprocplan = getprocplan.Where(x => x.WorkOrderId == combinedwo.First().WoId).FirstOrDefault();
-                        nextWorkingDate = await GetNextWorkingDate(wd, combinedprocplan.CalcReceiptDate, holidayList); 
+                         nextWorkingDate =  await GetNextWorkingDate(wd, DateTime.Today, holidayList);
                     }
+
+                   
 
                     #region Routing and Caculations
 
@@ -19410,7 +24180,7 @@ namespace CWB.App.Controllers
                             RoutingId = current.RoutingId,
                             RoutingStepLocation = Convert.ToInt64(current.StepLocation),
                             RoutingStepSequence = current.StepSequence,
-
+                            OprSequenceType = current.StepNextSequence,
                             Mode = 1,
                             Rework_Wo = 'N',
                             NC_Log_Ref = 0,
@@ -20005,7 +24775,7 @@ namespace CWB.App.Controllers
 
                                     foreach (var slot in plantSlots)
                                     {
-                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && x.Allocation == 2 &&
+                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && (x.Allocation == 2 || x.Allocation == 6) &&
                                         slot.Timeslot_ListId >= x.Timeslot_List_Id && slot.Timeslot_ListId <= x.EndTimeslot_List_Id);
                                         if (occupied)
                                         {                    // break the sequence 
@@ -20416,7 +25186,7 @@ namespace CWB.App.Controllers
             //master step 3 fetch those cmps which have makefrom as CMP
             var gettempwolist = await _woService.GetAllTempWo_Wait_List();
 
-            var wowtihstatuscmp = productions.Where(x => x.Status == 3 && x.PartType == 1 && x.For_Ref == 'N' &&x.Freeze==0).OrderBy(x => x.Sim_Seq_No).ThenBy(x => x.Calc_Capacity_Reqd).ToList();///makefrom== child ManufacturedPart
+            var wowtihstatuscmp = productions.Where(x => (x.Status == 3 || x.Status == 10) && x.PartType == 1 && x.For_Ref == 'N' &&x.Freeze==0).OrderBy(x => x.Sim_Seq_No).ThenBy(x => x.Calc_Capacity_Reqd).ToList();///makefrom== child ManufacturedPart
             List<ProductionPlan_WoVM> filterListcmp = new List<ProductionPlan_WoVM>();
             foreach (var item in wowtihstatuscmp)
             {
@@ -20451,27 +25221,37 @@ namespace CWB.App.Controllers
                     readyWOs.Add(woResult);
                     DateTime? nextWorkingDate= await GetNextWorkingDate(  wd,  DateTime.Now,  holidayList); 
                     //makepart from input part shoube be of the same parent woid else go for consolidated woid 
-                    var makefromwo = productions.Where(x => (x.Status == 3 || x.Status==10) && x.PartType == 1 && x.For_Ref == 'N' && x.PartId == item.Input_Part_No &&x.ParentWoId==item.ParentWoId).FirstOrDefault();
-                    if(makefromwo!=null)
+                    if(item.Status==3)
                     {
-                        var operationwo = gettempwolist.Where(x => x.Wo_Id == makefromwo.WoId).FirstOrDefault();
-                        if(operationwo!=null)
+                        var makefromwo = productions.Where(x => (x.Status == 3 || x.Status == 10) && x.PartType == 1 && x.For_Ref == 'N' && x.PartId == item.Input_Part_No && (x.ParentWoId == item.ParentWoId|| x.ParentWoId== item.WoId)).FirstOrDefault();
+                        if (makefromwo != null)
                         {
-                            nextWorkingDate = await GetNextWorkingDate(wd, operationwo.Plan_End_Date, holidayList);
+                            var operationwo = gettempwolist.Where(x => x.Wo_Id == makefromwo.WoId).FirstOrDefault();
+                            if (operationwo != null)
+                            {
+                                nextWorkingDate = await GetNextWorkingDate(wd, operationwo.Plan_End_Date, holidayList);
+                            }
+
                         }
-                        
-                    }
-                    else
-                    {
-                        //if makefrom wo is not directly available // --- it is a consolidated makefrom 
-                        var combinedmakefromwo = productions.Where(x => x.Status == 3 && x.PartType == 1 && x.For_Ref == 'N' && x.PartId == item.Input_Part_No && x.Combined_WO=='Y').FirstOrDefault();
-                        var operationwo = gettempwolist.Where(x => x.Wo_Id == combinedmakefromwo.WoId).FirstOrDefault();
-                        if(operationwo!=null)
+                        else
                         {
-                            nextWorkingDate = await GetNextWorkingDate(wd, operationwo.Plan_End_Date, holidayList);
+                            //if makefrom wo is not directly available // --- it is a consolidated makefrom 
+                            var combinedmakefromwo = productions.Where(x => x.Status == 3 && x.PartType == 1 && x.For_Ref == 'N' && x.PartId == item.Input_Part_No && x.Combined_WO == 'Y').FirstOrDefault();
+                            var operationwo = gettempwolist.Where(x => x.Wo_Id == combinedmakefromwo.WoId).FirstOrDefault();
+                            if (operationwo != null)
+                            {
+                                nextWorkingDate = await GetNextWorkingDate(wd, operationwo.Plan_End_Date, holidayList);
+                            }
+
                         }
-                        
                     }
+
+                    else if(item.Status==10)
+                        {
+                         nextWorkingDate =
+                    await GetNextWorkingDate(wd, DateTime.Today, holidayList);
+                    }
+                    
                     #region Routing and Caculations
 
 
@@ -20536,7 +25316,7 @@ namespace CWB.App.Controllers
                             RoutingId = current.RoutingId,
                             RoutingStepLocation = Convert.ToInt64(current.StepLocation),
                             RoutingStepSequence = current.StepSequence,
-
+                            OprSequenceType = current.StepNextSequence,
                             Mode = 1,
                             Rework_Wo = 'N',
                             NC_Log_Ref = 0,
@@ -21147,7 +25927,7 @@ namespace CWB.App.Controllers
 
                                     foreach (var slot in plantSlots)
                                     {
-                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && x.Allocation == 2 &&
+                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && (x.Allocation == 2 || x.Allocation == 6) &&
                                         slot.Timeslot_ListId >= x.Timeslot_List_Id && slot.Timeslot_ListId <= x.EndTimeslot_List_Id);
                                         if (occupied)
                                         {                    // break the sequence 
@@ -21575,13 +26355,13 @@ namespace CWB.App.Controllers
             //master step4 fetch those assemblies which are not sold to customer i.e subassemblies
             var gettempwosubbomlist = await _woService.GetAllTempWo_Wait_List();
             productions = await _woService.AllProductionPlan_Wo();
-            var subassemblies = productions.Where(x => x.Status == 3 && x.PartType == 2 && x.For_Ref == 'N' && x.Freeze == 0 && x.Parentlevel == 'N').OrderBy(x => x.Sim_Seq_No)
+            var subassemblies = productions.Where(x => (x.Status == 3 || x.Status == 10) && x.PartType == 2 && x.For_Ref == 'N' && x.Freeze == 0 && x.Parentlevel == 'N').OrderBy(x => x.Sim_Seq_No)
     .ThenByDescending(x => x.WOLevel).ThenBy(x => x.Calc_Capacity_Reqd).ToList();
             if(subassemblies.Any())
             {
                 List<TempWO_Wait_ListVM> readyWOs = new List<TempWO_Wait_ListVM>();
                 var allOprswo = new List<TempOpr_ListVM>();
-                foreach(var item in subassemblies)
+                foreach (var item in subassemblies)
                 {
                     productions = await _woService.AllProductionPlan_Wo();
                     gettempwosubbomlist = await _woService.GetAllTempWo_Wait_List();
@@ -21602,147 +26382,152 @@ namespace CWB.App.Controllers
                     readyWOs.Add(woResult);
                     DateTime? nextWorkingDate = await GetNextWorkingDate(wd, DateTime.Now, holidayList);
                     //not consolidated list 
-                                                                                                        // BOM of current WO
-                    var subbomlist = bomlist.Where(x => x.ProcPlanId == item.ProductionPlanId ).ToList();
-                    if(item.Combined_WO!='Y')
-                    {
-                        List<ProductionPlan_WoVM> bomwofreeze =      new List<ProductionPlan_WoVM>();
-                        foreach(var data in subbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
-                        {
-                            ProductionPlan_WoVM production = productions.FirstOrDefault(x => x.PartId == data.Child_Part_No_ID && x.ParentWoId == item.ParentWoId);
-                            if (production == null)
+                    if (item.Status == 3)   {                                                                             // BOM of current WO
+                        var subbomlist = bomlist.Where(x => x.ProcPlanId == item.ProductionPlanId).ToList();
+                            if (item.Combined_WO != 'Y')
                             {
-                                continue; // or allChildrenReady = false;
-                            }
-                            if (production.For_Ref=='N' && production.Freeze==1)
-                            {
-                                bomwofreeze.Add(production);
-                            }
-                            else if(production.For_Ref=='Y')
-                            {
-                                var combinedproduction = consolidatewomapping.Where(x => x.WoId == production.WoId).FirstOrDefault();
-                                var combinedwo = productions.FirstOrDefault(x => x.WoId == combinedproduction.CombinedWoId && x.Freeze == 1);
-                                if(combinedwo!=null)
+                                List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
+                                foreach (var data in subbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
                                 {
-                                    bomwofreeze.Add(combinedwo);
-                                }
-
-
-                            }
-
-                        }
-                        var procplans = getprocplan
-                            .Where(x => x.WorkOrderId == item.WoId)
-                            .ToList();
-                        // Get simulated WO dates of all child WOs
-                        List<TempWO_Wait_ListVM> simwo =
-                            new List<TempWO_Wait_ListVM>();
-
-                        foreach (var child in bomwofreeze)
-                        {
-                            var temp = gettempwosubbomlist
-                                .FirstOrDefault(x => x.Wo_Id == child.WoId);
-
-                            if (temp != null)
-                                simwo.Add(temp);
-                        }
-
-                        // Maximum child completion date
-                        DateTime maxPlanEndDate =
-                            simwo.Any()
-                                ? simwo.Max(x => x.Plan_End_Date)
-                                : DateTime.MinValue;
-
-                        // Maximum procurement receipt date
-                        DateTime procplanmaxDate =
-                            procplans.Any()
-                                ? procplans.Max(x => x.CalcReceiptDate)
-                                : DateTime.MinValue;
-
-                        // Parent can start only after both are complete
-                        DateTime nextDate =
-                            maxPlanEndDate > procplanmaxDate
-                                ? maxPlanEndDate
-                                : procplanmaxDate;
-
-                        nextWorkingDate =
-                            await GetNextWorkingDate(wd, nextDate, holidayList);
-
-
-
-
-
-
-
-                    }
-
-                    else if(item.Combined_WO=='Y')
-                    {
-                        var multiplewo = consolidatewomapping.Where(x => x.CombinedWoId == item.WoId).ToList();
-                        List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
-                        List<ProcPlanVM> childproc = new List<ProcPlanVM>();
-                        List<TempWO_Wait_ListVM> simwo = new List<TempWO_Wait_ListVM>();
-                        foreach (var childwo in multiplewo)
-                        {
-                            var production = productions.Where(x => x.WoId == childwo.WoId).FirstOrDefault();
-
-                            var childbomlist=bomlist.Where(x => x.ProcPlanId == production.ProductionPlanId).ToList();
-                            foreach (var data in childbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
-                            {
-                                ProductionPlan_WoVM childproduction = productions.FirstOrDefault(x => x.PartId == data.Child_Part_No_ID && x.ParentWoId == production.ParentWoId);
-
-                                if (childproduction.For_Ref == 'N' && childproduction.Freeze == 1)
-                                {
-                                    bomwofreeze.Add(childproduction);
-                                }
-                                else if (childproduction.For_Ref == 'Y')
-                                {
-                                    var combinedproduction = consolidatewomapping.Where(x => x.WoId == childproduction.WoId).FirstOrDefault();
-                                    var combinedwo = productions.FirstOrDefault(x => x.WoId == combinedproduction.CombinedWoId && x.Freeze == 1);
-                                    if (combinedwo != null)
+                                    ProductionPlan_WoVM production = productions.FirstOrDefault(x => x.PartId == data.Child_Part_No_ID && x.ParentWoId == item.ParentWoId);
+                                    if (production == null)
                                     {
-                                        bomwofreeze.Add(combinedwo);
+                                        continue; // or allChildrenReady = false;
+                                    }
+                                    if (production.For_Ref == 'N' && production.Freeze == 1)
+                                    {
+                                        bomwofreeze.Add(production);
+                                    }
+                                    else if (production.For_Ref == 'Y')
+                                    {
+                                        var combinedproduction = consolidatewomapping.Where(x => x.WoId == production.WoId).FirstOrDefault();
+                                        var combinedwo = productions.FirstOrDefault(x => x.WoId == combinedproduction.CombinedWoId && x.Freeze == 1);
+                                        if (combinedwo != null)
+                                        {
+                                            bomwofreeze.Add(combinedwo);
+                                        }
+
+
                                     }
 
+                                }
+                                var procplans = getprocplan
+                                    .Where(x => x.WorkOrderId == item.WoId)
+                                    .ToList();
+                                // Get simulated WO dates of all child WOs
+                                List<TempWO_Wait_ListVM> simwo =
+                                    new List<TempWO_Wait_ListVM>();
+
+                                foreach (var child in bomwofreeze)
+                                {
+                                    var temp = gettempwosubbomlist
+                                        .FirstOrDefault(x => x.Wo_Id == child.WoId);
+
+                                    if (temp != null)
+                                        simwo.Add(temp);
+                                }
+
+                                // Maximum child completion date
+                                DateTime maxPlanEndDate =
+                                    simwo.Any()
+                                        ? simwo.Max(x => x.Plan_End_Date)
+                                        : DateTime.MinValue;
+
+                                // Maximum procurement receipt date
+                                DateTime procplanmaxDate =
+                                    procplans.Any()
+                                        ? procplans.Max(x => x.CalcReceiptDate)
+                                        : DateTime.MinValue;
+
+                                // Parent can start only after both are complete
+                                DateTime nextDate =
+                                    maxPlanEndDate > procplanmaxDate
+                                        ? maxPlanEndDate
+                                        : procplanmaxDate;
+
+                                nextWorkingDate =
+                                    await GetNextWorkingDate(wd, nextDate, holidayList);
+
+
+
+
+
+
+
+                            }
+
+                            else if (item.Combined_WO == 'Y')
+                            {
+                                var multiplewo = consolidatewomapping.Where(x => x.CombinedWoId == item.WoId).ToList();
+                                List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
+                                List<ProcPlanVM> childproc = new List<ProcPlanVM>();
+                                List<TempWO_Wait_ListVM> simwo = new List<TempWO_Wait_ListVM>();
+                                foreach (var childwo in multiplewo)
+                                {
+                                    var production = productions.Where(x => x.WoId == childwo.WoId).FirstOrDefault();
+
+                                    var childbomlist = bomlist.Where(x => x.ProcPlanId == production.ProductionPlanId).ToList();
+                                    foreach (var data in childbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
+                                    {
+                                        ProductionPlan_WoVM childproduction = productions.FirstOrDefault(x => x.PartId == data.Child_Part_No_ID && x.ParentWoId == production.ParentWoId);
+
+                                        if (childproduction.For_Ref == 'N' && childproduction.Freeze == 1)
+                                        {
+                                            bomwofreeze.Add(childproduction);
+                                        }
+                                        else if (childproduction.For_Ref == 'Y')
+                                        {
+                                            var combinedproduction = consolidatewomapping.Where(x => x.WoId == childproduction.WoId).FirstOrDefault();
+                                            var combinedwo = productions.FirstOrDefault(x => x.WoId == combinedproduction.CombinedWoId && x.Freeze == 1);
+                                            if (combinedwo != null)
+                                            {
+                                                bomwofreeze.Add(combinedwo);
+                                            }
+
+
+                                        }
+                                    }
+                                    var procplans = getprocplan
+                                   .Where(x => x.WorkOrderId == production.WoId)
+                                   .ToList();
+                                    childproc.AddRange(procplans);
 
                                 }
+                                foreach (var child in bomwofreeze)
+                                {
+                                    var temp = gettempwosubbomlist
+                                        .FirstOrDefault(x => x.Wo_Id == child.WoId);
+
+                                    if (temp != null)
+                                        simwo.Add(temp);
+                                }
+                                DateTime maxPlanEndDate =
+                                    simwo.Any()
+                                        ? simwo.Max(x => x.Plan_End_Date)
+                                        : DateTime.MinValue;
+
+                                // Maximum procurement receipt date
+                                DateTime procplanmaxDate =
+                                    childproc.Any()
+                                        ? childproc.Max(x => x.CalcReceiptDate)
+                                        : DateTime.MinValue;
+
+                                // Parent can start only after both are complete
+                                DateTime nextDate =
+                                    maxPlanEndDate > procplanmaxDate
+                                        ? maxPlanEndDate
+                                        : procplanmaxDate;
+
+                                nextWorkingDate =
+                                    await GetNextWorkingDate(wd, nextDate, holidayList);
+
                             }
-                            var procplans = getprocplan
-                           .Where(x => x.WorkOrderId == production.WoId)
-                           .ToList();
-                            childproc.AddRange(procplans);
-                           
-                        }
-                        foreach (var child in bomwofreeze)
-                        {
-                            var temp = gettempwosubbomlist
-                                .FirstOrDefault(x => x.Wo_Id == child.WoId);
-
-                            if (temp != null)
-                                simwo.Add(temp);
-                        }
-                        DateTime maxPlanEndDate =
-                            simwo.Any()
-                                ? simwo.Max(x => x.Plan_End_Date)
-                                : DateTime.MinValue;
-
-                        // Maximum procurement receipt date
-                        DateTime procplanmaxDate =
-                            childproc.Any()
-                                ? childproc.Max(x => x.CalcReceiptDate)
-                                : DateTime.MinValue;
-
-                        // Parent can start only after both are complete
-                        DateTime nextDate =
-                            maxPlanEndDate > procplanmaxDate
-                                ? maxPlanEndDate
-                                : procplanmaxDate;
-
-                        nextWorkingDate =
-                            await GetNextWorkingDate(wd, nextDate, holidayList);
-
                     }
-                   
+                    else if (item.Status==10)
+                    {
+                        nextWorkingDate =
+                    await GetNextWorkingDate(wd, DateTime.Today, holidayList);
+                    }
 
 
 
@@ -21811,7 +26596,7 @@ namespace CWB.App.Controllers
                             RoutingId = current.RoutingId,
                             RoutingStepLocation = Convert.ToInt64(current.StepLocation),
                             RoutingStepSequence = current.StepSequence,
-
+                            OprSequenceType = current.StepNextSequence,
                             Mode = 1,
                             Rework_Wo = 'N',
                             NC_Log_Ref = 0,
@@ -22405,7 +27190,7 @@ namespace CWB.App.Controllers
 
                                     foreach (var slot in plantSlots)
                                     {
-                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && x.Allocation == 2 &&
+                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && (x.Allocation == 2 || x.Allocation == 6) &&
                                         slot.Timeslot_ListId >= x.Timeslot_List_Id && slot.Timeslot_ListId <= x.EndTimeslot_List_Id);
                                         if (occupied)
                                         {                    // break the sequence 
@@ -22814,7 +27599,7 @@ namespace CWB.App.Controllers
             //master step5 fetch those assemblies which are  sold to customer i.e Parentassemblies
             var gettempwobomlist = await _woService.GetAllTempWo_Wait_List();
             productions = await _woService.AllProductionPlan_Wo();
-            var parentassemblies = productions.Where(x =>   x.Status == 3 &&   x.PartType == 2 &&  x.For_Ref == 'N' &&  
+            var parentassemblies = productions.Where(x => (x.Status == 3 || x.Status == 10) &&   x.PartType == 2 &&  x.For_Ref == 'N' &&  
             x.Freeze == 0 && x.Parentlevel == 'Y') .OrderByDescending(x => x.WOLevel).ThenBy(x => x.Calc_Capacity_Reqd).ToList();
             if(parentassemblies.Any())
             {
@@ -22840,146 +27625,153 @@ namespace CWB.App.Controllers
                     var woResult = await _woService.PostTempWo_Wait_List(addData);
                     readyWOs.Add(woResult);
                     DateTime? nextWorkingDate = await GetNextWorkingDate(wd, DateTime.Now, holidayList);
-                    var subbomlist = bomlist.Where(x => x.ProcPlanId == item.ProductionPlanId).ToList();
-                    if (item.Combined_WO != 'Y')
-                    {
-                        List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
-                        foreach (var data in subbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
-                        {
-                            ProductionPlan_WoVM production = productions.FirstOrDefault(x => x.PartId == data.Child_Part_No_ID && x.ParentWoId == data.ParentWoId);
-                            if (production == null)
+
+                    if (item.Status == 3) { 
+                        var subbomlist = bomlist.Where(x => x.ProcPlanId == item.ProductionPlanId).ToList();
+                            if (item.Combined_WO != 'Y')
                             {
-                                continue; // or allChildrenReady = false;
-                            }
-                            if (production.For_Ref == 'N' && production.Freeze == 1)
-                            {
-                                bomwofreeze.Add(production);
-                            }
-                            else if (production.For_Ref == 'Y')
-                            {
-                                var combinedproduction = consolidatewomapping.Where(x => x.WoId == production.WoId).FirstOrDefault();
-                                var combinedwo = productions.FirstOrDefault(x => x.WoId == combinedproduction.CombinedWoId && x.Freeze == 1);
-                                if (combinedwo != null)
+                                List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
+                                foreach (var data in subbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
                                 {
-                                    bomwofreeze.Add(combinedwo);
-                                }
-
-
-                            }
-
-                        }
-                        var procplans = getprocplan
-                            .Where(x => x.WorkOrderId == item.WoId)
-                            .ToList();
-                        // Get simulated WO dates of all child WOs
-                        List<TempWO_Wait_ListVM> simwo =
-                            new List<TempWO_Wait_ListVM>();
-
-                        foreach (var child in bomwofreeze)
-                        {
-                            var temp = gettempwobomlist
-                                .FirstOrDefault(x => x.Wo_Id == child.WoId);
-
-                            if (temp != null)
-                                simwo.Add(temp);
-                        }
-
-                        // Maximum child completion date
-                        DateTime maxPlanEndDate =
-                            simwo.Any()
-                                ? simwo.Max(x => x.Plan_End_Date)
-                                : DateTime.MinValue;
-
-                        // Maximum procurement receipt date
-                        DateTime procplanmaxDate =
-                            procplans.Any()
-                                ? procplans.Max(x => x.CalcReceiptDate)
-                                : DateTime.MinValue;
-
-                        // Parent can start only after both are complete
-                        DateTime nextDate =
-                            maxPlanEndDate > procplanmaxDate
-                                ? maxPlanEndDate
-                                : procplanmaxDate;
-
-                        nextWorkingDate =
-                            await GetNextWorkingDate(wd, nextDate, holidayList);
-
-
-
-
-
-
-
-                    }
-
-                    else if (item.Combined_WO == 'Y')
-                    {
-                        var multiplewo = consolidatewomapping.Where(x => x.CombinedWoId == item.WoId).ToList();
-                        List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
-                        List<ProcPlanVM> childproc = new List<ProcPlanVM>();
-                        List<TempWO_Wait_ListVM> simwo = new List<TempWO_Wait_ListVM>();
-                        foreach (var childwo in multiplewo)
-                        {
-                            var production = productions.Where(x => x.WoId == childwo.WoId).FirstOrDefault();
-
-                            var childbomlist = bomlist.Where(x => x.ProcPlanId == production.ProductionPlanId).ToList();
-                            foreach (var data in childbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
-                            {
-                                ProductionPlan_WoVM childproduction = productions.FirstOrDefault(x => x.PartId == data.Child_Part_No_ID && x.ParentWoId == data.ParentWoId);
-
-                                if (childproduction.For_Ref == 'N' && childproduction.Freeze == 1)
-                                {
-                                    bomwofreeze.Add(childproduction);
-                                }
-                                else if (childproduction.For_Ref == 'Y')
-                                {
-                                    var combinedproduction = consolidatewomapping.Where(x => x.WoId == childproduction.WoId).FirstOrDefault();
-                                    var combinedwo = productions.FirstOrDefault(x => x.WoId == combinedproduction.CombinedWoId && x.Freeze == 1);
-                                    if (combinedwo != null)
+                                    ProductionPlan_WoVM production = productions.FirstOrDefault(x => x.PartId == data.Child_Part_No_ID && x.ParentWoId == data.ParentWoId);
+                                    if (production == null)
                                     {
-                                        bomwofreeze.Add(combinedwo);
+                                        continue; // or allChildrenReady = false;
+                                    }
+                                    if (production.For_Ref == 'N' && production.Freeze == 1)
+                                    {
+                                        bomwofreeze.Add(production);
+                                    }
+                                    else if (production.For_Ref == 'Y')
+                                    {
+                                        var combinedproduction = consolidatewomapping.Where(x => x.WoId == production.WoId).FirstOrDefault();
+                                        var combinedwo = productions.FirstOrDefault(x => x.WoId == combinedproduction.CombinedWoId && x.Freeze == 1);
+                                        if (combinedwo != null)
+                                        {
+                                            bomwofreeze.Add(combinedwo);
+                                        }
+
+
                                     }
 
+                                }
+                                var procplans = getprocplan
+                                    .Where(x => x.WorkOrderId == item.WoId)
+                                    .ToList();
+                                // Get simulated WO dates of all child WOs
+                                List<TempWO_Wait_ListVM> simwo =
+                                    new List<TempWO_Wait_ListVM>();
+
+                                foreach (var child in bomwofreeze)
+                                {
+                                    var temp = gettempwobomlist
+                                        .FirstOrDefault(x => x.Wo_Id == child.WoId);
+
+                                    if (temp != null)
+                                        simwo.Add(temp);
+                                }
+
+                                // Maximum child completion date
+                                DateTime maxPlanEndDate =
+                                    simwo.Any()
+                                        ? simwo.Max(x => x.Plan_End_Date)
+                                        : DateTime.MinValue;
+
+                                // Maximum procurement receipt date
+                                DateTime procplanmaxDate =
+                                    procplans.Any()
+                                        ? procplans.Max(x => x.CalcReceiptDate)
+                                        : DateTime.MinValue;
+
+                                // Parent can start only after both are complete
+                                DateTime nextDate =
+                                    maxPlanEndDate > procplanmaxDate
+                                        ? maxPlanEndDate
+                                        : procplanmaxDate;
+
+                                nextWorkingDate =
+                                    await GetNextWorkingDate(wd, nextDate, holidayList);
+
+
+
+
+
+
+
+                            }
+
+                            else if (item.Combined_WO == 'Y')
+                            {
+                                var multiplewo = consolidatewomapping.Where(x => x.CombinedWoId == item.WoId).ToList();
+                                List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
+                                List<ProcPlanVM> childproc = new List<ProcPlanVM>();
+                                List<TempWO_Wait_ListVM> simwo = new List<TempWO_Wait_ListVM>();
+                                foreach (var childwo in multiplewo)
+                                {
+                                    var production = productions.Where(x => x.WoId == childwo.WoId).FirstOrDefault();
+
+                                    var childbomlist = bomlist.Where(x => x.ProcPlanId == production.ProductionPlanId).ToList();
+                                    foreach (var data in childbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
+                                    {
+                                        ProductionPlan_WoVM childproduction = productions.FirstOrDefault(x => x.PartId == data.Child_Part_No_ID && x.ParentWoId == data.ParentWoId);
+
+                                        if (childproduction.For_Ref == 'N' && childproduction.Freeze == 1)
+                                        {
+                                            bomwofreeze.Add(childproduction);
+                                        }
+                                        else if (childproduction.For_Ref == 'Y')
+                                        {
+                                            var combinedproduction = consolidatewomapping.Where(x => x.WoId == childproduction.WoId).FirstOrDefault();
+                                            var combinedwo = productions.FirstOrDefault(x => x.WoId == combinedproduction.CombinedWoId && x.Freeze == 1);
+                                            if (combinedwo != null)
+                                            {
+                                                bomwofreeze.Add(combinedwo);
+                                            }
+
+
+                                        }
+                                    }
+                                    var procplans = getprocplan
+                                   .Where(x => x.WorkOrderId == production.WoId)
+                                   .ToList();
+                                    childproc.AddRange(procplans);
 
                                 }
+                                foreach (var child in bomwofreeze)
+                                {
+                                    var temp = gettempwobomlist
+                                        .FirstOrDefault(x => x.Wo_Id == child.WoId);
+
+                                    if (temp != null)
+                                        simwo.Add(temp);
+                                }
+                                DateTime maxPlanEndDate =
+                                    simwo.Any()
+                                        ? simwo.Max(x => x.Plan_End_Date)
+                                        : DateTime.MinValue;
+
+                                // Maximum procurement receipt date
+                                DateTime procplanmaxDate =
+                                    childproc.Any()
+                                        ? childproc.Max(x => x.CalcReceiptDate)
+                                        : DateTime.MinValue;
+
+                                // Parent can start only after both are complete
+                                DateTime nextDate =
+                                    maxPlanEndDate > procplanmaxDate
+                                        ? maxPlanEndDate
+                                        : procplanmaxDate;
+
+                                nextWorkingDate =
+                                    await GetNextWorkingDate(wd, nextDate, holidayList);
+
                             }
-                            var procplans = getprocplan
-                           .Where(x => x.WorkOrderId == production.WoId)
-                           .ToList();
-                            childproc.AddRange(procplans);
-
-                        }
-                        foreach (var child in bomwofreeze)
-                        {
-                            var temp = gettempwobomlist
-                                .FirstOrDefault(x => x.Wo_Id == child.WoId);
-
-                            if (temp != null)
-                                simwo.Add(temp);
-                        }
-                        DateTime maxPlanEndDate =
-                            simwo.Any()
-                                ? simwo.Max(x => x.Plan_End_Date)
-                                : DateTime.MinValue;
-
-                        // Maximum procurement receipt date
-                        DateTime procplanmaxDate =
-                            childproc.Any()
-                                ? childproc.Max(x => x.CalcReceiptDate)
-                                : DateTime.MinValue;
-
-                        // Parent can start only after both are complete
-                        DateTime nextDate =
-                            maxPlanEndDate > procplanmaxDate
-                                ? maxPlanEndDate
-                                : procplanmaxDate;
-
+                     }
+                    else if(item.Status==10)
+                    {
                         nextWorkingDate =
-                            await GetNextWorkingDate(wd, nextDate, holidayList);
-
+                    await GetNextWorkingDate(wd, DateTime.Today, holidayList);
                     }
-
 
                     #region Routing and Caculations
 
@@ -23045,7 +27837,7 @@ namespace CWB.App.Controllers
                             RoutingId = current.RoutingId,
                             RoutingStepLocation = Convert.ToInt64(current.StepLocation),
                             RoutingStepSequence = current.StepSequence,
-
+                            OprSequenceType = current.StepNextSequence,
                             Mode = 1,
                             Rework_Wo = 'N',
                             NC_Log_Ref = 0,
@@ -23641,7 +28433,7 @@ namespace CWB.App.Controllers
 
                                     foreach (var slot in plantSlots)
                                     {
-                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && x.Allocation == 2 &&
+                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && (x.Allocation == 2 || x.Allocation == 6) &&
                                         slot.Timeslot_ListId >= x.Timeslot_List_Id && slot.Timeslot_ListId <= x.EndTimeslot_List_Id);
                                         if (occupied)
                                         {                    // break the sequence 
@@ -25579,7 +30371,7 @@ namespace CWB.App.Controllers
         public async Task<IActionResult> FreezeSimulation()
         {
             // Load everything once
-            
+            var actualMcWaits = (await _woService.GetAllMc_Wait_List()).ToList(); 
             var tempWOs = await _woService.GetAllTempWo_Wait_List();
             var actualWOs = await _woService.GetAllWO_Wait_List();
             var tempOprs = await _woService.GetAllTempOpr_List();
@@ -25626,6 +30418,7 @@ namespace CWB.App.Controllers
                         RoutingId = tempopr.RoutingId,
                         RoutingStepLocation = tempopr.RoutingStepLocation,
                         RoutingStepSequence = tempopr.RoutingStepSequence,
+                        OprSequenceType=tempopr.OprSequenceType,
                         Initial_Opr_TPT = tempopr.Initial_Opr_TPT,
                         Rolledup_Opr_TPT = tempopr.Rolledup_Opr_TPT,
                         Rework_Wo = tempopr.Rework_Wo,
@@ -25666,6 +30459,7 @@ namespace CWB.App.Controllers
                         Mc_Id = tempmw.Mc_Id,
                         Wait_Seq_No = tempmw.Wait_Seq_No,
                         Plan_Qnty = tempmw.Plan_Qnty,
+                        Bal_Qnty= tempmw.Plan_Qnty,
                         Rework_Wo = tempmw.Rework_Wo,
                         Non_Plan_Wk = tempmw.Non_Plan_Wk,
                         Non_Plan_wk_Id = tempmw.Non_Plan_wk_Id,
@@ -25773,6 +30567,113 @@ namespace CWB.App.Controllers
 
 
             }
+            #region Freeze Non-Plan Work
+
+            var tempNonPlanMcWaits = tempMcWaits
+                .Where(x =>
+                    x.Non_Plan_Wk == 'Y' &&
+                    x.Non_Plan_wk_Id > 0)
+                .ToList();
+
+            foreach (var tempmw in tempNonPlanMcWaits)
+            {
+                
+
+                // Check whether this Non-Plan Work is already present
+                // in the main Mc_Wait_List table.
+                bool alreadyExists = actualMcWaits.Any(x =>
+                    x.Non_Plan_Wk == 'Y' &&
+                    x.Non_Plan_wk_Id == tempmw.Non_Plan_wk_Id);
+
+                if (alreadyExists)
+                    continue;
+
+                // Create main Machine Wait record
+                var mw = new Mc_Wait_ListVM()
+                {
+                    Wo_Id = 0,
+                    Opr_No_Id = tempmw.Opr_No_Id,
+                    Mc_Id = tempmw.Mc_Id,
+                    Wait_Seq_No = tempmw.Wait_Seq_No,
+
+                    Plan_Qnty = tempmw.Plan_Qnty,
+                    Bal_Qnty = tempmw.Plan_Qnty,
+
+                    Rework_Wo = tempmw.Rework_Wo,
+
+                    Non_Plan_Wk = 'Y',
+                    Non_Plan_wk_Id = tempmw.Non_Plan_wk_Id,
+
+                    Plan_start_time_Id = tempmw.Plan_start_time_Id,
+                    Plan_end_time_Id = tempmw.Plan_end_time_Id,
+
+                    Next_Opr_Start_time_Id = tempmw.Next_Opr_Start_time_Id,
+
+                    Setup_Apprvl_time = tempmw.Setup_Apprvl_time,
+                    Act_End_time = tempmw.Act_End_time,
+
+                    Mc_TPT = tempmw.Mc_TPT,
+                    Setup_Start_time = tempmw.Setup_Start_time,
+
+                    Mode = 2
+                };
+
+                var activeMW = await _woService.PostMc_Wait_List(mw);
+
+                // Copy only the Temp slots belonging to this Temp Mc Wait
+                var slots = tempMcSlots
+                    .Where(x => x.Mc_Wait_List_Id == tempmw.TempMc_Wait_ListId)
+                    .ToList();
+
+                foreach (var tempslot in slots)
+                {
+                    var slot = new Mc_Timeslot_ListVM()
+                    {
+                        Timeslot_List_Id = tempslot.Timeslot_List_Id,
+                        EndTimeslot_List_Id = tempslot.EndTimeslot_List_Id,
+
+                        Mc_Id = tempslot.Mc_Id,
+
+                        Mc_Wait_List_Id = activeMW.Mc_Wait_ListId,
+
+                        Slot_Not_Avl = tempslot.Slot_Not_Avl,
+                        Not_Avl_reason = tempslot.Not_Avl_reason,
+
+                        Allocation = 3
+                    };
+
+                    await _woService.PostMc_Timeslot_List(slot);
+                }
+
+                // Add this newly frozen record to our in-memory list.
+                // This is important if the same Non-Plan Work appears
+                // more than once in tempMcWaits during this Freeze call.
+                actualMcWaits.Add(activeMW);
+            }
+
+            #endregion
+
+            var tempNonAvailabilitySlots = tempMcSlots
+    .Where(x => x.Allocation == 6)
+    .ToList();
+
+            foreach (var tempslot in tempNonAvailabilitySlots)
+            {
+                var slot = new Mc_Timeslot_ListVM
+                {
+                    Timeslot_List_Id = tempslot.Timeslot_List_Id,
+                    EndTimeslot_List_Id = tempslot.EndTimeslot_List_Id,
+                    Mc_Id = tempslot.Mc_Id,
+                    Mc_Wait_List_Id = 0,
+                    Slot_Not_Avl = 'Y',
+                    Not_Avl_reason = tempslot.Not_Avl_reason,
+                    Allocation = 6
+                };
+
+                await _woService.PostMc_Timeslot_List(slot);
+            }
+
+
             if (subconlist.Any())
             {
                 var result = await _woService.ProcPlanPost(subconlist);
@@ -25839,7 +30740,7 @@ namespace CWB.App.Controllers
                             Immediate_Movmt = 'N',
 
                             Issue_Mov_Compl = 'N',
-
+                            Issued='N',
                             From_Location = departments.Stores_DirMatl_ID,
 
                             From_Loc_Flag = "Int",
@@ -25872,7 +30773,7 @@ namespace CWB.App.Controllers
                             Issue_Qnty = input.Plan_Alloc_Qnty,
 
                             Issue_Mov_date = issueDate,
-
+                            Issued = 'N',
                             Immediate_Movmt = 'N',
 
                             Issue_Mov_Compl = 'N',
@@ -25886,7 +30787,7 @@ namespace CWB.App.Controllers
                             To_Loc_Flag = "Ext",
 
                             Mode = 3
-                        });
+                        }) ;
 
 
 
@@ -29286,7 +34187,7 @@ namespace CWB.App.Controllers
         {
 
             var Departments = await _departmentService.GetDepartments(13);
-            var allprductionwo = await _woService.AllProductionWoReadForProd();
+            var allprductionwo = await _woService.AllProductionPlan_Wo();
 
             var livewowaitlist = await _woService.GetAllWO_Wait_List();
             var tempwowaitlist = await _woService.GetAllTempWo_Wait_List();
@@ -29685,9 +34586,45 @@ namespace CWB.App.Controllers
             return Ok(vm);
 
         }
+        [HttpGet]
+        public async Task<IActionResult> GetStoresLocation()
+        {
+            var departments = await _departmentService.GetDepartments(1);
 
+            var stores = departments
+                .Where(x => x.Stores_DirectMatl == 'Y')
+                .Select(x => new
+                {
+                    id = x.DepartmentId,
+                    name = x.Name
+                })
+                .ToList();
 
+            return Json(stores);
+        }
 
+        [HttpGet]
+        public async Task<IActionResult> GetProductionDepartment(long departmentId)
+        {
+            var departments = await _departmentService.GetDepartments(1);
+
+            var department = departments
+                .Where(x => x.ProdDept == 1 &&
+                            x.DepartmentId == departmentId)
+                .Select(x => new
+                {
+                    id = x.DepartmentId,
+                    name = x.Name
+                })
+                .FirstOrDefault();
+
+            if (department == null)
+            {
+                return Json(new List<object>());
+            }
+
+            return Json(new[] { department });
+        }
     }
 }
 

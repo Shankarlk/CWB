@@ -2861,7 +2861,7 @@ function loadSimulationWos() {
             $("#SimWoGrid td").css("white-space", "nowrap");
         }
         if (showResimulate) {
-            $("#ReSimulateBtn").show();
+            $("#ReSimulateBtn").hide();
         } else {
             $("#ReSimulateBtn").hide();
         }
@@ -3123,3 +3123,4 @@ function loadSels() {
     }).catch((error) => {
     });
 }
+$("#ReSimulateBtn").hide();

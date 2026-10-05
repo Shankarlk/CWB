@@ -17,6 +17,8 @@ namespace CWB.BusinessAquisition.Utils
             services.AddTransient<IDeliveryScheduleRepository, DeliveryScheduleRepository>();
             services.AddTransient<IBAStatusRepository, BAStatusRepository>();
             services.AddTransient<ISO_Alloc_ListRepository, SO_Alloc_ListRepository>();
+            services.AddTransient<ICust_Disp_ListRepository, Cust_Disp_ListRepository>();
+            services.AddTransient<IInvoice_Disp_ListRepository, Invoice_Disp_ListRepository>();
             services.AddTransient<IBAService, BAService>();
         }
     }

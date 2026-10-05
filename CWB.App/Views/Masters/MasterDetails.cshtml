@@ -3,6 +3,13 @@
 @{
     ViewData["Title"] = "Item Master";
 }
+<style>
+    .modal-stack-blur {
+        filter: blur(5px);
+        pointer-events: none;
+        user-select: none;
+    }
+</style>
 <input value="M-IM" type="hidden" id="hdn-nav-menu" />
 <div class="content">
     <div class="row" id="myRadioGroup">
@@ -259,18 +266,18 @@
                                 <tbody>
                                     <!-- --------------------  -->
                                     <!--<tr>
-                <td>XXXXXXXXX</td>
-                <td>XXXXXXXXX</td>
-                <td>XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</td>
-                <td> Manufactured Part without Routing</td>
-                <td>N/A</td>
-                <td>Yes</td>
-                <td>N/A</td>
-                <td>No</td>
-                <td>
-                    <div class="dropdown float-center">
-                        <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
-                        <div class="dropdown-menu dropdown-menu-end">-->
+                                    <td>XXXXXXXXX</td>
+                                    <td>XXXXXXXXX</td>
+                                    <td>XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</td>
+                                    <td> Manufactured Part without Routing</td>
+                                    <td>N/A</td>
+                                    <td>Yes</td>
+                                    <td>N/A</td>
+                                    <td>No</td>
+                                    <td>
+                                        <div class="dropdown float-center">
+                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false"><i class="mdi mdi-dots-vertical"></i></a>
+                                            <div class="dropdown-menu dropdown-menu-end">-->
                                     <!-- item-->
                                     <!--<a href="#" class="dropdown-item">Edit Part Details</a>-->
                                     <!-- item-->
@@ -285,10 +292,10 @@
                                     <!--<a href="manf-part.html" class="dropdown-item">Create Balloon</a>-->
                                     <!-- item-->
                                     <!--<a href="manf-part.html" class="dropdown-item">Edit Balloon</a>
-                            </div>
-                        </div>
-                    </td>
-                </tr>-->
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>-->
                                     <!-- --------------------  -->
                                     <!-- --------------------  -->
                                 </tbody>
@@ -418,8 +425,8 @@
                             {
                                 <a href="/masters/editpart?partId={partId}&partType={masterPartType}" class="dropdown-item">Edit Part Details</a>
                                 @*<a href="javascript:void(0);" class="dropdown-item activeAtag"
-                    data-partId="{partId}" data-parttype="{masterPartType}" data-status="{status}"
-                    data-partNo="{partNo}" data-bs-toggle="modal" data-bs-target="#status-info">{activeName}</a>*@
+                                    data-partId="{partId}" data-parttype="{masterPartType}" data-status="{status}"
+                                    data-partNo="{partNo}" data-bs-toggle="modal" data-bs-target="#status-info">{activeName}</a>*@
                             }
                             else if (pr.PermissionId >= 4)
                             {
@@ -429,13 +436,13 @@
 
 
                                 @*<a href="javascript:void(0);" class="dropdown-item activeAtag"
-                    data-partId="{partId}" data-parttype="{masterPartType}" data-status="{status}"
-                    data-partNo="{partNo}" data-bs-toggle="modal" data-bs-target="#status-info">{activeName}</a>*@
+                                    data-partId="{partId}" data-parttype="{masterPartType}" data-status="{status}"
+                                    data-partNo="{partNo}" data-bs-toggle="modal" data-bs-target="#status-info">{activeName}</a>*@
 
 
-                <a href="javascript:void(0);" class="dropdown-item activeAtag" onclick="DeletePart(this)"
-                   data-partId="{partId}" data-listassem="{listAssembly}"  data-partno="{partNo}"
-                   style="display:{showMenu}">Delete</a>
+                                <a href="javascript:void(0);" class="dropdown-item activeAtag" onclick="DeletePart(this)"
+                                   data-partId="{partId}" data-listassem="{listAssembly}" data-partno="{partNo}"
+                                   style="display:{showMenu}">Delete</a>
                             }
                             else { }
                         }
@@ -446,11 +453,11 @@
                     {
                         <a href="/masters/editpart?partId={partId}&partType={masterPartType}" class="dropdown-item">Edit Part Details</a>
                         @*<a href="javascript:void(0);" class="dropdown-item activeAtag"
-            data-partId="{partId}" data-parttype="{masterPartType}" data-status="{status}"
-            data-partNo="{partNo}" data-bs-toggle="modal" data-bs-target="#status-info">{activeName}</a>*@
-                <a href="javascript:void(0);" class="dropdown-item activeAtag" onclick="DeletePart(this)"
-                   data-partId="{partId}" data-listassem="{listAssembly}" data-partno="{partNo}"
-                   style="display:{showMenu}">Delete</a>
+                            data-partId="{partId}" data-parttype="{masterPartType}" data-status="{status}"
+                            data-partNo="{partNo}" data-bs-toggle="modal" data-bs-target="#status-info">{activeName}</a>*@
+                        <a href="javascript:void(0);" class="dropdown-item activeAtag" onclick="DeletePart(this)"
+                           data-partId="{partId}" data-listassem="{listAssembly}" data-partno="{partNo}"
+                           style="display:{showMenu}">Delete</a>
                     }
                 </div>
             </div>
@@ -580,17 +587,17 @@
                             <tbody class="text-center">
                                 <!-- ---------- -->
                                 @*<tr style="font-weight: bold;font-size: 16px;">
-                                    <td style="text-align: end; ">Total</td>
-                                    <td>xxx</td>
-                                    <td>xxx</td>
-                                    <td>xxx</td>
-                                    <td>xxx</td>
-                                    <td>xxx</td>
-                                    <td>xxx</td>
-                                    <td>xxx</td>
-                                    <td>xxx</td>
-                                    <td>xxx</td>
-                                </tr>*@
+                                        <td style="text-align: end; ">Total</td>
+                                        <td>xxx</td>
+                                        <td>xxx</td>
+                                        <td>xxx</td>
+                                        <td>xxx</td>
+                                        <td>xxx</td>
+                                        <td>xxx</td>
+                                        <td>xxx</td>
+                                        <td>xxx</td>
+                                        <td>xxx</td>
+                                    </tr>*@
                                 <!-- ---------- -->
                             </tbody>
                         </table>
@@ -882,10 +889,10 @@
                         <!-- ----------- -->
                         <div class="col-md-3 mb-2">
                             @*<select class="form-select form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top" id="P7Status">
-                                <option value="0">Status</option>
-                                <option value="1">Active</option>
-                                <option value="2">Inactive</option>
-                            </select>*@
+                                    <option value="0">Status</option>
+                                    <option value="1">Active</option>
+                                    <option value="2">Inactive</option>
+                                </select>*@
                             <select class="form-select form-select-sm" id="P7Status" name="Status" asp-items="ViewBag.Statuses">
                                 <option value="0">All Part Status</option>
                             </select>
@@ -962,10 +969,10 @@
                         <!-- ----------- -->
                         <div class="col-md-2 mb-2">
                             @*<select class="form-select form-select-sm" title="" data-plugin="tippy" data-tippy-placement="top" id="P9StatusSearch">
-                                <option value="0">Status </option>
-                                <option value="1">Active </option>
-                                <option value="2">Inactive</option>
-                            </select>*@
+                                    <option value="0">Status </option>
+                                    <option value="1">Active </option>
+                                    <option value="2">Inactive</option>
+                                </select>*@
 
                             <select class="form-select form-select-sm" id="P9StatusSearch" name="Status" asp-items="ViewBag.Statuses">
                                 <option value="0">All Part Status</option>

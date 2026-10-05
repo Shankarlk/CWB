@@ -635,12 +635,12 @@
                         </select>
                     </div>
                     <!-- -----------------  -->
-                    <div class="col-md-3 mb-2 mt-3">
+                    @*<div class="col-md-3 mb-2 mt-3">
                         <label class="form-label">Critical Part</label>
                         <input id="ChkMatlCriticalPart" class="form-check-input"
                                type="checkbox" title="Select" data-plugin="tippy"
                                data-tippy-placement="top">
-                    </div>
+                    </div>*@
                     <!-- ======================== -->
                     <div class="col-md-12">
                         <div class="table-responsive table-he-250">
@@ -664,11 +664,11 @@
                                         <th>Planned Purchase Qnty</th>
                                         <th>MOQ</th>
                                         <th>UoM (for ordering)</th>
-                                        <th>Date Reqd</th>
+                                        @*<th>Date Reqd</th>*@
                                         <th>Lead Time Days</th>
                                         <th>Calculated Receipt Date</th>
                                         <th>WO Type</th>
-                                        <th>Critical Part</th>
+                                        @*<th>Critical Part</th>*@
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -789,8 +789,8 @@
                                         <th>Machine Type</th>
                                         <th>Machine</th>
                                         <th>Plan Qnty</th>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
+                                        @*<th>Start Date</th>
+                                        <th>End Date</th>*@
                                         <th>Mc Hrs</th>
                                         <th>Status</th>
                                         <th>Critical Part</th>
@@ -871,8 +871,8 @@
                                         <th>Location</th>
                                         <th>Machine Type</th>
                                         <th>Machine</th>
-                                        <th>Start Date</th>
-                                        <th>End Date</th>
+                                        @*<th>Start Date</th>
+                                        <th>End Date</th>*@
                                         <th>Mc Hrs</th>
                                         <th></th>
                                     </tr>
@@ -931,12 +931,12 @@
                         </select>
                     </div>
                     <!-- -----------------  -->
-                    <div class="col-md-2 mb-2 mt-3">
+                    @*<div class="col-md-2 mb-2 mt-3">
                         <label class="form-label">Critical Part</label>
                         <input id="checkcritcalpartpopup" class="form-check-input"
                                type="checkbox" title="Select" data-plugin="tippy"
                                data-tippy-placement="top">
-                    </div>
+                    </div>*@
                     <!-- ======================== -->
                     <div class="col-md-12">
                         <div class="table-responsive table-he-250">
@@ -947,9 +947,9 @@
                                         <th>Part Type</th>
                                         <th>WO / PO Ref</th>
                                         <th>Plan Qnty</th>
-                                        <th>Plan Compl / Rcpt Date</th>
+                                        @*<th>Plan Compl / Rcpt Date</th>
                                        
-                                        <th>Critical Part</th>
+                                        <th>Critical Part</th>*@
                                         <th>WO Type</th>
                                         <th></th>
                                     </tr>
@@ -2101,11 +2101,11 @@
                                         <th>Part Type</th>
                                         <th>WO / PO Ref</th>
                                         <th>Plan Qnty</th>
-                                        <th>Plan Compl / Rcpt Date</th>
+                                        @*<th>Plan Compl / Rcpt Date</th>
                                         <th>Act Qnty</th>
                                         <th>Act Compl / Recpt Dt</th>
                                         <th>Status</th>
-                                        <th>Critical Part</th>
+                                        <th>Critical Part</th>*@
                                         <th>WO Type</th>
                                     </tr>
                                 </thead>
@@ -2759,13 +2759,13 @@
         <td>{plan_Proc_Qnty}</td>
         <td>{moq}</td>
         <td>{uomName}</td>
-        <td>{planStartDateStr}</td>
+        @*<td>{planStartDateStr}</td>*@
         <td>{leadTimeInDays}</td>
         <td>{calcReceiptDateStr}</td>
         <td>{woType}</td>
         <td hidden>{calcReceiptDate}</td>
         <td hidden>{supplierId}</td>
-        <td>{criticalParts}</td>
+        @*<td>{criticalParts}</td>*@
         <td>
             <div class="dropdown float-center">
                 <a href="#"
@@ -2805,9 +2805,9 @@
         <td>{child_Part_No_Type}</td>
         <td>{woNumber}</td>
         <td>{calc_Qnty}</td>
-        <td>{calcReceiptDateStr}</td>
+        @*<td>{calcReceiptDateStr}</td>*@
        
-        <td>{criticalPart}</td>
+        @*<td>{criticalPart}</td>*@
         <td>{woType}</td>
         <td hidden>{plan_Compl_Dt}</td>
         <td hidden>{calcReceiptDate}</td>
@@ -2856,11 +2856,11 @@
         <td>{child_Part_No_Type}</td>
         <td>{woNumber}</td>
         <td>{calc_Qnty}</td>
-        <td>{calcReceiptDateStr}</td>
+        @*<td>{calcReceiptDateStr}</td>*@
+        @*<td></td>
         <td></td>
         <td></td>
-        <td></td>
-        <td></td>
+        <td></td>*@
         <td></td>
         <td hidden>{plan_Compl_Dt}</td>
         <td hidden>{calcReceiptDate}</td>
@@ -3011,8 +3011,8 @@
         <td>{machineTypeName}</td>
         <td>{machineName}</td>
         <td>{planQnty}</td>
-        <td>{mcPlanStartTimeStr}</td>
-        <td>{mcPlanEndTimeStr}</td>
+        @*<td>{mcPlanStartTimeStr}</td>
+        <td>{mcPlanEndTimeStr}</td>*@
         <td>{totalPlanTime}</td>
         <td></td>
         <td>{criticalPart}</td>
@@ -3055,8 +3055,8 @@
         <td>{location}</td>
         <td>{machineTypeName}</td>
         <td>{machineName}</td>
-        <td>{mcPlanStartTimeStr}</td>
-        <td>{mcPlanEndTimeStr}</td>
+        @*<td>{mcPlanStartTimeStr}</td>
+        <td>{mcPlanEndTimeStr}</td>*@
         <td>{totalPlanTime}</td>
         <td></td>
         <td hidden>{inhouse}</td>

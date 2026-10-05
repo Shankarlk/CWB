@@ -45,6 +45,9 @@ namespace CWB.ProductionPlanWO.Configurations
             builder
                 .Property(b => b.Loc_Flag)
                 .HasColumnName("Loc_Flag");
+            builder
+                .Property(b => b.Part_Status)
+                .HasColumnName("Part_Status");
             builder.ConfigureBase();
             builder.HasIndex(c => c.TenantId).HasDatabaseName("Inventory_Master_TenantId");
         }

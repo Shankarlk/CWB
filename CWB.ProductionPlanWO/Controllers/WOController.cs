@@ -152,6 +152,17 @@ namespace CWB.ProductionPlanWO.Controllers
             return Ok(so);
         }
         [HttpGet]
+        [Route(ApiRoutes.WO.GetallSoWo)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<WOSOVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetallSoWo()
+        {
+            var so = await _woSerivce.GetallSoWo();
+            return Ok(so);
+        }
+
+
+        [HttpGet]
         [Route(ApiRoutes.WO.GetProCPurchase)]
         [Produces(AppContentTypes.ContentType,Type =typeof(List<ProcPlanPartPurChaseRelVM>))]
         [Authorize(Roles=Roles.ADMIN)]

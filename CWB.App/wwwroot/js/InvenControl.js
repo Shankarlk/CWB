@@ -26,7 +26,7 @@ function loadInvMis() {
 
 function loadInvMisFirst() {
     $("#preloaderblurred").show();
-    api.getbulk("/WorkOrder/GetAllInvMaster").then((data) => {
+    api.getbulk("/WorkOrder/GetAllInvMasterFirstTime").then((data) => {
         var tablebody = $("#P5Grid tbody");
         $(tablebody).html("");
         data = data.filter(item => parseInt(item.qnty) == 0);
@@ -263,6 +263,8 @@ function loadPartStatus() {
         div_data = "<option value='" + 0 + "'>" + "--Select--" + "</option>";
         selElem.append(div_data);
         P1SPartType.append(div_data);
+        div_data = "<option value='Assembly'>Assembly</option>";
+        P1SPartType.append(div_data);
         div_data = "<option value='ManufacturedPart'>ManufacturedPart</option>";
         P1SPartType.append(div_data);
         div_data = "<option value='RawMaterial'>RawMaterial</option>";
@@ -275,6 +277,40 @@ function loadPartStatus() {
         }
     });
 }
+function loadPartType() {
+
+    var P1SPartType = $('#P5SPt');
+    P1SPartType.html('');
+
+    div_data = "<option value='" + 0 + "'>" + "--Select--" + "</option>";
+
+    P1SPartType.append(div_data);
+    div_data = "<option value='Assembly'>Assembly</option>";
+    P1SPartType.append(div_data);
+    div_data = "<option value='ManufacturedPart'>ManufacturedPart</option>";
+    P1SPartType.append(div_data);
+    div_data = "<option value='RawMaterial'>RawMaterial</option>";
+    P1SPartType.append(div_data);
+    div_data = "<option value='BOF'>BOF</option>";
+    P1SPartType.append(div_data);
+
+
+}
+function loadCompanyforfirst() {
+    var selElem = $('#P5SComp');
+    selElem.html('');
+    api.getbulk("/masters/companies").then((data) => {
+
+        div_data = "<option value='" + 0 + "'>" + "--Select--" + "</option>";
+        selElem.append(div_data);
+        for (i = 0; i < data.length; i++) {
+            div_data = "<option value='" + data[i].companyName + "'>" + data[i].companyName + "</option>";
+            selElem.append(div_data);
+        }
+    });
+}
+
+
 function calculateCount() {
     var P3CorrectedQnty = $("#P3CorrectedQnty").val();
     var P3Qnty = $("#P3Qnty").text();
@@ -794,6 +830,551 @@ $(document).ready(function () {
             $tableBody.find(".norecordsfound").remove();
         }
     });
+    $("#SP2PartStatus").on("change", function () {
+        var selectedStatus = $(this).val();
+        var $tableBody = $("#P2InvTranLogGrid tbody");
+
+        // Remove old "No Records Found" row first
+        $tableBody.find(".norecordsfound").remove();
+
+        // If --Select-- is selected, show all rows
+        if (selectedStatus === "0") {
+            $tableBody.find("tr").show();
+        } else {
+            // Part Status is column 8
+            $tableBody.find("tr").filter(function () {
+                var partStatus = $(this).children("td").eq(8).text().trim();
+
+                return partStatus.toLowerCase() === selectedStatus.toLowerCase();
+            }).show();
+
+            // Hide rows that don't match
+            $tableBody.find("tr").filter(function () {
+                var partStatus = $(this).children("td").eq(8).text().trim();
+
+                return partStatus.toLowerCase() !== selectedStatus.toLowerCase();
+            }).hide();
+        }
+
+        // Check visible records
+        if ($tableBody.find("tr:visible").length === 0) {
+            const noRecordsRow = `
+            <tr class="norecordsfound">
+                <td colspan="20" style="text-align: center; color: #888;">
+                    <strong>No Records Found</strong>
+                </td>
+            </tr>`;
+
+            $tableBody.append(noRecordsRow);
+        }
+    });
+    $("#SP2TransType").on("change", function () {
+
+        var value = $(this).val().toLowerCase();
+        var $tableBody = $("#P2InvTranLogGrid tbody");
+
+        // Remove previous No Records row
+        $tableBody.find(".norecordsfound").remove();
+
+        if (value === "0") {
+
+            // Show all records when --Select-- is selected
+            $tableBody.find("tr").show();
+
+        } else {
+
+            $tableBody.find("tr").filter(function () {
+
+                var transactionName = $(this)
+                    .children("td")
+                    .eq(2)
+                    .text()
+                    .toLowerCase()
+                    .trim();
+
+                $(this).toggle(transactionName === value);
+
+            });
+        }
+
+        // No records found
+        if ($tableBody.find("tr:visible").length === 0) {
+
+            $tableBody.append(`
+            <tr class="norecordsfound">
+                <td colspan="20" style="text-align: center; color: #888;">
+                    <strong>No Records Found</strong>
+                </td>
+            </tr>
+        `);
+        }
+    });
+    $("#SP2FromDate, #SP2ToDate").on("change", function () {
+
+        var fromDate = $("#SP2FromDate").val(); // yyyy-MM-dd
+        var toDate = $("#SP2ToDate").val();     // yyyy-MM-dd
+
+        var $tableBody = $("#P2InvTranLogGrid tbody");
+
+        $tableBody.find(".norecordsfound").remove();
+
+        $tableBody.find("tr").each(function () {
+
+            var $row = $(this);
+
+            // dt_timeStr = 10-08-2026
+            var dateText = $row.children("td").eq(0).text().trim();
+
+            if (!dateText) {
+                $row.hide();
+                return;
+            }
+
+            // Convert dd-MM-yyyy to yyyy-MM-dd
+            var parts = dateText.split("-");
+
+            if (parts.length !== 3) {
+                $row.hide();
+                return;
+            }
+
+            var transactionDate =
+                parts[2] + "-" + parts[1] + "-" + parts[0];
+
+            var showRow = true;
+
+            // From Date
+            if (fromDate !== "" && transactionDate < fromDate) {
+                showRow = false;
+            }
+
+            // To Date
+            if (toDate !== "" && transactionDate > toDate) {
+                showRow = false;
+            }
+
+            $row.toggle(showRow);
+        });
+
+        if ($tableBody.find("tr:visible").length === 0) {
+
+            $tableBody.append(`
+            <tr class="norecordsfound">
+                <td colspan="20" style="text-align: center; color: #888;">
+                    <strong>No Records Found</strong>
+                </td>
+            </tr>
+        `);
+        }
+    });
+    $("#SP2WoId").on("keyup", function () {
+
+        var value = $(this).val().toLowerCase().trim();
+        var $tableBody = $("#P2InvTranLogGrid tbody");
+
+        $tableBody.find(".norecordsfound").remove();
+
+        if (value === "") {
+
+            // Empty search → show all rows
+            $tableBody.find("tr").show();
+
+        } else {
+
+            $tableBody.find("tr").filter(function () {
+
+                // WO Number is column 1
+                var woNumber = $(this)
+                    .children("td")
+                    .eq(1)
+                    .text()
+                    .toLowerCase()
+                    .trim();
+
+                $(this).toggle(
+                    woNumber.indexOf(value) > -1
+                );
+            });
+        }
+
+        // No records found
+        if ($tableBody.find("tr:visible").length === 0) {
+
+            $tableBody.append(`
+            <tr class="norecordsfound">
+                <td colspan="20" style="text-align: center; color: #888;">
+                    <strong>No Records Found</strong>
+                </td>
+            </tr>
+        `);
+        }
+    });
+    $("#SP2User").on("keyup", function () {
+
+        var value = $(this).val().toLowerCase().trim();
+        var $tableBody = $("#P2InvTranLogGrid tbody");
+
+        $tableBody.find(".norecordsfound").remove();
+
+        if (value === "") {
+
+            // Empty search → show all rows
+            $tableBody.find("tr").show();
+
+        } else {
+
+            $tableBody.find("tr").filter(function () {
+
+                // User Name is column 3
+                var userName = $(this)
+                    .children("td")
+                    .eq(3)
+                    .text()
+                    .toLowerCase()
+                    .trim();
+
+                $(this).toggle(
+                    userName.indexOf(value) > -1
+                );
+            });
+        }
+
+        // No records found
+        if ($tableBody.find("tr:visible").length === 0) {
+
+            $tableBody.append(`
+            <tr class="norecordsfound">
+                <td colspan="20" style="text-align: center; color: #888;">
+                    <strong>No Records Found</strong>
+                </td>
+            </tr>
+        `);
+        }
+    });
+    $("#SP2FromLoc").on("keyup", function () {
+
+        var value = $(this).val().toLowerCase().trim();
+        var $tableBody = $("#P2InvTranLogGrid tbody");
+
+        $tableBody.find(".norecordsfound").remove();
+
+        if (value === "") {
+
+            $tableBody.find("tr").show();
+
+        } else {
+
+            $tableBody.find("tr").filter(function () {
+
+                var fromSender = $(this)
+                    .children("td")
+                    .eq(6)
+                    .text()
+                    .toLowerCase()
+                    .trim();
+
+                $(this).toggle(
+                    fromSender.indexOf(value) > -1
+                );
+            });
+        }
+
+        if ($tableBody.find("tr:visible").length === 0) {
+
+            $tableBody.append(`
+            <tr class="norecordsfound">
+                <td colspan="20" style="text-align: center; color: #888;">
+                    <strong>No Records Found</strong>
+                </td>
+            </tr>
+        `);
+        }
+    });
+
+    $("#SP2ToLoc").on("keyup", function () {
+
+        var value = $(this).val().toLowerCase().trim();
+        var $tableBody = $("#P2InvTranLogGrid tbody");
+
+        $tableBody.find(".norecordsfound").remove();
+
+        if (value === "") {
+
+            $tableBody.find("tr").show();
+
+        } else {
+
+            $tableBody.find("tr").filter(function () {
+
+                var toSender = $(this)
+                    .children("td")
+                    .eq(7)
+                    .text()
+                    .toLowerCase()
+                    .trim();
+
+                $(this).toggle(
+                    toSender.indexOf(value) > -1
+                );
+            });
+        }
+
+        if ($tableBody.find("tr:visible").length === 0) {
+
+            $tableBody.append(`
+            <tr class="norecordsfound">
+                <td colspan="20" style="text-align: center; color: #888;">
+                    <strong>No Records Found</strong>
+                </td>
+            </tr>
+        `);
+        }
+    });
+    function filterP2InvTranLog() {
+
+        var $tableBody = $("#P2InvTranLogGrid tbody");
+
+        // Get checkbox states
+        var readyChecked = $("#Sp2ChkRead").is(":checked");
+        var movementChecked = $("#Sp2ChkMov").is(":checked");
+        var movementCompChecked = $("#Sp2ChkMovComp").is(":checked");
+
+        // Remove previous No Records row
+        $tableBody.find(".norecordsfound").remove();
+
+        $tableBody.find("tr").each(function () {
+
+            var $row = $(this);
+
+            // Ignore No Records row
+            if ($row.hasClass("norecordsfound")) {
+                return;
+            }
+
+            // Get Y/N values from table
+            var readyForIssue = $row.children("td").eq(11).text().trim().toUpperCase();
+            var movementStarted = $row.children("td").eq(12).text().trim().toUpperCase();
+            var movementCompleted = $row.children("td").eq(13).text().trim().toUpperCase();
+
+            // Each checked checkbox requires its column to be Y
+            var showRow =
+                (!readyChecked || readyForIssue === 'Y') &&
+                (!movementChecked || movementStarted === 'Y') &&
+                (!movementCompChecked || movementCompleted === 'Y');
+
+            $row.toggle(showRow);
+        });
+
+        // Show No Records Found if nothing matches
+        if ($tableBody.find("tr:visible").length === 0) {
+
+            $tableBody.append(`
+            <tr class="norecordsfound">
+                <td colspan="20" style="text-align: center; color: #888;">
+                    <strong>No Records Found</strong>
+                </td>
+            </tr>
+        `);
+        }
+    }
+
+
+    // Ready to Issue
+    $("#Sp2ChkRead").on("change", function () {
+        filterP2InvTranLog();
+    });
+
+    // Movement Started
+    $("#Sp2ChkMov").on("change", function () {
+        filterP2InvTranLog();
+    });
+
+    // Movement Completed
+    $("#Sp2ChkMovComp").on("change", function () {
+        filterP2InvTranLog();
+    });
+    $("#btnSP2ClearFilters").on("click", function () {
+
+        // Select dropdowns
+        $("#SP2IO").val("0");
+        $("#SP2PartStatus").val("0");
+        $("#MasterPart").val("0");
+        $("#SP2TransType").val("0");
+        $("#SP2FromLoc").val("");
+        $("#SP2ToLoc").val("");
+        $("#Sp2Mistach").val("0");
+
+        // Text inputs
+        $("#SP2PartNo").val("");
+        $("#SP2PartDesc").val("");
+        $("#SP2FromDate").val("");
+        $("#SP2ToDate").val("");
+        $("#SP2WoId").val("");
+        $("#SP2User").val("");
+
+        // Checkboxes
+        $("#Sp2ChkRead").prop("checked", false);
+        $("#Sp2ChkMov").prop("checked", false);
+        $("#Sp2ChkMovComp").prop("checked", false);
+        $("#Sp2ChkQntyMis").prop("checked", false);
+
+        // Remove "No Records Found"
+        var $tableBody = $("#P2InvTranLogGrid tbody");
+
+        $tableBody.find(".norecordsfound").remove();
+
+        // Restore original grid
+        $tableBody.find("tr").show();
+    });
+
+    $('#Popup5').on('show.bs.modal', function (event) {
+        loadPartType();
+        loadCompanyforfirst();
+    });
+    $("#P5SPt").on("change", function () {
+
+        var value = $(this).val().toLowerCase();
+        var $tableBody = $("#P5Grid tbody");
+
+        $tableBody.find(".norecordsfound").remove();
+
+        if (value === "0") {
+            $tableBody.find("tr").show();
+        } else {
+            $tableBody.find("tr").filter(function () {
+
+                var partType = $(this)
+                    .children("td")
+                    .eq(1)
+                    .text()
+                    .toLowerCase()
+                    .trim();
+
+                $(this).toggle(partType === value);
+            });
+        }
+
+        checkP5NoRecords();
+    });
+    $("#P5SComp").on("change", function () {
+
+        var value = $(this).val().toLowerCase().trim();
+        var $tableBody = $("#P5Grid tbody");
+
+        $tableBody.find(".norecordsfound").remove();
+
+        if (value === "0") {
+            $tableBody.find("tr").show();
+        } else {
+            $tableBody.find("tr").filter(function () {
+
+                var company = $(this)
+                    .children("td")
+                    .eq(0)
+                    .text()
+                    .toLowerCase()
+                    .trim();
+
+                $(this).toggle(company.indexOf(value) > -1);
+            });
+        }
+
+        checkP5NoRecords();
+    });
+    $("#P5SPN").on("keyup", function () {
+
+        var value = $(this).val().toLowerCase().trim();
+        var $tableBody = $("#P5Grid tbody");
+
+        $tableBody.find(".norecordsfound").remove();
+
+        if (value === "") {
+            $tableBody.find("tr").show();
+        } else {
+            $tableBody.find("tr").filter(function () {
+
+                var partNo = $(this)
+                    .children("td")
+                    .eq(0)
+                    .text()
+                    .toLowerCase()
+                    .trim();
+
+                $(this).toggle(partNo.indexOf(value) > -1);
+            });
+        }
+
+        checkP5NoRecords();
+    });
+    $("#P5SPD").on("keyup", function () {
+
+        var value = $(this).val().toLowerCase().trim();
+        var $tableBody = $("#P5Grid tbody");
+
+        $tableBody.find(".norecordsfound").remove();
+
+        if (value === "") {
+            $tableBody.find("tr").show();
+        } else {
+            $tableBody.find("tr").filter(function () {
+
+                var partDesc = $(this)
+                    .children("td")
+                    .eq(0)
+                    .text()
+                    .toLowerCase()
+                    .trim();
+
+                $(this).toggle(partDesc.indexOf(value) > -1);
+            });
+        }
+
+        checkP5NoRecords();
+    });
+    $("#P5SLoc").on("keyup", function () {
+
+        var value = $(this).val().toLowerCase().trim();
+        var $tableBody = $("#P5Grid tbody");
+
+        $tableBody.find(".norecordsfound").remove();
+
+        if (value === "") {
+            $tableBody.find("tr").show();
+        } else {
+            $tableBody.find("tr").filter(function () {
+
+                var location = $(this)
+                    .children("td")
+                    .eq(3)
+                    .text()
+                    .toLowerCase()
+                    .trim();
+
+                $(this).toggle(location.indexOf(value) > -1);
+            });
+        }
+
+        checkP5NoRecords();
+    });
+    function checkP5NoRecords() {
+
+        var $tableBody = $("#P5Grid tbody");
+
+        $tableBody.find(".norecordsfound").remove();
+
+        if ($tableBody.find("tr:visible").length === 0) {
+
+            $tableBody.append(`
+            <tr class="norecordsfound">
+                <td colspan="5" style="text-align: center; color: #888;">
+                    <strong>No Records Found</strong>
+                </td>
+            </tr>
+        `);
+        }
+    }
+
+
     $('#Popup6').on('hidden.bs.modal', function (event) {
         document.getElementById('Popup5').style.filter = 'none';
         $("#P3Save").prop("disabled", false);

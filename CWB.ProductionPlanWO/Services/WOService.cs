@@ -930,6 +930,18 @@ namespace CWB.ProductionPlanWO.Services
                 return new List<WOSOVM>();                
             }
         }
+        public async Task<IEnumerable<WOSOVM>> GetallSoWo()
+        {
+            var so =await _wosoRepository.GetAllAsync();
+            try
+            {
+                return _mapper.Map<IEnumerable<WOSOVM>>(so);
+            }
+            catch (Exception ex)
+            {
+                return new List<WOSOVM>();
+            }
+        }
         public async Task<IEnumerable<ProcPlanPartPurChaseRelVM>> GetProcPurchase(long procPlanId)
         {
             var so = _IProcPlanPartPurChaseRelRepository.GetRangeAsync(s => s.ProcPlanId == procPlanId).OrderBy(s => s.Id);
@@ -1001,6 +1013,15 @@ namespace CWB.ProductionPlanWO.Services
                         upp.EndingOpNo = pp.EndingOpNo;
                         upp.ReloadOption = pp.ReloadOption;
                         upp.Active = pp.Active;
+                        if (pp.ActStartDate > DateTime.MinValue)
+                        {
+                            upp.ActStartDate = pp.ActStartDate;
+                        }
+
+                        if (pp.ActCompletionDate > DateTime.MinValue)
+                        {
+                            upp.ActCompletionDate = pp.ActCompletionDate;
+                        }
                         upp.Changed = 1;
                         pp = await _productionPlan_WORepository.UpdateAsync(pp.Id, upp);
                     }
@@ -4599,7 +4620,7 @@ namespace CWB.ProductionPlanWO.Services
 
             // 3. Convert Lists to Dictionaries
             var allWO = allWOTask.Result
-                .GroupBy(x => x.ProductionPlanId).ToDictionary(g => g.Key, g => g.First());
+                .GroupBy(x => x.WoId).ToDictionary(g => g.Key, g => g.First());
 
             var timeSlots = timeslotsTask.Result
                 .GroupBy(x => x.Timeslot_ListId).ToDictionary(g => g.Key, g => g.First());
@@ -4667,90 +4688,483 @@ namespace CWB.ProductionPlanWO.Services
             return result;
         }
         // ... inside class WOService ...
+        //public async Task<IEnumerable<TempMc_Wait_ListVM>> GetAllSetUpCnfList(long tenantId)
+        //{
+        //    var result = new List<TempMc_Wait_ListVM>();
+
+        //    // 1. Load all local master data in parallel
+        //    //var waitListTask = GetAllMc_Wait_List(tenantId);
+        //    //var timeslotsTask = GetAllTimeslot_List(tenantId);
+        //    //var allWOTask = AllProductionWo(tenantId);
+        //    //var translogsTask = GetAllInvTransLog(tenantId);
+        //    //var MatTask = GetAllInputReservelist(tenantId);
+        //    var waitListTask = GetAllMc_Wait_List(tenantId);
+        //    var timeslotsTask = GetAllTimeslot_List(tenantId);
+        //    var allWOTask = AllProductionWo(tenantId);
+        //    var matTask = GetAllInputReservelist(tenantId);
+        //    await Task.WhenAll(    waitListTask, timeslotsTask,  allWOTask,   matTask );
+        //    // await Task.WhenAll(waitListTask, timeslotsTask, allWOTask, translogsTask, MatTask);
+
+        //    var waitList = waitListTask.Result;
+        //    // Note: No filter applied to waitList as per provided requirement code
+
+        //    if (!waitList.Any()) return result;
+
+        //    // 2. Convert Lists to Dictionaries/Lookups
+        //    var allWO = allWOTask.Result.Where(x=>x.For_Ref=='N')
+        //        .GroupBy(x => x.WoId)
+        //        .ToDictionary(g => g.Key, g => g.First());
+
+        //    var timeSlots = timeslotsTask.Result
+        //        .GroupBy(x => x.Timeslot_ListId)
+        //        .ToDictionary(g => g.Key, g => g.First());
+
+        //    //var translogs = translogsTask.Result;
+        //    //var translogInputLookup = translogs
+        //    //    .GroupBy(x => x.Input_Part_NoId)
+        //    //    .ToDictionary(g => g.Key, g => g.First());
+
+        //    //var translogOutputLookup = translogs
+        //    //    .GroupBy(x => x.Output_Part_No)
+        //    //    .ToDictionary(g => g.Key, g => g.First());
+
+        //    // 3. The Loop
+        //    foreach (var mcWait in waitList)
+        //    {
+        //        // A. Fast Fail lookups for WO
+        //        if (!allWO.TryGetValue(mcWait.Wo_Id, out var wo)) continue;
+
+        //        // B. Translog Logic
+        //        //Inv_Trans_LogVM translog = null;
+
+        //        //// Try Input Part first
+        //        //if (!translogInputLookup.TryGetValue(wo.PartId, out translog))
+        //        //{
+        //        //    // Fallback: Output Part search
+        //        //    translogOutputLookup.TryGetValue(wo.PartId, out translog);
+        //        //}
+
+        //        //if (translog == null) continue;
+
+        //        // C. Data Mapping
+        //        var currentStart = timeSlots.GetValueOrDefault(mcWait.Plan_start_time_Id)?.Start_time;
+
+        //        result.Add(new TempMc_Wait_ListVM
+        //        {
+        //            // CRITICAL: Map IDs for MVC Controller enrichment
+        //            Mc_Id = mcWait.Mc_Id,
+        //            Wo_Id = mcWait.Wo_Id,
+        //            Opr_No_Id = mcWait.Opr_No_Id,
+
+        //            // Local Data mapping
+        //            WoNumber = wo.WONumber ?? "",
+        //            WoQnty = wo.CalcWOQty.ToString(),
+        //            Plan_Qnty = mcWait.Plan_Qnty,
+        //            ActiveId = mcWait.Mc_Wait_ListId,
+        //            MatlIssued = "N",
+        //            PlanStartStr = currentStart?.ToString("hh:mm tt") ?? "",
+        //            MatlReceptTime = "",
+        //            Rework_Wo = 'N',
+        //            TenantId = tenantId,
+
+        //            // Fields to be populated by MVC
+        //            ShopName = "",
+        //            McName = "",
+        //            PartNo = "",
+        //            RoutingName = "",
+        //            OprNoName = ""
+        //        });
+        //    }
+
+        //    return result;
+        //}
         public async Task<IEnumerable<TempMc_Wait_ListVM>> GetAllSetUpCnfList(long tenantId)
         {
             var result = new List<TempMc_Wait_ListVM>();
 
-            // 1. Load all local master data in parallel
+            // 1. Load required data in parallel
             var waitListTask = GetAllMc_Wait_List(tenantId);
             var timeslotsTask = GetAllTimeslot_List(tenantId);
             var allWOTask = AllProductionWo(tenantId);
-            var translogsTask = GetAllInvTransLog(tenantId);
+            var matTask = GetAllInputReservelist(tenantId);
+            var oprTask = GetAllOpr_List(tenantId);
+            var issuetask = GetAllMatl_Issue_List(tenantId);
 
-            await Task.WhenAll(waitListTask, timeslotsTask, allWOTask, translogsTask);
+            await Task.WhenAll(
+                waitListTask,
+                timeslotsTask,
+                allWOTask,
+                matTask,
+                oprTask,
+                  issuetask
+            );
 
-            var waitList = waitListTask.Result;
-            // Note: No filter applied to waitList as per provided requirement code
+            var waitList = waitListTask.Result.ToList();
+            var allWOList = allWOTask.Result.ToList();
+            var materialList = matTask.Result.ToList();
+            var oprList = oprTask.Result.ToList();
+            var issueList = issuetask.Result.ToList();
 
-            if (!waitList.Any()) return result;
+            if (!waitList.Any())
+                return result;
 
-            // 2. Convert Lists to Dictionaries/Lookups
-            var allWO = allWOTask.Result
+            // 2. Work Order lookup
+            // Only normal Work Orders
+            var allWO = allWOList
+                .Where(x => x.For_Ref == 'N')
                 .GroupBy(x => x.WoId)
                 .ToDictionary(g => g.Key, g => g.First());
 
+            // 3. Timeslot lookup
             var timeSlots = timeslotsTask.Result
                 .GroupBy(x => x.Timeslot_ListId)
                 .ToDictionary(g => g.Key, g => g.First());
 
-            var translogs = translogsTask.Result;
-            var translogInputLookup = translogs
-                .GroupBy(x => x.Input_Part_NoId)
-                .ToDictionary(g => g.Key, g => g.First());
+            // 4. Material allocation lookup
+            // One WO can have multiple material allocation records
+            var materialLookup = materialList
+                .ToLookup(x => x.WO_Id);
+            var issueLookup = issueList
+        .ToLookup(x => x.WO_Id);
+            // 5. Operation lookup
+            // One WO can have multiple operations
+            var operationLookup = oprList
+                .GroupBy(x => x.Wo_Id)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g
+                        .OrderBy(x => x.RoutingStepSequence)
+                        .ToList()
+                );
 
-            var translogOutputLookup = translogs
-                .GroupBy(x => x.Output_Part_No)
-                .ToDictionary(g => g.Key, g => g.First());
+            // 6. First machine operation lookup
+            // This is only used to decide whether the current operation
+            // is the first machine operation.
+            var firstMachineOperationLookup = oprList
+                .Where(x => x.RoutingStepLocation == 1)
+                .GroupBy(x => x.Wo_Id)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g
+                        .OrderBy(x => x.RoutingStepSequence)
+                        .First()
+                );
 
-            // 3. The Loop
+            // 7. Process every Wait List record
             foreach (var mcWait in waitList)
             {
-                // A. Fast Fail lookups for WO
-                if (!allWO.TryGetValue(mcWait.Wo_Id, out var wo)) continue;
+                // -----------------------------------------------------
+                // A. Only records currently at Wait_Seq_No = 0
+                // -----------------------------------------------------
+                if (mcWait.Wait_Seq_No != 0)
+                    continue;
 
-                // B. Translog Logic
-                Inv_Trans_LogVM translog = null;
+                // -----------------------------------------------------
+                // B. Find Work Order
+                // -----------------------------------------------------
+                if (!allWO.TryGetValue(mcWait.Wo_Id, out var wo))
+                    continue;
 
-                // Try Input Part first
-                if (!translogInputLookup.TryGetValue(wo.PartId, out translog))
+                // -----------------------------------------------------
+                // C. Find all operations for this WO
+                // -----------------------------------------------------
+                if (!operationLookup.TryGetValue(mcWait.Wo_Id, out var operations))
+                    continue;
+
+                // -----------------------------------------------------
+                // D. Find current operation using Opr_No
+                // -----------------------------------------------------
+                var currentOperation = operations
+                    .FirstOrDefault(x => x.Opr_No == mcWait.Opr_No_Id);
+
+                if (currentOperation == null)
+                    continue;
+
+                // -----------------------------------------------------
+                // E. Only machine operations
+                // RoutingStepLocation = 1
+                // -----------------------------------------------------
+                if (currentOperation.RoutingStepLocation != 1)
+                    continue;
+
+                bool currentIsSequential =  currentOperation.OprSequenceType == 1;
+
+                bool currentIsParallel =
+                    currentOperation.OprSequenceType == 2 ||
+                    currentOperation.OprSequenceType == 3;
+                var previousOperation = operations
+                        .Where(x =>
+                            x.RoutingStepSequence <
+                            currentOperation.RoutingStepSequence)
+                        .OrderByDescending(x => x.RoutingStepSequence)
+                        .FirstOrDefault();
+
+                if (currentIsParallel)
                 {
-                    // Fallback: Output Part search
-                    translogOutputLookup.TryGetValue(wo.PartId, out translog);
+                    // No previous operation completion required.
                 }
 
-                if (translog == null) continue;
-
-                // C. Data Mapping
-                var currentStart = timeSlots.GetValueOrDefault(mcWait.Plan_start_time_Id)?.Start_time;
-
-                result.Add(new TempMc_Wait_ListVM
+                else if (currentIsSequential && previousOperation != null)
                 {
-                    // CRITICAL: Map IDs for MVC Controller enrichment
-                    Mc_Id = mcWait.Mc_Id,
-                    Wo_Id = mcWait.Wo_Id,
-                    Opr_No_Id = mcWait.Opr_No_Id,
+                    bool previousIsParallel =
+                        previousOperation.OprSequenceType == 2 ||
+                        previousOperation.OprSequenceType == 3;
 
-                    // Local Data mapping
-                    WoNumber = wo.WONumber ?? "",
-                    WoQnty = wo.CalcWOQty.ToString(),
-                    Plan_Qnty = mcWait.Plan_Qnty,
-                    ActiveId = mcWait.Mc_Wait_ListId,
-                    MatlIssued = Convert.ToInt32(translog.Qnty).ToString(),
-                    PlanStartStr = currentStart?.ToString("hh:mm tt") ?? "",
-                    MatlReceptTime = translog.Dt_time.ToString("hh:mm tt"),
-                    Rework_Wo = 'N',
-                    TenantId = tenantId,
 
-                    // Fields to be populated by MVC
-                    ShopName = "",
-                    McName = "",
-                    PartNo = "",
-                    RoutingName = "",
-                    OprNoName = ""
-                });
-            }
+                    // =================================================
+                    // PREVIOUS OPERATION IS SEQUENTIAL
+                    // =================================================
 
-            return result;
+                    if (!previousIsParallel)
+                    {
+                        var previousMachineWaits = waitList
+                            .Where(x =>
+                                x.Wo_Id == mcWait.Wo_Id &&
+                                x.Opr_No_Id == previousOperation.Opr_No)
+                            .ToList();
+
+                        // No machine wait records = previous operation
+                        // cannot be considered completed.
+                        if (!previousMachineWaits.Any())
+                            continue;
+
+                        // ALL machines of previous operation must
+                        // be completely booked out.
+                        bool previousOperationCompleted =
+                            previousMachineWaits.All(x =>
+                                x.Wait_Seq_No == -1 &&
+                                x.Bal_Qnty <= 0);
+
+                        if (!previousOperationCompleted)
+                            continue;
+                    }
+
+
+                    // =================================================
+                    // PREVIOUS OPERATION IS PARALLEL
+                    //
+                    // Find the complete contiguous parallel group.
+                    // =================================================
+
+                    else
+                    {
+                        var parallelGroup = new List<Opr_ListVM>();
+
+                        // Start with immediate previous operation.
+                        parallelGroup.Add(previousOperation);
+
+                        int previousIndex =
+                            operations.IndexOf(previousOperation);
+
+                        // Walk backwards and collect all preceding
+                        // parallel operations.
+                        for (int i = previousIndex - 1; i >= 0; i--)
+                        {
+                            var operation = operations[i];
+
+                            bool operationIsParallel =
+                                operation.OprSequenceType == 2 ||
+                                operation.OprSequenceType == 3;
+
+                            if (!operationIsParallel)
+                                break;
+
+                            parallelGroup.Add(operation);
+                        }
+
+
+                        // -------------------------------------------------
+                        // Every machine of every operation in the
+                        // parallel group must be completely booked out.
+                        // -------------------------------------------------
+
+                        bool parallelGroupCompleted = true;
+
+                        foreach (var parallelOperation in parallelGroup)
+                        {
+                            var machineWaits = waitList
+                                .Where(x =>
+                                    x.Wo_Id == mcWait.Wo_Id &&
+                                    x.Opr_No_Id == parallelOperation.Opr_No)
+                                .ToList();
+
+                            if (!machineWaits.Any())
+                            {
+                                parallelGroupCompleted = false;
+                                break;
+                            }
+
+                            bool operationCompleted =
+                                machineWaits.All(x =>
+                                    x.Wait_Seq_No == -1 &&
+                                    x.Bal_Qnty <= 0);
+
+                            if (!operationCompleted)
+                            {
+                                parallelGroupCompleted = false;
+                                break;
+                            }
+                        }
+
+                        if (!parallelGroupCompleted)
+                            continue;
+                    }
+                }
+
+                // -----------------------------------------------------
+                // F. Find first machine operation for this WO
+                // -----------------------------------------------------
+                if (!firstMachineOperationLookup.TryGetValue(
+                        mcWait.Wo_Id,
+                        out var firstMachineOperation))
+                {
+                    continue;
+                }
+
+                bool isFirstMachineOperation =
+                    currentOperation.Opr_No ==
+                    firstMachineOperation.Opr_No;
+
+                string matlIssued = "";
+
+                // =====================================================
+                // FIRST MACHINE OPERATION
+                // =====================================================
+                if (isFirstMachineOperation)
+                {
+                    // Get ALL material allocations for this WO
+                    var allocations = materialLookup[mcWait.Wo_Id];
+
+                    // Must have at least one material allocation
+                    if (!allocations.Any())
+                        continue;
+
+                    // ALL material allocations must be completed
+                    if (!allocations.All(x => x.Allocation_done == 'Y'))
+                        continue;
+                    var issueRecords = issueLookup[mcWait.Wo_Id];
+
+                    if (!issueRecords.Any())
+                        continue;
+
+                    if (!issueRecords.All(x => x.Issue_Mov_Compl == 'Y'))
+                        continue;
+                    // First machine operation is released
+                    matlIssued = "Y";
+                }
+                // =====================================================
+                // SUBSEQUENT MACHINE OPERATION
+                // =====================================================
+                else
+                {
+                    // Find immediately previous routing operation
+                     previousOperation = operations
+                        .Where(x =>
+                            x.RoutingStepSequence <
+                            currentOperation.RoutingStepSequence)
+                        .OrderByDescending(x => x.RoutingStepSequence)
+                        .FirstOrDefault();
+
+
+
+
+
+
+
+
+
+                    if (previousOperation == null)
+                        continue;
+
+                    // Previous operation actual quantity
+                    var previousActQty = previousOperation.Act_Qnty;
+
+                    if (previousActQty <= 0)
+                        continue;
+
+                    // Show previous operation actual quantity
+                    matlIssued = previousActQty.ToString();
+                }
+
+                // -----------------------------------------------------
+                // G. Get planned start time
+                // -----------------------------------------------------
+                var currentStart = timeSlots
+                    .GetValueOrDefault(mcWait.Plan_start_time_Id)
+                    ?.Start_time;
+                DateTime? matlReceiptTime = null;
+
+                if (isFirstMachineOperation)
+                {
+                    // First machine operation:
+                    // Material receipt time = planned start time
+                    matlReceiptTime = currentStart;
+                }
+                else
+                {
+                    // Subsequent machine operation:
+                    // Material receipt time = previous operation actual end time
+                     previousOperation = operations
+                        .Where(x =>
+                            x.RoutingStepSequence <
+                            currentOperation.RoutingStepSequence)
+                        .OrderByDescending(x => x.RoutingStepSequence)
+                        .FirstOrDefault();
+
+                    if (previousOperation != null)
+                    {
+                        matlReceiptTime = previousOperation.Act_End_time;
+                    }
+                }
+                    // -----------------------------------------------------
+                    // H. Add current operation to result
+                    // -----------------------------------------------------
+                    result.Add(new TempMc_Wait_ListVM
+                    {
+                        // IDs
+                        Mc_Id = mcWait.Mc_Id,
+                        Wo_Id = mcWait.Wo_Id,
+                        Opr_No_Id = mcWait.Opr_No_Id,
+
+                        // Setup / confirmation / end times
+                        Setup_Start_time = mcWait.Setup_Start_time,
+                        Setup_Apprvl_time = mcWait.Setup_Apprvl_time,
+                        Act_End_time = mcWait.Act_End_time,
+
+                        // WO information
+                        WoNumber = wo.WONumber ?? "",
+                        WoQnty = wo.PlanWOQnty.ToString(),
+
+                        // Wait information
+                        Plan_Qnty = mcWait.Plan_Qnty,
+                        Bal_Qnty = mcWait.Bal_Qnty,
+                        ActiveId = mcWait.Mc_Wait_ListId,
+
+                        // First operation = Y
+                        // Subsequent operation = previous Act_Qnty
+                        MatlIssued = matlIssued,
+
+                        // Planned start
+                        PlanStartStr = currentStart?.ToString("hh:mm tt") ?? "",
+
+                        // For now keep empty
+                        MatlReceptTime = matlReceiptTime?.ToString("hh:mm tt") ?? "",
+
+                        // Other
+                        Rework_Wo = currentOperation.Rework_Wo,
+                        TenantId = tenantId,
+
+                        // Enriched later by controller
+                        ShopName = "",
+                        McName = "",
+                        PartNo = "",
+                        RoutingName = "",
+                        OprNoName = ""
+                    });
+                }
+
+                return result;
+            
         }
         public async Task<IEnumerable<TempMc_Wait_ListVM>> GetAllBookOutList(long tenantId)
         {
@@ -5049,7 +5463,7 @@ namespace CWB.ProductionPlanWO.Services
                 }
 
                 // Critical Parts Calculation
-                item.CriticalParts = (wO_Wait_List.Plan_End_Date > item.PlanCompletionDate) ? "Y" : "N";
+                item.CriticalParts = (wO_Wait_List.Plan_End_Date > item.SoComplDate) ? "Y" : "N";
 
                 result.Add(item);
             }

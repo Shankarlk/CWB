@@ -71,6 +71,7 @@ function loadMis() {
 $(document).ready(function () {
     loadMis();
     loadSels();
+  //  loadProductionDepartments();
     $("#P6Shop").on("change", function () {
         var selectedValue = $(this).val();
         if (selectedValue == "0") {
@@ -226,6 +227,7 @@ $(document).ready(function () {
             alert("Setup Start Confirmation Saved");
             $("#Popup7").modal("hide");
             loadSetUpConfList();
+            loadMis();
         }).catch((error) => {
             console.log(error);
         });
@@ -516,6 +518,7 @@ $(document).ready(function () {
             alert("Setup Approval Saved");
             $("#Popup9").modal("hide");
             loadSetUpAplList();
+            loadMis();
         }).catch((error) => {
             console.log(error);
         });
@@ -547,8 +550,11 @@ $(document).ready(function () {
         document.getElementById('Popup10').style.filter = 'blur(5px)';
         var relatedTarget = $(event.relatedTarget);
         var partno = relatedTarget.data("partno");
+        var inputpartno = relatedTarget.data("inputpartno");
         var route = relatedTarget.data("route");
         var opname = relatedTarget.data("opname");
+        var previousopname = relatedTarget.data("previousoprno");
+        var previousopqty = relatedTarget.data("previousoprqty");
         var shopname = relatedTarget.data("shopname");
         var mcname = relatedTarget.data("mcname");
         var uomname = relatedTarget.data("uomname");
@@ -558,15 +564,23 @@ $(document).ready(function () {
         var accp = relatedTarget.data("accp");
         var ncqnty = relatedTarget.data("ncqnty");
         var id = relatedTarget.data("id");
+        var previousid = relatedTarget.data("previousid");
         var partid = relatedTarget.data("partid");
         var woid = relatedTarget.data("woid");
         var oprid = relatedTarget.data("oprid");
+        var departmentId = relatedTarget.data("departmentid");
+        var firstoperation = relatedTarget.data("firstopr");
+        if (firstoperation==='Y') {
+            $("#P11PreviousOperationSection").hide();
+        } else {
+            $("#P11PreviousOperationSection").show();
+        }
         $("#P11PartNo").text(partno);
-        $("#P11PerPart").text(partno);
+        $("#P11PerPart").text(inputpartno);
         $("#P11Rout").text(route);
         $("#P11OpNo").text(opname);
-        $("#P11PerOp").text(opname);
-        $("#P11PerQnty").text('0');
+        $("#P11PerOp").text(previousopname);
+        $("#P11PerQnty").text(previousopqty);
         $("#P11PerBook").text('0');
         $("#P11PerBal").text(planqnty);
         $("#P11Shop").text(shopname);
@@ -586,6 +600,22 @@ $(document).ready(function () {
         $("#P7InwHeaderId").val(id);
         $("#P7OprId").val(oprid);
         $("#P7woid").val(woid);
+        loadProductionDepartment(departmentId);
+       // $("#P7NcLocation")     .val(String(departmentId))
+             
+
+       
+        $("#P20UnitVM").text(uomname);
+        $("#P20PartNoSpan").text(partno);
+        $("#P20RoutingSpan").text(route);
+        $("#P20OprNoSpan").text(previousopname);
+        $("#P20PartId").val(partid);
+        $("#P20InwHeaderId").val(previousid);
+        $("#P20OprId").val(oprid);
+        $("#P20woid").val(woid);
+       
+       // $("#P20NcLocation").val(String(departmentId))
+             
         $("#P11TotalInsp").val(qntoff);
         $("#P11TbTotalOff").val(qntoff);
         $("#P11TbInspTotal").val(accp);
@@ -725,11 +755,11 @@ $(document).ready(function () {
         } else {
             $("#P7NcDesclaredBySup").prop("checked", false);
         }
-        if (parttype == "SubCon") {
-            $("#P7NcLocation").val(1);
-        } else {
-            $("#P7NcLocation").val(2);
-        }
+        //if (parttype == "SubCon") {
+        //    $("#P7NcLocation").val(1);
+        //} else {
+        //    $("#P7NcLocation").val(2);
+        //}
         $("#P7BallonNo").val(balno);
         $("#P7NcBallonDesc").val(baldesc);
         $("#P7NcDesc").val(ncdes);
@@ -872,11 +902,12 @@ $(document).ready(function () {
         var formdata = {
             mc_Wait_ListId: parseInt($("#P7InwHeaderId").val()),
             nonConQnty: parseInt($("#P11TbTotalNc").val()),
-            accepted: parseInt($("#P11TbInspTotal").val()),
+            accepted: parseInt($("#P11TbTotalOff").val()),
             qntyOffered: parseInt($("#P11TbTotalOff").val())
         };
         api.post("/WorkOrder/UpdateQntyMc_Wait_List", formdata).then((data) => {
-
+            loadBookoutList();
+            loadMis();
         }).catch((error) => {
             console.log(error);
         });
@@ -887,93 +918,116 @@ $(document).ready(function () {
             var qnty = parseInt($("#P11TbInspTotal").val());
             var P6PartId = parseInt($("#P7PartId").val());
             var P6PoId = parseInt($("#P6PoId").val());
+            var oprNo = parseInt($("#P7OprId").val());
+            var shopinsLog = {
+                operator_Id: P11Opertor,
+                inspected_on: new Date().toISOString(),
+                qnty_OK_finished: Acount,
+                qnty_ok_input: 0,
+                input_Opr_NoId: oprNo,
+                input_Part_No: P6PartId,
+                mc_Reference: parseInt($("#P7InwHeaderId").val())
+            };
 
-            return api.getbulk("/WorkOrder/GetAllInv_Trans_Log").then((logdata) => {
-                logdata = logdata.filter(item => item.input_Part_NoId === P6PartId);
-                var logId = 0;
-                if (Array.isArray(logdata) && logdata.length > 0) {
-                    logId = logdata[logdata.length - 1].inv_Trans_LogId || 0;
-                } else {
-                    logId = 0;
-                }
-                var oprNo = parseInt($("#P7OprId").val());
-                var rowData = {
-                    Inv_Trans_LogId: 0,
-                    Input_Part_NoId: P6PartId,
-                    Input_Routing_Id: 0,
-                    Input_Opr_No: oprNo,
-                    Output_Part_No: P6PartId,
-                    Output_Routing_Id: 0,
-                    Output_Opr_No: 0,
-                    Wo_Id: 0,
-                    PO_No_Id: P6PoId,
-                    Transaction_Id: 7,
-                    Qnty: Acount,
-                    From_Location_Id: 0,
-                    To_Location_Id: 1,
-                    Part_Status: 1,
-                    Movement_Compl: 'N'
-                };         // Ensure these fields exist
-                api.post("/WorkOrder/PostInv_Trans_Log", rowData).then((Insdata) => {
+            api.post("/WorkOrder/PostShop_Insp_Log", shopinsLog)
+                .then((res) => {
+                    
+                   
                     $("#P6MessageBox").text("Inspection Complete");
                     P11Save = false;
-                    var InvMasterrowData = {
-                        Part_NoId: P6PartId,
-                        Routing_Id: 0,
-                        Inv_Trans_Log_Id: Insdata.inv_Trans_LogId,
-                        Opr_No_Id: oprNo,
-                        Current_QntOnHand: Acount,
-                        Location_Id: 1
-                    };
-                    api.post("/WorkOrder/PostInventory_Master", InvMasterrowData).then((data) => {
 
-                        var woId = parseInt($("#P7woid").val());     
-                        var mcId = 0;             // Machine ID
-                        var balBookoutQty = ECount - Acount;  // Balance Bookout Quantity
-                        var bookoutTime = new Date().toISOString();          // Current time in ISO format
-
-                        var statusUpdateData = {
-                            woId: woId,
-                            oprNo: oprNo,
-                            mcId: mcId,
-                            balBookoutQty: balBookoutQty,
-                            bookoutTime: bookoutTime
-                        };
-
-                        api.post("/WorkOrder/UpdateWOStatusOnBookout", statusUpdateData)
-                            .then((res) => {
-                                console.log("WO status updated", res);
-                            })
-                            .catch((error) => {
-                                console.log("Error updating WO status", error);
-                            });
-                        var shopinsLog = {
-                            operator_Id: P11Opertor,
-                            inspected_on: new Date().toISOString(),
-                            qnty_OK_finished: Acount,
-                            qnty_ok_input: 0,
-                            input_Opr_NoId: oprNo,
-                            input_Part_No: P6PartId,
-                            mc_Reference: parseInt($("#P7InwHeaderId").val())
-                        };
-                        api.post("/WorkOrder/PostShop_Insp_Log", shopinsLog)
-                            .then((res) => {
-
-                            })
-                            .catch((error) => {
-                                console.log("Error PostShop_Insp_Log", error);
-                            });
-
-
-                    }).catch((error) => {
-                        console.log(error);
-                    });
-                }).catch((error) => {
-                    console.log(error);
+                    console.log("Shop Inspection Log posted successfully", res);
+                })
+                .catch((error) => {
+                    console.log("Error PostShop_Insp_Log", error);
                 });
+            //return api.getbulk("/WorkOrder/GetAllInv_Trans_Log").then((logdata) => {
+            //    logdata = logdata.filter(item => item.input_Part_NoId === P6PartId);
+            //    var logId = 0;
+            //    if (Array.isArray(logdata) && logdata.length > 0) {
+            //        logId = logdata[logdata.length - 1].inv_Trans_LogId || 0;
+            //    } else {
+            //        logId = 0;
+            //    }
+            //   // var oprNo = parseInt($("#P7OprId").val());
+            //    var rowData = {
+            //        Inv_Trans_LogId: 0,
+            //        Input_Part_NoId: P6PartId,
+            //        Input_Routing_Id: 0,
+            //        Input_Opr_No: oprNo,
+            //        Output_Part_No: P6PartId,
+            //        Output_Routing_Id: 0,
+            //        Output_Opr_No: 0,
+            //        Wo_Id: 0,
+            //        PO_No_Id: P6PoId,
+            //        Transaction_Id: 7,
+            //        Qnty: Acount,
+            //        From_Location_Id: 0,
+            //        To_Location_Id: 1,
+            //        Part_Status: 1,
+            //        Movement_Compl: 'N'
+            //    };         // Ensure these fields exist
+            //    api.post("/WorkOrder/PostInv_Trans_Log", rowData).then((Insdata) => {
+            //        $("#P6MessageBox").text("Inspection Complete");
+            //        P11Save = false;
+            //        var InvMasterrowData = {
+            //            Part_NoId: P6PartId,
+            //            Routing_Id: 0,
+            //            Inv_Trans_Log_Id: Insdata.inv_Trans_LogId,
+            //            Opr_No_Id: oprNo,
+            //            Current_QntOnHand: Acount,
+            //            Location_Id: 1
+            //        };
+            //        api.post("/WorkOrder/PostInventory_Master", InvMasterrowData).then((data) => {
 
-            }).catch((error) => {
-            });
+            //            var woId = parseInt($("#P7woid").val());     
+            //            var mcId = 0;             // Machine ID
+            //            var balBookoutQty = ECount - Acount;  // Balance Bookout Quantity
+            //            var bookoutTime = new Date().toISOString();          // Current time in ISO format
+
+            //            var statusUpdateData = {
+            //                woId: woId,
+            //                oprNo: oprNo,
+            //                mcId: mcId,
+            //                balBookoutQty: balBookoutQty,
+            //                bookoutTime: bookoutTime
+            //            };
+
+            //            api.post("/WorkOrder/UpdateWOStatusOnBookout", statusUpdateData)
+            //                .then((res) => {
+            //                    console.log("WO status updated", res);
+            //                })
+            //                .catch((error) => {
+            //                    console.log("Error updating WO status", error);
+            //                });
+            //            var shopinsLog = {
+            //                operator_Id: P11Opertor,
+            //                inspected_on: new Date().toISOString(),
+            //                qnty_OK_finished: Acount,
+            //                qnty_ok_input: 0,
+            //                input_Opr_NoId: oprNo,
+            //                input_Part_No: P6PartId,
+            //                mc_Reference: parseInt($("#P7InwHeaderId").val())
+            //            };
+            //            api.post("/WorkOrder/PostShop_Insp_Log", shopinsLog)
+            //                .then((res) => {
+
+            //                })
+            //                .catch((error) => {
+            //                    console.log("Error PostShop_Insp_Log", error);
+            //                });
+
+
+            //        }).catch((error) => {
+            //            console.log(error);
+            //        });
+            //    }).catch((error) => {
+            //        console.log(error);
+            //    });
+
+            //}).catch((error) => {
+            //});
+
         }
     });
     loadEmployeeSel();
@@ -1524,4 +1578,202 @@ data-bs-toggle="modal"
         });
 
     }
+}
+$("#P11InputBtn").on('click', function (event) {
+    $("#popup20").modal("show");
+
+    var P20NcBallonDesc = document.getElementById('P20NcBallonDesc');
+    P20NcBallonDesc.style.border = '';
+
+    var P20NcDesc = document.getElementById('P20NcDesc');
+    P20NcDesc.style.border = '';
+
+    var P20NcQnty = document.getElementById('P20NcQnty');
+    P20NcQnty.style.border = '';
+
+    $("#P20RoutingDiv").removeAttr("hidden");
+});
+
+$("#P20BtnClose").on("click", function () {
+    $("#popup20").modal("hide");
+    document.getElementById('Popup11').style.filter = 'none';
+});
+
+$('#popup20').on('show.bs.modal', function (event) {
+    document.getElementById('Popup11').style.filter = 'blur(5px)';
+
+    var relatedTarget = $(event.relatedTarget);
+
+    var id = relatedTarget.data("id");
+    var balno = relatedTarget.data("balno");
+    var baldesc = relatedTarget.data("baldesc");
+    var ncdes = relatedTarget.data("ncdes");
+    var declsup = relatedTarget.data("declsup");
+    var qnty = relatedTarget.data("qnty");
+    var nctrack = relatedTarget.data("nctrack");
+    var loc = relatedTarget.data("loc");
+
+    var parttype = $("#P6Ncparttype").val();
+
+    if (declsup === "Y") {
+        $("#P20NcDesclaredBySup").prop("checked", true);
+    } else {
+        $("#P20NcDesclaredBySup").prop("checked", false);
+    }
+
+    //if (parttype == "SubCon") {
+    //    $("#P20NcLocation").val(1);
+    //} else {
+    //    $("#P20NcLocation").val(2);
+    //}
+
+    $("#P20BallonNo").val(balno);
+    $("#P20NcBallonDesc").val(baldesc);
+    $("#P20NcDesc").val(ncdes);
+    $("#P20NcQnty").val(qnty);
+    $("#P20NcTrackNo").val(nctrack);
+    $("#P20NcId").val(id);
+});
+
+$("#P20NCSave").secureClick(function () {
+
+    var P20BallonNo = $("#P20BallonNo").val();
+    var P20NcBallonDesc = $("#P20NcBallonDesc").val();
+    var P20NcDesc = $("#P20NcDesc").val();
+    var P20NcQnty = parseInt($("#P20NcQnty").val());
+
+    var P20InwHeaderId = parseInt($("#P20InwHeaderId").val());
+    var P20PartId = parseInt($("#P20PartId").val());
+    var P20NcId = parseInt($("#P20NcId").val());
+    var P20NcLocation = $("#P20NcLocation").val();
+
+    var checkbox = document.getElementById("P20NcDesclaredBySup");
+
+    // Balloon Description validation
+    if (P20NcBallonDesc.length === 0) {
+        var newNamevalidate = document.getElementById('P20NcBallonDesc');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P20NcBallonDesc');
+        newNamevalidate.style.border = '';
+    }
+
+    // NC Description validation
+    if (P20NcDesc.length === 0) {
+        var newNamevalidate = document.getElementById('P20NcDesc');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P20NcDesc');
+        newNamevalidate.style.border = '';
+    }
+
+    // Quantity validation
+    if (P20NcQnty === 0 || isNaN(P20NcQnty)) {
+        var newNamevalidate = document.getElementById('P20NcQnty');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P20NcQnty');
+        newNamevalidate.style.border = '';
+    }
+
+    var decl = 'N';
+
+    if (checkbox.checked) {
+        decl = 'Y';
+    }
+
+    if (isNaN(P20NcId)) {
+        P20NcId = 0;
+    }
+
+    var rowData = {
+        insp_Outcome_Details_Id: parseInt(P20NcId),
+        mcWaitId: P20InwHeaderId,
+        inw_Recpt_Part_No_Id: P20PartId,
+        balloon_No: P20BallonNo,
+        balloon_No_Dir: P20NcBallonDesc,
+        feature_Descrip: P20NcDesc,
+        nC_Descrip: P20NcDesc,
+        nC_Qnty: P20NcQnty,
+        decl_by_Supplier: decl,
+        storage_Location: P20NcLocation,
+        nC_Log_status_Id: 1
+    };
+
+    return $.ajax({
+        type: "POST",
+        url: '/workOrder/PostInspNcLog',
+        contentType: "application/json; charset=utf-8",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(rowData),
+        dataType: "json",
+
+        success: function (result) {
+            loadNclog(P20InwHeaderId);
+            alert("Non Conformance Data Entered Successfully.");
+        }
+    });
+});
+
+ 
+function loadProductionDepartment(departmentId) {
+
+    $.ajax({
+        type: "GET",
+        url: "/WorkOrder/GetProductionDepartment",
+        data: {
+            departmentId: departmentId
+        },
+        dataType: "json",
+
+        
+
+            success: function (data) {
+
+                var ddlP7 = $("#P7NcLocation");
+                var ddlP20 = $("#P20NcLocation");
+
+                console.log("Production Department response:", data);
+
+                ddlP7.empty();
+                ddlP20.empty();
+
+                if (data && data.length > 0) {
+
+                    console.log("Department ID returned:", data[0].id);
+                    console.log("Department Name returned:", data[0].name);
+
+                    ddlP7.append(
+                        $("<option>", {
+                            value: String(data[0].id),
+                            text: data[0].name
+                        })
+                    );
+
+                    ddlP20.append(
+                        $("<option>", {
+                            value: String(data[0].id),
+                            text: data[0].name
+                        })
+                    );
+
+                    // Only one option exists, so select it
+                    ddlP7.val(String(data[0].id));
+                    ddlP20.val(String(data[0].id));
+
+                    ddlP7.prop("disabled", true);
+                    ddlP20.prop("disabled", true);
+                }
+            
+        },
+
+        error: function () {
+            console.log("Unable to load production department.");
+        }
+    });
 }

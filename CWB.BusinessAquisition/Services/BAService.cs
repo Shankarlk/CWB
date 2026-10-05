@@ -54,6 +54,8 @@ namespace CWB.BusinessAquisition.Services
         private readonly IDeliveryScheduleRepository _deliveryScheduleRepository;
         private readonly IBAStatusRepository _baStatusRepository;
         private readonly ISO_Alloc_ListRepository _SO_AllocationRepository;
+        private readonly ICust_Disp_ListRepository _Cust_Disp_ListRepository;
+        private readonly IInvoice_Disp_ListRepository _IInvoice_Disp_ListRepository;
         public BAService(ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork
             ,IPOLogRepository pOLogRepository
             ,ICustomerOrderRepository customerOderRepository
@@ -61,7 +63,8 @@ namespace CWB.BusinessAquisition.Services
             ,ISOAggregateRepository sOAggregateRepository
             ,IBAStatusRepository bAStatusRepository
             , IDeliveryScheduleRepository deliveryScheduleRepository
-            , ISO_Alloc_ListRepository SO_AllocationRepository)
+            , ISO_Alloc_ListRepository SO_AllocationRepository, ICust_Disp_ListRepository Cust_Disp_ListRepository
+            ,IInvoice_Disp_ListRepository IInvoice_Disp_ListRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -73,6 +76,8 @@ namespace CWB.BusinessAquisition.Services
             _baStatusRepository = bAStatusRepository;
             _deliveryScheduleRepository = deliveryScheduleRepository;
             _SO_AllocationRepository = SO_AllocationRepository;
+            _Cust_Disp_ListRepository = Cust_Disp_ListRepository;
+            _IInvoice_Disp_ListRepository = IInvoice_Disp_ListRepository;
         }
 
         public async Task<CustomerOrderVM> CustomerOrder(CustomerOrderVM customerOrderVM)
@@ -366,9 +371,26 @@ namespace CWB.BusinessAquisition.Services
                 else
                 {
                     //update logic remaining
-                    soallocation = await _SO_AllocationRepository.SingleOrDefaultAsync(x => x.Id == soallocation.Id);
+                    var existingAllocation =  await _SO_AllocationRepository.SingleOrDefaultAsync( x => x.Id == soallocation.Id);
 
-                    soallocation = await _SO_AllocationRepository.UpdateAsync(soallocation.Id, soallocation);
+                    if (existingAllocation == null)
+                    {
+                        return soallocationVM;
+                    }
+
+                    // Copy updated values from VM/entity to existing DB entity
+                    
+                    existingAllocation.Allocated_Qnty = soallocation.Allocated_Qnty;
+                    existingAllocation.Final_Dispatch_Qnty = soallocation.Final_Dispatch_Qnty;
+                    existingAllocation.Dispatch_Complete = soallocation.Dispatch_Complete;
+                    existingAllocation.Full_Qnty_Dispatched = soallocation.Full_Qnty_Dispatched;
+                    existingAllocation.Ready_for_Dispatch = soallocation.Ready_for_Dispatch;
+                   
+
+                    await _SO_AllocationRepository.UpdateAsync(
+                        existingAllocation.Id,
+                        existingAllocation);
+
                     await _unitOfWork.CommitAsync();
                     soallocationVM.SO_Alloc_List_Id = soallocation.Id;
                   
@@ -674,6 +696,16 @@ namespace CWB.BusinessAquisition.Services
             var salesOrder = _mapper.Map<SalesOrder>(salesOrderVm);
             if (salesOrder.Id == 0)
             {
+                salesOrder.Done = false;
+                salesOrder.Hold = false;
+                salesOrder.Plan = 0;
+                salesOrder.Matl = 0;
+                salesOrder.Status = (int)OrdStatus.NOTPlanned;//Scheduled
+                salesOrder.WorkOrderNo = "";
+                salesOrder.WorkOrderId = 0;
+                salesOrder.ActQuantity = 0;
+                salesOrder.SODate = DateTime.Now;
+                salesOrder.SONumber = "SO_" + salesOrder.SODate.Value.ToString("yyyyMMddHHmmss");
                 await _salesOrderRepository.AddAsync(salesOrder);
             }
             else
@@ -689,6 +721,8 @@ namespace CWB.BusinessAquisition.Services
                 so.SuggestedDispQnty = salesOrder.SuggestedDispQnty;
                 so.FinalDispQnty = salesOrder.FinalDispQnty;
                 so.Status = salesOrder.Status;
+                so.ActQuantity = salesOrder.ActQuantity;
+                so.ActCompletedDate = DateTime.Now;
                 salesOrder = await _salesOrderRepository.UpdateAsync(salesOrder.Id, so);
             }
             try
@@ -759,6 +793,228 @@ namespace CWB.BusinessAquisition.Services
             //}
             //return new BAStatusVM { StatusId = -1 };
         }
+        public async Task<IEnumerable<Cust_Disp_ListVM>> GetAllCustDispList(long tenantId)
+        {
+            try
+            {
+                var custDispList =  _Cust_Disp_ListRepository.GetRangeAsync(x => x.TenantId == tenantId);
+                return _mapper.Map<IEnumerable<Cust_Disp_ListVM>>(custDispList);
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.Message;
+
+                return new List<Cust_Disp_ListVM>();
+            }
+        }
+        public async Task<Cust_Disp_ListVM> PostCustDispList(  Cust_Disp_ListVM custDispListVM)
+        {
+            try
+            {
+                var custDispList = _mapper.Map<Cust_Disp_List>(custDispListVM);
+
+                // INSERT
+                if (custDispList.Id == 0)
+                {
+                    
+                    await _Cust_Disp_ListRepository.AddAsync(custDispList);
+                     await _unitOfWork.CommitAsync();
+
+                    custDispListVM.Cust_Disp_List_ID = custDispList.Id;
+                }
+                else
+                {
+                    // UPDATE
+                    var existingCustDispList =
+                        await _Cust_Disp_ListRepository.SingleOrDefaultAsync(
+                            x => x.Id == custDispList.Id);
+
+                    if (existingCustDispList == null)
+                    {
+                        return custDispListVM;
+                    }
+
+                    // Copy fields that are allowed to be updated.
+                    // Replace/add properties according to your actual table.
+                    existingCustDispList.Dispatch_Complete =       custDispList.Dispatch_Complete;
+                    existingCustDispList.Invoice_Details_Entered =      custDispList.Invoice_Details_Entered;
+                    existingCustDispList.Data_Confirmed =      custDispList.Data_Confirmed;
+
+                    await _Cust_Disp_ListRepository.UpdateAsync( existingCustDispList.Id,existingCustDispList);
+
+                    await _unitOfWork.CommitAsync();
+
+                    custDispListVM.Cust_Disp_List_ID =  existingCustDispList.Id;
+                }
+
+                return custDispListVM;
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.Message;
+
+                return custDispListVM;
+            }
+        }
+
+
+        public async Task<IEnumerable<Cust_Disp_ListVM>> PostCustDispListMultiple( List<Cust_Disp_ListVM> custDispListVMs)
+        {
+            try
+            {
+                var result = new List<Cust_Disp_ListVM>();
+
+                foreach (var item in custDispListVMs)
+                {
+                    var custDispList = _mapper.Map<Cust_Disp_List>(item);
+
+                    // INSERT
+                    if (custDispList.Id == 0)
+                    {
+                      
+
+                        await _Cust_Disp_ListRepository.AddAsync(custDispList);
+
+                        result.Add(item);
+                    }
+                    else
+                    {
+                        // UPDATE
+                        var existingCustDispList =
+                            await _Cust_Disp_ListRepository.SingleOrDefaultAsync(
+                                x => x.Id == custDispList.Id);
+
+                        if (existingCustDispList == null)
+                        {
+                            continue;
+                        }
+
+                        existingCustDispList.Dispatch_Complete = custDispList.Dispatch_Complete;
+                        existingCustDispList.Invoice_Details_Entered = custDispList.Invoice_Details_Entered;
+                        existingCustDispList.Data_Confirmed = custDispList.Data_Confirmed;
+
+                        await _Cust_Disp_ListRepository.UpdateAsync(existingCustDispList.Id, existingCustDispList);
+
+                        result.Add(item);
+                    }
+                }
+
+                await _unitOfWork.CommitAsync();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.Message;
+
+                return new List<Cust_Disp_ListVM>();
+            }
+        }
+        public async Task<bool> RemoveCustDispList(long tenantId, long custDispListId)
+        {
+            var custDispList =
+                await _Cust_Disp_ListRepository.SingleOrDefaultAsync(
+                    x => x.Id == custDispListId
+                         && x.TenantId == tenantId);
+
+            if (custDispList != null)
+            {
+                _Cust_Disp_ListRepository.Remove(custDispList);
+
+                await _unitOfWork.CommitAsync();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<IEnumerable<Invoice_Disp_ListVM>> GetAllInvoiceDispatchList(long tenantId)
+        {
+            try
+            {
+                var custDispList = _IInvoice_Disp_ListRepository.GetRangeAsync(x => x.TenantId == tenantId);
+                return _mapper.Map<IEnumerable<Invoice_Disp_ListVM>>(custDispList);
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.Message;
+
+                return new List<Invoice_Disp_ListVM>();
+            }
+        }
+        public async Task<Invoice_Disp_ListVM> PostInvoiceDispList(Invoice_Disp_ListVM custDispListVM)
+        {
+            try
+            {
+                var custDispList = _mapper.Map<Invoice_Disp_List>(custDispListVM);
+
+                // INSERT
+                if (custDispList.Id == 0)
+                {
+
+                    await _IInvoice_Disp_ListRepository.AddAsync(custDispList);
+                    await _unitOfWork.CommitAsync();
+
+                    custDispListVM.Invoice_Disp_List_Id = custDispList.Id;
+                }
+                else
+                {
+                    // UPDATE
+                    var existingCustDispList =
+                        await _IInvoice_Disp_ListRepository.SingleOrDefaultAsync(
+                            x => x.Id == custDispList.Id);
+
+                    if (existingCustDispList == null)
+                    {
+                        return custDispListVM;
+                    }
+
+                    // Copy fields that are allowed to be updated.
+                    // Replace/add properties according to your actual table.
+                    existingCustDispList.Dispatch_Detail_Id = custDispList.Dispatch_Detail_Id;
+                    existingCustDispList.Cust_Disp_List_Id = custDispList.Cust_Disp_List_Id;
+                    
+
+                    await _IInvoice_Disp_ListRepository.UpdateAsync(existingCustDispList.Id, existingCustDispList);
+
+                    await _unitOfWork.CommitAsync();
+
+                    custDispListVM.Invoice_Disp_List_Id = existingCustDispList.Id;
+                }
+
+                return custDispListVM;
+            }
+            catch (Exception ex)
+            {
+                string msg = ex.Message;
+
+                return custDispListVM;
+            }
+        }
+        public async Task<bool> RemoveInvoiceDispList(long tenantId, long custDispListId)
+        {
+            var custDispList =
+                await _IInvoice_Disp_ListRepository.SingleOrDefaultAsync(
+                    x => x.Id == custDispListId
+                         && x.TenantId == tenantId);
+
+            if (custDispList != null)
+            {
+                _IInvoice_Disp_ListRepository.Remove(custDispList);
+
+                await _unitOfWork.CommitAsync();
+
+                return true;
+            }
+
+            return false;
+        }
+
+
+
+
+
 
     }
 }

@@ -218,26 +218,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                    </tr>
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                    </tr>
+                                    
                                 </tbody>
                             </table>
                         </div>
@@ -435,7 +416,18 @@
     </tr>
 </template>
 
+<template id="P17GridRow">
+    <tr>
+        <td>{partNo}</td>
+        <td>{routingName}/{oprNo}</td>
+        <td>{fromSender}</td>
+        <td>{toSender}</td>
+        <td>{partStatus}</td>
+        <td>{qnty}</td>
+        <td hidden>{inv_Trans_LogId}</td>
+    </tr>
 
+</template>
 
 @section Scripts {
     <script src="~/js/MaterialMovement.js"></script>

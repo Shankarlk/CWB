@@ -117,8 +117,10 @@
                     Customer :  <span id="P12Cust"></span> <br>
                     PO No :  <span id="P12Po"></span> <br>
                     Bal Disp.Qnty :  <span id="P12BalQnty"></span> <br>
-                    Qnty on Hand :  <span id="P12QoH"></span>
-                </h5>
+                    Suggested Dispatch Qnty :  <span id="P12SuggestedQnty"></span> <br>
+                    <label id="P12RedistributionRow"> Qnty Available for Redistribution:  <span id="P12QntyRedistribution"></span> </label><br>
+                    Qnty on Hand Available for Dispatch :  <span id="P12QoH"></span>
+</h5>
                 <button type="button" class="btn-close position-absolute top-0 end-0 m-2" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -131,7 +133,14 @@
                          data-tippy=""
                          data-original-title="">
                         <input type="text" class="form-control form-control-sm w-25" id="P12FinQnty">
+                        <label id="P12FinQntyError"
+                               class="text-danger mt-1"
+                               style="display:none;">
+                            Quantity entered should not be greater than Bal Disp.Qnty. or Quantity On hand available for Dispatch
+                            Please check and reenter.
+                        </label>
                         <input type="text" class="form-control form-control-sm w-50" id="P12SoId" hidden>
+                        <input type="hidden" id="P12SoAllocId">
                     </div>
                     <div class="col-md-10 text-end">
                         <button class="btn btn-primary btn-sm" id="P12Save">Save</button>
@@ -145,7 +154,8 @@
                                         <th>Customer</th>
                                         <th>PO No</th>
                                         <th>Bal Disp Qnty</th>
-                                        <th>Disp Qnty</th>
+                                        <th>Disp Qnty Planned</th>
+                                        <th>Disp Qnty Finalized</th>
                                         <th width="5%">
                                         </th>
                                     </tr>
@@ -154,6 +164,11 @@
                                     <!-- -------------  -->
                                 </tbody>
                             </table>
+                            <div class="mt-2 text-muted small">
+                                In the event the the Quantity on Hand available to Dispatch is not sufficient to meet the entire Balance Quantity to Dispatch,
+                                to redistribute Dispatch Quantity across Customers or across POs for the same Customer, first reduce in one Line Item and then
+                                increase in the other line item. If reverse is done, error message will be shown
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -170,26 +185,30 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="mySmallModalLabel">
-                    Customerwise Dispatch Details
+                    Dispatch List Confirmation(for stores)
                 </h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-2 mb-2">
+                    <div class="col-md-3 mb-2">
                         <label class="form-label">Salesorder</label>
                         <input type="text" class="form-control form-control-sm" id="P13SearchSo">
                     </div>
-                    <div class="col-md-2 mb-2">
+                    <div class="col-md-3 mb-2">
                         <label class="form-label">Customer</label>
                         <select class="form-select form-select-sm" aria-label="form-select-sm" id="P13SearchCustomer"
                                 title="" data-plugin="tippy" data-tippy-placement="top">
                             <option value="">==========</option>
                         </select>
                     </div>
-                    <div class="col-md-2 mb-2">
+                    <div class="col-md-3 mb-2">
                         <label class="form-label">Customer PO No</label>
                         <input type="text" class="form-control form-control-sm" id="P13SearchPO">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Part No / Desc</label>
+                        <input type="text" class="form-control form-control-sm" id="P13Partno">
                     </div>
                     <div class="col-md-12" id="popupInwardGridDiv">
                         <div class="col-md-12">
@@ -201,12 +220,12 @@
                                             <th>Sales Order #</th>
                                             <th>Customer</th>
                                             <th>PO No</th>
-                                            <th>No of Part Nos selected</th>
-                                            <th>Inv No</th>
-                                            <th>Inv Date</th>
-                                            <th>Dispatch Details</th>
-                                            <th width="5%">
-                                            </th>
+                                            <th>Part No/Desc</th>
+                                            <th>Total SO Qnty </th>
+                                            <th>Bal SO Disp Qnty</th>
+                                            <th>Finalized Disp Qnty</th>
+                                            @*<th width="5%">
+                                </th>*@
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -215,6 +234,29 @@
                                 </table>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-md-12 mt-4">
+
+                        <div class="d-flex justify-content-center align-items-center gap-3">
+
+                            <button type="button"
+                                    class="btn btn-success btn-sm"
+                                    id="P13Save">
+                                Confirm Dispatch
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-danger btn-sm"
+                                    data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+
+                            <span class="text-danger fw-semibold ms-3">
+                                Transaction for Dispatch cannot be reversed beyond this point
+                            </span>
+
+                        </div>
+
                     </div>
                     <!-- ========================= -->
                 </div>
@@ -286,7 +328,71 @@
 
     </div>
 </div>
+<div class="modal fade"
+     id="confirmSODispatchActionModal"
+     tabindex="-1"
+     aria-labelledby="confirmSODispatchActionModalLabel"
+     aria-hidden="true"
+     data-bs-backdrop="static" data-bs-keyboard="false">
 
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title"
+                    id="confirmSODispatchActionModalLabel">
+                    Confirm Action
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <p id="confirmSODispatchActionMessage"
+                   class="mb-3">
+                </p>
+
+                <div class="mb-2">
+                    <strong>Part No:</strong>
+                    <span id="confirmSODispatchPartNo"></span>
+                </div>
+
+                <div>
+                    <strong>SO Number:</strong>
+                    <span id="confirmSODispatchSONumber"></span>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <button type="button"
+                        class="btn btn-danger"
+                        id="btnConfirmSODispatchAction">
+                    Confirm
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 <template id="P14GridRow">
     <tr>
         <td>{partNo}</td>
@@ -297,8 +403,9 @@
     <tr>
         <th>{customer}</th>
         <th>{poNumber}</th>
-        <th>{qntyOnHand}</th>
-        <th>{finalDispQnty}</th>
+        <th>{balanceSOQty}</th>
+        <th>{suggestedDispQnty}</th>
+        <th>{final_Dispatch_Qnty}</th>
         <td>
             <div class="dropdown float-center">
                 <a href="#"
@@ -308,8 +415,8 @@
                     <i class="mdi mdi-dots-vertical"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end">
-                    <a href="javascript:void(0);"  data-partn="{partNo}" data-partdesc="{partDesc}" data-pono="{poNumber}"
-                       data-customer="{customer}"  data-baldispqnty="{qntyOnHand}" data-soid="{salesOrderId}" data-findisqnty="{finalDispQnty}"
+                    <a href="javascript:void(0);"  data-partn="{partNo}" data-partdesc="{partDesc}" data-pono="{poNumber}"  data-suggested="{suggestedDispQnty}" data-qoh="{qntyOnHand}"
+                       data-customer="{customer}"  data-baldispqnty="{balanceSOQty}" data-soid="{salesOrderId}" data-findisqnty="{final_Dispatch_Qnty}"  data-soallocid="{sO_Alloc_List_Id}"
                        class="dropdown-item" onclick="EditP12(this)">Edit</a>
                 </div>
             </div>
@@ -325,7 +432,7 @@
         <td></td>
         <td></td>
         <td></td>
-        <td>
+        @*<td>
             <div class="dropdown float-center">
                 <a href="#"
                    class="dropdown-toggle arrow-none card-drop"
@@ -339,26 +446,26 @@
                        data-bs-target="#popup14">Edit</a>
                 </div>
             </div>
-        </td>
+        </td>*@
     </tr>
 </template>
 
 <template id="SOGridRow">
-    <tr data-so-id="{salesOrderId}">
+    <tr data-so-id="{salesOrderId}"  data-soallocid="{sO_Alloc_List_Id}">
         <th>
             <input class="form-check-input SOgridChks" type="checkbox" title=""
-                   data-plugin="tippy" data-tippy-placement="top" placeholder=""
-                   >
+                   data-plugin="tippy" data-tippy-placement="top" placeholder="" data-findisqnty="{final_Dispatch_Qnty}">
         </th>
         <th>{soNumber}</th>
         <th>{customer}</th>
         <th>{poNumber}</th>
         <th>{partNo} / {partDesc}</th>
         <th>{requiredQuantity}</th>
+        <th>{balanceSOQty}</th>
         <th>{qntyOnHand}</th>
-        <th>{qntyOnHand}</th>
+
         <th class="suggested-qnty-value">{suggestedDispQnty}</th>
-        <th>{finalDispQnty}</th>
+        <th>{final_Dispatch_Qnty}</th>
         <th>{requiredByDateStr}</th>
         <th hidden>{dispatchId}</th>
         <th hidden>{invoiceNo}</th>
@@ -377,9 +484,32 @@
                     <!-- item-->
                     <a href="javascript:void(0);"
                        class="dropdown-item"
-                       data-bs-toggle="modal" data-partn="{partNo}" data-partdesc="{partDesc}" data-pono="{poNumber}"
-                       data-customer="{customer}"  data-baldispqnty="{qntyOnHand}" data-soid="{salesOrderId}" data-findisqnty="{finalDispQnty}"
+                       data-bs-toggle="modal" data-partn="{partNo}" data-partdesc="{partDesc}" data-pono="{poNumber}" data-suggested="{suggestedDispQnty}" data-soallocid="{sO_Alloc_List_Id}"
+                       data-customer="{customer}" data-baldispqnty="{balanceSOQty}" data-soid="{salesOrderId}" data-findisqnty="{final_Dispatch_Qnty}" data-qoh="{qntyOnHand}"
                        data-bs-target="#popup12">Set Dispatch Qnty</a>
+                    <a href="javascript:void(0);"
+                       class="dropdown-item remove-suggested-qnty"
+                       data-partn="{partNo}"
+                       data-partdesc="{partDesc}"
+                       data-soid="{salesOrderId}"
+                       data-soallocid="{sO_Alloc_List_Id}"
+                       data-findisqnty="{final_Dispatch_Qnty}"
+                       data-sonumber="{soNumber}">
+                        Remove Suggested Qnty
+                    </a>
+
+                    <!-- Remove Final Dispatch Quantity -->
+                    <a href="javascript:void(0);"
+                       class="dropdown-item remove-final-disp-qnty"
+                       data-partn="{partNo}"
+                       data-partdesc="{partDesc}"
+                       data-soid="{salesOrderId}"
+                       data-soallocid="{sO_Alloc_List_Id}"
+                       data-findisqnty="{final_Dispatch_Qnty}"
+                       data-sonumber="{soNumber}">
+                        Remove Final Disp Qnty
+                    </a>
+
                 </div>
             </div>
         </td>
