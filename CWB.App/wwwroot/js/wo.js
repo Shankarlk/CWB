@@ -1484,6 +1484,40 @@ $(document).ready(function () {
         }).catch((error) => {
             console.error(error);
         });
+        api.getbulk("/WorkOrder/GetRoutingById?routingId=" + routeId)
+            .then((routing) => {
+
+                 
+
+                const mkPartId = routing.mkPartId;
+
+                 
+
+                if (mkPartId) {
+
+                    
+
+                    $('#ddlmakefrompopup3')
+                        .val(mkPartId)
+                        .trigger('change');
+
+                }
+                else {
+
+                    console.log("MkPartId is empty");
+
+                    $('#ddlmakefrompopup3').val("");
+
+                }
+
+            })
+            .catch((error) => {
+
+                console.error("GetRoutingById Error:", error);
+
+                $('#ddlmakefrompopup3').val("");
+
+            });
     });
 
     $("#singleSaveWo").on("click", function () {
@@ -1506,7 +1540,15 @@ $(document).ready(function () {
         const rstDtParts = woCompletedByText.split('-');
         const rstDt = new Date(rstDtParts[2], rstDtParts[1] - 1, rstDtParts[0]);
         const restrictDt = new Date(rstDt);
+        if (!routingid || parseInt(routingid) === 0) {
+            alert("Please select Routing.");
+            return false;
+        }
 
+        if (!makeFromId || parseInt(makeFromId) === 0) {
+            alert("Make From is not available for the selected Routing.");
+            return false;
+        }
         if (isNaN(WoComplDate.getTime())) {
             alert("Please Enter the WO Compl Date.");
             return false;
@@ -2175,7 +2217,15 @@ $(document).ready(function () {
         var makeFromId = $("#ddlMakeFromPopup7").val();
         var WoSoRel = [];
         var WoSOMethod = {};
+        if (!routingid || parseInt(routingid) === 0) {
+            alert("Please select Routing.");
+            return false;
+        }
 
+        if (!makeFromId || parseInt(makeFromId) === 0) {
+            alert("Make From is not available for the selected Routing.");
+            return false;
+        }
         if (planWoQty.length <= 0 || parseInt(planWoQty) == 0 ) {
             var newNamevalidate = document.getElementById('popup7BuildToStockQnty');
             newNamevalidate.style.border = '2px solid red';
@@ -2737,12 +2787,30 @@ function copyPartData() {
     $("#popup7PartNoField").val(data[selval].partNo + "/" + data[selval].description);
     $("#Popup7partId").val(data[selval].partId);
     api.getbulk("/WorkOrder/AllSalesOrders").then((sodata) => {
+       
         sodata = sodata.filter(item => item.partId === partId && item.status !== 6);
-        $("#popup7SoQnty").val(sodata[0].requiredQuantity);
-        $("#Popup7soid").val(sodata[0].salesOrderId);
+        
+        //$("#popup7SoQnty").val(sodata[0].requiredQuantity);
+        //$("#Popup7soid").val(sodata[0].salesOrderId);
+        if (sodata.length > 0) {
+            $("#popup7SoQnty").val(sodata[0].requiredQuantity);
+            $("#Popup7soid").val(sodata[0].salesOrderId);
+        }
+        else {
+            $("#popup7SoQnty").val(0);
+            $("#Popup7soid").val(0);
+        }
         api.getbulk("/WorkOrder/AllWorkOrders").then((wodata) => {
+           
             wodata = wodata.filter(item => item.partId === partId);
-            $("#popup7WoQnty").val(wodata[0].calcWOQty);
+            if (wodata.length > 0) {
+                $("#popup7WoQnty").val(wodata[0].calcWOQty);
+            }
+            else {
+                $("#popup7WoQnty").val(0);
+            }
+            
+            console.log("5. About to load routing");
             if (data[selval].masterPartType == "Assembly") {
                 $("#Popup7partType").val(2);
 
@@ -2753,54 +2821,141 @@ function copyPartData() {
                 selectElement.prop("disabled", true);
                 $('#popup7StartingOpNo').html("").prop("disabled", true);
                 $('#popup7EndingOpNo').html("").prop("disabled", true);
-            } else {
+            }
+            else {
                 $("#Popup7partType").val(1);
                 $("#popup7divRouting").show().addClass("row");
                 $("#SubConGridDivP7").hide();
+               
                 api.getbulk("/WorkOrder/GetRoutings?manufPartId=" + parseInt(partId)).then((data) => {
-                    console.log(data);
+
+                    console.log("Routings:", data);
+
                     const selectElement = $('#popup7Routing');
+
                     selectElement.prop("disabled", false);
                     selectElement.html("");
+
                     if (data.length === 1) {
+
                         $('#popup7Routing').prop('readonly', true);
                         $('#popup7Routing').css('pointer-events', 'none');
-                        $.each(data, (index, item) => {
-                            selectElement.append(`<option value="${item.routingId}">${item.routingName}</option>`);
 
+                        $.each(data, (index, item) => {
+                            selectElement.append(
+                                `<option value="${item.routingId}">${item.routingName}</option>`
+                            );
                         });
+
                         var routeId = $('#popup7Routing').val();
+
                         $('#popup7StartingOpNo').prop('readonly', true);
                         $('#popup7StartingOpNo').css('pointer-events', 'none');
+
                         $('#popup7EndingOpNo').prop('readonly', true);
                         $('#popup7EndingOpNo').css('pointer-events', 'none');
-                        api.getbulk("/WorkOrder/RoutingSteps?routingId=" + routeId).then((data) => {
-                            //console.log(data);
-                            const selectstartElement = $('#popup7StartingOpNo');
-                            const selectEndOpNo = $('#popup7EndingOpNo');
-                            selectstartElement.html("");
-                            $.each(data, (index, item) => {
-                                selectstartElement.append(`<option value="${item.stepId}">${item.stepNumber}</option>`);
-                            });
-                            const reversedData = data.slice().reverse();
-                            selectEndOpNo.html('');
-                            $.each(reversedData, (index, item) => {
-                                selectEndOpNo.append(`<option value="${item.stepId}">${item.stepNumber}</option>`);
-                            });
-                            loadWoP7SubCon();
-                        }).catch((error) => {
-                            console.error(error);
-                        });
-                    } else {
 
-                        selectElement.append(`<option value="0">--Select--</option>`);
+
+                        // LOAD ROUTING STEPS
+                        api.getbulk("/WorkOrder/RoutingSteps?routingId=" + routeId)
+                            .then((steps) => {
+
+                                console.log("Routing Steps:", steps);
+
+                                const selectstartElement = $('#popup7StartingOpNo');
+                                const selectEndOpNo = $('#popup7EndingOpNo');
+
+                                selectstartElement.html("");
+                                selectEndOpNo.html("");
+
+                                $.each(steps, (index, item) => {
+
+                                    selectstartElement.append(
+                                        `<option value="${item.stepId}">${item.stepNumber}</option>`
+                                    );
+
+                                });
+
+                                const reversedData = steps.slice().reverse();
+
+                                $.each(reversedData, (index, item) => {
+
+                                    selectEndOpNo.append(
+                                        `<option value="${item.stepId}">${item.stepNumber}</option>`
+                                    );
+
+                                });
+
+                                loadWoP7SubCon();
+
+                            })
+                            .catch((error) => {
+                                console.error("RoutingSteps Error:", error);
+                            });
+
+
+                        // ==========================================
+                        // GET MAKE FROM FROM SELECTED ROUTING
+                        // ==========================================
+
+                        api.getbulk("/WorkOrder/GetRoutingById?routingId=" + routeId)
+                            .then((routing) => {
+
+                                console.log("Selected Routing:", routing);
+
+                                var mkPartId = routing.mkPartId;
+
+                                console.log("Routing Make From PartId:", mkPartId);
+
+                                if (mkPartId) {
+
+                                    $('#ddlMakeFromPopup7')
+                                        .val(mkPartId)
+                                        .trigger('change');
+
+                                }
+                                else {
+
+                                    $('#ddlMakeFromPopup7').val("");
+
+                                }
+
+                            })
+                            .catch((error) => {
+
+                                console.error("GetRoutingById Error:", error);
+
+                            });
+
+                    }
+                    else {
+
+                        // ==========================================
+                        // MULTIPLE ROUTINGS
+                        // ==========================================
+
+                        selectElement.append(
+                            `<option value="0">--Select--</option>`
+                        );
+
                         $.each(data, (index, item) => {
-                            selectElement.append(`<option value="${item.routingId}">${item.routingName}</option>`);
+
+                            selectElement.append(
+                                `<option value="${item.routingId}">${item.routingName}</option>`
+                            );
 
                         });
+
+                        // Clear operations initially
+                        $('#popup7StartingOpNo').html("");
+                        $('#popup7EndingOpNo').html("");
+
                     }
 
                 }).catch((error) => {
+
+                    console.error("GetRoutings Error:", error);
+
                 });
                 $('#popup7EndingOpNo').prop("disabled", false);
                 $('#popup7StartingOpNo').prop("disabled", false);
@@ -2848,7 +3003,7 @@ function copyPartData() {
                         }
                         else {
 
-                            $("#ddlMakeFromPopup7").prop("disabled", false);
+                            $("#ddlMakeFromPopup7").prop("disabled", true);
 
                         }
 
@@ -2862,6 +3017,7 @@ function copyPartData() {
         }).catch((error) => {
         });
     }).catch((error) => {
+        console.log(error);
     });
 
     document.getElementById("btn-close-ba-ExistingParts").click();
@@ -3486,7 +3642,7 @@ function OpenSOCombinationPopup(
     // Routing binding code can stay here
 }
 function OpenEditWOPopup(wo) {
-
+    
 
     $('#popup3').modal('show');
 
@@ -3647,14 +3803,7 @@ function OpenEditWOPopup(wo) {
 
                 // Select saved routing
 
-                $('#singleRouting').val(wo.routingId);
-
-                setTimeout(function () {
-
-                    $('#singleStartOpNo').val(wo.startingOpNo);
-                    $('#singleEndOpNo').val(wo.endingOpNo);
-
-                }, 500);
+              
             }
 
         });
@@ -3703,11 +3852,20 @@ function OpenEditWOPopup(wo) {
                 else {
 
                     $("#ddlmakefrompopup3")
-                        .prop("disabled", false);
+                        .prop("disabled", true);
                 }
+                $('#singleRouting')
+                    .val(wo.routingId)
+                    .trigger('change');
 
+                setTimeout(function () {
+
+                    $('#singleStartOpNo').val(wo.startingOpNo);
+                    $('#singleEndOpNo').val(wo.endingOpNo);
+
+                }, 1500);
             });
-
+        
     }
     else {
 
@@ -4702,3 +4860,101 @@ function DeleteWo(element) {
         return false;
     }
 }
+
+$('#popup7Routing').on('change', (e) => {
+
+    const routeId = $(e.target).val();
+
+    if (!routeId || routeId == "0") {
+
+        $('#popup7StartingOpNo').html("");
+        $('#popup7EndingOpNo').html("");
+        $('#ddlMakeFromPopup7').val("");
+
+        return;
+    }
+
+    //====================================
+    // Routing Steps
+    //====================================
+
+    api.getbulk(
+        "/WorkOrder/RoutingSteps?routingId=" + routeId
+    )
+        .then((data) => {
+
+            const selectstartElement = $('#popup7StartingOpNo');
+            const selectEndOpNo = $('#popup7EndingOpNo');
+
+            selectstartElement.html("");
+
+            $.each(data, (index, item) => {
+
+                selectstartElement.append(
+                    `<option value="${item.stepId}">
+                    ${item.stepNumber}
+                </option>`
+                );
+
+            });
+
+            const reversedData = data.slice().reverse();
+
+            selectEndOpNo.html("");
+
+            $.each(reversedData, (index, item) => {
+
+                selectEndOpNo.append(
+                    `<option value="${item.stepId}">
+                    ${item.stepNumber}
+                </option>`
+                );
+
+            });
+
+        })
+        .catch((error) => {
+
+            console.error(error);
+
+        });
+
+
+    //====================================
+    // Get Make From PartId from Routing
+    //====================================
+
+    api.getbulk(
+        "/WorkOrder/GetRoutingById?routingId=" + routeId
+    )
+        .then((routing) => {
+
+            console.log("Routing:", routing);
+
+            const mkPartId = routing.mkPartId;
+
+            console.log("MkPartId:", mkPartId);
+
+            if (mkPartId) {
+
+                $('#ddlMakeFromPopup7')
+                    .val(mkPartId)
+                    .trigger('change');
+
+            }
+            else {
+
+                $('#ddlMakeFromPopup7').val("");
+
+            }
+
+        })
+        .catch((error) => {
+
+            console.error("GetRoutingById Error:", error);
+
+            $('#ddlMakeFromPopup7').val("");
+
+        });
+
+});

@@ -1,8 +1,10 @@
 ﻿let isP81Modified = false;
+let isP14Modified = false;
 let isP11Modified = false;
 let originalRoutingId = 0;
 let currentRoutingId = 0;
 let mcAdd = 0;
+let mcNotAdd = 0;
 let Popup10Open = 0;
 let closeP26 = 0;
 $(document).ready(function () {
@@ -395,8 +397,8 @@ $(document).ready(function () {
             $("#Div3Close").hide();
             $("#Div3Closehr").hide()
         } else {
-            $("#Div3Close").show();
-            $("#Div3Closehr").show();
+            $("#Div3Close").hide();
+            $("#Div3Closehr").hide();
             $("#P81CloseCom1").val(closecom);
             $("#P81ActDur").val(actdur).prop("readonly", true);
             if (actenddate) {
@@ -424,8 +426,8 @@ $(document).ready(function () {
             $("#P81Select").prop("disabled", false);
 
         } else if (actstartdate === "0001-01-01T00:00:00") {
-            $("#Div2Act").show();
-            $("#Div2Acthr").show();
+            $("#Div2Act").hide();
+            $("#Div2Acthr").hide();
 
             $("#P81MachinceSel2").val(mcname).prop("readonly", true);
             $("#P81MachinceSel1").val(shopname).prop("readonly", true);
@@ -455,10 +457,10 @@ $(document).ready(function () {
             }
         } else {
             // actstartdate has a real value – use it to prefill fields
-            $("#Div2Act").show();
-            $("#Div2Acthr").show();
-            $("#Div3Close").show();
-            $("#Div3Closehr").show();
+            $("#Div2Act").hide();
+            $("#Div2Acthr").hide();
+            $("#Div3Close").hide();
+            $("#Div3Closehr").hide();
             var parts = actstartdate.split("T");
             var datePart = parts[0];                // e.g., "2025-06-09"
             var timePart = parts[1].substring(0, 5); // e.g., "12:00"
@@ -523,6 +525,46 @@ $(document).ready(function () {
     $("#P82Select").on("click", function () {
         $("#Popup82").modal("hide");
     });
+
+    $('#Popup82').on('show.bs.modal', function (event) {
+        document.getElementById('Popup14').style.filter = 'blur(5px)';
+        //loadMachinceType();
+    });
+    $('#Popup82').on('hidden.bs.modal', function (event) {
+        document.getElementById('Popup14').style.filter = 'none';
+        $("#P92McType").val('0');
+        $("#P92Shop").val('0');
+    });
+    $("#P92McType").on("change", function () {
+        var selectedValue = $(this).val();
+        if (selectedValue == "0") {
+            $("#P92Grid tbody tr").show();
+        }
+        else {
+            selectedValue = selectedValue.toLowerCase();
+            $("#P92Grid tbody tr").filter(function () {
+                $(this).toggle($(this.children[1]).text().toLowerCase().indexOf(selectedValue) > -1)
+            });// show only the filtered rows
+        }
+    });
+    $("#P92Shop").on("change", function () {
+        var selectedValue = $(this).val();
+        if (selectedValue == "0") {
+            $("#P92Grid tbody tr").show();
+        }
+        else {
+            selectedValue = selectedValue.toLowerCase();
+            $("#P92Grid tbody tr").filter(function () {
+                $(this).toggle($(this.children[2]).text().toLowerCase().indexOf(selectedValue) > -1)
+            });// show only the filtered rows
+        }
+    });
+    $("#P92Select").on("click", function () {
+        $("#Popup92").modal("hide");
+    });
+
+
+
     $("#ErBtn1").on('click', function (event) {
         if ($("#openfrom").val() === "P81") {
             var P81ActDate1 = $("#P81ActDate1").val();
@@ -537,6 +579,19 @@ $(document).ready(function () {
         } else if ($("#openfrom").val() === "P26") {
             $("#P26Save").click();
         }
+        else if ($("#openfrom").val() === "P14") {
+          
+
+            var P14ActDate1 = $("#P14ActDate1").val();
+            var P14ActEndDate1 = $("#P14ActEndDate1").val();
+            if (P14ActDate1.length === 0) {
+                $("#P14Save1").click();
+            } else if (P14ActEndDate1.length === 0) {
+                $("#P14Save2").click();
+            } else {
+                $("#P14Save3").click();
+            }
+        }
         $("#ErrorMessage1").modal("hide");
     });
     $("#ErBtn2").on('click', function (event) {
@@ -547,6 +602,8 @@ $(document).ready(function () {
         closeP26 = 1;
         $("#Popup81").modal("hide");
         $("#Popup26").modal("hide");
+        isP14Modified = false;
+        $("#Popup14").modal("hide");
         $("#ErrorMessage1").modal("hide");
     });
     $("#P81Save1").secureClick( function (event) {
@@ -918,11 +975,22 @@ $(document).ready(function () {
     $('#P81Save1, #P81Save2, #P81Save3').on('click', function () {
         isP81Modified = false;
     });
+    $('#Popup14 input, #Popup14 textarea, #Popup14 select').on('change input', function () {
+        isP14Modified = true;
+    });
+
+    // Reset flag on Save buttons
+    $('#P14Save1, #P14Save2, #P14Save3').on('click', function () {
+        isP14Modified = false;
+    });
     $('#P11Save1, #P81Save2, #P11Save3').on('click', function () {
         isP11Modified = false;
     });
     $('#P81ActEndDate1, #P81ActEndTime1').on('change', function () {
         calculateActualDuration();
+    });
+    $('#P14ActEndDate1, #P14ActEndTime1').on('change', function () {
+        calculateActualDurationnotavailable();
     });
     $('#P11ActEndDate1, #P11ActEndTime1').on('change', function () {
         calculateActualDurationP11();
@@ -936,6 +1004,9 @@ $(document).ready(function () {
     loadSimulationWos();
     $("#P81Select").on('click', function (event) {
         mcAdd = 0;
+    });
+    $("#P14Select").on('click', function (event) {
+        mcNotAdd = 0;
     });
     $("#P11Select").on('click', function (event) {
         mcAdd = 11;
@@ -1527,95 +1598,729 @@ $(document).ready(function () {
         loadWoWaitlist();
     });
     $('#Popup13').on('show.bs.modal', function (event) {
-        loadMcShopP13();
+        //loadMcShopP13();
+        //loadMachinceType();
+        loadMachinceTypenotavailable();
+        loadMachinceList();
         loadNotAvlMcTimeslot();
     });
-    $('#Popup14').on('hidden.bs.modal', function (event) {
-        document.getElementById('Popup13').style.filter = 'none';
-        var P14Reason = document.getElementById('P14Reason');
-        P14Reason.style.border = '';
-        var P14ShopId = document.getElementById('P14ShopId');
-        P14ShopId.style.border = '';
-        var P14StartDate = document.getElementById('P14StartDate');
-        P14StartDate.style.border = '';
-        var P14StartTime = document.getElementById('P14StartTime');
-        P14StartTime.style.border = '';
-        var P14EndDate = document.getElementById('P14EndDate');
-        P14EndDate.style.border = '';
-        var P14EndTime = document.getElementById('P14EndTime');
-        P14EndTime.style.border = '';
-        var P14McId = document.getElementById('P14McId');
-        P14McId.style.border = '';
-    });
-    $('#Popup14').on('show.bs.modal', function (event) {
-        document.getElementById('Popup13').style.filter = 'blur(5px)';
-        var relatedTarget = $(event.relatedTarget);
-        var id = relatedTarget.data("id");
-        var mcid = relatedTarget.data("mcid");
-        var shopid = relatedTarget.data("shopid");
-        var nonreasid = relatedTarget.data("nonreasid");
-        var starttime = relatedTarget.data("starttime");
-        var endtime = relatedTarget.data("endtime");
-        if (starttime) {
-            // Convert to JS Date object
-            var parts = starttime.split(" ");
-            var dateParts = parts[0].split("-"); // [dd, mm, yyyy]
-            var timePart = parts[1] + " " + parts[2]; // "07:00 PM"
+    //$('#Popup14').on('hidden.bs.modal', function (event) {
+    //    document.getElementById('Popup13').style.filter = 'none';
+    //    var P14Reason = document.getElementById('P14Reason');
+    //    P14Reason.style.border = '';
+    //    var P14ShopId = document.getElementById('P14ShopId');
+    //    P14ShopId.style.border = '';
+    //    var P14StartDate = document.getElementById('P14StartDate');
+    //    P14StartDate.style.border = '';
+    //    var P14StartTime = document.getElementById('P14StartTime');
+    //    P14StartTime.style.border = '';
+    //    var P14EndDate = document.getElementById('P14EndDate');
+    //    P14EndDate.style.border = '';
+    //    var P14EndTime = document.getElementById('P14EndTime');
+    //    P14EndTime.style.border = '';
+    //    var P14McId = document.getElementById('P14McId');
+    //    P14McId.style.border = '';
+    //});
+    //$('#Popup14').on('show.bs.modal', function (event) {
+    //    document.getElementById('Popup13').style.filter = 'blur(5px)';
+    //    var relatedTarget = $(event.relatedTarget);
+    //    var id = relatedTarget.data("id");
+    //    var mcid = relatedTarget.data("mcid");
+    //    var shopid = relatedTarget.data("shopid");
+    //    var nonreasid = relatedTarget.data("nonreasid");
+    //    var starttime = relatedTarget.data("starttime");
+    //    var endtime = relatedTarget.data("endtime");
+    //    if (starttime) {
+    //        // Convert to JS Date object
+    //        var parts = starttime.split(" ");
+    //        var dateParts = parts[0].split("-"); // [dd, mm, yyyy]
+    //        var timePart = parts[1] + " " + parts[2]; // "07:00 PM"
 
-            var jsDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]} ${timePart}`);
+    //        var jsDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]} ${timePart}`);
 
-            // Format for input fields
-            var dateValue = jsDate.toISOString().split("T")[0]; // yyyy-mm-dd
-            var timeValue = jsDate.toTimeString().substring(0, 5); // hh:mm in 24hr
+    //        // Format for input fields
+    //        var dateValue = jsDate.toISOString().split("T")[0]; // yyyy-mm-dd
+    //        var timeValue = jsDate.toTimeString().substring(0, 5); // hh:mm in 24hr
 
-            // Set values to input fields
-            $("#P14StartDate").val(dateValue);
-            $("#P14StartTime").val(timeValue);
+    //        // Set values to input fields
+    //        $("#P14StartDate").val(dateValue);
+    //        $("#P14StartTime").val(timeValue);
+    //    }
+    //    if (endtime) {
+    //        // Convert to JS Date object
+    //        var partse = endtime.split(" ");
+    //        var datePartse = partse[0].split("-"); // [dd, mm, yyyy]
+    //        var timeParte = partse[1] + " " + parts[2]; // "07:00 PM"
+
+    //        var jsDatee = new Date(`${datePartse[2]}-${datePartse[1]}-${datePartse[0]} ${timeParte}`);
+
+    //        // Format for input fields
+    //        var dateValuee = jsDatee.toISOString().split("T")[0]; // yyyy-mm-dd
+    //        var timeValuee = jsDatee.toTimeString().substring(0, 5); // hh:mm in 24hr
+
+    //        // Set values to input fields
+    //        $("#P14EndDate").val(dateValuee);
+    //        $("#P14EndTime").val(timeValuee);
+    //    } if (id > 0) {
+    //        $("#P14McTmId").val(id);
+    //        $("#P14ShopId").val(shopid);
+    //        api.get("/machine/GetMachines").then((data) => {
+    //            const filteredMachines = data.filter(m => m.shopId == shopid);
+
+    //            const $mcDropdown = $("#P14McId");
+    //            $mcDropdown.html(""); // clear first
+    //            $mcDropdown.append('<option value="0">--Select Shop--</option>');
+
+    //            filteredMachines.forEach(m => {
+    //                $mcDropdown.append(`<option value="${m.machineId}">${m.name}</option>`);
+    //            });
+
+    //            // Now set the mcid value after options are populated
+    //            $mcDropdown.val(mcid);
+    //        });
+    //        $("#P14Reason").val(nonreasid);
+    //    } else {
+    //        $("#P14McTmId").val('');
+    //        $("#P14ShopId").val(0);
+    //        $("#P14McId").val(0);
+    //        $("#P14Reason").val(0);
+    //        $("#P14StartDate").val('');
+    //        $("#P14StartTime").val('');
+    //        $("#P14EndDate").val('');
+    //        $("#P14EndTime").val('');
+    //    }
+    //});
+    
+$('#Popup14').on('hide.bs.modal', function (event) {
+    document.getElementById('Popup13').style.filter = 'none';
+
+    var P14MachinceSel2 = document.getElementById('P14MachinceSel2');
+    P14MachinceSel2.style.border = '';
+
+    var P14MachinceSel1 = document.getElementById('P14MachinceSel1');
+    P14MachinceSel1.style.border = '';
+
+    var P14WorkDesc = document.getElementById('P14WorkDesc');
+    P14WorkDesc.style.border = '';
+
+    var P14NonPlanType = document.getElementById('P14NonPlanType');
+    P14NonPlanType.style.border = '';
+
+    var P14ReqStartDate = document.getElementById('P14ReqStartDate');
+    P14ReqStartDate.style.border = '';
+
+    var P14ReqStartTime = document.getElementById('P14ReqStartTime');
+    P14ReqStartTime.style.border = '';
+
+    var P14ReqDur = document.getElementById('P14ReqDur');
+    P14ReqDur.style.border = '';
+
+    var P14ActDate1 = document.getElementById('P14ActDate1');
+    P14ActDate1.style.border = '';
+
+    var P14ActTime1 = document.getElementById('P14ActTime1');
+    P14ActTime1.style.border = '';
+
+    var P14CloseCom1 = document.getElementById('P14CloseCom1');
+    P14CloseCom1.style.border = '';
+
+    var P14ActEndDate1 = document.getElementById('P14ActEndDate1');
+    P14ActEndDate1.style.border = '';
+
+    var P14ActEndTime1 = document.getElementById('P14ActEndTime1');
+    P14ActEndTime1.style.border = '';
+
+    var P14ActDur = document.getElementById('P14ActDur');
+    P14ActDur.style.border = '';
+
+    if (isP14Modified) {
+        event.preventDefault();
+        $("#openfrom").val("P14");
+        $("#ErrorMessage1").modal("show");
+    }
+});
+
+$('#Popup14').on('show.bs.modal', function (event) {
+    document.getElementById('Popup13').style.filter = 'blur(5px)';
+
+    $("#Div12Act").hide();
+    $("#Div13Close").hide();
+    $("#Div12Acthr").hide();
+    $("#Div13Closehr").hide();
+
+    var relatedTarget = $(event.relatedTarget);
+    var id = relatedTarget.data("id");
+    var mcid = relatedTarget.data("mcid");
+    var mcname = relatedTarget.data("mcname");
+    var shopname = relatedTarget.data("shopname");
+    var nontype = relatedTarget.data("nontype");
+    var reqddur = relatedTarget.data("reqddur");
+    var reqddate = relatedTarget.data("reqddate");
+    var workdesc = relatedTarget.data("workdesc");
+    var actstartdate = relatedTarget.data("actstartdate");
+    var actdur = relatedTarget.data("actdur");
+    var actenddate = relatedTarget.data("actenddate");
+    var closecom = relatedTarget.data("closecom");
+
+    $("#P14ActDur").val(actdur).prop("readonly", true);
+
+    $("#P14NonPlandId").val(id);
+    $("#P14MachinceId").val(mcid);
+    $("#P14MachinceSel2").val(mcname);
+    $("#P14MachinceSel1").val(shopname);
+    $("#P14WorkDesc").val(workdesc);
+    $("#P14NonPlanType").val(nontype);
+
+    if (reqddate) {
+        var parts = reqddate.split("T");
+        var datePart = parts[0];
+        var timePart = parts[1].substring(0, 5);
+
+        $("#P14ReqStartDate").val(datePart);
+        $("#P14ReqStartTime").val(timePart);
+    }
+
+    $("#P14ReqDur").val(reqddur);
+
+    if (closecom === null || !closecom) {
+        $("#Div13Close").hide();
+        $("#Div13Closehr").hide();
+    } else {
+        $("#Div13Close").hide();
+        $("#Div13Closehr").hide();
+
+        $("#P14CloseCom1").val(closecom);
+        $("#P14ActDur").val(actdur).prop("readonly", true);
+
+        if (actenddate) {
+            var eparts = actenddate.split("T");
+            var edatePart = eparts[0];
+            var etimePart = eparts[1].substring(0, 5);
+
+            $("#P14ActEndDate1").val(edatePart);
+            $("#P14ActEndTime1").val(etimePart);
         }
-        if (endtime) {
-            // Convert to JS Date object
-            var partse = endtime.split(" ");
-            var datePartse = partse[0].split("-"); // [dd, mm, yyyy]
-            var timeParte = partse[1] + " " + parts[2]; // "07:00 PM"
+    }
 
-            var jsDatee = new Date(`${datePartse[2]}-${datePartse[1]}-${datePartse[0]} ${timeParte}`);
+    if (!actstartdate) {
+        $("#P14MachinceSel2").val(mcname).prop("readonly", true);
+        $("#P14MachinceSel1").val(shopname).prop("readonly", true);
+        $("#P14WorkDesc").val(workdesc).prop("readonly", false);
+        $("#P14NonPlanType").val(0).prop("readonly", false);
+        $("#P14NonPlanType")
+            .css("pointer-events", "")
+            .css("background-color", "");
 
-            // Format for input fields
-            var dateValuee = jsDatee.toISOString().split("T")[0]; // yyyy-mm-dd
-            var timeValuee = jsDatee.toTimeString().substring(0, 5); // hh:mm in 24hr
+        let now = new Date();
+        var datePart = now.toISOString().split("T")[0];
+        var timePart = now.toTimeString().substring(0, 5);
 
-            // Set values to input fields
-            $("#P14EndDate").val(dateValuee);
-            $("#P14EndTime").val(timeValuee);
-        } if (id > 0) {
-            $("#P14McTmId").val(id);
-            $("#P14ShopId").val(shopid);
-            api.get("/machine/GetMachines").then((data) => {
-                const filteredMachines = data.filter(m => m.shopId == shopid);
+        $("#P14ReqStartDate").val(datePart).prop("readonly", false);
+        $("#P14ReqStartTime").val(timePart).prop("readonly", false);
+        $("#P14ReqDur").val('').prop("readonly", false);
 
-                const $mcDropdown = $("#P14McId");
-                $mcDropdown.html(""); // clear first
-                $mcDropdown.append('<option value="0">--Select Shop--</option>');
+        $("#P14Save1").prop("disabled", false);
+        $("#P14Select").prop("disabled", false);
 
-                filteredMachines.forEach(m => {
-                    $mcDropdown.append(`<option value="${m.machineId}">${m.name}</option>`);
-                });
+    } else if (actstartdate === "0001-01-01T00:00:00") {
+        $("#Div12Act").hide();
+        $("#Div12Acthr").hide();
 
-                // Now set the mcid value after options are populated
-                $mcDropdown.val(mcid);
-            });
-            $("#P14Reason").val(nonreasid);
+        $("#P14MachinceSel2").val(mcname).prop("readonly", true);
+        $("#P14MachinceSel1").val(shopname).prop("readonly", true);
+        $("#P14WorkDesc").val(workdesc).prop("readonly", true);
+        $("#P14NonPlanType").val(nontype).prop("readonly", true);
+
+        $("#P14NonPlanType")
+            .css("pointer-events", "none")
+            .css("background-color", "#e9ecef");
+
+        let now = new Date();
+        var datePart = now.toISOString().split("T")[0];
+        var timePart = now.toTimeString().substring(0, 5);
+
+        $("#P14ReqStartDate").val(datePart).prop("readonly", true);
+        $("#P14ReqStartTime").val(timePart).prop("readonly", true);
+        $("#P14ReqDur").prop("readonly", true);
+
+        $("#P14Select").prop("disabled", true);
+        $("#P14Save1").prop("disabled", true);
+
+        $("#P14ActDate1").val(datePart).prop("readonly", false);
+        $("#P14ActTime1").val(timePart).prop("readonly", false);
+
+        $("#P14Save2").prop("disabled", false);
+
+        if (reqddate) {
+            var parts = reqddate.split("T");
+            var rdatePart = parts[0];
+            var rtimePart = parts[1].substring(0, 5);
+
+            $("#P14ReqStartDate").val(rdatePart);
+            $("#P14ReqStartTime").val(rtimePart);
+        }
+
+    } else {
+        // actstartdate has a real value – use it to prefill fields
+        $("#Div12Act").hide();
+        $("#Div12Acthr").hide();
+        $("#Div13Close").hide();
+        $("#Div13Closehr").hide();
+
+        var parts = actstartdate.split("T");
+        var datePart = parts[0];
+        var timePart = parts[1].substring(0, 5);
+
+        $("#P14MachinceSel2").val(mcname).prop("readonly", true);
+        $("#P14MachinceSel1").val(shopname).prop("readonly", true);
+        $("#P14WorkDesc").val(workdesc).prop("readonly", true);
+        $("#P14NonPlanType").val(nontype).prop("readonly", true);
+
+        $("#P14NonPlanType")
+            .css("pointer-events", "none")
+            .css("background-color", "#e9ecef");
+
+        if (reqddate) {
+            var parts = reqddate.split("T");
+            var rdatePart = parts[0];
+            var rtimePart = parts[1].substring(0, 5);
+
+            $("#P14ReqStartDate").val(rdatePart).prop("readonly", true);
+            $("#P14ReqStartTime").val(rtimePart).prop("readonly", true);
+        }
+
+        $("#P14ReqDur").prop("readonly", true);
+        $("#P14Select").prop("disabled", true);
+        $("#P14Save1").prop("disabled", true);
+        $("#P14Save2").prop("disabled", true);
+
+        $("#P14ActDate1").val(datePart).prop("readonly", true);
+        $("#P14ActTime1").val(timePart).prop("readonly", true);
+    }
+
+    //loadMachinceType();
+});
+
+$("#P14Save1").secureClick(function (event) {
+    var P14NonPlandId = parseInt($("#P14NonPlandId").val());
+    var P14MachinceId = parseInt($("#P14MachinceId").val());
+    var P14NonPlanType = parseInt($("#P14NonPlanType").val());
+    var P14WorkDesc = $("#P14WorkDesc").val();
+    var P14ReqStartDate = $("#P14ReqStartDate").val();
+    var P14ReqStartTime = $("#P14ReqStartTime").val();
+    var P14ReqDur = $("#P14ReqDur").val();
+
+    if (isNaN(P14MachinceId) || P14MachinceId === 0) {
+        var newNamevalidate = document.getElementById('P14MachinceSel1');
+        newNamevalidate.style.border = '2px solid red';
+
+        var newNamevalidate = document.getElementById('P14MachinceSel2');
+        newNamevalidate.style.border = '2px solid red';
+
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14MachinceSel1');
+        newNamevalidate.style.border = '';
+
+        var newNamevalidate = document.getElementById('P14MachinceSel2');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14WorkDesc.length === 0) {
+        var newNamevalidate = document.getElementById('P14WorkDesc');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14WorkDesc');
+        newNamevalidate.style.border = '';
+    }
+
+    if (isNaN(P14NonPlanType) || P14NonPlanType === 0) {
+        var newNamevalidate = document.getElementById('P14NonPlanType');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14NonPlanType');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ReqStartDate.length === 0) {
+        var newNamevalidate = document.getElementById('P14ReqStartDate');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ReqStartDate');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ReqStartTime.length === 0) {
+        var newNamevalidate = document.getElementById('P14ReqStartTime');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ReqStartTime');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ReqDur.length === 0) {
+        var newNamevalidate = document.getElementById('P14ReqDur');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        const durParts = P14ReqDur.split(":");
+        let durValid = false;
+
+        if (durParts.length === 2) {
+            const hours = parseInt(durParts[0], 10);
+            const minutes = parseInt(durParts[1], 10);
+
+            // Check if valid numbers and not both zero
+            if (!isNaN(hours) && !isNaN(minutes) && (hours > 0 || minutes > 0)) {
+                durValid = true;
+            }
+        }
+
+        if (!durValid) {
+            var durInput = document.getElementById('P14ReqDur');
+            durInput.style.border = '2px solid red';
+            alert("Please enter a valid Required Duration (not 00:00)");
+            return false;
         } else {
-            $("#P14McTmId").val('');
-            $("#P14ShopId").val(0);
-            $("#P14McId").val(0);
-            $("#P14Reason").val(0);
-            $("#P14StartDate").val('');
-            $("#P14StartTime").val('');
-            $("#P14EndDate").val('');
-            $("#P14EndTime").val('');
+            document.getElementById('P14ReqDur').style.border = '';
         }
+
+        var newNamevalidate = document.getElementById('P14ReqDur');
+        newNamevalidate.style.border = '';
+    }
+
+    var combinedDateTimeStr = P14ReqStartDate + "T" + P14ReqStartTime;
+    var plannedDateTime = new Date(combinedDateTimeStr);
+    var now = new Date();
+
+    if (plannedDateTime <= now) {
+        alert("Required Start Date / Time  must be greater than the Today's Date / Time.");
+        return;
+    }
+
+    if (isNaN(P14NonPlandId)) {
+        P14NonPlandId = 0;
+    }
+
+    var formdata = {
+        non_Plan_Wk_ListId: P14NonPlandId,
+        mc_Id: P14MachinceId,
+        non_Plan_Wk_Type: P14NonPlanType,
+        plan_start_time: combinedDateTimeStr,
+        plan_Duration: P14ReqDur,
+        work_Description: P14WorkDesc
+    };
+
+    return api.post("/WorkOrder/PostNon_Plan_Wk_List", formdata).then((data) => {
+        alert("Machine Not available is Saved");
+        isP14Modified = false;
+        $("#Popup14").modal("hide");
+        loadNotAvlMcTimeslot();
+    }).catch((error) => {
+        console.log(error);
     });
+});
+
+
+$("#P14Save2").on('click', function (event) {
+    var P14NonPlandId = parseInt($("#P14NonPlandId").val());
+    var P14MachinceId = parseInt($("#P14MachinceId").val());
+    var P14NonPlanType = parseInt($("#P14NonPlanType").val());
+    var P14WorkDesc = $("#P14WorkDesc").val();
+    var P14ReqStartDate = $("#P14ReqStartDate").val();
+    var P14ReqStartTime = $("#P14ReqStartTime").val();
+    var P14ReqDur = $("#P14ReqDur").val();
+    var P14ActDate1 = $("#P14ActDate1").val();
+    var P14ActTime1 = $("#P14ActTime1").val();
+
+    if (isNaN(P14MachinceId) || P14MachinceId === 0) {
+        var newNamevalidate = document.getElementById('P14MachinceSel1');
+        newNamevalidate.style.border = '2px solid red';
+
+        var newNamevalidate = document.getElementById('P14MachinceSel2');
+        newNamevalidate.style.border = '2px solid red';
+
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14MachinceSel1');
+        newNamevalidate.style.border = '';
+
+        var newNamevalidate = document.getElementById('P14MachinceSel2');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14WorkDesc.length === 0) {
+        var newNamevalidate = document.getElementById('P14WorkDesc');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14WorkDesc');
+        newNamevalidate.style.border = '';
+    }
+
+    if (isNaN(P14NonPlanType) || P14NonPlanType === 0) {
+        var newNamevalidate = document.getElementById('P14NonPlanType');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14NonPlanType');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ReqStartDate.length === 0) {
+        var newNamevalidate = document.getElementById('P14ReqStartDate');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ReqStartDate');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ReqStartTime.length === 0) {
+        var newNamevalidate = document.getElementById('P14ReqStartTime');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ReqStartTime');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ReqDur.length === 0) {
+        var newNamevalidate = document.getElementById('P14ReqDur');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ReqDur');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ActDate1.length === 0) {
+        var newNamevalidate = document.getElementById('P14ActDate1');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ActDate1');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ActTime1.length === 0) {
+        var newNamevalidate = document.getElementById('P14ActTime1');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ActTime1');
+        newNamevalidate.style.border = '';
+    }
+
+    var combinedDateTimeStr = P14ReqStartDate + "T" + P14ReqStartTime;
+    var actcombinedDateTimeStr = P14ActDate1 + "T" + P14ActTime1;
+
+    var plannedDateTime = new Date(combinedDateTimeStr);
+    var actualDateTime = new Date(actcombinedDateTimeStr);
+
+    if (actualDateTime <= plannedDateTime) {
+        alert("Actual Start Date / Time should be greater than Required Start Date / Time .");
+        return false;
+    }
+
+    if (isNaN(P14NonPlandId)) {
+        P14NonPlandId = 0;
+    }
+
+    var formdata = {
+        non_Plan_Wk_ListId: P14NonPlandId,
+        mc_Id: P14MachinceId,
+        non_Plan_Wk_Type: P14NonPlanType,
+        plan_start_time: combinedDateTimeStr,
+        plan_Duration: P14ReqDur,
+        work_Description: P14WorkDesc,
+        actual_Start_Time: actcombinedDateTimeStr
+    };
+
+    api.post("/WorkOrder/PostNon_Plan_Wk_List", formdata).then((data) => {
+        alert("Machine not Available is  Saved");
+        isP14Modified = false;
+        $("#Popup14").modal("hide");
+        loadNotAvlMcTimeslot();
+    }).catch((error) => {
+        console.log(error);
+    });
+});
+
+
+$("#P14Save3").on('click', function (event) {
+    var P14NonPlandId = parseInt($("#P14NonPlandId").val());
+    var P14MachinceId = parseInt($("#P14MachinceId").val());
+    var P14NonPlanType = parseInt($("#P14NonPlanType").val());
+    var P14WorkDesc = $("#P14WorkDesc").val();
+    var P14ReqStartDate = $("#P14ReqStartDate").val();
+    var P14ReqStartTime = $("#P14ReqStartTime").val();
+    var P14ReqDur = $("#P14ReqDur").val();
+    var P14ActDate1 = $("#P14ActDate1").val();
+    var P14ActTime1 = $("#P14ActTime1").val();
+    var P14CloseCom1 = $("#P14CloseCom1").val();
+    var P14ActEndDate1 = $("#P14ActEndDate1").val();
+    var P14ActEndTime1 = $("#P14ActEndTime1").val();
+    var P14ActDur = $("#P14ActDur").val();
+
+    if (isNaN(P14MachinceId) || P14MachinceId === 0) {
+        var newNamevalidate = document.getElementById('P14MachinceSel1');
+        newNamevalidate.style.border = '2px solid red';
+
+        var newNamevalidate = document.getElementById('P14MachinceSel2');
+        newNamevalidate.style.border = '2px solid red';
+
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14MachinceSel1');
+        newNamevalidate.style.border = '';
+
+        var newNamevalidate = document.getElementById('P14MachinceSel2');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14WorkDesc.length === 0) {
+        var newNamevalidate = document.getElementById('P14WorkDesc');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14WorkDesc');
+        newNamevalidate.style.border = '';
+    }
+
+    if (isNaN(P14NonPlanType) || P14NonPlanType === 0) {
+        var newNamevalidate = document.getElementById('P14NonPlanType');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14NonPlanType');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ReqStartDate.length === 0) {
+        var newNamevalidate = document.getElementById('P14ReqStartDate');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ReqStartDate');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ReqStartTime.length === 0) {
+        var newNamevalidate = document.getElementById('P14ReqStartTime');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ReqStartTime');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ReqDur.length === 0) {
+        var newNamevalidate = document.getElementById('P14ReqDur');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ReqDur');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ActDate1.length === 0) {
+        var newNamevalidate = document.getElementById('P14ActDate1');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ActDate1');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ActTime1.length === 0) {
+        var newNamevalidate = document.getElementById('P14ActTime1');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ActTime1');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14CloseCom1.length === 0) {
+        var newNamevalidate = document.getElementById('P14CloseCom1');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14CloseCom1');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ActEndDate1.length === 0) {
+        var newNamevalidate = document.getElementById('P14ActEndDate1');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ActEndDate1');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ActEndTime1.length === 0) {
+        var newNamevalidate = document.getElementById('P14ActEndTime1');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ActEndTime1');
+        newNamevalidate.style.border = '';
+    }
+
+    if (P14ActDur.length === 0) {
+        var newNamevalidate = document.getElementById('P14ActDur');
+        newNamevalidate.style.border = '2px solid red';
+        return false;
+    } else {
+        var newNamevalidate = document.getElementById('P14ActDur');
+        newNamevalidate.style.border = '';
+    }
+
+    var combinedDateTimeStr = P14ReqStartDate + "T" + P14ReqStartTime;
+    var actcombinedDateTimeStr = P14ActDate1 + "T" + P14ActTime1;
+    var actendcombinedDateTimeStr = P14ActEndDate1 + "T" + P14ActEndTime1;
+
+    if (isNaN(P14NonPlandId)) {
+        P14NonPlandId = 0;
+    }
+
+    var formdata = {
+        non_Plan_Wk_ListId: P14NonPlandId,
+        mc_Id: P14MachinceId,
+        non_Plan_Wk_Type: P14NonPlanType,
+        plan_start_time: combinedDateTimeStr,
+        plan_Duration: P14ReqDur,
+        work_Description: P14WorkDesc,
+        actual_Start_Time: actcombinedDateTimeStr,
+        actual_end_Time: actendcombinedDateTimeStr,
+        closure_Comment: P14CloseCom1,
+        actual_Duration: P14ActDur
+    };
+
+    api.post("/WorkOrder/PostNon_Plan_Wk_List", formdata).then((data) => {
+        alert("Machine not Available is  Saved");
+        isP14Modified = false;
+        
+        loadNotAvlMcTimeslot();
+        $("#Popup14").modal("hide");
+    }).catch((error) => {
+        console.log(error);
+    });
+});
+
+
+    
+
+    
+
+
+
     loadCustomer();
     $("#P13SearchShop").on("change", function () {
         var selectedValue = $(this).val();
@@ -2612,6 +3317,31 @@ function calculateActualDuration() {
         $('#P81ActDur').val(formatted);
     }
 }
+function calculateActualDurationnotavailable() {
+    const startDate = $('#P14ActDate1').val();   // format: YYYY-MM-DD
+    const startTime = $('#P14ActTime1').val();   // format: HH:MM
+    const endDate = $('#P14ActEndDate1').val();
+    const endTime = $('#P14ActEndTime1').val();
+
+    if (startDate && startTime && endDate && endTime) {
+        const start = new Date(startDate + 'T' + startTime);
+        const end = new Date(endDate + 'T' + endTime);
+
+        if (end < start) {
+            $('#P81ActDur').val('');
+            alert('Actual End Date / Time must be greater than Actual Start Date / Time.');
+            return;
+        }
+
+        const diffMs = end - start;
+        const diffMins = Math.floor(diffMs / 60000);  // milliseconds to minutes
+        const hours = Math.floor(diffMins / 60);
+        const minutes = diffMins % 60;
+
+        const formatted = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        $('#P14ActDur').val(formatted);
+    }
+}
 function loadMcWaitSetup() {
     $("#preloaderblurred").show();
     api.getbulk("/workOrder/GetAllMcWaitSetupList").then((data) => {
@@ -2718,16 +3448,35 @@ function copyMachineData(shop, name, machineId) {
     console.log("Shop:", shop);
     console.log("Name:", name);
     console.log("Machine ID:", machineId);
-    if (mcAdd === 0) {
+    if (mcAdd === 0  ) {
     $("#P81MachinceSel1").val(shop);
     $("#P81MachinceSel2").val(name);
-    $("#P81MachinceId").val(machineId);
+        $("#P81MachinceId").val(machineId);
+       
+    }
+    if (mcNotAdd === 0) {
+       
+        $("#P14MachinceSel1").val(shop);
+        $("#P14MachinceSel2").val(name);
+        $("#P14MachinceId").val(machineId);
     }
     if (mcAdd === 11) {
         $("#P11MachinceSel1").val(shop);
         $("#P11MachinceSel2").val(name);
         $("#P11MachinceId").val(machineId);
     }
+}
+
+function copyMachineNotavailableData(shop, name, machineId) {
+    console.log("Shop:", shop);
+    console.log("Name:", name);
+    console.log("Machine ID:", machineId);
+    if (mcNotAdd === 0) {
+        $("#P14MachinceSel1").val(shop);
+        $("#P14MachinceSel2").val(name);
+        $("#P14MachinceId").val(machineId);
+    }
+    
 }
 function loadReworkList() {
     var tablebody = $("#P10Grid tbody");
@@ -2975,12 +3724,35 @@ function loadMachinceList() {
     }).catch((error) => {
     });
 }
+function loadMachincenotList() {
+
+    var tablebody = $("#P92Grid tbody");
+    $(tablebody).html("");//empty tbody
+
+    api.getbulk("/workOrder/GetMachines").then((data) => {
+        if (data.length === 0) {
+            // 2. Insert the "No Records Found" row
+            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+            const noRecordsRow = `
+                <tr>
+                    <td colspan="20" style="text-align: center; color: #888;">
+                        <strong>No Records Found</strong>
+                    </td>
+                </tr>`;
+            $(tablebody).append(noRecordsRow);
+        }
+        for (i = 0; i < data.length; i++) {
+            $(tablebody).append(AppUtil.ProcessTemplateData("P92Grid", data[i]));
+        }
+    }).catch((error) => {
+    });
+}
 function loadNotAvlMcTimeslot() {
 
     var tablebody = $("#P13Grid tbody");
     $(tablebody).html("");//empty tbody
 
-    api.getbulk("/workOrder/GetNotAvlMcTimeslot").then((data) => {
+    api.getbulk("/workOrder/GetAllNon_Plan_Wk_ListDataMachinenotavailable").then((data) => {
         if (data.length === 0) {
             // 2. Insert the "No Records Found" row
             // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
@@ -3034,6 +3806,45 @@ function loadMachinceType() {
 
     });
 }
+function loadMachinceTypenotavailable() {
+    var compSelect = $("#P92McType");
+    $(compSelect).html("");
+    $(compSelect).append('<option value="0">--Select Machince Type--</option>');
+    api.get("/machine/getmachinetypes").then((data) => {
+        for (i = 0; i < data.length; i++) {
+            //div_data = "<option value='" +
+            //    data[i].machineTypeTypeId + "'>" +
+            //    data[i].machineTypeName +
+            //    "</option>";
+            $(compSelect).append('<option value="' + data[i].machineTypeName + '">' + data[i].machineTypeName + '</option>');
+        }
+    }).catch((error) => {
+        //console.log(error);
+    });
+    api.get("/department/getdepartments/" + 1).then((data) => {
+        var departmentSelect = $("#P92Shop");
+        $(departmentSelect).html("");
+        $(departmentSelect).append('<option value="0">--Select Shop--</option>');
+        for (i = 0; i < data.length; i++) {
+            $(departmentSelect).append('<option value="' + data[i].name + '">' + data[i].name + '</option>');
+        }
+    }).catch((error) => {
+
+    });
+    api.get("/WorkOrder/GetAllNon_Plan_Wk_type_List/").then((data) => {
+        var departmentSelect = $("#P14NonPlanType");
+        $(departmentSelect).html("");
+        $(departmentSelect).append('<option value="0">--Select Non Plan Type--</option>');
+        for (i = 0; i < data.length; i++) {
+            $(departmentSelect).append('<option value="' + data[i].non_Plan_Wk_type_ListId + '">' + data[i].non_Plan_Wk_type_Desc + '</option>');
+        }
+    }).catch((error) => {
+
+    });
+}
+
+
+
 function loadMcShopP13() {
 
     var compSelect = $("#P13SearchMc");
@@ -3088,11 +3899,13 @@ function DelteNonPlan(element) {
     if (confirmval) {
         api.get("/workOrder/DeleteNon_Plan_Wk_List?itemMasterDocListId=" + masterdocid).then((data) => {
             loadNonWrkList();
+            loadNotAvlMcTimeslot();
         }).catch((error) => {
 
         });
     }
 }
+
 function loadSels() {
     api.get("/department/getdepartments/" + 1).then((data) => {
         var P27toLoc = $("#P27toLoc");

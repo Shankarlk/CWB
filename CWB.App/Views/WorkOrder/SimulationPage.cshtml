@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
-
+ 
 <input value="B-BP" type="hidden" id="hdn-nav-menu" />
 <div class="content">
     <div class="row" id="myRadioGroup">
@@ -20,96 +20,96 @@
                     }
                     <!-- WO Status Overview -->
                     <!--<div class="row">
-    <div class="col-md-7">
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th style="font-weight: bold;font-size: large;" class="text-center" colspan="2">WO Status Overview</th>
-                        <th class="text-center">Assembly</th>
-                        <th width="20%" class="text-center">Child Manf Part</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td rowspan="4" class="text-center">Waiting for M/c Slot<br>(not in M/c Queue)</td>
-                        <td rowspan="2" style="font-weight: bold;">Parent WO Released - Ready for Production</td>
-                        <td>Ready for Production (Material Available) </td>
-                        <td class="text-center" id="ReadAssy">0</td>
-                        <td class="text-center" id="ReadCMp">0</td>
-                    </tr>
-                    <tr>
-                        <td>Waiting for Material</td>
-                        <td class="text-center" id="WAssy">0</td>
-                        <td class="text-center" id="WCmp">0</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="text-end">Rework WO</td>
-                        <td class="text-center" id="RwkAssy">0</td>
-                        <td class="text-center" id="RwkCmp">0</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="text-end">Non Plan Work</td>
-                        <td colspan="2" class="text-center" id="NonAssy">0</td>
-                    </tr>
-                    <tr>
-                        <td rowspan="4" class="text-center">In M/c Queue</td>
-                        <td rowspan="2" style="font-weight: bold;">Child / Parent WO </td>
-                        <td>Ready for Production (Material Available) </td>
-                        <td class="text-center" id="InMcQueRAssy">0</td>
-                        <td class="text-center" id="InMcQueRCmp">0</td>
-                    </tr>
-                    <tr>
-                        <td>Waiting for Material</td>
-                        <td class="text-center" id="InMcQueWAssy">0</td>
-                        <td class="text-center" id="InMcQueWCmp">0</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="text-end">Rework WO</td>
-                        <td class="text-center" id="InMcQueRwkAssy">0</td>
-                        <td class="text-center" id="InMcQueRwkCmp">0</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="text-end">Non Plan Work</td>
-                        <td colspan="2" class="text-center" id="InMcQueNon">0</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="row m-5">
-            <div class="d-grid gap-2">
-                <button class="btn btn-outline-primary" data-bs-target="#Popup1" data-bs-toggle="modal"
-                        id="selectwoProdBtn">
-                    Select WO for Production Planning
-                </button>
-            </div>
-        </div>
-        <div class="row m-5">
-            <div class="d-grid gap-2">-->
+                    <div class="col-md-7">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th style="font-weight: bold;font-size: large;" class="text-center" colspan="2">WO Status Overview</th>
+                                        <th class="text-center">Assembly</th>
+                                        <th width="20%" class="text-center">Child Manf Part</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td rowspan="4" class="text-center">Waiting for M/c Slot<br>(not in M/c Queue)</td>
+                                        <td rowspan="2" style="font-weight: bold;">Parent WO Released - Ready for Production</td>
+                                        <td>Ready for Production (Material Available) </td>
+                                        <td class="text-center" id="ReadAssy">0</td>
+                                        <td class="text-center" id="ReadCMp">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Waiting for Material</td>
+                                        <td class="text-center" id="WAssy">0</td>
+                                        <td class="text-center" id="WCmp">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-end">Rework WO</td>
+                                        <td class="text-center" id="RwkAssy">0</td>
+                                        <td class="text-center" id="RwkCmp">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-end">Non Plan Work</td>
+                                        <td colspan="2" class="text-center" id="NonAssy">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="4" class="text-center">In M/c Queue</td>
+                                        <td rowspan="2" style="font-weight: bold;">Child / Parent WO </td>
+                                        <td>Ready for Production (Material Available) </td>
+                                        <td class="text-center" id="InMcQueRAssy">0</td>
+                                        <td class="text-center" id="InMcQueRCmp">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Waiting for Material</td>
+                                        <td class="text-center" id="InMcQueWAssy">0</td>
+                                        <td class="text-center" id="InMcQueWCmp">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-end">Rework WO</td>
+                                        <td class="text-center" id="InMcQueRwkAssy">0</td>
+                                        <td class="text-center" id="InMcQueRwkCmp">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-end">Non Plan Work</td>
+                                        <td colspan="2" class="text-center" id="InMcQueNon">0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="row m-5">
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-outline-primary" data-bs-target="#Popup1" data-bs-toggle="modal"
+                                        id="selectwoProdBtn">
+                                    Select WO for Production Planning
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row m-5">
+                            <div class="d-grid gap-2">-->
                     <!-- <button class="btn btn-primary ">Update Production Completion Status</button> -->
                     <!--</div>
-    </div>
-    <div class="row m-5">
-        <div class="d-grid gap-2">-->
+                    </div>
+                    <div class="row m-5">
+                        <div class="d-grid gap-2">-->
                     <!-- <button class="btn btn-primary ">Update Production Completion Status</button> -->
                     <!--</div>
-            </div>
-            <div class="row m-5">
-                <div class="d-grid gap-2">
-                    <button class="btn btn-outline-primary " data-bs-target="#" data-bs-toggle="modal" id="UpdateSimulaion">Update Production Completion Status</button>
-                </div>
-            </div>
-        </div>
+                            </div>
+                            <div class="row m-5">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary " data-bs-target="#" data-bs-toggle="modal" id="UpdateSimulaion">Update Production Completion Status</button>
+                                </div>
+                            </div>
+                        </div>
 
-        <div class="col-md-1 text-end">
-            <a asp-action="Index" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
-                X
-            </a>
-        </div>
-    </div>-->
+                        <div class="col-md-1 text-end">
+                            <a asp-action="Index" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                                X
+                            </a>
+                        </div>
+                    </div>-->
                     <div class="row">
                         <div class="col-md-7">
                             <div class="table-responsive">
@@ -174,13 +174,13 @@
                         </div>
                         <div class="col-md-4">
                             @*<div class="row m-5">
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-outline-primary" data-bs-target="#Popup1" data-bs-toggle="modal"
-                                id="selectwoProdBtn">
-                            Select WO for Production Planning
-                        </button>
-                    </div>
-                </div>*@
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-primary" data-bs-target="#Popup1" data-bs-toggle="modal"
+                                                id="selectwoProdBtn">
+                                            Select WO for Production Planning
+                                        </button>
+                                    </div>
+                                </div>*@
 
                             <div class="row m-5">
                                 <div class="d-grid gap-2">
@@ -210,15 +210,15 @@
                                 </div>
                             </div>
                             <!--<div class="row m-5">
-            <div class="d-grid gap-2">-->
+                            <div class="d-grid gap-2">-->
                             <!-- <button class="btn btn-primary ">Update Production Completion Status</button> -->
                             <!--</div>
-            </div>
-            <div class="row m-5">
-                <div class="d-grid gap-2">-->
+                            </div>
+                            <div class="row m-5">
+                                <div class="d-grid gap-2">-->
                             <!-- <button class="btn btn-primary ">Update Production Completion Status</button> -->
                             <!--</div>
-            </div>-->
+                            </div>-->
 
                         </div>
 
@@ -240,53 +240,53 @@
 
                     <!-- Simulation Controls -->
                     <!--<div class="row mt-4">
-        <div class="col">
-            <h4 class="section-title">Simulation Output : WO List - Parent Level - Assembly & Child Manufactured Parts </h4>
-            <div class="d-flex gap-3 mb-2">-->
+                    <div class="col">
+                        <h4 class="section-title">Simulation Output : WO List - Parent Level - Assembly & Child Manufactured Parts </h4>
+                        <div class="d-flex gap-3 mb-2">-->
                     @*<button class="btn btn-outline-dark" id="PauseBtn">Pause <i class="fas fa-pause"></i></button>*@
                     <!--<button class="btn btn-outline-success" id="CountinueBtn">Continue <i class="fas fa-play"></i></button>
-        <button class="btn btn-outline-danger" id="CancelBtn">Cancel <i class="fas fa-times"></i></button>
-    </div>
+                        <button class="btn btn-outline-danger" id="CancelBtn">Cancel <i class="fas fa-times"></i></button>
+                    </div>
 
-    <div class="col-md-12">
-        <div class="row">
-            <div class="table-responsive table-he-250">
-                <table class="table table-sm table-bordered w-100 text-center" id="SimWoGrid">
-                    <thead class="  table-info th-sti">
-                        <tr class="table-border-bottom">
-                            <th>Work Order # </th>
-                            <th>Customer</th>
-                            <th>Build to Stock</th>
-                            <th>Part No / Desc</th>
-                            <th>Part Type </th>
-                            <th>WIP</th>
-                            <th>Plan WO Qnty</th>
-                            <th>Reqd Compl Dt</th>
-                            <th>Cur Plan Qnty</th>
-                            <th>PS Start Date</th>
-                            <th>PS Compl Date </th>
-                            <th>CS Start Date </th>
-                            <th>CS Compl Date </th>
-                            <th>Act Start Date </th>
-                            <th>Critical Part </th>
-                            <th>Data Changed </th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>-->
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="table-responsive table-he-250">
+                                <table class="table table-sm table-bordered w-100 text-center" id="SimWoGrid">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Work Order # </th>
+                                            <th>Customer</th>
+                                            <th>Build to Stock</th>
+                                            <th>Part No / Desc</th>
+                                            <th>Part Type </th>
+                                            <th>WIP</th>
+                                            <th>Plan WO Qnty</th>
+                                            <th>Reqd Compl Dt</th>
+                                            <th>Cur Plan Qnty</th>
+                                            <th>PS Start Date</th>
+                                            <th>PS Compl Date </th>
+                                            <th>CS Start Date </th>
+                                            <th>CS Compl Date </th>
+                                            <th>Act Start Date </th>
+                                            <th>Critical Part </th>
+                                            <th>Data Changed </th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>-->
                     <!-- -------------  -->
                     <!-- -------------  -->
                     <!--</tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
 
-            <div class="col-md-12">
-                <h6>PS : Previous Simulation&nbsp;&nbsp;&nbsp;&nbsp;CS : Current Simulation</h6>
-            </div>
-        </div>
-    </div>-->
+                            <div class="col-md-12">
+                                <h6>PS : Previous Simulation&nbsp;&nbsp;&nbsp;&nbsp;CS : Current Simulation</h6>
+                            </div>
+                        </div>
+                    </div>-->
                     <div class="row mt-4">
                         <div class="col">
                             <h4 class="section-title">Simulation Output : WO List - Parent Level - Assembly & Child Manufactured Parts </h4>
@@ -391,12 +391,12 @@
                             {
                                 @if (permissionResult.Any(r => r.Menu3 == "Detailed Production Planning"))
                                 {
-                                    <button class="btn btn-primary mb-2" id="gobacktodetailplaningbtn"  onclick="window.location.href = '/D%231@122P%20I%255$3T%20I'">Go back to Detailed Planning</button>
+                                    <button class="btn btn-primary mb-2" id="gobacktodetailplaningbtn" onclick="window.location.href = '/D%231@122P%20I%255$3T%20I'">Go back to Detailed Planning</button>
                                 }
                             }
                             else
                             {
-                                <button class="btn btn-primary mb-2" id="gobacktodetailplaningbtn"  onclick="window.location.href = '/D%231@122P%20I%255$3T%20I'">Go back to Detailed Planning</button>
+                                <button class="btn btn-primary mb-2" id="gobacktodetailplaningbtn" onclick="window.location.href = '/D%231@122P%20I%255$3T%20I'">Go back to Detailed Planning</button>
                             }
                         </div>
                         <div class="col-md-9 text-end mt-3">
@@ -2607,6 +2607,12 @@
                             Add New Non Plan Work
                         </button>
                     </div>
+                    <div class="col-md-12 mt-2">
+                    <div class="alert alert-warning mb-2" role="alert"> 
+                        <strong>Note:</strong> Redo Set up checks before restarting Production of Part No / Routing No / Opr No. 
+                        
+                        </div> 
+                    </div>
                 </div>
             </div>
         </div><!-- /.modal-content -->
@@ -3267,6 +3273,152 @@
 
     </div>
 </div>
+
+ 
+
+
+
+<div class="modal fade" id="Popup13" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Machine Non Available List</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12 mb-4" id="P6partInspectPlanGridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P13Grid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="  table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Shop</th>
+                                            <th>Machine</th>
+                                            <th>Work Desc</th>
+                                            <th>Reqd Date</th>
+                                            <th>Reqd Duration</th>
+                                            <th>Planned Date</th>
+                                            <th>In Progress</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center">
+                                        <!-- -------------  -->
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 text-end mt-2 mb-2">
+                        <button type="button" class="btn btn-primary btn-sm" id="P13Save" data-bs-toggle="modal"
+                                data-bs-target="#Popup14">
+                            Add New M/c not Available
+                        </button>
+                    </div>
+                    <div class="col-md-12 mt-2">
+                        <div class="alert alert-warning mb-2" role="alert">
+                            <strong>Note:</strong> Redo Set up checks before restarting Production of Part No / Routing No / Opr No.
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="Popup14" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog  modal-lg">
+        <div class="modal-content" style="border: 4px solid #5eafd2;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mySmallModalLabel">
+                    Machine Not Available
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <label class="form-label col-md-4 mb-2">Machine Selection * </label>
+                    <div class="col-md-3 mb-2">
+                        <input class="form-control" id="P14MachinceSel1" placeholder="Shop" type="text" readonly>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <input class="form-control" id="P14MachinceSel2" placeholder="Machince" type="text" readonly>
+                        <input class="form-control" id="P14MachinceId" type="text" hidden>
+                        <input class="form-control" id="P14NonPlandId" type="text" hidden>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#Popup82" id="P14Select">Select</button>
+                    </div>
+                    <label class="form-label col-md-4 mb-2">Work Description * </label>
+                    <div class="col-md-6 mb-2">
+                        <textarea class="form-control" id="P14WorkDesc" placeholder="Enter Work Description" style="height: 64px;"></textarea>
+                    </div>
+                    <label class="form-label col-md-4 mb-2">Non Plan Work Type * </label>
+                    <div class="col-md-6 mb-2">
+                        <select class="form-select form-select-sm" aria-label="form-select-sm" id="P14NonPlanType"
+                                title="" data-plugin="tippy" data-tippy-placement="top">
+                            <option value="">==========</option>
+                        </select>
+                    </div>
+                    <label class="form-label col-md-4 mb-2">Required Start Date / Time * </label>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P14ReqStartDate" type="date">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P14ReqStartTime" type="time">
+                    </div>
+                    <label class="form-label col-md-4 mb-2">Required Duration * </label>
+                    <div class="col-md-4 mb-2">
+                        <input class="form-control" id="P14ReqDur" type="text" placeholder="00:00">
+                    </div>
+                    <div class="col-md-12 text-end mt-2 mb-2">
+                        <button type="button" class="btn btn-primary btn-sm" id="P14Save1">Save</button>
+                    </div>
+                    <hr class="mt-1 mb-2" id="Div12Acthr">
+                    <div id="Div12Act" class="row">
+                        <label class="form-label col-md-4 mb-2">Actual Start Date / Time * </label>
+                        <div class="col-md-4 mb-2">
+                            <input class="form-control" id="P14ActDate1" type="date">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <input class="form-control" id="P14ActTime1" type="time">
+                        </div>
+                        <div class="col-md-12 text-end mt-2 mb-2">
+                            <button type="button" class="btn btn-primary btn-sm" id="P14Save2">Save</button>
+                        </div>
+                    </div>
+                    <hr class="mt-1 mb-2" id="Div13Closehr">
+                    <div class="row" id="Div13Close">
+
+                        <label class="form-label col-md-4 mb-2">Completion Comments *</label>
+                        <div class="col-md-6 mb-2">
+                            <textarea class="form-control" id="P14CloseCom1" placeholder="Enter Completion Comments" style="height: 64px;"></textarea>
+                        </div>
+                        <label class="form-label col-md-4 mb-2">Actual End Date / Time * </label>
+                        <div class="col-md-4 mb-2">
+                            <input class="form-control" id="P14ActEndDate1" type="date">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <input class="form-control" id="P14ActEndTime1" type="time">
+                        </div>
+                        <label class="form-label col-md-4 mb-2">Actual Duration * </label>
+                        <div class="col-md-4 mb-2">
+                            <input class="form-control" id="P14ActDur" type="text" placeholder="00:00">
+                        </div>
+                        <div class="col-md-12 text-end mt-2 mb-2">
+                            <button type="button" class="btn btn-primary btn-sm" id="P14Save3">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
 <div class="modal fade" id="Popup82" data-bs-backdrop="static" data-bs-keyboard="false"
      tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
     <div class="modal-dialog">
@@ -3325,55 +3477,61 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div>
-<div class="modal fade" id="Popup13" data-bs-backdrop="static" data-bs-keyboard="false"
+<div class="modal fade" id="Popup92" data-bs-backdrop="static" data-bs-keyboard="false"
      tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border: 4px solid #5eafd2;">
             <div class="modal-header">
-                <h4 class="modal-title" id="mySmallModalLabel">Machine Non Availability Details</h4>
+                <h4 class="modal-title" id="mySmallModalLabel">
+                    Machine List
+                </h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-3 mb-2">
-                        <label class="form-label">Shop</label>
-                        <select class="form-select form-select-sm" aria-label="form-select-sm" id="P13SearchShop" title=""
-                                data-plugin="tippy" data-tippy-placement="top">
-                            <option value="">==========</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3 mb-2">
-                        <label class="form-label">Machine </label>
-                        <select class="form-select form-select-sm" aria-label="form-select-sm" id="P13SearchMc" title=""
-                                data-plugin="tippy" data-tippy-placement="top">
-                            <option value="">==========</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <label class="form-check-label" for="flexSwitchCheckDefault">Group by Shop / Machine</label>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="P13SwitchCheck">
-                            </div>
-                            <label class="form-check-label" for="flexSwitchCheckDefault">Group by Date</label>
+                    <div class="d-flex row">
+                        <label class="form-label col-md-6 mb-2">Machine Type </label>
+                        <label class="form-label col-md-6 mb-2">Shop </label>
+
+                        <div class="col-md-6 mb-2">
+                            <select class="form-select form-select-sm"
+                                    aria-label="form-select-sm"
+                                    id="P92McType"
+                                    title=""
+                                    data-plugin="tippy"
+                                    data-tippy-placement="top">
+                                <option value="">==========</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-2">
+                            <select class="form-select form-select-sm"
+                                    aria-label="form-select-sm"
+                                    id="P92Shop"
+                                    title=""
+                                    data-plugin="tippy"
+                                    data-tippy-placement="top">
+                                <option value="">==========</option>
+                            </select>
                         </div>
                     </div>
 
                     <div class="col-md-12 mb-4" id="P6partInspectPlanGridDiv">
                         <div class="col-md-12">
                             <div class="table-responsive table-he-330">
-                                <table id="P13Grid"
+                                <table id="P92Grid"
                                        class="table table-sm table-bordered w-100 text-center">
-                                    <thead class="  table-info th-sti">
+                                    <thead class="table-info th-sti">
                                         <tr class="table-border-bottom">
+                                            <th>Select</th>
+                                            <th>Machine Type</th>
                                             <th>Shop</th>
                                             <th>Machine</th>
-                                            <th>Non Availability Reason</th>
-                                            <th>Start Date / Time</th>
-                                            <th>End Date / Time </th>
-                                            <th></th>
+                                            <th>Next Set up Date / Time</th>
                                         </tr>
                                     </thead>
+
                                     <tbody class="text-center">
                                         <!-- -------------  -->
                                         <!-- -------------  -->
@@ -3382,69 +3540,13 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-12 text-end mt-2 mb-2">
-                        <button type="button" class="btn btn-primary btn-sm" id="P13OpenBtn" data-bs-toggle="modal"
-                                data-bs-target="#Popup14">
-                            Enter New Non-Availability Slot details
+                        <button type="button"
+                                class="btn btn-primary btn-sm"
+                                id="P92Select">
+                            Select
                         </button>
-                    </div>
-                </div>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div>
-<div class="modal fade" id="Popup14" data-bs-backdrop="static" data-bs-keyboard="false"
-     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content" style="border: 4px solid #5eafd2;">
-            <div class="modal-header">
-                <h5 class="modal-title" id="mySmallModalLabel">
-                    Machine Non Availability Slot Details
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <label class="form-label col-md-6 mb-2">Shop </label>
-                    <div class="col-md-6 mb-2">
-                        <select class="form-select form-select-sm" aria-label="form-select-sm" id="P14ShopId" title=""
-                                data-plugin="tippy" data-tippy-placement="top">
-                            <option value="">==========</option>
-                        </select>
-                    </div>
-                    <label class="form-label col-md-6 mb-2">Machine </label>
-                    <div class="col-md-6 mb-2">
-                        <select class="form-select form-select-sm" aria-label="form-select-sm" id="P14McId" title=""
-                                data-plugin="tippy" data-tippy-placement="top">
-                            <option value="">==========</option>
-                        </select>
-                    </div>
-                    <label class="form-label col-md-6 mb-2">Start Date  </label>
-                    <div class="col-md-6 mb-2">
-                        <input class="form-control form-control-sm" id="P14StartDate" type="date">
-                    </div>
-                    <label class="form-label col-md-6 mb-2">Start Time  </label>
-                    <div class="col-md-6 mb-2">
-                        <input class="form-control form-control-sm" id="P14StartTime" type="time">
-                    </div>
-                    <label class="form-label col-md-6 mb-2">End Date  </label>
-                    <div class="col-md-6 mb-2">
-                        <input class="form-control form-control-sm" id="P14EndDate" type="date">
-                    </div>
-                    <label class="form-label col-md-6 mb-2">End Time  </label>
-                    <div class="col-md-6 mb-2">
-                        <input class="form-control form-control-sm" id="P14EndTime" type="time">
-                        <input class="form-control form-control-sm" id="P14McTmId" type="text" hidden>
-                    </div>
-                    <label class="form-label col-md-6 mb-2">Reason </label>
-                    <div class="col-md-6 mb-2">
-                        <select class="form-select form-select-sm" aria-label="form-select-sm" id="P14Reason" title=""
-                                data-plugin="tippy" data-tippy-placement="top">
-                            <option value="">==========</option>
-                        </select>
-                    </div>
-                    <div class="col-md-12 text-end mt-2 mb-2">
-                        <button type="button" class="btn btn-primary btn-sm" id="P14Save">Save</button>
                     </div>
                 </div>
             </div>
@@ -3494,21 +3596,37 @@
 <template id="P13GridRow">
     <tr>
         <td>{shopName}</td>
-        <td>{mcName}</td>
-        <td>{nonAvlReas}</td>
-        <td>{startTime}</td>
-        <td>{endTime}</td>
+        <td>{machineName}</td>
+        <td>{work_Description}</td>
+        <td>{reqDateStr}</td>
+        <td>{plan_Duration}</td>
+        <td>{plannedStr}</td>
+        <td>{inProcess}</td>
         <td>
             <div class="dropdown float-center">
-                <a href="#" class="dropdown-toggle arrow-none card-drop" data-bs-toggle="dropdown" aria-expanded="false">
+                <a href="#" class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="mdi mdi-dots-vertical"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
-                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-id="{mc_Timeslot_List_Id}"
-                       data-mcid="{mc_Id}" data-shopid="{shopId}" data-nonreasid="{not_Avl_reason}" data-starttime="{startTime}" data-endtime="{endTime}"
-                       data-bs-target="#Popup14">Edit</a>
-                    <a href="javascript:void(0);" class="dropdown-item" data-id="{mc_Timeslot_List_Id}" onclick="DeleteMcNotAvl(this)">Delete</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-bs-target="#Popup14" data-id="{non_Plan_Wk_ListId}" data-mcname="{machineName}" data-shopname="{shopName}"
+                       data-mcid="{mc_Id}" data-nontype="{non_Plan_Wk_Type}" data-reqddate="{plan_start_time}"
+                       data-reqddur="{plan_Duration}" data-actstartdate="{actual_Start_Time}"
+                       data-actenddate="{actual_end_Time}" data-actdur="{actual_Duration}" data-workdesc="{work_Description}"
+                       data-closecom="{closure_Comment}">View</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                       data-bs-target="#Popup14" data-id="{non_Plan_Wk_ListId}" data-mcname="{machineName}" data-shopname="{shopName}"
+                       data-mcid="{mc_Id}" data-nontype="{non_Plan_Wk_Type}" data-reqddate="{plan_start_time}"
+                       data-reqddur="{plan_Duration}" data-actstartdate="{actual_Start_Time}"
+                       data-actenddate="{actual_end_Time}" data-actdur="{actual_Duration}" data-workdesc="{work_Description}"
+                       data-closecom="{closure_Comment}">Edit</a>
+                    <a href="javascript:void(0);" class="dropdown-item" data-id="{non_Plan_Wk_ListId}" data-mcname="{machineName}" data-shopname="{shopName}"
+                       data-mcid="{mc_Id}" data-nontype="{non_Plan_Wk_Type}" data-reqddate="{plan_start_time}"
+                       data-reqddur="{plan_Duration}" data-actstartdate="{actual_Start_Time}"
+                       data-actenddate="{actual_end_Time}" data-actdur="{actual_Duration}" data-workdesc="{work_Description}"
+                       data-closecom="{closure_Comment}" onclick="DelteNonPlan(this)">Delete</a>
                     <!-- item-->
                 </div>
             </div>
@@ -3520,7 +3638,7 @@
         <td hidden>{woIdStr}</td>
         <td>
             <input class="form-check-input mt-2 P1gridChk" type="checkbox" title="" data-plugin="tippy"
-                   data-tippy-placement="top" placeholder="" data-ppid="{productionPlanId}" data-workorderid="{woIdStr}" >
+                   data-tippy-placement="top" placeholder="" data-ppid="{productionPlanId}" data-workorderid="{woIdStr}">
         </td>
         <td>{woNumber}</td>
         <td>{customer}</td>
@@ -3602,7 +3720,7 @@
                        data-routingid={routingId}
                        data-wostatus={status}>View List of Docs w/f Approval </a>
                     <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                       data-bs-target="#wohold"  
+                       data-bs-target="#wohold"
                        data-ppid={productionPlanId}
                        data-workorderid={woId}
                        data-parentwoid={parentWoId}
@@ -3617,8 +3735,7 @@
                        data-requiredquantity={requiredQuantity}
                        data-calwoqty={calcWOQty}
                        data-routingid={routingId}
-                       data-statusstr={status} data-holdstr={holdstr}
-                       >hold / resume</a>
+                       data-statusstr={status} data-holdstr={holdstr}>hold / resume</a>
                     <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#"
                        data-ppid={productionPlanId}
                        data-workorderid={woId}
@@ -3921,6 +4038,18 @@
     <tr>
         <td>
             <input class="form-check-input mt-1" type="radio" onclick="copyMachineData('{shop}', '{name}', '{machineId}');" name="radiopartba" value="{machineId}">
+        </td>
+        <td>{machineType}</td>
+        <td>{shop}</td>
+        <td>{name}</td>
+        <td>{nextOprTime}</td>
+    </tr>
+</template>
+<template id="P92GridRow">
+
+    <tr>
+        <td>
+            <input class="form-check-input mt-1" type="radio" onclick="copyMachineNotavailableData('{shop}', '{name}', '{machineId}');" name="radiopartba" value="{machineId}">
         </td>
         <td>{machineType}</td>
         <td>{shop}</td>

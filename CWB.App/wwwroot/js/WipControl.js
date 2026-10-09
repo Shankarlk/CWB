@@ -287,6 +287,7 @@ $(document).ready(function () {
     loadPO();
     loadCustomerDispatchCount();
     loadMisCount();
+    loadNonWrkList();
     $("#CustomerSel").on("change", function () {
         var selval = $(this).val().toLowerCase();
         LoadPOLines(selval);
@@ -569,5 +570,17 @@ function loadMisCount() {
         $("#preloaderblurred").hide();
     }).catch((error) => {
         $("#preloaderblurred").hide();
+    });
+}
+
+function loadNonWrkList() {
+    var tablebody = $("#nonplanworktblGridbody");
+    $(tablebody).html("");//empty tbody
+
+    api.getbulk("/workOrder/GetAllNon_Plan_Wk_ListData").then((data) => {
+        var datacount = data.length;
+        $("#Nonplancount").text(datacount);
+
+    }).catch((error) => {
     });
 }

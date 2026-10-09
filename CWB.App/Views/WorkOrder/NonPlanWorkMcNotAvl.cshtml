@@ -1,0 +1,378 @@
+﻿
+<div class="content">
+    <div class="row" id="myRadioGroup">
+        <div class="col-xl-12 col-md-12 col-sm-12 col-xs-12">
+            <!-- ================= -->
+            <div class="card">
+                <div class="card-body">
+
+                    <!-- WO Status Overview -->
+                    <div class="row">
+                        <div class="col-md-11">
+
+                            <h3>Non-Plan Work List</h3>
+                        </div>
+                        <div class="col-md-1 text-end">
+                            <a asp-action="WipControl" asp-controller="WorkOrder" id="CloseBtn" style="font-size: large; color: #000;">
+                                X
+                            </a>
+                        </div>
+                        <div class="col-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="nonplanworktblGrid"
+                                       class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th class="text-center">Shop</th>
+                                            <th class="text-center">Machine</th>
+                                            <th class="text-center">WorkDesc</th>
+                                            <th class="text-center">Reqd Date</th>
+                                            <th class="text-center">Reqd Duration</th>
+                                            <th class="text-center">Planned Date</th>
+                                            <th class="text-center">In Progress</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="nonplanworktblGridbody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+    <template id="P8GridRow">
+        <tr>
+            <td>{shopName}</td>
+            <td>{machineName}</td>
+            <td>{work_Description}</td>
+            <td>{reqDateStr}</td>
+            <td>{plan_Duration}</td>
+            <td>{plannedStr}</td>
+            <td>{inProcess}</td>
+            <td>
+                <div class="dropdown float-center">
+                    <a href="#" class="dropdown-toggle arrow-none card-drop"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="mdi mdi-dots-vertical"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                           data-bs-target="#Popup81" data-id="{non_Plan_Wk_ListId}" data-mcname="{machineName}" data-shopname="{shopName}"
+                           data-mcid="{mc_Id}" data-nontype="{non_Plan_Wk_Type}" data-reqddate="{plan_start_time}"
+                           data-reqddur="{plan_Duration}" data-actstartdate="{actual_Start_Time}"
+                           data-actenddate="{actual_end_Time}" data-actdur="{actual_Duration}" data-workdesc="{work_Description}"
+                           data-closecom="{closure_Comment}">View</a>
+                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                           data-bs-target="#Popup81" data-id="{non_Plan_Wk_ListId}" data-mcname="{machineName}" data-shopname="{shopName}"
+                           data-mcid="{mc_Id}" data-nontype="{non_Plan_Wk_Type}" data-reqddate="{plan_start_time}"
+                           data-reqddur="{plan_Duration}" data-actstartdate="{actual_Start_Time}"
+                           data-actenddate="{actual_end_Time}" data-actdur="{actual_Duration}" data-workdesc="{work_Description}"
+                           data-closecom="{closure_Comment}">Edit</a>
+
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </template>
+    <div class="modal fade" id="Popup81" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="border: 4px solid #5eafd2;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="mySmallModalLabel">
+                        Non Plan Work Allocation
+                    </h5>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                            id="P81CloseBtn">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <label class="form-label col-md-4 mb-2">Machine Selection * </label>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control" id="P81MachinceSel1" placeholder="Shop" type="text" readonly>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <input class="form-control" id="P81MachinceSel2" placeholder="Machince" type="text" readonly>
+                            <input class="form-control" id="P81MachinceId" type="text" hidden>
+                            <input class="form-control" id="P81NonPlandId" type="text" hidden>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#Popup82" id="P81Select">Select</button>
+                        </div>
+                        <label class="form-label col-md-4 mb-2">Work Description * </label>
+                        <div class="col-md-6 mb-2">
+                            <textarea class="form-control" id="P81WorkDesc" placeholder="Enter Work Description" style="height: 64px;"></textarea>
+                        </div>
+                        <label class="form-label col-md-4 mb-2">Non Plan Work Type * </label>
+                        <div class="col-md-6 mb-2">
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" id="P81NonPlanType"
+                                    title="" data-plugin="tippy" data-tippy-placement="top">
+                                <option value="">==========</option>
+                            </select>
+                        </div>
+                        <label class="form-label col-md-4 mb-2">Required Start Date / Time * </label>
+                        <div class="col-md-4 mb-2">
+                            <input class="form-control" id="P81ReqStartDate" type="date">
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <input class="form-control" id="P81ReqStartTime" type="time">
+                        </div>
+                        <label class="form-label col-md-4 mb-2">Required Duration * </label>
+                        <div class="col-md-4 mb-2">
+                            <input class="form-control" id="P81ReqDur" type="text" placeholder="00:00">
+                        </div>
+                        <div class="col-md-12 text-end mt-2 mb-2">
+                            <button type="button" class="btn btn-primary btn-sm" id="P81Save1">Save</button>
+                        </div>
+                        <hr class="mt-1 mb-2" id="Div2Acthr">
+                        <div id="Div2Act" class="row">
+                            <label class="form-label col-md-4 mb-2">Actual Start Date / Time * </label>
+                            <div class="col-md-4 mb-2">
+                                <input class="form-control" id="P81ActDate1" type="date">
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <input class="form-control" id="P81ActTime1" type="time">
+                            </div>
+                            <div class="col-md-12 text-end mt-2 mb-2">
+                                <button type="button" class="btn btn-primary btn-sm" id="P81Save2">Save</button>
+                            </div>
+                        </div>
+                        <hr class="mt-1 mb-2" id="Div3Closehr">
+                        <div class="row" id="Div3Close">
+
+                            <label class="form-label col-md-4 mb-2">Completion Comments *</label>
+                            <div class="col-md-6 mb-2">
+                                <textarea class="form-control" id="P81CloseCom1" placeholder="Enter Completion Comments" style="height: 64px;"></textarea>
+                            </div>
+                            <label class="form-label col-md-4 mb-2">Actual End Date / Time * </label>
+                            <div class="col-md-4 mb-2">
+                                <input class="form-control" id="P81ActEndDate1" type="date">
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <input class="form-control" id="P81ActEndTime1" type="time">
+                            </div>
+                            <label class="form-label col-md-4 mb-2">Actual Duration * </label>
+                            <div class="col-md-4 mb-2">
+                                <input class="form-control" id="P81ActDur" type="text" placeholder="00:00">
+                            </div>
+                            <div class="col-md-12 text-end mt-2 mb-2">
+                                <button type="button" class="btn btn-primary btn-sm" id="P81Save3">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="Popup8" data-bs-backdrop="static" data-bs-keyboard="false"
+         tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="mySmallModalLabel">
+                        Non-Plan Work List
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12 mb-4" id="P6partInspectPlanGridDiv">
+                            <div class="col-md-12">
+                                <div class="table-responsive table-he-330">
+                                    <table id="P8Grid"
+                                           class="table table-sm table-bordered w-100 text-center">
+                                        <thead class="  table-info th-sti">
+                                            <tr class="table-border-bottom">
+                                                <th>Shop</th>
+                                                <th>Machine</th>
+                                                <th>Work Desc</th>
+                                                <th>Reqd Date</th>
+                                                <th>Reqd Duration</th>
+                                                <th>Planned Date</th>
+                                                <th>In Progress</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-center">
+                                            <!-- -------------  -->
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <div class="dropdown float-center">
+                                                        <a href="#" class="dropdown-toggle arrow-none card-drop"
+                                                           data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="mdi mdi-dots-vertical"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#Popup81">View</a>
+                                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#Popup81">Edit</a>
+                                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#Popup81">Delete</a>
+                                                            <!-- item-->
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <div class="dropdown float-center">
+                                                        <a href="#" class="dropdown-toggle arrow-none card-drop"
+                                                           data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="mdi mdi-dots-vertical"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#Popup81">View</a>
+                                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#Popup81">Edit</a>
+                                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#Popup81">Delete</a>
+                                                            <!-- item-->
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <div class="dropdown float-center">
+                                                        <a href="#" class="dropdown-toggle arrow-none card-drop"
+                                                           data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="mdi mdi-dots-vertical"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#Popup81">View</a>
+                                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#Popup81">Edit</a>
+                                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#Popup81">Delete</a>
+                                                            <!-- item-->
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <div class="dropdown float-center">
+                                                        <a href="#" class="dropdown-toggle arrow-none card-drop"
+                                                           data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="mdi mdi-dots-vertical"></i>
+                                                        </a>
+                                                        <div class="dropdown-menu dropdown-menu-end">
+                                                            <!-- item-->
+                                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#Popup81">View</a>
+                                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#Popup81">Edit</a>
+                                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#Popup81">Delete</a>
+                                                            <!-- item-->
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <!-- -------------  -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 text-end mt-2 mb-2">
+                            <button type="button" class="btn btn-primary btn-sm" id="P8Save" data-bs-toggle="modal"
+                                    data-bs-target="#Popup81">
+                                Add New Non Plan Work
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    <div class="modal fade" id="ErrorMessage1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" style="border: 4px solid #5eafd2;">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="mySmallModalLabel">Data is not saved</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <form id="frmAddUOM" onsubmit="return false;" novalidate="novalidate">
+                            <div class="row">
+                                <label class="form-label col-md-6 mb-2">
+
+                                    Save changes & Exit
+                                    <br>
+                                    <br>
+                                    <br>
+                                    Return to Popup to Edit
+                                    <br>
+                                    <br>
+                                    <br>
+                                    Exit without saving changes
+
+                                </label>
+                                <div class="col-md-6 text-center">
+                                    <input id="openfrom" type="text" hidden />
+                                    <button class="btn btn-sm btn-primary" id="ErBtn1">Save & Exit</button>
+                                    <br>
+                                    <button class="btn btn-sm mt-4 btn-primary" id="ErBtn2">Edit Entered Data</button>
+                                    <button class="btn btn-sm mt-4 btn-primary" id="ErBtn3">Exit without Saving Entered Data</button>
+                                </div>
+                            </div>
+                        </form>
+                        <!-- ========================= -->
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+    @section Scripts {
+        <script src="~/js/NonPlanWorkMcnotAvl.js"></script>
+    }

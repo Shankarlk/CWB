@@ -27,7 +27,8 @@ namespace CWB.ProductionPlanWO.Configurations
         new Non_Plan_Wk_type_List { Id = 2, Non_Plan_Wk_type_Desc = "Fixture Part Manf" },
         new Non_Plan_Wk_type_List { Id = 3, Non_Plan_Wk_type_Desc = "Fixture Rework" },
         new Non_Plan_Wk_type_List { Id = 4, Non_Plan_Wk_type_Desc = "Tool Manf" },
-        new Non_Plan_Wk_type_List { Id = 5, Non_Plan_Wk_type_Desc = "Tool Rework" }
+        new Non_Plan_Wk_type_List { Id = 5, Non_Plan_Wk_type_Desc = "Tool Rework" },
+        new Non_Plan_Wk_type_List { Id = 6, Non_Plan_Wk_type_Desc = "M/c Maintenance" }
     );
 
 

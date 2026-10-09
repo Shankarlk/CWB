@@ -186,7 +186,10 @@ namespace CWB.App.Controllers
         {
             return View();
         }
-
+        public IActionResult NonPlanWorkMcNotAvl()
+        {
+            return View();
+        }
         [HttpGet]
         public async Task<IActionResult> CheckSalesOrdersForWO()
         {
@@ -1926,6 +1929,13 @@ namespace CWB.App.Controllers
             var resultList = await _routingService.Routings(mf.ManufacturedPartNoDetailId);
             var sortedList = resultList.OrderByDescending(x => x.PreferredRouting == 1).ThenBy(x => x.PreferredRouting).ToList();
             return Ok(sortedList);
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetRoutingById(long routingId)
+        {
+            var routing = await _routingService.GetRouting((int)routingId);
+
+            return Ok(routing);
         }
         [HttpGet]
         public async Task<IActionResult> GetSimRoutings(int manufPartId, int Qnty)
@@ -21893,7 +21903,7 @@ namespace CWB.App.Controllers
             var result = await _woService.GetAllNon_Plan_Wk_List();
             var machines = await _machineService.GetMachinesList();
             var mcWaitList = await _woService.GetAllMc_Wait_List();
-            foreach (var item in result)
+            foreach (var item in result.Where(x=>x.Non_Plan_Wk_Type!=6))
             {
                 var machine = machines.Where(m => m.MachineId == item.Mc_Id).FirstOrDefault();
                 item.MachineName = machine?.Name ?? "Unknown";
@@ -21910,6 +21920,34 @@ namespace CWB.App.Controllers
                 }
 
             }
+            result = result.Where(x => x.Non_Plan_Wk_Type != 6).ToList();
+            return Ok(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllNon_Plan_Wk_ListDataMachinenotavailable()
+        {
+            var result = await _woService.GetAllNon_Plan_Wk_List();
+            var machines = await _machineService.GetMachinesList();
+            var mcWaitList = await _woService.GetAllMc_Wait_List();
+            foreach (var item in result.Where(x => x.Non_Plan_Wk_Type == 6))
+            {
+                var machine = machines.Where(m => m.MachineId == item.Mc_Id).FirstOrDefault();
+                item.MachineName = machine?.Name ?? "Unknown";
+                item.ShopName = machine?.Shop ?? "Unknown";
+                item.ReqDateStr = item.Plan_start_time.ToString("dd-MM-yyyy hh:mm tt");
+                item.PlannedStr = item.PlannedDate.ToString("dd-MM-yyyy");
+                if (mcWaitList.Any(m => m.Non_Plan_wk_Id == item.Non_Plan_Wk_ListId))
+                {
+                    item.InProcess = "Y";
+                }
+                else
+                {
+                    item.InProcess = "N";
+                }
+
+            }
+            result = result.Where(x => x.Non_Plan_Wk_Type == 6).ToList();
             return Ok(result);
         }
         [HttpGet]
@@ -21934,6 +21972,24 @@ namespace CWB.App.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteNon_Plan_Wk_List(long itemMasterDocListId)
         {
+            var mctimeslotlist = await _woService.GetAllMc_Timeslot_List();
+            var mcwaitlist = await _woService.GetAllMc_Wait_List();
+            var mcWait = mcwaitlist.Where(x => x.Non_Plan_wk_Id == itemMasterDocListId).FirstOrDefault();
+            if(mcWait !=null)
+            {
+                long deletedSeqNo = mcWait.Wait_Seq_No; 
+                long mcId = mcWait.Mc_Id;
+                var recordsToRearrange = mcwaitlist.Where(x => x.Mc_Id == mcId && x.Wait_Seq_No > deletedSeqNo).ToList();
+                foreach (var item in recordsToRearrange)
+                { 
+                    item.Wait_Seq_No = item.Wait_Seq_No - 1;
+                    await _woService.PostMc_Wait_List(item);
+                }
+                var mcslitrecord = mctimeslotlist.Where(x => x.Mc_Wait_List_Id == mcWait.Mc_Wait_ListId).FirstOrDefault();
+
+                await _woService.DeleteMc_Wait_List(mcWait.Mc_Wait_ListId);
+                await _woService.DeleteMc_Timeslot_List(mcslitrecord.Mc_Timeslot_List_Id);
+            }
             var result = await _woService.DeleteNon_Plan_Wk_List(itemMasterDocListId);
             return Ok(result);
         }
@@ -22888,7 +22944,7 @@ namespace CWB.App.Controllers
 
                     foreach (var slot in plantSlots)
                     {
-                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == np.Mc_Id && (x.Allocation == 2||x.Allocation==6) &&
+                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == np.Mc_Id && x.Allocation == 2 &&
                         slot.Timeslot_ListId >= x.Timeslot_List_Id && slot.Timeslot_ListId <= x.EndTimeslot_List_Id);
                         if (occupied)
                         {                    // break the sequence 
@@ -23661,7 +23717,7 @@ namespace CWB.App.Controllers
 
                                     foreach (var slot in plantSlots)
                                     {
-                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && (x.Allocation == 2 || x.Allocation == 6) &&
+                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && x.Allocation == 2  &&
                                         slot.Timeslot_ListId >= x.Timeslot_List_Id && slot.Timeslot_ListId <= x.EndTimeslot_List_Id);
                                         if (occupied)
                                         {                    // break the sequence 
@@ -24775,7 +24831,7 @@ namespace CWB.App.Controllers
 
                                     foreach (var slot in plantSlots)
                                     {
-                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && (x.Allocation == 2 || x.Allocation == 6) &&
+                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && x.Allocation == 2 &&
                                         slot.Timeslot_ListId >= x.Timeslot_List_Id && slot.Timeslot_ListId <= x.EndTimeslot_List_Id);
                                         if (occupied)
                                         {                    // break the sequence 
@@ -25927,7 +25983,7 @@ namespace CWB.App.Controllers
 
                                     foreach (var slot in plantSlots)
                                     {
-                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && (x.Allocation == 2 || x.Allocation == 6) &&
+                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && x.Allocation == 2  &&
                                         slot.Timeslot_ListId >= x.Timeslot_List_Id && slot.Timeslot_ListId <= x.EndTimeslot_List_Id);
                                         if (occupied)
                                         {                    // break the sequence 
@@ -27190,7 +27246,7 @@ namespace CWB.App.Controllers
 
                                     foreach (var slot in plantSlots)
                                     {
-                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && (x.Allocation == 2 || x.Allocation == 6) &&
+                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && x.Allocation == 2  &&
                                         slot.Timeslot_ListId >= x.Timeslot_List_Id && slot.Timeslot_ListId <= x.EndTimeslot_List_Id);
                                         if (occupied)
                                         {                    // break the sequence 
@@ -28433,7 +28489,7 @@ namespace CWB.App.Controllers
 
                                     foreach (var slot in plantSlots)
                                     {
-                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && (x.Allocation == 2 || x.Allocation == 6) &&
+                                        bool occupied = allMcTimeslots.Any(x => x.Mc_Id == mc.MachineId && x.Allocation == 2 &&
                                         slot.Timeslot_ListId >= x.Timeslot_List_Id && slot.Timeslot_ListId <= x.EndTimeslot_List_Id);
                                         if (occupied)
                                         {                    // break the sequence 
