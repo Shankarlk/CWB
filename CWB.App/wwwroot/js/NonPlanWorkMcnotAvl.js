@@ -714,7 +714,7 @@ $(document).ready(function () {
         loadMachinceType();
         loadMachinceList();
     });
-    loadSimulationWos();
+    
     $("#P81Select").on('click', function (event) {
         mcAdd = 0;
     });
@@ -722,19 +722,7 @@ $(document).ready(function () {
         mcAdd = 11;
     });
 
-    $("#CancelBtn").on('click', function (event) {
-        let confirmval = confirm("Are your sure you want to Cancel Simulation ?", "Yes", "No");
-        if (confirmval) {
-            $("#preloader").show();
-            document.getElementById('preloader').style.display = 'block';
-            document.getElementById('status').style.display = 'block';
-            api.get("/workOrder/ClearTemp").then((data) => {
-                loadSimulationWos();
-            }).catch((error) => {
-
-            });
-        }
-    });
+    
 
     loadCustomer();
 
@@ -828,7 +816,7 @@ function loadNonWrkList() {
     var tablebody = $("#nonplanworktblGridbody");
     $(tablebody).html("");//empty tbody
 
-    api.getbulk("/workOrder/GetAllNon_Plan_Wk_ListData").then((data) => {
+    api.getbulk("/workOrder/GetAllNon_Plan_Wk_ListDataforsetup").then((data) => {
         if (data.length === 0) {
             // 2. Insert the "No Records Found" row
             // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)

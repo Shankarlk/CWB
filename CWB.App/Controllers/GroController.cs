@@ -880,6 +880,10 @@ namespace CWB.App.Controllers
             foreach (var item in filteredgrostocklist)
             {
                 var part = allgroparts.Where(x => x.Gro_Part_ListId == item.Gro_Part_List_ID).FirstOrDefault();
+                if (part == null)
+                {
+                    continue;
+                }
                 item.Gro_Part_No = part.Gro_Part_No;
                 result.Add(item);
             }

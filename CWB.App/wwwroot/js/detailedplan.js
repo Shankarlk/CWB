@@ -2174,8 +2174,8 @@ $(document).ready(function () {
                 procPlanId: parseInt(row.find("td:eq(1)").text()),
                 partId: parseInt(row.find("td:eq(3)").text()),
                 partType: row.find("td:eq(5)").text(),
-                calc_Proc_Qnty: parseInt(row.find("td:eq(8)").text()),
-                plan_Proc_Qnty: parseInt(row.find("td:eq(10)").text()),
+                calc_Proc_Qnty: parseFloat(row.find("td:eq(8)").text()),
+                plan_Proc_Qnty: parseFloat(row.find("td:eq(10)").text()),
                 moq: parseInt(row.find("td:eq(11)").text()),
                 uomid: 0,
                 workOrderId: parseInt(row.find("td:eq(2)").text()),
@@ -2295,7 +2295,7 @@ $(document).ready(function () {
             var rowData = {
                 procPlanId: parseInt($(row).find("td:eq(1)").text()),
                 partId: parseInt($(row).find("td:eq(3)").text()),
-                poQnty: parseInt($(row).find("td:eq(8)").text()),
+                poQnty: parseFloat($(row).find("td:eq(10)").text()),
                 planPoReceiptDate: $(row).find("td:eq(16)").text(),
                 companyId: parseInt($(row).find("td:eq(17)").text()),
                 combinedIds: $(row).find("td:eq(19)").text()

@@ -288,6 +288,7 @@ $(document).ready(function () {
     loadCustomerDispatchCount();
     loadMisCount();
     loadNonWrkList();
+    setup();
     $("#CustomerSel").on("change", function () {
         var selval = $(this).val().toLowerCase();
         LoadPOLines(selval);
@@ -577,10 +578,48 @@ function loadNonWrkList() {
     var tablebody = $("#nonplanworktblGridbody");
     $(tablebody).html("");//empty tbody
 
-    api.getbulk("/workOrder/GetAllNon_Plan_Wk_ListData").then((data) => {
+    api.getbulk("/workOrder/GetAllNon_Plan_Wk_ListDataforsetup").then((data) => {
         var datacount = data.length;
         $("#Nonplancount").text(datacount);
 
     }).catch((error) => {
     });
 }
+function setup() {
+    $("#preloaderblurred").show();
+ 
+api.getbulk('/WorkOrder/GetSetupSummaryByShop')
+    .then((data) => {
+
+        $("#setup").text(0);
+        $("#approval").text(0);
+        $("#bookout").text(0);
+
+        if (data.length > 0) {
+            const totalSetup = data.reduce(
+                (sum, item) => sum + item.waitingForSetupStart, 0
+            );
+
+            const totalApproval = data.reduce(
+                (sum, item) => sum + item.readyForSetupApproval, 0
+            );
+
+            const totalBookout = data.reduce(
+                (sum, item) => sum + item.bookout, 0
+            );
+
+            $("#setup").text(totalSetup);
+            $("#approval").text(totalApproval);
+            $("#bookout").text(totalBookout);
+        }
+
+        $("#preloaderblurred").hide();
+    })
+    .catch((error) => {
+        $("#preloaderblurred").hide();
+        console.error(error);
+    });
+ 
+
+}
+

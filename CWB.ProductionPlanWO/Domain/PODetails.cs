@@ -13,13 +13,13 @@ namespace CWB.ProductionPlanWO.Domain
         public string ProcPlanIds { get; set; }
         public char AddHocPO { get; set; }
         public long PartId { get; set; }
-        public int PoQnty { get; set; }
+        public decimal PoQnty { get; set; }
         public DateTime PoDate { get; set; }
         public long CompanyId { get; set; }
         public DateTime PlanPoReceiptDate { get; set; }
         public char PoSent { get; set; }
         public char Mismatch_Resolved { get; set; }
-        public int PoQntyRecd { get; set; }
+        public decimal PoQntyRecd { get; set; }
         public int Status { get; set; }
         public long TenantId { get; set; }
         public char Inspection { get; set; }

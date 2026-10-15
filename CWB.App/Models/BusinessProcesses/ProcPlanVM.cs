@@ -19,10 +19,10 @@ namespace CWB.App.Models.BusinessProcesses
         public long UOMId { get; set; }
         public long StartingOpNO { get; set; }
         public long EndingOpNO { get; set; }
-        public int Calc_Proc_Qnty { get; set; }
-        public int OtyOnHand { get; set; }
-        public int AddnOtyUser { get; set; }
-        public int Plan_Proc_Qnty { get; set; }
+        public decimal Calc_Proc_Qnty { get; set; }
+        public decimal OtyOnHand { get; set; }
+        public decimal AddnOtyUser { get; set; }
+        public decimal Plan_Proc_Qnty { get; set; }
         public DateTime PlanReceiptDate { get; set;}
 
         public String CalcReceiptDateStr {

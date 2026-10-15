@@ -706,7 +706,7 @@ $(document).ready(function () {
             plan_Duration: P81ReqDur,
             work_Description: P81WorkDesc
         };
-        return api.post("/WorkOrder/PostNon_Plan_Wk_List", formdata).then((data) => {
+        return api.post("/WorkOrder/PostNon_Plan_Wk_ListFirsttime", formdata).then((data) => {
             alert("Non Plan Work Saved");
             isP81Modified = false;
             $("#Popup81").modal("hide");
@@ -2015,7 +2015,7 @@ $("#P14Save1").secureClick(function (event) {
         work_Description: P14WorkDesc
     };
 
-    return api.post("/WorkOrder/PostNon_Plan_Wk_List", formdata).then((data) => {
+    return api.post("/WorkOrder/PostNon_Plan_Wk_ListFirsttime", formdata).then((data) => {
         alert("Machine Not available is Saved");
         isP14Modified = false;
         $("#Popup14").modal("hide");
