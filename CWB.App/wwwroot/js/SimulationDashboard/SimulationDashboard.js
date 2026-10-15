@@ -624,7 +624,7 @@ function bindPartSimulation(data) {
             partNo: data.parts[i].partNo,
             partNoTitle: data.parts[i].partNo,
             urgent: data.parts[i].isUrgent ? "Y" : "N",
-            partNoColor: data.parts[i].partNoColor,
+            partNoColor: data.parts[i].partNoColor || "#f8f9fa",
             operations: operationsHtml + soMarker + matlMarker,
             soMarker: soMarker,
             rowHeight: rowHeight,
@@ -639,6 +639,81 @@ function bindPartSimulation(data) {
     $('[data-bs-toggle="popover"]').popover('dispose');
     $('[data-bs-toggle="popover"]').popover({ html: true, trigger: 'hover' });
 }
+
+//function bindMachineSimulation(data) {
+
+//    bindMachineHeader(data.headers);
+
+//    var tableBody = $("#simulationBody");
+//    tableBody.html("");
+
+//    if (data.machines.length == 0) {
+//        tableBody.append(`
+//            <tr>
+//                <td colspan="74" class="text-center">No Records Found</td>
+//            </tr>`);
+//        return;
+//    }
+//    tableBody.find('.operation-bar[data-customer=""]').find('.customer-line').hide();
+//    var totalHours = 0;
+//    for (var i = 0; i < data.headers.length; i++) {
+//        for (var j = 0; j < data.headers[i].shifts.length; j++) {
+//            totalHours += data.headers[i].shifts[j].hours.length;
+//        }
+//    }
+
+//    var hw = getHourWidth();
+//    var scale = getScaleFactor();
+//    var totalWidth = totalHours * hw;
+
+//    for (var i = 0; i < data.machines.length; i++) {
+
+//        var rowHeight = 49;
+//        var barHeight = 24;
+//        var centeredTop = (rowHeight - barHeight) / 2;
+//        var operationsHtml = "";
+
+//        for (var j = 0; j < data.machines[i].operations.length; j++) {
+
+//            var op = data.machines[i].operations[j];
+
+//            var barHeight = 24; // matches the height in your template
+//            var rowHeight = 49;
+//            var centeredTop = (rowHeight - barHeight) / 2;
+
+//            var scaledOp = Object.assign({}, op, {
+//                left: op.left * scale,
+//                width: op.width * scale,
+//                top: centeredTop
+//            });
+
+//            operationsHtml += AppUtil.ProcessTemplateData("machineOperationTemplate", scaledOp);
+//            if (j < data.machines[i].operations.length - 1) {
+//                var dividerLeft = (op.left + op.width) * scale;
+//                operationsHtml += `<div style="position:absolute;left:${dividerLeft}px;top:6px;height:32px;width:1px;background:#fff;z-index:4;pointer-events:none;"></div>`;
+//            }
+//        }
+
+//        operationsHtml += buildDividerHtml(data.headers);
+
+//        var rowHeight = 48;
+
+//        var row = {
+//            machineNo: data.machines[i].machineNo,
+//            operations: operationsHtml,
+//            rowHeight: rowHeight,
+//            totalHours: totalHours,
+//            totalWidth: totalWidth
+//        };
+
+//        tableBody.append(AppUtil.ProcessTemplateData("machineSimulationRow", row));
+//    }
+//    tableBody.find('.operation-bar[data-supplier=""]').find('.supplier-line').hide();
+//    tableBody.find('.operation-bar[data-machine=""]').find('.machine-line').hide();
+
+//    $('[data-bs-toggle="popover"]').popover('dispose');
+//    $('[data-bs-toggle="popover"]').popover({ html: true, trigger: 'hover' });
+//}
 
 function bindMachineSimulation(data) {
 
@@ -655,6 +730,7 @@ function bindMachineSimulation(data) {
         return;
     }
     tableBody.find('.operation-bar[data-customer=""]').find('.customer-line').hide();
+
     var totalHours = 0;
     for (var i = 0; i < data.headers.length; i++) {
         for (var j = 0; j < data.headers[i].shifts.length; j++) {
@@ -666,37 +742,39 @@ function bindMachineSimulation(data) {
     var scale = getScaleFactor();
     var totalWidth = totalHours * hw;
 
+    var barHeight = 24;
+    var rowHeight = 66;     // two lanes
+    var planTop = 6;        // frozen / temp / non-plan bars
+    var actualTop = 36;     // actual production bars
+
     for (var i = 0; i < data.machines.length; i++) {
 
-        var rowHeight = 49;
-        var barHeight = 24;
-        var centeredTop = (rowHeight - barHeight) / 2;
+        var ops = data.machines[i].operations;
         var operationsHtml = "";
 
-        for (var j = 0; j < data.machines[i].operations.length; j++) {
+        for (var j = 0; j < ops.length; j++) {
 
-            var op = data.machines[i].operations[j];
-
-            var barHeight = 24; // matches the height in your template
-            var rowHeight = 49;
-            var centeredTop = (rowHeight - barHeight) / 2;
+            var op = ops[j];
+            var isActual = (op.lane === "Actual");
+            var barTop = isActual ? actualTop : planTop;
 
             var scaledOp = Object.assign({}, op, {
                 left: op.left * scale,
                 width: op.width * scale,
-                top: centeredTop
+                top: barTop
             });
 
             operationsHtml += AppUtil.ProcessTemplateData("machineOperationTemplate", scaledOp);
-            if (j < data.machines[i].operations.length - 1) {
+
+            // white divider only between neighbouring bars in the same lane
+            var next = ops[j + 1];
+            if (next && ((next.lane === "Actual") === isActual)) {
                 var dividerLeft = (op.left + op.width) * scale;
-                operationsHtml += `<div style="position:absolute;left:${dividerLeft}px;top:6px;height:32px;width:1px;background:#fff;z-index:4;pointer-events:none;"></div>`;
+                operationsHtml += `<div style="position:absolute;left:${dividerLeft}px;top:${barTop - 2}px;height:${barHeight + 4}px;width:1px;background:#fff;z-index:4;pointer-events:none;"></div>`;
             }
         }
 
         operationsHtml += buildDividerHtml(data.headers);
-
-        var rowHeight = 48;
 
         var row = {
             machineNo: data.machines[i].machineNo,
@@ -714,6 +792,7 @@ function bindMachineSimulation(data) {
     $('[data-bs-toggle="popover"]').popover('dispose');
     $('[data-bs-toggle="popover"]').popover({ html: true, trigger: 'hover' });
 }
+
 
 
 function updateArrows() {

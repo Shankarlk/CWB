@@ -1,0 +1,642 @@
+﻿<style>
+    .table-bordered > :not(caption) > * > * {
+        border-color: #ced4da;
+    }
+
+    #simulationBody .bg-success {
+        border: none !important;
+    }
+</style>
+<div class="content">
+    <div class="card-body">
+
+        <!-- Page Title -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+           <h4 class="mb-0 fw-bold">Actual Production Plan Dashboard</h4>
+
+
+        </div>
+
+        <!-- Filters -->
+        <div class="row mb-3">
+            <!-- Search Filters -->
+            <div class="row mb-3">
+
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">View</label>
+
+                    <select id="ddlView" class="form-select form-select-sm">
+                        <option value="Machine">Machine View</option>
+                        <option value="Part">Part View</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Display</label>
+
+                    <select id="ddlDisplay" class="form-select form-select-sm">
+                        <option value="Hour">Hour-wise</option>
+                        <option value="Shift">Shift-wise</option>
+                        <option value="Day">Day-wise</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Part No</label>
+                    <input type="text" id="txtPartNo" class="form-control form-control-sm"
+                           placeholder="Search Part No">
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">Machine</label>
+                    <input type="text" id="txtMachine" class="form-control form-control-sm"
+                           placeholder="Search Machine">
+                </div>
+
+                <div>
+                    <label class="form-label fw-bold" style="visibility:hidden;">Machine</label>
+                </div>
+
+
+
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <div id="legendBar" class="d-flex flex-wrap align-items-center gap-4 border rounded p-2 px-3">
+
+                            <!-- PART VIEW LEGEND -->
+                            <div id="legendPartView" class="d-none flex-wrap align-items-center gap-4">
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#7092BE;"></span>
+                                    <span>Frozen Production Plan (Inhouse)</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#8B5FBF;"></span>
+                                    <span>Frozen Production Plan (Subcon)</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#FFC107;"></span>
+                                    <span>New Production Plan (Inhouse)</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#FD7E14;"></span>
+                                    <span>New Production Plan (Subcon)</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#000000;"></span>
+                                    <span>So Completion Date</span>
+                                </div>
+                            </div>
+
+                            <!-- MACHINE VIEW LEGEND -->
+
+                            <div id="legendMachineView" class="d-none flex-wrap align-items-center gap-4">
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#7092BE;"></span>
+                                    <span>Frozen Production Plan (Inhouse)</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#0A58CA;"></span>
+                                    <span>Actual Production (Inhouse)</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#0F753A;"></span>
+                                    <span>Non-Plan Work (Frozen)</span>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-wrapper">
+                    <button id="btnPrev" class="timeline-arrow left">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+
+                    <div class="table-responsive" id="timelineContainer" style="max-height:650px; overflow:auto;">
+
+                        <table class="table table-bordered text-center align-middle mb-0">
+
+                            <thead>
+                                <tr id="dateHeader"></tr>
+                                <tr id="shiftHeader"></tr>
+                                <tr id="hourHeader"></tr>
+                            </thead>
+
+                            <tbody id="simulationBody"></tbody>
+
+                        </table>
+
+                    </div>
+
+                    <button id="btnNext" class="timeline-arrow right">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+
+                </div>
+
+                <!-- Legend -->
+
+                <div class="row mt-4">
+
+                    <!-- Left Side -->
+                    <div class="col-md-8">
+
+
+
+                        <div>VMC1 = Critical Routing Step (Operation)</div>
+
+                        <div>VMC1 * = Critical Routing Step (Operation) + Critical Setup</div>
+
+                        <div>Pride * = Critical Setup</div>
+
+                        <br>
+
+                        <div>Part Bookout Summary can be provided below</div>
+
+                    </div>
+
+
+
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+
+<template id="partSimulationRow">
+
+    <tr>
+
+        <td title="{partNoTitle}" style="position: sticky; left: 0px; z-index: 95; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; background:{partNoColor};">{partNo}</td>
+        <td style="position:sticky; left:160px; background:#f8f9fa; z-index:94;">{urgent}</td>
+
+        <td colspan="{totalHours}" class="position-relative p-0" style="border: 0.5px solid #ced4da;">
+
+            <div class="timeline-grid" style="height:{rowHeight}px;width:{totalWidth}px;position:relative;">
+
+                {operations}
+
+                {soMarker}
+
+            </div>
+
+        </td>
+
+    </tr>
+
+</template>
+<template id="machineSimulationRow">
+
+    <tr>
+
+        <td>{machineNo}</td>
+
+
+
+        <td colspan="{totalHours}" class="position-relative p-0" style="border: 0.5px solid #ced4da;">
+
+            <div class="timeline-grid"
+                 style="height:{rowHeight}px;width:{totalWidth}px;position:relative;">
+
+                {operations}
+
+            </div>
+
+        </td>
+
+    </tr>
+
+</template>
+<template id="machineOperationTemplate">
+
+    <div class="operation-bar"
+         data-bartype="{tooltipType}"
+         style="
+        position:absolute;
+        left:{left}px;
+        top:{top}px;
+        width:{width}px;
+        height:24px;
+        background:{color};
+        color:#fff;
+        line-height:24px;
+        text-align:center;
+        border-radius:4px;">
+
+        {partNum} - {operationName}
+
+        <div class="operation-tooltip tooltip-inhouse">
+            <b>Tool Tip Content for M/c Bar</b><br>
+            <span class="customer-line"><b>Part Sold to Customer:</b> {partSoldToCustomer}<br></span>
+            <b>Shop / Machine:</b> <span class="tooltip-value">{shopMachine}</span><br>
+            <b>Part No / Desc:</b> <span class="tooltip-value">{partNoDesc}</span><br>
+            <b>Routing No / Opr No:</b> <span class="tooltip-value">{routingOprNo}</span><br>
+            <b>WO No:</b> <span class="tooltip-value">{woNo}</span><br>
+            <b>Batch Qnty:</b> <span class="tooltip-value">{batchQnty}</span><br>
+            <b>Start Date / Time:</b> <span class="tooltip-value">{startDateTime}</span><br>
+            <b>End Date / Time:</b> <span class="tooltip-value">{endDateTime}</span><br>
+            <b>Duration (Hrs):</b> <span class="tooltip-value">{durationHours}</span><br>
+            <b>Floor to Floor Time (min):</b> <span class="tooltip-value">{floorToFloorTime}</span><br>
+            <b>Setup Time (min):</b> <span class="tooltip-value">{setupTime}</span><br>
+        </div>
+
+        <div class="operation-tooltip tooltip-actual">
+            <b>Tool Tip Content for M/c Bar from Setup / Bookout data</b><br>
+            <u>Actual Data</u><br>
+            <b>Part Sold to Customer:</b> <span class="tooltip-value">{partSoldToCustomer}</span><br>
+            <b>Shop / Machine:</b> <span class="tooltip-value">{shopMachine}</span><br>
+            <b>Part No / Desc:</b> <span class="tooltip-value">{partNoDesc}</span><br>
+            <b>Routing No / Opr No:</b> <span class="tooltip-value">{routingOprNo}</span><br>
+            <b>WO No:</b> <span class="tooltip-value">{woNo}</span><br>
+            <b>Booked out Qnty:</b> <span class="tooltip-value">{bookedOutQnty}</span><br>
+            <b>NC Qnty:</b> <span class="tooltip-value">{ncQnty}</span><br>
+            <b>Act Start Date / Time:</b> <span class="tooltip-value">{startDateTime}</span><br>
+            <b>Act Setup Time (min):</b> <span class="tooltip-value">{actSetupMinutes}</span><br>
+            <b>Act End Date / Time:</b> <span class="tooltip-value">{endDateTime}</span><br>
+            <b>Act Duration (Hrs):</b> <span class="tooltip-value">{durationHours}</span><br>
+            <b>Act Floor to Floor Time (min):</b> <span class="tooltip-value">{actFloorToFloor}</span><br>
+        </div>
+
+        <div class="operation-tooltip tooltip-nonplan">
+            <u>Non Plan Work Details</u><br>
+            <b>Shop / Machine:</b> {shopMachine}<br>
+            <b>Start Date / Time:</b> {startDateTime}<br>
+            <b>End Date / Time:</b> {endDateTime}<br>
+            <b>Duration (Hrs):</b> {durationHours}<br>
+            <b>Initiated by:</b> {initiatedBy}<br>
+        </div>
+
+    </div>
+
+</template>
+<template id="partOperationTemplate">
+    <div class="operation-bar"
+         data-supplier="{supplier}"
+         data-machine="{machineName}"
+         data-bartype="{tooltipType}"
+         style="
+        position:absolute;
+        left:{left}px;
+        top:{top}px;
+        width:{width}px;
+        height:24px;
+        background:{color};
+        outline: {delayOutline};
+        color:#fff;
+        line-height:24px;
+        text-align:center;
+        border-radius:4px;">
+        {displayLabel} - {operationName}
+
+        <div class="operation-tooltip tooltip-inhouse">
+            <b><span class="tooltip-value">{customerLabel}</span> </b> <span class="tooltip-value">{customerValue}</span><br>
+            <b>Shop / Machine:</b> <span class="tooltip-value">{shopMachine}</span><br>
+            <b>Part No / Desc:</b> <span class="tooltip-value">{partNoDesc}</span><br>
+            <b>Routing No / Opr No:</b> <span class="tooltip-value">{routingOprNo}</span><br>
+            <b>WO No:</b> <span class="tooltip-value">{woNo}</span><br>
+            <b>Batch Qnty:</b> <span class="tooltip-value">{batchQnty}</span><br>
+            <b>Start Date / Time:</b> <span class="tooltip-value">{startDateTime}</span><br>
+            <b>End Date / Time:</b> <span class="tooltip-value">{endDateTime}</span><br>
+            <b>Duration (Hrs):</b> <span class="tooltip-value">{durationHours}</span><br>
+            <b>Floor to Floor Time (min):</b> <span class="tooltip-value">{floorToFloorTime}</span><br>
+            <b>Setup Time (min):</b> <span class="tooltip-value">{setupTime}</span><br>
+        </div>
+        <div class="operation-tooltip tooltip-subcon">
+
+            <b>Sub Con:</b> {supplier}<br>
+            <b>Part No / Desc:</b> {partNoDesc}<br>
+            <b>Routing No / Opr No:</b> {routingOprNo}<br>
+            <b>WO No:</b> {woNo}<br>
+            <b>Batch Qnty:</b> {batchQnty}<br>
+            <b>Start Date / Time:</b> {startDateTime}<br>
+            <b>End Date / Time:</b> {endDateTime}<br>
+        </div>
+    </div>
+</template>
+
+
+
+<style>
+    .tooltip-value {
+        margin-left: 4px;
+    }
+
+    .d-flex {
+        display: flex !important;
+    }
+
+    .legend-swatch {
+        display: inline-block;
+        width: 18px;
+        height: 14px;
+        border-radius: 3px;
+    }
+
+    #dateHeader th {
+        position: sticky;
+        top: 0;
+        background: #f5f6f7;
+        z-index: 70;
+        height: 28px;
+        padding: 0;
+        line-height: 28px;
+        font-size: 0.85rem;
+    }
+
+    #shiftHeader th {
+        position: sticky;
+        background: #f5f6f7;
+        z-index: 60;
+        height: 28px;
+        padding: 0;
+        line-height: 28px;
+        font-size: 0.85rem;
+    }
+
+    #hourHeader th {
+        position: sticky;
+        background: #f5f6f7;
+        z-index: 50;
+        font-size: 0.8rem;
+        line-height: 20px;
+    }
+
+    .timeline-wrapper {
+        position: relative;
+    }
+
+    /* Floating arrows */
+    .timeline-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
+        border: none;
+        border-radius: 50%;
+        background: #fff;
+        color: #555;
+        box-shadow: 0 2px 10px rgba(0,0,0,.25);
+        z-index: 99999;
+        display: none;
+        transition: .25s;
+    }
+
+        .timeline-arrow:hover {
+            background: #7092BE;
+            color: #fff;
+        }
+
+        .timeline-arrow.left {
+            left: 12px;
+        }
+
+        .timeline-arrow.right {
+            right: 12px;
+        }
+
+    .so-completion-marker {
+        position: absolute;
+        top: 4px;
+        width: 36px;
+        height: 45px;
+        background: #000;
+        cursor: pointer;
+        z-index: 6;
+    }
+
+    .tooltip-somarker {
+        display: none;
+        position: absolute;
+        /* show above the marker */
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 220px;
+        padding: 10px;
+        background: #fff;
+        color: #333;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        text-align: left;
+        white-space: normal;
+        box-shadow: 0 4px 12px rgba(0,0,0,.2);
+        z-index: 999999;
+    }
+
+    .so-completion-marker:hover .tooltip-somarker {
+        display: block !important;
+    }
+
+
+
+    /* Part View
+    .part-view #dateHeader th:first-child,
+    .part-view #simulationBody td:first-child {
+        position: sticky;
+        left: 0;
+        min-width: 160px;
+        background: #f8f9fa;
+        z-index: 105;
+    }
+
+    .part-view #dateHeader th:nth-child(2),
+    .part-view #simulationBody td:nth-child(2) {
+        position: sticky;
+        left: 160px;
+        min-width: 80px;
+        background: #f8f9fa;
+        z-index: 106;
+        border-left: 1px solid #ced4da !important;
+    }*/
+
+    /* Machine View */
+    .machine-view #dateHeader th:first-child,
+    .machine-view #simulationBody td:first-child {
+        position: sticky;
+        left: 0;
+        min-width: 160px;
+        background: #f8f9fa;
+        z-index: 100;
+    }
+
+    /*  #simulationBody td {
+        border-top: 1px solid #ced4da;
+        border-bottom: 1px solid #ced4da;
+    }
+
+    #simulationBody tr {
+        box-shadow: inset 0 -1px 0 #ced4da;
+    }*/
+
+
+    .machine-view #dateHeader th:first-child {
+        border-right: 1px solid #ced4da !important;
+    }
+
+    .part-view #dateHeader th:nth-child(2) {
+        border-right: 1px solid #ced4da !important;
+    }
+
+    .machine-view #simulationBody td:first-child {
+        border-right: 1px solid #ced4da !important;
+    }
+
+    .part-view #simulationBody td:nth-child(2) {
+        border-right: 1px solid #ced4da !important;
+    }
+
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .timeline-grid {
+        position: relative;
+        background-color: white;
+        background-image: repeating-linear-gradient( to right, rgba(0,0,0,.05) 0px, rgba(0,0,0,.05) 1px, transparent 1px, transparent 38px );
+    }
+</style>
+
+
+
+<style>
+    .operation-bar {
+        cursor: pointer;
+        position: absolute;
+        z-index: 3;
+    }
+
+    .operation-tooltip {
+        display: none !important;
+        position: absolute;
+        bottom: 110%;
+        left: 50%;
+        transform: translateX(-50%);
+        min-width: 220px;
+        background: #fff;
+        color: #333;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 10px;
+        text-align: left;
+        box-shadow: 0 4px 12px rgba(0,0,0,.2);
+        z-index: 9999;
+        white-space: nowrap;
+    }
+
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+        table-layout: fixed;
+    }
+    /* Only show the matching tooltip type for each bar type */
+    .operation-bar[data-bartype="Inhouse"]:hover .tooltip-inhouse {
+        display: block;
+    }
+
+    .operation-bar[data-bartype="NonPlan"]:hover .tooltip-nonplan {
+        display: block;
+    }
+
+    .operation-bar[data-bartype="Subcon"]:hover .tooltip-subcon {
+        display: block;
+    }
+
+    /* No rule for [data-bartype="Temp"] — stays hidden always */
+
+    .operation-tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 8px;
+        border-style: solid;
+        z-index: 500;
+        border-color: #fff transparent transparent transparent;
+    }
+
+    .matl-receipt-marker {
+        position: absolute;
+        top: 4px;
+        height: 45px;
+        background: #fff;
+        border: 2px solid #000;
+        cursor: pointer;
+        z-index: 6;
+    }
+
+    .tooltip-matlmarker {
+        display: none;
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 220px;
+        padding: 10px;
+        background: #fff;
+        color: #333;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        text-align: left;
+        white-space: normal;
+        box-shadow: 0 4px 12px rgba(0,0,0,.2);
+        z-index: 999999;
+    }
+
+    .matl-receipt-marker:hover .tooltip-matlmarker {
+        display: block !important;
+    }
+
+    #sharedTooltip {
+        position: fixed !important;
+        display: none;
+        width: 350px;
+        min-width: 350px;
+        max-width: 350px;
+        padding: 10px;
+        background: #fff;
+        color: #333;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        text-align: left;
+        white-space: normal;
+        z-index: 2147483647 !important;
+        pointer-events: none;
+    }
+
+        #sharedTooltip .tooltip-value {
+            margin-left: 10px;
+        }
+
+    .operation-bar .operation-tooltip {
+        display: none !important;
+    }
+
+    /* Part View sticky columns - always opaque so bars never show through */
+    .part-view #simulationBody td:first-child {
+        position: sticky;
+        left: 0;
+        background-color: #f8f9fa;
+        z-index: 95;
+    }
+
+    .part-view #simulationBody td:nth-child(2) {
+        position: sticky;
+        left: 160px;
+        background-color: #f8f9fa;
+        z-index: 94;
+    }
+</style>
+<div id="sharedTooltip"></div>
+@section Scripts {
+    <script src="~/js/SimulationDashboard/ActualProdPlan.js"></script>
+}
