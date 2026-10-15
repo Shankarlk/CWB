@@ -37,5 +37,12 @@ namespace CWB.App.Models.SimulationMachineVM
         public string BarType { get; set; }
         public string TooltipType { get; set; }
         public string InitiatedBy { get; set; }
+
+        public string Lane { get; set; } = "Plan";
+
+        public string BookedOutQnty { get; set; } = "";
+        public string NcQnty { get; set; } = "";
+        public string ActSetupMinutes { get; set; } = "";
+        public string ActFloorToFloor { get; set; } = "";
     }
 }
