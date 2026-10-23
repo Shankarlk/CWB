@@ -78,6 +78,7 @@ namespace CWB.App.Models.BusinessProcesses
         public string InvoiceDate { get; set; }= string.Empty;
         public string DispatchDetail { get; set; }= string.Empty;
         public char Reorder { get; set; }
+        public DateTime ActCompletedDate { get; set; }
 
     }
 }

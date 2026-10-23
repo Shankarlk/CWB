@@ -71,20 +71,30 @@
                                     <span>Frozen Production Plan (Inhouse)</span>
                                 </div>
                                 <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#0A58CA;"></span>
+                                    <span>Actual Production (Inhouse)</span>
+                                </div>
+                                <div class="d-flex align-items-center">
                                     <span class="legend-swatch me-2" style="background:#8B5FBF;"></span>
                                     <span>Frozen Production Plan (Subcon)</span>
                                 </div>
-                                <div class="d-flex align-items-center">
-                                    <span class="legend-swatch me-2" style="background:#FFC107;"></span>
-                                    <span>New Production Plan (Inhouse)</span>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <span class="legend-swatch me-2" style="background:#FD7E14;"></span>
-                                    <span>New Production Plan (Subcon)</span>
-                                </div>
+
+
                                 <div class="d-flex align-items-center">
                                     <span class="legend-swatch me-2" style="background:#000000;"></span>
                                     <span>So Completion Date</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#D6246E;"></span>
+                                    <span>Matl Plan Receipt Date</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#00E5FF;"></span>
+                                    <span>Matl Act. Receipt Date</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background:#00FF00;"></span>
+                                    <span>SO Act. Completion Date</span>
                                 </div>
                             </div>
 
@@ -100,10 +110,13 @@
                                     <span>Actual Production (Inhouse)</span>
                                 </div>
                                 <div class="d-flex align-items-center">
-                                    <span class="legend-swatch me-2" style="background:#0F753A;"></span>
+                                    <span class="legend-swatch me-2" style="background: #EDE379; "></span>
                                     <span>Non-Plan Work (Frozen)</span>
                                 </div>
-
+                                <div class="d-flex align-items-center">
+                                    <span class="legend-swatch me-2" style="background: #C98404;"></span>
+                                    <span>Actual NP Work</span>
+                                </div>
                             </div>
 
                         </div>
@@ -184,6 +197,8 @@
 
                 {soMarker}
 
+                
+
             </div>
 
         </td>
@@ -216,7 +231,7 @@
 <template id="machineOperationTemplate">
 
     <div class="operation-bar"
-         data-bartype="{tooltipType}"
+         data-bartype="{barType}"
          style="
         position:absolute;
         left:{left}px;
@@ -232,7 +247,7 @@
         {partNum} - {operationName}
 
         <div class="operation-tooltip tooltip-inhouse">
-            <b>Tool Tip Content for M/c Bar</b><br>
+            <b> M/c Bar</b><br>
             <span class="customer-line"><b>Part Sold to Customer:</b> {partSoldToCustomer}<br></span>
             <b>Shop / Machine:</b> <span class="tooltip-value">{shopMachine}</span><br>
             <b>Part No / Desc:</b> <span class="tooltip-value">{partNoDesc}</span><br>
@@ -247,7 +262,7 @@
         </div>
 
         <div class="operation-tooltip tooltip-actual">
-            <b>Tool Tip Content for M/c Bar from Setup / Bookout data</b><br>
+            @*<b>Tool Tip Content for M/c Bar from Setup / Bookout data</b><br>*@
             <u>Actual Data</u><br>
             <b>Part Sold to Customer:</b> <span class="tooltip-value">{partSoldToCustomer}</span><br>
             <b>Shop / Machine:</b> <span class="tooltip-value">{shopMachine}</span><br>
@@ -272,6 +287,15 @@
             <b>Initiated by:</b> {initiatedBy}<br>
         </div>
 
+        <div class="operation-tooltip tooltip-actualnonplan">
+            @*<b>Tool Tip Content for Non Plan Work</b><br>*@
+            <u>Non Plan Work Details (Actual)</u><br>
+            <b>Shop / Machine:</b> <span class="tooltip-value">{shopMachine}</span><br>
+            <b>Act Start Date / Time:</b> <span class="tooltip-value">{startDateTime}</span><br>
+            <b>Act End Date / Time:</b> <span class="tooltip-value">{endDateTime}</span><br>
+            <b>Act Duration (Hrs):</b> <span class="tooltip-value">{durationHours}</span><br>
+            <b>Updated by:</b> <span class="tooltip-value">{initiatedBy}</span><br>
+        </div>
     </div>
 
 </template>
@@ -279,7 +303,7 @@
     <div class="operation-bar"
          data-supplier="{supplier}"
          data-machine="{machineName}"
-         data-bartype="{tooltipType}"
+         data-bartype="{barType}"
          style="
         position:absolute;
         left:{left}px;
@@ -317,12 +341,48 @@
             <b>Start Date / Time:</b> {startDateTime}<br>
             <b>End Date / Time:</b> {endDateTime}<br>
         </div>
+        <div class="operation-tooltip tooltip-actual">
+            @*<b>Tool Tip Content from Setup / Bookout data</b><br>*@
+            <u>Actual Data</u><br>
+            <b><span class="tooltip-value">{customerLabel}</span></b> <span class="tooltip-value">{customerValue}</span><br>
+            <b>Shop / Machine:</b> <span class="tooltip-value">{shopMachine}</span><br>
+            <b>Part No / Desc:</b> <span class="tooltip-value">{partNoDesc}</span><br>
+            <b>Routing No / Opr No:</b> <span class="tooltip-value">{routingOprNo}</span><br>
+            <b>WO No:</b> <span class="tooltip-value">{woNo}</span><br>
+            <b>Booked out Qnty:</b> <span class="tooltip-value">{bookedOutQnty}</span><br>
+            <b>NC Qnty:</b> <span class="tooltip-value">{ncQnty}</span><br>
+            <b>Act Start Date / Time:</b> <span class="tooltip-value">{startDateTime}</span><br>
+            <b>Act Setup Time (min):</b> <span class="tooltip-value">{actSetupMinutes}</span><br>
+            <b>Act End Date / Time:</b> <span class="tooltip-value">{endDateTime}</span><br>
+            <b>Act Duration (Hrs):</b> <span class="tooltip-value">{durationHours}</span><br>
+            <b>Act Floor to Floor Time (min):</b> <span class="tooltip-value">{actFloorToFloor}</span><br>
+        </div>
     </div>
 </template>
 
 
 
 <style>
+    .part-view .so-completion-marker {
+        top: 6px;
+        height: 26px;
+    }
+
+    .so-act-completion-marker {
+        top: 36px !important;
+        height: 24px !important;
+        background: #00FF00 !important;
+        border: 1px solid #000;
+    }
+    .matl-act-receipt-marker {
+        position: absolute;
+        top: 6px;
+        height: 24px;  
+        background: #00E5FF;
+        border: 1px solid #000;
+        cursor: pointer;
+        z-index: 6;
+    }
     .tooltip-value {
         margin-left: 4px;
     }
@@ -567,7 +627,7 @@
         position: absolute;
         top: 4px;
         height: 45px;
-        background: #fff;
+        background: #D6246E;
         border: 2px solid #000;
         cursor: pointer;
         z-index: 6;

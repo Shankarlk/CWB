@@ -35,5 +35,15 @@ namespace CWB.App.Models.ProductionSimulation
         public string MatlReceiptQnty { get; set; }
         public string MatlReceiptSupplier { get; set; }
         public string MatlReceiptPoNo { get; set; }
+
+        public bool HasMatlActReceiptMarker { get; set; }
+        public double MatlActReceiptMarkerLeft { get; set; }
+        public string MatlActReceiptDateDisplay { get; set; } = "";
+        public string MatlActReceiptQnty { get; set; } = "";
+
+
+        public bool HasSoActCompletionMarker { get; set; }
+        public double SoActCompletionMarkerLeft { get; set; }
+        public string SoActCompletionDateDisplay { get; set; } = "";
     }
 }
