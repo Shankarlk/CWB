@@ -57,5 +57,11 @@ namespace CWB.App.Models.ProductionSimulation
 
         public string CustomerLabel { get; set; }
         public string CustomerValue { get; set; }
+
+        public string Lane { get; set; } = "Plan";
+        public string BookedOutQnty { get; set; } = "";
+        public string NcQnty { get; set; } = "";
+        public string ActSetupMinutes { get; set; } = "";
+        public string ActFloorToFloor { get; set; } = "";
     }
 }

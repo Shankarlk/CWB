@@ -81,7 +81,7 @@ $("#ddlView").change(function () {
 
 function loadPartView() {
     $("#preloaderblurred").show();
-    api.getbulk("/WorkOrder/SimulationData")
+       api.getbulk("/WorkOrder/SimulationData?actual=true")
         .then((data) => {
             simulationData = data;
             bindPartSimulation(data);
@@ -544,32 +544,38 @@ function bindPartSimulation(data) {
     var totalWidth = totalHours * hw;
 
     for (var i = 0; i < data.parts.length; i++) {
-        var rowHeight = 49;
+
         var barHeight = 24;
-        var centeredTop = (rowHeight - barHeight) / 2;
+        var rowHeight = 66;     // two lanes
+        var planTop = 6;        // frozen bars
+        var actualTop = 36;     // actual production bars
+
+        var ops = data.parts[i].operations;
         var operationsHtml = "";
 
-        for (var j = 0; j < data.parts[i].operations.length; j++) {
+        for (var j = 0; j < ops.length; j++) {
 
-            var op = data.parts[i].operations[j];
+            var op = ops[j];
+            var isActual = (op.lane === "Actual");
+            var barTop = isActual ? actualTop : planTop;
 
             var scaledOp = Object.assign({}, op, {
                 left: op.left * scale,
                 width: op.width * scale,
-                top: centeredTop
+                top: barTop
             });
 
             operationsHtml += AppUtil.ProcessTemplateData("partOperationTemplate", scaledOp);
 
-            if (j < data.parts[i].operations.length - 1) {
+            // white divider only between neighbouring bars in the same lane
+            var next = ops[j + 1];
+            if (next && ((next.lane === "Actual") === isActual)) {
                 var dividerLeft = (op.left + op.width) * scale;
-                operationsHtml += `<div style="position:absolute;left:${dividerLeft}px;top:${centeredTop - 4}px;height:${barHeight + 8}px;width:1px;background:#fff;z-index:4;pointer-events:none;"></div>`;
+                operationsHtml += `<div style="position:absolute;left:${dividerLeft}px;top:${barTop - 2}px;height:${barHeight + 4}px;width:1px;background:#fff;z-index:4;pointer-events:none;"></div>`;
             }
         }
 
         operationsHtml += buildDividerHtml(data.headers);
-
-        var rowHeight = 49;
 
 
         var soMarker = "";
@@ -621,18 +627,69 @@ function bindPartSimulation(data) {
         </div>`;
         }
 
+       
+
+
+        var matlActMarker = "";
+
+        if (data.parts[i].hasMatlActReceiptMarker) {
+
+            var actLeft = data.parts[i].matlActReceiptMarkerLeft * scale;
+
+            var actTooltip = `
+        <b>Material Actual Receipt</b><br>
+        <b>Part No / Desc:</b> ${data.parts[i].partNo || ""} / ${data.parts[i].description || ""}<br>
+        <b>Qnty:</b> ${data.parts[i].matlActReceiptQnty || ""}<br>
+        <b>Act Receipt Date / Time:</b> ${data.parts[i].matlActReceiptDateDisplay || ""}
+    `;
+
+
+
+
+            matlActMarker = `
+        <div class="matl-act-receipt-marker"
+             data-bartype="MatlMarker"
+             data-tooltip="${encodeURIComponent(actTooltip)}"
+             style="left:${actLeft}px; width:${Math.max(38 * scale, 3)}px;">
+        </div>`;
+        }
+
+        var soActMarker = "";
+
+        if (data.parts[i].hasSoActCompletionMarker) {
+
+            var soActLeft = data.parts[i].soActCompletionMarkerLeft * scale;
+            var soActWidth = Math.max(36 * scale, 4);
+
+            var soActTooltip = `
+        <b>SO Actual Completion</b><br>
+        <b>Customer:</b> ${data.parts[i].soCustomer || ""}<br>
+        <b>Part No / Desc:</b> ${data.parts[i].partNo || ""} / ${data.parts[i].description || ""}<br>
+        <b>SO No:</b> ${data.parts[i].soNo || ""}<br>
+        <b>Quantity:</b> ${data.parts[i].soQnty || ""}<br>
+        <b>Act Completion Date:</b> ${data.parts[i].soActCompletionDateDisplay || ""}
+    `;
+
+            soActMarker = `
+        <div class="so-completion-marker so-act-completion-marker"
+             data-bartype="SoMarker"
+             data-tooltip="${encodeURIComponent(soActTooltip)}"
+             style="left:${soActLeft}px; width:${soActWidth}px;">
+        </div>`;
+        }
         var row = {
             partNo: data.parts[i].partNo,
             partNoTitle: data.parts[i].partNo,
             urgent: data.parts[i].isUrgent ? "Y" : "N",
             partNoColor: data.parts[i].partNoColor || "#f8f9fa",
-            operations: operationsHtml + soMarker + matlMarker,
-            soMarker: soMarker,
+           operations: operationsHtml + soMarker + matlMarker + matlActMarker + soActMarker,
+            soMarker: "",
             rowHeight: rowHeight,
             totalHours: totalHours,
             totalWidth: totalWidth
         };
         tableBody.append(AppUtil.ProcessTemplateData("partSimulationRow", row));
+
 
 
     }
@@ -641,8 +698,10 @@ function bindPartSimulation(data) {
     $('[data-bs-toggle="popover"]').popover({ html: true, trigger: 'hover' });
 }
 
- 
 
+  
+
+ 
 function bindMachineSimulation(data) {
 
     bindMachineHeader(data.headers);
@@ -796,7 +855,7 @@ function loadSelectedView() {
 
  
 
-$(document).on('mouseenter', '.operation-bar, .so-completion-marker, .matl-receipt-marker', function () {
+$(document).on('mouseenter', '.operation-bar, .so-completion-marker, .matl-receipt-marker, .matl-act-receipt-marker', function () {
 
     var $element = $(this);
     var sourceHtml = "";
@@ -804,18 +863,23 @@ $(document).on('mouseenter', '.operation-bar, .so-completion-marker, .matl-recei
     // Operation bar
     if ($element.hasClass('operation-bar')) {
 
-        var barType = $element.attr('data-bartype');
+        var barType = ($element.attr('data-bartype') || '')
+            .trim()
+            .toLowerCase();
 
-        if (barType === 'NonPlan') {
+        if (barType === 'nonplan') {
             sourceHtml = $element.find('.tooltip-nonplan').html();
         }
-        else if (barType === 'Subcon') {
+        else if (barType === 'subcon') {
             sourceHtml = $element.find('.tooltip-subcon').html();
         }
-        else if (barType === 'Actual') { sourceHtml = $element.find('.tooltip-actual').html();
+        else if (barType === 'actualnonplan') {
+            sourceHtml = $element.find('.tooltip-actualnonplan').html();
         }
-        else
-        {
+        else if (barType === 'actual') {
+            sourceHtml = $element.find('.tooltip-actual').html();
+        }
+        else {
             sourceHtml = $element.find('.tooltip-inhouse').html();
         }
     }
@@ -829,7 +893,7 @@ $(document).on('mouseenter', '.operation-bar, .so-completion-marker, .matl-recei
     }
 
     // Material receipt marker
-    else if ($element.hasClass('matl-receipt-marker')) {
+    else if ($element.hasClass('matl-receipt-marker') || $element.hasClass('matl-act-receipt-marker'))  {
 
         sourceHtml = decodeURIComponent(
             $element.attr('data-tooltip') || ''
@@ -897,7 +961,7 @@ $(document).on('mouseenter', '.operation-bar, .so-completion-marker, .matl-recei
 );
 
 
-$(document).on('mouseleave', '.operation-bar, .so-completion-marker, .matl-receipt-marker', function () {
+$(document).on('mouseleave', '.operation-bar, .so-completion-marker, .matl-receipt-marker, .matl-act-receipt-marker', function () {
 
     $('#sharedTooltip').stop(true, true).hide().html('');
 }

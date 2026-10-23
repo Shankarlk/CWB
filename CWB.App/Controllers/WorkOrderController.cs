@@ -35268,8 +35268,7 @@ namespace CWB.App.Controllers
         //}
 
         [HttpGet]
-
-        public async Task<IActionResult> SimulationData()
+        public async Task<IActionResult> SimulationData(bool actual = false)
         {
             var Departments = await _departmentService.GetDepartments(13);
             var allprductionwo = await _woService.AllProductionWoReadForProd();
@@ -35286,12 +35285,20 @@ namespace CWB.App.Controllers
             var procPlanList = await _woService.GetAllProcPlan();
             var tempmachinetimeslotlist = await _woService.GetAllTempMc_Timeslot_List();
             var Livemachinetimeslotlist = await _woService.GetAllMc_Timeslot_List();
-
+          
             var Livesubconlist = await _woService.GetAllSubCon_List();
             var Tempsubconlist = await _woService.GetAllTempSubCon_List();
 
             var companies = await _masterService.GetCompanies();
-            var salesOrders = await _baService.AllSalesOrders();
+            var salesOrders = new List<dynamic>();
+            try
+            {
+                salesOrders = (await _baService.AllSalesOrders()).Cast<dynamic>().ToList();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("AllSalesOrders failed: " + ex.Message);
+            }
             var timeslotlist = await _woService.GetAllTimeslot_List();
             //DateTime chartStart = timeslotlist.OrderBy(x => x.Start_time).First().Start_time;
             var masterpartlist = await _masterService.MasterPartList();
@@ -35315,6 +35322,8 @@ namespace CWB.App.Controllers
             var consolidatedwomapping = await _woService.Getallconsolidationproductionwo();
 
             var podetails = await _woService.GetAllPodetails();
+            var invTransLogs = actual ? await _woService.GetAllInv_Trans_Log() : null;
+
             foreach (var date in dates)
             {
 
@@ -35405,9 +35414,96 @@ namespace CWB.App.Controllers
 
             const double slotWidth = 38;    //pixel 
             var liveWoIds = new HashSet<long>(livewowaitlist.Select(x => x.Wo_Id));
+
+
+            //Actual prockplan bar 
+            const string ACTUAL_PROD_COLOR = "#0A58CA";
+
+            DateTime? ValidDate(DateTime? d) => (d.HasValue && d.Value.Year > 1) ? d : null;
+
+            // Actual production bar (lower lane): hour of Setup_Start_time -> hour of Act_End_time
+            SimulationOperationVM BuildActualPartBar(SimulationOperationVM baseOp,
+                DateTime? setupStartRaw, DateTime? setupApprvlRaw, DateTime? actEndRaw)
+            {
+                var setupStart = ValidDate(setupStartRaw);
+                var setupApprvl = ValidDate(setupApprvlRaw);
+                var actEnd = ValidDate(actEndRaw);
+
+                // bar is introduced only after Setup Approval
+                if (setupStart == null || setupApprvl == null)
+                    return null;
+
+                // bookout extends the bar, otherwise it ends at setup approval
+                DateTime actualEnd = actEnd ?? setupApprvl.Value;
+                if (actualEnd < setupStart.Value)
+                    actualEnd = setupStart.Value;
+
+                // start -> round DOWN to the hour, end -> round UP to the hour
+                var startSlotRow = timeslotlist.FirstOrDefault(x =>
+                    x.Start_time <= setupStart.Value && setupStart.Value < x.End_time);
+                var endSlotRow = timeslotlist.FirstOrDefault(x =>
+                    x.Start_time < actualEnd && actualEnd <= x.End_time);
+
+                if (startSlotRow == null)
+                    return null;
+
+                if (endSlotRow == null || (long)endSlotRow.Timeslot_ListId < (long)startSlotRow.Timeslot_ListId)
+                    endSlotRow = startSlotRow;
+
+                long actStartId = (long)startSlotRow.Timeslot_ListId;
+                long actEndId = (long)endSlotRow.Timeslot_ListId;
+
+                var op = new SimulationOperationVM();
+                op.PartNum = baseOp.PartNum;
+                op.Department = baseOp.Department;
+                op.OperationName = baseOp.OperationName;
+                op.MachineName = baseOp.MachineName;
+                op.DisplayLabel = baseOp.DisplayLabel;
+                op.Supplier = "";
+                op.ShopMachine = baseOp.ShopMachine;
+                op.PartNoDesc = baseOp.PartNoDesc;
+                op.RoutingOprNo = baseOp.RoutingOprNo;
+                op.WoNo = baseOp.WoNo;
+                op.BatchQnty = baseOp.BatchQnty;
+                op.CustomerLabel = baseOp.CustomerLabel;
+                op.CustomerValue = baseOp.CustomerValue;
+
+                op.Left = (actStartId - firstTimelineSlot) * slotWidth;
+                op.Width = ((actEndId - actStartId) + 1) * slotWidth;
+
+                op.Color = ACTUAL_PROD_COLOR;
+                op.Status = "Running";
+                op.BarType = "Actual";
+                op.TooltipType = "Actual";
+                op.Lane = "Actual";
+                op.IsDelayed = false;
+                op.DelayOutline = "none";
+
+                // tooltip shows the ACTUAL (unrounded) times
+                op.StartDateTime = setupStart.Value.ToString("dd/MM/yyyy HH:mm");
+                op.ActSetupMinutes = (setupApprvl.Value - setupStart.Value).TotalMinutes.ToString("0.##");
+
+                if (actEnd != null)
+                {
+                    op.EndDateTime = actEnd.Value.ToString("dd/MM/yyyy HH:mm");
+                    op.DurationHours = (actEnd.Value - setupStart.Value).TotalHours.ToString("0.##");
+                }
+                else
+                {
+                    op.EndDateTime = "";
+                    op.DurationHours = "";
+                }
+
+                op.ActFloorToFloor = "";
+                op.BookedOutQnty = "";
+                op.NcQnty = "";
+                return op;
+            }
+
+            //frozen inhouse
             foreach (var item in livewowaitlist)
             {
-
+                
                 var production = productions.Where(x => x.WoId == item.Wo_Id).FirstOrDefault();
                 if (production == null)
                 {
@@ -35450,14 +35546,30 @@ namespace CWB.App.Controllers
                         long slotId = lastSlot.Timeslot_ListId;
                         partRow.SoCompletionMarkerLeft = (slotId - firstTimelineSlot) * slotWidth;
                         partRow.HasSoCompletionMarker = true;
-                        var salesOrder = salesOrders.FirstOrDefault(x => x.SalesOrderId == production.SalesOrderId);
+                        SalesOrderVM salesOrder = salesOrders.FirstOrDefault(x => x.SalesOrderId == production.SalesOrderId);
 
                         if (salesOrder != null)
                         {
                             var customerOrder = customerOrders.FirstOrDefault(x => x.CustomerOrderId == salesOrder.CustomerOrderId);
 
                             partRow.SoCustomer = customerOrder != null ? customerOrder.CustomerName : "";
+                            if (actual)
+                            {
+                                var soActDate = salesOrder.ActCompletedDate; 
 
+                                if (soActDate != null)
+                                {
+                                    var soActSlot = timeslotlist.FirstOrDefault(x =>
+                                        x.Start_time <= soActDate && soActDate < x.End_time);
+
+                                    if (soActSlot != null)
+                                    {
+                                        partRow.HasSoActCompletionMarker = true;
+                                        partRow.SoActCompletionMarkerLeft = ((long)soActSlot.Timeslot_ListId - firstTimelineSlot) * slotWidth;
+                                        partRow.SoActCompletionDateDisplay = soActDate.ToString("dd/MM/yyyy HH:mm");
+                                    }
+                                }
+                            }
 
                         }
                         else
@@ -35484,7 +35596,7 @@ namespace CWB.App.Controllers
 
                 var operations = Liveoperationslist.Where(x => x.Wo_Id == item.Wo_Id).ToList();
 
-
+               
                 foreach (var opr in operations)
                 {
 
@@ -35493,6 +35605,7 @@ namespace CWB.App.Controllers
 
                     if (opr.RoutingStepLocation == 1)
                     {
+                         
                         var stepmachines = await _routingService.StepMachines((int)routingstep.StepId);
 
                         if (stepmachines.Any())
@@ -35604,6 +35717,22 @@ namespace CWB.App.Controllers
                                     operation.CustomerValue = customerValue;
 
                                     partRow.Operations.Add(operation);
+                                    
+
+                                    if (actual)
+                                    {
+                                        var actualBar = BuildActualPartBar(operation,
+                                            machineinuse.Setup_Start_time,
+                                            machineinuse.Setup_Apprvl_time,
+                                            machineinuse.Act_End_time);
+
+                                        if (actualBar != null)
+                                        {
+                                            actualBar.BookedOutQnty = machineinuse.Act_Qnty.ToString();
+                                            actualBar.NcQnty = machineinuse.NonConQnty.ToString();
+                                            partRow.Operations.Add(actualBar);
+                                        }
+                                    }
                                 }
 
                             }
@@ -35863,11 +35992,36 @@ namespace CWB.App.Controllers
                     }
 
                 }
+                if (actual && invTransLogs != null)
+                {
+                    var receipts = invTransLogs
+                        .Where(x => x.Wo_Id == item.Wo_Id && x.Transaction_Id == 5)
+                        .ToList();
+
+                    if (receipts.Any())
+                    {
+                        var receiptDate = receipts.Max(x => x.Dt_time);
+
+                         
+                        var receiptSlot = timeslotlist.FirstOrDefault(x =>
+                            x.Start_time <= receiptDate && receiptDate < x.End_time);
+
+                        if (receiptSlot != null)
+                        {
+                            partRow.HasMatlActReceiptMarker = true;
+                            partRow.MatlActReceiptMarkerLeft = ((long)receiptSlot.Timeslot_ListId - firstTimelineSlot) * slotWidth;
+                            partRow.MatlActReceiptDateDisplay = receiptDate.ToString("dd/MM/yyyy HH:mm");
+                            partRow.MatlActReceiptQnty = receipts.Sum(x => x.Qnty).ToString();
+                        }
+                    }
+                }
+
                 vm.Parts.Add(partRow);
 
 
             }
-
+            if (actual)
+                return Ok(vm);
             //temp data 
             foreach (var item in tempwowaitlist)
             {
@@ -35906,6 +36060,7 @@ namespace CWB.App.Controllers
                     var route = await _routingService.GetRouting((int)production.RoutingId);
                     if (opr.RoutingStepLocation == 1)
                     {
+                       
                         var stepmachines = await _routingService.StepMachines((int)routingstep.StepId);
 
                         if (stepmachines.Any())
@@ -35928,8 +36083,8 @@ namespace CWB.App.Controllers
 
                                 if (operationSlots.Any())
                                 {
+                                    
                                     SimulationOperationVM operation = new SimulationOperationVM();
-
                                     operation.PartNum = partno.PartNo;
                                     operation.Department = Department != null ? Department.Name : "";
                                     operation.OperationName = "Op " + routingstep.StepNumber;
@@ -36254,96 +36409,7 @@ namespace CWB.App.Controllers
                 return op;
             }
 
-            const string ACTUAL_PROD_COLOR = "#0A58CA"; // dark blue - Actual Prodn (Inhouse)
-
-            // treat NULL and 0001-01-01 as "not set"
-            DateTime? ValidDate(DateTime? d) => (d.HasValue && d.Value.Year > 1) ? d : null;
-
-            // Builds the lower "Actual Production" bar for a frozen operation
-            SimulationMachineOperationVM BuildActualBar(SimulationMachineOperationVM baseOp,DateTime? setupStartRaw, DateTime? setupApprvlRaw, DateTime? actEndRaw)
-            {
-                var setupStart = ValidDate(setupStartRaw);
-                var setupApprvl = ValidDate(setupApprvlRaw);
-                var actEnd = ValidDate(actEndRaw);
-
-                // bar is introduced only after Setup Approval
-                if (setupStart == null || setupApprvl == null)
-                    return null;
-
-                // bookout extends the bar, otherwise it ends at setup approval
-                DateTime actualEnd = actEnd ?? setupApprvl.Value;
-                if (actualEnd < setupStart.Value)
-                    actualEnd = setupStart.Value;
-
-                // slot containing the start time -> round DOWN to the hour
-                var startSlotRow = timeslotlist.FirstOrDefault(x =>
-                    x.Start_time <= setupStart.Value && setupStart.Value < x.End_time);
-
-                // slot containing the end time -> round UP to the hour
-                var endSlotRow = timeslotlist.FirstOrDefault(x =>
-                    x.Start_time < actualEnd && actualEnd <= x.End_time);
-
-                if (startSlotRow == null)
-                    return null;
-
-                if (endSlotRow == null || (long)endSlotRow.Timeslot_ListId < (long)startSlotRow.Timeslot_ListId)
-                    endSlotRow = startSlotRow;
-
-                long actStartId = (long)startSlotRow.Timeslot_ListId;
-                long actEndId = (long)endSlotRow.Timeslot_ListId;
-
-                var op = new SimulationMachineOperationVM();
-
-                // copy descriptive fields from the frozen bar
-                op.Department = baseOp.Department;
-                op.PartNum = baseOp.PartNum;
-                op.MachineName = baseOp.MachineName;
-                op.OperationName = baseOp.OperationName;
-                op.ShopMachine = baseOp.ShopMachine;
-                op.PartNoDesc = baseOp.PartNoDesc;
-                op.RoutingOprNo = baseOp.RoutingOprNo;
-                op.WoNo = baseOp.WoNo;
-                op.BatchQnty = baseOp.BatchQnty;
-                op.PartSoldToCustomer = baseOp.PartSoldToCustomer;
-                op.FloorToFloorTime = baseOp.FloorToFloorTime;
-                op.SetupTime = baseOp.SetupTime;
-
-                // position (hour-rounded, slot based)
-                op.Left = (actStartId - firstTimelineSlot) * slotWidth;
-                op.Width = ((actEndId - actStartId) + 1) * slotWidth;
-
-                op.Color = ACTUAL_PROD_COLOR;
-                op.Status = "Running";
-                op.BarType = "Actual";
-                op.TooltipType = "Actual";   // uses the new tooltip
-                op.Lane = "Actual";
-
-                // Act Start = when setup started (actual, not rounded)
-                op.StartDateTime = setupStart.Value.ToString("dd/MM/yyyy HH:mm");
-
-                // Act Setup Time (min) = Setup Approval - Setup Start
-                op.ActSetupMinutes = (setupApprvl.Value - setupStart.Value).TotalMinutes.ToString("0.##");
-
-                // Act End + Duration only after the final bookout
-                if (actEnd != null)
-                {
-                    op.EndDateTime = actEnd.Value.ToString("dd/MM/yyyy HH:mm");
-                    op.DurationHours = (actEnd.Value - setupStart.Value).TotalHours.ToString("0.##");
-                }
-                else
-                {
-                    op.EndDateTime = "";
-                    op.DurationHours = "";
-                }
-
-                op.ActFloorToFloor = "";   // from mc monitoring, currently blank
-                op.BookedOutQnty = "";
-                op.NcQnty = "";
- 
-
-                return op;
-               
-            }
+          
 
 
             // ================= MACHINE ROWS =================
@@ -36444,9 +36510,7 @@ namespace CWB.App.Controllers
                     operation.Status = "Running";
                     row.Operations.Add(operation);
 
-                    // lower "Actual Production" bar
-                    var actualBar = BuildActualBar(operation, mc.Setup_Start_time, mc.Setup_Apprvl_time, mc.Act_End_time);
-                    if (actualBar != null) row.Operations.Add(actualBar);
+                     
                 }
 
                 // ---------- NON-PLAN: LIVE (frozen) bars ----------
@@ -36712,8 +36776,8 @@ namespace CWB.App.Controllers
 
             const string FROZEN_PROD_COLOR = "#7092BE";   // Frozen Production Plan (Inhouse)
             const string ACTUAL_PROD_COLOR = "#0A58CA";   // Actual Production (Inhouse)
-            const string NON_PLAN_LIVE_COLOR = "#0F753A"; // Non-Plan Work (Frozen)
-
+            const string NON_PLAN_LIVE_COLOR = "#D6C82D"; // Non-Plan Work (Frozen)
+            const string ACTULA_PLAN_COLOUR = "#C98404"; 
             // treat NULL and 0001-01-01 as "not set"
             DateTime? ValidDate(DateTime? d) => (d.HasValue && d.Value.Year > 1) ? d : null;
 
@@ -36854,6 +36918,84 @@ namespace CWB.App.Controllers
                 op.Lane = "Actual";           
                 return op;
             }
+
+            SimulationMachineOperationVM BuildActualNonPlanBar(long nonPlanId, string machineNo, DateTime? startRaw, DateTime? endRaw)
+            {
+                var actStart = ValidDate(startRaw);
+                var actEnd = ValidDate(endRaw);
+
+                if (actStart == null)
+                {
+                    return null;
+                }
+
+                // no end yet -> bar covers only the start hour
+
+                DateTime effectiveEnd = actEnd ?? actStart.Value;
+                if (effectiveEnd < actStart.Value)
+                    effectiveEnd = actStart.Value;
+
+                // start -> round DOWN to the hour, end -> round UP to the hour
+
+                var startSlotRow = timeslotlist.FirstOrDefault(x =>
+                    x.Start_time <= actStart.Value && actStart.Value < x.End_time);
+
+                var endSlotRow = timeslotlist.FirstOrDefault(x =>
+                    x.Start_time < effectiveEnd && effectiveEnd <= x.End_time);
+
+                if (startSlotRow == null)
+                {
+                    return null;
+                }
+
+                if (endSlotRow == null || (long)endSlotRow.Timeslot_ListId < (long)startSlotRow.Timeslot_ListId)
+                {
+                    endSlotRow = startSlotRow;
+                }
+
+                long actStartId = (long)startSlotRow.Timeslot_ListId;
+                long actEndId = (long)endSlotRow.Timeslot_ListId;
+
+
+                nonPlanLookup.TryGetValue(nonPlanId, out var npRow);
+
+                var op = new SimulationMachineOperationVM();
+                op.PartNum = "";
+                op.MachineName = machineNo;
+                op.Department = "";
+                op.OperationName = (npRow == null || string.IsNullOrEmpty(npRow.Work_Description))
+                    ? "Non-Plan"
+                    : npRow.Work_Description;
+
+                op.Left = (actStartId - firstTimelineSlot) * slotWidth;
+                op.Width = ((actEndId - actStartId) + 1) * slotWidth;
+
+                op.Color = ACTULA_PLAN_COLOUR;   
+                op.Status = "Running";
+                op.BarType = "ActualNonPlan";            
+                op.TooltipType = "ActualNonPlan";
+                op.Lane = "Actual";
+                op.ShopMachine = machineNo;
+
+                // tooltip shows the ACTUAL (unrounded) times
+                op.StartDateTime = actStart.Value.ToString("dd/MM/yyyy HH:mm");
+
+                if (actEnd != null)
+                {
+                    op.EndDateTime = actEnd.Value.ToString("dd/MM/yyyy HH:mm");
+                    op.DurationHours = (actEnd.Value - actStart.Value).TotalHours.ToString("0.##");
+                }
+                else
+                {
+                    op.EndDateTime = "";
+                    op.DurationHours = "";
+                }
+
+                op.InitiatedBy = "";   // "Updated by" - fill when you have the user column
+
+                return op;
+
+            }
             // ================= MACHINE ROWS (LIVE DATA ONLY) =================
             foreach (var machine in machinelist)
             {
@@ -36965,10 +37107,11 @@ namespace CWB.App.Controllers
                     }
                 }
 
-             
+
 
                 foreach (var mc in liveNonPlanRows)
                 {
+                    // planned (frozen) non-plan bar - top lane
                     var bar = BuildNonPlanBar(
                         (long)mc.Plan_start_time_Id,
                         (long)mc.Plan_end_time_Id,
@@ -36976,6 +37119,15 @@ namespace CWB.App.Controllers
                         machine.SlNo);
 
                     if (bar != null) row.Operations.Add(bar);
+
+                    // actual non-plan bar - lower lane
+                    var actualNpBar = BuildActualNonPlanBar(
+                        (long)mc.Non_Plan_wk_Id,
+                        machine.SlNo,
+                        mc.Setup_Start_time,
+                        mc.Act_End_time);
+
+                    if (actualNpBar != null) row.Operations.Add(actualNpBar);
                 }
 
                 if (row.Operations.Any())

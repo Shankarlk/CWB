@@ -149,7 +149,9 @@ namespace CWB.BusinessAquisition.Utils
                 .ForMember(m => m.BalanceSOQty, m => m.MapFrom(src => src.BalanceSOQty))
                 .ForMember(m => m.RequiredQuantity, m => m.MapFrom(src => src.RequiredQuantity))
                 .ForMember(m => m.Reorder, m => m.MapFrom(src => src.Reorder))
-                .ForMember(m => m.RequiredByDate, m => m.MapFrom(src => src.RequiredByDate));
+                .ForMember(m => m.RequiredByDate, m => m.MapFrom(src => src.RequiredByDate))
+                .ForMember(m => m.ActCompletedDate, m => m.MapFrom(src => src.ActCompletedDate));
+                 
 
             CreateMap<SalesOrderVM, SalesOrder>()
                .ForMember(m => m.Id, m => m.MapFrom(src => src.SalesOrderId))
@@ -171,7 +173,8 @@ namespace CWB.BusinessAquisition.Utils
                .ForMember(m => m.WIP, m => m.MapFrom(src => src.WIP))
                .ForMember(m => m.RequiredQuantity, m => m.MapFrom(src => src.RequiredQuantity))
                .ForMember(m => m.Reorder, m => m.MapFrom(src => src.Reorder))
-               .ForMember(m => m.RequiredByDate, m => m.MapFrom(src => src.RequiredByDate));
+               .ForMember(m => m.RequiredByDate, m => m.MapFrom(src => src.RequiredByDate))
+             .ForMember(m => m.ActCompletedDate, m => m.MapFrom(src => src.ActCompletedDate));
 
             CreateMap<SO_Alloc_List, SO_Alloc_ListVM>()
                .ForMember(m => m.SO_Alloc_List_Id, m => m.MapFrom(src => src.Id))
