@@ -174,13 +174,13 @@
                         </div>
                         <div class="col-md-4">
                             @*<div class="row m-5">
-                                    <div class="d-grid gap-2">
-                                        <button class="btn btn-outline-primary" data-bs-target="#Popup1" data-bs-toggle="modal"
-                                                id="selectwoProdBtn">
-                                            Select WO for Production Planning
-                                        </button>
-                                    </div>
-                                </div>*@
+            <div class="d-grid gap-2">
+                <button class="btn btn-outline-primary" data-bs-target="#Popup1" data-bs-toggle="modal"
+                        id="selectwoProdBtn">
+                    Select WO for Production Planning
+                </button>
+            </div>
+        </div>*@
 
                             <div class="row m-5">
                                 <div class="d-grid gap-2">
@@ -204,21 +204,31 @@
                                            style="width: 70px;">
                                 </div>
                             </div>
+                            @*<div class="row m-5">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary " data-bs-target="#" data-bs-toggle="modal" id="UpdateSimulaion" style="display:none;">Update Production Completion Status</button>
+                                </div>
+                            </div>*@
                             <div class="row m-5">
                                 <div class="d-grid gap-2">
-                                    <button class="btn btn-outline-primary " data-bs-target="#" data-bs-toggle="modal" id="UpdateSimulaion">Update Production Completion Status</button>
+                                    <button class="btn btn-outline-primary ms-3" data-bs-target="#Popup8" data-bs-toggle="modal">Edit/New Non-Plan Work</button>
+                                </div>
+                            </div>
+                            <div class="row m-5">
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary ms-2" data-bs-target="#Popup13" data-bs-toggle="modal">Update Mc Non-Availability</button>
                                 </div>
                             </div>
                             <!--<div class="row m-5">
-                            <div class="d-grid gap-2">-->
+    <div class="d-grid gap-2">-->
                             <!-- <button class="btn btn-primary ">Update Production Completion Status</button> -->
                             <!--</div>
-                            </div>
-                            <div class="row m-5">
-                                <div class="d-grid gap-2">-->
+    </div>
+    <div class="row m-5">
+        <div class="d-grid gap-2">-->
                             <!-- <button class="btn btn-primary ">Update Production Completion Status</button> -->
                             <!--</div>
-                            </div>-->
+    </div>-->
 
                         </div>
 
@@ -231,9 +241,9 @@
                     <!-- Actions -->
                     <div class="row mt-1">
                         <div class="col d-flex gap-2">
-                            <button class="btn btn-outline-primary ms-3" data-bs-target="#Popup8" data-bs-toggle="modal">Edit/New Non-Plan Work</button>
-                            <button class="btn btn-outline-primary ms-2" data-bs-target="#Popup10" data-bs-toggle="modal" style="display:none;">Edit Rework Slot</button>
-                            <button class="btn btn-outline-primary ms-2" data-bs-target="#Popup13" data-bs-toggle="modal">Update Mc Non-Availability</button>
+                            @*<button class="btn btn-outline-primary ms-3" data-bs-target="#Popup8" data-bs-toggle="modal">Edit/New Non-Plan Work</button>*@
+                            @*<button class="btn btn-outline-primary ms-2" data-bs-target="#Popup10" data-bs-toggle="modal" style="display:none;">Edit Rework Slot</button>*@
+                            @*<button class="btn btn-outline-primary ms-2" data-bs-target="#Popup13" data-bs-toggle="modal">Update Mc Non-Availability</button>*@
                             <button class="btn btn-outline-primary ms-2" data-bs-target="#ErrorMessage1" data-bs-toggle="modal" hidden>Error Message 1</button>
                         </div>
                     </div>
@@ -426,7 +436,7 @@
 </div>
 
 <div class="modal fade" id="Popup1" data-bs-backdrop="static" data-bs-keyboard="false"
-     tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+     tabindex="-1" aria-labelledby="staticBackdropLabel"   aria-hidden="true">
     <div class="modal-dialog modal-xl-custom">
         <div class="modal-content">
             <div class="modal-header">
@@ -490,10 +500,8 @@
                                        class="table table-sm table-bordered w-100 text-center">
                                     <thead class="  table-info th-sti">
                                         <tr class="table-border-bottom">
-                                            <th>
-                                                <input class="form-check-input mt-2" type="checkbox" title="" data-plugin="tippy"
-                                                       data-tippy-placement="top" placeholder="" id="P1SelectAll">
-                                            </th>
+                                            <th> WO Seq No  @*<input class="form-check-input mt-2" type="checkbox" title="" data-plugin="tippy"
+                                                        data-tippy-placement="top" placeholder="" id="P1SelectAll">*@ </th>
                                             <th>Work Order # </th>
                                             <th>Customer</th>
                                             <th>Build to Stock</th>
@@ -516,9 +524,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12 text-end">
+                    @*<div class="col-md-12 text-end">
                         <button class="btn btn-primary mb-2" id="P1Simulate">Simulate</button>
-                    </div>
+                    </div>*@
                     <!-- ========================= -->
                 </div>
             </div>
@@ -3640,8 +3648,9 @@
     <tr>
         <td hidden>{woIdStr}</td>
         <td>
-            <input class="form-check-input mt-2 P1gridChk" type="checkbox" title="" data-plugin="tippy"
-                   data-tippy-placement="top" placeholder="" data-ppid="{productionPlanId}" data-workorderid="{woIdStr}">
+            {sim_Seq_No}
+            @*<input class="form-check-input mt-2 P1gridChk" type="checkbox" title="" data-plugin="tippy"
+        data-tippy-placement="top" placeholder="" data-ppid="{productionPlanId}" data-workorderid="{woIdStr}">*@
         </td>
         <td>{woNumber}</td>
         <td>{customer}</td>

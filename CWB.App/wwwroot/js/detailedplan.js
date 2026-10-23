@@ -3851,6 +3851,7 @@ function EditWo(element) {
                         $('#PartId').val(partId);
                         $('#PartType').val(partType);
                         $('#woStatus').val(wostatus);
+                        
                         var tablebody = $("#multipleSO tbody");
                         $(tablebody).html("");//empty tbody
 
@@ -3875,6 +3876,7 @@ function EditWo(element) {
                             $('#EndingOpNo').prop("disabled", false);
                         }
                         else {
+                            $("#popup1DivRouting").hide();
                             const selectElement = $('#routing');
                             selectElement.html("");
                             selectElement.prop("disabled", true);

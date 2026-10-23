@@ -66,7 +66,7 @@ namespace CWB.Masters.Controllers
             var bofs = _boughtOutFinishDetailService.GetBoughtOutFinishDetailsByTenant(tenantId).ToList();
             var rms = _rawMaterialDetailService.GetRawMaterialDetailsByTenant(tenantId).ToList();
             var partPurchases = _rawMaterialDetailService.GetPartPurchases(tenantId).ToList();
-
+            var uoms = _manufacturedPartNoDetailService.GetUOMsByTenantId(tenantId).ToList();
             // 1b. Fetch Enrichment Data (Docs & Statuses)
             var docmand = (await _masterPartService.GetAllItemMasterDocList(tenantId)).ToList();
             var docListVMs = (await _documentManagementService.GetAllDocList(tenantId)).ToList(); 
@@ -96,7 +96,7 @@ namespace CWB.Masters.Controllers
                 .Select(x => x.BOMManufPartId) // Assuming BOMManufPartId is the Parent's ManufPartDetailId
                 .Distinct()
                 .ToHashSet();
-
+            var uomLookup = uoms.GroupBy(x => x.UOMId).ToDictionary(g => g.Key, g => g.First().Name);
             var parentPartNoMap = manufList
         .Where(m => masterPartLookup.ContainsKey(m.PartId))
         .ToDictionary(
@@ -127,7 +127,7 @@ namespace CWB.Masters.Controllers
                         companyLookup.TryGetValue(m.CompanyId, out var coName);
 
                         childUsageMap.TryGetValue(m.PartId, out var usedInAssemblies);
-
+                        uomLookup.TryGetValue(m.UOMId, out var uomName);
                         // Doc Status Logic (In-Memory)
                         var docStatus = GetDocStatusInMemory(docmand, docListVMs, m.PartId, m.ManufacturedPartType == 1 ? 1 : 2);
 
@@ -157,7 +157,8 @@ namespace CWB.Masters.Controllers
                             DocStatus = docStatus.DocStatusDesc,
                             RmAvl = m.ManufacturedPartType == 1 ? rmAvl : "N/A", // RmAvl only relevant for Manuf Parts
                             BomAvl = m.ManufacturedPartType == 2 ? bomAvl : "N/A", // BomAvl usually only relevant for Assemblies
-                            SupplierAvl = "N/A"
+                            SupplierAvl = "N/A",
+                            UOMName = uomName ?? string.Empty
                         });
                     }
                 },
@@ -170,7 +171,7 @@ namespace CWB.Masters.Controllers
                         masterPartLookup.TryGetValue(b.PartId, out var mp);
                         purchaseByBof.TryGetValue((int)b.BoughtOutFinishDetailId, out var supp);
                         childUsageMap.TryGetValue(b.PartId, out var usedInAssemblies);
-
+                        uomLookup.TryGetValue(b.UOMId, out var uomName);
                         var docStatus = GetDocStatusInMemory(docmand, docListVMs, b.PartId, 6, 7, 8);
 
                         companyLookup.TryGetValue(supp, out var coName);
@@ -195,7 +196,8 @@ namespace CWB.Masters.Controllers
                             DocStatus = docStatus.DocStatusDesc,
                             SupplierAvl = string.IsNullOrEmpty(coName) ? "No" : "Yes",
                             BomAvl = "N/A",
-                            RmAvl = "N/A"
+                            RmAvl = "N/A",
+                            UOMName = uomName ?? string.Empty
                         });
                     }
                 },
@@ -209,7 +211,7 @@ namespace CWB.Masters.Controllers
                         purchaseByRm.TryGetValue((int)r.RawMaterialDetailId, out var supp);
                         childUsageMap.TryGetValue((int)r.PartId, out var usedInAssemblies);
                         var docStatus = GetDocStatusInMemory(docmand, docListVMs, r.PartId, 3, 4, 5);
-
+                        uomLookup.TryGetValue(r.UOMId, out var uomName);
                         companyLookup.TryGetValue(supp, out var coName);
                         list.Add(new ItemMasterPartVM
                         {
@@ -232,7 +234,8 @@ namespace CWB.Masters.Controllers
                             DocStatus = docStatus.DocStatusDesc,
                             SupplierAvl = string.IsNullOrEmpty(coName) ? "No" : "Yes",
                             BomAvl = "N/A",
-                            RmAvl = "N/A"
+                            RmAvl = "N/A",
+                            UOMName = uomName ?? string.Empty
                         });
                     }
                 }

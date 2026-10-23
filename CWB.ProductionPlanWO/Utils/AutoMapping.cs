@@ -1597,6 +1597,7 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(s => s.PartId, s => s.MapFrom(src => src.PartId))
                .ForMember(s => s.Plan_Alloc_Qnty, s => s.MapFrom(src => src.Plan_Alloc_Qnty))
                .ForMember(s => s.Allocation_done, s => s.MapFrom(src => src.Allocation_done))
+               .ForMember(s => s.Issued, s => s.MapFrom(src => src.Issued))
                .ForMember(s => s.Bal_to_Issue, s => s.MapFrom(src => src.Bal_to_Issue))
                .ForMember(s => s.Qnty_Recd, s => s.MapFrom(src => src.Qnty_Recd))
                .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
@@ -1607,6 +1608,7 @@ namespace CWB.ProductionPlanWO.Utils
                .ForMember(s => s.PartId, s => s.MapFrom(src => src.PartId))
                .ForMember(s => s.Plan_Alloc_Qnty, s => s.MapFrom(src => src.Plan_Alloc_Qnty))
                .ForMember(s => s.Allocation_done, s => s.MapFrom(src => src.Allocation_done))
+               .ForMember(s => s.Issued, s => s.MapFrom(src => src.Issued))
                .ForMember(s => s.Bal_to_Issue, s => s.MapFrom(src => src.Bal_to_Issue))
                .ForMember(s => s.Qnty_Recd, s => s.MapFrom(src => src.Qnty_Recd))
                .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));

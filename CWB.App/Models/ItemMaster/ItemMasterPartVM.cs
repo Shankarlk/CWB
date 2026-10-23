@@ -55,7 +55,7 @@ namespace CWB.App.Models.ItemMaster
         public string ListAssembly { get; set; } = string.Empty;
         public char Inv_Trans { get; set; }
         public char Linked_to_BOM { get; set; }
-
+        public string UOMName { get; set; }
         public string RmLink { get; set; } = string.Empty;
     }
 }

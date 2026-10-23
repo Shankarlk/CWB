@@ -487,8 +487,8 @@ $(document).ready(function () {
     });
     $("#P5Save").secureClick( function () {
         var P5Condition = parseInt($("#P5Condition").val());
-        var P5OurCount = parseInt($("#P5OurCount").val());
-        var P5SuppCount = parseInt($("#P5SuppCount").val());
+        var P5OurCount = parseFloat($("#P5OurCount").val());
+        var P5SuppCount = parseFloat($("#P5SuppCount").val());
         var P5Comment = $("#P5Comment").val();
         var P5InwDetailsId = parseInt($("#P5InwDetailsId").val());
         var popupPoPartId = parseInt($("#popupPoPartId").val());
@@ -538,7 +538,7 @@ $(document).ready(function () {
             inw_Recpt_DetailsId: parseInt(P5InwDetailsId),
             inw_Recpt_Header_Id: parseInt(popupInwardHeaderId),
             inw_Recpt_Part_No_Id: parseInt(popupPoPartId),
-            our_count: parseInt(P5OurCount),
+            our_count: parseFloat(P5OurCount),
             vendor_DC_count: P5SuppCount,
             inward_Condition: P5Condition,
             comment: P5Comment

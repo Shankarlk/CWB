@@ -42,7 +42,10 @@ namespace CWB.ProductionPlanWO.Configurations
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();
-           
+            builder
+                .Property(b => b.Issued)
+                .HasColumnName("Issued");
+
             builder.ConfigureBase();
             builder.HasIndex(c => c.TenantId).HasDatabaseName("Input_Resrv_List_TenantId");
         }

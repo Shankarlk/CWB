@@ -29,6 +29,73 @@ var stoppingData = {
     woStoppingOprIds: {},     // { woId: oprListId }
     oprStoppingMcWaitIds: {}  // { oprListId: mcWaitListId }
 };
+
+var P1CountFilterIds = {};
+
+function bindWoCount(cellId, data, partType, filterKey) {
+
+    const filteredData = data.filter(
+        workOrder => workOrder.partType === partType
+    );
+
+    P1CountFilterIds[filterKey] = filteredData.map(
+        workOrder => String(workOrder.woId)
+    );
+
+    const cell = $('#' + cellId);
+    const count = filteredData.length;
+
+    if (count > 0) {
+        cell.html(
+            `<a href="#" class="P1WoCountLink"
+                data-filter="${filterKey}">${count}</a>`
+        );
+    } else {
+        cell.text('0');
+    }
+}
+$(document).on('click', '.P1WoCountLink', function (e) {
+
+    e.preventDefault();
+
+    const filterKey = $(this).data('filter');
+
+    // Save the selected filter
+    window.P1SelectedCountFilter = filterKey;
+
+    // Set the Part Type dropdown
+    const isAssembly = filterKey.endsWith('Assy');
+
+    $('#P1SearchPartType').val(isAssembly ? '2' : '3');
+
+    // Open the existing popup
+    
+    $('#Popup1').modal('show');
+ 
+
+    // Load the grid with the selected filter
+   // loadWoWaitlist(filterKey);
+});
+
+$('#Popup1').on('hidden.bs.modal', function () {
+
+    // Reset the selected count filter
+    window.P1SelectedCountFilter = null;
+
+    // Reset dropdown filters
+    $('#P1SearchWoStatus').val('0');
+    $('#P1SearchPartDesc').val('');
+    $('#P1SearchPartNo').val('');
+    $('#P1SearchCustomer').val('');
+    $('#P1SearchPartType').val('0');
+    $('#P1SearchHold').prop('checked', false);
+
+    // Clear the grid
+    $('#P1Grid tbody').empty();
+});
+
+
+
 function landingPage() {
     const today = new Date();
     $("#preloaderblurred").show();
@@ -46,31 +113,53 @@ function landingPage() {
     //}).catch((error) => {
     //    $("#preloaderblurred").hide();
     //});
+    api.getbulk("/WorkOrder/GetAllproductionWithMaterailavailableFreezed")
+        .then((data) => {
+            bindWoCount('ReadAssy', data, 2, 'ReadAssy');
+            bindWoCount('ReadCMp', data, 1, 'ReadCMp');
+        });
 
-    api.getbulk("/WorkOrder/GetAllproductionWithMaterailavailableFreezed").then((data) => {
+    api.getbulk("/WorkOrder/GetAllproductionWithoutMaterailavailableFreezed")
+        .then((data) => {
+            bindWoCount('WAssy', data, 2, 'WAssy');
+            bindWoCount('WCmp', data, 1, 'WCmp');
+        });
+
+    api.getbulk("/WorkOrder/GetAllproductionWithMaterailavailable")
+        .then((data) => {
+            bindWoCount('RwkAssy', data, 2, 'RwkAssy');
+            bindWoCount('RwkCmp', data, 1, 'RwkCmp');
+        });
+
+    api.getbulk("/WorkOrder/GetAllproductionWithoutMaterailavailable")
+        .then((data) => {
+            bindWoCount('NonAssy', data, 2, 'NonAssy');
+            bindWoCount('InMcQueNon', data, 1, 'InMcQueNon');
+        });
+    //api.getbulk("/WorkOrder/GetAllproductionWithMaterailavailableFreezed").then((data) => {
         
-        const AssyCount = data.filter((workOrder) => workOrder.partType === 2).length;
-        const CmpCount = data.filter((workOrder) => workOrder.partType === 1).length;
+    //    const AssyCount = data.filter((workOrder) => workOrder.partType === 2).length;
+    //    const CmpCount = data.filter((workOrder) => workOrder.partType === 1).length;
        
-        $('#ReadAssy').text(AssyCount);
-        $('#ReadCMp').text(CmpCount);
+    //    $('#ReadAssy').text(AssyCount);
+    //    $('#ReadCMp').text(CmpCount);
         
-        $("#preloaderblurred").hide();
-    }).catch((error) => {
-        $("#preloaderblurred").hide();
-    });
-    api.getbulk("/WorkOrder/GetAllproductionWithoutMaterailavailableFreezed").then((data) => {
+    //    $("#preloaderblurred").hide();
+    //}).catch((error) => {
+    //    $("#preloaderblurred").hide();
+    //});
+    //api.getbulk("/WorkOrder/GetAllproductionWithoutMaterailavailableFreezed").then((data) => {
 
-        const AssyCount = data.filter((workOrder) => workOrder.partType === 2).length;
-        const CmpCount = data.filter((workOrder) => workOrder.partType === 1).length;
+    //    const AssyCount = data.filter((workOrder) => workOrder.partType === 2).length;
+    //    const CmpCount = data.filter((workOrder) => workOrder.partType === 1).length;
 
-        $('#WAssy').text(AssyCount);
-        $('#WCmp').text(CmpCount);
+    //    $('#WAssy').text(AssyCount);
+    //    $('#WCmp').text(CmpCount);
 
-        $("#preloaderblurred").hide();
-    }).catch((error) => {
-        $("#preloaderblurred").hide();
-    });
+    //    $("#preloaderblurred").hide();
+    //}).catch((error) => {
+    //    $("#preloaderblurred").hide();
+    //});
     //api.getbulk("/WorkOrder/GetAllRwk_List").then((data) => {
     //    const AssyCount = data.filter((workOrder) => workOrder.partType === 1).length;
     //    const CmpCount = data.filter((workOrder) => workOrder.partType === 2).length;
@@ -78,24 +167,24 @@ function landingPage() {
     //    $('#RwkCmp').text(CmpCount);
     //}).catch((error) => {
     //});
-    api.getbulk("/WorkOrder/GetAllproductionWithMaterailavailable").then((data) => {
-        const AssyCount = data.filter((workOrder) => workOrder.partType === 2).length;
-        const CmpCount = data.filter((workOrder) => workOrder.partType === 1).length;
-        $('#RwkAssy').text(AssyCount);
-        $('#RwkCmp').text(CmpCount);
-    }).catch((error) => {
-    });
+    //api.getbulk("/WorkOrder/GetAllproductionWithMaterailavailable").then((data) => {
+    //    const AssyCount = data.filter((workOrder) => workOrder.partType === 2).length;
+    //    const CmpCount = data.filter((workOrder) => workOrder.partType === 1).length;
+    //    $('#RwkAssy').text(AssyCount);
+    //    $('#RwkCmp').text(CmpCount);
+    //}).catch((error) => {
+    //});
     //api.getbulk("/WorkOrder/GetAllNon_Plan_Wk_List").then((data) => {
     //    $('#NonAssy').text(data.length);
     //}).catch((error) => {
     //});
-    api.getbulk("/WorkOrder/GetAllproductionWithoutMaterailavailable").then((data) => {
-        const AssyCount = data.filter((workOrder) => workOrder.partType === 2).length;
-        const CmpCount = data.filter((workOrder) => workOrder.partType === 1).length;
-        $('#NonAssy').text(AssyCount);
-        $('#InMcQueNon').text(CmpCount);
-    }).catch((error) => {
-    });
+    //api.getbulk("/WorkOrder/GetAllproductionWithoutMaterailavailable").then((data) => {
+    //    const AssyCount = data.filter((workOrder) => workOrder.partType === 2).length;
+    //    const CmpCount = data.filter((workOrder) => workOrder.partType === 1).length;
+    //    $('#NonAssy').text(AssyCount);
+    //    $('#InMcQueNon').text(CmpCount);
+    //}).catch((error) => {
+    //});
     api.getbulk("/WorkOrder/GetAllWO_Wait_List").then((data) => {
         //console.log(data);
         const AssyCount = data.filter(workOrder =>
@@ -197,7 +286,7 @@ $(document).ready(function () {
         else {
             cushionPercent = parseFloat(value);
 
-            if (isNaN(cushionPercent) || cushionPercent < 0 || cushionPercent > 25) {
+            if (isNaN(cushionPercent) || cushionPercent < 0 || cushionPercent > 50) {
                 alert("Cushion Time should be between 0 and 25%.");
                 cushionPercent = 10.0;
                 $("#txtCushionTime").val(10);
@@ -1595,7 +1684,8 @@ $(document).ready(function () {
         }
     });
     $('#Popup1').on('show.bs.modal', function (event) {
-        loadWoWaitlist();
+       // loadWoWaitlist(filterKey);
+        loadWoWaitlist(window.P1SelectedCountFilter);
     });
     $('#Popup13').on('show.bs.modal', function (event) {
         //loadMcShopP13();
@@ -3410,9 +3500,17 @@ function loadMoveMatl() {
         console.error("Failed to load WOs", error);
     });
 }
-function loadWoWaitlist() {
+function loadWoWaitlist(filterKey = null) {
 
     api.getbulk("/workOrder/AllProductionWo").then((data) => {
+        if (filterKey && P1CountFilterIds[filterKey]) {
+
+            const selectedWoIds = P1CountFilterIds[filterKey];
+
+            data = data.filter(item =>
+                selectedWoIds.includes(String(item.woId))
+            );
+        }
         var tablebody = $("#P1Grid tbody");
         $(tablebody).html(""); // empty tbody
        // data = data.filter(item => item.readyForProd === "Y" && item.woRelease === "Y");  //

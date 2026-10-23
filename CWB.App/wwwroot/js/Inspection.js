@@ -640,7 +640,7 @@ $(document).ready(function () {
         if (P6TbUnpro === "") {
             P6TbUnpro = 0;
         }
-        var totalinps = parseInt(ourCountVM) + parseInt(P6TbTotalNc) + parseInt(P6TbUnpro);
+        var totalinps = parseFloat(ourCountVM) + parseFloat(P6TbTotalNc) + parseFloat(P6TbUnpro);
         if (parseInt(suppCountVM) != parseInt(totalinps)) {
             $("#ErrorMessage4").modal("show");
         } else if (parseInt(suppCountVM) > parseInt(totalinps)) {
@@ -648,7 +648,7 @@ $(document).ready(function () {
         } else {
             var partType = $("#P6Ncparttype").val();
             if (partType === "RawMaterial" || partType === "BOF") {
-                var qnty = parseInt($("#P6TbInspTotal").val());
+                var qnty = parseFloat($("#P6TbInspTotal").val());
                 var P6PartId = parseInt($("#P6PartId").val());
                 var P6PoId = parseInt($("#P6PoId").val());
 

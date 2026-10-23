@@ -14,7 +14,7 @@ namespace CWB.App.Models.WorkOrder
         public decimal Plan_Alloc_Qnty { get; set; }
         public char Allocation_done { get; set; }
         public decimal Bal_to_Issue { get; set; }
-
+        public char Issued { get; set; }
         public decimal Qnty_Recd { get; set; }
         public long TenantId { get; set; }
     }

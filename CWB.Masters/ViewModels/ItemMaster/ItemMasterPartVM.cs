@@ -35,5 +35,6 @@ namespace CWB.Masters.ViewModels.ItemMaster
         public string BomAvl { get; set; }
         public string MasterDisplay { get; set; }
         public string ListAssembly { get; set; }
+        public string UOMName { get; set; }
     }
 }

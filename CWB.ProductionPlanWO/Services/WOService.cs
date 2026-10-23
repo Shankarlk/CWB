@@ -1072,6 +1072,7 @@ namespace CWB.ProductionPlanWO.Services
                         }
                     upp.Qnty_Recd = pp.Qnty_Recd;
                     upp.Allocation_done = pp.Allocation_done;
+                    upp.Issued = pp.Issued;
                         pp = await _Input_Resrv_ListRepository.UpdateAsync(pp.Id, upp);
                     }
                     try
@@ -1856,7 +1857,7 @@ namespace CWB.ProductionPlanWO.Services
             {
                 try
                 {
-                    wo.Dt_time = DateTime.Now;
+                    wo.Dt_time = DateTime.UtcNow.AddHours(5).AddMinutes(30); 
                     await _IInv_Trans_LogRepository.AddAsync(wo);
                 }
                 catch (Exception ex)
@@ -1867,7 +1868,7 @@ namespace CWB.ProductionPlanWO.Services
             }
             else
             {
-                wo.Dt_time = DateTime.Now;
+                wo.Dt_time = DateTime.UtcNow.AddHours(5).AddMinutes(30);
                 var wkord = await _IInv_Trans_LogRepository.SingleOrDefaultAsync(x => x.Id == wo.Id);
                 if (wkord == null)
                 {
@@ -4789,14 +4790,15 @@ namespace CWB.ProductionPlanWO.Services
             var matTask = GetAllInputReservelist(tenantId);
             var oprTask = GetAllOpr_List(tenantId);
             var issuetask = GetAllMatl_Issue_List(tenantId);
-
+            var translog = GetAllInvTransLog(tenantId);
             await Task.WhenAll(
                 waitListTask,
                 timeslotsTask,
                 allWOTask,
                 matTask,
                 oprTask,
-                  issuetask
+                  issuetask,
+                  translog
             );
 
             var waitList = waitListTask.Result.ToList();
@@ -4804,7 +4806,7 @@ namespace CWB.ProductionPlanWO.Services
             var materialList = matTask.Result.ToList();
             var oprList = oprTask.Result.ToList();
             var issueList = issuetask.Result.ToList();
-
+            var transLoglist = translog.Result.ToList();
             if (!waitList.Any())
                 return result;
 
@@ -5098,7 +5100,22 @@ namespace CWB.ProductionPlanWO.Services
                 {
                     // First machine operation:
                     // Material receipt time = planned start time
-                    matlReceiptTime = currentStart;
+                   
+
+                    var lastMaterialReceipt = transLoglist
+                        .Where(x => x.Wo_Id == mcWait.Wo_Id && x.Transaction_Id == 5)
+                        .OrderByDescending(x => x.Dt_time)
+                        .FirstOrDefault();
+
+                    if (lastMaterialReceipt != null)
+                    {
+                        matlReceiptTime = lastMaterialReceipt.Dt_time;
+                    }
+                    else
+                    {
+                        matlReceiptTime = currentStart;
+                    }
+                    
                 }
                 else
                 {

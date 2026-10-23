@@ -704,7 +704,7 @@ namespace CWB.BusinessAquisition.Services
                 salesOrder.WorkOrderNo = "";
                 salesOrder.WorkOrderId = 0;
                 salesOrder.ActQuantity = 0;
-                salesOrder.SODate = DateTime.Now;
+                salesOrder.SODate = DateTime.UtcNow.AddHours(5).AddMinutes(30);
                 salesOrder.SONumber = "SO_" + salesOrder.SODate.Value.ToString("yyyyMMddHHmmss");
                 await _salesOrderRepository.AddAsync(salesOrder);
             }
@@ -722,7 +722,7 @@ namespace CWB.BusinessAquisition.Services
                 so.FinalDispQnty = salesOrder.FinalDispQnty;
                 so.Status = salesOrder.Status;
                 so.ActQuantity = salesOrder.ActQuantity;
-                so.ActCompletedDate = DateTime.Now;
+                so.ActCompletedDate = DateTime.UtcNow.AddHours(5).AddMinutes(30); 
                 salesOrder = await _salesOrderRepository.UpdateAsync(salesOrder.Id, so);
             }
             try

@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "E:\\CWB\\CWB.Logging\\CWB.Logging.csproj": {}
+    "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj": {}
   },
   "projects": {
-    "E:\\CWB\\CWB.Logging\\CWB.Logging.csproj": {
+    "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\CWB\\CWB.Logging\\CWB.Logging.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj",
         "projectName": "CWB.Logging",
-        "projectPath": "E:\\CWB\\CWB.Logging\\CWB.Logging.csproj",
-        "packagesPath": "C:\\Users\\RRMINDS\\.nuget\\packages\\",
-        "outputPath": "E:\\CWB\\CWB.Logging\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.Logging\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\RRMINDS\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
