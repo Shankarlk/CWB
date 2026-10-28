@@ -63,5 +63,24 @@ namespace CWB.App.Models.ProductionSimulation
         public string NcQnty { get; set; } = "";
         public string ActSetupMinutes { get; set; } = "";
         public string ActFloorToFloor { get; set; } = "";
+
+
+
+
+
+        public string PlanStartDateTime { get; set; } = "";
+        public string PlanEndDateTime { get; set; } = "";
+        public string PlanDurationHours { get; set; } = "";
+        public string PlanFloorToFloor { get; set; } = "";
+        public string PlanSetupTime { get; set; } = "";
+
+        public string ActStartDateTime { get; set; } = "";
+        public string ActEndDateTime { get; set; } = "";
+        public string ActDurationHours { get; set; } = "";
+        public string ActSetupTime { get; set; } = "";
+
+        public string CompareColor { get; set; } = "#000000";
+
+      
     }
 }

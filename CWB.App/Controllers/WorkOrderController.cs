@@ -186,6 +186,11 @@ namespace CWB.App.Controllers
         {
             return View();
         }
+        
+        public IActionResult partwiseSimulationExpode()
+        {
+            return View();
+        }
 
         public IActionResult ActualProdPlan()
         {
@@ -23440,7 +23445,9 @@ namespace CWB.App.Controllers
                         WO_Wait_Seq_No = 0,
                         Plan_Start_Date = item.PlanStartDate,
                         Plan_End_Date = (DateTime)item.PlanCompletionDate,
-                        Plan_Simul_Qnty = item.CalcWOQty
+                        Plan_Simul_Qnty = item.PlanWOQnty,
+                        Sim_Seq_No = item.Sim_Seq_No,
+                        WOLevel = item.WOLevel
                     };
 
                     var woResult = await _woService.PostTempWo_Wait_List(addData);
@@ -24537,7 +24544,9 @@ namespace CWB.App.Controllers
                         WO_Wait_Seq_No = 0,
                         Plan_Start_Date = item.PlanStartDate,
                         Plan_End_Date = (DateTime)item.PlanCompletionDate,
-                        Plan_Simul_Qnty = item.CalcWOQty
+                        Plan_Simul_Qnty = item.PlanWOQnty,
+                        Sim_Seq_No = item.Sim_Seq_No,
+                        WOLevel = item.WOLevel
                     };
 
                     var woResult = await _woService.PostTempWo_Wait_List(addData);
@@ -25702,7 +25711,9 @@ namespace CWB.App.Controllers
                         WO_Wait_Seq_No = 0,
                         Plan_Start_Date = item.PlanStartDate,
                         Plan_End_Date = (DateTime)item.PlanCompletionDate,
-                        Plan_Simul_Qnty = item.CalcWOQty
+                        Plan_Simul_Qnty = item.PlanWOQnty,
+                        Sim_Seq_No = item.Sim_Seq_No,
+                        WOLevel = item.WOLevel
                     };
 
                     var woResult = await _woService.PostTempWo_Wait_List(addData);
@@ -27232,7 +27243,9 @@ namespace CWB.App.Controllers
                         WO_Wait_Seq_No = 0,
                         Plan_Start_Date = item.PlanStartDate,
                         Plan_End_Date = (DateTime)item.PlanCompletionDate,
-                        Plan_Simul_Qnty = item.CalcWOQty
+                        Plan_Simul_Qnty = item.PlanWOQnty,
+                        Sim_Seq_No = item.Sim_Seq_No,
+                        WOLevel = item.WOLevel
                     };
                     var woResult = await _woService.PostTempWo_Wait_List(addData);
                     readyWOs.Add(woResult);
@@ -28922,7 +28935,9 @@ namespace CWB.App.Controllers
                         WO_Wait_Seq_No = 0,
                         Plan_Start_Date = item.PlanStartDate,
                         Plan_End_Date = (DateTime)item.PlanCompletionDate,
-                        Plan_Simul_Qnty = item.CalcWOQty
+                        Plan_Simul_Qnty = item.PlanWOQnty,
+                        Sim_Seq_No = item.Sim_Seq_No,
+                        WOLevel = item.WOLevel
                     };
                     var woResult = await _woService.PostTempWo_Wait_List(addData);
                     readyWOs.Add(woResult);
@@ -32288,6 +32303,8 @@ namespace CWB.App.Controllers
                     Plan_Start_Date = tempwo.Plan_Start_Date,
                     Plan_End_Date = tempwo.Plan_End_Date,
                     Plan_Simul_Qnty = tempwo.Plan_Simul_Qnty,
+                    Sim_Seq_No = tempwo.Sim_Seq_No,
+                    WOLevel = tempwo.WOLevel,
                     Mode = 2
                 };
 
@@ -34249,1023 +34266,1017 @@ namespace CWB.App.Controllers
         }
 
 
-        //[HttpGet]
-
-        //public async Task<IActionResult> SimulationData()
-        //{
-        //    var Departments = await _departmentService.GetDepartments(13);
-        //    var allprductionwo = await _woService.AllProductionWoReadForProd();
-
-        //    var livewowaitlist = await _woService.GetAllWO_Wait_List();
-        //    var tempwowaitlist = await _woService.GetAllTempWo_Wait_List();
-
-        //    var Liveoperationslist = await _woService.GetAllOpr_List();
-        //    var tempoperationslist = await _woService.GetAllTempOpr_List();
-
-        //    var Livemachinewaitlist = await _woService.GetAllMc_Wait_List();
-        //    var tempmachinewaitlist = await _woService.GetAllTempMc_Wait_List();
-
-        //    var procPlanList = await _woService.GetAllProcPlan();
-        //    var tempmachinetimeslotlist = await _woService.GetAllTempMc_Timeslot_List();
-        //    var Livemachinetimeslotlist = await _woService.GetAllMc_Timeslot_List();
-
-        //    var Livesubconlist = await _woService.GetAllSubCon_List();
-        //    var Tempsubconlist = await _woService.GetAllTempSubCon_List();
-
-        //    var companies = await _masterService.GetCompanies();
-        //    var salesOrders = await _baService.AllSalesOrders();
-        //    var timeslotlist = await _woService.GetAllTimeslot_List();
-        //    //DateTime chartStart = timeslotlist.OrderBy(x => x.Start_time).First().Start_time;
-        //    var masterpartlist = await _masterService.MasterPartList();
-        //    var machinelist = await _machineService.GetMachinesList();
-        //    var plantwd = await _plantService.GetPlantWD(13);
-        //    var holidaylist = await _plantService.GetHolidays(13);
-        //    ProductionSimulationVM vm = new ProductionSimulationVM();
-        //    var productions = allprductionwo.Where(x => x.For_Ref == 'N').ToList();
-        //    var dates = timeslotlist.GroupBy(x => x.Start_time.Date).OrderBy(x => x.Key);
-        //    var consolidatedwomapping = await _woService.Getallconsolidationproductionwo();
-        //    foreach (var day in dates)
-        //    {
-        //        SimulationHeaderVM header = new SimulationHeaderVM();
-
-        //        header.Date = day.Key;
-
-        //        SimulationShiftVM shift1 = new SimulationShiftVM();
-        //        shift1.ShiftName = "1st Shift";
-        //        shift1.Hours = day.Where(x => x.Start_time.Hour >= 6 &&
-        //                                      x.Start_time.Hour < 14)
-        //                          .Select(x => x.Start_time.Hour)
-        //                          .ToList();
-
-        //        SimulationShiftVM shift2 = new SimulationShiftVM();
-        //        shift2.ShiftName = "2nd Shift";
-        //        shift2.Hours = day.Where(x => x.Start_time.Hour >= 14 &&
-        //                                      x.Start_time.Hour < 22)
-        //                          .Select(x => x.Start_time.Hour)
-        //                          .ToList();
-
-        //        SimulationShiftVM shift3 = new SimulationShiftVM();
-        //        shift3.ShiftName = "3rd Shift";
-        //        shift3.Hours = day.Where(x => x.Start_time.Hour >= 22 ||
-        //                                      x.Start_time.Hour < 6)
-        //                          .Select(x => x.Start_time.Hour)
-        //                          .ToList();
-
-        //        if (shift1.Hours.Any())
-        //            header.Shifts.Add(shift1);
-
-        //        if (shift2.Hours.Any())
-        //            header.Shifts.Add(shift2);
-
-        //        if (shift3.Hours.Any())
-        //            header.Shifts.Add(shift3);
-
-        //        vm.Headers.Add(header);
-        //    }
-        //    int firstTimelineSlot = (int)timeslotlist.Min(x => x.Timeslot_ListId);
-
-        //    const double slotWidth = 38;    //pixel 
-        //    var liveWoIds = new HashSet<long>(livewowaitlist.Select(x => x.Wo_Id));
-        //    foreach (var item in livewowaitlist)
-        //    {
-
-        //        var production = productions.Where(x => x.WoId == item.Wo_Id).FirstOrDefault();
-        //        if (production == null)
-        //        {
-        //            continue;
-        //        }
-        //        var partno = masterpartlist.Where(x => x.PartId == production.PartId).FirstOrDefault();
-        //        if (partno == null)
-        //        {
-        //            continue;
-        //        }
-        //        SimulationPartRowVM partRow = new SimulationPartRowVM();
-        //        partRow.WoId = item.Wo_Id;
-        //        partRow.PartNo = partno.PartNo;
-        //        partRow.Description = partno.Description;
-        //        partRow.IsUrgent = production.Urgent == 0;
-
-        //        if (production.Parentlevel == 'Y')
-        //        {
-        //            bool isEven = production.Sim_Seq_No % 2 == 0;
-        //            partRow.PartNoColor = isEven ? "#A8E6A1" : "#FFD59E";
-        //        }
-        //        else
-        //        {
-        //            partRow.PartNoColor = "";
-        //        }
+        // this for testing partwiseSimulatinExplode dashboard 
+        [HttpGet]
+        public async Task<IActionResult> partwiseSimulatinExplode(bool actual = false)
+        {
+            var Departments = await _departmentService.GetDepartments(13);
+            var allprductionwo = await _woService.AllProductionWoReadForProd();
 
+            var livewowaitlist = await _woService.GetAllWO_Wait_List();
+            var tempwowaitlist = await _woService.GetAllTempWo_Wait_List();
 
+            var Liveoperationslist = await _woService.GetAllOpr_List();
+            var tempoperationslist = await _woService.GetAllTempOpr_List();
 
+            var Livemachinewaitlist = await _woService.GetAllMc_Wait_List();
+            var tempmachinewaitlist = await _woService.GetAllTempMc_Wait_List();
 
-        //        if (production.Parentlevel == 'Y' && production.SoComplDate != null)
-        //        {
-        //            var soDate = production.SoComplDate.Value;
-        //            var markerDay = GetPreviousWorkingDay(soDate, holidaylist);
-        //            var lastSlot = GetLastSlotOfDay(markerDay, timeslotlist);
-        //            var customerOrders = await _baService.GetCustomerOrders();
-        //            if (lastSlot != null)
-        //            {
-        //                long slotId = lastSlot.Timeslot_ListId;
-        //                partRow.SoCompletionMarkerLeft = (slotId - firstTimelineSlot) * slotWidth;
-        //                partRow.HasSoCompletionMarker = true;
-        //                var salesOrder = salesOrders.FirstOrDefault(x => x.SalesOrderId == production.SalesOrderId);
+            var procPlanList = await _woService.GetAllProcPlan();
+            var tempmachinetimeslotlist = await _woService.GetAllTempMc_Timeslot_List();
+            var Livemachinetimeslotlist = await _woService.GetAllMc_Timeslot_List();
 
-        //                if (salesOrder != null)
-        //                {
-        //                    var customerOrder = customerOrders.FirstOrDefault(x => x.CustomerOrderId == salesOrder.CustomerOrderId);
-
-        //                    partRow.SoCustomer = customerOrder != null ? customerOrder.CustomerName : "";
+            var Livesubconlist = await _woService.GetAllSubCon_List();
+            var Tempsubconlist = await _woService.GetAllTempSubCon_List();
 
+            var companies = await _masterService.GetCompanies();
+            var salesOrders = new List<dynamic>();
+            try
+            {
+                salesOrders = (await _baService.AllSalesOrders()).Cast<dynamic>().ToList();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("AllSalesOrders failed: " + ex.Message);
+            }
+            var timeslotlist = await _woService.GetAllTimeslot_List();
+            //DateTime chartStart = timeslotlist.OrderBy(x => x.Start_time).First().Start_time;
+            var masterpartlist = await _masterService.MasterPartList();
+            var machinelist = await _machineService.GetMachinesList();
+            ProductionSimulationVM vm = new ProductionSimulationVM();
+            var productions = allprductionwo.Where(x => x.For_Ref == 'N').ToList();
 
-        //                }
-        //                else
-        //                {
-        //                    partRow.SoCustomer = "";
-        //                }
+            var plantwd = await _plantService.GetPlantWD(13);
+            var holidaylist = await _plantService.GetHolidays(13);
+            string weekOff1 = plantwd.WeeklyOff1;
+            string weekOff2 = plantwd.WeeklyOff2;
 
-        //                partRow.SoNo = production.SalesOrderId.ToString();
-        //                partRow.SoQnty = production.PlanWOQnty.ToString();
-        //                partRow.SoCompletionDateDisplay = soDate.ToString("dd/MM/yyyy");
-        //            }
-        //            else
-        //            {
-        //                partRow.HasSoCompletionMarker = false;
-        //            }
-        //        }
-        //        else
-        //        {
-        //            partRow.HasSoCompletionMarker = false;
-        //        }
 
+            TimeSpan shift1Start = DateTime.Parse(plantwd.FirstShiftStartTime).TimeOfDay;
+            TimeSpan shift2Start = DateTime.Parse(plantwd.SecondShiftStartTime).TimeOfDay;
+            TimeSpan shift3Start = DateTime.Parse(plantwd.ThirdShiftStartTime).TimeOfDay;
 
+            var dates = timeslotlist.Select(x => x.Start_time.Date).Distinct()
+            .OrderBy(x => x).ToList();
 
+            var consolidatedwomapping = await _woService.Getallconsolidationproductionwo();
 
-        //        var operations = Liveoperationslist.Where(x => x.Wo_Id == item.Wo_Id).ToList();
+            var podetails = await _woService.GetAllPodetails();
+            var invTransLogs = actual ? await _woService.GetAllInv_Trans_Log() : null;
 
+            foreach (var date in dates)
+            {
 
-        //        foreach (var opr in operations)
-        //        {
+                string dayName = date.DayOfWeek.ToString();
 
-        //            var routingstep = await _routingService.GetStep((int)opr.Opr_No);
-        //            var route = await _routingService.GetRouting((int)production.RoutingId);
+                if (dayName.Equals(weekOff1, StringComparison.OrdinalIgnoreCase) || dayName.Equals(weekOff2, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
 
-        //            if (opr.RoutingStepLocation == 1)
-        //            {
-        //                var stepmachines = await _routingService.StepMachines((int)routingstep.StepId);
+                bool isHoliday = holidaylist.Any(x => x.HolidayDate.HasValue && x.HolidayDate.Value.Date == date.Date);
 
-        //                if (stepmachines.Any())
-        //                {
-        //                    var preffredstepmachine = stepmachines.OrderByDescending(x => x.PreferredMachine).FirstOrDefault();
+                if (isHoliday)
+                {
+                    continue;
+                }
 
-        //                    var machine = machinelist.Where(x => x.MachineId == preffredstepmachine.MachineId).FirstOrDefault();
-        //                    //machine Sl no
-        //                    var Department = Departments.Where(x => x.DepartmentId == machine.ShopId).FirstOrDefault();
+                SimulationHeaderVM header = new SimulationHeaderVM();
+                header.Date = date;
 
-        //                    SimulationOperationVM operation = new SimulationOperationVM();
+                DateTime firstShiftStart = date.Add(shift1Start);
 
-        //                    var machineinuse = Livemachinewaitlist.FirstOrDefault(x =>
-        //                       x.Wo_Id == item.Wo_Id &&
-        //                       x.Opr_No_Id == opr.Opr_No &&
-        //                       x.Mc_Id == preffredstepmachine.MachineId);
+                DateTime firstShiftEnd = date.Add(shift2Start);
 
-        //                    if (machineinuse != null)
-        //                    {
-        //                        var operationSlots = Livemachinetimeslotlist
-        //                            .Where(x => x.Mc_Wait_List_Id == machineinuse.Mc_Wait_ListId)
-        //                            .OrderBy(x => x.Timeslot_List_Id)
-        //                            .ToList();
-        //                        if (operationSlots.Any())
-        //                        {
-        //                            operation.PartNum = partno.PartNo;
-        //                            operation.Department = Department != null ? Department.Name : "";
-        //                            operation.OperationName = "Op " + routingstep.StepNumber;
+                var shift1Slots = timeslotlist.Where(x => x.Start_time >= firstShiftStart && x.Start_time < firstShiftEnd)
+                        .OrderBy(x => x.Start_time)
+                        .ToList();
 
-        //                            long startSlot = (long)machineinuse.Plan_start_time_Id;
-        //                            long endSlot = (long)machineinuse.Plan_end_time_Id;
+                if (shift1Slots.Any())
+                {
+                    SimulationShiftVM shift1 = new SimulationShiftVM();
 
-        //                            operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
-        //                            operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
+                    shift1.ShiftName = "1st Shift";
+                    shift1.Hours = shift1Slots.Select(x => x.Start_time.Hour % 12 == 0 ? 12 : x.Start_time.Hour % 12).ToList();
+                    header.Shifts.Add(shift1);
+                }
 
-        //                            operation.Color = "#7092BE";
-        //                            operation.MachineName = machine.SlNo;
 
-        //                            operation.DisplayLabel = machine.SlNo;
-        //                            operation.Status = "Running";
+                DateTime secondShiftStart = date.Add(shift2Start);
 
+                DateTime secondShiftEnd = date.Add(shift3Start);
 
-        //                            operation.BarType = "Inhouse";
-        //                            operation.TooltipType = "Inhouse";
-        //                            var startSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == startSlot);
-        //                            var endSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == endSlot);
-
-        //                            operation.ShopMachine = (Department != null ? Department.Name : "") + " / " + machine.SlNo;
-        //                            operation.PartNoDesc = partno.PartNo + " / " + partno.Description;
-        //                            operation.RoutingOprNo = route.RoutingName + " / " + routingstep.StepNumber;
-        //                            operation.WoNo = production.WONumber;
-        //                            operation.BatchQnty = production.PlanWOQnty.ToString();
+                var shift2Slots = timeslotlist.Where(x =>
+                        x.Start_time >= secondShiftStart &&
+                        x.Start_time < secondShiftEnd)
+                        .OrderBy(x => x.Start_time)
+                        .ToList();
 
-        //                            if (startSlotObj != null)
-        //                            {
-        //                                operation.StartDateTime = startSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
-        //                            }
-
-        //                            if (endSlotObj != null)
-        //                            {
-        //                                operation.EndDateTime = endSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
-        //                            }
-
-        //                            operation.DurationHours = ((endSlot - startSlot) + 1).ToString();
-
-        //                            var oprmachines = await _routingService.StepMachines((int)opr.Opr_No);
-        //                            var machineselected = oprmachines.Where(x => x.MachineId == machineinuse.Mc_Id && x.RoutingStepId == opr.Opr_No).FirstOrDefault();
-        //                            var setupTime = TimeSpan.Parse(machineselected.SetupTime);
-        //                            var floorToFloorTime = TimeSpan.Parse(machineselected.FloorToFloorTime);
-
-        //                            operation.FloorToFloorTime = floorToFloorTime.TotalMinutes.ToString();
-        //                            operation.SetupTime = setupTime.TotalMinutes.ToString();
-
-        //                            operation.AssySoldToCustomer = "";   // TODO — pending customer field
-        //                            operation.PartSoldToCustomer = "";   // TODO — pending customer field
-
-        //                            partRow.Operations.Add(operation);
-        //                        }
-
-        //                    }
-
-        //                }
-        //            }
-        //            else if (opr.RoutingStepLocation == 2)
-        //            {
-
-        //                // Match the subcon record for this operation
-        //                var subconRecord = Livesubconlist.FirstOrDefault(x => x.Wo_Id == item.Wo_Id && x.Opr_No == opr.Opr_No);
-
-        //                if (subconRecord != null && subconRecord.Plan_Disp_date != null && subconRecord.Plan_Recpt_date != null)
-        //                {
-        //                    var dispDate = subconRecord.Plan_Disp_date;
-        //                    var recptDate = subconRecord.Plan_Recpt_date;
-
-        //                    // Find the timeslot that contains the dispatch date
-        //                    var startSlotObj = timeslotlist
-        //                        .Where(x => x.Start_time <= dispDate)
-        //                        .OrderByDescending(x => x.Start_time)
-        //                        .FirstOrDefault();
-
-        //                    // Find the timeslot that contains the receipt date
-        //                    var endSlotObj = timeslotlist
-        //                        .Where(x => x.Start_time <= recptDate)
-        //                        .OrderByDescending(x => x.Start_time)
-        //                        .FirstOrDefault();
-
-        //                    if (startSlotObj != null && endSlotObj != null)
-        //                    {
-        //                        SimulationOperationVM operation = new SimulationOperationVM();
-
-        //                        operation.PartNum = partno.PartNo;
-        //                        operation.Department = "";
-
-
-        //                        var supplierCompany = companies.FirstOrDefault(x => x.CompanyId == subconRecord.Supplier_Id);
-
-        //                        if (supplierCompany != null)
-        //                        {
-        //                            operation.Supplier = supplierCompany.CompanyName;
-        //                        }
-        //                        else
-        //                        {
-        //                            operation.Supplier = "Supplier " + subconRecord.Supplier_Id;
-        //                        }
-
-        //                        operation.MachineName = "";
-        //                        operation.DisplayLabel = operation.Supplier;
-        //                        operation.OperationName = "Op " + routingstep.StepNumber;
-
-        //                        long startSlot = (long)startSlotObj.Timeslot_ListId;
-        //                        long endSlot = (long)endSlotObj.Timeslot_ListId;
-
-        //                        operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
-        //                        operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
-        //                        operation.Color = "#8B5FBF";
-        //                        operation.Status = "Running";
-
-
-        //                        operation.BarType = "Subcon";
-        //                        operation.TooltipType = "Subcon";
-        //                        operation.PartNoDesc = partno.PartNo + " / " + partno.Description;
-        //                        operation.RoutingOprNo = route.RoutingName + " / " + routingstep.StepNumber;
-        //                        operation.WoNo = production.WONumber;
-        //                        operation.BatchQnty = production.PlanWOQnty.ToString();
-        //                        operation.StartDateTime = dispDate.ToString("dd/MM/yyyy HH:mm");
-        //                        operation.EndDateTime = recptDate.ToString("dd/MM/yyyy HH:mm");
-
-        //                        partRow.Operations.Add(operation);
-        //                    }
-        //                }
-        //            }
-
-        //        }
-        //        if (production.Combined_WO != 'Y')
-        //        {
-        //            var qualifyingProcPlan = procPlanList
-        //                    .Where(x => x.WorkOrderId == item.Wo_Id && (x.PartType == "BOF" || x.PartType == "RawMaterial"))
-        //                    .OrderBy(x => x.CalcReceiptDate)
-        //                    .ToList();
-
-        //            foreach (var prockpaln in qualifyingProcPlan)
-        //            {
-        //                var receiptDate = prockpaln.CalcReceiptDate;
-        //                var procPlanPartPurchaseRelList = await _woService.ProcPlanPartPurChaseRel(prockpaln.ProcPlanId);
-        //                var procplan = procPlanPartPurchaseRelList.FirstOrDefault();
-        //                if (procplan == null)
-        //                {
-        //                    continue;
-        //                }
-        //                var partPurchaseDetailsList = await _masterService.GetPartPurchase((int)procplan.PartPurchaseId);
-        //                var firstSlot = GetFirstSlotOfDay(receiptDate, timeslotlist);
-        //                var part = masterpartlist.FirstOrDefault(x => x.PartId == prockpaln.PartId);
-
-        //                if (firstSlot != null)
-        //                {
-        //                    long slotId = firstSlot.Timeslot_ListId;
-        //                    partRow.MatlReceiptMarkerLeft = (slotId - firstTimelineSlot) * slotWidth;
-        //                    partRow.HasMatlReceiptMarker = true;
-        //                    partRow.MatlReceiptPartNo = prockpaln.PartId.ToString();
-        //                    partRow.MatlReceiptPartType = prockpaln.PartType;
-        //                    partRow.MatlReceiptDateDisplay = receiptDate.ToString("dd/MM/yyyy");
-
-
-        //                    var matlPart = masterpartlist.FirstOrDefault(x => x.PartId == prockpaln.PartId);
-        //                    partRow.MatlReceiptPartNoDesc = matlPart != null
-        //                        ? matlPart.PartNo + " / " + matlPart.Description
-        //                        : prockpaln.PartId.ToString();
-
-
-        //                    partRow.MatlReceiptQnty = prockpaln.Calc_Proc_Qnty.ToString();
-
-        //                    if (partPurchaseDetailsList != null)
-        //                    {
-        //                        var supplierCompany = companies.FirstOrDefault(x => x.CompanyId == partPurchaseDetailsList.PSupplierId);
-        //                        partRow.MatlReceiptSupplier = supplierCompany != null ? supplierCompany.CompanyName : "";
-        //                    }
-        //                    else
-        //                    {
-        //                        partRow.MatlReceiptSupplier = "";
-        //                    }
-
-        //                    partRow.MatlReceiptPoNo = "";
-        //                }
-        //                else
-        //                {
-        //                    partRow.HasMatlReceiptMarker = false;
-        //                }
-        //            }
-
-        //        }
-        //        else
-        //        {
-
-        //            // Get WO IDs from Consolidated WO Mapping
-        //            var consolidatedMappings = consolidatedwomapping.Where(x=>x.CombinedWoId==item.Wo_Id);
-
-        //            var mappedWoIds = consolidatedMappings
-        //                .Select(x => x.WoId)
-        //                .Distinct()
-        //                .ToList();
-
-        //            if (!mappedWoIds.Contains(item.Wo_Id))
-        //                mappedWoIds.Add(item.Wo_Id);
-
-        //            // Get all ProcPlans belonging to mapped WOs
-        //            var combinedProcPlans = procPlanList
-        //                .Where(x => mappedWoIds.Contains(x.WorkOrderId) &&
-        //                            (x.PartType == "BOF" ||
-        //                             x.PartType == "RawMaterial"))
-        //                .ToList();
-
-        //            // Combine same material
-        //            var groupedProcPlans = combinedProcPlans
-        //                .GroupBy(x => new
-        //                {
-        //                    x.PartId,
-        //                    x.PartType
-        //                })
-        //                .Select(g => new
-        //                {
-        //                    ProcPlans = g.ToList(),
-        //                    PartId = g.Key.PartId,
-        //                    PartType = g.Key.PartType,
-        //                    ReceiptDate = g.Min(x => x.CalcReceiptDate),
-        //                    Quantity = g.Sum(x => x.Calc_Proc_Qnty)
-        //                })
-        //                .OrderBy(x => x.ReceiptDate)
-        //                .ToList();
-
-        //            foreach (var group in groupedProcPlans)
-        //            {
-        //                var firstSlot =
-        //                    GetFirstSlotOfDay(group.ReceiptDate, timeslotlist);
-
-        //                if (firstSlot == null)
-        //                    continue;
-
-        //                long slotId = firstSlot.Timeslot_ListId;
-
-        //                partRow.MatlReceiptMarkerLeft =
-        //                    (slotId - firstTimelineSlot) * slotWidth;
-
-        //                partRow.HasMatlReceiptMarker = true;
-
-        //                partRow.MatlReceiptPartNo =
-        //                    group.PartId.ToString();
-
-        //                partRow.MatlReceiptPartType =
-        //                    group.PartType;
-
-        //                partRow.MatlReceiptDateDisplay =
-        //                    group.ReceiptDate.ToString("dd/MM/yyyy");
-
-        //                var matlPart =
-        //                    masterpartlist.FirstOrDefault(
-        //                        x => x.PartId == group.PartId);
-
-        //                partRow.MatlReceiptPartNoDesc =
-        //                    matlPart != null
-        //                        ? matlPart.PartNo + " / " + matlPart.Description
-        //                        : group.PartId.ToString();
-
-        //                partRow.MatlReceiptQnty =
-        //                    group.Quantity.ToString();
-
-        //                // Get supplier
-        //                var suppliers = new List<string>();
-
-        //                foreach (var procPlan in group.ProcPlans)
-        //                {
-        //                    var relations =
-        //                        await _woService.ProcPlanPartPurChaseRel(
-        //                            procPlan.ProcPlanId);
-
-        //                    var relation = relations.FirstOrDefault();
-
-        //                    if (relation == null)
-        //                        continue;
-
-        //                    var purchase =
-        //                        await _masterService.GetPartPurchase(
-        //                            (int)relation.PartPurchaseId);
-
-        //                    if (purchase != null)
-        //                    {
-        //                        var supplier =
-        //                            companies.FirstOrDefault(
-        //                                x => x.CompanyId == purchase.PSupplierId);
-
-        //                        if (supplier != null &&
-        //                            !suppliers.Contains(supplier.CompanyName))
-        //                        {
-        //                            suppliers.Add(supplier.CompanyName);
-        //                        }
-        //                    }
-        //                }
-
-        //                partRow.MatlReceiptSupplier =
-        //                    string.Join(", ", suppliers);
-
-        //                partRow.MatlReceiptPoNo = "";
-        //            }
-        //        }
-        //        vm.Parts.Add(partRow);
-
-
-        //    }
-
-        //    //temp data 
-        //    foreach (var item in tempwowaitlist)
-        //    {
-        //        if (liveWoIds.Contains(item.Wo_Id))
-        //            continue;
-
-        //        var production = productions.Where(x => x.WoId == item.Wo_Id).FirstOrDefault();
-        //        if (production == null)
-        //        {
-        //            continue;
-        //        }
-        //        var partno = masterpartlist.Where(x => x.PartId == production.PartId).FirstOrDefault();
-        //        if (partno == null)
-        //        {
-        //            continue;
-        //        }
-        //        SimulationPartRowVM partRow = new SimulationPartRowVM();
-        //        partRow.WoId = item.Wo_Id;
-        //        partRow.PartNo = partno.PartNo;
-        //        partRow.Description = partno.Description;
-        //        partRow.IsUrgent = production.Urgent == 0;
-        //        if (production.Parentlevel == 'Y')
-        //        {
-        //            bool isEven = production.Sim_Seq_No % 2 == 0;
-        //            partRow.PartNoColor = isEven ? "#A8E6A1" : "#FFD59E";
-        //        }
-        //        else
-        //        {
-        //            partRow.PartNoColor = "";
-        //        }
-        //        var operations = tempoperationslist.Where(x => x.Wo_Id == item.Wo_Id).ToList();
-
-        //        foreach (var opr in operations)
-        //        {
-        //            var routingstep = await _routingService.GetStep((int)opr.Opr_No);
-        //            var route = await _routingService.GetRouting((int)production.RoutingId);
-        //            if (opr.RoutingStepLocation == 1)
-        //            {
-        //                var stepmachines = await _routingService.StepMachines((int)routingstep.StepId);
-
-        //                if (stepmachines.Any())
-        //                {
-        //                    var preffredstepmachine = stepmachines.OrderByDescending(x => x.PreferredMachine).FirstOrDefault();
-        //                    var machine = machinelist.Where(x => x.MachineId == preffredstepmachine.MachineId).FirstOrDefault();
-        //                    var Department = Departments.Where(x => x.DepartmentId == machine.ShopId).FirstOrDefault();
-
-        //                    var machineinuse = tempmachinewaitlist.FirstOrDefault(x =>
-        //                       x.Wo_Id == item.Wo_Id &&
-        //                       x.Opr_No_Id == opr.Opr_No &&
-        //                       x.Mc_Id == preffredstepmachine.MachineId);
-
-        //                    if (machineinuse != null)
-        //                    {
-        //                        var operationSlots = tempmachinetimeslotlist
-        //                            .Where(x => x.Mc_Wait_List_Id == machineinuse.TempMc_Wait_ListId)
-        //                            .OrderBy(x => x.Timeslot_List_Id)
-        //                            .ToList();
-
-        //                        if (operationSlots.Any())
-        //                        {
-        //                            SimulationOperationVM operation = new SimulationOperationVM();
-
-        //                            operation.PartNum = partno.PartNo;
-        //                            operation.Department = Department != null ? Department.Name : "";
-        //                            operation.OperationName = "Op " + routingstep.StepNumber;
-
-        //                            long startSlot = (long)machineinuse.Plan_start_time_Id;
-        //                            long endSlot = (long)machineinuse.Plan_end_time_Id;
-
-        //                            operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
-        //                            operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
-
-        //                            operation.Color = "#FFC107";   // yellow — unfrozen/temp
-        //                            operation.MachineName = machine.SlNo;
-        //                            operation.Supplier = "";
-        //                            operation.DisplayLabel = machine.SlNo;
-        //                            operation.Status = "Running";
-        //                            operation.BarType = "Temp";
-        //                            operation.TooltipType = "Inhouse";
-        //                            var startSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == startSlot);
-        //                            var endSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == endSlot);
-
-        //                            operation.ShopMachine = (Department != null ? Department.Name : "") + " / " + machine.SlNo;
-        //                            operation.PartNoDesc = partno.PartNo + " / " + partno.Description;
-        //                            operation.RoutingOprNo = route.RoutingName + " / " + routingstep.StepNumber;
-        //                            operation.WoNo = production.WONumber;
-        //                            operation.BatchQnty = production.PlanWOQnty.ToString();
-
-        //                            if (startSlotObj != null)
-        //                            {
-        //                                operation.StartDateTime = startSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
-        //                            }
-
-        //                            if (endSlotObj != null)
-        //                            {
-        //                                operation.EndDateTime = endSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
-        //                            }
-
-        //                            operation.DurationHours = ((endSlot - startSlot) + 1).ToString();
-
-        //                            var oprmachines = await _routingService.StepMachines((int)opr.Opr_No);
-        //                            var machineselected = oprmachines.Where(x => x.MachineId == machineinuse.Mc_Id && x.RoutingStepId == opr.Opr_No).FirstOrDefault();
-        //                            var setupTime = TimeSpan.Parse(machineselected.SetupTime);
-        //                            var floorToFloorTime = TimeSpan.Parse(machineselected.FloorToFloorTime);
-
-        //                            operation.FloorToFloorTime = floorToFloorTime.TotalMinutes.ToString();
-        //                            operation.SetupTime = setupTime.TotalMinutes.ToString();
-
-        //                            operation.AssySoldToCustomer = "";   // TODO — pending customer field
-        //                            operation.PartSoldToCustomer = "";   // TODO — pending customer field
-
-        //                            partRow.Operations.Add(operation);
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //            else if (opr.RoutingStepLocation == 2)
-        //            {
-        //                var subconRecord = Tempsubconlist.FirstOrDefault(x => x.Wo_Id == item.Wo_Id && x.Opr_No == opr.Opr_No);
-
-        //                if (subconRecord != null && subconRecord.Plan_Disp_date != null && subconRecord.Plan_Recpt_date != null)
-        //                {
-        //                    var dispDate = subconRecord.Plan_Disp_date;
-        //                    var recptDate = subconRecord.Plan_Recpt_date;
-
-        //                    var startSlotObj = timeslotlist
-        //                        .Where(x => x.Start_time <= dispDate)
-        //                        .OrderByDescending(x => x.Start_time)
-        //                        .FirstOrDefault();
-
-        //                    var endSlotObj = timeslotlist
-        //                        .Where(x => x.Start_time <= recptDate)
-        //                        .OrderByDescending(x => x.Start_time)
-        //                        .FirstOrDefault();
-
-        //                    if (startSlotObj != null && endSlotObj != null)
-        //                    {
-        //                        SimulationOperationVM operation = new SimulationOperationVM();
-
-        //                        operation.PartNum = partno.PartNo;
-        //                        operation.Department = "";
-
-        //                        var supplierCompany = companies.FirstOrDefault(x => x.CompanyId == subconRecord.Supplier_Id);
-
-        //                        if (supplierCompany != null)
-        //                        {
-        //                            operation.Supplier = supplierCompany.CompanyName;
-        //                        }
-        //                        else
-        //                        {
-        //                            operation.Supplier = "Supplier " + subconRecord.Supplier_Id;
-        //                        }
-
-        //                        operation.MachineName = "";
-        //                        operation.DisplayLabel = operation.Supplier;
-        //                        operation.OperationName = "Op " + routingstep.StepNumber;
-
-        //                        long startSlot = (long)startSlotObj.Timeslot_ListId;
-        //                        long endSlot = (long)endSlotObj.Timeslot_ListId;
-
-        //                        operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
-        //                        operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
-        //                        operation.Color = "#FD7E14";   // yellow — unfrozen/temp
-
-        //                        operation.Status = "Running";
-        //                        operation.BarType = "Temp";
-        //                        operation.TooltipType = "Subcon";
-        //                        operation.PartNoDesc = partno.PartNo + " / " + partno.Description;
-        //                        operation.RoutingOprNo = route.RoutingName + " / " + routingstep.StepNumber;
-        //                        operation.WoNo = production.WONumber;
-        //                        operation.BatchQnty = production.PlanWOQnty.ToString();
-        //                        operation.StartDateTime = dispDate.ToString("dd/MM/yyyy HH:mm");
-        //                        operation.EndDateTime = recptDate.ToString("dd/MM/yyyy HH:mm");
-        //                        partRow.Operations.Add(operation);
-        //                    }
-        //                }
-        //            }
-        //        }
-
-        //        if (partRow.Operations.Any())
-        //            vm.Parts.Add(partRow);
-        //    }
-        //    return Ok(vm);
-        //}
-        //[HttpGet]
-        //public async Task<IActionResult> SimulationMachineData()
-        //{
-
-        //    var Departments = await _departmentService.GetDepartments(13);
-        //    var allprductionwo = await _woService.AllProductionWoReadForProd();
-
-        //    var livewowaitlist = await _woService.GetAllWO_Wait_List();
-        //    var tempwowaitlist = await _woService.GetAllTempWo_Wait_List();
-
-        //    var Liveoperationslist = await _woService.GetAllOpr_List();
-        //    var tempoperationslist = await _woService.GetAllTempOpr_List();
-
-        //    var Livemachinewaitlist = await _woService.GetAllMc_Wait_List();
-        //    var tempmachinewaitlist = await _woService.GetAllTempMc_Wait_List();
-
-        //    var tempmachinetimeslotlist = await _woService.GetAllTempMc_Timeslot_List();
-        //    var Livemachinetimeslotlist = await _woService.GetAllMc_Timeslot_List();
-
-        //    var nonplanbars = await _woService.GetAllNon_Plan_Wk_List();
-        //    var timeslotlist = await _woService.GetAllTimeslot_List();
-
-        //    var masterpartlist = await _masterService.MasterPartList();
-        //    SimulationMachineVM vm = new SimulationMachineVM();
-        //    var machinelist = await _machineService.GetMachinesList();
-        //    var productions = allprductionwo.Where(x => x.For_Ref == 'N').ToList();
-        //    var dates = timeslotlist.GroupBy(x => x.Start_time.Date).OrderBy(x => x.Key);
-        //    foreach (var day in dates)
-        //    {
-        //        SimulationHeaderVM header = new SimulationHeaderVM();
-
-        //        header.Date = day.Key;
-
-        //        SimulationShiftVM shift1 = new SimulationShiftVM();
-        //        shift1.ShiftName = "1st Shift";
-        //        shift1.Hours = day.Where(x => x.Start_time.Hour >= 6 &&
-        //                                      x.Start_time.Hour < 14)
-        //                          .Select(x => x.Start_time.Hour)
-        //                          .ToList();
-
-        //        SimulationShiftVM shift2 = new SimulationShiftVM();
-        //        shift2.ShiftName = "2nd Shift";
-        //        shift2.Hours = day.Where(x => x.Start_time.Hour >= 14 &&
-        //                                      x.Start_time.Hour < 22)
-        //                          .Select(x => x.Start_time.Hour)
-        //                          .ToList();
-
-        //        SimulationShiftVM shift3 = new SimulationShiftVM();
-        //        shift3.ShiftName = "3rd Shift";
-        //        shift3.Hours = day.Where(x => x.Start_time.Hour >= 22 ||
-        //                                      x.Start_time.Hour < 6)
-        //                          .Select(x => x.Start_time.Hour)
-        //                          .ToList();
-
-        //        if (shift1.Hours.Any())
-        //            header.Shifts.Add(shift1);
-
-        //        if (shift2.Hours.Any())
-        //            header.Shifts.Add(shift2);
-
-        //        if (shift3.Hours.Any())
-        //            header.Shifts.Add(shift3);
-
-        //        vm.Headers.Add(header);
-        //    }
-        //    int firstTimelineSlot = (int)timeslotlist.Min(x => x.Timeslot_ListId);
-
-        //    const double slotWidth = 38; //pixel
-        //    var liveWoIds = new HashSet<long>(livewowaitlist.Select(x => x.Wo_Id));
-        //    foreach (var machine in machinelist)
-        //    {
-        //        SimulationMachineRowVM row = new SimulationMachineRowVM();
-        //        row.MachineId = machine.MachineId;
-        //        row.MachineNo = machine.SlNo;
-
-        //        var machineOperations = Livemachinewaitlist.Where(x => x.Mc_Id == machine.MachineId).ToList();
-
-        //        foreach (var mc in machineOperations)
-        //        {
-        //            var production = productions.FirstOrDefault(x => x.WoId == mc.Wo_Id);
-
-        //            if (production == null)
-        //            {
-        //                continue;
-        //            }
-        //            var route = await _routingService.GetRouting((int)production.RoutingId);
-
-        //            var part = masterpartlist.FirstOrDefault(x => x.PartId == production.PartId);
-
-        //            if (part == null)
-        //            {
-        //                continue;
-        //            }
-
-        //            var opr = Liveoperationslist.FirstOrDefault(x => x.Wo_Id == mc.Wo_Id && x.Opr_No == mc.Opr_No_Id);
-
-        //            if (opr == null)
-        //            {
-        //                continue;
-        //            }
-        //            var Department = Departments.Where(x => x.DepartmentId == machine.ShopId).FirstOrDefault();
-
-        //            var routingStep = await _routingService.GetStep((int)opr.Opr_No);
-
-        //            var operation = new SimulationMachineOperationVM();
-
-
-        //            operation.Department = Department != null
-        //                ? Department.Name
-        //                : "";
-        //            operation.PartNum = part.PartNo;
-        //            operation.MachineName = machine.SlNo;
-        //            operation.OperationName = "Op " + routingStep.StepNumber;
-        //            operation.Color = "#7092BE";
-        //            var operationSlots = Livemachinetimeslotlist
-        //                .Where(x => x.Mc_Wait_List_Id == mc.Mc_Wait_ListId)
-        //                .OrderBy(x => x.Timeslot_List_Id)
-        //                .ToList();
-
-        //            if (operationSlots.Any())
-        //            {
-
-        //                operation.BarType = "Inhouse";
-        //                operation.TooltipType = "Inhouse";
-        //                long startSlot = (long)mc.Plan_start_time_Id;
-        //                long endSlot = (long)mc.Plan_end_time_Id;
-
-        //                operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
-        //                operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
-
-        //                var startSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == startSlot);
-        //                var endSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == endSlot);
-
-        //                operation.ShopMachine = (Department != null ? Department.Name : "") + " / " + machine.SlNo;
-        //                operation.PartNoDesc = part.PartNo + " / " + part.Description;
-        //                operation.RoutingOprNo = route.RoutingName + " / " + routingStep.StepNumber;
-        //                operation.WoNo = production.WONumber;
-        //                operation.BatchQnty = production.PlanWOQnty.ToString();
-
-        //                if (startSlotObj != null)
-        //                    operation.StartDateTime = startSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
-
-        //                if (endSlotObj != null)
-        //                    operation.EndDateTime = endSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
-
-        //                operation.DurationHours = ((endSlot - startSlot) + 1).ToString();
-
-        //                char partsoldtocustomer;
-
-        //                if (production.Parentlevel == 'Y')
-        //                {
-        //                    partsoldtocustomer = 'Y';
-        //                }
-        //                else
-        //                {
-        //                    partsoldtocustomer = 'N';
-        //                }
-        //                operation.PartSoldToCustomer = partsoldtocustomer;
-
-        //                var oprmachines = await _routingService.StepMachines((int)opr.Opr_No);
-
-        //                var machineselected = oprmachines.Where(x => x.MachineId == mc.Mc_Id && x.RoutingStepId == opr.Opr_No).FirstOrDefault();
-
-        //                var setupTime = TimeSpan.Parse(machineselected.SetupTime);
-        //                var floorToFloorTime = TimeSpan.Parse(machineselected.FloorToFloorTime);
-
-        //                operation.FloorToFloorTime = floorToFloorTime.TotalMinutes.ToString();
-        //                operation.SetupTime = setupTime.TotalMinutes.ToString();
-
-        //            }
-
-        //            operation.Status = "Running";
-
-        //            row.Operations.Add(operation);
-        //        }
-
-
-        //        if (row.Operations.Any())
-        //        {
-        //            vm.Machines.Add(row);
-        //        }
-
-        //        var nonPlanForMachine = nonplanbars.Where(x => x.Mc_Id == machine.MachineId).ToList();
-
-        //        foreach (var np in nonPlanForMachine)
-        //        {
-        //            if (np.Plan_start_time == null || np.Plan_Duration == null)
-        //                continue;
-
-
-        //            if (string.IsNullOrWhiteSpace(np.Plan_Duration))
-        //                continue;
-
-        //            if (!TimeSpan.TryParse(np.Plan_Duration, out TimeSpan duration))
-        //                continue;
-
-        //            var npStart = np.Plan_start_time;
-        //            var npEnd = npStart.Add(duration);
-
-
-        //            var startSlotObj = timeslotlist
-        //                .Where(x => x.Start_time <= npStart)
-        //                .OrderByDescending(x => x.Start_time)
-        //                .FirstOrDefault();
-
-        //            var endSlotObj = timeslotlist
-        //                .Where(x => x.Start_time <= npEnd)
-        //                .OrderByDescending(x => x.Start_time)
-        //                .FirstOrDefault();
-
-        //            if (startSlotObj == null || endSlotObj == null)
-        //                continue;
-
-        //            var operation = new SimulationMachineOperationVM();
-
-        //            operation.PartNum = "";
-        //            operation.MachineName = machine.SlNo;
-        //            operation.Department = "";
-        //            operation.OperationName = string.IsNullOrEmpty(np.Work_Description)
-        //                ? "Non-Plan"
-        //                : np.Work_Description;
-
-        //            long startSlot = (long)startSlotObj.Timeslot_ListId;
-        //            long endSlot = (long)endSlotObj.Timeslot_ListId;
-
-        //            operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
-        //            operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
-
-        //            operation.Color = "#DC3545";
-        //            // operation.Status = "Machine Stop";
-
-        //            operation.BarType = "NonPlan";
-        //            operation.ShopMachine = machine.SlNo;   // no department/shop context for non-plan, adjust if you have one
-        //            operation.StartDateTime = npStart.ToString("dd/MM/yyyy HH:mm");
-        //            operation.EndDateTime = npEnd.ToString("dd/MM/yyyy HH:mm");
-        //            operation.DurationHours = duration.TotalHours.ToString();
-        //            operation.InitiatedBy = "";
-
-
-        //            row.Operations.Add(operation);
-        //        }
-
-        //        var tempMachineOperations = tempmachinewaitlist.Where(x => x.Mc_Id == machine.MachineId).ToList();
-
-        //        foreach (var mc in tempMachineOperations)
-        //        {
-        //            if (liveWoIds.Contains(mc.Wo_Id))// already frozen/live, skip
-        //            {
-        //                continue;
-        //            }
-        //            var production = productions.FirstOrDefault(x => x.WoId == mc.Wo_Id);
-        //            if (production == null)
-        //            {
-        //                continue;
-        //            }
-        //            var part = masterpartlist.FirstOrDefault(x => x.PartId == production.PartId);
-        //            if (part == null)
-        //            {
-        //                continue;
-        //            }
-        //            var opr = tempoperationslist.FirstOrDefault(x => x.Wo_Id == mc.Wo_Id && x.Opr_No == mc.Opr_No_Id);
-        //            if (opr == null)
-        //            {
-        //                continue;
-        //            }
-        //            var Department = Departments.Where(x => x.DepartmentId == machine.ShopId).FirstOrDefault();
-
-        //            var routingStep = await _routingService.GetStep((int)opr.Opr_No);
-        //            var route = await _routingService.GetRouting((int)production.RoutingId);
-        //            var operation = new SimulationMachineOperationVM();
-        //            operation.BarType = "Temp";
-        //            operation.TooltipType = "Inhouse";
-        //            operation.Department = Department != null ? Department.Name : "";
-        //            operation.PartNum = part.PartNo;
-        //            operation.MachineName = machine.SlNo;
-        //            operation.OperationName = "Op " + routingStep.StepNumber;
-        //            operation.Color = "#FFC107";
-
-        //            var operationSlots = tempmachinetimeslotlist
-        //           .Where(x => x.Mc_Wait_List_Id == mc.TempMc_Wait_ListId)
-        //           .OrderBy(x => x.Timeslot_List_Id)
-        //           .ToList();
-
-        //            if (operationSlots.Any())
-        //            {
-
-        //                long startSlot = (long)mc.Plan_start_time_Id;
-        //                long endSlot = (long)mc.Plan_end_time_Id;
-
-        //                operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
-        //                operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
-        //                var startSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == startSlot);
-        //                var endSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == endSlot);
-
-        //                operation.ShopMachine = (Department != null ? Department.Name : "") + " / " + machine.SlNo;
-        //                operation.PartNoDesc = part.PartNo + " / " + part.Description;
-        //                operation.RoutingOprNo = route.RoutingName + " / " + routingStep.StepNumber;
-        //                operation.WoNo = production.WONumber;
-        //                operation.BatchQnty = production.PlanWOQnty.ToString();
-
-        //                if (startSlotObj != null)
-        //                    operation.StartDateTime = startSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
-
-        //                if (endSlotObj != null)
-        //                    operation.EndDateTime = endSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
-
-        //                operation.DurationHours = ((endSlot - startSlot) + 1).ToString();
-
-        //                char partsoldtocustomer;
-
-        //                if (production.Parentlevel == 'Y')
-        //                {
-        //                    partsoldtocustomer = 'Y';
-        //                }
-        //                else
-        //                {
-        //                    partsoldtocustomer = 'N';
-        //                }
-        //                operation.PartSoldToCustomer = partsoldtocustomer;
-
-        //                var oprmachines = await _routingService.StepMachines((int)opr.Opr_No);
-
-        //                var machineselected = oprmachines.Where(x => x.MachineId == mc.Mc_Id && x.RoutingStepId == opr.Opr_No).FirstOrDefault();
-
-        //                var setupTime = TimeSpan.Parse(machineselected.SetupTime);
-        //                var floorToFloorTime = TimeSpan.Parse(machineselected.FloorToFloorTime);
-
-        //                operation.FloorToFloorTime = floorToFloorTime.TotalMinutes.ToString();
-        //                operation.SetupTime = setupTime.TotalMinutes.ToString();
-        //            }
-
-
-        //            operation.Status = "Running";
-        //            row.Operations.Add(operation);
-        //        }
-
-        //    }
-
-
-        //    return Ok(vm);
-
-        //}
+                if (shift2Slots.Any())
+                {
+                    SimulationShiftVM shift2 = new SimulationShiftVM();
+
+                    shift2.ShiftName = "2nd Shift";
+                    shift2.Hours = shift2Slots.Select(x => x.Start_time.Hour % 12 == 0 ? 12 : x.Start_time.Hour % 12).ToList();
+                    header.Shifts.Add(shift2);
+                }
+
+
+
+                DateTime thirdShiftStart = date.Add(shift3Start);
+
+                DateTime thirdShiftEnd = date.AddDays(1).Add(shift1Start);
+
+                var shift3Slots = timeslotlist
+                    .Where(x => x.Start_time >= thirdShiftStart && x.Start_time < thirdShiftEnd)
+                    .OrderBy(x => x.Start_time)
+                    .ToList();
+
+                if (shift3Slots.Any())
+                {
+                    SimulationShiftVM shift3 = new SimulationShiftVM();
+
+                    shift3.ShiftName = "3rd Shift";
+                    shift3.Hours = shift3Slots.Select(x => x.Start_time.Hour % 12 == 0 ? 12 : x.Start_time.Hour % 12).ToList();
+                    header.Shifts.Add(shift3);
+                }
+
+                // Add only if at least one shift exists
+                if (header.Shifts.Any())
+                {
+                    vm.Headers.Add(header);
+                }
+
+            }
+
+
+            int firstTimelineSlot = (int)timeslotlist.Min(x => x.Timeslot_ListId);
+
+            const double slotWidth = 38;    //pixel 
+            var liveWoIds = new HashSet<long>(livewowaitlist.Select(x => x.Wo_Id));
+
+
+            //Actual prockplan bar 
+            const string ACTUAL_PROD_COLOR = "#0A58CA";
+
+            DateTime? ValidDate(DateTime? d) => (d.HasValue && d.Value.Year > 1) ? d : null;
+
+
+
+            // Actual production bar 
+
+            SimulationOperationVM BuildActualPartBar(SimulationOperationVM baseOp, DateTime? setupStartRaw, DateTime? setupApprvlRaw, DateTime? actEndRaw, long planStartId, long planEndId)
+            {
+                var setupStart = ValidDate(setupStartRaw);
+                var setupApprvl = ValidDate(setupApprvlRaw);
+                var actEnd = ValidDate(actEndRaw);
+
+                // bar is introduced only after Setup Approval
+                if (setupStart == null || setupApprvl == null)
+                    return null;
+
+                // bookout extends the bar, otherwise it ends at setup approval
+                DateTime actualEnd = actEnd ?? setupApprvl.Value;
+                if (actualEnd < setupStart.Value)
+                    actualEnd = setupStart.Value;
+
+                // start -> round DOWN to the hour, end -> round UP to the hour
+                var startSlotRow = timeslotlist.FirstOrDefault(x =>
+                    x.Start_time <= setupStart.Value && setupStart.Value < x.End_time);
+                var endSlotRow = timeslotlist.FirstOrDefault(x =>
+                    x.Start_time < actualEnd && actualEnd <= x.End_time);
+
+                if (startSlotRow == null)
+                    return null;
+
+                if (endSlotRow == null || (long)endSlotRow.Timeslot_ListId < (long)startSlotRow.Timeslot_ListId)
+                    endSlotRow = startSlotRow;
+
+                long actStartId = (long)startSlotRow.Timeslot_ListId;
+                long actEndId = (long)endSlotRow.Timeslot_ListId;
+
+                var op = new SimulationOperationVM();
+                op.PartNum = baseOp.PartNum;
+                op.Department = baseOp.Department;
+                op.OperationName = baseOp.OperationName;
+                op.MachineName = baseOp.MachineName;
+                op.DisplayLabel = baseOp.DisplayLabel;
+                op.Supplier = "";
+                op.ShopMachine = baseOp.ShopMachine;
+                op.PartNoDesc = baseOp.PartNoDesc;
+                op.RoutingOprNo = baseOp.RoutingOprNo;
+                op.WoNo = baseOp.WoNo;
+                op.BatchQnty = baseOp.BatchQnty;
+                op.CustomerLabel = baseOp.CustomerLabel;
+                op.CustomerValue = baseOp.CustomerValue;
+
+                op.Left = (actStartId - firstTimelineSlot) * slotWidth;
+                op.Width = ((actEndId - actStartId) + 1) * slotWidth;
+
+                op.Color = ACTUAL_PROD_COLOR;
+                op.Status = "Running";
+                op.BarType = "Actual";
+                op.TooltipType = "Actual";
+                op.Lane = "Actual";
+                op.IsDelayed = false;
+                op.DelayOutline = "none";
+
+
+                op.PlanStartDateTime = baseOp.PlanStartDateTime;
+                op.PlanEndDateTime = baseOp.PlanEndDateTime;
+                op.PlanDurationHours = baseOp.PlanDurationHours;
+                op.PlanFloorToFloor = baseOp.PlanFloorToFloor;
+                op.PlanSetupTime = baseOp.PlanSetupTime;
+
+                op.ActStartDateTime = setupStart.Value.ToString("dd/MM/yyyy HH:mm");
+                op.ActEndDateTime = actEnd != null ? actEnd.Value.ToString("dd/MM/yyyy HH:mm") : "";
+                op.ActDurationHours = actEnd != null ? (actEnd.Value - setupStart.Value).TotalHours.ToString("0.##") : "";
+
+                op.ActSetupMinutes = Math.Max(0, (setupApprvl.Value - setupStart.Value).TotalMinutes).ToString("0.##");
+                op.ActSetupTime = op.ActSetupMinutes;
+
+                op.IsDelayed = false;
+                op.DelayOutline = "none";
+                op.CompareColor = op.IsDelayed ? "red" : "#000000";
+
+                if (actEnd != null && actStartId > planStartId && actEndId > planEndId)
+                {
+                    op.IsDelayed = true;
+                    op.DelayOutline = "2px solid red";
+                    op.CompareColor = "red";
+                }
+
+
+                op.StartDateTime = op.ActStartDateTime;
+                op.EndDateTime = op.ActEndDateTime;
+                op.DurationHours = op.ActDurationHours;
+                op.ActFloorToFloor = "";
+                op.BookedOutQnty = "";
+                op.NcQnty = "";
+                return op;
+
+
+
+
+            }
+
+            //frozen inhouse
+            foreach (var item in livewowaitlist)
+            {
+
+                var production = productions.Where(x => x.WoId == item.Wo_Id).FirstOrDefault();
+                if (production == null)
+                {
+                    continue;
+                }
+                var partno = masterpartlist.Where(x => x.PartId == production.PartId).FirstOrDefault();
+                if (partno == null)
+                {
+                    continue;
+                }
+                SimulationPartRowVM partRow = new SimulationPartRowVM();
+                partRow.WoId = item.Wo_Id;
+                partRow.PartNo = partno.PartNo;
+                partRow.PartNoTitle = partno.PartNo;
+                partRow.Description = partno.Description;
+                partRow.IsUrgent = production.Urgent == 0;
+
+                partRow.SoldToCustomerText = production.Parentlevel == 'Y' ? "Yes" : "No";
+                partRow.PartTypeText = production.PartType == 2 ? "Assembly" : production.PartType == 1 ? "Manufactured Part" : "";
+
+                if (production.Parentlevel == 'Y')
+                {
+                    bool isEven = production.Sim_Seq_No % 2 == 0;
+
+                    partRow.PartNoColor = isEven ? "#A8E6A1" : "#FFD59E";
+                }
+                else
+                {
+                    partRow.PartNoColor = "#f8f9fa";
+                }
+
+
+
+
+                if (production.Parentlevel == 'Y' && production.SoComplDate != null)
+                {
+                    var soDate = production.SoComplDate.Value;
+                    var markerDay = GetPreviousWorkingDay(soDate, holidaylist);
+                    var lastSlot = GetLastSlotOfDay(markerDay, timeslotlist);
+                    var customerOrders = await _baService.GetCustomerOrders();
+                    if (lastSlot != null)
+                    {
+                        long slotId = lastSlot.Timeslot_ListId;
+                        partRow.SoCompletionMarkerLeft = (slotId - firstTimelineSlot) * slotWidth;
+                        partRow.HasSoCompletionMarker = true;
+                        SalesOrderVM salesOrder = salesOrders.FirstOrDefault(x => x.SalesOrderId == production.SalesOrderId);
+
+                        if (salesOrder != null)
+                        {
+                            var customerOrder = customerOrders.FirstOrDefault(x => x.CustomerOrderId == salesOrder.CustomerOrderId);
+
+                            partRow.SoCustomer = customerOrder != null ? customerOrder.CustomerName : "";
+                            if (actual)
+                            {
+                                var soActDate = salesOrder.ActCompletedDate;
+
+                                if (soActDate != null)
+                                {
+                                    var soActSlot = timeslotlist.FirstOrDefault(x =>
+                                        x.Start_time <= soActDate && soActDate < x.End_time);
+
+                                    if (soActSlot != null)
+                                    {
+                                        partRow.HasSoActCompletionMarker = true;
+                                        partRow.SoActCompletionMarkerLeft = ((long)soActSlot.Timeslot_ListId - firstTimelineSlot) * slotWidth;
+                                        partRow.SoActCompletionDateDisplay = soActDate.ToString("dd/MM/yyyy HH:mm");
+                                    }
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            partRow.SoCustomer = "";
+                        }
+
+                        partRow.SoNo = production.SalesOrderId.ToString();
+                        partRow.SoQnty = production.PlanWOQnty.ToString();
+                        partRow.SoCompletionDateDisplay = soDate.ToString("dd/MM/yyyy");
+
+                    }
+                    else
+                    {
+                        partRow.HasSoCompletionMarker = false;
+                    }
+                }
+                else
+                {
+                    partRow.HasSoCompletionMarker = false;
+                }
+
+
+
+
+                var operations = Liveoperationslist.Where(x => x.Wo_Id == item.Wo_Id).ToList();
+
+
+                foreach (var opr in operations)
+                {
+
+                    var routingstep = await _routingService.GetStep((int)opr.Opr_No);
+                    var route = await _routingService.GetRouting((int)production.RoutingId);
+
+                    if (opr.RoutingStepLocation == 1)
+                    {
+
+                        var stepmachines = await _routingService.StepMachines((int)routingstep.StepId);
+
+                        if (stepmachines.Any())
+                        {
+                            var preffredstepmachine = stepmachines.OrderByDescending(x => x.PreferredMachine).FirstOrDefault();
+
+                            var machine = machinelist.Where(x => x.MachineId == preffredstepmachine.MachineId).FirstOrDefault();
+                            //machine Sl no
+                            var Department = Departments.Where(x => x.DepartmentId == machine.ShopId).FirstOrDefault();
+
+                            SimulationOperationVM operation = new SimulationOperationVM();
+
+                            var machineinuse = Livemachinewaitlist.FirstOrDefault(x =>
+                               x.Wo_Id == item.Wo_Id &&
+                               x.Opr_No_Id == opr.Opr_No &&
+                               x.Mc_Id == preffredstepmachine.MachineId);
+
+                            if (machineinuse != null)
+                            {
+                                var operationSlots = Livemachinetimeslotlist
+                                    .Where(x => x.Mc_Wait_List_Id == machineinuse.Mc_Wait_ListId)
+                                    .OrderBy(x => x.Timeslot_List_Id)
+                                    .ToList();
+                                if (operationSlots.Any())
+                                {
+                                    operation.PartNum = partno.PartNo;
+                                    operation.Department = Department != null ? Department.Name : "";
+                                    operation.OperationName = "Op " + routingstep.StepNumber;
+
+                                    long startSlot = (long)machineinuse.Plan_start_time_Id;
+                                    long endSlot = (long)machineinuse.Plan_end_time_Id;
+
+                                    operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
+                                    operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
+
+                                    operation.Color = "#7092BE";
+                                    operation.MachineName = machine.SlNo;
+
+                                    operation.DisplayLabel = machine.SlNo;
+                                    operation.Status = "Running";
+
+
+                                    operation.BarType = "Inhouse";
+                                    operation.TooltipType = "Inhouse";
+                                    var startSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == startSlot);
+                                    var endSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == endSlot);
+
+                                    operation.ShopMachine = (Department != null ? Department.Name : "") + " / " + machine.SlNo;
+                                    operation.PartNoDesc = partno.PartNo + " / " + partno.Description;
+                                    operation.RoutingOprNo = route.RoutingName + " / " + routingstep.StepNumber;
+                                    operation.WoNo = production.WONumber;
+                                    operation.BatchQnty = production.PlanWOQnty.ToString();
+
+                                    if (startSlotObj != null)
+                                    {
+                                        operation.StartDateTime = startSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
+                                    }
+
+                                    if (endSlotObj != null)
+                                    {
+                                        operation.EndDateTime = endSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
+                                    }
+
+                                    if (endSlotObj != null && production.SoComplDate.HasValue)
+                                    {
+                                        operation.IsDelayed = endSlotObj.Start_time > production.SoComplDate.Value;
+                                    }
+                                    else
+                                    {
+                                        operation.IsDelayed = false;
+                                    }
+
+                                    operation.DelayOutline = operation.IsDelayed ? "2px solid red" : "none";
+                                    operation.DurationHours = ((endSlot - startSlot) + 1).ToString();
+
+                                    var oprmachines = await _routingService.StepMachines((int)opr.Opr_No);
+                                    var machineselected = oprmachines.Where(x => x.MachineId == machineinuse.Mc_Id && x.RoutingStepId == opr.Opr_No).FirstOrDefault();
+                                    var setupTime = TimeSpan.Parse(machineselected.SetupTime);
+                                    var floorToFloorTime = TimeSpan.Parse(machineselected.FloorToFloorTime);
+
+                                    operation.FloorToFloorTime = floorToFloorTime.TotalMinutes.ToString();
+                                    operation.SetupTime = setupTime.TotalMinutes.ToString();
+
+                                    string customerLabel = "";
+                                    string customerValue = "";
+
+                                    if (production.PartType == 2 && production.Parentlevel == 'Y')
+                                    {
+                                        customerLabel = "Assy Sold to Customer";
+
+                                    }
+                                    else if (production.PartType == 1 && production.Parentlevel == 'Y')
+                                    {
+                                        customerLabel = "Child Manufactured Part Sold to Customer";
+
+                                    }
+                                    else if (production.PartType == 2 && production.Parentlevel == 'N')
+                                    {
+                                        customerLabel = "Sub Assy";
+
+                                    }
+                                    else if (production.PartType == 1 && production.Parentlevel == 'N')
+                                    {
+                                        customerLabel = "Child Manufactured Part";
+
+                                    }
+
+                                    operation.CustomerLabel = customerLabel;
+                                    operation.CustomerValue = customerValue;
+
+                                    operation.PlanStartDateTime = startSlotObj != null ? startSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm") : "";
+                                    operation.PlanEndDateTime = endSlotObj != null ? endSlotObj.End_time.ToString("dd/MM/yyyy HH:mm") : "";
+                                    operation.PlanDurationHours = operation.DurationHours;
+                                    operation.PlanFloorToFloor = operation.FloorToFloorTime;
+                                    operation.PlanSetupTime = operation.SetupTime;
+                                    operation.CompareColor = "#000000";
+
+                                    partRow.Operations.Add(operation);
+
+
+                                    if (actual)
+                                    {
+                                        operation.BookedOutQnty = machineinuse.Act_Qnty.ToString();
+                                        operation.NcQnty = machineinuse.NonConQnty.ToString();
+
+                                        var actualBar = BuildActualPartBar(operation,
+                                            machineinuse.Setup_Start_time,
+                                            machineinuse.Setup_Apprvl_time,
+                                            machineinuse.Act_End_time,
+                                            (long)machineinuse.Plan_start_time_Id,
+                                            (long)machineinuse.Plan_end_time_Id);
+
+                                        if (actualBar != null)
+                                        {
+                                            actualBar.BookedOutQnty = operation.BookedOutQnty;
+                                            actualBar.NcQnty = operation.NcQnty;
+
+                                            // frozen bar shows the same actual values and colour
+                                            operation.ActStartDateTime = actualBar.ActStartDateTime;
+                                            operation.ActEndDateTime = actualBar.ActEndDateTime;
+                                            operation.ActDurationHours = actualBar.ActDurationHours;
+                                            operation.ActSetupTime = actualBar.ActSetupTime;
+                                            operation.ActFloorToFloor = actualBar.ActFloorToFloor;
+                                            operation.CompareColor = actualBar.CompareColor;
+
+                                            partRow.Operations.Add(actualBar);
+                                        }
+                                    }
+                                }
+
+                            }
+
+                        }
+                    }
+                    else if (opr.RoutingStepLocation == 2)
+                    {
+
+                        // Match the subcon record for this operation
+                        var subconRecord = Livesubconlist.FirstOrDefault(x => x.Wo_Id == item.Wo_Id && x.Opr_No == opr.Opr_No);
+
+                        if (subconRecord != null && subconRecord.Plan_Disp_date != null && subconRecord.Plan_Recpt_date != null)
+                        {
+                            var dispDate = subconRecord.Plan_Disp_date;
+                            var recptDate = subconRecord.Plan_Recpt_date;
+
+                            // Find the timeslot that contains the dispatch date
+                            var startSlotObj = timeslotlist.Where(x => x.Start_time <= dispDate).OrderByDescending(x => x.Start_time).FirstOrDefault();
+                            // Find the timeslot that contains the receipt date
+                            var endSlotObj = timeslotlist.Where(x => x.Start_time <= recptDate).OrderByDescending(x => x.Start_time).FirstOrDefault();
+
+
+
+                            if (startSlotObj != null && endSlotObj != null)
+                            {
+                                SimulationOperationVM operation = new SimulationOperationVM();
+                                if (production.SoComplDate.HasValue)
+                                {
+                                    operation.IsDelayed =
+                                        recptDate > production.SoComplDate.Value;
+                                }
+                                else
+                                {
+                                    operation.IsDelayed = false;
+                                }
+                                operation.DelayOutline = operation.IsDelayed ? "2px solid red" : "none";
+                                operation.PartNum = partno.PartNo;
+                                operation.Department = "";
+                                var supplierCompany = companies.FirstOrDefault(x => x.CompanyId == subconRecord.Supplier_Id);
+
+                                if (supplierCompany != null)
+                                {
+                                    operation.Supplier = supplierCompany.CompanyName;
+                                }
+                                else
+                                {
+                                    operation.Supplier = "Supplier " + subconRecord.Supplier_Id;
+                                }
+
+                                operation.MachineName = "";
+                                operation.DisplayLabel = operation.Supplier;
+                                operation.OperationName = "Op " + routingstep.StepNumber;
+
+                                long startSlot = (long)startSlotObj.Timeslot_ListId;
+                                long endSlot = (long)endSlotObj.Timeslot_ListId;
+
+                                operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
+                                operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
+                                operation.Color = "#8B5FBF";
+                                operation.Status = "Running";
+
+
+                                operation.BarType = "Subcon";
+                                operation.TooltipType = "Subcon";
+                                operation.PartNoDesc = partno.PartNo + " / " + partno.Description;
+                                operation.RoutingOprNo = route.RoutingName + " / " + routingstep.StepNumber;
+                                operation.WoNo = production.WONumber;
+                                operation.BatchQnty = production.PlanWOQnty.ToString();
+                                operation.StartDateTime = dispDate.ToString("dd/MM/yyyy HH:mm");
+                                operation.EndDateTime = recptDate.ToString("dd/MM/yyyy HH:mm");
+
+                                partRow.Operations.Add(operation);
+                            }
+                        }
+                    }
+
+                }
+                if (production.Combined_WO != 'Y')
+                {
+                    var qualifyingProcPlan = procPlanList
+                            .Where(x => x.WorkOrderId == item.Wo_Id && (x.PartType == "BOF" || x.PartType == "RawMaterial"))
+                            .OrderBy(x => x.CalcReceiptDate)
+                            .ToList();
+
+                    foreach (var prockpaln in qualifyingProcPlan)
+                    {
+                        var receiptDate = prockpaln.CalcReceiptDate;
+                        var procPlanPartPurchaseRelList = await _woService.ProcPlanPartPurChaseRel(prockpaln.ProcPlanId);
+                        var procplan = procPlanPartPurchaseRelList.FirstOrDefault();
+                        if (procplan == null)
+                        {
+                            continue;
+                        }
+                        var partPurchaseDetailsList = await _masterService.GetPartPurchase((int)procplan.PartPurchaseId);
+                        var firstSlot = GetFirstSlotOfDay(receiptDate, timeslotlist);
+                        var part = masterpartlist.FirstOrDefault(x => x.PartId == prockpaln.PartId);
+
+                        if (firstSlot != null)
+                        {
+                            long slotId = firstSlot.Timeslot_ListId;
+                            partRow.MatlReceiptMarkerLeft = (slotId - firstTimelineSlot) * slotWidth;
+                            partRow.HasMatlReceiptMarker = true;
+                            partRow.MatlReceiptPartNo = prockpaln.PartId.ToString();
+                            partRow.MatlReceiptPartType = prockpaln.PartType;
+                            partRow.MatlReceiptDateDisplay = receiptDate.ToString("dd/MM/yyyy");
+
+
+                            var matlPart = masterpartlist.FirstOrDefault(x => x.PartId == prockpaln.PartId);
+                            partRow.MatlReceiptPartNoDesc = matlPart != null
+                                ? matlPart.PartNo + " / " + matlPart.Description
+                                : prockpaln.PartId.ToString();
+
+
+                            partRow.MatlReceiptQnty = prockpaln.Calc_Proc_Qnty.ToString();
+
+                            if (partPurchaseDetailsList != null)
+                            {
+                                var supplierCompany = companies.FirstOrDefault(x => x.CompanyId == partPurchaseDetailsList.PSupplierId);
+                                partRow.MatlReceiptSupplier = supplierCompany != null ? supplierCompany.CompanyName : "";
+                            }
+                            else
+                            {
+                                partRow.MatlReceiptSupplier = "";
+                            }
+
+                            var selectedpo = podetails.Where(x => x.ProcPlanId == prockpaln.ProcPlanId).FirstOrDefault();
+                            if (selectedpo != null)
+                            {
+                                partRow.MatlReceiptPoNo = selectedpo.POReference;
+                            }
+                            else
+                            {
+                                partRow.MatlReceiptPoNo = "Po Not Approved!";
+                            }
+
+                        }
+                        else
+                        {
+                            partRow.HasMatlReceiptMarker = false;
+                        }
+                    }
+
+                }
+                else
+                {
+                    // Get WO IDs from Consolidated WO Mapping
+                    var consolidatedMappings = consolidatedwomapping.Where(x => x.CombinedWoId == item.Wo_Id);
+
+                    var mappedWoIds = consolidatedMappings
+                        .Select(x => x.WoId)
+                        .Distinct()
+                        .ToList();
+
+                    if (!mappedWoIds.Contains(item.Wo_Id)) mappedWoIds.Add(item.Wo_Id);
+
+                    // Get all ProcPlans belonging to mapped WOs
+                    var combinedProcPlans = procPlanList
+                        .Where(x => mappedWoIds.Contains(x.WorkOrderId) &&
+                                    (x.PartType == "BOF" ||
+                                     x.PartType == "RawMaterial"))
+                        .ToList();
+
+                    // Combine same material
+                    var groupedProcPlans = combinedProcPlans
+                        .GroupBy(x => new
+                        {
+                            x.PartId,
+                            x.PartType
+                        })
+                        .Select(g => new
+                        {
+                            ProcPlans = g.ToList(),
+                            PartId = g.Key.PartId,
+                            PartType = g.Key.PartType,
+                            ReceiptDate = g.Min(x => x.CalcReceiptDate),
+                            Quantity = g.Sum(x => x.Calc_Proc_Qnty)
+                        })
+                        .OrderBy(x => x.ReceiptDate)
+                        .ToList();
+
+                    foreach (var group in groupedProcPlans)
+                    {
+                        var firstSlot = GetFirstSlotOfDay(group.ReceiptDate, timeslotlist);
+
+                        if (firstSlot == null)
+                            continue;
+
+                        long slotId = firstSlot.Timeslot_ListId;
+
+                        partRow.MatlReceiptMarkerLeft = (slotId - firstTimelineSlot) * slotWidth;
+
+                        partRow.HasMatlReceiptMarker = true;
+
+                        partRow.MatlReceiptPartNo = group.PartId.ToString();
+
+                        partRow.MatlReceiptPartType = group.PartType;
+
+                        partRow.MatlReceiptDateDisplay = group.ReceiptDate.ToString("dd/MM/yyyy");
+
+                        var matlPart = masterpartlist.FirstOrDefault(x => x.PartId == group.PartId);
+
+                        partRow.MatlReceiptPartNoDesc = matlPart != null
+                                ? matlPart.PartNo + " / " + matlPart.Description
+                                : group.PartId.ToString();
+
+                        partRow.MatlReceiptQnty = group.Quantity.ToString();
+
+                        // Get supplier
+                        var suppliers = new List<string>();
+
+                        foreach (var procPlan in group.ProcPlans)
+                        {
+                            var relations = await _woService.ProcPlanPartPurChaseRel(procPlan.ProcPlanId);
+
+                            var relation = relations.FirstOrDefault();
+
+                            if (relation == null)
+                                continue;
+
+                            var purchase = await _masterService.GetPartPurchase((int)relation.PartPurchaseId);
+
+                            if (purchase != null)
+                            {
+                                var supplier = companies.FirstOrDefault(x => x.CompanyId == purchase.PSupplierId);
+
+                                if (supplier != null && !suppliers.Contains(supplier.CompanyName))
+                                {
+                                    suppliers.Add(supplier.CompanyName);
+                                }
+                            }
+                        }
+
+                        partRow.MatlReceiptSupplier = string.Join(", ", suppliers);
+
+                        var poNumbers = new List<string>();
+
+                        foreach (var procPlan in group.ProcPlans)
+                        {
+                            var selectedPo = podetails
+                                .FirstOrDefault(x => x.ProcPlanId == procPlan.ProcPlanId);
+
+                            if (selectedPo != null && !string.IsNullOrWhiteSpace(selectedPo.POReference))
+                            {
+                                if (!poNumbers.Contains(selectedPo.POReference))
+                                {
+                                    poNumbers.Add(selectedPo.POReference);
+                                }
+                            }
+                        }
+
+                        partRow.MatlReceiptPoNo = poNumbers.Any()
+                            ? string.Join(", ", poNumbers)
+                            : "Po Not Approved!";
+
+
+                    }
+
+                }
+                if (actual && invTransLogs != null)
+                {
+                    var receipts = invTransLogs
+                        .Where(x => x.Wo_Id == item.Wo_Id && x.Transaction_Id == 5)
+                        .ToList();
+
+                    if (receipts.Any())
+                    {
+                        var receiptDate = receipts.Max(x => x.Dt_time);
+
+
+                        var receiptSlot = timeslotlist.FirstOrDefault(x =>
+                            x.Start_time <= receiptDate && receiptDate < x.End_time);
+
+                        if (receiptSlot != null)
+                        {
+                            partRow.HasMatlActReceiptMarker = true;
+                            partRow.MatlActReceiptMarkerLeft = ((long)receiptSlot.Timeslot_ListId - firstTimelineSlot) * slotWidth;
+                            partRow.MatlActReceiptDateDisplay = receiptDate.ToString("dd/MM/yyyy HH:mm");
+                            partRow.MatlActReceiptQnty = receipts.Sum(x => x.Qnty).ToString();
+                        }
+                    }
+                }
+
+                vm.Parts.Add(partRow);
+
+
+            }
+            if (actual)
+                return Ok(vm);
+            //temp data 
+            foreach (var item in tempwowaitlist)
+            {
+                if (liveWoIds.Contains(item.Wo_Id))
+                    continue;
+
+                var production = productions.Where(x => x.WoId == item.Wo_Id).FirstOrDefault();
+                if (production == null)
+                {
+                    continue;
+                }
+                var partno = masterpartlist.Where(x => x.PartId == production.PartId).FirstOrDefault();
+                if (partno == null)
+                {
+                    continue;
+                }
+                SimulationPartRowVM partRow = new SimulationPartRowVM();
+                partRow.WoId = item.Wo_Id;
+                partRow.PartNo = partno.PartNo;
+                partRow.Description = partno.Description;
+                partRow.IsUrgent = production.Urgent == 0;
+
+                partRow.SoldToCustomerText = production.Parentlevel == 'Y' ? "Yes" : "No";
+                partRow.PartTypeText = production.PartType == 2 ? "Assembly" : production.PartType == 1 ? "Manufactured Part" : "";
+
+                if (production.Parentlevel == 'Y')
+                {
+                    bool isEven = production.Sim_Seq_No % 2 == 0;
+                    partRow.PartNoColor = isEven ? "#A8E6A1" : "#FFD59E";
+                }
+                else
+                {
+                    partRow.PartNoColor = "";
+                }
+                var operations = tempoperationslist.Where(x => x.Wo_Id == item.Wo_Id).ToList();
+
+                foreach (var opr in operations)
+                {
+                    var routingstep = await _routingService.GetStep((int)opr.Opr_No);
+                    var route = await _routingService.GetRouting((int)production.RoutingId);
+                    if (opr.RoutingStepLocation == 1)
+                    {
+
+                        var stepmachines = await _routingService.StepMachines((int)routingstep.StepId);
+
+                        if (stepmachines.Any())
+                        {
+                            var preffredstepmachine = stepmachines.OrderByDescending(x => x.PreferredMachine).FirstOrDefault();
+                            var machine = machinelist.Where(x => x.MachineId == preffredstepmachine.MachineId).FirstOrDefault();
+                            var Department = Departments.Where(x => x.DepartmentId == machine.ShopId).FirstOrDefault();
+
+                            var machineinuse = tempmachinewaitlist.FirstOrDefault(x =>
+                               x.Wo_Id == item.Wo_Id &&
+                               x.Opr_No_Id == opr.Opr_No &&
+                               x.Mc_Id == preffredstepmachine.MachineId);
+
+                            if (machineinuse != null)
+                            {
+                                var operationSlots = tempmachinetimeslotlist
+                                    .Where(x => x.Mc_Wait_List_Id == machineinuse.TempMc_Wait_ListId)
+                                    .OrderBy(x => x.Timeslot_List_Id)
+                                    .ToList();
+
+                                if (operationSlots.Any())
+                                {
+
+                                    SimulationOperationVM operation = new SimulationOperationVM();
+                                    operation.PartNum = partno.PartNo;
+                                    operation.Department = Department != null ? Department.Name : "";
+                                    operation.OperationName = "Op " + routingstep.StepNumber;
+
+                                    long startSlot = (long)machineinuse.Plan_start_time_Id;
+                                    long endSlot = (long)machineinuse.Plan_end_time_Id;
+
+                                    operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
+                                    operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
+
+                                    operation.Color = "#FFC107";   // yellow — unfrozen/temp
+                                    operation.MachineName = machine.SlNo;
+                                    operation.Supplier = "";
+                                    operation.DisplayLabel = machine.SlNo;
+                                    operation.Status = "Running";
+                                    operation.BarType = "Temp";
+                                    operation.TooltipType = "Inhouse";
+                                    var startSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == startSlot);
+                                    var endSlotObj = timeslotlist.FirstOrDefault(x => x.Timeslot_ListId == endSlot);
+                                    if (endSlotObj != null && production.SoComplDate.HasValue)
+                                    {
+                                        operation.IsDelayed =
+                                            endSlotObj.Start_time > production.SoComplDate.Value;
+                                    }
+                                    else
+                                    {
+                                        operation.IsDelayed = false;
+                                    }
+
+                                    operation.DelayOutline = operation.IsDelayed ? "2px solid red" : "none";
+                                    operation.ShopMachine = (Department != null ? Department.Name : "") + " / " + machine.SlNo;
+                                    operation.PartNoDesc = partno.PartNo + " / " + partno.Description;
+                                    operation.RoutingOprNo = route.RoutingName + " / " + routingstep.StepNumber;
+                                    operation.WoNo = production.WONumber;
+                                    operation.BatchQnty = production.PlanWOQnty.ToString();
+
+                                    if (startSlotObj != null)
+                                    {
+                                        operation.StartDateTime = startSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
+                                    }
+
+                                    if (endSlotObj != null)
+                                    {
+                                        operation.EndDateTime = endSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm");
+                                    }
+
+                                    operation.DurationHours = ((endSlot - startSlot) + 1).ToString();
+
+                                    var oprmachines = await _routingService.StepMachines((int)opr.Opr_No);
+                                    var machineselected = oprmachines.Where(x => x.MachineId == machineinuse.Mc_Id && x.RoutingStepId == opr.Opr_No).FirstOrDefault();
+                                    var setupTime = TimeSpan.Parse(machineselected.SetupTime);
+                                    var floorToFloorTime = TimeSpan.Parse(machineselected.FloorToFloorTime);
+
+                                    operation.FloorToFloorTime = floorToFloorTime.TotalMinutes.ToString();
+                                    operation.SetupTime = setupTime.TotalMinutes.ToString();
+
+                                    operation.AssySoldToCustomer = "";   // TODO — pending customer field
+                                    operation.PartSoldToCustomer = "";   // TODO — pending customer field
+
+                                    partRow.Operations.Add(operation);
+                                }
+                            }
+                        }
+                    }
+                    else if (opr.RoutingStepLocation == 2)
+                    {
+                        var subconRecord = Tempsubconlist.FirstOrDefault(x => x.Wo_Id == item.Wo_Id && x.Opr_No == opr.Opr_No);
+
+                        if (subconRecord != null && subconRecord.Plan_Disp_date != null && subconRecord.Plan_Recpt_date != null)
+                        {
+                            var dispDate = subconRecord.Plan_Disp_date;
+                            var recptDate = subconRecord.Plan_Recpt_date;
+
+                            var startSlotObj = timeslotlist
+                                .Where(x => x.Start_time <= dispDate)
+                                .OrderByDescending(x => x.Start_time)
+                                .FirstOrDefault();
+
+                            var endSlotObj = timeslotlist
+                                .Where(x => x.Start_time <= recptDate)
+                                .OrderByDescending(x => x.Start_time)
+                                .FirstOrDefault();
+
+                            if (startSlotObj != null && endSlotObj != null)
+                            {
+                                SimulationOperationVM operation = new SimulationOperationVM();
+
+                                if (endSlotObj != null && production.SoComplDate.HasValue)
+                                {
+                                    operation.IsDelayed = endSlotObj.Start_time > production.SoComplDate.Value;
+                                }
+                                else
+                                {
+                                    operation.IsDelayed = false;
+                                }
+
+                                operation.DelayOutline = operation.IsDelayed ? "2px solid red" : "none";
+                                operation.PartNum = partno.PartNo;
+                                operation.Department = "";
+
+                                var supplierCompany = companies.FirstOrDefault(x => x.CompanyId == subconRecord.Supplier_Id);
+
+                                if (supplierCompany != null)
+                                {
+                                    operation.Supplier = supplierCompany.CompanyName;
+                                }
+                                else
+                                {
+                                    operation.Supplier = "Supplier " + subconRecord.Supplier_Id;
+                                }
+
+                                operation.MachineName = "";
+                                operation.DisplayLabel = operation.Supplier;
+                                operation.OperationName = "Op " + routingstep.StepNumber;
+
+                                long startSlot = (long)startSlotObj.Timeslot_ListId;
+                                long endSlot = (long)endSlotObj.Timeslot_ListId;
+
+                                operation.Left = (startSlot - firstTimelineSlot) * slotWidth;
+                                operation.Width = ((endSlot - startSlot) + 1) * slotWidth;
+                                operation.Color = "#FD7E14";   // yellow — unfrozen/temp
+
+                                operation.Status = "Running";
+                                operation.BarType = "Temp";
+                                operation.TooltipType = "Subcon";
+                                operation.PartNoDesc = partno.PartNo + " / " + partno.Description;
+                                operation.RoutingOprNo = route.RoutingName + " / " + routingstep.StepNumber;
+                                operation.WoNo = production.WONumber;
+                                operation.BatchQnty = production.PlanWOQnty.ToString();
+                                operation.StartDateTime = dispDate.ToString("dd/MM/yyyy HH:mm");
+                                operation.EndDateTime = recptDate.ToString("dd/MM/yyyy HH:mm");
+                                partRow.Operations.Add(operation);
+                            }
+                        }
+                    }
+                }
+
+                if (partRow.Operations.Any())
+                    vm.Parts.Add(partRow);
+            }
+            return Ok(vm);
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> SimulationData(bool actual = false)
@@ -35421,9 +35432,11 @@ namespace CWB.App.Controllers
 
             DateTime? ValidDate(DateTime? d) => (d.HasValue && d.Value.Year > 1) ? d : null;
 
-            // Actual production bar (lower lane): hour of Setup_Start_time -> hour of Act_End_time
-            SimulationOperationVM BuildActualPartBar(SimulationOperationVM baseOp,
-                DateTime? setupStartRaw, DateTime? setupApprvlRaw, DateTime? actEndRaw)
+
+
+            // Actual production bar 
+
+            SimulationOperationVM BuildActualPartBar(SimulationOperationVM baseOp, DateTime? setupStartRaw, DateTime? setupApprvlRaw, DateTime? actEndRaw, long planStartId, long planEndId)
             {
                 var setupStart = ValidDate(setupStartRaw);
                 var setupApprvl = ValidDate(setupApprvlRaw);
@@ -35479,25 +35492,43 @@ namespace CWB.App.Controllers
                 op.IsDelayed = false;
                 op.DelayOutline = "none";
 
-                // tooltip shows the ACTUAL (unrounded) times
-                op.StartDateTime = setupStart.Value.ToString("dd/MM/yyyy HH:mm");
-                op.ActSetupMinutes = (setupApprvl.Value - setupStart.Value).TotalMinutes.ToString("0.##");
 
-                if (actEnd != null)
+                op.PlanStartDateTime = baseOp.PlanStartDateTime;
+                op.PlanEndDateTime = baseOp.PlanEndDateTime;
+                op.PlanDurationHours = baseOp.PlanDurationHours;
+                op.PlanFloorToFloor = baseOp.PlanFloorToFloor;
+                op.PlanSetupTime = baseOp.PlanSetupTime;
+
+                op.ActStartDateTime = setupStart.Value.ToString("dd/MM/yyyy HH:mm");
+                op.ActEndDateTime = actEnd != null ? actEnd.Value.ToString("dd/MM/yyyy HH:mm") : "";
+                op.ActDurationHours = actEnd != null ? (actEnd.Value - setupStart.Value).TotalHours.ToString("0.##") : "";
+
+                op.ActSetupMinutes = Math.Max(0, (setupApprvl.Value - setupStart.Value).TotalMinutes).ToString("0.##");
+                op.ActSetupTime = op.ActSetupMinutes;
+
+                op.IsDelayed = false;
+                op.DelayOutline = "none";
+                op.CompareColor = op.IsDelayed ? "red" : "#000000";
+
+                if (actEnd != null && actStartId > planStartId && actEndId > planEndId)
                 {
-                    op.EndDateTime = actEnd.Value.ToString("dd/MM/yyyy HH:mm");
-                    op.DurationHours = (actEnd.Value - setupStart.Value).TotalHours.ToString("0.##");
-                }
-                else
-                {
-                    op.EndDateTime = "";
-                    op.DurationHours = "";
+                    op.IsDelayed = true;
+                    op.DelayOutline = "2px solid red";
+                    op.CompareColor = "red";
                 }
 
+                 
+                op.StartDateTime = op.ActStartDateTime;
+                op.EndDateTime = op.ActEndDateTime;
+                op.DurationHours = op.ActDurationHours;
                 op.ActFloorToFloor = "";
                 op.BookedOutQnty = "";
                 op.NcQnty = "";
                 return op;
+
+              
+
+              
             }
 
             //frozen inhouse
@@ -35520,6 +35551,9 @@ namespace CWB.App.Controllers
                 partRow.PartNoTitle = partno.PartNo;
                 partRow.Description = partno.Description;
                 partRow.IsUrgent = production.Urgent == 0;
+
+                partRow.SoldToCustomerText = production.Parentlevel == 'Y' ? "Yes" : "No";
+                partRow.PartTypeText = production.PartType == 2 ? "Assembly" : production.PartType == 1 ? "Manufactured Part" : "";
 
                 if (production.Parentlevel == 'Y')
                 {
@@ -35580,6 +35614,7 @@ namespace CWB.App.Controllers
                         partRow.SoNo = production.SalesOrderId.ToString();
                         partRow.SoQnty = production.PlanWOQnty.ToString();
                         partRow.SoCompletionDateDisplay = soDate.ToString("dd/MM/yyyy");
+                       
                     }
                     else
                     {
@@ -35716,20 +35751,41 @@ namespace CWB.App.Controllers
                                     operation.CustomerLabel = customerLabel;
                                     operation.CustomerValue = customerValue;
 
+                                    operation.PlanStartDateTime = startSlotObj != null ? startSlotObj.Start_time.ToString("dd/MM/yyyy HH:mm") : "";
+                                    operation.PlanEndDateTime = endSlotObj != null ? endSlotObj.End_time.ToString("dd/MM/yyyy HH:mm") : "";
+                                    operation.PlanDurationHours = operation.DurationHours;
+                                    operation.PlanFloorToFloor = operation.FloorToFloorTime;
+                                    operation.PlanSetupTime = operation.SetupTime;
+                                    operation.CompareColor = "#000000";
+
                                     partRow.Operations.Add(operation);
                                     
 
                                     if (actual)
                                     {
+                                        operation.BookedOutQnty = machineinuse.Act_Qnty.ToString();
+                                        operation.NcQnty = machineinuse.NonConQnty.ToString();
+
                                         var actualBar = BuildActualPartBar(operation,
                                             machineinuse.Setup_Start_time,
                                             machineinuse.Setup_Apprvl_time,
-                                            machineinuse.Act_End_time);
+                                            machineinuse.Act_End_time,
+                                            (long)machineinuse.Plan_start_time_Id,
+                                            (long)machineinuse.Plan_end_time_Id);
 
                                         if (actualBar != null)
                                         {
-                                            actualBar.BookedOutQnty = machineinuse.Act_Qnty.ToString();
-                                            actualBar.NcQnty = machineinuse.NonConQnty.ToString();
+                                            actualBar.BookedOutQnty = operation.BookedOutQnty;
+                                            actualBar.NcQnty = operation.NcQnty;
+
+                                            // frozen bar shows the same actual values and colour
+                                            operation.ActStartDateTime = actualBar.ActStartDateTime;
+                                            operation.ActEndDateTime = actualBar.ActEndDateTime;
+                                            operation.ActDurationHours = actualBar.ActDurationHours;
+                                            operation.ActSetupTime = actualBar.ActSetupTime;
+                                            operation.ActFloorToFloor = actualBar.ActFloorToFloor;
+                                            operation.CompareColor = actualBar.CompareColor;
+
                                             partRow.Operations.Add(actualBar);
                                         }
                                     }
@@ -36043,6 +36099,10 @@ namespace CWB.App.Controllers
                 partRow.PartNo = partno.PartNo;
                 partRow.Description = partno.Description;
                 partRow.IsUrgent = production.Urgent == 0;
+
+                partRow.SoldToCustomerText = production.Parentlevel == 'Y' ? "Yes" : "No";
+                partRow.PartTypeText = production.PartType == 2 ? "Assembly" : production.PartType == 1 ? "Manufactured Part" : "";
+
                 if (production.Parentlevel == 'Y')
                 {
                     bool isEven = production.Sim_Seq_No % 2 == 0;

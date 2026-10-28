@@ -22,5 +22,8 @@ namespace CWB.ProductionPlanWO.ViewModels
         public int Plan_Simul_Qnty { get; set; }
         public int NoOfSimulation { get; set; }
         public long TenantId { get; set; }
+
+        public long Sim_Seq_No { get; set; }
+        public long WOLevel { get; set; }
     }
 }

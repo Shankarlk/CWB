@@ -45,5 +45,8 @@ namespace CWB.App.Models.ProductionSimulation
         public bool HasSoActCompletionMarker { get; set; }
         public double SoActCompletionMarkerLeft { get; set; }
         public string SoActCompletionDateDisplay { get; set; } = "";
+
+        public string SoldToCustomerText { get; set; } = "";
+        public string PartTypeText { get; set; } = "";
     }
 }

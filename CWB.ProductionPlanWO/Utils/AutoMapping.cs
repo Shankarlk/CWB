@@ -1483,6 +1483,8 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(s => s.Plan_End_Date, s => s.MapFrom(src => src.Plan_End_Date))
             .ForMember(s => s.StopingId, s => s.MapFrom(src => src.StopingId))
             .ForMember(s => s.Plan_Simul_Qnty, s => s.MapFrom(src => src.Plan_Simul_Qnty))
+             .ForMember(s => s.Sim_Seq_No, s => s.MapFrom(src => src.Sim_Seq_No))
+            .ForMember(s => s.WOLevel, s => s.MapFrom(src => src.WOLevel))
             .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
             CreateMap<WO_Wait_ListVM, WO_Wait_List>()
             .ForMember(s => s.Id, s => s.MapFrom(src => src.WO_Wait_ListId))
@@ -1497,6 +1499,8 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(s => s.Plan_End_Date, s => s.MapFrom(src => src.Plan_End_Date))
             .ForMember(s => s.StopingId, s => s.MapFrom(src => src.StopingId))
             .ForMember(s => s.Plan_Simul_Qnty, s => s.MapFrom(src => src.Plan_Simul_Qnty))
+             .ForMember(s => s.Sim_Seq_No, s => s.MapFrom(src => src.Sim_Seq_No))
+            .ForMember(s => s.WOLevel, s => s.MapFrom(src => src.WOLevel))
             .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
             CreateMap<TempWO_Wait_List, TempWO_Wait_ListVM>()
             .ForMember(s => s.TempWO_Wait_ListId, s => s.MapFrom(src => src.Id))
@@ -1513,6 +1517,8 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(s => s.Plan_End_Date, s => s.MapFrom(src => src.Plan_End_Date))
             .ForMember(s => s.NoOfSimulation, s => s.MapFrom(src => src.NoOfSimulation))
             .ForMember(s => s.Plan_Simul_Qnty, s => s.MapFrom(src => src.Plan_Simul_Qnty))
+             .ForMember(s => s.Sim_Seq_No, s => s.MapFrom(src => src.Sim_Seq_No))
+            .ForMember(s => s.WOLevel, s => s.MapFrom(src => src.WOLevel))
             .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
             CreateMap<TempWO_Wait_ListVM, TempWO_Wait_List>()
             .ForMember(s => s.Id, s => s.MapFrom(src => src.TempWO_Wait_ListId))
@@ -1529,6 +1535,8 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(s => s.Plan_End_Date, s => s.MapFrom(src => src.Plan_End_Date))
             .ForMember(s => s.NoOfSimulation, s => s.MapFrom(src => src.NoOfSimulation))
             .ForMember(s => s.Plan_Simul_Qnty, s => s.MapFrom(src => src.Plan_Simul_Qnty))
+             .ForMember(s => s.Sim_Seq_No, s => s.MapFrom(src => src.Sim_Seq_No))
+            .ForMember(s => s.WOLevel, s => s.MapFrom(src => src.WOLevel))
             .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
 
             CreateMap<Matl_Issue_ListVM, Matl_Issue_List>()

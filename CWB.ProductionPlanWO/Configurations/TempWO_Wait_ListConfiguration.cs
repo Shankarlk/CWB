@@ -61,6 +61,15 @@ namespace CWB.ProductionPlanWO.Configurations
                 .Property(c => c.TenantId)
                 .HasColumnName("TenantId")
                 .IsRequired();
+            builder
+           .Property(t => t.Sim_Seq_No)
+           .HasColumnName("Sim_Seq_No")
+           .HasDefaultValue(0);
+
+            builder
+                        .Property(t => t.WOLevel)
+                        .HasColumnName("WOLevel")
+                        .HasDefaultValue(0);
             builder.ConfigureBase();
             builder.HasIndex(c => c.TenantId).HasDatabaseName("TempWO_Wait_List_TenantId");
         }

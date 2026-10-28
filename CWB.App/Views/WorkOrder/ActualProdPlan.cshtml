@@ -186,7 +186,7 @@
 
     <tr>
 
-        <td title="{partNoTitle}" style="position: sticky; left: 0px; z-index: 95; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; background:{partNoColor};">{partNo}</td>
+        <td class="part-no-cell" data-tooltip="{partTooltip}" style="position: sticky; left: 0px; z-index: 95; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; background:{partNoColor};">{partNo}</td>
         <td style="position:sticky; left:160px; background:#f8f9fa; z-index:94;">{urgent}</td>
 
         <td colspan="{totalHours}" class="position-relative p-0" style="border: 0.5px solid #ced4da;">
@@ -318,7 +318,7 @@
         border-radius:4px;">
         {displayLabel} - {operationName}
 
-        <div class="operation-tooltip tooltip-inhouse">
+        @*<div class="operation-tooltip tooltip-inhouse">
             <b><span class="tooltip-value">{customerLabel}</span> </b> <span class="tooltip-value">{customerValue}</span><br>
             <b>Shop / Machine:</b> <span class="tooltip-value">{shopMachine}</span><br>
             <b>Part No / Desc:</b> <span class="tooltip-value">{partNoDesc}</span><br>
@@ -330,7 +330,7 @@
             <b>Duration (Hrs):</b> <span class="tooltip-value">{durationHours}</span><br>
             <b>Floor to Floor Time (min):</b> <span class="tooltip-value">{floorToFloorTime}</span><br>
             <b>Setup Time (min):</b> <span class="tooltip-value">{setupTime}</span><br>
-        </div>
+        </div>*@
         <div class="operation-tooltip tooltip-subcon">
 
             <b>Sub Con:</b> {supplier}<br>
@@ -341,28 +341,96 @@
             <b>Start Date / Time:</b> {startDateTime}<br>
             <b>End Date / Time:</b> {endDateTime}<br>
         </div>
-        <div class="operation-tooltip tooltip-actual">
-            @*<b>Tool Tip Content from Setup / Bookout data</b><br>*@
-            <u>Actual Data</u><br>
-            <b><span class="tooltip-value">{customerLabel}</span></b> <span class="tooltip-value">{customerValue}</span><br>
-            <b>Shop / Machine:</b> <span class="tooltip-value">{shopMachine}</span><br>
-            <b>Part No / Desc:</b> <span class="tooltip-value">{partNoDesc}</span><br>
-            <b>Routing No / Opr No:</b> <span class="tooltip-value">{routingOprNo}</span><br>
-            <b>WO No:</b> <span class="tooltip-value">{woNo}</span><br>
-            <b>Booked out Qnty:</b> <span class="tooltip-value">{bookedOutQnty}</span><br>
-            <b>NC Qnty:</b> <span class="tooltip-value">{ncQnty}</span><br>
-            <b>Act Start Date / Time:</b> <span class="tooltip-value">{startDateTime}</span><br>
-            <b>Act Setup Time (min):</b> <span class="tooltip-value">{actSetupMinutes}</span><br>
-            <b>Act End Date / Time:</b> <span class="tooltip-value">{endDateTime}</span><br>
-            <b>Act Duration (Hrs):</b> <span class="tooltip-value">{durationHours}</span><br>
-            <b>Act Floor to Floor Time (min):</b> <span class="tooltip-value">{actFloorToFloor}</span><br>
-        </div>
+        <!--<div class="operation-tooltip tooltip-actual">-->
+        @*<b>Tool Tip Content from Setup / Bookout data</b><br>*@
+        <!--<u>Actual Data</u><br>
+        <b><span class="tooltip-value">{customerLabel}</span></b> <span class="tooltip-value">{customerValue}</span><br>
+        <b>Shop / Machine:</b> <span class="tooltip-value">{shopMachine}</span><br>
+        <b>Part No / Desc:</b> <span class="tooltip-value">{partNoDesc}</span><br>
+        <b>Routing No / Opr No:</b> <span class="tooltip-value">{routingOprNo}</span><br>
+        <b>WO No:</b> <span class="tooltip-value">{woNo}</span><br>
+        <b>Booked out Qnty:</b> <span class="tooltip-value">{bookedOutQnty}</span><br>
+        <b>NC Qnty:</b> <span class="tooltip-value">{ncQnty}</span><br>
+        <b>Act Start Date / Time:</b> <span class="tooltip-value">{startDateTime}</span><br>
+        <b>Act Setup Time (min):</b> <span class="tooltip-value">{actSetupMinutes}</span><br>
+        <b>Act End Date / Time:</b> <span class="tooltip-value">{endDateTime}</span><br>
+        <b>Act Duration (Hrs):</b> <span class="tooltip-value">{durationHours}</span><br>
+        <b>Act Floor to Floor Time (min):</b> <span class="tooltip-value">{actFloorToFloor}</span><br>
+    </div>-->
+    <div class="operation-tooltip tooltip-compare">
+        <b><span class="tooltip-value">{customerLabel}</span></b> <span class="tooltip-value">{customerValue}</span><br>
+        <b>Shop / Machine:</b> <span class="tooltip-value">{shopMachine}</span><br>
+        <b>Part No / Desc:</b> <span class="tooltip-value">{partNoDesc}</span><br>
+        <b>Routing No / Opr No:</b> <span class="tooltip-value">{routingOprNo}</span><br>
+        <b>WO No:</b> <span class="tooltip-value">{woNo}</span><br>
+        <b>Batch Qnty:</b> <span class="tooltip-value">{batchQnty}</span><br>
+        <b>Booked out Qnty:</b> <span class="tooltip-value">{bookedOutQnty}</span><br>
+        <b>NC Qnty:</b> <span class="tooltip-value">{ncQnty}</span><br>
+
+        <table class="cmp-table" style="color:{compareColor};">
+            <colgroup>
+                <col style="width:200px;">
+                <col style="width:190px;">
+                <col style="width:190px;">
+            </colgroup>
+            <tr>
+                <td></td>
+                <td><u>Plan</u></td>
+                <td><u>Actual</u></td>
+            </tr>
+            <tr>
+                <td><b>Start Date / Time</b></td>
+                <td>{planStartDateTime}</td>
+                <td>{actStartDateTime}</td>
+            </tr>
+            <tr>
+                <td><b>End Date / Time</b></td>
+                <td>{planEndDateTime}</td>
+                <td>{actEndDateTime}</td>
+            </tr>
+            <tr>
+                <td><b>Duration (Hrs)</b></td>
+                <td>{planDurationHours}</td>
+                <td>{actDurationHours}</td>
+            </tr>
+            <tr>
+                <td><b>Floor to Floor Time (min)</b></td>
+                <td>{planFloorToFloor}</td>
+                <td>{actFloorToFloor}</td>
+            </tr>
+            <tr>
+                <td><b>Setup Time (min)</b></td>
+                <td>{planSetupTime}</td>
+                <td>{actSetupTime}</td>
+            </tr>
+        </table>
+    </div>
     </div>
 </template>
 
 
 
 <style>
+    #sharedTooltip {
+        width: 600px;
+        min-width: 600px;
+        max-width: 600px;
+    }
+
+        #sharedTooltip .cmp-table {
+            width: 100%;
+            margin-top: 8px;
+            table-layout: fixed;
+            border-collapse: collapse;
+        }
+
+            #sharedTooltip .cmp-table td {
+                white-space: nowrap; /* date and time stay on one line */
+                vertical-align: top;
+                padding: 2px 6px 2px 0;
+                border: none !important;
+                text-align: left;
+            }
     .part-view .so-completion-marker {
         top: 6px;
         height: 26px;
@@ -658,9 +726,9 @@
     #sharedTooltip {
         position: fixed !important;
         display: none;
-        width: 350px;
-        min-width: 350px;
-        max-width: 350px;
+        width: 520px;
+        min-width: 520px;
+        max-width: 520px;
         padding: 10px;
         background: #fff;
         color: #333;

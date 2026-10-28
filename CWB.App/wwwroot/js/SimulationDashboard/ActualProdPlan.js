@@ -686,7 +686,13 @@ function bindPartSimulation(data) {
             soMarker: "",
             rowHeight: rowHeight,
             totalHours: totalHours,
-            totalWidth: totalWidth
+            totalWidth: totalWidth,
+            partTooltip: encodeURIComponent(`
+    <b>Part Number:</b> <span class="tooltip-value">${data.parts[i].partNo || ""}</span><br>
+    <b>Description:</b> <span class="tooltip-value">${data.parts[i].description || ""}</span><br>
+    <b>Sold to Customer:</b> <span class="tooltip-value">${data.parts[i].soldToCustomerText || ""}</span><br>
+    <b>Part Type:</b> <span class="tooltip-value">${data.parts[i].partTypeText || ""}</span>
+`),
         };
         tableBody.append(AppUtil.ProcessTemplateData("partSimulationRow", row));
 
@@ -855,19 +861,21 @@ function loadSelectedView() {
 
  
 
-$(document).on('mouseenter', '.operation-bar, .so-completion-marker, .matl-receipt-marker, .matl-act-receipt-marker', function () {
+$(document).on('mouseenter', '.operation-bar, .so-completion-marker, .matl-receipt-marker, .matl-act-receipt-marker,.part-no-cell', function () {
 
     var $element = $(this);
     var sourceHtml = "";
 
-    // Operation bar
+    
     if ($element.hasClass('operation-bar')) {
 
-        var barType = ($element.attr('data-bartype') || '')
-            .trim()
-            .toLowerCase();
+        var barType = ($element.attr('data-bartype') || '').trim().toLowerCase();
+        var $compare = $element.find('.tooltip-compare');
 
-        if (barType === 'nonplan') {
+        if ($compare.length && (barType === 'actual' || barType === 'inhouse')) {
+            sourceHtml = $compare.html();
+        }
+        else if (barType === 'nonplan') {
             sourceHtml = $element.find('.tooltip-nonplan').html();
         }
         else if (barType === 'subcon') {
@@ -893,7 +901,7 @@ $(document).on('mouseenter', '.operation-bar, .so-completion-marker, .matl-recei
     }
 
     // Material receipt marker
-    else if ($element.hasClass('matl-receipt-marker') || $element.hasClass('matl-act-receipt-marker'))  {
+    else if ($element.hasClass('matl-receipt-marker') || $element.hasClass('matl-act-receipt-marker') || $element.hasClass('part-no-cell'))  {
 
         sourceHtml = decodeURIComponent(
             $element.attr('data-tooltip') || ''
@@ -961,7 +969,7 @@ $(document).on('mouseenter', '.operation-bar, .so-completion-marker, .matl-recei
 );
 
 
-$(document).on('mouseleave', '.operation-bar, .so-completion-marker, .matl-receipt-marker, .matl-act-receipt-marker', function () {
+$(document).on('mouseleave', '.operation-bar, .so-completion-marker, .matl-receipt-marker, .matl-act-receipt-marker,.part-no-cell', function () {
 
     $('#sharedTooltip').stop(true, true).hide().html('');
 }

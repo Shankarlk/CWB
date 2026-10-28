@@ -28,5 +28,8 @@ namespace CWB.App.Models.WorkOrder
         public string Tpt { get; set; }
         public string PlanEndStr { get; set; }
         public string PlanStartStr { get; set; }
+
+        public long Sim_Seq_No { get; set; }
+        public long WOLevel { get; set; }
     }
 }

@@ -20,5 +20,8 @@ namespace CWB.ProductionPlanWO.Domain
         public int Plan_Simul_Qnty { get; set; }
         public long StopingId { get; set; }
         public long TenantId { get; set; }
+
+        public long Sim_Seq_No { get; set; }
+        public long WOLevel { get; set; }
     }
 }
