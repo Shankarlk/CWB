@@ -29,7 +29,7 @@
                         {
                             @if (permissionResult.Any(r => r.Menu3 == "View / Edit Part No"))
                             {
-                                <div class="col-md-3">
+                                <div class="col-xl">
                                     <div class="widget-simple text-center card btn btn-outline-info">
                                         <a asp-action="MasterDetails" onclick="removesessionitem()">
                                             <div class="card-body">
@@ -41,7 +41,7 @@
                             }
                             @if (permissionResult.Any(r => r.Menu3 == "Create New Manf Part No"))
                             {
-                                <div class="col-md-3">
+                                <div class="col-xl">
                                     <div class="widget-simple text-center card btn btn-outline-info">
                                         <a asp-action="ManufPart" asp-route-id="@ViewBag.IndexId">
                                             <div class="card-body">
@@ -51,9 +51,9 @@
                                     </div>
                                 </div>
                             }
-                            @if (permissionResult.Any(r => r.Menu3 == "Create New Manf Part No"))
+                            @if (permissionResult.Any(r => r.Menu3 == "Create New Assembly"))
                             {
-                                <div class="col-md-3">
+                                <div class="col-xl">
                                     <div class="widget-simple text-center card btn btn-outline-info">
                                         <a asp-action="ManufPart" asp-route-id="@ViewBag.IndexId">
                                             <div class="card-body">
@@ -65,7 +65,7 @@
                             }
                             @if (permissionResult.Any(r => r.Menu3 == "Create New Raw Material Part No"))
                             {
-                                <div class="col-md-3">
+                                <div class="col-xl">
                                     <div class="widget-simple text-center card btn btn-outline-info">
                                         <a asp-action="RawMaterial" asp-route-id="@ViewBag.IndexId">
                                             <div class="card-body">
@@ -77,7 +77,7 @@
                             }
                             @if (permissionResult.Any(r => r.Menu3 == "Create New Bof Part No"))
                             {
-                                <div class="col-md-3">
+                                <div class="col-xl">
                                     <div class="widget-simple text-center card btn btn-outline-info">
                                         <a asp-action="BOF" asp-route-id="@ViewBag.IndexId">
                                             <div class="card-body">
@@ -91,7 +91,7 @@
                         else
                         {
 
-                            <div class="col-md-3">
+                            <div class="col-xl">
                                 <div class="widget-simple text-center card btn btn-outline-info">
                                     <a asp-action="MasterDetails" onclick="removesessionitem()">
                                         <div class="card-body">
@@ -101,7 +101,7 @@
                                 </div>
                             </div>
                             <!-- end -->
-                            <div class="col-md-3">
+                            <div class="col-xl">
                                 <div class="widget-simple text-center card btn btn-outline-info">
                                     <a asp-action="ManufPart" asp-route-id="@ViewBag.IndexId">
                                         <div class="card-body">
@@ -111,7 +111,7 @@
                                 </div>
                             </div>
                             <!-- end -->
-                            <div class="col-md-3">
+                            <div class="col-xl">
                                 <div class="widget-simple text-center card btn btn-outline-info">
                                     <a asp-action="ManufPart" asp-route-id="@ViewBag.IndexId" asp-route-parttype="Assem">
                                         <div class="card-body">
@@ -121,7 +121,7 @@
                                 </div>
                             </div>
                             <!-- end -->
-                            <div class="col-md-3">
+                            <div class="col-xl">
                                 <div class="widget-simple text-center card btn btn-outline-info">
                                     <a asp-action="RawMaterial" asp-route-id="@ViewBag.IndexId">
                                         <div class="card-body">
@@ -131,7 +131,7 @@
                                 </div>
                             </div>
                             <!-- end -->
-                            <div class="col-md-3">
+                            <div class="col-xl">
                                 <div class="widget-simple text-center card btn btn-outline-info">
                                     <a asp-action="BOF" asp-route-id="@ViewBag.IndexId">
                                         <div class="card-body">

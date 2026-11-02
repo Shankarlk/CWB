@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Item Master - Raw Material";
+    bool isViewMode = ViewBag.ReadOnly == true;
 }
 @model CWB.App.Models.ItemMaster.RawMaterialDetailVM
 <partial name="RawMaterial" model=@Model/>
@@ -16,5 +17,6 @@
         var modelObj = @Html.Raw(Json.Serialize(Model));
         modelObj["Edit"] = true;
         //$('#RawMetform').validate();
+         var isViewMode = @(isViewMode ? "true" : "false");
     </script>
 }

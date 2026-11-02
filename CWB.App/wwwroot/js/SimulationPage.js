@@ -20,7 +20,7 @@ $("#txtCushionTime").on("input", function () {
 
     value = parseInt(value);
 
-    if (isNaN(value) || value < 0 || value > 25) {
+    if (isNaN(value) || value < 0 || value > 50) {
         alert("Cushion Time should be between 0 and 25%.");
         $(this).val(10);
     }
@@ -48,7 +48,7 @@ function bindWoCount(cellId, data, partType, filterKey) {
     if (count > 0) {
         cell.html(
             `<a href="#" class="P1WoCountLink"
-                data-filter="${filterKey}">${count}</a>`
+                data-filter="${filterKey}"  style="text-decoration: underline;">${count}</a>`
         );
     } else {
         cell.text('0');

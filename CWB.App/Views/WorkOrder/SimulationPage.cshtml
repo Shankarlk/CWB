@@ -380,6 +380,7 @@
                         <div class="col-md-8">
                             <button class="btn btn-primary ms-3" data-bs-target="#Popup27" data-bs-toggle="modal">Material Issue / Movement  List</button>
                             <button class="btn btn-primary ms-3" data-bs-target="#Popup28" data-bs-toggle="modal">Machine Setup List</button>
+                            <button class="btn btn-primary ms-3" onclick="window.location.href='/S$%25%5ED%23$!D'" >View Gantt Chart</button>
                         </div>
                         <div class="col-md-2 text-end">
                             @if (permissionResult != null)
@@ -507,12 +508,13 @@
                                             <th>Build to Stock</th>
                                             <th>Part No / Desc</th>
                                             <th>Part Type </th>
-                                            <th>Input Matl Coverage</th>
+                                            <th>AllocatedQty </th>
+                                           
                                             <th>Plan WO Qnty</th>
                                             <th>Plan Compl Dt</th>
                                             <th># of Open NC</th>
-                                            <th># Doc w/f Apprvl</th>
-                                            <th>Hold</th>
+                                            @*<th># Doc w/f Apprvl</th>
+                                            <th>Hold</th>*@
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -3657,12 +3659,13 @@
         <td>{buildToStock}</td>
         <td>{partNo} / {partDesc}</td>
         <td>{partTypeName}</td>
-        <td>{calcWOQty}</td>]
-        <td>{calcWOQty}</td>
+        <td>{allocatedQty}</td>
+        <td>{planWOQnty}</td>
+         
         <td>{planCompletionDateStr}</td>
         <td>{noOfOpenNc}</td>
-        <td>{noOfDocWf}</td>
-        <td>{holdstr}</td>
+        @*<td>{noOfDocWf}</td>
+        <td>{holdstr}</td>*@
         <td>
             <div class="dropdown float-center">
                 <a href="#" class="dropdown-toggle arrow-none card-drop"
@@ -3671,10 +3674,10 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
-                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#">
+                    @*<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#">
                         Edit
                         WO
-                    </a>
+                    </a>*@
                     <!-- item Popup7-->
                     <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#"
                        data-ppid={productionPlanId}
@@ -3731,7 +3734,7 @@
                        data-calwoqty={calcWOQty}
                        data-routingid={routingId}
                        data-wostatus={status}>View List of Docs w/f Approval </a>
-                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                    @*<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
                        data-bs-target="#wohold"
                        data-ppid={productionPlanId}
                        data-workorderid={woId}
@@ -3747,7 +3750,7 @@
                        data-requiredquantity={requiredQuantity}
                        data-calwoqty={calcWOQty}
                        data-routingid={routingId}
-                       data-statusstr={status} data-holdstr={holdstr}>hold / resume</a>
+                       data-statusstr={status} data-holdstr={holdstr}>hold / resume</a>*@
                     <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#"
                        data-ppid={productionPlanId}
                        data-workorderid={woId}
@@ -3767,7 +3770,7 @@
                         Allow
                         Selection w NC open
                     </a>
-                    <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#"
+                    @*<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#"
                        data-ppid={productionPlanId}
                        data-workorderid={woId}
                        data-parentwoid={parentWoId}
@@ -3785,7 +3788,7 @@
                        data-wostatus={status}>
                         Allow
                         Selection w Docs w/f Apprvl
-                    </a>
+                    </a>*@
                 </div>
             </div>
         </td>
@@ -3800,7 +3803,7 @@
         <td>{partNo} / {partDesc}</td>
         <td>{partTypeName}</td>
         <td>{wipp}</td>
-        <td>{calcWOQty}</td>
+        <td>{planWOQnty}</td>
         <td>{planCompletionDateStr}</td>
         @*<td>{calcWOQty}</td>*@
         @*<td>{psStartDate}</td>*@

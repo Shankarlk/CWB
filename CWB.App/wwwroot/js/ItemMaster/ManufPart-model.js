@@ -1700,10 +1700,10 @@ $(document).ready(function () {
     });
 
    
-    document.getElementById('addUomPopup').addEventListener('click', function () {
-        var myModal = new bootstrap.Modal(document.getElementById('dialog-AddUOM'));
-        myModal.show();
-    });
+    //document.getElementById('addUomPopup').addEventListener('click', function () {
+    //    var myModal = new bootstrap.Modal(document.getElementById('dialog-AddUOM'));
+    //    myModal.show();
+    //});
 
     $("#PartDescriptionbak").change(function () {
         if ($("#ManufacturedPartType").val() == 1) {

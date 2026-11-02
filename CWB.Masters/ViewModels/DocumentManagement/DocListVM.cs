@@ -9,7 +9,7 @@ namespace CWB.Masters.ViewModels.DocumentManagement
     {
         public long DocListId { get; set; }
         public long DocumentTypeId { get; set; }
-        public long Approved_by { get; set; }
+        public string Approved_by { get; set; }
         public string FileName { get; set; }
         public string StorageLocation { get; set; }
         public long UploadUiId { get; set; }
@@ -29,6 +29,8 @@ namespace CWB.Masters.ViewModels.DocumentManagement
         public long Inw_Recpt_HeaderId { get; set; }
         public long Inw_Recpt_DetailsId { get; set; }
         public long McId { get; set; }
+
+        public string Creator { get; set; }
         public long TenantId { get; set; }
     }
 }

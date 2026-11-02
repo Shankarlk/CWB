@@ -10,6 +10,7 @@ using CWB.App.Services.Masters;
 using CWB.App.Services.ProductionPlanWo;
 using CWB.App.Services.Routings;
 using CWB.App.Services.CompanySettings;
+using CWB.App.Models.EmployeeMaster;
 using CWB.CommonUtils.Common;
 using CWB.Logging;
 using Microsoft.AspNetCore.Hosting;
@@ -25,6 +26,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using static System.Net.Mime.MediaTypeNames;
+using CWB.App.Services.EmployeeMaster;
 
 namespace CWB.App.Controllers
 {
@@ -39,10 +41,11 @@ namespace CWB.App.Controllers
         private readonly IRoutingService _routingService;
         private readonly IOperationService _operationService;
         private readonly IWOService _woService;
+        private readonly IEmployeeService _employeeService;
         IHostingEnvironment _hostingEnvironment = null;
         public MastersController(ILoggerManager logger, IMachineService machineService, IMastersServices mastersService, IDocMangService docMangService,
            IRoutingService routingService, IHostingEnvironment hostingEnvironment, IWOService woService, IDepartmentService departmentService
-            , IHttpContextAccessor httpContextAccessor, IOperationService operationService,
+            , IHttpContextAccessor httpContextAccessor, IOperationService operationService, IEmployeeService employeeService,
            IBAService baService)
         {
             _logger = logger;
@@ -55,6 +58,7 @@ namespace CWB.App.Controllers
             _woService = woService;
             _baService = baService;
             _departmentService = departmentService;
+            _employeeService = employeeService;
 
         }
         public IActionResult Index()
@@ -166,29 +170,30 @@ namespace CWB.App.Controllers
             return View();
         }
 
-        public IActionResult EditPart(long partId, string partType)
+        public IActionResult EditPart(long partId, string partType, string mode = "edit")
         {
             string encodepartid = CWBAppUtils.EncodeLong(partId);
 
             if (partType.Equals("BOF"))
             {
-                return RedirectToAction("EditBOF", new { partId = encodepartid });
+                return RedirectToAction("EditBOF", new { partId = encodepartid, mode = mode });
             }
             else if (partType.Equals("RawMaterial"))
             {
-                return RedirectToAction("EditRawMaterial", new { partId = encodepartid });
+                return RedirectToAction("EditRawMaterial", new { partId = encodepartid, mode = mode });
             }
-            return RedirectToAction("EditManufPart", new { partId = encodepartid });
+            return RedirectToAction("EditManufPart", new { partId = encodepartid, mode = mode });
         }
 
         //editmanufpart
-        public async Task<IActionResult> EditManufPart(string partId)
+        public async Task<IActionResult> EditManufPart(string partId, string mode = "edit")
         {
             int decodedManufPartId = (int)CWBAppUtils.DecodeString(partId.ToString());
             ManufacturedPartNoDetailVM manuf = await _mastersService.GetManufPart(decodedManufPartId);
             await CustomerViewBag();
             await CompaniesViewBagForManuF(manuf);
             await StatusViewBagForManuf(manuf);
+            ViewBag.ReadOnly = mode == "view";
             return View(manuf);
         }
 
@@ -206,13 +211,14 @@ namespace CWB.App.Controllers
             return View(new ManufacturedPartNoDetailVM { MasterPartType = "0", PartId = 0, ManufacturedPartNoDetailId = 0, ManufacturedPartType = mt, Status = "Not Released" });
         }
 
-        public async Task<IActionResult> EditBOF(string partId)
+        public async Task<IActionResult> EditBOF(string partId, string mode = "edit")
         {
             int decodedPartId = (int)CWBAppUtils.DecodeString(partId);
             BoughtOutFinishDetailVM manuf = await _mastersService.GetBOFPart(decodedPartId);
             await CompaniesViewBagForBOF();
             await SupplierViewBag();
             await StatusViewBagForBOF();
+            ViewBag.ReadOnly = mode == "view";
             return View(manuf);
         }
 
@@ -227,7 +233,7 @@ namespace CWB.App.Controllers
             return decodepartID;
         }
 
-        public async Task<IActionResult> EditRawMaterial(string partId)
+        public async Task<IActionResult> EditRawMaterial(string partId, string mode = "edit")
         {
             int decodedPartId = (int)CWBAppUtils.DecodeString(partId);
             RawMaterialDetailVM manuf = await _mastersService.GetRMPart(decodedPartId);
@@ -235,6 +241,7 @@ namespace CWB.App.Controllers
             await CompaniesViewBagForRawMaterial(manuf);
             await StatusViewBagForRawMaterial(manuf);
             await RawMaterialViewBags(manuf);
+            ViewBag.ReadOnly = mode == "view";
             return View(manuf);
         }
         [HttpGet]
@@ -699,8 +706,22 @@ namespace CWB.App.Controllers
         {
             var result = await _mastersService.Getallitemmasterdoclist();
             var doctype = await _docMangService.GetAllDocumentType();
+            var content = await _mastersService.ItemMasterContents();
+
+            var contentHashSet = content
+                .ToDictionary(x => x.ItemMasterContentId, x => x.ContentDesc);
+
+            
             foreach (var item in result)
             {
+                if (contentHashSet.TryGetValue(item.ContentId, out var contentName))
+                {
+                    item.ContentName = contentName;
+                }
+                else
+                {
+                    item.ContentName = string.Empty;
+                }
                 foreach (var doc in doctype)
                 {
                     if (item.DocumentTypeId == doc.DocumentTypeId)
@@ -2735,7 +2756,7 @@ namespace CWB.App.Controllers
             var custRetnDataVMs = await _docMangService.GetAllCustRet();
             var companies = await _mastersService.GetCompanies();
             var extns = await _docMangService.GetAllFileExtn();
-
+            var users = await _mastersService.AllUsers();
             List<DocListVM> docListVM = new List<DocListVM>();
             List<DocListVM> empdocLists = new List<DocListVM>();
 
@@ -2759,17 +2780,33 @@ namespace CWB.App.Controllers
                     PopulateItemFields(item, result.First(m => m.ContentId == contentid && m.DocumentTypeId == item.DocumentTypeId), doctype, extns, custRetnDataVMs, companies);
                     ClaimsPrincipal userClaim = HttpContext.User; 
                     string fullName = AppUtil.GetFullName(userClaim);
+                    var getuser = users.Where(x => x.UserId == item.Creator).FirstOrDefault();
                     item.UpdatedOnStr =item.CreationDt.ToString("MM-dd-yyyy"); 
-                    item.UploadedBy = fullName;
+                    item.UploadedBy = getuser.FirstName+getuser.LastName;
                     var getdoc = await _docMangService.GetDoc_Status_List(item.AppvStatus);
                     item.DocStatus = getdoc.Doc_Status_Desc;
                     if (item.DocCat == 1)
                     {
-                        if(item.Approved_by > 0)
+
+                        if(item.AppvStatus==3)
                         {
                             item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
-                            item.ApprovedByStr = fullName;
+                            var approveduser = users.Where(x => x.UserId == item.Approved_by).FirstOrDefault();
+                               item.ApprovedByStr = approveduser.FirstName+ approveduser.LastName;
                         }
+                        else if(item.AppvStatus==2)
+                        {
+                            item.ApprovedOnStr = "";
+                            item.ApprovedByStr = "";
+                        }
+
+
+
+                        //if(item.Approved_by > 0)
+                        //{
+                        //    item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
+                        //    item.ApprovedByStr = fullName;
+                        //}
                     }
                     else
                     {
@@ -2868,6 +2905,7 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> PostDocList(IFormFile uploadedFile, DocListVM docListVM)
         {
+          
             string ftpUrl = "/filestorage/Active/";
             string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
             string fileNameWithTimestamp = Path.GetFileNameWithoutExtension(uploadedFile.FileName)
@@ -2894,6 +2932,37 @@ namespace CWB.App.Controllers
                 docListVM.AppvStatus = 2;
             }
             docListVM.Appv_Date_time = DateTime.Now;
+            if(docListVM.PartId>0)
+            {
+               // var uilist = await _employeeService.GetAllUilist();
+                var masterparts = await _mastersService.MasterPartList();
+                var selectedpart = masterparts.Where(x => x.PartId == docListVM.PartId).FirstOrDefault();
+                if(selectedpart!=null)
+                {
+                    if(selectedpart.MasterPartType== "ManufacturedPart")
+                    {
+                        docListVM.UploadUiId = 9;
+                    }
+                    else if(selectedpart.MasterPartType== "Assembly")
+                    {
+                        docListVM.UploadUiId = 9;
+                    }
+                    else if(selectedpart.MasterPartType== "BOF")
+                    {
+                        docListVM.UploadUiId = 19;
+                    }
+                    else if (selectedpart.MasterPartType == "RawMaterial")
+                    {
+                        docListVM.UploadUiId = 14;
+                    }
+
+
+                }
+
+            }
+
+
+
             var result = await _docMangService.PostDocList(docListVM);
 
             return Ok(result);
@@ -2957,12 +3026,35 @@ namespace CWB.App.Controllers
         [HttpPost]
         public async Task<IActionResult> DocApprov(DocListVM docListVM)
         {
+            var users = await _mastersService.AllUsers();
             var finddoc = await _docMangService.GetOneDoclist(docListVM.DocListId);
-            finddoc.AppvStatus = docListVM.AppvStatus;
-            finddoc.Appv_Date_time = DateTime.Now;
-            ClaimsPrincipal userClaim = HttpContext.User; // Assuming you're in a controller or middleware
-            string fullName = AppUtil.GetTenantId(userClaim);
-            finddoc.Approved_by = Convert.ToInt64(fullName);
+
+            if(docListVM.AppvStatus==3)
+            {
+                ClaimsPrincipal userClaims = HttpContext.User; // Assuming you're in a controller or middleware
+                string fullNames = AppUtil.GetUsername(userClaims);
+
+                var user = users.Where(x => x.Username == fullNames).FirstOrDefault();
+                finddoc.Approved_by = user.UserId;
+                finddoc.AppvStatus = docListVM.AppvStatus;
+                finddoc.Appv_Date_time = DateTime.Now;
+
+            }
+            else if(docListVM.AppvStatus==2)
+            {
+
+                finddoc.Approved_by ="";
+                finddoc.AppvStatus = docListVM.AppvStatus;
+                finddoc.Appv_Date_time = DateTime.Now;
+            }
+
+
+
+            //finddoc.AppvStatus = docListVM.AppvStatus;
+            //finddoc.Appv_Date_time = DateTime.Now;
+            //ClaimsPrincipal userClaim = HttpContext.User; // Assuming you're in a controller or middleware
+            //string fullName = AppUtil.GetTenantId(userClaim);
+           
             var result = await _docMangService.PostDocList(finddoc);
             return Ok(result);
         }

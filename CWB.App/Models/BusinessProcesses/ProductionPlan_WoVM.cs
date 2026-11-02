@@ -28,6 +28,7 @@ namespace CWB.App.Models.BusinessProcesses
         public int AddnOtyUser { get; set; }
         public int Status { get; set; }
         public int PlanWOQnty { get; set; }
+        public int AllocatedQty { get; set; }
         public DateTime? PlanCompletionDate
         {
             get { return planDate; }

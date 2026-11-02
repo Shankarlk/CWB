@@ -352,7 +352,25 @@ namespace CWB.Identity
 
             return View(admins); // Send to AdminList.cshtml
         }
+        [HttpGet]
+        [Route(ApiRoutes.Identity.Getcwbusers)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<CwbUserVM>))]
+        public async Task<IActionResult> GetCwbUsers()
+        {
+            var users = await _userManager.Users
+                .Select(u => new
+                {
+                    UserId = u.Id,
+                    Username = u.UserName,
+                    Email = u.Email,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    PhoneNumber = u.PhoneNumber
+                })
+                .ToListAsync();
 
+            return Ok(users);
+        }
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)

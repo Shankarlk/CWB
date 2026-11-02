@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Item Master - Raw Material";
+    bool isViewMode = ViewBag.ReadOnly == true;
 }
 @model CWB.App.Models.ItemMaster.RawMaterialDetailVM
 <input value="M-IM" type="hidden" id="hdn-nav-menu" />
@@ -66,19 +67,22 @@
                                             <input type="text" id="Status" asp-for="Status" name="Status" class="form-control form-control-sm" readonly>
 
                                             <div class="d-flex flex-column">
-                                                <button type="button" class="btn btn-sm waves-effect waves-light mb-1"
-                                                        data-plugin="tippy" data-tippy-placement="top"
-                                                        data-bs-toggle="modal" data-bs-target="#status-info"
-                                                        data-original-title="Edit Status">
-                                                    <i class="fas fa-pencil-alt font-10"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm waves-effect waves-light"
-                                                        data-plugin="tippy" data-tippy-placement="top"  id="historybtn"
-                                                        data-bs-toggle="modal" data-bs-target="#ChangeListPopup"
-                                                        data-original-title="View Status History">
-                                                    <i class="fa fa-history font-10"></i>
-                                                </button>
-                                            </div>
+                                                @if (!isViewMode)
+                                                {
+                                                    <button type="button" class="btn btn-sm waves-effect waves-light mb-1"
+                                                            data-plugin="tippy" data-tippy-placement="top"
+                                                            data-bs-toggle="modal" data-bs-target="#status-info"
+                                                            data-original-title="Edit Status">
+                                                        <i class="fas fa-pencil-alt font-10"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm waves-effect waves-light"
+                                                            data-plugin="tippy" data-tippy-placement="top" id="historybtn"
+                                                            data-bs-toggle="modal" data-bs-target="#ChangeListPopup"
+                                                            data-original-title="View Status History">
+                                                        <i class="fa fa-history font-10"></i>
+                                                    </button>
+                                                }
+                                                </div>
                                             <input asp-for="StatusChangeReason" name="StatusChangeReason" id="StatusChangeReason" class="form-control form-control-sm" type="text" placeholder="enter here" hidden>
                                             <input asp-for="Inv_Trans" name="Inv_Trans" id="Inv_Trans" class="form-control form-control-sm" type="text" placeholder="enter here" hidden>
                                             <input asp-for="Linked_to_BOM" name="Linked_to_BOM" id="Linked_to_BOM" class="form-control form-control-sm" type="text" placeholder="enter here" hidden>
@@ -98,13 +102,16 @@
                                                     <select class="form-select form-select-sm" id="RawMaterialTypeId" asp-for="RawMaterialTypeId" asp-items="ViewBag.RMTypes" required></select>
 
                                                 </div>
-                                                <button type="button" id="addRMPart" class="btn btn-sm waves-effect waves-light" title="Use to add a New Raw Material Type to the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMType">
-                                                    <i class="fe-plus-square add-cust-btn"></i>
-                                                </button>
-                                                <button type="button" id="editRMpart" class="btn btn-sm waves-effect waves-light" title="Use to add a New Raw Material Type to the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMType">
-                                                    <i class="fas fa-pencil-alt font-16"></i>
-                                                </button>
-                                            </div>
+                                                @if (!isViewMode)
+                                                {
+                                                    <button type="button" id="addRMPart" class="btn btn-sm waves-effect waves-light" title="Use to add a New Raw Material Type to the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMType">
+                                                        <i class="fe-plus-square add-cust-btn"></i>
+                                                    </button>
+                                                    <button type="button" id="editRMpart" class="btn btn-sm waves-effect waves-light" title="Use to add a New Raw Material Type to the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMType">
+                                                        <i class="fas fa-pencil-alt font-16"></i>
+                                                    </button>
+                                                }
+                                                </div>
                                             <!-- ===================== -->
                                             <label class="form-label col-md-4 mb-2"> Part No</label>
                                             <div class="col-md-8 mb-2" data-plugin="tippy" data-tippy-placement="top" data-tippy="" data-original-title="Enter the Inhouse Part No (Own Company's Part No). RM made to Print require a Part No. You can optionally provide inhouse Part Nos for Standard RM ParTs">
@@ -141,13 +148,16 @@
                                                     <select class="form-select form-select-sm" id="UOMId" asp-for="UOMId" asp-items="@ViewBag.UOMs"></select>
 
                                                 </div>
-                                                <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Add UOM" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#uom">
-                                                    <i class="fe-plus-square add-cust-btn"></i>
-                                                </button>
-                                                <button type="button" id="UomEdit" class="btn btn-sm waves-effect waves-light" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#uom" data-tippy="" data-original-title="Click to see the Status change details">
-                                                    <i class="fas fa-pencil-alt font-16"></i>
-                                                </button>
-                                            </div>
+                                                @if (!isViewMode)
+                                                {
+                                                    <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Add UOM" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#uom">
+                                                        <i class="fe-plus-square add-cust-btn"></i>
+                                                    </button>
+                                                    <button type="button" id="UomEdit" class="btn btn-sm waves-effect waves-light" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#uom" data-tippy="" data-original-title="Click to see the Status change details">
+                                                        <i class="fas fa-pencil-alt font-16"></i>
+                                                    </button>
+                                                }
+                                                </div>
                                             <!-- ===================== -->
                                             <label class="form-label col-md-4 mb-2">RM Wt (Kgs) *</label>
                                             <div class="col-md-8 mb-2" data-plugin="tippy" data-tippy-placement="top" data-tippy="" data-original-title="Enter the Raw Material Weight in Kgs">
@@ -192,13 +202,16 @@
                                                     <select class="form-select form-select-sm" id="BaseRawMaterialId" asp-for="BaseRawMaterialId" asp-items="ViewBag.BaseRMs" title="Select the Base Raw Material from the List (Steel, Brass ...)" data-plugin="tippy" data-tippy-placement="top" required></select>
 
                                                 </div>
-                                                <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Select to enter a new Base Raw Material to the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddBaseRM">
-                                                    <i class="fe-plus-square add-cust-btn"></i>
-                                                </button>
-                                                <button type="button" id="baseMtEdit" class="btn btn-sm waves-effect waves-light" title="Select to enter a new Base Raw Material to the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddBaseRM">
-                                                    <i class="fas fa-pencil-alt font-16"></i>
-                                                </button>
-                                            </div>
+                                                @if (!isViewMode)
+                                                {
+                                                    <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Select to enter a new Base Raw Material to the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddBaseRM">
+                                                        <i class="fe-plus-square add-cust-btn"></i>
+                                                    </button>
+                                                    <button type="button" id="baseMtEdit" class="btn btn-sm waves-effect waves-light" title="Select to enter a new Base Raw Material to the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddBaseRM">
+                                                        <i class="fas fa-pencil-alt font-16"></i>
+                                                    </button>
+                                                }
+                                                </div>
                                             <!-- ===================== -->
                                             <label class="form-label col-md-4 mb-2">
                                                 Standard <span class="text-danger">
@@ -210,13 +223,16 @@
                                                     <select class="form-select form-select-sm" id="Standard" asp-for="Standard" asp-items="ViewBag.Standards" title="Select the Standard from the List (IS, DIN, JIS ...)" data-plugin="tippy" data-tippy-placement="top" required></select>
 
                                                 </div>
-                                                <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Select to enter a Standard not in the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMStandard">
-                                                    <i class="fe-plus-square add-cust-btn"></i>
-                                                </button>
-                                                <button type="button" id="StEdit" class="btn btn-sm waves-effect waves-light" title="" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMStandard">
-                                                    <i class="fas fa-pencil-alt font-16"></i>
-                                                </button>
-                                            </div>
+                                                @if (!isViewMode)
+                                                {
+                                                    <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Select to enter a Standard not in the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMStandard">
+                                                        <i class="fe-plus-square add-cust-btn"></i>
+                                                    </button>
+                                                    <button type="button" id="StEdit" class="btn btn-sm waves-effect waves-light" title="" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMStandard">
+                                                        <i class="fas fa-pencil-alt font-16"></i>
+                                                    </button>
+                                                }
+                                                </div>
                                             <!-- ===================== -->
                                             <label class="form-label col-md-4 mb-2">
                                                 Material Spec<span class="text-danger">
@@ -228,13 +244,16 @@
                                                     <select class="form-select form-select-sm" id="MaterialSpecId" asp-for="MaterialSpecId" title="Enter the Material Spec as for the RM Part No. The List will show options available for the chosen Standard" data-plugin="tippy" data-tippy-placement="top" asp-items="ViewBag.Specs" required></select>
 
                                                 </div>
-                                                <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Select to enter a Material Spec for the chosen Standard not in the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMSpec">
-                                                    <i class="fe-plus-square add-cust-btn"></i>
-                                                </button>
-                                                <button type="button" id="MSpecEdit" class="btn btn-sm waves-effect waves-light" title="Select to enter a Material Spec for the chosen Standard not in the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMSpec">
-                                                    <i class="fas fa-pencil-alt font-16"></i>
-                                                </button>
-                                            </div>
+                                                @if (!isViewMode)
+                                                {
+                                                    <button type="button" id="#" class="btn btn-sm waves-effect waves-light" title="Select to enter a Material Spec for the chosen Standard not in the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMSpec">
+                                                        <i class="fe-plus-square add-cust-btn"></i>
+                                                    </button>
+                                                    <button type="button" id="MSpecEdit" class="btn btn-sm waves-effect waves-light" title="Select to enter a Material Spec for the chosen Standard not in the List" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#dialog-AddRMSpec">
+                                                        <i class="fas fa-pencil-alt font-16"></i>
+                                                    </button>
+                                                }
+                                                </div>
                                             <!-- ===================== -->
 
                                         </div>
@@ -255,10 +274,12 @@
                                         <input class="form-control form-control-sm display-none" type="text" value="CNMG 120408">
                                     </div>
                                     <div class="col-md-8 text-end mb-2">
+                                        @if (!isViewMode)
+                                        {
+                                            <button type="button" id="btnRawMaterialDetailSubmit" class="btn btn-sm btn-primary" title="Use to Save the entered data" data-plugin="tippy" data-tippy-placement="top">Save</button>
+                                        }
 
-                                        <button type="button" id="btnRawMaterialDetailSubmit" class="btn btn-sm btn-primary" title="Use to Save the entered data" data-plugin="tippy" data-tippy-placement="top">Save</button>
-
-                                    </div>
+                                        </div>
                                     <!-- ------ end col ----------  -->
                                 </div>
 
