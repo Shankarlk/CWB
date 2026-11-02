@@ -81,7 +81,7 @@ $("#ddlView").change(function () {
 
 function loadPartView() {
     $("#preloaderblurred").show();
-       api.getbulk("/WorkOrder/SimulationData?actual=true")
+    api.getbulk("/WorkOrder/SimulationData?actual=true")
         .then((data) => {
             simulationData = data;
             bindPartSimulation(data);
@@ -94,7 +94,7 @@ function loadPartView() {
         });
 }
 
- 
+
 function scrollToToday() {
 
     var today = new Date().toLocaleDateString("en-GB");
@@ -627,7 +627,7 @@ function bindPartSimulation(data) {
         </div>`;
         }
 
-       
+
 
 
         var matlActMarker = "";
@@ -682,7 +682,7 @@ function bindPartSimulation(data) {
             partNoTitle: data.parts[i].partNo,
             urgent: data.parts[i].isUrgent ? "Y" : "N",
             partNoColor: data.parts[i].partNoColor || "#f8f9fa",
-           operations: operationsHtml + soMarker + matlMarker + matlActMarker + soActMarker,
+            operations: operationsHtml + soMarker + matlMarker + matlActMarker + soActMarker,
             soMarker: "",
             rowHeight: rowHeight,
             totalHours: totalHours,
@@ -705,9 +705,9 @@ function bindPartSimulation(data) {
 }
 
 
-  
 
- 
+
+
 function bindMachineSimulation(data) {
 
     bindMachineHeader(data.headers);
@@ -859,14 +859,14 @@ function loadSelectedView() {
     }
 }
 
- 
+
 
 $(document).on('mouseenter', '.operation-bar, .so-completion-marker, .matl-receipt-marker, .matl-act-receipt-marker,.part-no-cell', function () {
 
     var $element = $(this);
     var sourceHtml = "";
 
-    
+
     if ($element.hasClass('operation-bar')) {
 
         var barType = ($element.attr('data-bartype') || '').trim().toLowerCase();
@@ -901,7 +901,7 @@ $(document).on('mouseenter', '.operation-bar, .so-completion-marker, .matl-recei
     }
 
     // Material receipt marker
-    else if ($element.hasClass('matl-receipt-marker') || $element.hasClass('matl-act-receipt-marker') || $element.hasClass('part-no-cell'))  {
+    else if ($element.hasClass('matl-receipt-marker') || $element.hasClass('matl-act-receipt-marker') || $element.hasClass('part-no-cell')) {
 
         sourceHtml = decodeURIComponent(
             $element.attr('data-tooltip') || ''
@@ -997,6 +997,3 @@ function buildColgroup(headers, firstColWidths) {
     html += "</colgroup>";
     return html;
 }
-
-
-

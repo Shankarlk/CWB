@@ -1,5 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Item Master - BOF";
+    
+        bool isViewMode = ViewBag.ReadOnly == true;
+    
 }
 @model CWB.App.Models.ItemMaster.BoughtOutFinishDetailVM
 <input value="M-IM" type="hidden" id="hdn-nav-menu" />
@@ -51,18 +54,22 @@
                                             <input type="text" id="Status" asp-for="Status" name="Status" class="form-control form-control-sm" readonly>
 
                                             <div class="ms-1 d-flex flex-column">
-                                                <button type="button" class="btn btn-sm btn-outline-secondary mb-1"
-                                                        data-plugin="tippy" data-tippy-placement="top"
-                                                        data-bs-toggle="modal" data-bs-target="#status-info"
-                                                        data-original-title="Edit Status">
-                                                    <i class="fas fa-pencil-alt font-10"></i>
-                                                </button>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary"
-                                                        data-plugin="tippy" data-tippy-placement="top"   id="historybtn"
-                                                        data-bs-toggle="modal" data-bs-target="#ChangeListPopup"
-                                                        data-original-title="View Status History">
-                                                    <i class="fa fa-history font-10"></i>
-                                                </button>
+                                                @if (!isViewMode)
+                                                {
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary mb-1"
+                                                            data-plugin="tippy" data-tippy-placement="top"
+                                                            data-bs-toggle="modal" data-bs-target="#status-info"
+                                                            data-original-title="Edit Status">
+                                                        <i class="fas fa-pencil-alt font-10"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                                            data-plugin="tippy" data-tippy-placement="top" id="historybtn"
+                                                            data-bs-toggle="modal" data-bs-target="#ChangeListPopup"
+                                                            data-original-title="View Status History">
+                                                        <i class="fa fa-history font-10"></i>
+                                                    </button>
+                                                }
+
                                             </div>
                                             <input asp-for="StatusChangeReason" name="StatusChangeReason" id="StatusChangeReason" class="form-control form-control-sm" type="text" placeholder="enter here" hidden>
                                             <input asp-for="Inv_Trans" name="Inv_Trans" id="Inv_Trans" class="form-control form-control-sm" type="text" placeholder="enter here" hidden>
@@ -91,8 +98,8 @@
                                             </div>
                                             <!-- ===================== -->
                                             <label class="form-label col-md-4 mb-2"> Part No</label>
-                                            <div class="col-md-8 mb-2" data-plugin="tippy" data-tippy-placement="top" data-tippy="" data-original-title="Enter the Inhouse Part No (Own Company's Part No). RM made to Print require a Part No. You can optionally provide inhouse Part Nos for Standard RM ParTs">
-                                                <input class="form-control form-control-sm" type="text" placeholder="enter here" title="Enter the Part Number (No.) - Please note that the Part No. is to be unique " data-plugin="tippy" data-tippy-placement="top" asp-for="PartNo" required>
+                                            <div class="col-md-8 mb-2" data-plugin="tippy" data-tippy-placement="top" data-tippy="" data-original-title="Enter the Inhouse Part No (Own Company's Part No). RM made to Print require a Part No. You can optionally provide inhouse Part Nos for Standard RM ParTs" >
+                                                <input class="form-control form-control-sm" type="text" placeholder="enter here" title="Enter the Part Number (No.) - Please note that the Part No. is to be unique " data-plugin="tippy" data-tippy-placement="top" asp-for="PartNo"  required>
                                                 <span asp-validation-for="PartNo"></span>
                                             </div>
                                             <!-- ===================== -->
@@ -130,12 +137,16 @@
                                                     <select class="form-select form-select-sm" id="UOMId" asp-for="UOMId" asp-items="@ViewBag.UOMs"></select>
 
                                                 </div>
-                                                <button type="button" id="addUomPopup" class="btn btn-sm waves-effect waves-light" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#uom" data-tippy="" data-original-title="Add UOM">
-                                                    <i class="fe-plus-square add-cust-btn"></i>
-                                                </button>
-                                                <button type="button" id="editUomPopup" class="btn btn-sm waves-effect waves-light" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#uom" data-tippy="" data-original-title="Edit UOM">
-                                                    <i class="fas fa-pen font-18"></i>
-                                                </button>
+                                                @if (!isViewMode)
+                                                {
+                                                    <button type="button" id="addUomPopup" class="btn btn-sm waves-effect waves-light" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#uom" data-tippy="" data-original-title="Add UOM">
+                                                        <i class="fe-plus-square add-cust-btn"></i>
+                                                    </button>
+                                                    <button type="button" id="editUomPopup" class="btn btn-sm waves-effect waves-light" data-plugin="tippy" data-tippy-placement="top" data-bs-toggle="modal" data-bs-target="#uom" data-tippy="" data-original-title="Edit UOM">
+                                                        <i class="fas fa-pen font-18"></i>
+                                                    </button>
+                                                    }
+
                                             </div>
                                             <!-- ===================== -->
                                             <!-- ===================== -->
@@ -179,8 +190,13 @@
                                         <input class="form-control form-control-sm display-none" type="text" value="CNMG 120408">
                                     </div>
                                     <div class="col-md-8 text-end mb-2">
-
-                                        <button type="button" class="btn btn-sm btn-primary" title="Use to Save the entered data" id="btnBOFDetailSubmit" value="Save">Save</button>
+                                        @if (!isViewMode)
+                                        {
+                                            <button type="button" id="btnBOFDetailSubmit" class="btn btn-sm btn-primary">
+                                                Save
+                                            </button>
+                                        }
+                                        @*<button type="button" class="btn btn-sm btn-primary" title="Use to Save the entered data" id="btnBOFDetailSubmit" value="Save">Save</button>*@
 
                                     </div>
                                     <!-- ------ end col ----------  -->

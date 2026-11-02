@@ -561,6 +561,11 @@ namespace CWB.App.Services.Masters
             var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
             return await RestHelper<bool>.GetAsync(uri, headers);
         }
-
+        public async Task<IEnumerable<CwbUserVM>> AllUsers()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbidentity/AllUsers");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<List<CwbUserVM>>.GetAsync(uri, headers);
+        }
     }
 }

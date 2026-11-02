@@ -81,6 +81,6 @@ namespace CWB.App.Models.ProductionSimulation
 
         public string CompareColor { get; set; } = "#000000";
 
-      
+
     }
 }

@@ -37,7 +37,7 @@
                                                 <h5 class="mb-3">Production Planning Flow</h5>
                                                 <div class="col-md-12">
                                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <a asp-controller="WorkOrder"  id="ConvertSoToWo" asp-action="SoToWo" class="btn btn-outline-info flex-shrink-0"
+                                                        <a asp-controller="WorkOrder" id="ConvertSoToWo" asp-action="SoToWo" class="btn btn-outline-info flex-shrink-0"
                                                            style="min-width: 200px;">
                                                             <h6>Convert SO to WO</h6>
                                                         </a>
@@ -61,7 +61,7 @@
                                                     </div>
                                                 </div>
                                             }
-                                            @if (permissionResult.Any(r => r.Menu3 == "Approve Matl / SubCon PO"))
+                                            @*@if (permissionResult.Any(r => r.Menu3 == "Approve Matl / SubCon PO"))
                                             {
                                                 <div class="col-md-12">
                                                     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -74,6 +74,16 @@
                                                         </h6>
                                                     </div>
                                                 </div>
+                                            }*@
+                                            @if (permissionResult.Any(r => r.Menu3 == "Simulate"))
+                                            {
+                                                <div class="col-md-12">
+                                                    <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                        <a asp-controller="WorkOrder" asp-action="SimulationPage">
+                                                            <h6>Simulate</h6>
+                                                        </a>
+                                                    </div>
+                                                </div>
                                             }
                                         }
                                         else
@@ -81,7 +91,7 @@
                                             <h5 class="mb-3">Production Planning Flow</h5>
                                             <div class="col-md-12">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <a asp-controller="WorkOrder"  id="ConvertSoToWo" asp-action="SoToWo" class="btn btn-outline-info flex-shrink-0"
+                                                    <a asp-controller="WorkOrder" id="ConvertSoToWo" asp-action="SoToWo" class="btn btn-outline-info flex-shrink-0"
                                                        style="min-width: 200px;">
                                                         <h6>Convert SO to WO</h6>
                                                     </a>
@@ -102,6 +112,104 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-12">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="SimulationPage">
+                                                        <h6>Simulate</h6>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            @*<div class="col-md-12">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="ApprovPoDetails" class="btn btn-outline-info flex-shrink-0"
+                                                       style="min-width: 200px;">
+                                                        <h6>Approve Matl / SubCon PO</h6>
+                                                    </a>
+                                                    <h6 class="mb-0 ms-2 text-end">
+                                                        <span id="openPOs">0</span> Parts w/f PO Release
+                                                    </h6>
+                                                </div>
+                                            </div>*@
+                                            <!-- end -->
+                                        }
+                                        @*<div class="col-md-12">
+            <div class="text-center btn btn-outline-info w-100 mb-2">
+                <a href="#">
+                    <h6>Release Material PO</h6>
+                </a>
+            </div>
+        </div>*@
+                                        <!-- end -->
+                                        @if (permissionResult != null)
+                                        {
+                                            @if (permissionResult.Any(r => r.Menu3 == "Approve Matl / SubCon PO"))
+                                            {
+                                                <div class="col-md-12">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <a asp-controller="WorkOrder" asp-action="ApprovPoDetails" class="btn btn-outline-info flex-shrink-0"
+                                                           style="min-width: 200px;">
+                                                            <h6>Approve Matl / SubCon PO</h6>
+                                                        </a>
+                                                        <h6 class="mb-0 ms-2 text-end">
+                                                            <span id="openPOs">0</span> Parts w/f PO Release
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                            }
+                                            @*@if (permissionResult.Any(r => r.Menu3 == "Simulate"))
+                                            {
+                                                <div class="col-md-12">
+                                                    <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                        <a asp-controller="WorkOrder" asp-action="SimulationPage">
+                                                            <h6>Simulate</h6>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            }*@
+                                            @*<div class="col-md-12">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <a href="#" class="btn btn-outline-info flex-shrink-0" style="min-width: 200px;">
+                        <h6>Select WO for Production</h6>
+                    </a>
+                    <h6 class="mb-0 ms-2 text-end">
+                        <span id="openWORs">0</span> WO ready for Production
+                    </h6>
+                </div>
+            </div>*@
+                                            @if (permissionResult.Any(r => r.Menu3 == "WIP Control"))
+                                            {
+                                                <div class="col-md-12">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <a asp-controller="WorkOrder" asp-action="WipControl" class="btn btn-outline-info flex-shrink-0"
+                                                           style="min-width: 200px;">
+                                                            <h6>WIP Control</h6>
+                                                        </a>
+                                                        <h6 class="mb-0 ms-2 text-end">
+                                                            <span id="openWOPs">0</span> WO in Production
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                            }
+                                            <div class="col-md-12">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="SoDispatch" class="btn btn-outline-info flex-shrink-0" style="min-width: 200px;" id="openSODsBtn">
+                                                        <h6>SO Ready for Dispatch</h6>
+                                                    </a>
+                                                    <h6 class="mb-0 ms-2 text-end">
+                                                        <span id="openSODs">0</span> SO ready for dispatch
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            @*<div class="col-md-12">
+                                                <div class="text-center btn btn-outline-info w-100 mb-2">
+                                                    <a asp-controller="WorkOrder" asp-action="SimulationPage">
+                                                        <h6>Simulate</h6>
+                                                    </a>
+                                                </div>
+                                            </div>*@
+                                            <div class="col-md-12">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                                     <a asp-controller="WorkOrder" asp-action="ApprovPoDetails" class="btn btn-outline-info flex-shrink-0"
                                                        style="min-width: 200px;">
@@ -112,82 +220,16 @@
                                                     </h6>
                                                 </div>
                                             </div>
-                                            <!-- end -->
-                                        }
-                                        @*<div class="col-md-12">
-                                                <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                    <a href="#">
-                                                        <h6>Release Material PO</h6>
-                                                    </a>
-                                                </div>
-                                            </div>*@
-                                        <!-- end -->
-                                        @if (permissionResult != null)
-                                        {
-                                            @if (permissionResult.Any(r => r.Menu3 == "Simulate"))
-                                            {
-                                                <div class="col-md-12">
-                                                    <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                        <a asp-controller="WorkOrder" asp-action="SimulationPage">
-                                                            <h6>Simulate</h6>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            }
-                                    @*<div class="col-md-12">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <a href="#" class="btn btn-outline-info flex-shrink-0" style="min-width: 200px;">
-                                                <h6>Select WO for Production</h6>
-                                            </a>
-                                            <h6 class="mb-0 ms-2 text-end">
-                                                <span id="openWORs">0</span> WO ready for Production
-                                            </h6>
-                                        </div>
-                                    </div>*@
-                                            @if (permissionResult.Any(r => r.Menu3 == "WIP Control"))
-                                            {
-                                    <div class="col-md-12">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <a asp-controller="WorkOrder" asp-action="WipControl" class="btn btn-outline-info flex-shrink-0"
-                                               style="min-width: 200px;">
-                                                <h6>WIP Control</h6>
-                                            </a>
-                                            <h6 class="mb-0 ms-2 text-end">
-                                                <span id="openWOPs">0</span> WO in Production
-                                            </h6>
-                                        </div>
-                                    </div>
-                                            }
-                                    <div class="col-md-12">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <a asp-controller="WorkOrder" asp-action="SoDispatch"  class="btn btn-outline-info flex-shrink-0" style="min-width: 200px;" id="openSODsBtn">
-                                                <h6>SO Ready for Dispatch</h6>
-                                            </a>
-                                            <h6 class="mb-0 ms-2 text-end">
-                                                <span id="openSODs">0</span> SO ready for dispatch
-                                            </h6>
-                                        </div>
-                                    </div>
-                                        }
-                                        else
-                                        {
-                                            <div class="col-md-12">
-                                                <div class="text-center btn btn-outline-info w-100 mb-2">
-                                                    <a asp-controller="WorkOrder" asp-action="SimulationPage">
-                                                        <h6>Simulate</h6>
-                                                    </a>
-                                                </div>
-                                            </div>
                                             @*<div class="col-md-12">
-                                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <a href="#" class="btn btn-outline-info flex-shrink-0" style="min-width: 200px;">
-                                                        <h6>Select WO for Production</h6>
-                                                    </a>
-                                                    <h6 class="mb-0 ms-2 text-end">
-                                                        <span id="openWORs">0</span> WO ready for Production
-                                                    </h6>
-                                                </div>
-                                            </div>*@
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <a href="#" class="btn btn-outline-info flex-shrink-0" style="min-width: 200px;">
+                        <h6>Select WO for Production</h6>
+                    </a>
+                    <h6 class="mb-0 ms-2 text-end">
+                        <span id="openWORs">0</span> WO ready for Production
+                    </h6>
+                </div>
+            </div>*@
                                             <div class="col-md-12">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                                     <a asp-controller="WorkOrder" asp-action="WipControl" class="btn btn-outline-info flex-shrink-0"
@@ -202,7 +244,7 @@
                                             <!-- end -->
                                             <div class="col-md-12">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                                    <a asp-controller="WorkOrder" asp-action="SoDispatch"  class="btn btn-outline-info flex-shrink-0" style="min-width: 200px;" id="openSODsBtn">
+                                                    <a asp-controller="WorkOrder" asp-action="SoDispatch" class="btn btn-outline-info flex-shrink-0" style="min-width: 200px;" id="openSODsBtn">
                                                         <h6>SO Ready for Dispatch</h6>
                                                     </a>
                                                     <h6 class="mb-0 ms-2 text-end">

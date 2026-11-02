@@ -9,6 +9,8 @@ namespace CWB.App.Models.ItemMaster
     {
         public long ItemMasterDocListId { get; set; }
         public long ContentId { get; set; }
+
+        public string ContentName { get; set; } = string.Empty;
         public long DocumentTypeId { get; set; }
         public char Mandatory { get; set; }
         public long UpdatedBy { get; set; }

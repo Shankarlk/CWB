@@ -62,9 +62,9 @@ namespace CWB.ProductionPlanWO.Configurations
                 .HasColumnName("TenantId")
                 .IsRequired();
             builder
-           .Property(t => t.Sim_Seq_No)
-           .HasColumnName("Sim_Seq_No")
-           .HasDefaultValue(0);
+             .Property(t => t.Sim_Seq_No)
+             .HasColumnName("Sim_Seq_No")
+             .HasDefaultValue(0);
 
             builder
                         .Property(t => t.WOLevel)

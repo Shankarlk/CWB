@@ -715,7 +715,7 @@ function bindMachineSimulation(data) {
     $('[data-bs-toggle="popover"]').popover({ html: true, trigger: 'hover' });
 }
 
- 
+
 
 
 function updateArrows() {
@@ -922,6 +922,3 @@ function buildColgroup(headers, firstColWidths) {
     html += "</colgroup>";
     return html;
 }
-
-
-

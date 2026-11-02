@@ -186,9 +186,22 @@
 
 <template id="partSimulationRow">
 
-    <tr>
+    <tr data-wo-id="{woId}" data-parent-row-wo-id="{parentRowWoId}">
+        >
 
-        <td title="{partNoTitle}" style="position: sticky; left: 0px; z-index: 95; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; background:{partNoColor};">{partNo}</td>
+        <td title="{partNoTitle}"
+            style="position:sticky;
+                   left:0;
+                   z-index:95;
+                   white-space:nowrap;
+                   overflow:hidden;
+                   text-overflow:ellipsis;
+                   max-width:160px;
+                   background:{partNoColor};">
+            <span style="display:inline-block;width:{treeIndentPx}px;"></span>
+            {treeButtonHtml}{partNo}
+        </td>
+
         <td style="position:sticky; left:160px; background:#f8f9fa; z-index:94;">{urgent}</td>
 
         <td colspan="{totalHours}" class="position-relative p-0" style="border: 0.5px solid #ced4da;">
@@ -293,7 +306,7 @@
         {displayLabel} - {operationName}
 
         <div class="operation-tooltip tooltip-inhouse">
-            <b><span class="tooltip-value">{customerLabel}</span> </b> <span class="tooltip-value">{customerValue}</span><br>
+            @*<b><span class="tooltip-value">{customerLabel}</span> </b> <span class="tooltip-value">{customerValue}</span><br>*@
             <b>Shop / Machine:</b> <span class="tooltip-value">{shopMachine}</span><br>
             <b>Part No / Desc:</b> <span class="tooltip-value">{partNoDesc}</span><br>
             <b>Routing No / Opr No:</b> <span class="tooltip-value">{routingOprNo}</span><br>
@@ -321,6 +334,17 @@
 
 
 <style>
+
+    .explode-btn {
+        width: 22px;
+        height: 22px;
+        padding: 0;
+        margin-right: 4px;
+        font-size: 11px;
+        line-height: 20px;
+        vertical-align: middle;
+    }
+
     .tooltip-value {
         margin-left: 4px;
     }

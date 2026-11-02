@@ -1,4 +1,7 @@
-﻿<!--Depends on partial _ManuF_Templates included in parent page-->
+﻿@{
+    bool isViewMode = ViewBag.ReadOnly == true;
+}
+<!--Depends on partial _ManuF_Templates included in parent page-->
 @model CWB.App.Models.ItemMaster.MPBomVM
 <form method="post" id="MPBOM">
     <!-- ========= -->
@@ -45,7 +48,10 @@
         <div class="col-md-12">
             <div class="row mt-2">
                 <div class="col-md-1">
-                    <button class="btn btn-sm waves-effect waves-light" title="Select Part No" data-plugin="tippy" data-tippy-placement="top" type="button" data-bs-toggle="modal" data-bs-target="#existing-part-bof"><i class="ri-search-2-line bom-ser-1"></i></button>
+                    @if (!isViewMode)
+                    {
+                        <button class="btn btn-sm waves-effect waves-light" title="Select Part No" data-plugin="tippy" data-tippy-placement="top" type="button" data-bs-toggle="modal" data-bs-target="#existing-part-bof"><i class="ri-search-2-line bom-ser-1"></i></button>
+                    }  
                 </div>
                 <label class="form-label col-md-1 mb-1"> Part No  <span class="text-danger"> * </span></label>
                 <div class="col-md-2 mb-1">
@@ -66,7 +72,10 @@
                 <input type="text" hidden id="MPBOMId" name="MPBOMId" value="0" />
                 <!-- ========================== -->
                 <div class="col-md-12 mb-2 text-end">
-                    <button type="button" class="btn btn-sm btn-info" title="Click to add entered information to the BoM List" data-plugin="tippy" data-tippy-placement="top" id="AddBOM" >Add to BOM</button>
+                    @if (!isViewMode)
+                    {
+                        <button type="button" class="btn btn-sm btn-info" title="Click to add entered information to the BoM List" data-plugin="tippy" data-tippy-placement="top" id="AddBOM">Add to BOM</button>
+                    }
                 </div>
                 <!-- ========================== -->
             </div>
@@ -99,10 +108,10 @@
                     <a asp-action="Index" asp-controller="Masters">
                         <button type="button" class="btn btn-sm btn-dark" data-bs-toggle="modal">Exit</button>
                     </a>-->
-                    <!--
-                    <button class="btn btn-sm btn-primary" title="Save the entered Information" data-plugin="tippy" data-tippy-placement="top" id="btnSaveBOM">Save</button>
-                    -->
-                    <!--<button type="button" class="btn btn-warning btn-sm"><i class="fas fa-arrow-right"></i></button>
+                <!--
+                <button class="btn btn-sm btn-primary" title="Save the entered Information" data-plugin="tippy" data-tippy-placement="top" id="btnSaveBOM">Save</button>
+                -->
+                <!--<button type="button" class="btn btn-warning btn-sm"><i class="fas fa-arrow-right"></i></button>
                 </div>-->
                 <!-- ------end col ----- -->
             </div>

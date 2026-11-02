@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Item Master - Manufactured Part";
-    
+    bool isViewMode = ViewBag.ReadOnly == true;
 }
 
 @model CWB.App.Models.ItemMaster.ManufacturedPartNoDetailVM
@@ -113,6 +113,6 @@
     <script>
         var modelObj = @Html.Raw(Json.Serialize(Model));
         modelObj["Edit"] = false;
-   
+     var isViewMode = @(isViewMode ? "true" : "false");
     </script>
 }

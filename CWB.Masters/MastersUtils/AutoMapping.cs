@@ -720,7 +720,8 @@ namespace CWB.Masters.MastersUtils
             .ForMember(s => s.Inw_Recpt_HeaderId, s => s.MapFrom(src => src.Inw_Recpt_HeaderId))
             .ForMember(s => s.NcLogIdId, s => s.MapFrom(src => src.NcLogIdId))
             .ForMember(s => s.McId, s => s.MapFrom(src => src.McId))
-            .ForMember(s => s.CreationDt, s => s.MapFrom(src => src.CreationDate));
+            .ForMember(s => s.CreationDt, s => s.MapFrom(src => src.CreationDate))
+            .ForMember(s => s.Creator, s => s.MapFrom(src => src.Creator));
 
 
             CreateMap<DocListVM, DocList>()
@@ -745,7 +746,8 @@ namespace CWB.Masters.MastersUtils
             .ForMember(s => s.Status, s => s.MapFrom(src => src.Status))
             .ForMember(s => s.McTypeId, s => s.MapFrom(src => src.McTypeId))
             .ForMember(s => s.McId, s => s.MapFrom(src => src.McId))
-            .ForMember(s => s.CreationDate, s => s.MapFrom(src => src.CreationDt));
+            .ForMember(s => s.CreationDate, s => s.MapFrom(src => src.CreationDt))
+             .ForMember(s => s.Creator, s => s.MapFrom(src => src.Creator)); 
 
 
             CreateMap<UiList, UiListVM>()
