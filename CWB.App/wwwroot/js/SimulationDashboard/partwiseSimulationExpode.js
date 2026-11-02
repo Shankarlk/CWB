@@ -4,6 +4,7 @@ var partwiseSimulatinExplode = null;
 
 var HOUR_BASE_WIDTH = 38; // width that op.left / op.width in your data assume
 
+var partTreeExpandedIds = new Set();
 function getHourWidth() {
     if (currentDisplay === "Shift") return 19;
     if (currentDisplay === "Day") return 8;
@@ -65,6 +66,9 @@ $("#ddlView").change(function () {
 });
 
 function loadPartView() {
+    partTreeExpandedIds = new Set();
+
+   
     $("#preloaderblurred").show();
     api.getbulk("/WorkOrder/partwiseSimulatinExplode")
         .then((data) => {
@@ -531,6 +535,11 @@ function bindPartSimulation(data) {
         return;
     }
 
+    var partsByWoId = new Map(
+        data.parts.map(function (part) {
+            return [String(part.woId), part];
+        })
+    );
     var totalHours = 0;
     for (var i = 0; i < data.headers.length; i++) {
         for (var j = 0; j < data.headers[i].shifts.length; j++) {
@@ -620,18 +629,43 @@ function bindPartSimulation(data) {
         </div>`;
         }
 
+        var part = data.parts[i];
+
+        var treeLevel = Number(part.treeLevel || 0);
+
+        var treeButtonHtml = part.hasChildren
+            ? `<button type="button"
+               class="btn btn-outline-secondary btn-sm explode-btn"
+               data-wo-id="${part.woId}"
+               aria-expanded="${partTreeExpandedIds.has(String(part.woId))}"
+               title="Expand children">
+           E
+       </button>`
+            : "";
+
         var row = {
-            partNo: data.parts[i].partNo,
-            partNoTitle: data.parts[i].partNo,
-            urgent: data.parts[i].isUrgent ? "Y" : "N",
-            partNoColor: data.parts[i].partNoColor || "#f8f9fa",
+            woId: part.woId,
+            parentRowWoId: part.parentRowWoId,
+            treeButtonHtml: treeButtonHtml,
+            treeIndentPx: treeLevel * 20,
+
+            partNo: part.partNo,
+            partNoTitle: part.partNo,
+            urgent: part.isUrgent ? "Y" : "N",
+            partNoColor: part.partNoColor || "#f8f9fa",
             operations: operationsHtml + soMarker + matlMarker,
             soMarker: soMarker,
             rowHeight: rowHeight,
             totalHours: totalHours,
             totalWidth: totalWidth
         };
-        tableBody.append(AppUtil.ProcessTemplateData("partSimulationRow", row));
+        var rowHtml = AppUtil.ProcessTemplateData("partSimulationRow",row);
+
+        var $row = $(rowHtml);
+
+        $row.toggle(shouldShowPartTreeRow(part, partsByWoId));
+
+        tableBody.append($row);
 
 
     }
@@ -639,7 +673,98 @@ function bindPartSimulation(data) {
     $('[data-bs-toggle="popover"]').popover('dispose');
     $('[data-bs-toggle="popover"]').popover({ html: true, trigger: 'hover' });
 }
+function shouldShowPartTreeRow(part, partsByWoId) {
+    if (part.isTreeRoot)
+        return true;
 
+    var parentId = part.parentRowWoId;
+    var visited = new Set();
+
+    while (parentId !== null &&
+        parentId !== undefined &&
+        parentId !== "") {
+
+        parentId = String(parentId);
+
+        if (visited.has(parentId))
+            return false;
+
+        visited.add(parentId);
+
+        // Every ancestor must be expanded before this row is visible.
+        if (!partTreeExpandedIds.has(parentId))
+            return false;
+
+        var parent = partsByWoId.get(parentId);
+
+        if (!parent)
+            return false;
+
+        if (parent.isTreeRoot)
+            return true;
+
+        parentId = parent.parentRowWoId;
+    }
+
+    return false;
+}
+function getDirectChildRows(parentWoId) {
+    return $("#simulationBody tr[data-wo-id]").filter(function () {
+        return String($(this).attr("data-parent-row-wo-id")) ===
+               String(parentWoId);
+    });
+}
+
+function collapsePartTree(parentWoId) {
+    parentWoId = String(parentWoId);
+
+    partTreeExpandedIds.delete(parentWoId);
+
+    getDirectChildRows(parentWoId).each(function () {
+        var $childRow = $(this);
+
+        var childWoId = String($childRow.attr("data-wo-id"));
+
+        $childRow.hide();
+
+        $childRow.find(".explode-btn")
+            .text("E")
+            .attr("aria-expanded", "false")
+            .attr("title", "Expand children");
+
+        // Collapse everything below this child too.
+        collapsePartTree(childWoId);
+    });
+}
+
+$(document)
+    .off("click.partTree", "#simulationBody .explode-btn")
+    .on("click.partTree", "#simulationBody .explode-btn", function () {
+
+        var $button = $(this);
+        var parentWoId = String($button.attr("data-wo-id"));
+
+        var isExpanded =
+            $button.attr("aria-expanded") === "true";
+
+        if (isExpanded) {
+            collapsePartTree(parentWoId);
+
+            $button
+                .text("E")
+                .attr("aria-expanded", "false")
+                .attr("title", "Expand children");
+        } else {
+            partTreeExpandedIds.add(parentWoId);
+
+            getDirectChildRows(parentWoId).show();
+
+            $button
+                .text("C")
+                .attr("aria-expanded", "true")
+                .attr("title", "Collapse children");
+        }
+    });
 function bindMachineSimulation(data) {
 
     bindMachineHeader(data.headers);

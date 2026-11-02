@@ -10,7 +10,7 @@ namespace CWB.App.Models.DocumentManagement
         public long DocListId { get; set; }
         public long DocumentTypeId { get; set; }
         public string FileName { get; set; }
-        public long Approved_by { get; set; }
+        public string Approved_by { get; set; }
         public DateTime Appv_Date_time { get; set; }
         public long AppvStatus { get; set; }
         public string StorageLocation { get; set; }
