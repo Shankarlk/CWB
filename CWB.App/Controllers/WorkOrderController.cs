@@ -16134,11 +16134,11 @@ namespace CWB.App.Controllers
                     item.DocStatus = getdoc.Doc_Status_Desc;
                     if (item.DocCat == 1)
                     {
-                        //if (item.Approved_by > 0)
-                        //{
-                        //    item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
-                        //    item.ApprovedByStr = fullName;
-                        //}
+                        if (item.Approved_by > 0)
+                        {
+                            item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
+                            item.ApprovedByStr = fullName;
+                        }
                     }
                     else
                     {
@@ -16245,11 +16245,11 @@ namespace CWB.App.Controllers
                     item.DocStatus = getdoc.Doc_Status_Desc;
                     if (item.DocCat == 1)
                     {
-                        //if (item.Approved_by > 0)
-                        //{
-                        //    item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
-                        //    item.ApprovedByStr = fullName;
-                        //}
+                        if (item.Approved_by > 0)
+                        {
+                            item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
+                            item.ApprovedByStr = fullName;
+                        }
                     }
                     else
                     {
@@ -16353,11 +16353,11 @@ namespace CWB.App.Controllers
                     item.DocStatus = getdoc.Doc_Status_Desc;
                     if (item.DocCat == 1)
                     {
-                        //if (item.Approved_by > 0)
-                        //{
-                        //    item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
-                        //    item.ApprovedByStr = fullName;
-                        //}
+                        if (item.Approved_by > 0)
+                        {
+                            item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
+                            item.ApprovedByStr = fullName;
+                        }
                     }
                     else
                     {
@@ -16423,11 +16423,11 @@ namespace CWB.App.Controllers
                     item.DocStatus = getdoc.Doc_Status_Desc;
                     if (item.DocCat == 1)
                     {
-                        //if (item.Approved_by > 0)
-                        //{
-                        //    item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
-                        //    item.ApprovedByStr = fullName;
-                        //}
+                        if (item.Approved_by > 0)
+                        {
+                            item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
+                            item.ApprovedByStr = fullName;
+                        }
                     }
                     else
                     {
@@ -24556,7 +24556,7 @@ namespace CWB.App.Controllers
                     if(item.Status==3)
                     {
 
-                        //for normal wo 
+
                         if(item.Combined!='Y' && item.SplitParentWoId==0)
                         {
                             var procplan = getprocplan.Where(x => x.WorkOrderId == item.WoId).FirstOrDefault();
@@ -24566,8 +24566,8 @@ namespace CWB.App.Controllers
                             }
                         }
   
-                       //for combined wo 
-                        else if (item.Combined =='Y'  && item.SplitParentWoId==0)
+                       
+                        else if (item.Combined=='Y'  && item.SplitParentWoId==0)
                         {
                             var combinedwo = consolidatewomapping.Where(x => x.CombinedWoId == item.WoId).ToList();
                             var combinedprocplan = getprocplan.Where(x => x.WorkOrderId == combinedwo.First().WoId).FirstOrDefault();
@@ -24576,7 +24576,7 @@ namespace CWB.App.Controllers
 
                         else if(item.SplitParentWoId>0){
 
-                            var parentwo = productions.FirstOrDefault(x => x.WoId == item.SplitParentWoId);
+                            var parentwo = productions  .FirstOrDefault(x => x.WoId == item.SplitParentWoId);
 
                             if (parentwo != null)
                             {
@@ -34266,10 +34266,6 @@ namespace CWB.App.Controllers
         }
 
 
-
-
-
-
         // this for testing partwiseSimulatinExplode dashboard 
         [HttpGet]
         public async Task<IActionResult> partwiseSimulatinExplode(bool actual = false)
@@ -34292,7 +34288,7 @@ namespace CWB.App.Controllers
 
             var Livesubconlist = await _woService.GetAllSubCon_List();
             var Tempsubconlist = await _woService.GetAllTempSubCon_List();
-            var bomList = await _woService.GetAllBomlist();
+
             var companies = await _masterService.GetCompanies();
             var salesOrders = new List<dynamic>();
             try
@@ -34309,17 +34305,6 @@ namespace CWB.App.Controllers
             var machinelist = await _machineService.GetMachinesList();
             ProductionSimulationVM vm = new ProductionSimulationVM();
             var productions = allprductionwo.Where(x => x.For_Ref == 'N').ToList();
-
-            var productionByWoId = productions.GroupBy(x => x.WoId).ToDictionary(g => g.Key, g => g.First());
-            var bomByProcPlanId = bomList.GroupBy(x => x.ProcPlanId).ToDictionary(g => g.Key, g => g.ToList());
-
-            var masterPartById = masterpartlist.Where(x => x.PartId.HasValue).GroupBy(x => x.PartId.Value).ToDictionary(g => g.Key, g => g.First());
-
-            // Existing live and temp work-order IDs.
-            var liveWoIdSet = livewowaitlist.Select(x => x.Wo_Id).ToHashSet();
-
-            var tempWoIdSet = tempwowaitlist.Select(x => x.Wo_Id).ToHashSet();
-
 
             var plantwd = await _plantService.GetPlantWD(13);
             var holidaylist = await _plantService.GetHolidays(13);
@@ -34555,8 +34540,6 @@ namespace CWB.App.Controllers
                 partRow.PartNoTitle = partno.PartNo;
                 partRow.Description = partno.Description;
                 partRow.IsUrgent = production.Urgent == 0;
-
-                
 
                 partRow.SoldToCustomerText = production.Parentlevel == 'Y' ? "Yes" : "No";
                 partRow.PartTypeText = production.PartType == 2 ? "Assembly" : production.PartType == 1 ? "Manufactured Part" : "";
@@ -35083,11 +35066,7 @@ namespace CWB.App.Controllers
 
             }
             if (actual)
-            {
-                
                 return Ok(vm);
-            }
-                
             //temp data 
             foreach (var item in tempwowaitlist)
             {
@@ -35109,8 +35088,6 @@ namespace CWB.App.Controllers
                 partRow.PartNo = partno.PartNo;
                 partRow.Description = partno.Description;
                 partRow.IsUrgent = production.Urgent == 0;
-
-                
 
                 partRow.SoldToCustomerText = production.Parentlevel == 'Y' ? "Yes" : "No";
                 partRow.PartTypeText = production.PartType == 2 ? "Assembly" : production.PartType == 1 ? "Manufactured Part" : "";
@@ -35295,215 +35272,10 @@ namespace CWB.App.Controllers
                 }
 
                 if (partRow.Operations.Any())
-                {
                     vm.Parts.Add(partRow);
-                }
-                  
             }
-            BuildTempPartTree();
             return Ok(vm);
-
-
-            void BuildTempPartTree()
-            {
-                var originalRows = vm.Parts.ToList();
-
-                var rowsByWoId = originalRows.GroupBy(x => x.WoId).ToDictionary(g => g.Key, g => g.First());
-
-                var originalOrder = originalRows.Select((row, index) => new
-                    {
-                        row.WoId,
-                        Index = index
-                    })
-                    .GroupBy(x => x.WoId)
-                    .ToDictionary(g => g.Key, g => g.First().Index);
-
-                // These two collections were missing in your code.
-                var orderedRows = new List<SimulationPartRowVM>();
-                var placedWoIds = new HashSet<long>();
-
-                // Reset hierarchy properties.
-                foreach (var row in originalRows)
-                {
-                    row.ParentRowWoId = null;
-                    row.TreeLevel = 0;
-                    row.IsTreeRoot = false;
-                    row.HasChildren = false;
-                }
-
-                // Identify root parent rows.
-                var rootRows = originalRows.Where(row =>productionByWoId.TryGetValue(row.WoId, out var production) && production.Parentlevel == 'Y').ToList();
-
-                // RECURSIVE FUNCTION
-                void LinkChildren(ProductionPlan_WoVM parentProduction,long rootWoId,int parentDepth,HashSet<long> ancestors)
-                {
-                    // Do NOT check ancestors.Contains(parentProduction.WoId)
-                    // here. The caller has already added this WO to ancestors.
-
-                    if (!rowsByWoId.TryGetValue( parentProduction.WoId, out var parentRow))
-                    {
-                        return;
-                    }
-
-                    var childPartIds = new List<long>();
-
-                    
-                    // CASE 1: ASSEMBLY (PartType = 2)                    
-                    if (parentProduction.PartType == 2)
-                    {
-                        if (bomByProcPlanId.TryGetValue(parentProduction.ProductionPlanId,out var bomRows))
-                        {
-                            foreach (var bom in bomRows)
-                            {
-                                if (bom.ParentWoId != rootWoId)
-                                    continue;
-
-                                if (!long.TryParse(Convert.ToString(bom.Child_Part_No_ID),out long childPartId))
-                                {
-                                    continue;
-                                }
-
-                                if (childPartId <= 0)
-                                    continue;
-
-                                var childType = (bom.Child_Part_No_Type ?? "").Trim();
-
-                                if (string.Equals(childType,"Assembly",StringComparison.OrdinalIgnoreCase)||string.Equals(childType,"ManufacturedPart",StringComparison.OrdinalIgnoreCase))
-                                {
-                                    childPartIds.Add(childPartId);
-                                }
-                                else if (string.Equals(childType,"MasterPart",StringComparison.OrdinalIgnoreCase))
-                                {
-                                    if (masterPartById.TryGetValue(childPartId, out var masterChild))
-                                    {
-                                        if (string.Equals(masterChild.MasterPartType,"ManufacturedPart",StringComparison.OrdinalIgnoreCase))
-                                        {
-                                            childPartIds.Add(childPartId);
-                                        }
-                                    }
-                                }
-
-                                // RawMaterial and BOF are excluded.
-                            }
-                        }
-                    }
-
-                   
-                    // CASE 2: MANUFACTURED PART (PartType = 1)
-                   
-                    else if (parentProduction.PartType == 1)
-                    {
-                        long inputPartId = parentProduction.Input_Part_No;
-
-                        if (inputPartId > 0 && masterPartById.TryGetValue(inputPartId, out var inputMasterPart))
-                        {
-                            if (string.Equals(inputMasterPart.MasterPartType,"ManufacturedPart",StringComparison.OrdinalIgnoreCase))
-                            {
-                                childPartIds.Add(inputPartId);
-                            }
-                        }
-                    }
-
-
-                    
-                    // FIND CHILD WORK ORDERS
-                     
-                    foreach (long childPartId in childPartIds.Distinct())
-                    {
-                        var childProductions = productions.Where(x =>x.PartId == childPartId &&x.ParentWoId == rootWoId && tempWoIdSet.Contains(x.WoId))
-                            .OrderBy(x => originalOrder.TryGetValue(x.WoId, out int index)
-                                    ? index
-                                    : int.MaxValue).ToList();
-
-                        foreach (var childProduction in childProductions)
-                        {
-                            // Prevent circular hierarchy.
-                            if (ancestors.Contains(childProduction.WoId))
-                                continue;
-
-                            // Prevent duplicate WO rows.
-                            if (placedWoIds.Contains(childProduction.WoId))
-                                continue;
-
-                            // Child must already exist in vm.Parts.
-                            if (!rowsByWoId.TryGetValue(childProduction.WoId, out var childRow))
-                            {
-                                continue;
-                            }
-
-                            // Set direct parent relationship.
-                            childRow.ParentRowWoId = parentProduction.WoId;
-                            childRow.TreeLevel = parentDepth + 1;
-                            childRow.IsTreeRoot = false;
-
-                            parentRow.HasChildren = true;
-
-                            placedWoIds.Add(childProduction.WoId);
-                            orderedRows.Add(childRow);
-
-                            // Recursively discover the next level.
-                            ancestors.Add(childProduction.WoId);
-
-                            LinkChildren(childProduction,rootWoId,parentDepth + 1,ancestors);
-
-                            ancestors.Remove(childProduction.WoId);
-                        }
-                    }
-                }
-
-
-               
-                // START FROM ROOT PARENT ROWS
-                
-                foreach (var rootRow in rootRows)
-                {
-                    if (!productionByWoId.TryGetValue(rootRow.WoId, out var rootProduction))
-                    {
-                        continue;
-                    }
-
-                    if (!placedWoIds.Add(rootRow.WoId))
-                        continue;
-
-                    rootRow.ParentRowWoId = null;
-                    rootRow.TreeLevel = 0;
-                    rootRow.IsTreeRoot = true;
-
-                    orderedRows.Add(rootRow);
-
-                    var ancestors = new HashSet<long>
-                    {
-                        rootProduction.WoId
-                    };
-
-                    LinkChildren(rootProduction,rootProduction.WoId,0,ancestors);
-                }
-
-
-              
-                // KEEP UNLINKED ROWS
-                
-                foreach (var row in originalRows)
-                {
-                    if (!placedWoIds.Add(row.WoId))
-                        continue;
-
-                    row.ParentRowWoId = null;
-                    row.TreeLevel = 0;
-                    row.IsTreeRoot = true;
-
-                    orderedRows.Add(row);
-                }
-
-
-                // Replace rows with hierarchy order.
-                vm.Parts.Clear();
-                vm.Parts.AddRange(orderedRows);
-            }
-
         }
-
-
 
 
         [HttpGet]
@@ -35779,8 +35551,6 @@ namespace CWB.App.Controllers
                 partRow.PartNoTitle = partno.PartNo;
                 partRow.Description = partno.Description;
                 partRow.IsUrgent = production.Urgent == 0;
-
-                
 
                 partRow.SoldToCustomerText = production.Parentlevel == 'Y' ? "Yes" : "No";
                 partRow.PartTypeText = production.PartType == 2 ? "Assembly" : production.PartType == 1 ? "Manufactured Part" : "";

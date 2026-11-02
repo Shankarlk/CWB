@@ -9,7 +9,7 @@ namespace CWB.Masters.ViewModels.DocumentManagement
     {
         public long DocListId { get; set; }
         public long DocumentTypeId { get; set; }
-        public string Approved_by { get; set; }
+        public long Approved_by { get; set; }
         public string FileName { get; set; }
         public string StorageLocation { get; set; }
         public long UploadUiId { get; set; }

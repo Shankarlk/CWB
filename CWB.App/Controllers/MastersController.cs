@@ -2765,11 +2765,11 @@ namespace CWB.App.Controllers
                     item.DocStatus = getdoc.Doc_Status_Desc;
                     if (item.DocCat == 1)
                     {
-                        //if(item.Approved_by > 0)
-                        //{
-                        //    item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
-                        //    item.ApprovedByStr = fullName;
-                        //}
+                        if(item.Approved_by > 0)
+                        {
+                            item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
+                            item.ApprovedByStr = fullName;
+                        }
                     }
                     else
                     {
@@ -2962,7 +2962,7 @@ namespace CWB.App.Controllers
             finddoc.Appv_Date_time = DateTime.Now;
             ClaimsPrincipal userClaim = HttpContext.User; // Assuming you're in a controller or middleware
             string fullName = AppUtil.GetTenantId(userClaim);
-            finddoc.Approved_by = Convert.ToString(fullName);
+            finddoc.Approved_by = Convert.ToInt64(fullName);
             var result = await _docMangService.PostDocList(finddoc);
             return Ok(result);
         }

@@ -263,16 +263,16 @@ namespace CWB.App.Controllers
                 }
 
                 // H. Approval Info
-                //if (item.DocCat == 1 && item.Approved_by > 0)
-                //{
-                //    item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
-                //    item.ApprovedByStr = fullName; // Note: Original code sets this to current user, is this intended?
-                //}
-                //else
-                //{
-                //    item.ApprovedOnStr = "";
-                //    item.ApprovedByStr = "";
-                //}
+                if (item.DocCat == 1 && item.Approved_by > 0)
+                {
+                    item.ApprovedOnStr = item.Appv_Date_time.ToString("MM-dd-yyyy");
+                    item.ApprovedByStr = fullName; // Note: Original code sets this to current user, is this intended?
+                }
+                else
+                {
+                    item.ApprovedOnStr = "";
+                    item.ApprovedByStr = "";
+                }
             }
 
             return Ok(docListVMs);

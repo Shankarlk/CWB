@@ -9,7 +9,7 @@ namespace CWB.Masters.Domain.DocumentManagement
     public class DocList :BaseEntity
     {
         public long DocumentTypeId { get; set; }
-        public string Approved_by { get; set; }
+        public long Approved_by { get; set; }
         public string FileName { get; set; }
         public string StorageLocation { get; set; }
         public long UploadUiId { get; set; }

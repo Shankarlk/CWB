@@ -24,7 +24,7 @@ namespace CWB.Masters.Configurations.DocumentManagement
             builder
                 .Property(t => t.Approved_by)
                 .HasColumnName("Approved_by")
-                 ;
+                .IsRequired();
             builder
                 .Property(t => t.FileName)
                 .HasColumnName("FileName")
