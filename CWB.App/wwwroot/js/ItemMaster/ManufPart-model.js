@@ -338,7 +338,7 @@ function DecodeManufPartId() {
                 }
                 $("#headingN").text("New");
                 $("#createfep").show();
-                $("#Status").val("Not Released");
+               /* $("#Status").val("Not Released");*/
                 $("#statusDiv").show();
                 $("#statusLbl").show();
                 $("#popuphistorybtn").hide();
@@ -465,33 +465,33 @@ $(document).ready(function () {
 
     var $statusPopup = $("#statusPopup");
     var $statusResasonopup = $("#statusResasonopup");
-    $statusPopup.empty(); // clear old options
-    $('#StPopupGrid').hide();
-    $statusPopup.append('<option value="">Select</option>');
+    /*$statusPopup.empty();*/ // clear old options
+  /*  $('#StPopupGrid').hide();*/
+  /*  $statusPopup.append('<option value="">Select</option>');*/
 
-    if (currentStatus === "Not Released") {
-        // only Released should be shown
-        $statusPopup.append('<option value="Released">Released</option>');
-        $statusResasonopup.val("Regular Release");
-    }
-    else if (currentStatus === "Released") {
-        $statusPopup.append('<option value="Hold">Hold</option>');
-        $statusPopup.append('<option value="Obsolete">Obsolete</option>');
-    }
-    else if (currentStatus === "Hold") {
-        $statusPopup.append('<option value="Released">Released</option>');
-    }
-    else if (currentStatus === "Obsolete") {
-        // No further transitions, optionally disable
-        $statusPopup.append('<option disabled>No further status</option>');
-        $statusPopup.prop("disabled", true);
-    } else {
-        // fallback → show all
-        $statusPopup.append('<option>Not Released</option>');
-        $statusPopup.append('<option>Released</option>');
-        $statusPopup.append('<option>Hold</option>');
-        $statusPopup.append('<option>Obsolete</option>');
-    }
+    //if (currentStatus === "Not Released") {
+    //    // only Released should be shown
+    //    $statusPopup.append('<option value="Released">Released</option>');
+    //    $statusResasonopup.val("Regular Release");
+    //}
+    //else if (currentStatus === "Released") {
+    //    $statusPopup.append('<option value="Hold">Hold</option>');
+    //    $statusPopup.append('<option value="Obsolete">Obsolete</option>');
+    //}
+    //else if (currentStatus === "Hold") {
+    //    $statusPopup.append('<option value="Released">Released</option>');
+    //}
+    //else if (currentStatus === "Obsolete") {
+    //    // No further transitions, optionally disable
+    //    $statusPopup.append('<option disabled>No further status</option>');
+    //    $statusPopup.prop("disabled", true);
+    //} else {
+    //    // fallback → show all
+    //    $statusPopup.append('<option>Not Released</option>');
+    //    $statusPopup.append('<option>Released</option>');
+    //    $statusPopup.append('<option>Hold</option>');
+    //    $statusPopup.append('<option>Obsolete</option>');
+    //}
     $("#statusPopup").change(function () {
         var selval = $(this).val();
         var manufPartId = $("#PartId").val();
@@ -1540,24 +1540,39 @@ $(document).ready(function () {
         }
         //checkboxFinalPart();
     });
-    $("#ApprovSave").click(function (event) {
+    //$("#ApprovSave").click(function (event) {
+    //    var mkID = parseInt($("#ApprovdDocId").val());
+    //    var prefred = 1;
+    //    if ($("#ApprovdChk").prop("checked") == true) {
+    //        prefred = 2;
+    //    }
+    //    if ($("#NotChk").prop("checked") == true) {
+    //        prefred = 1;
+    //    }
+    //    var rowData = {
+    //        docListId: mkID,
+    //        appvStatus: prefred
+    //    };
+        
+    //    api.post("/masters/DocApprov", rowData).then((data) => {
+    //        loadDocUploadList();
+    //        $("#ApprovPopup").modal("hide");
+    //    }).catch((error) => {
+             
+    //    });
+    //});
+    $("#ApprovSave").click(function () {
         var mkID = parseInt($("#ApprovdDocId").val());
-        var prefred = 1;
-        if ($("#ApprovdChk").prop("checked") == true) {
-            prefred = 3;
-        }
-        if ($("#NotChk").prop("checked") == true) {
-            prefred = 2;
-        }
-        var rowData = {
-            docListId: mkID,
-            appvStatus: prefred
-        };
-        api.post("/masters/DocApprov", rowData).then((data) => {
-            loadDocUploadList();
-            $("#ApprovPopup").modal("hide");
-        }).catch((error) => {
-        });
+        var status = $("#ApprovdChk").prop("checked") ? 2 : 1;
+
+        api.post("/masters/DocApprov", { docListId: mkID, appvStatus: status })
+            .then(() => {
+                loadDocUploadList();
+                $("#ApprovPopup").modal("hide");
+            })
+            .catch(() => {
+                alert("You are not authorized to approve this document, or the update failed.");
+            });
     });
     $('#setPreferredPopUp').on('show.bs.modal', function (event) {
         var relatedTarget = $(event.relatedTarget);
@@ -2839,10 +2854,14 @@ data-bs-toggle="modal"
     `);
 
                         if (data[i].docCat === 1) {
-                            const approveTag = $(`
-            <a href="javascript:void(0);" 
-               class="dropdown-item open-approve-modal" 
-               data-bs-toggle="modal" 
+
+                            if (data[i].canApprove === true) {
+                             
+                                // Only users with PermissionId 5 can open the approval popup
+                                const approveTag = $(`
+            <a href="javascript:void(0);"
+               class="dropdown-item open-approve-modal"
+               data-bs-toggle="modal"
                data-bs-target="#ApprovPopup"
                data-docid="${data[i].docListId}"
                data-doctype="${data[i].documentTypeName}"
@@ -2850,9 +2869,16 @@ data-bs-toggle="modal"
                data-uploadedon="${data[i].updatedOnStr}">
                 ${data[i].docStatus || ''}
             </a>`);
-                            rowHtml.find('td').eq(3).html(approveTag); // Replace {docStatus} placeholder
+
+                                rowHtml.find('td').eq(3).html(approveTag);
+
+                            } else {
+                                // Everyone else sees the status as plain text
+                                rowHtml.find('td').eq(3).text(data[i].docStatus || '');
+                            }
+
                         } else {
-                            rowHtml.find('td').eq(3).html(''); // Clear {docStatus} if not applicable
+                            rowHtml.find('td').eq(3).html('');
                         }
 
                         if (data[i].docListId === 0) {

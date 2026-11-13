@@ -490,33 +490,33 @@ $(function () {
 
     var $statusPopup = $("#statusPopup");
     var $statusResasonopup = $("#statusResasonopup");
-    $statusPopup.empty(); // clear old options
-    $('#StPopupGrid').hide();
-    $statusPopup.append('<option value="">Select</option>');
+    //$statusPopup.empty(); // clear old options
+    //$('#StPopupGrid').hide();
+    //$statusPopup.append('<option value="">Select</option>');
 
-    if (currentStatus === "Not Released") {
-        // only Released should be shown
-        $statusPopup.append('<option value="Released">Released</option>');
-        $statusResasonopup.val("Regular Release");
-    }
-    else if (currentStatus === "Released") {
-        $statusPopup.append('<option value="Hold">Hold</option>');
-        $statusPopup.append('<option value="Obsolete">Obsolete</option>');
-    }
-    else if (currentStatus === "Hold") {
-        $statusPopup.append('<option value="Released">Released</option>');
-    }
-    else if (currentStatus === "Obsolete") {
-        // No further transitions, optionally disable
-        $statusPopup.append('<option disabled>No further status</option>');
-        $statusPopup.prop("disabled", true);
-    } else {
-        // fallback → show all
-        $statusPopup.append('<option>Not Released</option>');
-        $statusPopup.append('<option>Released</option>');
-        $statusPopup.append('<option>Hold</option>');
-        $statusPopup.append('<option>Obsolete</option>');
-    }
+    //if (currentStatus === "Not Released") {
+    //    // only Released should be shown
+    //    $statusPopup.append('<option value="Released">Released</option>');
+    //    $statusResasonopup.val("Regular Release");
+    //}
+    //else if (currentStatus === "Released") {
+    //    $statusPopup.append('<option value="Hold">Hold</option>');
+    //    $statusPopup.append('<option value="Obsolete">Obsolete</option>');
+    //}
+    //else if (currentStatus === "Hold") {
+    //    $statusPopup.append('<option value="Released">Released</option>');
+    //}
+    //else if (currentStatus === "Obsolete") {
+    //    // No further transitions, optionally disable
+    //    $statusPopup.append('<option disabled>No further status</option>');
+    //    $statusPopup.prop("disabled", true);
+    //} else {
+    //    // fallback → show all
+    //    $statusPopup.append('<option>Not Released</option>');
+    //    $statusPopup.append('<option>Released</option>');
+    //    $statusPopup.append('<option>Hold</option>');
+    //    $statusPopup.append('<option>Obsolete</option>');
+    //}
     $("#statusPopup").change(function () {
         var selval = $(this).val();
         var manufPartId = $("#PartId").val();

@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Item Master - Raw Material";
     bool isViewMode = ViewBag.ReadOnly == true;
+    bool canApprove = ViewBag.CanApprove == true;
 }
 @model CWB.App.Models.ItemMaster.RawMaterialDetailVM
 <input value="M-IM" type="hidden" id="hdn-nav-menu" />
@@ -67,22 +68,22 @@
                                             <input type="text" id="Status" asp-for="Status" name="Status" class="form-control form-control-sm" readonly>
 
                                             <div class="d-flex flex-column">
-                                                @if (!isViewMode)
-                                                {
-                                                    <button type="button" class="btn btn-sm waves-effect waves-light mb-1"
-                                                            data-plugin="tippy" data-tippy-placement="top"
-                                                            data-bs-toggle="modal" data-bs-target="#status-info"
-                                                            data-original-title="Edit Status">
-                                                        <i class="fas fa-pencil-alt font-10"></i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-sm waves-effect waves-light"
-                                                            data-plugin="tippy" data-tippy-placement="top" id="historybtn"
-                                                            data-bs-toggle="modal" data-bs-target="#ChangeListPopup"
-                                                            data-original-title="View Status History">
-                                                        <i class="fa fa-history font-10"></i>
-                                                    </button>
-                                                }
-                                                </div>
+                                           @if (!isViewMode || (ViewBag.IsApproveMode == true && canApprove))
+                                            {
+                                                <button type="button" class="btn btn-sm waves-effect waves-light mb-1"
+                                                        data-plugin="tippy" data-tippy-placement="top"
+                                                        data-bs-toggle="modal" data-bs-target="#status-info"
+                                                        data-original-title="Edit Status">
+                                                    <i class="fas fa-pencil-alt font-10"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm waves-effect waves-light"
+                                                        data-plugin="tippy" data-tippy-placement="top" id="historybtn"
+                                                        data-bs-toggle="modal" data-bs-target="#ChangeListPopup"
+                                                        data-original-title="View Status History">
+                                                    <i class="fa fa-history font-10"></i>
+                                                </button>
+                                            }
+                                            </div>
                                             <input asp-for="StatusChangeReason" name="StatusChangeReason" id="StatusChangeReason" class="form-control form-control-sm" type="text" placeholder="enter here" hidden>
                                             <input asp-for="Inv_Trans" name="Inv_Trans" id="Inv_Trans" class="form-control form-control-sm" type="text" placeholder="enter here" hidden>
                                             <input asp-for="Linked_to_BOM" name="Linked_to_BOM" id="Linked_to_BOM" class="form-control form-control-sm" type="text" placeholder="enter here" hidden>

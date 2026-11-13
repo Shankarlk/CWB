@@ -1,8 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Item Master - BOF";
-    
-        bool isViewMode = ViewBag.ReadOnly == true;
-    
+
+    bool isViewMode = ViewBag.ReadOnly == true;
+    bool canApprove = ViewBag.CanApprove == true;
 }
 @model CWB.App.Models.ItemMaster.BoughtOutFinishDetailVM
 <input value="M-IM" type="hidden" id="hdn-nav-menu" />
@@ -54,7 +54,7 @@
                                             <input type="text" id="Status" asp-for="Status" name="Status" class="form-control form-control-sm" readonly>
 
                                             <div class="ms-1 d-flex flex-column">
-                                                @if (!isViewMode)
+                                                @if (!isViewMode || (ViewBag.IsApproveMode == true && canApprove))
                                                 {
                                                     <button type="button" class="btn btn-sm btn-outline-secondary mb-1"
                                                             data-plugin="tippy" data-tippy-placement="top"

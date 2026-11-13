@@ -87,6 +87,18 @@
                                     </div>
                                 </div>
                             }
+                            @if (permissionResult.Any(r => r.Menu3 == "Item Master Approve"))
+                            {
+                                <div class="col-xl">
+                                    <div class="widget-simple text-center card btn btn-outline-info">
+                                        <a asp-action="MasterDetails" asp-route-menuId="138">
+                                            <div class="card-body">
+                                                <h5>Item Master Approve <br><br></h5>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
                         }
                         else
                         {
@@ -136,6 +148,16 @@
                                     <a asp-action="BOF" asp-route-id="@ViewBag.IndexId">
                                         <div class="card-body">
                                             <h5>Create New Bought Out Finish <br><br> (BOF) Part No</h5>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- end -->
+                            <div class="col-xl">
+                                <div class="widget-simple text-center card btn btn-outline-info">
+                                    <a asp-action="MasterDetails" asp-route-menuId="138">
+                                        <div class="card-body">
+                                            <h5>Item Master Approve  <br><br> </h5>
                                         </div>
                                     </a>
                                 </div>

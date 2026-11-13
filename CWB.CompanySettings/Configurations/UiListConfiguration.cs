@@ -263,8 +263,8 @@ namespace CWB.CompanySettings.Configurations
     new UiList { Id = 134, MenuLevelId = 3, TopLevel = 'N', UI_Type = "Command", UI_Name_Label = "Update Stock", UI_Part_linked_to = 133, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 3 },
     new UiList { Id = 135, MenuLevelId = 2, TopLevel = 'N', UI_Type = "Landing Page", UI_Name_Label = "Gro Document Management", UI_Part_linked_to = 130, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 3 },
     new UiList { Id = 136, MenuLevelId = 2, TopLevel = 'N', UI_Type = "Landing Page", UI_Name_Label = "GroFinalPackUpdate", UI_Part_linked_to = 130, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'N', Delete_Allowed = 'N', TenantId = 3 },
-    new UiList { Id = 137, MenuLevelId = 3, TopLevel = 'N', UI_Type = "Landing Page", UI_Name_Label = "Create New Assembly", UI_Part_linked_to = 2, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'Y', Delete_Allowed = 'Y', TenantId = 1 }
-
+    new UiList { Id = 137, MenuLevelId = 3, TopLevel = 'N', UI_Type = "Landing Page", UI_Name_Label = "Create New Assembly", UI_Part_linked_to = 2, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'Y', Delete_Allowed = 'Y', TenantId = 1 },
+     new UiList { Id = 138, MenuLevelId = 3, TopLevel = 'N', UI_Type = "Landing Page", UI_Name_Label = "Item Master Approve", UI_Part_linked_to = 2, Approval_Allowed = 'N', View_Allowed = 'Y', Add_Edit_Allowed = 'Y', Delete_Allowed = 'Y', TenantId = 1 }
     );
             builder.HasIndex(c => c.TenantId).HasDatabaseName("UiList_TenantId");
         }

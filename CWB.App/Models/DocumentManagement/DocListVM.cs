@@ -64,5 +64,7 @@ namespace CWB.App.Models.DocumentManagement
         public string UploadedBy { get; set; } = string.Empty;
         public char Mandatory { get; set; } = ' ';
         public string Creator { get; set; }
+
+        public bool CanApprove { get; set; }
     }
 }
