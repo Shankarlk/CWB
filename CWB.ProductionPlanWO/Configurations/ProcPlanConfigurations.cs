@@ -82,6 +82,33 @@ namespace CWB.ProductionPlanWO.Configurations
                .HasColumnName("PO_Flag")
                .HasDefaultValue(0);
             builder
+              .Property(p => p.SupplierId)
+              .HasColumnName("SupplierId")
+              .HasDefaultValue(0)
+              .IsRequired();
+            builder
+              .Property(p => p.LeadTimeInDays)
+              .HasColumnName("LeadTimeInDays")
+              .HasDefaultValue(0)
+              .IsRequired();
+            builder
+              .Property(p => p.MinimumOrderQuantity)
+              .HasColumnName("MinimumOrderQuantity")
+              .HasDefaultValue(0).
+              IsRequired();
+            builder
+              .Property(p => p.Price)
+              .HasColumnName("Price")
+              .HasDefaultValue(0m).
+              IsRequired();
+
+            builder
+             .Property(p => p.ParentProcplanId)
+             .HasColumnName("ParentProcplanId")
+             .HasDefaultValue(0).
+             IsRequired();
+
+            builder
                 .Property(p => p.PlanReceiptDate)
                 .HasColumnName("PlanReceiptDate")
                 .HasDefaultValue(null);

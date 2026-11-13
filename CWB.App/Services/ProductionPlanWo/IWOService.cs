@@ -47,6 +47,7 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<WoSubConSupplierVM> PostSubConSupplier(WoSubConSupplierVM childWoRels);
 
         Task<bool> DeleteSubCon(long doctypeId);
+        Task<bool> DeleteProcplan(long doctypeId);
         Task<bool> DeleteWo(long doctypeId);
         Task<bool> DeleteWoSoRel(long doctypeId);
         Task<bool> Deleteproductionplansplitwo(long doctypeId);

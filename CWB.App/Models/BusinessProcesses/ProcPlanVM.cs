@@ -53,16 +53,25 @@ namespace CWB.App.Models.BusinessProcesses
         public string? PlanStartDateStr { get; set; } = string.Empty;
         public string? PartNo { get; set; } = string.Empty;
         public string? PartDesc { get; set; } = string.Empty;
-        public string? LeadTimeInDays { get; set; } = string.Empty;
+      //  public string? LeadTimeInDays { get; set; } = string.Empty;
         public int Moq { get; set; }
-        public long SupplierId { get; set; }
+        //public long SupplierId { get; set; }
          public long ChildCount { get; set; }
         public string Supplier { get; set; } = string.Empty;
         public string UomName { get; set; } = string.Empty;
-        public string Price { get; set; } = string.Empty;
+       // public string Price { get; set; } = string.Empty;
         public string CombinedIds { get; set; } = string.Empty;
         public string CombinedProcPlan { get; set; } = string.Empty;
         public string WoIds { get; set; } = string.Empty;
-       
+
+
+        public int SupplierId { get; set; }
+        public int LeadTimeInDays { get; set; }
+        public int MinimumOrderQuantity { get; set; }
+        public decimal Price { get; set; }
+        public long ParentProcplanId { get; set; }
+
+        public string ProcPriceQnty { get; set; }
+
     }
 }

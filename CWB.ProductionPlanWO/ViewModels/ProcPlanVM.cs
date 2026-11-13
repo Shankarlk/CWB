@@ -27,5 +27,10 @@ namespace CWB.ProductionPlanWO.ViewModels
         public int CriticalPart { get; set; }
         public int Changed { get; set; }
         public long TenantId { get; set; }
+        public int SupplierId { get; set; }
+        public int LeadTimeInDays { get; set; }
+        public int MinimumOrderQuantity { get; set; }
+        public decimal Price { get; set; }
+        public long ParentProcplanId { get; set; }
     }
 }

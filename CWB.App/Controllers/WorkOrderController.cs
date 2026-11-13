@@ -301,6 +301,7 @@ namespace CWB.App.Controllers
                     }
                 }
             }
+            salesorders = salesorders.OrderBy(x => x.RequiredByDate).ToList();
             return Ok(salesorders);
         }
         [HttpGet]
@@ -7538,6 +7539,8 @@ namespace CWB.App.Controllers
                                                 allMaterialsAvailable = false;
                                                 if (ptype.MasterPartType == "RawMaterial")
                                                 {
+                                                    var rmpurchasedetails = await _masterService.PartPurchasesFor(grouped.PartId);
+                                                    var prefferedrm = rmpurchasedetails.OrderByDescending(x => x.PreferredSupplier).FirstOrDefault();
                                                     ProcPlanVM ppdata = new ProcPlanVM
                                                     {
                                                         PartId = grouped.PartId,
@@ -7549,7 +7552,11 @@ namespace CWB.App.Controllers
                                                         CalcReceiptDate = nextworkdingdate,
                                                         WorkOrderId = item.WoId,
                                                         CriticalPart = criticalpart,
-                                                        PO_Flag = 0
+                                                        PO_Flag = 0,
+                                                        SupplierId=prefferedrm.PSupplierId,
+                                                        LeadTimeInDays=prefferedrm.LeadTimeInDays,
+                                                        MinimumOrderQuantity=prefferedrm.MinimumOrderQuantity,
+                                                        Price=Convert.ToDecimal(prefferedrm.Price)
                                                     };
                                                     listprocplan.Add(ppdata);
                                                 }
@@ -8097,9 +8104,11 @@ namespace CWB.App.Controllers
                                             case MasterPartType.BOF:
                                                 decimal shortagebofQty = Math.Max(0, requiredQty - availableQty);
                                                 var bofpdList = await _masterService.PartPurchasesFor(bomgrp.PartId);
+                                                var prefferedbof = bofpdList.OrderByDescending(x => x.PreferredSupplier).FirstOrDefault();
+
                                                 //var bofptype = await _masterService.GetRMPart(bomgrp.PartId);
                                                 BoughtOutFinishDetailVM manuf = await _masterService.GetBOFPart(bomgrp.PartId);
-                                                totalLeadTime = bofpdList.Sum(x => x.LeadTimeInDays);
+                                                totalLeadTime = prefferedbof.LeadTimeInDays; 
                                                 DateTime bofnextworkdingdate = DateTime.Now;
                                                 bofnextworkdingdate = bofnextworkdingdate.AddDays(totalLeadTime);
                                                 int criticalpart = 0;
@@ -8139,7 +8148,11 @@ namespace CWB.App.Controllers
                                                         CalcReceiptDate = bofnextworkdingdate,
                                                         WorkOrderId = item.WoId,
                                                         CriticalPart = criticalpart,
-                                                        PO_Flag = 0
+                                                        PO_Flag = 0,
+                                                        SupplierId = prefferedbof.PSupplierId,
+                                                        LeadTimeInDays = prefferedbof.LeadTimeInDays,
+                                                        MinimumOrderQuantity = prefferedbof.MinimumOrderQuantity,
+                                                        Price = Convert.ToDecimal(prefferedbof.Price)
                                                     };
                                                     listprocplan.Add(ppdata);
                                                     Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
@@ -8827,6 +8840,8 @@ namespace CWB.App.Controllers
                                         allMaterialsAvailable = false;
                                         if (ptype.MasterPartType == "RawMaterial")
                                         {
+                                            var rmpurchasedetails = await _masterService.PartPurchasesFor(grouped.PartId);
+                                            var prefferedrm = rmpurchasedetails.OrderByDescending(x => x.PreferredSupplier).FirstOrDefault();
                                             ProcPlanVM ppdata = new ProcPlanVM
                                             {
                                                 PartId = grouped.PartId,
@@ -8838,7 +8853,11 @@ namespace CWB.App.Controllers
                                                 CalcReceiptDate = nextworkdingdate,
                                                 WorkOrderId = item.WoId,
                                                 CriticalPart = criticalpart,
-                                                PO_Flag = 0
+                                                PO_Flag = 0,
+                                                SupplierId = prefferedrm.PSupplierId,
+                                                LeadTimeInDays = prefferedrm.LeadTimeInDays,
+                                                MinimumOrderQuantity = prefferedrm.MinimumOrderQuantity,
+                                                Price = Convert.ToDecimal(prefferedrm.Price)
                                             };
                                             listprocplan.Add(ppdata);
                                         }
@@ -9387,9 +9406,10 @@ namespace CWB.App.Controllers
                                     case MasterPartType.BOF:
                                         decimal shortagebofQty = Math.Max(0, requiredQty - availableQty);
                                         var bofpdList = await _masterService.PartPurchasesFor(bomgrp.PartId);
+                                        var prefferedbof = bofpdList.OrderByDescending(x => x.PreferredSupplier).FirstOrDefault();
                                         //var bofptype = await _masterService.GetRMPart(bomgrp.PartId);
                                         BoughtOutFinishDetailVM manuf = await _masterService.GetBOFPart(bomgrp.PartId);
-                                        totalLeadTime = bofpdList.Sum(x => x.LeadTimeInDays);
+                                        totalLeadTime = prefferedbof.LeadTimeInDays;
                                         DateTime bofnextworkdingdate = DateTime.Now;
                                         bofnextworkdingdate = bofnextworkdingdate.AddDays(totalLeadTime);
                                         int criticalpart = 0;
@@ -9429,7 +9449,11 @@ namespace CWB.App.Controllers
                                                 CalcReceiptDate = bofnextworkdingdate,
                                                 WorkOrderId = item.WoId,
                                                 CriticalPart = criticalpart,
-                                                PO_Flag = 0
+                                                PO_Flag = 0,
+                                                SupplierId = prefferedbof.PSupplierId,
+                                                LeadTimeInDays = prefferedbof.LeadTimeInDays,
+                                                MinimumOrderQuantity = prefferedbof.MinimumOrderQuantity,
+                                                Price = Convert.ToDecimal(prefferedbof.Price)
                                             };
                                             listprocplan.Add(ppdata);
                                             Input_Resrv_ListVM newinput = new Input_Resrv_ListVM()
@@ -10261,13 +10285,84 @@ namespace CWB.App.Controllers
             return Ok(result);
         }
         [HttpPost]
+        public async Task<IActionResult> PostProcPlanSplit( [FromBody] IEnumerable<ProcPlanVM> procPlanVMs)
+        {
+            var procplans = await _woService.GetAllProcPlan();
+
+            foreach (var data in procPlanVMs)
+            {
+                // UPDATE existing child ProcPlan
+                if (data.ProcPlanId > 0)
+                {
+                    var existing = procplans.FirstOrDefault(
+                        x => x.ProcPlanId == data.ProcPlanId);
+
+                    if (existing == null)
+                        return NotFound("ProcPlan record not found.");
+
+                    existing.SupplierId = data.SupplierId;
+                    existing.LeadTimeInDays = data.LeadTimeInDays;
+                    existing.MinimumOrderQuantity = data.MinimumOrderQuantity;
+                    existing.Price = data.Price;
+
+                    existing.Plan_Proc_Qnty = data.Plan_Proc_Qnty;
+                    existing.Calc_Proc_Qnty = data.Plan_Proc_Qnty;
+
+                    existing.PlanReceiptDate = data.PlanReceiptDate;
+                    existing.CalcReceiptDate = data.PlanReceiptDate;
+
+                    existing.ParentProcplanId = data.ParentProcplanId;
+
+                    var updateResult = await _woService.ProcPlanPost(
+                        new List<ProcPlanVM> { existing });
+                }
+                else
+                {
+                    // INSERT new child ProcPlan
+                    var parent = procplans.FirstOrDefault(
+                        x => x.ProcPlanId == data.ParentProcplanId);
+
+                    if (parent == null)
+                        return NotFound("Parent ProcPlan record not found.");
+
+                    parent.For_Ref = 1;
+
+                    var parentupdate = await _woService.ProcPlanPost(
+                        new List<ProcPlanVM> { parent });
+
+                    data.PartId = parent.PartId;
+                    data.PartType = parent.PartType;
+                    data.WorkOrderId = parent.WorkOrderId;
+                    data.Calc_Proc_Qnty = data.Plan_Proc_Qnty;
+                    data.CalcReceiptDate = data.PlanReceiptDate;
+                    data.UOMId = parent.UOMId;
+                    data.StartingOpNO = parent.StartingOpNO;
+                    data.EndingOpNO = parent.EndingOpNO;
+                    data.PO_Flag = parent.PO_Flag;
+                    data.CriticalPart = parent.CriticalPart;
+                }
+            }
+
+            // Insert only the new records
+            var newRecords = procPlanVMs
+                .Where(x => x.ProcPlanId == 0)
+                .ToList();
+
+            if (newRecords.Any())
+            {
+                return Ok(await _woService.ProcPlanPost(newRecords));
+            }
+
+            return Ok(true);
+        }
+        [HttpPost]
         public async Task<IActionResult> UpdateProcPlanMOQ([FromBody] IEnumerable<ProcPlanVM> procPlanVMs)
         {
             var allprocplan = await _woService.GetAllProcPlan();
             var finalList = new List<ProcPlanVM>();
             foreach (var proc in procPlanVMs)
             {
-                // 🔥 STEP 1: Check if Combined
+                //  STEP 1: Check if Combined
                 if (!string.IsNullOrEmpty(proc.CombinedIds))
                 {
                     var ids = proc.CombinedIds
@@ -10508,7 +10603,7 @@ namespace CWB.App.Controllers
                 }
                 else
                 {
-                    item.PlanCompletionDate = null;
+                    item.PlanCompletionDate = item.PlanCompletionDate;
                 }
                 if (so != null)
                 {
@@ -10831,7 +10926,7 @@ namespace CWB.App.Controllers
                     {
                         item.Supplier = purs.PSupplier;
                         int subtotalLeadTime = mfpdList.Sum(x => x.LeadTimeInDays);
-                        item.LeadTimeInDays = subtotalLeadTime.ToString();
+                        item.LeadTimeInDays = subtotalLeadTime;
                         int MOQ = mfpdList.Sum(x => x.MinimumOrderQuantity);
                         item.Moq = MOQ;
                     }
@@ -10980,7 +11075,7 @@ namespace CWB.App.Controllers
                 .Select(wo => wo.WoId) // adjust if the ID property is named differently
                 .ToHashSet();
             resultList = resultList
-                .Where(item => !excludedWoIds.Contains(item.WorkOrderId) && item.PO_Flag == 0)
+                .Where(item => !excludedWoIds.Contains(item.WorkOrderId) && item.PO_Flag == 0 &&item.For_Ref==0)
                 .ToList();
             var partIds = resultList.Select(item => (int)item.PartId).Distinct().ToList();
 
@@ -11006,25 +11101,27 @@ namespace CWB.App.Controllers
                 {
                     var mfpdList = partPurchasesTasks[(int)item.PartId].Result;
                     var relevantPurchases = mfpdList.Where(purs => item.PartId == purs.PPartId).ToList();
-
-                    if (relevantPurchases.Any())
-                    {
-                        item.Supplier = relevantPurchases.First().PSupplier;
-                        item.SupplierId = relevantPurchases.First().PSupplierId;
-                        item.LeadTimeInDays = relevantPurchases.Sum(x => x.LeadTimeInDays).ToString();
-                        item.Moq = relevantPurchases.Sum(x => x.MinimumOrderQuantity);
-                        item.Price = relevantPurchases
-                                    .Where(x => long.TryParse(x.Price, out _))
-                                    .Sum(x => Convert.ToInt64(x.Price ?? "0"))
-                                    .ToString();
-                    }
+                    item.Price = Math.Round(item.Price, 2);
+                    var suppliername = comapnies.Where(x => x.CompanyId == item.SupplierId).FirstOrDefault();
+                    item.Supplier = suppliername.CompanyName;
+                    //if (relevantPurchases.Any())
+                    //{
+                    //    item.Supplier = relevantPurchases.First().PSupplier;
+                    //    item.SupplierId = relevantPurchases.First().PSupplierId;
+                    //    item.LeadTimeInDays = relevantPurchases.Sum(x => x.LeadTimeInDays).ToString();
+                    //    item.Moq = relevantPurchases.Sum(x => x.MinimumOrderQuantity);
+                    //    item.Price = relevantPurchases
+                    //                .Where(x => long.TryParse(x.Price, out _))
+                    //                .Sum(x => Convert.ToInt64(x.Price ?? "0"))
+                    //                .ToString();
+                    //}
                 }
                 else
                 {
                     var subconsupplier = await _routingService.SubCons((int)item.StartingOpNO);
                     var suppliername = comapnies.Where(x => x.CompanyId == subconsupplier.FirstOrDefault().SupplierId).FirstOrDefault();
                     item.Supplier = suppliername.CompanyName;
-                    item.SupplierId = suppliername.CompanyId;
+                    item.SupplierId = (int)suppliername.CompanyId;
                 }
                 if (item.CriticalPart == 1)
                 {
@@ -11078,10 +11175,12 @@ namespace CWB.App.Controllers
             var consolidatedResult = resultList
             .GroupBy(x => new
             {
+                x.WorkOrderId,
                 x.PartId,
                 x.SupplierId,
                 x.StartingOpNO,
-                x.EndingOpNO
+                x.EndingOpNO,
+                x.CalcReceiptDateStr
                 //RootParentWoId = GetRootParent(x.WorkOrderId)
             })
             .Select(g =>
@@ -14561,30 +14660,81 @@ namespace CWB.App.Controllers
             return Ok(woSubs);
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllPoSubCons(int woid)
+        public async Task<IActionResult> GetAllPoSubCons(long woid)
         {
-            var procdutionpost = await _woService.GetAllSubCOnSupp();
-            List<WoSubConSupplierVM> woSubs = new List<WoSubConSupplierVM>();
+            var procplans = await _woService.GetAllProcPlan();
             var companies = await _masterService.GetCompanies();
-            foreach (var item in procdutionpost)
+            var splittedprocplans = procplans.Where(x => x.ParentProcplanId == woid).ToList();
+
+            foreach(var item in splittedprocplans)
             {
                 foreach (ContactsVM mobj in companies)
                 {
                     if (item.SupplierId == mobj.CompanyId)
                     {
-                        item.Company = mobj.CompanyName;
+                        item.Supplier = mobj.CompanyName;
                     }
                 }
-                item.AgreedDate = item.RecieptDate.ToString("dd-MM-yyyy");
-                item.ProcPriceQnty = (Convert.ToDouble(item.ProcPrice) * Convert.ToDouble(item.Qnty)).ToString();
-                if (item.ProcPlanId == woid)
+                item.ProcPriceQnty = Math.Round(Convert.ToDouble(item.Price) * Convert.ToDouble(item.Plan_Proc_Qnty)).ToString();
+            }
+
+            return Ok(splittedprocplans);
+
+
+
+
+
+           // var procdutionpost = await _woService.GetAllSubCOnSupp();
+           // List<WoSubConSupplierVM> woSubs = new List<WoSubConSupplierVM>();
+           //// var companies = await _masterService.GetCompanies();
+           // foreach (var item in procdutionpost)
+           // {
+           //     foreach (ContactsVM mobj in companies)
+           //     {
+           //         if (item.SupplierId == mobj.CompanyId)
+           //         {
+           //             item.Company = mobj.CompanyName;
+           //         }
+           //     }
+           //     item.AgreedDate = item.RecieptDate.ToString("dd-MM-yyyy");
+           //     item.ProcPriceQnty = (Convert.ToDouble(item.ProcPrice) * Convert.ToDouble(item.Qnty)).ToString();
+           //     if (item.ProcPlanId == woid)
+           //     {
+           //         woSubs.Add(item);
+           //     }
+           // }
+           // return Ok(woSubs);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteProcPlanSplit( long id, long parentProcplanId)
+        {
+            var deleteprocplan = await _woService.DeleteProcplan(id);
+
+            if (deleteprocplan)
+            {
+                var procplans = await _woService.GetAllProcPlan();
+
+                var remainingChildren = procplans
+                    .Where(x => x.ParentProcplanId == parentProcplanId)
+                    .ToList();
+
+                if (!remainingChildren.Any())
                 {
-                    woSubs.Add(item);
+                    var parent = procplans
+                        .FirstOrDefault(x => x.ProcPlanId == parentProcplanId);
+
+                    if (parent != null)
+                    {
+                        parent.For_Ref = 0;
+                        await _woService.ProcPlanPost(
+                            new List<ProcPlanVM> { parent });
+                    }
                 }
             }
-            return Ok(woSubs);
-        }
 
+            return Ok(deleteprocplan);
+            // We will implement the deletion logic here.
+        }
         [HttpGet]
         public async Task<IActionResult> DeleteSubCon(long id)
         {
@@ -14618,26 +14768,92 @@ namespace CWB.App.Controllers
             }
             var consolidated = await _woService.Getallconsolidationproductionwo();
             var filtered = consolidated.Where(x => x.ParentWoId == id).ToList();
-            var filteredcombined = filtered.First();
-            if (filtered.Any())
+            if (filtered.Count>0)
             {
-                var parentwoids = consolidated.Where(x => x.CombinedWoId == filteredcombined.CombinedWoId).ToList();
-                var sowoids = parentwoids.Select(x => x.ParentWoId).ToHashSet();
-                var workOrders = await _baService.AllWorkOrders();
-                var woNumbers = workOrders.Where(x => sowoids.Contains(x.WOID)).ToList();
-                string wostring = "";
-                foreach (var wono in woNumbers)
+                var filteredcombined = filtered.First();
+                if (filtered.Any())
                 {
-                    wostring = wostring + wono.WONumber;
-                }
+                    var parentwoids = consolidated.Where(x => x.CombinedWoId == filteredcombined.CombinedWoId).ToList();
+                    var sowoids = parentwoids.Select(x => x.ParentWoId).ToHashSet();
+                    var workOrders = await _baService.AllWorkOrders();
+                    var woNumbers = workOrders.Where(x => sowoids.Contains(x.WOID)).ToList();
+                    string wostring = "";
+                    foreach (var wono in woNumbers)
+                    {
+                        wostring = wostring + wono.WONumber;
+                    }
 
-                string msg = "This work order  is consolidated for wo numbers " + wostring + "cannot be deleted";
-                return Ok(msg);
+                    string msg = "This work order  is consolidated for wo numbers " + wostring + "cannot be deleted";
+                    return Ok(msg);
+                }
             }
             var result = await _woService.DeleteWo(id);
             return Ok(result);
         }
+        [HttpPost]
+        public async Task<IActionResult> UndoGeneratedWOs([FromBody] List<string> woNumbers)
+        {
+            if (woNumbers == null || !woNumbers.Any())
+                return BadRequest("No Work Orders found.");
 
+            var distinctWoNumbers = woNumbers
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Distinct()
+                .ToList();
+
+            var workOrders = await _baService.AllWorkOrders();
+
+            var deletedWoNumbers = new List<string>();
+            var failedWoNumbers = new List<string>();
+
+            foreach (var woNumber in distinctWoNumbers)
+            {
+                var workOrder = workOrders.FirstOrDefault(
+                    x => x.WONumber == woNumber);
+
+                if (workOrder == null)
+                {
+                    failedWoNumbers.Add(woNumber + " - Work Order not found");
+                    continue;
+                }
+
+                var id = workOrder.WOID;
+
+                // Check consolidation restrictions
+                var consolidated = await _woService.Getallconsolidationproductionwo();
+
+                var filtered = consolidated
+                    .Where(x => x.ParentWoId == id)
+                    .ToList();
+
+                if (filtered.Any())
+                {
+                    failedWoNumbers.Add(
+                        woNumber + " - Work Order is consolidated and cannot be deleted");
+
+                    continue;
+                }
+
+                // Delete the Work Order
+                var result = await _woService.DeleteWo(id);
+
+                if (result != null)
+                {
+                    deletedWoNumbers.Add(woNumber);
+                }
+                else
+                {
+                    failedWoNumbers.Add(woNumber + " - Unable to delete");
+                }
+            }
+
+            return Json(new
+            {
+                success = failedWoNumbers.Count == 0,
+                deleted = deletedWoNumbers,
+                failed = failedWoNumbers
+            });
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetPartPurchase(long partId)

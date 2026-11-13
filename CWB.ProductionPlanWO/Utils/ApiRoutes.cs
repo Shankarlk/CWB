@@ -70,6 +70,7 @@ namespace CWB.ProductionPlanWO.Utils
             public const string UpdateHoldProductionPlan_Wo = Base + "/updateholdproductionplan";
             public const string AllProductionPlanWo = Base + "/allproductionplanwo/{tenantId}";
             public const string DeleteSubCon = Base + "/delwosubcon/{Id}";
+            public const string Deleteprocplan = Base + "/delprocplan/{Id}";
             public const string DeleteWo = Base + "/deletewo/{Id}";
             public const string DeleteSoWoRel = Base + "/deletesoworel/{Id}";
             public const string DeleteProductionplansplitwo = Base + "/deleteproductionplansplitwo/{Id}";

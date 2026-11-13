@@ -1,6 +1,9 @@
 ﻿var noofWOCreation = [];
 var subcontotal = 0;
 var ba_masterparts = {};
+var originalSelectedSOData = [];
+var tempSelectedSOData = [];
+var soCombinationGroups = [];
 const WoOrdStatus = {
     1: "w/f Detailed Prodn Planning",
     2: "w/f WO Release",
@@ -86,7 +89,7 @@ function loadSOallocation() {
 function loadWO() {
     $("#preloaderblurred").show();
     api.getbulk("/WorkOrder/AllWorkOrders").then((data) => {
-        //data = data.filter(item => item.active !== 2);
+        data = data.filter(item => item.active !== 2);
         var tablebody = $("#WorkOrder tbody");
         $(tablebody).html("");//empty tbody
                                            
@@ -226,6 +229,7 @@ $(document).ready(function () {
     //$("#initiateDetailedbtn").on("click", function () {
 
     //});
+    
     $("#btnAG").secureClick( function () {
         var checkboxes = $("#SalesOrders1 tbody input[type='checkbox']:checked"); // Select only checked checkboxes
         var selectedRowsData = {};
@@ -386,9 +390,99 @@ $(document).ready(function () {
             alert("Please select at least one row by checking the checkbox.");
         }
     });
-
+   
     $("#btnGW").secureClick( function () {
         var checkboxes = $("#SalesOrders1 tbody input[type='checkbox']:checked"); // Select only checked checkboxes
+        // Multiple SO selection - open combination control
+        if (checkboxes.length > 1) {
+
+            var popupSelectedRowsData = [];
+
+            checkboxes.each(function (index, checkbox) {
+
+                var row = checkbox.parentNode.parentNode;
+
+                var rowData = {
+                    salesOrderId: parseInt($(row).find("td:eq(1)").text()),
+                    wonumber: "",
+                    woNumber: "",
+                    partId: parseInt($(row).find("td:eq(3)").text()),
+                    saleOrderNo: $(row).find("td:eq(4)").text(),
+                    partType: 0,
+                    partlevel: ' ',
+                    partNo: $(row).find("td:eq(7)").text(),
+                    soQty: parseFloat($(row).find("td:eq(8)").text()) || 0,
+                    calcWOQty: parseFloat($(row).find("td:eq(8)").text()) || 0,
+                    planCompletionDate: $(row).find("td:eq(12)").text(),
+                    soComplDate: $(row).find("td:eq(12)").text(),
+
+                    customerName: $(row).find("td:eq(5)").text(),
+                    woPlanDate: "",
+                    qtyOnHand: parseInt($(row).find("td:eq(10)").text()) || 0,
+                    combineDisabled: ""
+                };
+
+                var balanceSoQty = parseInt($(row).find("td:eq(9)").text());
+
+                if (balanceSoQty > 0) {
+                    rowData.calcWOQty = balanceSoQty;
+                }
+
+                popupSelectedRowsData.push(rowData);
+
+            });
+
+            // Preserve original selection
+            originalSelectedSOData = JSON.parse(JSON.stringify(popupSelectedRowsData));
+
+            // Temporary working data
+            tempSelectedSOData = JSON.parse(JSON.stringify(popupSelectedRowsData));
+
+            // Group only for identifying duplicate PartIds
+            var partIdMapForPopup = {};
+
+            tempSelectedSOData.forEach(function (item) {
+
+                if (!partIdMapForPopup[item.partId]) {
+                    partIdMapForPopup[item.partId] = [];
+                }
+
+                partIdMapForPopup[item.partId].push(item);
+
+            });
+
+            // Prepare combination groups
+            soCombinationGroups = Object.keys(partIdMapForPopup)
+                .map(function (partId) {
+
+                    return {
+                        partId: parseInt(partId),
+                        salesOrders: partIdMapForPopup[partId]
+                    };
+
+                });
+            soCombinationGroups.forEach(function (group) {
+
+                group.salesOrders.sort(function (a, b) {
+                    return parseSOPlanDate(a.planCompletionDate) -
+                        parseSOPlanDate(b.planCompletionDate);
+                });
+
+            });
+
+            // Load popup table
+            loadSOCombinationTable();
+
+            // Show popup
+            $("#soCombinationModal").modal("show");
+            
+
+            return;
+        }
+
+
+
+
         var selectedRowsData = {};
         var partIdMap = {};
         var SalesorderId = [];
@@ -491,7 +585,7 @@ $(document).ready(function () {
         }
 
     });
-
+   
     $('#routing').on('change', (e) => {
                 const routeId = $(e.target).val();
                 // make an API call to get data for select2 based on the selected studentId
@@ -2698,7 +2792,10 @@ function LoadPartsExist() {
         $(tablebody).html("");//empty tbody
         let i = 0;
         if (ba_masterparts.length > 0) {
-            ba_masterparts = ba_masterparts.filter(item => item.finalPart === "Y");
+            ba_masterparts = ba_masterparts.filter(item =>
+                item.masterPartType === "ManufacturedPart" ||
+                item.masterPartType === "Assembly"
+            );
             if (ba_masterparts.length === 0) {
                 // 2. Insert the "No Records Found" row
                 // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
@@ -2734,7 +2831,10 @@ function LoadPartsExist() {
                 $(tablebody).append(noRecordsRow);
             }
             if (ba_masterparts.length > 0) {
-                ba_masterparts = ba_masterparts.filter(item => item.finalPart === "Y");
+                ba_masterparts = ba_masterparts.filter(item =>
+                    item.masterPartType === "ManufacturedPart" ||
+                    item.masterPartType === "Assembly"
+                );
                 for (i = 0; i < ba_masterparts.length; i++) {
                     $(tablebody).append(AppUtil.ProcessTemplateDataNew("BAParts", ba_masterparts[i], i));
                 }
@@ -4957,4 +5057,427 @@ $('#popup7Routing').on('change', (e) => {
 
         });
 
+});
+
+
+
+function loadSOCombinationTable() {
+
+    var tbody = $("#tblSOCombinationBody");
+
+    $(tbody).html("");
+
+    soCombinationGroups.forEach(function (group) {
+
+        var salesOrders = group.salesOrders;
+
+        salesOrders.forEach(function (item) {
+
+            var rowData = {
+                partId: item.partId,
+                salesOrderId: item.salesOrderId,
+                woNumber: item.woNumber || "",
+                saleOrderNo: item.saleOrderNo || "",
+                customerName: item.customerName || "-",
+                partNo: item.partNo || "",
+                soQty: item.soQty,
+                planCompletionDate: formatSOPlanDate(item.planCompletionDate) || "",
+                woPlanDate: item.woPlanDate || "",
+                qtyOnHand: parseInt(item.qtyOnHand) ,
+                calcWOQty: item.calcWOQty 
+            };
+
+            $(tbody).append(
+                AppUtil.ProcessTemplateData("SOCombinationRow", rowData)
+            );
+
+        });
+
+    });
+   // updateSOCombinationButtons();
+
+}
+function formatSOPlanDate(dateValue) {
+
+    if (!dateValue) {
+        return "";
+    }
+
+    var date = parseSOPlanDate(dateValue);
+
+    if (isNaN(date.getTime())) {
+        return dateValue;
+    }
+
+    var day = String(date.getDate()).padStart(2, '0');
+    var month = String(date.getMonth() + 1).padStart(2, '0');
+    var year = date.getFullYear();
+
+    return day + "-" + month + "-" + year;
+}
+function parseSOPlanDate(dateValue) {
+
+    if (!dateValue) {
+        return new Date(8640000000000000);
+    }
+
+    // Supports dd-MM-yyyy
+    var parts = dateValue.split("-");
+
+    if (parts.length === 3 && parts[0].length <= 2) {
+        return new Date(
+            parseInt(parts[2]),
+            parseInt(parts[1]) - 1,
+            parseInt(parts[0])
+        );
+    }
+
+    // Supports yyyy-MM-dd and other JavaScript-recognized formats
+    return new Date(dateValue);
+}
+function updateSOGenerationState(isGenerated) {
+
+    $("#btnGenerateSeparateWO").prop("disabled", isGenerated);
+    $("#btnGenerateCombinedWO").prop("disabled", isGenerated);
+
+    $("#btnUndoSOChanges").prop("disabled", !isGenerated);
+}
+//function updateSOCombinationButtons() {
+
+//    var checkedCount = $("#tblSOCombinationBody .so-combine-checkbox:checked").length;
+
+//    $("#btnGenerateSeparateWO").prop("disabled", checkedCount > 0);
+
+//}
+//$(document).on("change", ".so-combine-checkbox", function () {
+
+//    updateSOCombinationButtons();
+
+//});
+$("#btnGenerateSeparateWO").secureClick(  function () {
+
+    var selectedRowsData = [];
+    var WoSoRel = [];
+
+    tempSelectedSOData.forEach(function (item) {
+        selectedRowsData.push({
+            salesOrderId: item.salesOrderId,
+            wonumber: "",
+            partId: item.partId,
+            saleOrderNo: item.saleOrderNo,
+            partNo: item.partNo,
+            partType: item.partType,
+            partlevel: item.partlevel,
+            calcWOQty: item.calcWOQty,
+            planCompletionDate: item.planCompletionDate,
+            soComplDate: item.soComplDate
+        });
+    });
+
+    if (selectedRowsData.length === 0) return;
+
+    $("#preloaderblurred").show();
+
+    $.ajax({
+        type: "POST",
+        url: '/BusinessAquisition/MultipleWOPost',
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(selectedRowsData),
+        dataType: "json",
+        success: function (result) {
+
+            loadmissingdetails(result.missing);
+
+            // Assumes result.created is returned in the same order
+            // as selectedRowsData, with one created WO per input.
+            result.created.forEach(function (a, index) {
+                WoSoRel.push({
+                    workOrderId: a.woid,
+                    salesOrderId: selectedRowsData[index].salesOrderId
+                });
+            });
+
+            $.ajax({
+                type: "POST",
+                url: '/BusinessAquisition/PostWoSoRel',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(WoSoRel),
+                dataType: "json",
+                success: function (relResult) {
+                    window.locationre = relResult.url || result.url;
+                    loadWO();
+                    loadSO();
+                    refreshSOCombinationWOData();
+                },
+                complete: function () {
+                    $("#preloaderblurred").hide();
+                }
+            });
+        },
+        error: function () {
+            $("#preloaderblurred").hide();
+        }
+    });
+});
+
+$("#btnGenerateCombinedWO").secureClick(  function () {
+
+    var partIdMap = {};
+    var selectedRowsData = [];
+    var WoSoRel = [];
+
+    tempSelectedSOData.forEach(function (item) {
+
+        if (partIdMap[item.partId]) {
+
+            partIdMap[item.partId].calcWOQty += item.calcWOQty;
+
+            partIdMap[item.partId].salesOrderIds.push(item.salesOrderId);
+
+            var currentDate = parseSOPlanDate(item.planCompletionDate);
+            var storedDate = parseSOPlanDate(partIdMap[item.partId].planCompletionDate);
+
+            if (currentDate < storedDate) {
+                partIdMap[item.partId].planCompletionDate = item.planCompletionDate;
+                partIdMap[item.partId].salesOrderId = item.salesOrderId;
+            }
+
+        } else {
+
+            var rowData = {
+                salesOrderId: item.salesOrderId,
+                salesOrderIds: [item.salesOrderId],
+                wonumber: "",
+                partId: item.partId,
+                saleOrderNo: item.saleOrderNo,
+                partNo: item.partNo,
+                partType: item.partType,
+                partlevel: item.partlevel,
+                calcWOQty: item.calcWOQty,
+                planCompletionDate: item.planCompletionDate,
+                soComplDate: item.soComplDate
+            };
+
+            partIdMap[item.partId] = rowData;
+        }
+    });
+
+    selectedRowsData = Object.values(partIdMap);
+
+    if (selectedRowsData.length === 0) return;
+
+    $("#preloaderblurred").show();
+
+    $.ajax({
+        type: "POST",
+        url: '/BusinessAquisition/MultipleWOPost',
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(selectedRowsData),
+        dataType: "json",
+        success: function (result) {
+
+            loadmissingdetails(result.missing);
+
+            result.created.forEach(function (a) {
+
+                var group = partIdMap[a.partId];
+
+                if (group) {
+                    group.salesOrderIds.forEach(function (salesOrderId) {
+                        WoSoRel.push({
+                            workOrderId: a.woid,
+                            salesOrderId: salesOrderId
+                        });
+                    });
+                }
+            });
+
+            $.ajax({
+                type: "POST",
+                url: '/BusinessAquisition/PostWoSoRel',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(WoSoRel),
+                dataType: "json",
+                success: function (relResult) {
+                    window.locationre = relResult.url || result.url;
+                    refreshSOCombinationWOData();
+                    loadWO();
+                    loadSO();
+                },
+                complete: function () {
+                    $("#preloaderblurred").hide();
+                }
+            });
+        },
+        error: function () {
+            $("#preloaderblurred").hide();
+        }
+    });
+});
+
+
+function refreshSOCombinationWOData() {
+
+    var salesOrderIds = tempSelectedSOData.map(function (item) {
+        return item.salesOrderId;
+    });
+
+    $.ajax({
+        type: "POST",
+        url: '/BusinessAquisition/GetSOWorkOrderDetails',
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(salesOrderIds),
+        dataType: "json",
+        success: function (result) {
+
+            // Update WO details for each Sales Order
+            tempSelectedSOData.forEach(function (item) {
+
+                var woDetails = result.filter(function (wo) {
+                    return wo.salesOrderId === item.salesOrderId;
+                });
+
+                if (woDetails.length > 0) {
+
+                    // If one SO has multiple WOs, display the first one for now.
+                    var wo = woDetails[0];
+
+                    item.woId = wo.woId;
+                    item.woNumber = wo.woNumber;
+                    item.woPlanDate = wo.woPlanDate;
+                    item.calcWOQty = wo.woQty;
+                }
+                else {
+                    item.woId = "";
+                    item.woNumber = "";
+                    item.woPlanDate = "";
+                }
+            });
+
+            // Rebuild groups using updated temporary data
+            var partIdMapForPopup = {};
+
+            tempSelectedSOData.forEach(function (item) {
+
+                if (!partIdMapForPopup[item.partId]) {
+                    partIdMapForPopup[item.partId] = [];
+                }
+
+                partIdMapForPopup[item.partId].push(item);
+            });
+
+            soCombinationGroups = Object.keys(partIdMapForPopup)
+                .map(function (partId) {
+                    return {
+                        partId: parseInt(partId),
+                        salesOrders: partIdMapForPopup[partId]
+                    };
+                });
+
+            // Sort SOs within each Part No by plan date
+            soCombinationGroups.forEach(function (group) {
+
+                group.salesOrders.sort(function (a, b) {
+                    return parseSOPlanDate(a.planCompletionDate) -
+                        parseSOPlanDate(b.planCompletionDate);
+                });
+
+            });
+
+            loadSOCombinationTable();
+            updateSOGenerationState(true);
+        },
+        error: function (xhr) {
+            console.log("Unable to refresh WO details:", xhr.responseText);
+        }
+    });
+}
+
+
+$("#btnUndoSOChanges").on("click", function () {
+
+    if (!confirm("Are you sure you want to undo all changes ?")) {
+        return;
+    }
+
+    // Get distinct generated WO numbers
+    var woNumbers = tempSelectedSOData
+        .map(function (item) {
+            return item.woNumber;
+        })
+        .filter(function (woNumber) {
+            return woNumber && woNumber.trim() !== "";
+        });
+
+    woNumbers = [...new Set(woNumbers)];
+
+    if (woNumbers.length === 0) {
+        alert("No generated Work Orders found.");
+        return;
+    }
+
+    $("#preloaderblurred").show();
+
+    $.ajax({
+        type: "POST",
+        url: '/WorkOrder/UndoGeneratedWOs',
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(woNumbers),
+        dataType: "json",
+        success: function (result) {
+
+            if (result.success) {
+
+                // Restore original selected SO data
+                tempSelectedSOData = JSON.parse(
+                    JSON.stringify(originalSelectedSOData)
+                );
+
+                // Rebuild original Part No groups
+                var partIdMapForPopup = {};
+
+                tempSelectedSOData.forEach(function (item) {
+
+                    if (!partIdMapForPopup[item.partId]) {
+                        partIdMapForPopup[item.partId] = [];
+                    }
+
+                    partIdMapForPopup[item.partId].push(item);
+                });
+
+                soCombinationGroups = Object.keys(partIdMapForPopup)
+                    .map(function (partId) {
+                        return {
+                            partId: parseInt(partId),
+                            salesOrders: partIdMapForPopup[partId]
+                        };
+                    });
+
+                soCombinationGroups.forEach(function (group) {
+                    group.salesOrders.sort(function (a, b) {
+                        return parseSOPlanDate(a.planCompletionDate) -
+                            parseSOPlanDate(b.planCompletionDate);
+                    });
+                });
+
+                // Reload the original popup table
+                loadSOCombinationTable();
+
+                // Enable generation buttons and disable Undo
+                updateSOGenerationState(false);
+                
+                loadWO();
+                loadSO();
+
+                alert("Generated Work Orders have been reverted successfully.");
+            }
+        },
+        error: function (xhr) {
+            alert("Unable to undo the generated Work Orders.");
+            console.log(xhr.responseText);
+        },
+        complete: function () {
+            $("#preloaderblurred").hide();
+        }
+    });
 });

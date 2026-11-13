@@ -293,23 +293,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\RRMINDS\\.nuget\\packages\\": {},
+    "C:\\Users\\PC\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\CWB\\CWB.Constants\\CWB.Constants.csproj",
+      "projectUniqueName": "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj",
       "projectName": "CWB.Constants",
-      "projectPath": "E:\\CWB\\CWB.Constants\\CWB.Constants.csproj",
-      "packagesPath": "C:\\Users\\RRMINDS\\.nuget\\packages\\",
-      "outputPath": "E:\\CWB\\CWB.Constants\\obj\\",
+      "projectPath": "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj",
+      "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+      "outputPath": "F:\\CWBworking\\CWB.Constants\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\RRMINDS\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],

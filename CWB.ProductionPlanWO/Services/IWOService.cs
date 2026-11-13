@@ -43,6 +43,7 @@ namespace CWB.ProductionPlanWO.Services
         Task<IEnumerable<ProductionPlan_WOVM>> AllProductionWo(long tenantId);
         Task<WOStatusVM> GetWOStatus(long Id);
         Task<bool> DeleteSubCon(long Id);
+        Task<bool> Deleteprocplan(long Id);
         Task<bool> DeleteWo(long Id);
         Task<bool> DeleteSoWoRel(long Id);
         Task<bool> DeleteProductionplansplitwo(long Id);

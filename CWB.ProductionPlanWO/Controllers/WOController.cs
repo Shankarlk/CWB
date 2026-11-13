@@ -470,6 +470,15 @@ namespace CWB.ProductionPlanWO.Controllers
             return Ok(result);
         }
         [HttpGet]
+        [Route(ApiRoutes.WO.Deleteprocplan)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
+        public async Task<IActionResult> Deleteprocplan(long Id)
+        {
+            var result = await _woSerivce.Deleteprocplan(Id);
+            return Ok(result);
+        }
+
+        [HttpGet]
         [Route(ApiRoutes.WO.DeleteWo)]
         [Produces(AppContentTypes.ContentType, Type = typeof(bool))]
         public async Task<IActionResult> DeleteWo(long Id)

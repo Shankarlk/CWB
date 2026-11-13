@@ -139,6 +139,11 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(m => m.CalcReceiptDate, m => m.MapFrom(src => src.CalcReceiptDate))
             .ForMember(m => m.CriticalPart, m => m.MapFrom(src => src.CriticalPart))
             .ForMember(m => m.PO_Flag, m => m.MapFrom(src => src.PO_Flag))
+            .ForMember(m => m.SupplierId, m => m.MapFrom(src => src.SupplierId))
+            .ForMember(m => m.LeadTimeInDays, m => m.MapFrom(src => src.LeadTimeInDays))
+            .ForMember(m => m.MinimumOrderQuantity, m => m.MapFrom(src => src.MinimumOrderQuantity))
+            .ForMember(m => m.Price, m => m.MapFrom(src => src.Price))
+            .ForMember(m => m.ParentProcplanId, m => m.MapFrom(src => src.ParentProcplanId))
             .ForMember(m => m.Changed, m => m.MapFrom(src => src.Changed))
             .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
@@ -160,6 +165,11 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(m => m.CalcReceiptDate, m => m.MapFrom(src => src.CalcReceiptDate))
             .ForMember(m => m.CriticalPart, m => m.MapFrom(src => src.CriticalPart))
             .ForMember(m => m.PO_Flag, m => m.MapFrom(src => src.PO_Flag))
+            .ForMember(m => m.SupplierId, m => m.MapFrom(src => src.SupplierId))
+            .ForMember(m => m.LeadTimeInDays, m => m.MapFrom(src => src.LeadTimeInDays))
+            .ForMember(m => m.MinimumOrderQuantity, m => m.MapFrom(src => src.MinimumOrderQuantity))
+            .ForMember(m => m.Price, m => m.MapFrom(src => src.Price))
+             .ForMember(m => m.ParentProcplanId, m => m.MapFrom(src => src.ParentProcplanId))
             .ForMember(m => m.Changed, m => m.MapFrom(src => src.Changed))
             .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 

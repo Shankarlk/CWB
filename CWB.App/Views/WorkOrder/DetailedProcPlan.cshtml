@@ -2483,7 +2483,7 @@
                     </div>
                     <!-- ========================= -->
                     <hr />
-                    <div class="col-md-12 mb-2" hidden>
+                    <div class="col-md-12 mb-2">
 
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <label class="form-check-label" for="flexSwitchCheckDefault">Single Delivery Date</label>
@@ -2509,12 +2509,16 @@
                                data-tippy-placement="top" id="P10AddnInfo">
                     </div>
                     <!-- ========================= -->
-                    <div class="col-md-12 mb-2 text-end">
+                    <div class="col-md-12 mb-2 text-end" id="multipleDeliverySection">
                         <input type="text" id="Popup10WoSubConId" hidden />
                         <input type="text" id="Popup10Woid" hidden />
                         <input type="text" id="Popup10SuppId" hidden />
                         <input type="text" id="Popup10SubConId" hidden />
+                        <input type="hidden" id="P10EditProcPlanId" value="0" />
                         <button class="btn btn-primary btn-sm" id="P10SaveWo">Save</button>
+                        <button class="btn btn-primary btn-sm" id="P10UpdateWo" style="display:none;">
+                            Update
+                        </button>
                         <button class="btn btn-primary btn-sm" id="P10AddNextDel" disabled>Add Next Delivery</button>
                     </div>
                     <!-- ========================= -->
@@ -2927,7 +2931,7 @@
         <td>{calc_Proc_Qnty}</td>
         <td>0</td>
         <td>{plan_Proc_Qnty}</td>
-        <td>{moq}</td>
+        <td>{minimumOrderQuantity}</td>
         <td>{uomName}</td>
         @*<td>{planStartDateStr}</td>*@
         <td>{leadTimeInDays}</td>
@@ -2952,9 +2956,9 @@
                        data-bs-toggle="modal" data-bs-target="#popup9">Show WO details</a>
                     <!-- item-->
                     <a href="javascript:void(0);"
-                       class="dropdown-item" data-partid="{partId}" data-partno="{partNo}" data-moq="{moq}" data-uom="{uomName}"
+                       class="dropdown-item" data-partid="{partId}" data-partno="{partNo}" data-moq="{minimumOrderQuantity}" data-uom="{uomName}"
                        data-partdesc="{partDesc}" data-suppid="{supplierId}" data-qnty="{calc_Proc_Qnty}" data-calcdate="{calcReceiptDateStr}"
-                       data-price="{price}" data-woid="{procPlanId}"
+                       data-price="{price}" data-woid="{procPlanId}" data-supplierid="{supplierId}"
                        data-bs-toggle="modal" data-bs-target="#popup10">Edit</a>
                 </div>
             </div>
@@ -3234,11 +3238,11 @@
 </template>
 <template id="P10SupplierGridRow">
     <tr>
-        <td>{company}</td>
-        <td>{qnty}</td>
+        <td>{supplier}</td>
+        <td>{plan_Proc_Qnty}</td>
         <td>{procPriceQnty}</td>
-        <td>{procPrice}</td>
-        <td>{agreedDate}</td>
+        <td>{price}</td>
+        <td>{calcReceiptDateStr}</td>
         <td>
             <div class="dropdown float-center">
                 <a href="#"
@@ -3250,14 +3254,16 @@
                 <div class="dropdown-menu dropdown-menu-end">
                     <!-- item-->
                     <a href="javascript:void(0);"
-                       class="dropdown-item" data-partid="{company}" data-suppid="{supplierId}" data-qnty="{qnty}" data-price="{procPrice}"
+                       class="dropdown-item" data-partid="{company}" data-suppid="{supplierId}" data-qnty="{plan_Proc_Qnty}" data-price="{price}"
                        data-calcdate="{recieptDate}" data-woid="{woId}" data-subconid="{woSubConSupplierId}" data-addninfo="{addnInfo}"
+                        data-procplanid="{procPlanId}"  data-parentprocplanid="{parentProcplanId}"   data-moq="{minimumOrderQuantity}"
+                         data-leadtime="{leadTimeInDays}"   data-planreceiptdate="{calcReceiptDateStr}"
                        onclick="EditSubSupplier(this)">Edit</a>
                     <!-- item-->
                     <a href="javascript:void(0);"
-                       class="dropdown-item" data-partid="{partId}" data-partno="{partNo}" data-moq="{moq}" data-uom="{uomName}"
+                       class="dropdown-item" data-partid="{partId}"  data-procplanid="{procPlanId}" data-partno="{partNo}" data-moq="{moq}" data-uom="{uomName}"
                        data-partdesc="{partDesc}" data-suppid="{supplierId}" data-qnty="{calc_Proc_Qnty}" data-calcdate="{calcReceiptDateStr}"
-                       data-price="{price}" data-woid="{woId}" data-subconid="{woSubConSupplierId}"
+                       data-price="{price}" data-woid="{woId}" data-subconid="{woSubConSupplierId}"  data-parentprocplanid="{parentProcplanId}"
                        onclick="DeleteSubSupplier(this)">Delete</a>
                 </div>
             </div>

@@ -24,10 +24,10 @@ namespace CWB.Masters.Configurations.DocumentManagement
             builder.ConfigureBase();
 
             builder.HasData(
-        new Doc_status_list { Id = 1, Doc_Status_Desc = "Waiting for Approval" },
-        new Doc_status_list { Id = 2, Doc_Status_Desc = "Not Approved" },
-        new Doc_status_list { Id = 3, Doc_Status_Desc = "Approved" },
-        new Doc_status_list { Id = 4, Doc_Status_Desc = "On Hold" }
+        new Doc_status_list { Id = 1, Doc_Status_Desc = "w/f  Approval" },
+        new Doc_status_list { Id = 2, Doc_Status_Desc = "Approved" },
+        new Doc_status_list { Id = 3, Doc_Status_Desc = "Archive" }
+        //new Doc_status_list { Id = 4, Doc_Status_Desc = "On Hold" }
     );
         }
     }

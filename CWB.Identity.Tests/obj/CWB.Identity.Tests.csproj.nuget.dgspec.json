@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "E:\\CWB\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj": {}
+    "F:\\CWBworking\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj": {}
   },
   "projects": {
-    "E:\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
+    "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj",
         "projectName": "CWB.CommonUtils",
-        "projectPath": "E:\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj",
-        "packagesPath": "C:\\Users\\RRMINDS\\.nuget\\packages\\",
-        "outputPath": "E:\\CWB\\CWB.CommonUtils\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.CommonUtils\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\RRMINDS\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -93,20 +93,20 @@
         }
       }
     },
-    "E:\\CWB\\CWB.Constants\\CWB.Constants.csproj": {
+    "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\CWB\\CWB.Constants\\CWB.Constants.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj",
         "projectName": "CWB.Constants",
-        "projectPath": "E:\\CWB\\CWB.Constants\\CWB.Constants.csproj",
-        "packagesPath": "C:\\Users\\RRMINDS\\.nuget\\packages\\",
-        "outputPath": "E:\\CWB\\CWB.Constants\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.Constants\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\RRMINDS\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -162,20 +162,20 @@
         }
       }
     },
-    "E:\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
+    "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj",
         "projectName": "CWB.ExceptionHandling",
-        "projectPath": "E:\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj",
-        "packagesPath": "C:\\Users\\RRMINDS\\.nuget\\packages\\",
-        "outputPath": "E:\\CWB\\CWB.ExceptionHandling\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.ExceptionHandling\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\RRMINDS\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -191,11 +191,11 @@
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "E:\\CWB\\CWB.Constants\\CWB.Constants.csproj": {
-                "projectPath": "E:\\CWB\\CWB.Constants\\CWB.Constants.csproj"
+              "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj"
               },
-              "E:\\CWB\\CWB.Logging\\CWB.Logging.csproj": {
-                "projectPath": "E:\\CWB\\CWB.Logging\\CWB.Logging.csproj"
+              "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj"
               }
             }
           }
@@ -242,20 +242,20 @@
         }
       }
     },
-    "E:\\CWB\\CWB.Extensions\\CWB.Extensions.csproj": {
+    "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\CWB\\CWB.Extensions\\CWB.Extensions.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj",
         "projectName": "CWB.Extensions",
-        "projectPath": "E:\\CWB\\CWB.Extensions\\CWB.Extensions.csproj",
-        "packagesPath": "C:\\Users\\RRMINDS\\.nuget\\packages\\",
-        "outputPath": "E:\\CWB\\CWB.Extensions\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.Extensions\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\RRMINDS\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -271,11 +271,11 @@
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "E:\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
-                "projectPath": "E:\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj"
+              "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj"
               },
-              "E:\\CWB\\CWB.Logging\\CWB.Logging.csproj": {
-                "projectPath": "E:\\CWB\\CWB.Logging\\CWB.Logging.csproj"
+              "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj"
               }
             }
           }
@@ -342,20 +342,20 @@
         }
       }
     },
-    "E:\\CWB\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj": {
+    "F:\\CWBworking\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\CWB\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj",
         "projectName": "CWB.Identity.Tests",
-        "projectPath": "E:\\CWB\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj",
-        "packagesPath": "C:\\Users\\RRMINDS\\.nuget\\packages\\",
-        "outputPath": "E:\\CWB\\CWB.Identity.Tests\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.Identity.Tests\\CWB.Identity.Tests.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.Identity.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\RRMINDS\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -371,8 +371,8 @@
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "E:\\CWB\\CWB.Identity\\CWB.Identity.csproj": {
-                "projectPath": "E:\\CWB\\CWB.Identity\\CWB.Identity.csproj"
+              "F:\\CWBworking\\CWB.Identity\\CWB.Identity.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Identity\\CWB.Identity.csproj"
               }
             }
           }
@@ -435,20 +435,20 @@
         }
       }
     },
-    "E:\\CWB\\CWB.Identity\\CWB.Identity.csproj": {
+    "F:\\CWBworking\\CWB.Identity\\CWB.Identity.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\CWB\\CWB.Identity\\CWB.Identity.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.Identity\\CWB.Identity.csproj",
         "projectName": "CWB.Identity",
-        "projectPath": "E:\\CWB\\CWB.Identity\\CWB.Identity.csproj",
-        "packagesPath": "C:\\Users\\RRMINDS\\.nuget\\packages\\",
-        "outputPath": "E:\\CWB\\CWB.Identity\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.Identity\\CWB.Identity.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.Identity\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\RRMINDS\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -464,20 +464,20 @@
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "E:\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
-                "projectPath": "E:\\CWB\\CWB.CommonUtils\\CWB.CommonUtils.csproj"
+              "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.CommonUtils\\CWB.CommonUtils.csproj"
               },
-              "E:\\CWB\\CWB.Constants\\CWB.Constants.csproj": {
-                "projectPath": "E:\\CWB\\CWB.Constants\\CWB.Constants.csproj"
+              "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Constants\\CWB.Constants.csproj"
               },
-              "E:\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
-                "projectPath": "E:\\CWB\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj"
+              "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.ExceptionHandling\\CWB.ExceptionHandling.csproj"
               },
-              "E:\\CWB\\CWB.Extensions\\CWB.Extensions.csproj": {
-                "projectPath": "E:\\CWB\\CWB.Extensions\\CWB.Extensions.csproj"
+              "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Extensions\\CWB.Extensions.csproj"
               },
-              "E:\\CWB\\CWB.Logging\\CWB.Logging.csproj": {
-                "projectPath": "E:\\CWB\\CWB.Logging\\CWB.Logging.csproj"
+              "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj": {
+                "projectPath": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj"
               }
             }
           }
@@ -559,20 +559,20 @@
         }
       }
     },
-    "E:\\CWB\\CWB.Logging\\CWB.Logging.csproj": {
+    "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\CWB\\CWB.Logging\\CWB.Logging.csproj",
+        "projectUniqueName": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj",
         "projectName": "CWB.Logging",
-        "projectPath": "E:\\CWB\\CWB.Logging\\CWB.Logging.csproj",
-        "packagesPath": "C:\\Users\\RRMINDS\\.nuget\\packages\\",
-        "outputPath": "E:\\CWB\\CWB.Logging\\obj\\",
+        "projectPath": "F:\\CWBworking\\CWB.Logging\\CWB.Logging.csproj",
+        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+        "outputPath": "F:\\CWBworking\\CWB.Logging\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\RRMINDS\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],

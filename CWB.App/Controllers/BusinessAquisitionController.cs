@@ -968,6 +968,32 @@ namespace CWB.App.Controllers
             return Ok(postwoso);
         }
         [HttpPost]
+        public async Task<IActionResult> GetSOWorkOrderDetails([FromBody] List<long> salesOrderIds)
+        {
+            var soWoRelations = await _woService.GetAllSoWoRel();
+            var workOrders = await _baService.AllWorkOrders();
+
+            // Filter relationships for the selected Sales Orders
+            var selectedRelations = soWoRelations
+                .Where(x => salesOrderIds.Contains(x.SalesOrderId))
+                .ToList();
+
+            // Match the relationships with their Work Orders
+            var result = (from rel in selectedRelations
+                          join wo in workOrders
+                          on rel.WorkOrderId equals wo.WOID
+                          select new
+                          {
+                              SalesOrderId = rel.SalesOrderId,
+                              WoId = wo.WOID,
+                              WoNumber = wo.WONumber,
+                              WoQty = wo.CalcWOQty,
+                              WoPlanDate = wo.PlanCompletionDateStr
+                          }).ToList();
+
+            return Json(result);
+        }
+        [HttpPost]
         public async Task<IActionResult> MultipleWOPostsplit([FromBody] IEnumerable<WorkOrdersVM> listworkOrdersVM)
         {
             List<Selected_Sales_OrderVM> selected_Sales_OrderVMs = new List<Selected_Sales_OrderVM>();

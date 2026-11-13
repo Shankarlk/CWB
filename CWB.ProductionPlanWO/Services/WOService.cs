@@ -594,6 +594,12 @@ namespace CWB.ProductionPlanWO.Services
                         wkord.Old_Plan_Proc_Qnty = wkord.Plan_Proc_Qnty;
                     }
                     wkord.Plan_Proc_Qnty = pp.Plan_Proc_Qnty;
+                    wkord.For_Ref = pp.For_Ref;
+                    wkord.Calc_Proc_Qnty = pp.Plan_Proc_Qnty;
+                    wkord.SupplierId = pp.SupplierId;
+
+
+                    pp = await _procPlanRepository.UpdateAsync(wkord.Id, wkord);
                 }
                 try
                 {
@@ -688,6 +694,21 @@ namespace CWB.ProductionPlanWO.Services
                 try
                 {
                     _woSubConSupplierRepository.Remove(co);
+                    await _unitOfWork.CommitAsync();
+                    return true;
+                }
+                catch (Exception ex) { }
+            }
+            return false;
+        }
+        public async Task<bool> Deleteprocplan(long Id)
+        {
+            var co = await _procPlanRepository.SingleOrDefaultAsync(m => m.Id == Id);
+            if (co != null)
+            {
+                try
+                {
+                    _procPlanRepository.Remove(co);
                     await _unitOfWork.CommitAsync();
                     return true;
                 }
