@@ -989,86 +989,90 @@ $(function () {
             $("#VMOneGrid tbody tr").show();
         }
     });
-    $('select[name="MasterPart"]').change(function () {
-        var selectedValue = $(this).val();
-        if (selectedValue == "1") {
-            var data = "ManufacturedPart";
-            var value = data.toLowerCase();
-            $("#mptable tbody tr").filter(function () {
-                $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
-            });
-            var $tableBody = $("#mptable tbody");
-            if ($tableBody.find("tr:visible").length === 0) {
-                const noRecordsRow = `
-                <tr class="norecordsfound">
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-                $tableBody.append(noRecordsRow);
-            } else {
-                $tableBody.find(".norecordsfound").remove();
-            }
-        } else if (selectedValue == "2") {
-            partType = "Assembly";
-            var data = "Assembly";
-            var value = data.toLowerCase();
-            $("#mptable tbody tr").filter(function () {
-                $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
-            });
-            var $tableBody = $("#mptable tbody");
-            if ($tableBody.find("tr:visible").length === 0) {
-                const noRecordsRow = `
-                <tr class="norecordsfound">
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-                $tableBody.append(noRecordsRow);
-            } else {
-                $tableBody.find(".norecordsfound").remove();
-            }
-        } else if (selectedValue == "3") {
-            partType = "BOF";
-            var data = "BOF";
-            var value = data.toLowerCase();
-            $("#mptable tbody tr").filter(function () {
-                $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
-            });
-            var $tableBody = $("#mptable tbody");
-            if ($tableBody.find("tr:visible").length === 0) {
-                const noRecordsRow = `
-                <tr class="norecordsfound">
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-                $tableBody.append(noRecordsRow);
-            } else {
-                $tableBody.find(".norecordsfound").remove();
-            }
-        } else if (selectedValue == "4") {
-            partType = "RawMaterial";
-            var data = "RM";
-            var value = data.toLowerCase();
-            $("#mptable tbody tr").filter(function () {
-                $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
-            });
-            var $tableBody = $("#mptable tbody");
-            if ($tableBody.find("tr:visible").length === 0) {
-                const noRecordsRow = `
-                <tr class="norecordsfound">
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-                $tableBody.append(noRecordsRow);
-            } else {
-                $tableBody.find(".norecordsfound").remove();
-            }
-        } else {
-            $("#mptable tbody tr").show();
-        }
+    //$('select[name="MasterPart"]').change(function () {
+    //    loadMPDList();
+    //    var selectedValue = $(this).val();
+    //    if (selectedValue == "1") {
+    //        var data = "ManufacturedPart";
+    //        var value = data.toLowerCase();
+    //        $("#mptable tbody tr").filter(function () {
+    //            $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
+    //        });
+    //        var $tableBody = $("#mptable tbody");
+    //        if ($tableBody.find("tr:visible").length === 0) {
+    //            const noRecordsRow = `
+    //            <tr class="norecordsfound">
+    //                <td colspan="20" style="text-align: center; color: #888;">
+    //                    <strong>No Records Found</strong>
+    //                </td>
+    //            </tr>`;
+    //            $tableBody.append(noRecordsRow);
+    //        } else {
+    //            $tableBody.find(".norecordsfound").remove();
+    //        }
+    //    } else if (selectedValue == "2") {
+    //        partType = "Assembly";
+    //        var data = "Assembly";
+    //        var value = data.toLowerCase();
+    //        $("#mptable tbody tr").filter(function () {
+    //            $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
+    //        });
+    //        var $tableBody = $("#mptable tbody");
+    //        if ($tableBody.find("tr:visible").length === 0) {
+    //            const noRecordsRow = `
+    //            <tr class="norecordsfound">
+    //                <td colspan="20" style="text-align: center; color: #888;">
+    //                    <strong>No Records Found</strong>
+    //                </td>
+    //            </tr>`;
+    //            $tableBody.append(noRecordsRow);
+    //        } else {
+    //            $tableBody.find(".norecordsfound").remove();
+    //        }
+    //    } else if (selectedValue == "3") {
+    //        partType = "BOF";
+    //        var data = "BOF";
+    //        var value = data.toLowerCase();
+    //        $("#mptable tbody tr").filter(function () {
+    //            $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
+    //        });
+    //        var $tableBody = $("#mptable tbody");
+    //        if ($tableBody.find("tr:visible").length === 0) {
+    //            const noRecordsRow = `
+    //            <tr class="norecordsfound">
+    //                <td colspan="20" style="text-align: center; color: #888;">
+    //                    <strong>No Records Found</strong>
+    //                </td>
+    //            </tr>`;
+    //            $tableBody.append(noRecordsRow);
+    //        } else {
+    //            $tableBody.find(".norecordsfound").remove();
+    //        }
+    //    } else if (selectedValue == "4") {
+    //        partType = "RawMaterial";
+    //        var data = "RM";
+    //        var value = data.toLowerCase();
+    //        $("#mptable tbody tr").filter(function () {
+    //            $(this).toggle($(this.children[3]).text().toLowerCase().indexOf(value) > -1)
+    //        });
+    //        var $tableBody = $("#mptable tbody");
+    //        if ($tableBody.find("tr:visible").length === 0) {
+    //            const noRecordsRow = `
+    //            <tr class="norecordsfound">
+    //                <td colspan="20" style="text-align: center; color: #888;">
+    //                    <strong>No Records Found</strong>
+    //                </td>
+    //            </tr>`;
+    //            $tableBody.append(noRecordsRow);
+    //        } else {
+    //            $tableBody.find(".norecordsfound").remove();
+    //        }
+    //    } else {
+    //        $("#mptable tbody tr").show();
+    //    }
+    //});
+    $("#MasterPart").on("change", function () {
+        loadMPDList();
     });
     $("#ClearSearchFields").on("click", function () {
         $("#mptable tbody tr").show();
@@ -1641,80 +1645,127 @@ function ProcessTemplateDataNew(templateId, dataObj) {
     return templateElement;
 }
 
+//function loadMPDList() {
+//    var tablebody = $("#mptable tbody");
+//    $(tablebody).html("");//empty tbody
+//    //UpdatePurchaseDetailsTableFromPostData
+//    let i = 0;
+//    var strActive = $("#Status").val();
+//    if (dataMPDList.length > 2) {
+//        //console.log(partType);
+//        //console.log("================");
+//        let data = dataMPDList;
+//        if (data.length === 0) {
+//            // 2. Insert the "No Records Found" row
+//            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+//            const noRecordsRow = `
+//                <tr>
+//                    <td colspan="20" style="text-align: center; color: #888;">
+//                        <strong>No Records Found</strong>
+//                    </td>
+//                </tr>`;
+//            $(tablebody).append(noRecordsRow);
+//        }
+//        for (i = 0; i < data.length; i++) {
+//            //if (!(data[i]['masterPartType'] == partType))
+//            //    continue;
+//            if (!(data[i]['status'] == strActive))
+//                continue;
+//            data[i].activeName = data[i]['status'] == "Active" ? "Make Inactive" : "Make Active";
+//            var tBody = ProcessTemplateDataNew("MasterDetaiTemplate", data[i]);
+//            $(tablebody).append(tBody);
+//            //console.log(tBody);
+//        }
+//    }
+//    else {
+//        api.getbulk("/masters/masterparts").then((data) => {
+//            dataMPDList = data;
+//            if (typeof fromobselete !== 'undefined' && fromobselete === 'ObsoletePart') {
+//                data = data.filter(item => item.status != "Active");
+//                dataMPDList = data;
+//            }
+//            if (data.length === 0) {
+//                // 2. Insert the "No Records Found" row
+//                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+//                const noRecordsRow = `
+//                <tr>
+//                    <td colspan="20" style="text-align: center; color: #888;">
+//                        <strong>No Records Found</strong>
+//                    </td>
+//                </tr>`;
+//                $(tablebody).append(noRecordsRow);
+//            }
+//            for (i = 0; i < data.length; i++) {
+//                /*for (var key in data[i]) {
+//                    console.log(key);
+//                    console.log(data[i][key]);
+//                    console.log("*****");
+//                }*/
+//                //console.log(partType);
+//                //console.log("================");
+//                //if (!(data[i]['masterPartType'] == partType))
+//                //    continue;
+//                if (!(data[i]['status'] == strActive))
+//                    continue;
+//                data[i].activeName = data[i]['status'] == "Active" ? "Make Inactive" : "Make Active";
+//                var tBody = ProcessTemplateDataNew("MasterDetaiTemplate", data[i]);
+//                $(tablebody).append(tBody);
+//                //console.log(tBody);
+//            }
+//        }).catch((error) => {
+//        });
+//    }
+//}
+
+
+
+
 function loadMPDList() {
     var tablebody = $("#mptable tbody");
-    $(tablebody).html("");//empty tbody
-    //UpdatePurchaseDetailsTableFromPostData
-    let i = 0;
-    var strActive = $("#Status").val();
-    if (dataMPDList.length > 2) {
-        //console.log(partType);
-        //console.log("================");
-        let data = dataMPDList;
-        if (data.length === 0) {
-            // 2. Insert the "No Records Found" row
-            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
-            const noRecordsRow = `
-                <tr>
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-            $(tablebody).append(noRecordsRow);
-        }
-        for (i = 0; i < data.length; i++) {
-            //if (!(data[i]['masterPartType'] == partType))
-            //    continue;
-            if (!(data[i]['status'] == strActive))
-                continue;
-            data[i].activeName = data[i]['status'] == "Active" ? "Make Inactive" : "Make Active";
-            var tBody = ProcessTemplateDataNew("MasterDetaiTemplate", data[i]);
-            $(tablebody).append(tBody);
-            //console.log(tBody);
-        }
+    tablebody.empty();
+
+    const filters = getItemMasterFilters();
+    let data = applyItemMasterFilters(dataMPDList, filters);
+
+    if (typeof fromobselete !== 'undefined' &&
+        fromobselete === 'ObsoletePart') {
+        data = data.filter(item => item.status === "Obsolete");
     }
-    else {
-        api.getbulk("/masters/masterparts").then((data) => {
-            dataMPDList = data;
-            if (typeof fromobselete !== 'undefined' && fromobselete === 'ObsoletePart') {
-                data = data.filter(item => item.status != "Active");
-                dataMPDList = data;
-            }
-            if (data.length === 0) {
-                // 2. Insert the "No Records Found" row
-                // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
-                const noRecordsRow = `
-                <tr>
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-                $(tablebody).append(noRecordsRow);
-            }
-            for (i = 0; i < data.length; i++) {
-                /*for (var key in data[i]) {
-                    console.log(key);
-                    console.log(data[i][key]);
-                    console.log("*****");
-                }*/
-                //console.log(partType);
-                //console.log("================");
-                //if (!(data[i]['masterPartType'] == partType))
-                //    continue;
-                if (!(data[i]['status'] == strActive))
-                    continue;
-                data[i].activeName = data[i]['status'] == "Active" ? "Make Inactive" : "Make Active";
-                var tBody = ProcessTemplateDataNew("MasterDetaiTemplate", data[i]);
-                $(tablebody).append(tBody);
-                //console.log(tBody);
-            }
-        }).catch((error) => {
-        });
+
+    if (data.length === 0) {
+        tablebody.append(`
+            <tr>
+                <td colspan="20" style="text-align:center;color:#888;">
+                    <strong>No Records Found</strong>
+                </td>
+            </tr>`);
+        return;
     }
+
+    data.forEach(item => {
+        item.activeName =
+            item.status === "Active" ? "Make Inactive" : "Make Active";
+
+        let canDelete =
+            item.inv_Trans === "N" &&
+            (item.linked_to_BOM === "N" || item.linked_to_BOM === "Y");
+
+        item.showMenu = canDelete ? "block" : "none";
+
+        const row = ProcessTemplateDataNew("MasterDetaiTemplate", item);
+        tablebody.append(row);
+    });
 }
+
+
+
+
+
+
 function getItemMasterFilters() {
     return {
-        MasterPart: $("#MasterPart option:selected").text(),          // 0,1,2,3,4
+        /* MasterPart: $("#MasterPart option:selected").text(),*/          // 0,1,2,3,4
+        MasterPart: $("#MasterPart").val(), 
         Company: $("#master_co").val()?.trim(),
         Status: $("#Status").val(),
         PartNo: $("#master_partno").val()?.trim(),
@@ -1722,97 +1773,176 @@ function getItemMasterFilters() {
         DocRefStatus: $("#DocRefStatus").val()
     };
 }
+//function applyItemMasterFilters(data, filters) {
+//    return data.filter(item => {
+
+//        // Part Type
+//        if (filters.MasterPart && filters.MasterPart !== "0" && $("#MasterPart").val() != "0") {
+//            var mp = filters.MasterPart.replace(/\s+/g, '');
+//            if (item.masterPartType != mp)
+//                return false;
+//        }
+
+//        // Company
+//        if (filters.Company) {
+//            if (!item.company?.toLowerCase().includes(filters.Company.toLowerCase()))
+//                return false;
+//        }
+
+//        // Part Status
+//        if (filters.Status) {
+//            if (item.status !== filters.Status)
+//                return false;
+//        }
+
+//        // Part No
+//        if (filters.PartNo) {
+//            if (!item.partNo?.toLowerCase().includes(filters.PartNo.toLowerCase()))
+//                return false;
+//        }
+
+//        // Part Description
+//        if (filters.PartDesc) {
+//            if (!item.description?.toLowerCase().includes(filters.PartDesc.toLowerCase()))
+//                return false;
+//        }
+
+//        // Document Status
+//        if (filters.DocRefStatus && filters.DocRefStatus !== "0") {
+//            if (item.docRefStatus != filters.DocRefStatus)
+//                return false;
+//        }
+
+//        return true;
+//    });
+//}
+
 function applyItemMasterFilters(data, filters) {
+
+    const partTypeMap = {
+        "1": "ManufacturedPart",
+        "2": "Assembly",
+        "3": "BOF",
+        "4": "RawMaterial"
+    };
+
     return data.filter(item => {
 
         // Part Type
-        if (filters.MasterPart && filters.MasterPart !== "0" && $("#MasterPart").val() != "0") {
-            var mp = filters.MasterPart.replace(/\s+/g, '');
-            if (item.masterPartType != mp)
-                return false;
+        const selectedType = partTypeMap[filters.MasterPart];
+
+        if (selectedType && item.masterPartType !== selectedType) {
+            return false;
         }
 
         // Company
-        if (filters.Company) {
-            if (!item.company?.toLowerCase().includes(filters.Company.toLowerCase()))
-                return false;
+        if (filters.Company &&
+            !item.company?.toLowerCase().includes(filters.Company.toLowerCase())) {
+            return false;
         }
 
         // Part Status
-        if (filters.Status) {
-            if (item.status !== filters.Status)
-                return false;
+        if (filters.Status && filters.Status !== "0" &&
+            item.status !== filters.Status) {
+            return false;
         }
 
         // Part No
-        if (filters.PartNo) {
-            if (!item.partNo?.toLowerCase().includes(filters.PartNo.toLowerCase()))
-                return false;
+        if (filters.PartNo &&
+            !item.partNo?.toLowerCase().includes(filters.PartNo.toLowerCase())) {
+            return false;
         }
 
-        // Part Description
-        if (filters.PartDesc) {
-            if (!item.description?.toLowerCase().includes(filters.PartDesc.toLowerCase()))
-                return false;
+        // Description
+        if (filters.PartDesc &&
+            !item.description?.toLowerCase().includes(filters.PartDesc.toLowerCase())) {
+            return false;
         }
 
         // Document Status
-        if (filters.DocRefStatus && filters.DocRefStatus !== "0") {
-            if (item.docRefStatus != filters.DocRefStatus)
-                return false;
+        if (filters.DocRefStatus && filters.DocRefStatus !== "0" &&
+            item.docRefStatus != filters.DocRefStatus) {
+            return false;
         }
 
         return true;
     });
 }
-
 function loadEditParts() {
-    var tablebody = $("#mptable tbody");
-    $(tablebody).html("");//empty tbody
-    $('#preloaderblurred').show();
+
+    $("#mptable tbody").empty();
+    $("#preloaderblurred").show();
+
     api.getbulk("/masters/masterparts").then((data) => {
+
         dataMPDList = data;
-        if (typeof fromobselete !== 'undefined' && fromobselete === 'ObsoletePart') {
-            data = data.filter(item => item.status === "Obsolete");
-            dataMPDList = data;
-            partType = " ";
+
+        if (typeof fromobselete !== 'undefined' &&
+            fromobselete === 'ObsoletePart') {
+
+            dataMPDList = data.filter(item => item.status === "Obsolete");
+
             $("#Status").val("Obsolete");
             $("#Status").prop("disabled", true);
         }
-        const filters = getItemMasterFilters();
-        const savedFilters = sessionStorage.getItem("ItemMaster_SearchFilters");
-        if (savedFilters) {
-            data = applyItemMasterFilters(data, filters);
-        }
-        if (data.length === 0) {
-            // 2. Insert the "No Records Found" row
-            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
-            const noRecordsRow = `
-                <tr>
-                    <td colspan="20" style="text-align: center; color: #888;">
-                        <strong>No Records Found</strong>
-                    </td>
-                </tr>`;
-            $(tablebody).append(noRecordsRow);
-        }
-        for (i = 0; i < data.length; i++) {
-           
-            if (!(data[i]['status'] == "Released"))
-                continue;
-            data[i].activeName = data[i]['status'] == "Active" ? "Make Inactive" : "Make Active";
-            let canDelete = (data[i].inv_Trans === "N" && data[i].linked_to_BOM ==="N");
-            let canalsoDelete = (data[i].inv_Trans === "N" && data[i].linked_to_BOM === "Y");
-            data[i].showMenu = (canDelete || canalsoDelete) ? "block" : "none";
-            var tBody = ProcessTemplateDataNew("MasterDetaiTemplate", data[i]);
-            $(tablebody).append(tBody);
-            //console.log(tBody);
-        }
-        $("#Status").val("Released");
-        $('#preloaderblurred').hide();
+
+        loadMPDList();
+
+        $("#preloaderblurred").hide();
+
     }).catch((error) => {
-        $('#preloaderblurred').hide();
+        $("#preloaderblurred").hide();
+        console.log(error);
     });
 }
+//function loadEditParts() {
+//    var tablebody = $("#mptable tbody");
+//    $(tablebody).html("");//empty tbody
+//    $('#preloaderblurred').show();
+//    api.getbulk("/masters/masterparts").then((data) => {
+//        dataMPDList = data;
+//        if (typeof fromobselete !== 'undefined' && fromobselete === 'ObsoletePart') {
+//            data = data.filter(item => item.status === "Obsolete");
+//            dataMPDList = data;
+//            partType = " ";
+//            $("#Status").val("Obsolete");
+//            $("#Status").prop("disabled", true);
+//        }
+//        loadMPDList();
+//        const filters = getItemMasterFilters();
+//        const savedFilters = sessionStorage.getItem("ItemMaster_SearchFilters");
+//        if (savedFilters) {
+//            data = applyItemMasterFilters(data, filters);
+//        }
+//        if (data.length === 0) {
+//            // 2. Insert the "No Records Found" row
+//            // We assume a standard table has a 6-column span (adjust 'colspan' as needed for your table)
+//            const noRecordsRow = `
+//                <tr>
+//                    <td colspan="20" style="text-align: center; color: #888;">
+//                        <strong>No Records Found</strong>
+//                    </td>
+//                </tr>`;
+//            $(tablebody).append(noRecordsRow);
+//        }
+//        for (i = 0; i < data.length; i++) {
+           
+//            if (!(data[i]['status'] == "Released"))
+//                continue;
+//            data[i].activeName = data[i]['status'] == "Active" ? "Make Inactive" : "Make Active";
+//            let canDelete = (data[i].inv_Trans === "N" && data[i].linked_to_BOM ==="N");
+//            let canalsoDelete = (data[i].inv_Trans === "N" && data[i].linked_to_BOM === "Y");
+//            data[i].showMenu = (canDelete || canalsoDelete) ? "block" : "none";
+//            var tBody = ProcessTemplateDataNew("MasterDetaiTemplate", data[i]);
+//            $(tablebody).append(tBody);
+//            //console.log(tBody);
+//        }
+//        $("#Status").val("Released");
+//        $('#preloaderblurred').hide();
+//    }).catch((error) => {
+//        $('#preloaderblurred').hide();
+//    });
+//}
 function DeletePart(element) {
     var relatedTarget = $(element);
     var doclistid = relatedTarget.data("partid");

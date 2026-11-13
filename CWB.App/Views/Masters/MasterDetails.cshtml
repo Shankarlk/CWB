@@ -1,8 +1,10 @@
-﻿@using Microsoft.AspNetCore.Http
+﻿@using CWB.App.Models.EmployeeMaster
+@using Microsoft.AspNetCore.Http
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
     ViewData["Title"] = "Item Master";
 }
+ 
 <style>
     .modal-stack-blur {
         filter: blur(5px);
@@ -30,7 +32,7 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    <h5>View / Edit Item Master</h5>
+                                    <h5>@ViewBag.PageTitle</h5>
                                 </td>
                                 <td class="text-end">
                                     <a id="MastersDetailClose" asp-action="Index" asp-controller="Masters"><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></a>
@@ -396,7 +398,7 @@
     <script src="~/js/contacts.js"></script>
 }
 
-
+ 
 <template id="MasterDetaiTemplate">
     <tr style="text-align: center;">
         <td data-key="Company">{company}</td>
@@ -418,40 +420,54 @@
                     <!-- item-->
                     @if (permissionResult != null)
                     {
-                        @if (permissionResult.Any(r => r.Menu3 == "View / Edit Part No"))
+                        // View / Edit Part No permission
+                        var pr = permissionResult.FirstOrDefault(
+                            r => r.Menu3 == "View / Edit Part No");
+
+                        if (pr != null)
                         {
-                            var pr = permissionResult.Where(r => r.Menu3 == "View / Edit Part No").FirstOrDefault();
-                            @if (pr.PermissionId>= 2)
+                            if (pr.PermissionId >= 2)
                             {
-                            <a href="/masters/editpart?partId={partId}&partType={masterPartType}&mode=view"   class="dropdown-item">    View Part Details     </a>
+                                <a href="/masters/editpart?partId={partId}&partType={masterPartType}&mode=view"
+                                   class="dropdown-item">
+                                    View Part Details
+                                </a>
                             }
+
                             if (pr.PermissionId >= 3)
                             {
-                                <a href="/masters/editpart?partId={partId}&partType={masterPartType}" class="dropdown-item">Edit Part Details</a>
-                                @*<a href="javascript:void(0);" class="dropdown-item activeAtag"
-                    data-partId="{partId}" data-parttype="{masterPartType}" data-status="{status}"
-                    data-partNo="{partNo}" data-bs-toggle="modal" data-bs-target="#status-info">{activeName}</a>*@
+                                <a href="/masters/editpart?partId={partId}&partType={masterPartType}"
+                                   class="dropdown-item">
+                                    Edit Part Details
+                                </a>
                             }
-                            else if (pr.PermissionId >= 4)
+
+                            if (pr.PermissionId >= 4)
                             {
-
-
-                                <a href="/masters/editpart?partId={partId}&partType={masterPartType}" class="dropdown-item">Edit Part Details</a>
-
-
-                                @*<a href="javascript:void(0);" class="dropdown-item activeAtag"
-                    data-partId="{partId}" data-parttype="{masterPartType}" data-status="{status}"
-                    data-partNo="{partNo}" data-bs-toggle="modal" data-bs-target="#status-info">{activeName}</a>*@
-
-
-                                <a href="javascript:void(0);" class="dropdown-item activeAtag" onclick="DeletePart(this)"
-                                   data-partId="{partId}" data-listassem="{listAssembly}" data-partno="{partNo}"
-                                   style="display:{showMenu}">Delete</a>
+                                <a href="javascript:void(0);"
+                                   class="dropdown-item activeAtag"
+                                   onclick="DeletePart(this)"
+                                   data-partId="{partId}"
+                                   data-listassem="{listAssembly}"
+                                   data-partno="{partNo}"
+                                   style="display:{showMenu}">
+                                    Delete
+                                </a>
                             }
-                            else { }
                         }
 
+                        // Independent Item Master Approve permission
+                        var approvePermission = permissionResult.FirstOrDefault(
+                            r => r.Menu3 != null &&
+                                 r.Menu3.Trim() == "Item Master Approve");
 
+                        if (approvePermission != null && approvePermission.PermissionId == 5)
+                        {
+                            <a href="/masters/editpart?partId={partId}&partType={masterPartType}&mode=Approve&menuId=138"
+                               class="dropdown-item">
+                                Approve
+                            </a>
+                        }
                     }
                     else
                     {
@@ -640,7 +656,8 @@
                         <div class="col-md-2 mb-2">
                             <label class="form-check-label">Part Status</label>
                             <select class="form-select form-select-sm" id="VMStatus" name="Status" asp-items="ViewBag.Statuses">
-                                <option value="0">All Part Status</option>
+                                <option value="">All Part Status</option>
+                                
                             </select>
                         </div>
                         <div class="col-md-2 mb-2">
