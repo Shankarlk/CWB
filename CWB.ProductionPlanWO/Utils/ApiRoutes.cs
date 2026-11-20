@@ -233,6 +233,8 @@ namespace CWB.ProductionPlanWO.Utils
             public const string GetAllMatlIssueListForShop = Base + "/getallmatlissuelistforshop/{tenantId}";
             public const string PostConsolidationWo = Base + "/postconsolidationwo";
             public const string GetAllConsolidationwo = Base + "/getallconsolidationwo/{tenantId}";
+            public const string PostConsolidationProcplan = Base + "/postconsolidationprocplan";
+            public const string GetallconsolidationProcplan = Base + "/getallconsolidationprocplan/{tenantId}";
             public const string UpdateProductionPlan_WoForReference = Base + "/updateproductionwoforreference";
         }
     }

@@ -17,6 +17,11 @@ namespace CWB.App.Services.ProductionPlanWo
         Task<List<ProductionPlan_WoVM>> UpdateProduction_WoForReference(IEnumerable<ProductionPlan_WoVM> productions);
         Task<List<ConsolidatedWoMappingVM>> PostConsolidatedWO(IEnumerable<ConsolidatedWoMappingVM> productions);
         Task<IEnumerable<ConsolidatedWoMappingVM>> Getallconsolidationproductionwo();
+
+        Task<List<ProcPlanConsolidationMappingVM>> PostConsolidatedProcplan(IEnumerable<ProcPlanConsolidationMappingVM> productions);
+        Task<IEnumerable<ProcPlanConsolidationMappingVM>> Getallconsolidationprocplan();
+
+
         Task<ProductionPlan_WoVM> UpdateProductionPlan_Wo(ProductionPlan_WoVM productions);
         Task<ProductionPlan_WoVM> UpdateHoldProductionPlan_Wo(ProductionPlan_WoVM productions);
         Task<ProductionPlan_WoVM> UpdateProductionPlan_WoCritcalPart(ProductionPlan_WoVM productions);

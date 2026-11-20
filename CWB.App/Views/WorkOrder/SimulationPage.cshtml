@@ -349,14 +349,19 @@
                     <!-- Bottom Actions -->
                     <div class="row mt-1">
                         <div class="col-md-12 mb-3">
+                            @*<button class="btn btn-outline-primary ms-3"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#Popup2">
+                                Show All WO
+                            </button>*@
                             @if (permissionResult != null)
                             {
-                                @if (permissionResult.Any(r => r.Menu4 == "Show Child WO Status"))
-                                {
-                                    <button class="btn btn-outline-primary ms-3" onclick="window.location.href='/S!M@l@T!LO0'">
-                                        Show Child WO Status
-                                    </button>
-                                }
+                                @*@if (permissionResult.Any(r => r.Menu4 == "Show Child WO Status"))
+            {
+                <button class="btn btn-outline-primary ms-3" onclick="window.location.href='/S!M@l@T!LO0'">
+                    Show Child WO Status
+                </button>
+            }*@
                                 @if (permissionResult.Any(r => r.Menu4 == "Machine List"))
                                 {
                                     <button class="btn btn-outline-primary ms-3" onclick="window.location.href='/M@H1NE!P'">Machine List</button>
@@ -368,8 +373,10 @@
                             }
                             else
                             {
-                                <button class="btn btn-outline-primary ms-3" onclick="window.location.href='/S!M@l@T!LO0'">
-                                    Show Child WO Status
+                                @*<button class="btn btn-outline-primary ms-3" onclick="window.location.href='/S!M@l@T!LO0'">
+                Show Child WO Status
+            </button>*@ <button class="btn btn-outline-primary ms-3"     data-bs-toggle="modal"     data-bs-target="#Popup2">
+                                    Show All WO
                                 </button>
                                 <button class="btn btn-outline-primary ms-3" onclick="window.location.href='/M@H1NE!P'">Machine List</button>
                                 <button class="btn btn-outline-primary ms-3" onclick="window.location.href='/SYBC0!NK'">SubCon List</button>
@@ -537,11 +544,11 @@
 </div>
 <div class="modal fade" id="Popup2" data-bs-backdrop="static" data-bs-keyboard="false"
      tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl-custom">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="mySmallModalLabel">
-                    Simulation Output : Parent, Child WO, Rework WO & Non Plan Work
+                    Simulation Output : Parent, Child WO 
                 </h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -551,40 +558,42 @@
                         <label class="form-label">WO Status</label>
                         <select class="form-select form-select-sm" aria-label="form-select-sm" id="P2SearchWoStatus"
                                 title="" data-plugin="tippy" data-tippy-placement="top">
-                            <option value="">==========</option>
+                            @*<option value="">==========</option>*@
                         </select>
                     </div>
                     <div class="col-md-2 mb-2">
                         <label class="form-label">Part No</label>
                         <input class="form-control form-control-sm" type="text" title=""
                                data-plugin="tippy" data-tippy-placement="top"
-                               placeholder="Enter DC Reference" id="P2SearchPartNo">
+                               placeholder="Part No" id="P2SearchPartNo">
                     </div>
                     <div class="col-md-2 mb-2">
                         <label class="form-label">Part Desc</label>
                         <input class="form-control form-control-sm" type="text" title=""
                                data-plugin="tippy" data-tippy-placement="top"
-                               placeholder="Enter DC Reference" id="P2SearchPartDesc">
+                               placeholder="Part Description" id="P2SearchPartDesc">
                     </div>
                     <div class="col-md-2 mb-2">
                         <label class="form-label">Part Type</label>
                         <select class="form-select form-select-sm" aria-label="form-select-sm" id="P1SearchPartType"
                                 title="" data-plugin="tippy" data-tippy-placement="top">
                             <option value="0">--Select</option>
-                            <option value="1">All</option>
+                            <option value="1">Manufactured Part</option>
+                            <option value="2">Assembly</option>
+                            @*<option value="1">All</option>
                             <option value="2">Parent Assembly</option>
                             <option value="2">Assembly</option>
                             <option value="3">Parent Manf. Part </option>
                             <option value="3">Child Manf. Part</option>
                             <option value="3">Child Manf Part (Comb. WO)</option>
-                            <option value="3">CMP with Common Input Matl</option>
+                            <option value="3">CMP with Common Input Matl</option>*@
                         </select>
                     </div>
                     <div class="col-md-2 mb-2">
                         <label class="form-label">Work Order #</label>
                         <input class="form-control form-control-sm" type="text" title=""
                                data-plugin="tippy" data-tippy-placement="top"
-                               placeholder="Enter DC Reference" id="P2SearchWo">
+                               placeholder="WO Number" id="P2SearchWo">
                     </div>
                     <div class="col-md-2 mb-2">
                         <div class="d-flex align-items-center justify-content-fornt">
@@ -594,7 +603,7 @@
                                    id="P2SearchCritical">
                         </div>
                     </div>
-                    <div class="col-md-2 mb-2">
+                    @*<div class="col-md-2 mb-2">
                         <div class="d-flex align-items-center justify-content-fornt">
                             <label class="form-label me-2 mb-0">Show Child Parts </label>
                             <input class="form-check-input mt-2" type="checkbox" title=""
@@ -625,7 +634,7 @@
                                    data-plugin="tippy" data-tippy-placement="top" placeholder=""
                                    id="P2SearchBuildStock">
                         </div>
-                    </div>
+                    </div>*@
                     <div class="col-md-12" id="P6partInspectPlanGridDiv">
                         <div class="col-md-12">
                             <div class="table-responsive table-he-330">
@@ -634,32 +643,32 @@
                                     <thead class="  table-info th-sti">
                                         <tr class="table-border-bottom">
                                             <th>Work Order # </th>
-                                            <th>Customer</th>
-                                            <th>Rwk WO</th>
+                                            @*<th>Customer</th>
+                                            <th>Rwk WO</th>*@
                                             <th>Build to Stock</th>
                                             <th>Part No / Desc</th>
                                             <th>Part Type </th>
                                             <th>Routing </th>
-                                            <th>Cur Opr No </th>
+                                            @*<th>Cur Opr No </th>*@
                                             <th>WIP</th>
                                             <th>Input Matl Coverage</th>
                                             <th>Plan WO Qnty</th>
                                             <th>Reqd Compl Dt</th>
                                             <th>Cur Plan Qnty</th>
-                                            <th>PS Start Date</th>
-                                            <th>PS Compl Date </th>
+                                            @*<th>PS Start Date</th>
+                                            <th>PS Compl Date </th>*@
                                             <th>CS Start Date </th>
                                             <th>CS Compl Date </th>
-                                            <th>Act Start Date </th>
+                                            @*<th>Act Start Date </th>*@
                                             <th>Data Changed </th>
                                             <th>Critical Part </th>
-                                            <th>Hold</th>
+                                            @*<th>Hold</th>*@
                                             <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <!-- -------------  -->
-                                        <tr>
+                                        <!--<tr>
                                             <td></td>
                                             <td></td>
                                             <td></td>
@@ -687,15 +696,15 @@
                                                        data-bs-toggle="dropdown" aria-expanded="false">
                                                         <i class="mdi mdi-dots-vertical"></i>
                                                     </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                    <div class="dropdown-menu dropdown-menu-end">-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                                                           data-bs-target="#popupInward1">Change Routing</a>
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#popupInward1">Change Routing</a>-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                                                           data-bs-target="#popupInward1">Allocate Common Material</a>
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#popupInward1">Allocate Common Material</a>-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
                                                            data-bs-target="#Popup7">View Material Availability </a>
                                                         <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
                                                            data-bs-target="#NotUploaded">hold / resume</a>
@@ -704,10 +713,10 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                        </tr>
+                                        </tr>-->
                                         <!-- -------------  -->
                                         <!-- -------------  -->
-                                        <tr>
+                                        <!--<tr>
                                             <td></td>
                                             <td></td>
                                             <td></td>
@@ -735,15 +744,15 @@
                                                        data-bs-toggle="dropdown" aria-expanded="false">
                                                         <i class="mdi mdi-dots-vertical"></i>
                                                     </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                    <div class="dropdown-menu dropdown-menu-end">-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                                                           data-bs-target="#popupInward1">Change Routing</a>
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#popupInward1">Change Routing</a>-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                                                           data-bs-target="#popupInward1">Allocate Common Material</a>
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#popupInward1">Allocate Common Material</a>-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
                                                            data-bs-target="#warning">View Material Availability </a>
                                                         <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
                                                            data-bs-target="#NotUploaded">hold / resume</a>
@@ -752,10 +761,10 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                        </tr>
+                                        </tr>-->
                                         <!-- -------------  -->
                                         <!-- -------------  -->
-                                        <tr>
+                                        <!--<tr>
                                             <td></td>
                                             <td></td>
                                             <td></td>
@@ -783,15 +792,15 @@
                                                        data-bs-toggle="dropdown" aria-expanded="false">
                                                         <i class="mdi mdi-dots-vertical"></i>
                                                     </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                    <div class="dropdown-menu dropdown-menu-end">-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                                                           data-bs-target="#popupInward1">Change Routing</a>
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#popupInward1">Change Routing</a>-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                                                           data-bs-target="#popupInward1">Allocate Common Material</a>
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#popupInward1">Allocate Common Material</a>-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
                                                            data-bs-target="#warning">View Material Availability </a>
                                                         <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
                                                            data-bs-target="#NotUploaded">hold / resume</a>
@@ -800,10 +809,10 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                        </tr>
+                                        </tr>-->
                                         <!-- -------------  -->
                                         <!-- -------------  -->
-                                        <tr>
+                                        <!--<tr>
                                             <td></td>
                                             <td></td>
                                             <td></td>
@@ -831,15 +840,15 @@
                                                        data-bs-toggle="dropdown" aria-expanded="false">
                                                         <i class="mdi mdi-dots-vertical"></i>
                                                     </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                    <div class="dropdown-menu dropdown-menu-end">-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                                                           data-bs-target="#popupInward1">Change Routing</a>
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#popupInward1">Change Routing</a>-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                                                           data-bs-target="#popupInward1">Allocate Common Material</a>
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#popupInward1">Allocate Common Material</a>-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
                                                            data-bs-target="#warning">View Material Availability </a>
                                                         <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
                                                            data-bs-target="#NotUploaded">hold / resume</a>
@@ -848,10 +857,10 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                        </tr>
+                                        </tr>-->
                                         <!-- -------------  -->
                                         <!-- -------------  -->
-                                        <tr>
+                                        <!--<tr>
                                             <td></td>
                                             <td></td>
                                             <td></td>
@@ -879,15 +888,15 @@
                                                        data-bs-toggle="dropdown" aria-expanded="false">
                                                         <i class="mdi mdi-dots-vertical"></i>
                                                     </a>
-                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                    <div class="dropdown-menu dropdown-menu-end">-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                                                           data-bs-target="#popupInward1">Change Routing</a>
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#popupInward1">Change Routing</a>-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
-                                                           data-bs-target="#popupInward1">Allocate Common Material</a>
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                           data-bs-target="#popupInward1">Allocate Common Material</a>-->
                                                         <!-- item-->
-                                                        <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
+                                                        <!--<a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
                                                            data-bs-target="#warning">View Material Availability </a>
                                                         <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal"
                                                            data-bs-target="#NotUploaded">hold / resume</a>
@@ -896,19 +905,45 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                        </tr>
+                                        </tr>-->
                                         <!-- -------------  -->
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-10">
-                        <button class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#Popup21">Machine List</button>
-                        <button class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#Popup23">SubCon List</button>
+                    <div class="col-md-12">
+                        @if (permissionResult != null)
+                        {
+
+                            @if (permissionResult.Any(r => r.Menu4 == "Machine List"))
+                            {
+                                <button class="btn btn-outline-primary ms-3" onclick="window.location.href='/M@H1NE!P'">Machine List</button>
+                            }
+                            @if (permissionResult.Any(r => r.Menu4 == "SubCon List"))
+                            {
+                                <button class="btn btn-outline-primary ms-3" onclick="window.location.href='/SYBC0!NK'">SubCon List</button>
+                            }
+                        }
+                        else
+                        {
+
+
+                            <button class="btn btn-primary ms-3" onclick="window.location.href='/M@H1NE!P'">Machine List</button>
+                            <button class="btn btn-primary ms-3" data-bs-target="#Popup28" data-bs-toggle="modal">Machine Setup List</button>
+                            <button class="btn btn-primary ms-3" onclick="window.location.href='/SYBC0!NK'">SubCon List</button>
+                            <button class="btn btn-primary ms-3" data-bs-target="#Popup27" data-bs-toggle="modal">Material Issue / Movement  List</button>
+                            <button class="btn btn-primary ms-3" data-bs-toggle="modal" data-bs-target="#matlPop" id="MatlBtn">
+                                Material Proc Plan
+                            </button>
+                        }
+
+
+                        @*<button class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#Popup21">Machine List</button>
+        <button class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#Popup23">SubCon List</button>*@
                     </div>
                     <div class="col-md-2 text-end  ">
-                        <button class="btn btn-primary mb-2">Re-Simulate</button>
+                        @*<button class="btn btn-primary mb-2">Re-Simulate</button>*@
                     </div>
                     <!-- ========================= -->
                 </div>
@@ -916,6 +951,356 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div>
+<div class="modal fade" id="matlPop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-full-width">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">Material Procurement Plan</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Part No</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter Part No" id="searchMatProcPartNo">
+                    </div>
+                    <!-- -----------------  -->
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Part Description</label>
+                        <input class="form-control form-control-sm" type="text"
+                               placeholder="Enter PO Number" title=""
+                               data-plugin="tippy" data-tippy-placement="top" id="searchMatProcPartDesc">
+                    </div>
+                    <!-- -----------------  -->
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Part Type</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter Part No" id="searchMatProcPartType">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Supplier</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter Part No" id="searchMatSupplier">
+                    </div>
+
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">WO Type</label>
+                        <select class="form-select form-select-sm" aria-label="form-select-sm"
+                                title="" data-plugin="tippy" data-tippy-placement="top" id="searchMatlWoType">
+                            <option value="0">--Select--</option>
+                            <option value="1">Regular</option>
+                            <option value="2">Build to Stock or Reorder</option>
+                        </select>
+                    </div>
+                    <!-- -----------------  -->
+                    @*<div class="col-md-3 mb-2 mt-3">
+                            <label class="form-label">Critical Part</label>
+                            <input id="ChkMatlCriticalPart" class="form-check-input"
+                                   type="checkbox" title="Select" data-plugin="tippy"
+                                   data-tippy-placement="top">
+                        </div>*@
+                    <!-- ======================== -->
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table class="table table-sm table-bordered w-100 text-center" id="ProcPlanGrid">
+                                <thead class="  table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>
+                                            <input id="select-all-checkbox-in-procplan"
+                                                   class="form-check-input"
+                                                   type="checkbox"
+                                                   title="Select all"
+                                                   data-plugin="tippy"
+                                                   data-tippy-placement="top">
+                                        </th>
+                                        <th>Part No / Desc </th>
+                                        <th>Part Type</th>
+                                        <th>Supplier </th>
+                                        <th hidden>PO Ref</th>
+                                        <th>Calculated. Requirement</th>
+                                        <th>Qnty on Hand</th>
+                                        <th>Planned Purchase Qnty</th>
+                                        <th>MOQ</th>
+                                        <th>UoM (for ordering)</th>
+                                        @*<th>Date Reqd</th>*@
+                                        <th>Lead Time Days</th>
+                                        <th>Calculated Receipt Date</th>
+                                        <th>WO Type</th>
+                                        @*<th>Critical Part</th>*@
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- -------------  -->
+                                    <!-- -------------  -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- -----------------  -->
+                    <div class="col-md-6 mt-2">
+                        <button class="btn btn-sm btn-purple" id="UpdateMOQ">
+                            Update All
+                            Purchase Qnty < MOQ to MOQ
+                        </button>
+                    </div>
+                    <!-- -----------------  -->
+                    <div class="col-md-4 mt-2 text-end">
+                        <button class="btn btn-sm btn-purple" id="ReleasePo">
+                            Send Purchase Order for Approval
+                        </button>
+                    </div>
+                    <div class="col-md-2 mt-2 text-end">
+                        <!-- =============================  -->
+                        <a class="btn btn-sm btn-purple" asp-controller="WorkOrder"
+                           asp-action="DownloadMaterialProcPlanGridData" id="DownloadMatlProc">
+                            Download Material Procurement Plan
+                        </a>
+                        <!-- =============================  -->
+                    </div>
+                    <!-- -----------------  -->
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="Popup90" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-full-width">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="standard-modalLabel">WO List of parts which use Raw Material/BOF  <span id="P90PartNoSpan"></span> / <span id="P90PartDescSpan"></span></h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- ======================== -->
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Bal Qnty to Procure (Plan Proc. Qnty)</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter Part No" id="P90BalQnty" readonly>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Date Reqd. as Planning</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter Part No" id="P90DateReqd" readonly>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Total PO Qnty</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter Part No" id="P90PoQnty" readonly>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label class="form-label">Agreed Receipt Date</label>
+                        <input class="form-control form-control-sm" type="text" title=""
+                               data-plugin="tippy" data-tippy-placement="top"
+                               placeholder="Enter Part No" id="P90RptDate" readonly>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="table-responsive table-he-250">
+                            <table class="table table-sm table-bordered w-100 text-center" id="MatlWhereGrid">
+                                <thead class="table-info th-sti">
+                                    <tr class="table-border-bottom">
+                                        <th>Manuf Part / Desc</th>
+                                        <th>WO / PO Ref</th>
+                                        <th>Plan Qnty</th>
+                                        <th>Plan Compl </th>
+                                        <th>Status</th>
+                                        <th>Critical Part</th>
+                                        <th>WO Type</th>
+                                        <th>Proc. for</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- -------------  -->
+                                    <!-- -------------  -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal fade" id="popup100" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bxs-modal">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">
+                    Procurement of <span id="popup100PartNo"> </span>/<span id="P100partdesc"></span>
+                    @*<span id="P20BRLbl" hidden>Build to Stock WO Reorder WO</span>*@
+                </h5>
+                <button type="button" class="btn-close" id="btnPurClose"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-2 mb-2" style="margin-top: -2px;">
+                        <label class="form-label">Calc. Reqt.</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" placeholder="" id="P100CalcReq" readonly>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Qnty on Hand.</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy" value="0"
+                                   data-tippy-placement="top" placeholder="" id="P100QntyHand" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">Bal Qnty to Procure(Plan Proc. Qnty).</label>
+                        <div class="input-group">
+                            <div style="width: 50%;">
+                                <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                       data-tippy-placement="top" placeholder="" id="P100balQnty" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <label class="form-label">Date Reqd.</label>
+                        <div class="input-group">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" placeholder="" id="P100DateReqd" readonly>
+                        </div>
+                    </div>
+                    <!-- ========================= -->
+                    <hr />
+                    <div class="col-md-7 mb-2">
+                        <label class="form-label">Supplier</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <select class="form-select form-select-sm" aria-label="form-select-sm" title="" id="P100Supplier">
+                            </select>
+                            <span id="P100PreferredSpan" style="display: none;">Preferred</span>
+                        </div>
+                    </div>
+                    <div class="col-md-5 mb-2"></div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">Total PO Qty</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                                   data-tippy-placement="top" id="P100TotalPoQnty">
+                            <span id="P100UnitSpan">Nos</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">Update Proc Qnty to MOQ</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input id="chkP100UpdateQnty" class="form-check-input"
+                                   type="checkbox" title=""
+                                   data-plugin="tippy" data-tippy-placement="top">
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">MOQ</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P100Moq" readonly>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">PO Unit Price</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P100Convprice">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">Use Item Master Price</label>
+                        <input id="chkP100RoutPrice" class="form-check-input"
+                               type="checkbox" title=""
+                               data-plugin="tippy" data-tippy-placement="top">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">Unit Price (from Item Master)</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P100UnitRout" readonly>
+                    </div>
+                    <!-- ========================= -->
+                    <hr />
+                    <div class="col-md-12 mb-2">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Single Delivery Date</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                            </div>
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Delivery over multiple dates</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">Delivery Qnty</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P100DelQnty">
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <label class="form-label">Agreed Delivery Date</label>
+                        <input class="form-control form-control-sm" type="date" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P100AgrDate">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label">Addn Info for Supplier</label>
+                        <input class="form-control form-control-sm" type="text" title="" data-plugin="tippy"
+                               data-tippy-placement="top" id="P100AddnInfo">
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-12 mb-2 text-end" id="multipleDeliverySection">
+                        <input type="text" id="Popup100WoSubConId" hidden />
+                        <input type="text" id="Popup100Woid" hidden />
+                        <input type="text" id="Popup100SuppId" hidden />
+                        <input type="text" id="Popup100SubConId" hidden />
+                        <input type="hidden" id="P100EditProcPlanId" value="0" />
+                        <button class="btn btn-primary btn-sm" id="P100SaveWo">Save</button>
+                        <button class="btn btn-primary btn-sm" id="P100UpdateWo" style="display:none;">
+                            Update
+                        </button>
+                        <button class="btn btn-primary btn-sm" id="P100AddNextDel" disabled>Add Next Delivery</button>
+                    </div>
+                    <!-- ========================= -->
+                    <div class="col-md-12" id="P100GridDiv">
+                        <div class="col-md-12">
+                            <div class="table-responsive table-he-330">
+                                <table id="P10SupplierGrid" class="table table-sm table-bordered w-100 text-center">
+                                    <thead class="table-info th-sti">
+                                        <tr class="table-border-bottom">
+                                            <th>Supplier</th>
+                                            <th>Quantity</th>
+                                            <th>Proc. Price</th>
+                                            <th>Unit Price</th>
+                                            <th>Receipt Date</th>
+                                            <th width="5%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- -------------  -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-1 text-end">
+                        <button class="btn btn-primary btn-sm" id="P100AddOtherSupp">Add Order to other Supplier</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="Popup21" data-bs-backdrop="static" data-bs-keyboard="false"
      tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -3606,6 +3991,104 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div>
+<template id="ProcPlanRow">
+    <tr>
+        <td>
+            <input class="form-check-input" type="checkbox">
+        </td>
+        <td hidden>{procPlanId}</td>
+        <td hidden>{workOrderId}</td>
+        <td hidden>{partId}</td>
+        <td>{partNo} / {partDesc}</td>
+        <td>{partType}</td>
+        <td>{supplier}</td>
+        <td hidden>0</td>
+        <td>{calc_Proc_Qnty}</td>
+        <td>0</td>
+        <td>{plan_Proc_Qnty}</td>
+        <td>{minimumOrderQuantity}</td>
+        <td>{uomName}</td>
+        @*<td>{planStartDateStr}</td>*@
+        <td>{leadTimeInDays}</td>
+        <td>{calcReceiptDateStr}</td>
+        <td>{woType}</td>
+        <td hidden>{calcReceiptDate}</td>
+        <td hidden>{supplierId}</td>
+        @*<td>{criticalParts}</td>*@
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-partid="{partId}" data-customername="{company}" data-partno="{partNo}"
+                       data-partdesc="{partDesc}" data-qnty="{calc_Proc_Qnty}" data-calcdate="{calcReceiptDateStr}" data-woids="{woIds} " data-procplanid="{procPlanId}"
+                       data-bs-toggle="modal" data-bs-target="#Popup90">Show WO details</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);"
+                       class="dropdown-item editProcPlan" data-partid="{partId}" data-partno="{partNo}" data-moq="{minimumOrderQuantity}" data-uom="{uomName}"
+                       data-partdesc="{partDesc}" data-suppid="{supplierId}" data-qnty="{calc_Proc_Qnty}" data-calcdate="{calcReceiptDateStr}"
+                       data-price="{price}" data-woid="{procPlanId}" data-supplierid="{supplierId}"
+                       data-bs-toggle="modal" data-bs-target="#popup100">Edit</a>
+                </div>
+            </div>
+        </td>
+        <td hidden class="combinedIds">{combinedIds}</td>
+        <td hidden>{childCount}</td>
+        <td hidden>{combinedProcPlan}</td>
+
+    </tr>
+</template>
+<template id="MatlWhereGridRow">
+    <tr>
+        <td>{partNo} / {partDesc}</td>
+        <td>{woNumber}</td>
+        <td>{planWOQnty}</td>
+        <td>{planCompletionDateStr}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+</template>
+<template id="P10SupplierGridRow">
+    <tr>
+        <td>{supplier}</td>
+        <td>{plan_Proc_Qnty}</td>
+        <td>{procPriceQnty}</td>
+        <td>{price}</td>
+        <td>{calcReceiptDateStr}</td>
+        <td>
+            <div class="dropdown float-center">
+                <a href="#"
+                   class="dropdown-toggle arrow-none card-drop"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    <i class="mdi mdi-dots-vertical"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-partid="{company}" data-suppid="{supplierId}" data-qnty="{plan_Proc_Qnty}" data-price="{price}"
+                       data-calcdate="{recieptDate}" data-woid="{woId}" data-subconid="{woSubConSupplierId}" data-addninfo="{addnInfo}"
+                       data-procplanid="{procPlanId}" data-parentprocplanid="{parentProcplanId}" data-moq="{minimumOrderQuantity}"
+                       data-leadtime="{leadTimeInDays}" data-planreceiptdate="{calcReceiptDateStr}"
+                       onclick="EditSubSupplier(this)">Edit</a>
+                    <!-- item-->
+                    <a href="javascript:void(0);"
+                       class="dropdown-item" data-partid="{partId}" data-procplanid="{procPlanId}" data-partno="{partNo}" data-moq="{moq}" data-uom="{uomName}"
+                       data-partdesc="{partDesc}" data-suppid="{supplierId}" data-qnty="{calc_Proc_Qnty}" data-calcdate="{calcReceiptDateStr}"
+                       data-price="{price}" data-woid="{woId}" data-subconid="{woSubConSupplierId}" data-parentprocplanid="{parentProcplanId}"
+                       onclick="DeleteSubSupplier(this)">Delete</a>
+                </div>
+            </div>
+        </td>
+    </tr>
+</template>
 <template id="P13GridRow">
     <tr>
         <td>{shopName}</td>

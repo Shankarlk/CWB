@@ -144,6 +144,24 @@ namespace CWB.App.Services.ProductionPlanWo
             return await RestHelper<IEnumerable<ConsolidatedWoMappingVM>>.GetAsync(uri, headers);
         }
 
+        public async Task<List<ProcPlanConsolidationMappingVM>> PostConsolidatedProcplan(IEnumerable<ProcPlanConsolidationMappingVM> productions)
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/postconsolidationprocplan");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            foreach (var item in productions)
+            {
+                item.TenantId = tenantId;
+            }
+            return await RestHelper<List<ProcPlanConsolidationMappingVM>>.PostAsync(uri, productions, headers);
+        }
+        public async Task<IEnumerable<ProcPlanConsolidationMappingVM>> Getallconsolidationprocplan()
+        {
+            var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/getallconsolidationprocplan/{tenantId}");
+            var headers = await AppUtil.GetAuthToken(_httpContextAccessor.HttpContext);
+            return await RestHelper<IEnumerable<ProcPlanConsolidationMappingVM>>.GetAsync(uri, headers);
+        }
+
+
         public async Task<ProductionPlan_WoVM> UpdateProductionPlan_Wo(ProductionPlan_WoVM productions)
         {
             var uri = new Uri(_apiUrls.Gateway + $"/cwbpwo/updateproductionplan");

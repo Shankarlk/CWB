@@ -728,9 +728,9 @@ namespace CWB.App.Controllers
                 var salesOrderLookup = salesorders.GroupBy(x => x.SalesOrderId).ToDictionary(g => g.Key, g => g.First());
                 var partLookup = masterparts.GroupBy(x => x.PartId).ToDictionary(g => g.Key, g => g.First());
                 var customerOrderLookup = customers.GroupBy(x => x.CustomerOrderId).ToDictionary(g => g.Key, g => g.First());
-                // ==========================================
+               
                 // STEP 1: Get Invoice Dispatch List
-                // ==========================================
+                
 
                 var allInvoiceDispList = await _baService.AllInvoiceDispatchlist();
 
@@ -742,17 +742,17 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+               
                 // STEP 2: Get Dispatch Details ID
-                // ==========================================
+                
 
                 long dispatchDetailsId =
                     invoiceDispList.Dispatch_Detail_Id;
 
 
-                // ==========================================
+               
                 // STEP 3: Get Dispatch Details
-                // ==========================================
+              
 
                 var allDispatchDetails =            await _woService.GetAllDispatchDetails();
 
@@ -766,16 +766,16 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+                
                 // STEP 4: Get All Linked Invoice Dispatch List
-                // ==========================================
+               
 
                 var linkedInvoiceDispList = allInvoiceDispList.Where(x => x.Dispatch_Detail_Id == dispatchDetailsId).ToList();
 
 
-                // ==========================================
+                
                 // STEP 5: Get Customer Dispatch List Data
-                // ==========================================
+               
 
                 var allCustomerDispatchList =
                     await _baService.AllCustomerDispatchList();
@@ -819,9 +819,9 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+              
                 // STEP 6: Get Customer Name
-                // ==========================================
+               
 
                 string customer = "";
 
@@ -831,9 +831,9 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+               
                 // STEP 7: Prepare Response
-                // ==========================================
+               
 
                 var result = new EditCustomerDispatchInvoiceVM
                 {
@@ -941,9 +941,9 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+               
                 // Check Invoice No Uniqueness
-                // ==========================================
+               
 
                 var allDispatchDetails =
                     await _woService.GetAllDispatchDetails();
@@ -968,9 +968,9 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+               
                 // Get Existing Record
-                // ==========================================
+               
 
                 var existingDispatchDetails =
                     allDispatchDetails.FirstOrDefault(x =>
@@ -986,9 +986,9 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+               
                 // Update Only Editable Fields
-                // ==========================================
+               
 
                 existingDispatchDetails.InvoiceNo =
                     model.InvoiceNo.Trim();
@@ -1000,9 +1000,9 @@ namespace CWB.App.Controllers
                     model.DispatchDetail;
 
 
-                // ==========================================
+                
                 // Save Existing Record
-                // ==========================================
+              
 
                 await _woService.PostDispatchDetails(
                     existingDispatchDetails
@@ -1039,9 +1039,9 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+                
                 // STEP 1: Get All Invoice Dispatch List Records
-                // ==========================================
+              
 
                 var allInvoiceDispList =
                     await _baService.AllInvoiceDispatchlist();
@@ -1064,9 +1064,9 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+               
                 // STEP 2: Get All Customer Dispatch List Records
-                // ==========================================
+               
 
                 var customerdispatchlist =
                     await _baService.AllCustomerDispatchList();
@@ -1094,9 +1094,9 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+                
                 // STEP 3: Update Cust_Disp_List Records
-                // ==========================================
+               
 
                 if (updateList.Any())
                 {
@@ -1106,9 +1106,8 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
                 // STEP 4: Delete Invoice_Disp_List Records
-                // ==========================================
+               
 
                 foreach (var invoiceItem in linkedInvoiceDispList)
                 {
@@ -1116,9 +1115,9 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+              
                 // STEP 5: Delete Dispatch Details Record
-                // ==========================================
+                
 
                 await _woService.DeleteDispatchDetails( model.DispatchDetailsId);
 
@@ -1144,19 +1143,19 @@ namespace CWB.App.Controllers
             try
             {
                 var masterparts = await _masterService.MasterPartList();
-                // ==========================================
+              
                 // STEP 1: Load All Customer Dispatch Records
-                // ==========================================
+                
 
                 var allCustDispList =
                     await _baService.AllCustomerDispatchList();
 
 
-                // ==========================================
+               
                 // STEP 2: Get Pending Records Only
                 // Invoice Entered = Y
                 // Data Confirmed = N
-                // ==========================================
+               
 
                 var pendingRecords = allCustDispList
                     .Where(x =>
@@ -1176,9 +1175,9 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+               
                 // STEP 3: Load Required Master Data
-                // ==========================================
+               
 
                 var allSOList =
                     await _baService.AllSalesOrders();
@@ -1190,9 +1189,9 @@ namespace CWB.App.Controllers
                     await _woService.GetAllInventory_Master();
 
 
-                // ==========================================
+               
                 // STEP 4: Prepare Update Lists
-                // ==========================================
+               
 
                 var custDispUpdateList =
                     new List<Cust_Disp_ListVM>();
@@ -1207,25 +1206,25 @@ namespace CWB.App.Controllers
                     new List<Inventory_MasterVM>();
 
 
-                // ==========================================
+              
                 // STEP 5: Process Every Pending Record
-                // ==========================================
+               
 
                 foreach (var custDisp in pendingRecords)
                 {
 
-                    // --------------------------------------
+                  
                     // A. Set Dispatch Flags
-                    // --------------------------------------
+                  
 
                     custDisp.Data_Confirmed = 'Y';
 
                     custDisp.Dispatch_Complete = 'Y';
 
 
-                    // --------------------------------------
+                  
                     // B. Update SO Actual Quantity
-                    // --------------------------------------
+                  
 
                     var soList = allSOList
                         .FirstOrDefault(x =>
@@ -1237,9 +1236,9 @@ namespace CWB.App.Controllers
                         soList.ActQuantity += custDisp.Disp_Qnty;
 
 
-                        // ----------------------------------
+                      
                         // C. Check Full / Partial Dispatch
-                        // ----------------------------------
+                        
 
                         decimal remainingQty =
                             soList.RequiredQuantity -
@@ -1283,9 +1282,9 @@ namespace CWB.App.Controllers
                     }
 
                     var department = await _departmentService.GetAllStoresIDs();
-                    // --------------------------------------
+                   
                     // D. Update Inventory Master
-                    // --------------------------------------
+                   
 
                     var inventory = allInventoryMaster
                         .FirstOrDefault(x =>
@@ -1314,9 +1313,9 @@ namespace CWB.App.Controllers
                     inventoryUpdateList.Add(inventory);
 
 
-                    // --------------------------------------
+                   
                     // E. Add Customer Dispatch to Update List
-                    // --------------------------------------
+                   
 
                     custDispUpdateList.Add(custDisp);
                     // reoerder logic  implementation for each partid sold to customer 
@@ -1401,9 +1400,9 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+               
                 // STEP 6: Save Customer Dispatch Updates
-                // ==========================================
+               
 
                 if (custDispUpdateList.Any())
                 {
@@ -1413,9 +1412,9 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+               
                 // STEP 7: Save SO Updates
-                // ==========================================
+               
 
                 if (soUpdateList.Any())
                 {
@@ -1427,9 +1426,9 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+               
                 // STEP 8: Save SO Allocation Updates
-                // ==========================================
+            
 
                 if (soAllocUpdateList.Any())
                 {
@@ -1440,9 +1439,9 @@ namespace CWB.App.Controllers
                 }
 
 
-                // ==========================================
+               
                 // STEP 9: Save Inventory Updates
-                // ==========================================
+                
 
                 if (inventoryUpdateList.Any())
                 {
@@ -1555,8 +1554,7 @@ namespace CWB.App.Controllers
 
                 allocation.Allocated_Qnty = 0;
                 await _baService.PostSOAllocation(allocation);
-                // Your logic here
-                // model.SO_Alloc_List_Id
+               
 
 
                 return Json(new
@@ -1602,8 +1600,8 @@ namespace CWB.App.Controllers
 
                 allocation.Final_Dispatch_Qnty = 0;
                 await _baService.PostSOAllocation(allocation);
-                // Your logic here
-                // model.SO_Alloc_List_Id
+              
+               
 
 
                 return Json(new
@@ -1662,12 +1660,11 @@ namespace CWB.App.Controllers
                     .ToList();
 
 
-                // =====================================================
+               
                 // 2. SELECTED RECORDS
                 // Ready_For_Dispatch = Y
                 // Insert into Cust_Disp_List
-                // =====================================================
-
+              
                 var selectedRecords = eligibleAllocations
                     .Where(x => selectedIds.Contains(x.SO_Alloc_List_Id))
                     .ToList();
@@ -1680,7 +1677,7 @@ namespace CWB.App.Controllers
                     await _baService.PostSOAllocation(item);
 
                 //Insert one Cust_Disp_List record
-                // Your actual Cust_Disp_List VM/ entity mapping goes here.
+               
 
     
                     var custDisp = new Cust_Disp_ListVM
@@ -1701,11 +1698,11 @@ namespace CWB.App.Controllers
                 }
 
                 await _baService.PostMultipleCustDispList(custdispatchList);
-                // =====================================================
+              
                 // 3. UNSELECTED RECORDS
                 // Records still having Ready_For_Dispatch = N
                 // Final_Dispatch_Qnty = 0
-                // =====================================================
+               
 
                 var unselectedRecords = eligibleAllocations
                     .Where(x =>
@@ -7073,7 +7070,7 @@ namespace CWB.App.Controllers
                                     var subfirst = sub.FirstOrDefault();
                                     if (subfirst == null)
                                     {
-                                        continue; // 🔥 VERY IMPORTANT
+                                        continue; //  VERY IMPORTANT
                                     }
                                     var subworks = await _routingService.SubConWSS((int)step.StepId, subfirst.SubConDetailsId);
                                     var processingTimeSum = subworks
@@ -7333,7 +7330,7 @@ namespace CWB.App.Controllers
                                         var subfirst = sub.FirstOrDefault();
                                         if (subfirst == null)
                                         {
-                                            continue; // 🔥 VERY IMPORTANT
+                                            continue; //  VERY IMPORTANT
                                         }
                                         var subworks = await _routingService.SubConWSS((int)step.StepId, subfirst.SubConDetailsId);
                                         var processingTimeSum = subworks
@@ -8405,26 +8402,26 @@ namespace CWB.App.Controllers
                         {
                             var result = await _woService.ProcPlanPost(listprocplan);
 
-                            List<ProcPlanPartPurChaseRelVM> purcList = new List<ProcPlanPartPurChaseRelVM>();
-                            foreach (var item in result)
-                            {
-                                var submfpdList = await _masterService.PartPurchasesFor((int)item.PartId);
-                                foreach (var pur in submfpdList)
-                                {
-                                    ProcPlanPartPurChaseRelVM subcwo = new ProcPlanPartPurChaseRelVM()
-                                    {
-                                        ProcPlanId = item.ProcPlanId,
-                                        PartPurchaseId = pur.PartPurchaseId,
-                                        LeadTime = pur.LeadTimeInDays.ToString(),
-                                        Active = 1
-                                    };
-                                    purcList.Add(subcwo);
-                                }
-                            }
-                            if (purcList.Any())
-                            {
-                                var bomresult = await _woService.ProcPurchasePost(purcList);
-                            }
+                            //List<ProcPlanPartPurChaseRelVM> purcList = new List<ProcPlanPartPurChaseRelVM>();
+                            //foreach (var item in result)
+                            //{
+                            //    var submfpdList = await _masterService.PartPurchasesFor((int)item.PartId);
+                            //    foreach (var pur in submfpdList)
+                            //    {
+                            //        ProcPlanPartPurChaseRelVM subcwo = new ProcPlanPartPurChaseRelVM()
+                            //        {
+                            //            ProcPlanId = item.ProcPlanId,
+                            //            PartPurchaseId = pur.PartPurchaseId,
+                            //            LeadTime = pur.LeadTimeInDays.ToString(),
+                            //            Active = 1
+                            //        };
+                            //        purcList.Add(subcwo);
+                            //    }
+                            //}
+                            //if (purcList.Any())
+                            //{
+                            //    var bomresult = await _woService.ProcPurchasePost(purcList);
+                            //}
 
                         }
                         if (listbom.Any())
@@ -8461,6 +8458,7 @@ namespace CWB.App.Controllers
                     // throw;
                 }
                 await Consolidate();
+                await ConsolidateRMBOF();
             }
             catch (Exception ex)
             {
@@ -8552,7 +8550,7 @@ namespace CWB.App.Controllers
                                         var subfirst = sub.FirstOrDefault();
                                         if (subfirst == null)
                                         {
-                                            continue; // 🔥 VERY IMPORTANT
+                                            continue; // VERY IMPORTANT
                                         }
                                         var subworks = await _routingService.SubConWSS((int)step.StepId, subfirst.SubConDetailsId);
                                         var processingTimeSum = subworks
@@ -8621,7 +8619,7 @@ namespace CWB.App.Controllers
                                         var subfirst = sub.FirstOrDefault();
                                         if (subfirst == null)
                                         {
-                                            continue; // 🔥 VERY IMPORTANT
+                                            continue; //  VERY IMPORTANT
                                         }
                                         var subworks = await _routingService.SubConWSS((int)step.StepId, subfirst.SubConDetailsId);
                                         var processingTimeSum = subworks
@@ -9706,26 +9704,26 @@ namespace CWB.App.Controllers
                 {
                     var result = await _woService.ProcPlanPost(listprocplan);
 
-                    List<ProcPlanPartPurChaseRelVM> purcList = new List<ProcPlanPartPurChaseRelVM>();
-                    foreach (var item in result)
-                    {
-                        var submfpdList = await _masterService.PartPurchasesFor((int)item.PartId);
-                        foreach (var pur in submfpdList)
-                        {
-                            ProcPlanPartPurChaseRelVM subcwo = new ProcPlanPartPurChaseRelVM()
-                            {
-                                ProcPlanId = item.ProcPlanId,
-                                PartPurchaseId = pur.PartPurchaseId,
-                                LeadTime = pur.LeadTimeInDays.ToString(),
-                                Active = 1
-                            };
-                            purcList.Add(subcwo);
-                        }
-                    }
-                    if (purcList.Any())
-                    {
-                        var bomresult = await _woService.ProcPurchasePost(purcList);
-                    }
+                    //List<ProcPlanPartPurChaseRelVM> purcList = new List<ProcPlanPartPurChaseRelVM>();
+                    //foreach (var item in result)
+                    //{
+                    //    var submfpdList = await _masterService.PartPurchasesFor((int)item.PartId);
+                    //    foreach (var pur in submfpdList)
+                    //    {
+                    //        ProcPlanPartPurChaseRelVM subcwo = new ProcPlanPartPurChaseRelVM()
+                    //        {
+                    //            ProcPlanId = item.ProcPlanId,
+                    //            PartPurchaseId = pur.PartPurchaseId,
+                    //            LeadTime = pur.LeadTimeInDays.ToString(),
+                    //            Active = 1
+                    //        };
+                    //        purcList.Add(subcwo);
+                    //    }
+                    //}
+                    //if (purcList.Any())
+                    //{
+                    //    var bomresult = await _woService.ProcPurchasePost(purcList);
+                    //}
 
                 }
 
@@ -9755,7 +9753,7 @@ namespace CWB.App.Controllers
             }
 
         }
-
+         
         private async Task Consolidate()
         {
             var depratmentstores = await _departmentService.GetAllStoresIDs();
@@ -9763,7 +9761,7 @@ namespace CWB.App.Controllers
             await Task.WhenAll(productionTask);
             var productions = productionTask.Result.Where(x => x.Consolidation_Flag == 0).ToList();
             var updatedproductions = _woService.ProductionPlanWoPostConsolidation(productions);
-            var groupedco = productions.GroupBy(x => new { x.PartId, x.PartType }).Where(g => g.Count() > 1) // 🔥 ONLY duplicates
+            var groupedco = productions.GroupBy(x => new { x.PartId, x.PartType }).Where(g => g.Count() > 1) //  ONLY duplicates
             .ToList();
             List<Input_Resrv_ListVM> inpputreservelist = new List<Input_Resrv_ListVM>();
             foreach (var group in groupedco)
@@ -9981,12 +9979,77 @@ namespace CWB.App.Controllers
             await forreferenceupdation();
             ///PostConsolidatedWO
         }
+
+        private async Task ConsolidateRMBOF()
+        {
+            var procplans = await _woService.GetAllProcPlan();
+            var consolidation = procplans.Where(x => x.Consolidation_Flag == 0 && (x.PartType == "RawMaterial" || x.PartType == "BOF")).ToList();
+            foreach( var data in consolidation)
+            {
+                data.Consolidation_Flag = 1;
+                //update consolidation flag for each
+            }
+            var result = await _woService.ProcPlanPost(consolidation);
+            var groupedco = consolidation.GroupBy(x => new { x.PartId, x.SupplierId }).Where(g => g.Count() > 1) //  ONLY duplicates
+          .ToList();
+            foreach(var group in groupedco)
+            {
+                var key = group.Key;
+                var first = group.First();
+                List<ProcPlanVM> consolidatedprocplan = new List<ProcPlanVM>();
+                ProcPlanVM cprocplan = new ProcPlanVM()
+                {
+                    WorkOrderId = 0,
+                    PartId = first.PartId,
+                    PartType = first.PartType,
+                    Calc_Proc_Qnty = group.Sum(x => x.Calc_Proc_Qnty),
+                    UOMId = first.UOMId,
+                    Plan_Proc_Qnty = group.Sum(x => x.Plan_Proc_Qnty),
+                    PlanReceiptDate = group.Max(x => x.PlanReceiptDate),
+                    CalcReceiptDate = group.Max(x => x.CalcReceiptDate),
+                    CriticalPart = group.Max(x => x.CriticalPart),
+                    PO_Flag = 0,
+                    StartingOpNO = 0,
+                    EndingOpNO = 0,
+                    SupplierId = first.SupplierId,
+                    LeadTimeInDays = first.LeadTimeInDays,
+                    MinimumOrderQuantity = first.MinimumOrderQuantity,
+                    Price = first.Price,
+                    ParentProcplanId = 0,
+                    Combined = 'Y',
+                    Consolidation_Flag = 1
+                 };
+                consolidatedprocplan.Add(cprocplan);
+                var procplanpost = await _woService.ProcPlanPost(consolidatedprocplan);
+                var consolidatedprocplanId = procplanpost.First().ProcPlanId;
+                List<ProcPlanConsolidationMappingVM> data = new List<ProcPlanConsolidationMappingVM>();
+                foreach (var item in group)
+                {
+                    ProcPlanConsolidationMappingVM map = new ProcPlanConsolidationMappingVM()
+                    {
+                        ConsolidatedProcPlanId= consolidatedprocplanId,
+                        ProcPlanId=item.ProcPlanId,
+                        WorkOrderId=item.WorkOrderId,
+                        TenantId=0
+                    };
+                    data.Add(map);
+                }
+                await _woService.PostConsolidatedProcplan(data);
+
+
+
+                }
+            //for reference updation logic remaining
+            await Forreferenceupdationnprocplan();
+        }
+
+
         private async Task forreferenceupdation()
         {
             var cwos = await _woService.Getallconsolidationproductionwo();
             var productionTask = _woService.AllProductionWoReadForProd();
             await Task.WhenAll(productionTask);
-            var filterdpoductiontask = productionTask.Result.Where(x => x.Parentlevel != 'Y' && x.For_Ref != 'Y').ToList();
+            var filterdpoductiontask = productionTask.Result.Where(x =>  x.For_Ref != 'Y').ToList();
             //List<ProductionPlan_WoVM> referencelist = new List<ProductionPlan_WoVM>();
             var cwoWoIds = cwos.Select(x => x.WoId).ToHashSet();
             var referencelist = filterdpoductiontask
@@ -9996,8 +10059,34 @@ namespace CWB.App.Controllers
 
         }
 
+        private async Task Forreferenceupdationnprocplan()
+
+        {
+            var procplans = await _woService.GetAllProcPlan();
+            var consolidatedprocplan = await _woService.Getallconsolidationprocplan();
+            List<ProcPlanVM> data = new List<ProcPlanVM>();
+            foreach(var item in consolidatedprocplan)
+            {
+                var getprocplan = procplans.Where(x => x.ProcPlanId == item.ProcPlanId).FirstOrDefault();
+                if(getprocplan!=null)
+                {
+                    if(getprocplan.For_Ref==1)
+
+                    {
+                        continue;
 
 
+                    }
+                    else
+                    {
+                        getprocplan.For_Ref = 1;
+                        data.Add(getprocplan);
+                     }
+
+                }
+            }
+            await _woService.ProcPlanPost(data); 
+        }
         [HttpPost]
         public async Task<IActionResult> FreezeWorkOrder()
         {
@@ -10340,6 +10429,10 @@ namespace CWB.App.Controllers
                     data.EndingOpNO = parent.EndingOpNO;
                     data.PO_Flag = parent.PO_Flag;
                     data.CriticalPart = parent.CriticalPart;
+                    data.Combined = parent.Combined;
+                    data.Consolidation_Flag = parent.Consolidation_Flag;
+
+
                 }
             }
 
@@ -10389,7 +10482,7 @@ namespace CWB.App.Controllers
                 }
                 else
                 {
-                    // 🔥 Normal case
+                    //  Normal case
                     var item = allprocplan.FirstOrDefault(x => x.ProcPlanId == proc.ProcPlanId);
                     if (item != null)
                     {
@@ -10693,14 +10786,14 @@ namespace CWB.App.Controllers
             //        first.CalcWOQty = g.Sum(x => x.CalcWOQty);
             //        //first.PlanWOQty = g.Sum(x => x.PlanWOQty);
 
-            //        // 🔥 Earliest Start Date
+            //        //  Earliest Start Date
             //        first.PlanStartDate = g.Min(x => x.PlanStartDate);
 
             //        // Optional: if string date exists
             //        first.PlanStartDateStr = g.Min(x => x.PlanStartDate)
             //                                    .ToString("dd-MM-yyyy");
 
-            //        // 🔥 Combine WO IDs
+            //        //  Combine WO IDs
             //        first.CombinedWoIds = string.Join(",", g.Select(x => x.WoId));
 
             //        first.Combined = 'Y';
@@ -10764,17 +10857,77 @@ namespace CWB.App.Controllers
             return Ok(result);
         }
         [HttpGet]
-        public async Task<IActionResult> GetMaterialwhereused(string ids)
+        public async Task<IActionResult> GetMaterialwhereused(long id)
         {
-            var woIds = ids.Split(',')
-                    .Select(x => Convert.ToInt64(x.Trim()))
-                    .ToList();
+            var procplanconsolidation = await _woService.Getallconsolidationprocplan();
+            var getallprocplan = await _woService.GetAllProcPlan();
             var masterPartsTask = _masterService.MasterPartList();
             var masterparts = masterPartsTask.Result.ToDictionary(p => p.PartId);
             var productions = await _woService.AllProductionWoReadForProd();
-            var result = productions
-        .Where(p => woIds.Contains(p.WoId))
-        .ToList();
+            List<ProductionPlan_WoVM> result = new List<ProductionPlan_WoVM>();
+            var selectedprocplan = getallprocplan.Where(x => x.ProcPlanId == id).FirstOrDefault();
+            if(selectedprocplan.For_Ref==0)
+            {
+                if(selectedprocplan.Combined=='Y')
+                {
+                    if(selectedprocplan.ParentProcplanId==0)
+                    {
+                        var getconsolidated = procplanconsolidation.Where(x => x.ConsolidatedProcPlanId == selectedprocplan.ProcPlanId).ToList();
+                        foreach (var data in getconsolidated)
+                        {
+                            var record = productions.Where(x => x.WoId == data.WorkOrderId).FirstOrDefault();
+                            if (record != null)
+                            {
+                                result.Add(record);
+                            }
+                        }
+                    }
+                    else if(selectedprocplan.ParentProcplanId>0)
+                    {
+                        var getparent= getallprocplan.Where(x => x.ProcPlanId == selectedprocplan.ParentProcplanId).FirstOrDefault();
+                        if(getparent!=null)
+                        {
+                            var getconsolidated = procplanconsolidation.Where(x => x.ConsolidatedProcPlanId == getparent.ProcPlanId).ToList();
+                            foreach (var data in getconsolidated)
+                            {
+                                var record = productions.Where(x => x.WoId == data.WorkOrderId).FirstOrDefault();
+                                if (record != null)
+                                {
+                                    result.Add(record);
+                                }
+                            }
+                        }
+                       
+
+                    }
+                }
+                else
+                {
+                    if (selectedprocplan.ParentProcplanId == 0)
+                    {
+                        var record = productions.Where(x => x.WoId == selectedprocplan.WorkOrderId).FirstOrDefault();
+                        if (record != null)
+                        {
+                            result.Add(record);
+                        }
+                    }
+                    else if(selectedprocplan.ParentProcplanId>0)
+                    {
+                        var getparent = getallprocplan.Where(x => x.ProcPlanId == selectedprocplan.ParentProcplanId).FirstOrDefault();
+                        if(getparent!=null)
+                        {
+                            var record = productions.Where(x => x.WoId == getparent.WorkOrderId).FirstOrDefault();
+                            if (record != null)
+                            {
+                                result.Add(record);
+                            }
+                        }
+                       
+                    }
+                }
+            }
+             
+
 
             foreach (var item in result)
             {
@@ -10999,7 +11152,7 @@ namespace CWB.App.Controllers
                     mctime.PartType = master.MasterPartType;
                 }
 
-                // 🔥 Get correct WONumber (only matching WoId)
+                //  Get correct WONumber (only matching WoId)
                 var wo = productions.FirstOrDefault(x => x.WoId == mctime.WoId);
                 if (wo != null)
                     mctime.WoNumber = wo.WONumber;
@@ -11134,77 +11287,77 @@ namespace CWB.App.Controllers
 
             }
             // Map: WoId → ParentWoId
-            var parentMap = new Dictionary<long, long>();
+            //var parentMap = new Dictionary<long, long>();
 
-            // ✅ from Production WO (same as BOM)
-            foreach (var p in workOrders)
-            {
-                if (!parentMap.ContainsKey(p.WoId))
-                    parentMap[p.WoId] = p.ParentWoId;
-            }
+            //// from Production WO (same as BOM)
+            //foreach (var p in workOrders)
+            //{
+            //    if (!parentMap.ContainsKey(p.WoId))
+            //        parentMap[p.WoId] = p.ParentWoId;
+            //}
 
-            // ✅ from ProcPlan (like BOM logic 🔥)
-            foreach (var b in resultList)
-            {
-                if (!parentMap.ContainsKey(b.WorkOrderId))
-                {
-                    var guessParent = workOrders
-                        .Where(x => x.WoId < b.WorkOrderId)
-                        .OrderByDescending(x => x.WoId)
-                        .FirstOrDefault();
+            //// from ProcPlan (like BOM logic )
+            //foreach (var b in resultList)
+            //{
+            //    if (!parentMap.ContainsKey(b.WorkOrderId))
+            //    {
+            //        var guessParent = workOrders
+            //            .Where(x => x.WoId < b.WorkOrderId)
+            //            .OrderByDescending(x => x.WoId)
+            //            .FirstOrDefault();
 
-                    if (guessParent != null)
-                        parentMap[b.WorkOrderId] = guessParent.WoId;
-                }
-            }
-            // 2. Root resolver
-            long GetRootParent(long woId)
-            {
-                var visited = new HashSet<long>();
+            //        if (guessParent != null)
+            //            parentMap[b.WorkOrderId] = guessParent.WoId;
+            //    }
+            //}
+            //// 2. Root resolver
+            //long GetRootParent(long woId)
+            //{
+            //    var visited = new HashSet<long>();
 
-                while (parentMap.ContainsKey(woId) && parentMap[woId] != 0)
-                {
-                    if (!visited.Add(woId))
-                        break;
+            //    while (parentMap.ContainsKey(woId) && parentMap[woId] != 0)
+            //    {
+            //        if (!visited.Add(woId))
+            //            break;
 
-                    woId = parentMap[woId];
-                }
+            //        woId = parentMap[woId];
+            //    }
 
-                return woId;
-            }
-            var consolidatedResult = resultList
-            .GroupBy(x => new
-            {
-                x.WorkOrderId,
-                x.PartId,
-                x.SupplierId,
-                x.StartingOpNO,
-                x.EndingOpNO,
-                x.CalcReceiptDateStr
-                //RootParentWoId = GetRootParent(x.WorkOrderId)
-            })
-            .Select(g =>
-            {
-                var first = g.First();
+            //    return woId;
+            //}
+            //var consolidatedResult = resultList
+            //.GroupBy(x => new
+            //{
+                
+            //    x.PartId,
+            //    x.SupplierId,
+            //    x.StartingOpNO,
+            //    x.EndingOpNO,
+            //    x.CalcReceiptDateStr
+            //    //RootParentWoId = GetRootParent(x.WorkOrderId)
+            //})
+            //.Select(g =>
+            //{
+            //    var first = g.First();
 
-                first.Calc_Proc_Qnty = g.Sum(x => x.Calc_Proc_Qnty);
-                first.Plan_Proc_Qnty = g.Sum(x => x.Plan_Proc_Qnty);
-                first.CombinedProcPlan = g.Count() > 1 ? "Y" : "N";
-                first.CriticalParts = g.Any(x => x.CriticalParts == "Y") ? "Y" : "N";
-                first.PlanReceiptDate = g.Min(x => x.PlanReceiptDate);
-                first.PlanStartDateStr = g.Min(x => x.PlanReceiptDate).ToString("dd-MM-yyyy");
+            //    first.Calc_Proc_Qnty = g.Sum(x => x.Calc_Proc_Qnty);
+            //    first.Plan_Proc_Qnty = g.Sum(x => x.Plan_Proc_Qnty);
+            //    first.CombinedProcPlan = g.Count() > 1 ? "Y" : "N";
+            //    first.CriticalParts = g.Any(x => x.CriticalParts == "Y") ? "Y" : "N";
+            //    first.PlanReceiptDate = g.Min(x => x.PlanReceiptDate);
+            //    first.PlanStartDateStr = g.Min(x => x.PlanReceiptDate).ToString("dd-MM-yyyy");
 
-                first.ChildCount = g.Count();
+            //    first.ChildCount = g.Count();
 
-                first.CombinedIds = string.Join(",", g.Select(x => x.ProcPlanId));
+            //    first.CombinedIds = string.Join(",", g.Select(x => x.ProcPlanId));
 
-                first.WoIds = string.Join(",", g.Select(x => x.WorkOrderId).Distinct());
+            //    first.WoIds = string.Join(",", g.Select(x => x.WorkOrderId).Distinct());
 
-                return first;
-            })
-            .ToList();
+            //    return first;
+            //})
+            //.ToList();
 
-            return Ok(consolidatedResult);
+            return Ok(resultList);
             //return Ok(resultList);
         }
         [HttpGet]
@@ -11713,7 +11866,7 @@ namespace CWB.App.Controllers
             var finalList = new List<ProcPlanVM>();
             foreach (var proc in pODetails)
             {
-                // 🔥 STEP 1: Check if Combined
+                //  STEP 1: Check if Combined
                 if (!string.IsNullOrEmpty(proc.CombinedIds))
                 {
                     var ids = proc.CombinedIds
@@ -11736,6 +11889,15 @@ namespace CWB.App.Controllers
                             item.PO_Flag = 1;
                             finalList.Add(item);
                         }
+                    }
+                }
+                else
+                {
+                    var item = allprocplan.FirstOrDefault(x => x.ProcPlanId == proc.ProcPlanId);
+                    if (item != null)
+                    {
+                        item.PO_Flag = 1;
+                        finalList.Add(item);
                     }
                 }
             }
@@ -23485,6 +23647,7 @@ namespace CWB.App.Controllers
             var bomlist = await _woService.GetAllBomlist();
             var getprocplan = await _woService.GetAllProcPlan();
             var consolidatewomapping = await _woService.Getallconsolidationproductionwo();
+            var conslidatedprocplanmapping = await _woService.Getallconsolidationprocplan();
             var masterPartList = await _masterService.MasterPartList();
             var productions = await _woService.AllProductionPlan_Wo();
             var allOprs = new List<TempOpr_ListVM>();
@@ -24782,48 +24945,253 @@ namespace CWB.App.Controllers
 
                     var woResult = await _woService.PostTempWo_Wait_List(addData);
                     readyWOs.Add(woResult);
-                   
-                    DateTime? nextWorkingDate=null;
+
+                    DateTime? nextWorkingDate = null;
                     if(item.Status==3)
                     {
 
 
-                        if(item.Combined!='Y' && item.SplitParentWoId==0)
+                        if(item.Combined_WO != 'Y' && item.SplitParentWoId==0)
                         {
+                            List<DateTime> calcReceiptDates = new List<DateTime>();
                             var procplan = getprocplan.Where(x => x.WorkOrderId == item.WoId).FirstOrDefault();
                             if (procplan != null)
                             {
-                                nextWorkingDate = await GetNextWorkingDate(wd, procplan.CalcReceiptDate, holidayList);
+                                if(procplan.For_Ref==1)
+                                {
+                                    //first check in consolidatedtable 
+                                    var consolidationrecord = conslidatedprocplanmapping.Where(x => x.WorkOrderId == procplan.WorkOrderId).FirstOrDefault();
+                                    if(consolidationrecord!=null)
+                                    {
+                                        var combinedprocplan = getprocplan.Where(x => x.ProcPlanId == consolidationrecord.ConsolidatedProcPlanId).FirstOrDefault();
+                                        if(combinedprocplan!=null)
+                                        {
+                                            if(combinedprocplan.For_Ref==1)
+                                            {
+                                                // combined splitted
+                                                var combinedsplittedrecords = getprocplan.Where(x => x.ParentProcplanId == combinedprocplan.ProcPlanId).ToList();
+                                                foreach(var dates in combinedsplittedrecords)
+                                                {
+                                                    calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                }
+                                                nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                            }
+                                            else
+                                            {
+                                                //normal consolidation
+                                                nextWorkingDate = await GetNextWorkingDate(wd, combinedprocplan.CalcReceiptDate, holidayList);
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        var getsplitteddates = getprocplan.Where(x => x.ParentProcplanId == procplan.ProcPlanId).ToList();
+                                        foreach(var dates in getsplitteddates)
+                                        {
+                                            calcReceiptDates.Add(dates.CalcReceiptDate);
+                                        }
+                                        nextWorkingDate = await GetNextWorkingDate(wd,calcReceiptDates.Max(), holidayList);
+                                        //normal splitting
+                                    }
+
+                                }
+                                else
+                                {
+                                    //normal procplan
+                                    nextWorkingDate = await GetNextWorkingDate(wd, procplan.CalcReceiptDate, holidayList);
+                                }
+
+
+
+                                //nextWorkingDate = await GetNextWorkingDate(wd, procplan.CalcReceiptDate, holidayList);
                             }
                         }
   
                        
-                        else if (item.Combined=='Y'  && item.SplitParentWoId==0)
+                        else if (item.Combined_WO == 'Y'  && item.SplitParentWoId==0)
                         {
+                            List<DateTime> calcReceiptDates = new List<DateTime>();
                             var combinedwo = consolidatewomapping.Where(x => x.CombinedWoId == item.WoId).ToList();
-                            var combinedprocplan = getprocplan.Where(x => x.WorkOrderId == combinedwo.First().WoId).FirstOrDefault();
-                            nextWorkingDate = await GetNextWorkingDate(wd, combinedprocplan.CalcReceiptDate, holidayList);
+
+                            foreach(var record in combinedwo)
+                            {
+                                var procplan = getprocplan.Where(x => x.WorkOrderId == record.WoId).FirstOrDefault();
+                                if (procplan != null)
+                                {
+                                    if (procplan.For_Ref == 1)
+                                    {
+                                        //first check in consolidatedtable 
+                                        var consolidationrecord = conslidatedprocplanmapping.Where(x => x.WorkOrderId == procplan.WorkOrderId).FirstOrDefault();
+                                        if (consolidationrecord != null)
+                                        {
+                                            var combinedprocplan = getprocplan.Where(x => x.ProcPlanId == consolidationrecord.ConsolidatedProcPlanId).FirstOrDefault();
+                                            if (combinedprocplan != null)
+                                            {
+                                                if (combinedprocplan.For_Ref == 1)
+                                                {
+                                                    // combined splitted
+                                                    var combinedsplittedrecords = getprocplan.Where(x => x.ParentProcplanId == combinedprocplan.ProcPlanId).ToList();
+                                                    foreach (var dates in combinedsplittedrecords)
+                                                    {
+                                                        calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                    }
+                                                   // nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                }
+                                                else
+                                                {
+                                                    //normal consolidation
+                                                    calcReceiptDates.Add(combinedprocplan.CalcReceiptDate);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var getsplitteddates = getprocplan.Where(x => x.ParentProcplanId == procplan.ProcPlanId).ToList();
+                                            foreach (var dates in getsplitteddates)
+                                            {
+                                                calcReceiptDates.Add(dates.CalcReceiptDate);
+                                            }
+                                            //nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                            //normal splitting
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        //normal procplan
+                                        calcReceiptDates.Add(procplan.CalcReceiptDate);
+                                    }
+
+
+
+                                    //nextWorkingDate = await GetNextWorkingDate(wd, procplan.CalcReceiptDate, holidayList);
+                                }
+                            }
+
+                            nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
                         }
 
                         else if(item.SplitParentWoId>0){
 
-                            var parentwo = productions  .FirstOrDefault(x => x.WoId == item.SplitParentWoId);
+                            var parentwo = productions.FirstOrDefault(x => x.WoId == item.SplitParentWoId);
 
                             if (parentwo != null)
                             {
 
                                 if(parentwo.Combined_WO=='Y')
                                 {
+                                    List<DateTime> calcReceiptDates = new List<DateTime>();
                                     var combinedwo = consolidatewomapping.Where(x => x.CombinedWoId == parentwo.WoId).ToList();
-                                    var combinedprocplan = getprocplan.Where(x => x.WorkOrderId == combinedwo.First().WoId).FirstOrDefault();
-                                    nextWorkingDate = await GetNextWorkingDate(wd, combinedprocplan.CalcReceiptDate, holidayList);
+                                    foreach (var record in combinedwo)
+                                    {
+                                        var procplan = getprocplan.Where(x => x.WorkOrderId == record.WoId).FirstOrDefault();
+                                        if (procplan != null)
+                                        {
+                                            if (procplan.For_Ref == 1)
+                                            {
+                                                //first check in consolidatedtable 
+                                                var consolidationrecord = conslidatedprocplanmapping.Where(x => x.WorkOrderId == procplan.WorkOrderId).FirstOrDefault();
+                                                if (consolidationrecord != null)
+                                                {
+                                                    var combinedprocplan = getprocplan.Where(x => x.ProcPlanId == consolidationrecord.ConsolidatedProcPlanId).FirstOrDefault();
+                                                    if (combinedprocplan != null)
+                                                    {
+                                                        if (combinedprocplan.For_Ref == 1)
+                                                        {
+                                                            // combined splitted
+                                                            var combinedsplittedrecords = getprocplan.Where(x => x.ParentProcplanId == combinedprocplan.ProcPlanId).ToList();
+                                                            foreach (var dates in combinedsplittedrecords)
+                                                            {
+                                                                calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                            }
+                                                            // nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                        }
+                                                        else
+                                                        {
+                                                            //normal consolidation
+                                                            calcReceiptDates.Add(combinedprocplan.CalcReceiptDate);
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    var getsplitteddates = getprocplan.Where(x => x.ParentProcplanId == procplan.ProcPlanId).ToList();
+                                                    foreach (var dates in getsplitteddates)
+                                                    {
+                                                        calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                    }
+                                                    //nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                    //normal splitting
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                //normal procplan
+                                                calcReceiptDates.Add(procplan.CalcReceiptDate);
+                                            }
+
+
+
+                                            //nextWorkingDate = await GetNextWorkingDate(wd, procplan.CalcReceiptDate, holidayList);
+                                        }
+                                    }
+
+                                    nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
                                 }
                                 else
                                 {
+                                    List<DateTime> calcReceiptDates = new List<DateTime>();
                                     var procplan = getprocplan.Where(x => x.WorkOrderId == parentwo.WoId).FirstOrDefault();
                                     if (procplan != null)
                                     {
-                                        nextWorkingDate = await GetNextWorkingDate(wd, procplan.CalcReceiptDate, holidayList);
+                                        if (procplan.For_Ref == 1)
+                                        {
+                                            //first check in consolidatedtable 
+                                            var consolidationrecord = conslidatedprocplanmapping.Where(x => x.WorkOrderId == procplan.WorkOrderId).FirstOrDefault();
+                                            if (consolidationrecord != null)
+                                            {
+                                                var combinedprocplan = getprocplan.Where(x => x.ProcPlanId == consolidationrecord.ConsolidatedProcPlanId).FirstOrDefault();
+                                                if (combinedprocplan != null)
+                                                {
+                                                    if (combinedprocplan.For_Ref == 1)
+                                                    {
+                                                        // combined splitted
+                                                        var combinedsplittedrecords = getprocplan.Where(x => x.ParentProcplanId == combinedprocplan.ProcPlanId).ToList();
+                                                        foreach (var dates in combinedsplittedrecords)
+                                                        {
+                                                            calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                        }
+                                                        nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                    }
+                                                    else
+                                                    {
+                                                        //normal consolidation
+                                                        nextWorkingDate = await GetNextWorkingDate(wd, combinedprocplan.CalcReceiptDate, holidayList);
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var getsplitteddates = getprocplan.Where(x => x.ParentProcplanId == procplan.ProcPlanId).ToList();
+                                                foreach (var dates in getsplitteddates)
+                                                {
+                                                    calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                }
+                                                nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                //normal splitting
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            //normal procplan
+                                            nextWorkingDate = await GetNextWorkingDate(wd, procplan.CalcReceiptDate, holidayList);
+                                        }
+
+
+
+                                        //nextWorkingDate = await GetNextWorkingDate(wd, procplan.CalcReceiptDate, holidayList);
                                     }
                                 }
 
@@ -27489,6 +27857,7 @@ namespace CWB.App.Controllers
                         if(item.Combined_WO!='Y' && item.SplitParentWoId==0)
                         {
                             List<DateTime> normalwodates = new List<DateTime>();
+                            List<DateTime> calcReceiptDates = new List<DateTime>();
                             //normal wo
                             var normalbomlist = bomlist.Where(x => x.ProcPlanId == item.ProductionPlanId).ToList();
 
@@ -27566,9 +27935,58 @@ namespace CWB.App.Controllers
                                 //}
 
                             }
-                            var procplans = getprocplan
-                                   .Where(x => x.WorkOrderId == item.WoId)
-                                   .ToList();
+                            var procplans = getprocplan.Where(x => x.WorkOrderId == item.WoId).ToList();
+
+                            foreach (var procplan in procplans)
+                            {
+                                if (procplan != null)
+                                {
+                                    if (procplan.For_Ref == 1)
+                                    {
+                                        //first check in consolidatedtable 
+                                        var consolidationrecord = conslidatedprocplanmapping.Where(x => x.WorkOrderId == procplan.WorkOrderId).FirstOrDefault();
+                                        if (consolidationrecord != null)
+                                        {
+                                            var combinedprocplan = getprocplan.Where(x => x.ProcPlanId == consolidationrecord.ConsolidatedProcPlanId).FirstOrDefault();
+                                            if (combinedprocplan != null)
+                                            {
+                                                if (combinedprocplan.For_Ref == 1)
+                                                {
+                                                    // combined splitted
+                                                    var combinedsplittedrecords = getprocplan.Where(x => x.ParentProcplanId == combinedprocplan.ProcPlanId).ToList();
+                                                    foreach (var dates in combinedsplittedrecords)
+                                                    {
+                                                        calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                    }
+                                                    //nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                }
+                                                else
+                                                {
+                                                    //normal consolidation
+                                                    calcReceiptDates.Add(combinedprocplan.CalcReceiptDate);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var getsplitteddates = getprocplan.Where(x => x.ParentProcplanId == procplan.ProcPlanId).ToList();
+                                            foreach (var dates in getsplitteddates)
+                                            {
+                                                calcReceiptDates.Add(dates.CalcReceiptDate);
+                                            }
+                                           // nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                            //normal splitting
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        //normal procplan
+                                        calcReceiptDates.Add(procplan.CalcReceiptDate);
+                                    }
+                                }
+                            }
+
                             List<TempWO_Wait_ListVM> simwo =
                                     new List<TempWO_Wait_ListVM>();
 
@@ -27587,8 +28005,8 @@ namespace CWB.App.Controllers
 
                             // Maximum procurement receipt date
                             DateTime procplanmaxDate =
-                                procplans.Any()
-                                    ? procplans.Max(x => x.CalcReceiptDate)
+                                 calcReceiptDates.Any()
+                                    ? calcReceiptDates.Max()
                                     : DateTime.MinValue;
 
                             // Parent can start only after both are complete
@@ -27613,6 +28031,7 @@ namespace CWB.App.Controllers
                             List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
                             List<ProcPlanVM> childproc = new List<ProcPlanVM>();
                             List<TempWO_Wait_ListVM> simwo = new List<TempWO_Wait_ListVM>();
+                            List<DateTime> calcReceiptDates = new List<DateTime>();
                             foreach (var forref in getmutiplewos)
                             {
                                 var production = productions.Where(x => x.WoId == forref.WoId).FirstOrDefault();
@@ -27666,10 +28085,58 @@ namespace CWB.App.Controllers
                                         }
 
                                     }
-                                    var procplans = getprocplan
-                                      .Where(x => x.WorkOrderId == production.WoId)
-                                      .ToList();
-                                    childproc.AddRange(procplans);
+                                    var procplans = getprocplan.Where(x => x.WorkOrderId == production.WoId).ToList();
+                                    foreach (var procplan in procplans)
+                                    {
+                                        if (procplan != null)
+                                        {
+                                            if (procplan.For_Ref == 1)
+                                            {
+                                                //first check in consolidatedtable 
+                                                var consolidationrecord = conslidatedprocplanmapping.Where(x => x.WorkOrderId == procplan.WorkOrderId).FirstOrDefault();
+                                                if (consolidationrecord != null)
+                                                {
+                                                    var combinedprocplan = getprocplan.Where(x => x.ProcPlanId == consolidationrecord.ConsolidatedProcPlanId).FirstOrDefault();
+                                                    if (combinedprocplan != null)
+                                                    {
+                                                        if (combinedprocplan.For_Ref == 1)
+                                                        {
+                                                            // combined splitted
+                                                            var combinedsplittedrecords = getprocplan.Where(x => x.ParentProcplanId == combinedprocplan.ProcPlanId).ToList();
+                                                            foreach (var dates in combinedsplittedrecords)
+                                                            {
+                                                                calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                            }
+                                                            //nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                        }
+                                                        else
+                                                        {
+                                                            //normal consolidation
+                                                            calcReceiptDates.Add(combinedprocplan.CalcReceiptDate);
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    var getsplitteddates = getprocplan.Where(x => x.ParentProcplanId == procplan.ProcPlanId).ToList();
+                                                    foreach (var dates in getsplitteddates)
+                                                    {
+                                                        calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                    }
+                                                    // nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                    //normal splitting
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                //normal procplan
+                                                calcReceiptDates.Add(procplan.CalcReceiptDate);
+                                            }
+                                        }
+                                    }
+
+                                    //childproc.AddRange(procplans);
                                 }
                             }
                             foreach (var child in bomwofreeze)
@@ -27687,8 +28154,8 @@ namespace CWB.App.Controllers
 
                             // Maximum procurement receipt date
                             DateTime procplanmaxDate =
-                                childproc.Any()
-                                    ? childproc.Max(x => x.CalcReceiptDate)
+                                calcReceiptDates.Any()
+                                    ? calcReceiptDates.Max()
                                     : DateTime.MinValue;
 
                             // Parent can start only after both are complete
@@ -27711,6 +28178,7 @@ namespace CWB.App.Controllers
                                 List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
                                 List<ProcPlanVM> childproc = new List<ProcPlanVM>();
                                 List<TempWO_Wait_ListVM> simwo = new List<TempWO_Wait_ListVM>();
+                                List<DateTime> calcReceiptDates = new List<DateTime>();
                                 foreach (var forref in getmutiplewos)
                                 {
                                     var production = productions.Where(x => x.WoId == forref.WoId).FirstOrDefault();
@@ -27768,7 +28236,56 @@ namespace CWB.App.Controllers
                                         var procplans = getprocplan
                                           .Where(x => x.WorkOrderId == production.WoId)
                                           .ToList();
-                                        childproc.AddRange(procplans);
+                                        foreach (var procplan in procplans)
+                                        {
+                                            if (procplan != null)
+                                            {
+                                                if (procplan.For_Ref == 1)
+                                                {
+                                                    //first check in consolidatedtable 
+                                                    var consolidationrecord = conslidatedprocplanmapping.Where(x => x.WorkOrderId == procplan.WorkOrderId).FirstOrDefault();
+                                                    if (consolidationrecord != null)
+                                                    {
+                                                        var combinedprocplan = getprocplan.Where(x => x.ProcPlanId == consolidationrecord.ConsolidatedProcPlanId).FirstOrDefault();
+                                                        if (combinedprocplan != null)
+                                                        {
+                                                            if (combinedprocplan.For_Ref == 1)
+                                                            {
+                                                                // combined splitted
+                                                                var combinedsplittedrecords = getprocplan.Where(x => x.ParentProcplanId == combinedprocplan.ProcPlanId).ToList();
+                                                                foreach (var dates in combinedsplittedrecords)
+                                                                {
+                                                                    calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                                }
+                                                                //nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                            }
+                                                            else
+                                                            {
+                                                                //normal consolidation
+                                                                calcReceiptDates.Add(combinedprocplan.CalcReceiptDate);
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        var getsplitteddates = getprocplan.Where(x => x.ParentProcplanId == procplan.ProcPlanId).ToList();
+                                                        foreach (var dates in getsplitteddates)
+                                                        {
+                                                            calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                        }
+                                                        // nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                        //normal splitting
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    //normal procplan
+                                                    calcReceiptDates.Add(procplan.CalcReceiptDate);
+                                                }
+                                            }
+                                        }
+                                        // childproc.AddRange(procplans);
                                     }
 
                                 }
@@ -27787,8 +28304,8 @@ namespace CWB.App.Controllers
 
                                 // Maximum procurement receipt date
                                 DateTime procplanmaxDate =
-                                    childproc.Any()
-                                        ? childproc.Max(x => x.CalcReceiptDate)
+                                    calcReceiptDates.Any()
+                                        ? calcReceiptDates.Max()
                                         : DateTime.MinValue;
 
                                 // Parent can start only after both are complete
@@ -27806,6 +28323,7 @@ namespace CWB.App.Controllers
                             }
                             else
                             {
+                                List<DateTime> calcReceiptDates = new List<DateTime>();
                                 //normal split
                                 var parentsplitted = productions.Where(x => x.WoId == item.SplitParentWoId).FirstOrDefault();
 
@@ -27886,9 +28404,60 @@ namespace CWB.App.Controllers
                                     //}
 
                                 }
-                                var procplans = getprocplan
-                                       .Where(x => x.WorkOrderId == parentsplitted.WoId)
-                                       .ToList();
+
+
+                                var procplans = getprocplan.Where(x => x.WorkOrderId == parentsplitted.WoId).ToList();
+                                foreach (var procplan in procplans)
+                                {
+                                    if (procplan != null)
+                                    {
+                                        if (procplan.For_Ref == 1)
+                                        {
+                                            //first check in consolidatedtable 
+                                            var consolidationrecord = conslidatedprocplanmapping.Where(x => x.WorkOrderId == procplan.WorkOrderId).FirstOrDefault();
+                                            if (consolidationrecord != null)
+                                            {
+                                                var combinedprocplan = getprocplan.Where(x => x.ProcPlanId == consolidationrecord.ConsolidatedProcPlanId).FirstOrDefault();
+                                                if (combinedprocplan != null)
+                                                {
+                                                    if (combinedprocplan.For_Ref == 1)
+                                                    {
+                                                        // combined splitted
+                                                        var combinedsplittedrecords = getprocplan.Where(x => x.ParentProcplanId == combinedprocplan.ProcPlanId).ToList();
+                                                        foreach (var dates in combinedsplittedrecords)
+                                                        {
+                                                            calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                        }
+                                                        //nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                    }
+                                                    else
+                                                    {
+                                                        //normal consolidation
+                                                        calcReceiptDates.Add(combinedprocplan.CalcReceiptDate);
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var getsplitteddates = getprocplan.Where(x => x.ParentProcplanId == procplan.ProcPlanId).ToList();
+                                                foreach (var dates in getsplitteddates)
+                                                {
+                                                    calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                }
+                                                // nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                //normal splitting
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            //normal procplan
+                                            calcReceiptDates.Add(procplan.CalcReceiptDate);
+                                        }
+                                    }
+                                }
+
+
                                 List<TempWO_Wait_ListVM> simwo =
                                         new List<TempWO_Wait_ListVM>();
 
@@ -27907,8 +28476,8 @@ namespace CWB.App.Controllers
 
                                 // Maximum procurement receipt date
                                 DateTime procplanmaxDate =
-                                    procplans.Any()
-                                        ? procplans.Max(x => x.CalcReceiptDate)
+                                    calcReceiptDates.Any()
+                                        ? calcReceiptDates.Max()
                                         : DateTime.MinValue;
 
                                 // Parent can start only after both are complete
@@ -27929,145 +28498,7 @@ namespace CWB.App.Controllers
 
 
 
-                        //var subbomlist = bomlist.Where(x => x.ProcPlanId == item.ProductionPlanId).ToList();
-                        //    if (item.Combined_WO != 'Y')
-                        //    {
-                        //        List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
-                        //        foreach (var data in subbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
-                        //        {
-                        //            ProductionPlan_WoVM production = productions.FirstOrDefault(x => x.PartId == data.Child_Part_No_ID && x.ParentWoId == item.ParentWoId);
-                        //            if (production == null)
-                        //            {
-                        //                continue; // or allChildrenReady = false;
-                        //            }
-                        //            if (production.For_Ref == 'N' && production.Freeze == 1)
-                        //            {
-                        //                bomwofreeze.Add(production);
-                        //            }
-                        //            else if (production.For_Ref == 'Y')
-                        //            {
-                        //                var combinedproduction = consolidatewomapping.Where(x => x.WoId == production.WoId).FirstOrDefault();
-                        //                var combinedwo = productions.FirstOrDefault(x => x.WoId == combinedproduction.CombinedWoId && x.Freeze == 1);
-                        //                if (combinedwo != null)
-                        //                {
-                        //                    bomwofreeze.Add(combinedwo);
-                        //                }
-
-
-                        //            }
-
-                        //        }
-                        //        var procplans = getprocplan
-                        //            .Where(x => x.WorkOrderId == item.WoId)
-                        //            .ToList();
-                        //        // Get simulated WO dates of all child WOs
-                        //        List<TempWO_Wait_ListVM> simwo =
-                        //            new List<TempWO_Wait_ListVM>();
-
-                        //        foreach (var child in bomwofreeze)
-                        //        {
-                        //            var temp = gettempwosubbomlist
-                        //                .FirstOrDefault(x => x.Wo_Id == child.WoId);
-
-                        //            if (temp != null)
-                        //                simwo.Add(temp);
-                        //        }
-
-                        //        // Maximum child completion date
-                        //        DateTime maxPlanEndDate =
-                        //            simwo.Any()
-                        //                ? simwo.Max(x => x.Plan_End_Date)
-                        //                : DateTime.MinValue;
-
-                        //        // Maximum procurement receipt date
-                        //        DateTime procplanmaxDate =
-                        //            procplans.Any()
-                        //                ? procplans.Max(x => x.CalcReceiptDate)
-                        //                : DateTime.MinValue;
-
-                        //        // Parent can start only after both are complete
-                        //        DateTime nextDate =
-                        //            maxPlanEndDate > procplanmaxDate
-                        //                ? maxPlanEndDate
-                        //                : procplanmaxDate;
-
-                        //        nextWorkingDate =
-                        //            await GetNextWorkingDate(wd, nextDate, holidayList);
-
-
-
-
-
-
-
-                        //    }
-
-                        //    else if (item.Combined_WO == 'Y')
-                        //    {
-                        //        var multiplewo = consolidatewomapping.Where(x => x.CombinedWoId == item.WoId).ToList();
-                        //        List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
-                        //        List<ProcPlanVM> childproc = new List<ProcPlanVM>();
-                        //        List<TempWO_Wait_ListVM> simwo = new List<TempWO_Wait_ListVM>();
-                        //        foreach (var childwo in multiplewo)
-                        //        {
-                        //            var production = productions.Where(x => x.WoId == childwo.WoId).FirstOrDefault();
-
-                        //            var childbomlist = bomlist.Where(x => x.ProcPlanId == production.ProductionPlanId).ToList();
-                        //            foreach (var data in childbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
-                        //            {
-                        //                ProductionPlan_WoVM childproduction = productions.FirstOrDefault(x => x.PartId == data.Child_Part_No_ID && x.ParentWoId == production.ParentWoId);
-
-                        //                if (childproduction.For_Ref == 'N' && childproduction.Freeze == 1)
-                        //                {
-                        //                    bomwofreeze.Add(childproduction);
-                        //                }
-                        //                else if (childproduction.For_Ref == 'Y')
-                        //                {
-                        //                    var combinedproduction = consolidatewomapping.Where(x => x.WoId == childproduction.WoId).FirstOrDefault();
-                        //                    var combinedwo = productions.FirstOrDefault(x => x.WoId == combinedproduction.CombinedWoId && x.Freeze == 1);
-                        //                    if (combinedwo != null)
-                        //                    {
-                        //                        bomwofreeze.Add(combinedwo);
-                        //                    }
-
-
-                        //                }
-                        //            }
-                        //            var procplans = getprocplan
-                        //           .Where(x => x.WorkOrderId == production.WoId)
-                        //           .ToList();
-                        //            childproc.AddRange(procplans);
-
-                        //        }
-                        //        foreach (var child in bomwofreeze)
-                        //        {
-                        //            var temp = gettempwosubbomlist
-                        //                .FirstOrDefault(x => x.Wo_Id == child.WoId);
-
-                        //            if (temp != null)
-                        //                simwo.Add(temp);
-                        //        }
-                        //        DateTime maxPlanEndDate =
-                        //            simwo.Any()
-                        //                ? simwo.Max(x => x.Plan_End_Date)
-                        //                : DateTime.MinValue;
-
-                        //        // Maximum procurement receipt date
-                        //        DateTime procplanmaxDate =
-                        //            childproc.Any()
-                        //                ? childproc.Max(x => x.CalcReceiptDate)
-                        //                : DateTime.MinValue;
-
-                        //        // Parent can start only after both are complete
-                        //        DateTime nextDate =
-                        //            maxPlanEndDate > procplanmaxDate
-                        //                ? maxPlanEndDate
-                        //                : procplanmaxDate;
-
-                        //        nextWorkingDate =
-                        //            await GetNextWorkingDate(wd, nextDate, holidayList);
-
-                        //    }
+                     
                     }
                     else if (item.Status==10)
                     {
@@ -29146,7 +29577,7 @@ namespace CWB.App.Controllers
             var gettempwobomlist = await _woService.GetAllTempWo_Wait_List();
             productions = await _woService.AllProductionPlan_Wo();
             var parentassemblies = productions.Where(x => (x.Status == 3 || x.Status == 10) &&   x.PartType == 2 &&  x.For_Ref == 'N' &&  
-            x.Freeze == 0 && x.Parentlevel == 'Y') .OrderByDescending(x => x.WOLevel).ThenBy(x => x.Calc_Capacity_Reqd).ToList();
+            x.Freeze == 0 && x.Parentlevel == 'Y').OrderBy(x => x.Sim_Seq_No).OrderByDescending(x => x.WOLevel).ThenBy(x => x.Calc_Capacity_Reqd).ToList();
             if(parentassemblies.Any())
             {
                 List<TempWO_Wait_ListVM> readyWOs = new List<TempWO_Wait_ListVM>();
@@ -29182,7 +29613,8 @@ namespace CWB.App.Controllers
 
                             if (item.Combined_WO != 'Y' && item.SplitParentWoId == 0)
                             {
-                                List<DateTime> normalwodates = new List<DateTime>();
+                                   List<DateTime> calcReceiptDates = new List<DateTime>();
+                                   List<DateTime> normalwodates = new List<DateTime>();
                                 //normal wo
                                 var normalbomlist = bomlist.Where(x => x.ProcPlanId == item.ProductionPlanId).ToList();
 
@@ -29260,15 +29692,62 @@ namespace CWB.App.Controllers
                                     //}
 
                                 }
-                                var procplans = getprocplan
-                                       .Where(x => x.WorkOrderId == item.WoId)
-                                       .ToList();
-                                List<TempWO_Wait_ListVM> simwo =
-                                        new List<TempWO_Wait_ListVM>();
+                                var procplans = getprocplan .Where(x => x.WorkOrderId == item.WoId).ToList();
+                            foreach (var procplan in procplans)
+                            {
+                                if (procplan != null)
+                                {
+                                    if (procplan.For_Ref == 1)
+                                    {
+                                        //first check in consolidatedtable 
+                                        var consolidationrecord = conslidatedprocplanmapping.Where(x => x.WorkOrderId == procplan.WorkOrderId).FirstOrDefault();
+                                        if (consolidationrecord != null)
+                                        {
+                                            var combinedprocplan = getprocplan.Where(x => x.ProcPlanId == consolidationrecord.ConsolidatedProcPlanId).FirstOrDefault();
+                                            if (combinedprocplan != null)
+                                            {
+                                                if (combinedprocplan.For_Ref == 1)
+                                                {
+                                                    // combined splitted
+                                                    var combinedsplittedrecords = getprocplan.Where(x => x.ParentProcplanId == combinedprocplan.ProcPlanId).ToList();
+                                                    foreach (var dates in combinedsplittedrecords)
+                                                    {
+                                                        calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                    }
+                                                    //nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                }
+                                                else
+                                                {
+                                                    //normal consolidation
+                                                    calcReceiptDates.Add(combinedprocplan.CalcReceiptDate);
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var getsplitteddates = getprocplan.Where(x => x.ParentProcplanId == procplan.ProcPlanId).ToList();
+                                            foreach (var dates in getsplitteddates)
+                                            {
+                                                calcReceiptDates.Add(dates.CalcReceiptDate);
+                                            }
+                                            // nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                            //normal splitting
+                                        }
 
+                                    }
+                                    else
+                                    {
+                                        //normal procplan
+                                        calcReceiptDates.Add(procplan.CalcReceiptDate);
+                                    }
+                                }
+                            }
+                            List<TempWO_Wait_ListVM> simwo =
+                                        new List<TempWO_Wait_ListVM>();
+                                 
                                 foreach (var child in bomwofreeze)
                                 {
-                                    var temp = gettempwosubbomlist
+                                    var temp = gettempwobomlist
                                         .FirstOrDefault(x => x.Wo_Id == child.WoId);
 
                                     if (temp != null)
@@ -29281,8 +29760,8 @@ namespace CWB.App.Controllers
 
                                 // Maximum procurement receipt date
                                 DateTime procplanmaxDate =
-                                    procplans.Any()
-                                        ? procplans.Max(x => x.CalcReceiptDate)
+                                    calcReceiptDates.Any()
+                                        ? calcReceiptDates.Max()
                                         : DateTime.MinValue;
 
                                 // Parent can start only after both are complete
@@ -29304,7 +29783,8 @@ namespace CWB.App.Controllers
                             {
                                 //combined wo 
                                 var getmutiplewos = consolidatewomapping.Where(x => x.CombinedWoId == item.WoId).ToList();
-                                List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
+                            List<DateTime> calcReceiptDates = new List<DateTime>();
+                            List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
                                 List<ProcPlanVM> childproc = new List<ProcPlanVM>();
                                 List<TempWO_Wait_ListVM> simwo = new List<TempWO_Wait_ListVM>();
                                 foreach (var forref in getmutiplewos)
@@ -29361,10 +29841,58 @@ namespace CWB.App.Controllers
 
                                         }
                                         var procplans = getprocplan
-                                          .Where(x => x.WorkOrderId == production.WoId)
-                                          .ToList();
-                                        childproc.AddRange(procplans);
+                                          .Where(x => x.WorkOrderId == production.WoId).ToList();
+                                    foreach (var procplan in procplans)
+                                    {
+                                        if (procplan != null)
+                                        {
+                                            if (procplan.For_Ref == 1)
+                                            {
+                                                //first check in consolidatedtable 
+                                                var consolidationrecord = conslidatedprocplanmapping.Where(x => x.WorkOrderId == procplan.WorkOrderId).FirstOrDefault();
+                                                if (consolidationrecord != null)
+                                                {
+                                                    var combinedprocplan = getprocplan.Where(x => x.ProcPlanId == consolidationrecord.ConsolidatedProcPlanId).FirstOrDefault();
+                                                    if (combinedprocplan != null)
+                                                    {
+                                                        if (combinedprocplan.For_Ref == 1)
+                                                        {
+                                                            // combined splitted
+                                                            var combinedsplittedrecords = getprocplan.Where(x => x.ParentProcplanId == combinedprocplan.ProcPlanId).ToList();
+                                                            foreach (var dates in combinedsplittedrecords)
+                                                            {
+                                                                calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                            }
+                                                            //nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                        }
+                                                        else
+                                                        {
+                                                            //normal consolidation
+                                                            calcReceiptDates.Add(combinedprocplan.CalcReceiptDate);
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    var getsplitteddates = getprocplan.Where(x => x.ParentProcplanId == procplan.ProcPlanId).ToList();
+                                                    foreach (var dates in getsplitteddates)
+                                                    {
+                                                        calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                    }
+                                                    // nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                    //normal splitting
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                //normal procplan
+                                                calcReceiptDates.Add(procplan.CalcReceiptDate);
+                                            }
+                                        }
                                     }
+                                    //childproc.AddRange(procplans);
+                                }
                                 }
                                 foreach (var child in bomwofreeze)
                                 {
@@ -29381,8 +29909,8 @@ namespace CWB.App.Controllers
 
                                 // Maximum procurement receipt date
                                 DateTime procplanmaxDate =
-                                    childproc.Any()
-                                        ? childproc.Max(x => x.CalcReceiptDate)
+                                    calcReceiptDates.Any()
+                                        ? calcReceiptDates.Max()
                                         : DateTime.MinValue;
 
                                 // Parent can start only after both are complete
@@ -29402,7 +29930,8 @@ namespace CWB.App.Controllers
                                 {
                                     // spliteed from cobined wo 
                                     var getmutiplewos = consolidatewomapping.Where(x => x.CombinedWoId == getparentofsplit.WoId).ToList();
-                                    List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
+                                List<DateTime> calcReceiptDates = new List<DateTime>();
+                                List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
                                     List<ProcPlanVM> childproc = new List<ProcPlanVM>();
                                     List<TempWO_Wait_ListVM> simwo = new List<TempWO_Wait_ListVM>();
                                     foreach (var forref in getmutiplewos)
@@ -29462,8 +29991,57 @@ namespace CWB.App.Controllers
                                             var procplans = getprocplan
                                               .Where(x => x.WorkOrderId == production.WoId)
                                               .ToList();
-                                            childproc.AddRange(procplans);
+                                             foreach (var procplan in procplans)
+                                        {
+                                            if (procplan != null)
+                                            {
+                                                if (procplan.For_Ref == 1)
+                                                {
+                                                    //first check in consolidatedtable 
+                                                    var consolidationrecord = conslidatedprocplanmapping.Where(x => x.WorkOrderId == procplan.WorkOrderId).FirstOrDefault();
+                                                    if (consolidationrecord != null)
+                                                    {
+                                                        var combinedprocplan = getprocplan.Where(x => x.ProcPlanId == consolidationrecord.ConsolidatedProcPlanId).FirstOrDefault();
+                                                        if (combinedprocplan != null)
+                                                        {
+                                                            if (combinedprocplan.For_Ref == 1)
+                                                            {
+                                                                // combined splitted
+                                                                var combinedsplittedrecords = getprocplan.Where(x => x.ParentProcplanId == combinedprocplan.ProcPlanId).ToList();
+                                                                foreach (var dates in combinedsplittedrecords)
+                                                                {
+                                                                    calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                                }
+                                                                //nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                            }
+                                                            else
+                                                            {
+                                                                //normal consolidation
+                                                                calcReceiptDates.Add(combinedprocplan.CalcReceiptDate);
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        var getsplitteddates = getprocplan.Where(x => x.ParentProcplanId == procplan.ProcPlanId).ToList();
+                                                        foreach (var dates in getsplitteddates)
+                                                        {
+                                                            calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                        }
+                                                        // nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                        //normal splitting
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    //normal procplan
+                                                    calcReceiptDates.Add(procplan.CalcReceiptDate);
+                                                }
+                                            }
                                         }
+                                        //childproc.AddRange(procplans);
+                                    }
 
                                     }
                                     foreach (var child in bomwofreeze)
@@ -29481,8 +30059,8 @@ namespace CWB.App.Controllers
 
                                     // Maximum procurement receipt date
                                     DateTime procplanmaxDate =
-                                        childproc.Any()
-                                            ? childproc.Max(x => x.CalcReceiptDate)
+                                        calcReceiptDates.Any()
+                                            ? calcReceiptDates.Max()
                                             : DateTime.MinValue;
 
                                     // Parent can start only after both are complete
@@ -29502,8 +30080,8 @@ namespace CWB.App.Controllers
                                 {
                                     //normal split
                                     var parentsplitted = productions.Where(x => x.WoId == item.SplitParentWoId).FirstOrDefault();
-
-                                    var parentbomlist = bomlist.Where(x => x.ProcPlanId == parentsplitted.ProductionPlanId).ToList();
+                                List<DateTime> calcReceiptDates = new List<DateTime>();
+                                var parentbomlist = bomlist.Where(x => x.ProcPlanId == parentsplitted.ProductionPlanId).ToList();
                                     List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
                                     foreach (var data in parentbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
                                     {
@@ -29583,7 +30161,56 @@ namespace CWB.App.Controllers
                                     var procplans = getprocplan
                                            .Where(x => x.WorkOrderId == parentsplitted.WoId)
                                            .ToList();
-                                    List<TempWO_Wait_ListVM> simwo =
+                                         foreach (var procplan in procplans)
+                                {
+                                    if (procplan != null)
+                                    {
+                                        if (procplan.For_Ref == 1)
+                                        {
+                                            //first check in consolidatedtable 
+                                            var consolidationrecord = conslidatedprocplanmapping.Where(x => x.WorkOrderId == procplan.WorkOrderId).FirstOrDefault();
+                                            if (consolidationrecord != null)
+                                            {
+                                                var combinedprocplan = getprocplan.Where(x => x.ProcPlanId == consolidationrecord.ConsolidatedProcPlanId).FirstOrDefault();
+                                                if (combinedprocplan != null)
+                                                {
+                                                    if (combinedprocplan.For_Ref == 1)
+                                                    {
+                                                        // combined splitted
+                                                        var combinedsplittedrecords = getprocplan.Where(x => x.ParentProcplanId == combinedprocplan.ProcPlanId).ToList();
+                                                        foreach (var dates in combinedsplittedrecords)
+                                                        {
+                                                            calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                        }
+                                                        //nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                    }
+                                                    else
+                                                    {
+                                                        //normal consolidation
+                                                        calcReceiptDates.Add(combinedprocplan.CalcReceiptDate);
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var getsplitteddates = getprocplan.Where(x => x.ParentProcplanId == procplan.ProcPlanId).ToList();
+                                                foreach (var dates in getsplitteddates)
+                                                {
+                                                    calcReceiptDates.Add(dates.CalcReceiptDate);
+                                                }
+                                                // nextWorkingDate = await GetNextWorkingDate(wd, calcReceiptDates.Max(), holidayList);
+                                                //normal splitting
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            //normal procplan
+                                            calcReceiptDates.Add(procplan.CalcReceiptDate);
+                                        }
+                                    }
+                                }
+                                List<TempWO_Wait_ListVM> simwo =
                                             new List<TempWO_Wait_ListVM>();
 
                                     foreach (var child in bomwofreeze)
@@ -29601,8 +30228,8 @@ namespace CWB.App.Controllers
 
                                     // Maximum procurement receipt date
                                     DateTime procplanmaxDate =
-                                        procplans.Any()
-                                            ? procplans.Max(x => x.CalcReceiptDate)
+                                        calcReceiptDates.Any()
+                                            ? calcReceiptDates.Max()
                                             : DateTime.MinValue;
 
                                     // Parent can start only after both are complete
@@ -29623,290 +30250,14 @@ namespace CWB.App.Controllers
 
 
 
-                            //var subbomlist = bomlist.Where(x => x.ProcPlanId == item.ProductionPlanId).ToList();
-                            //    if (item.Combined_WO != 'Y')
-                            //    {
-                            //        List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
-                            //        foreach (var data in subbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
-                            //        {
-                            //            ProductionPlan_WoVM production = productions.FirstOrDefault(x => x.PartId == data.Child_Part_No_ID && x.ParentWoId == item.ParentWoId);
-                            //            if (production == null)
-                            //            {
-                            //                continue; // or allChildrenReady = false;
-                            //            }
-                            //            if (production.For_Ref == 'N' && production.Freeze == 1)
-                            //            {
-                            //                bomwofreeze.Add(production);
-                            //            }
-                            //            else if (production.For_Ref == 'Y')
-                            //            {
-                            //                var combinedproduction = consolidatewomapping.Where(x => x.WoId == production.WoId).FirstOrDefault();
-                            //                var combinedwo = productions.FirstOrDefault(x => x.WoId == combinedproduction.CombinedWoId && x.Freeze == 1);
-                            //                if (combinedwo != null)
-                            //                {
-                            //                    bomwofreeze.Add(combinedwo);
-                            //                }
-
-
-                            //            }
-
-                            //        }
-                            //        var procplans = getprocplan
-                            //            .Where(x => x.WorkOrderId == item.WoId)
-                            //            .ToList();
-                            //        // Get simulated WO dates of all child WOs
-                            //        List<TempWO_Wait_ListVM> simwo =
-                            //            new List<TempWO_Wait_ListVM>();
-
-                            //        foreach (var child in bomwofreeze)
-                            //        {
-                            //            var temp = gettempwosubbomlist
-                            //                .FirstOrDefault(x => x.Wo_Id == child.WoId);
-
-                            //            if (temp != null)
-                            //                simwo.Add(temp);
-                            //        }
-
-                            //        // Maximum child completion date
-                            //        DateTime maxPlanEndDate =
-                            //            simwo.Any()
-                            //                ? simwo.Max(x => x.Plan_End_Date)
-                            //                : DateTime.MinValue;
-
-                            //        // Maximum procurement receipt date
-                            //        DateTime procplanmaxDate =
-                            //            procplans.Any()
-                            //                ? procplans.Max(x => x.CalcReceiptDate)
-                            //                : DateTime.MinValue;
-
-                            //        // Parent can start only after both are complete
-                            //        DateTime nextDate =
-                            //            maxPlanEndDate > procplanmaxDate
-                            //                ? maxPlanEndDate
-                            //                : procplanmaxDate;
-
-                            //        nextWorkingDate =
-                            //            await GetNextWorkingDate(wd, nextDate, holidayList);
-
-
-
-
-
-
-
-                            //    }
-
-                            //    else if (item.Combined_WO == 'Y')
-                            //    {
-                            //        var multiplewo = consolidatewomapping.Where(x => x.CombinedWoId == item.WoId).ToList();
-                            //        List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
-                            //        List<ProcPlanVM> childproc = new List<ProcPlanVM>();
-                            //        List<TempWO_Wait_ListVM> simwo = new List<TempWO_Wait_ListVM>();
-                            //        foreach (var childwo in multiplewo)
-                            //        {
-                            //            var production = productions.Where(x => x.WoId == childwo.WoId).FirstOrDefault();
-
-                            //            var childbomlist = bomlist.Where(x => x.ProcPlanId == production.ProductionPlanId).ToList();
-                            //            foreach (var data in childbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
-                            //            {
-                            //                ProductionPlan_WoVM childproduction = productions.FirstOrDefault(x => x.PartId == data.Child_Part_No_ID && x.ParentWoId == production.ParentWoId);
-
-                            //                if (childproduction.For_Ref == 'N' && childproduction.Freeze == 1)
-                            //                {
-                            //                    bomwofreeze.Add(childproduction);
-                            //                }
-                            //                else if (childproduction.For_Ref == 'Y')
-                            //                {
-                            //                    var combinedproduction = consolidatewomapping.Where(x => x.WoId == childproduction.WoId).FirstOrDefault();
-                            //                    var combinedwo = productions.FirstOrDefault(x => x.WoId == combinedproduction.CombinedWoId && x.Freeze == 1);
-                            //                    if (combinedwo != null)
-                            //                    {
-                            //                        bomwofreeze.Add(combinedwo);
-                            //                    }
-
-
-                            //                }
-                            //            }
-                            //            var procplans = getprocplan
-                            //           .Where(x => x.WorkOrderId == production.WoId)
-                            //           .ToList();
-                            //            childproc.AddRange(procplans);
-
-                            //        }
-                            //        foreach (var child in bomwofreeze)
-                            //        {
-                            //            var temp = gettempwosubbomlist
-                            //                .FirstOrDefault(x => x.Wo_Id == child.WoId);
-
-                            //            if (temp != null)
-                            //                simwo.Add(temp);
-                            //        }
-                            //        DateTime maxPlanEndDate =
-                            //            simwo.Any()
-                            //                ? simwo.Max(x => x.Plan_End_Date)
-                            //                : DateTime.MinValue;
-
-                            //        // Maximum procurement receipt date
-                            //        DateTime procplanmaxDate =
-                            //            childproc.Any()
-                            //                ? childproc.Max(x => x.CalcReceiptDate)
-                            //                : DateTime.MinValue;
-
-                            //        // Parent can start only after both are complete
-                            //        DateTime nextDate =
-                            //            maxPlanEndDate > procplanmaxDate
-                            //                ? maxPlanEndDate
-                            //                : procplanmaxDate;
-
-                            //        nextWorkingDate =
-                            //            await GetNextWorkingDate(wd, nextDate, holidayList);
-
-                            //    }
+                           
                         }
                         else if (item.Status == 10)
                         {
                             nextWorkingDate =
                         await GetNextWorkingDate(wd, DateTime.Today, holidayList);
                         }
-                        //var subbomlist = bomlist.Where(x => x.ProcPlanId == item.ProductionPlanId).ToList();
-                        //    if (item.Combined_WO != 'Y')
-                        //    {
-                        //        List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
-                        //        foreach (var data in subbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
-                        //        {
-                        //            ProductionPlan_WoVM production = productions.FirstOrDefault(x => x.PartId == data.Child_Part_No_ID && x.ParentWoId == data.ParentWoId);
-                        //            if (production == null)
-                        //            {
-                        //                continue; // or allChildrenReady = false;
-                        //            }
-                        //            if (production.For_Ref == 'N' && production.Freeze == 1)
-                        //            {
-                        //                bomwofreeze.Add(production);
-                        //            }
-                        //            else if (production.For_Ref == 'Y')
-                        //            {
-                        //                var combinedproduction = consolidatewomapping.Where(x => x.WoId == production.WoId).FirstOrDefault();
-                        //                var combinedwo = productions.FirstOrDefault(x => x.WoId == combinedproduction.CombinedWoId && x.Freeze == 1);
-                        //                if (combinedwo != null)
-                        //                {
-                        //                    bomwofreeze.Add(combinedwo);
-                        //                }
-
-
-                        //            }
-
-                        //        }
-                        //        var procplans = getprocplan
-                        //            .Where(x => x.WorkOrderId == item.WoId)
-                        //            .ToList();
-                        //        // Get simulated WO dates of all child WOs
-                        //        List<TempWO_Wait_ListVM> simwo =
-                        //            new List<TempWO_Wait_ListVM>();
-
-                        //        foreach (var child in bomwofreeze)
-                        //        {
-                        //            var temp = gettempwobomlist
-                        //                .FirstOrDefault(x => x.Wo_Id == child.WoId);
-
-                        //            if (temp != null)
-                        //                simwo.Add(temp);
-                        //        }
-
-                        //        // Maximum child completion date
-                        //        DateTime maxPlanEndDate =
-                        //            simwo.Any()
-                        //                ? simwo.Max(x => x.Plan_End_Date)
-                        //                : DateTime.MinValue;
-
-                        //        // Maximum procurement receipt date
-                        //        DateTime procplanmaxDate =
-                        //            procplans.Any()
-                        //                ? procplans.Max(x => x.CalcReceiptDate)
-                        //                : DateTime.MinValue;
-
-                        //        // Parent can start only after both are complete
-                        //        DateTime nextDate =
-                        //            maxPlanEndDate > procplanmaxDate
-                        //                ? maxPlanEndDate
-                        //                : procplanmaxDate;
-
-                        //        nextWorkingDate =
-                        //            await GetNextWorkingDate(wd, nextDate, holidayList);
-
-
-
-
-
-
-
-                        //    }
-
-                        //    else if (item.Combined_WO == 'Y')
-                        //    {
-                        //        var multiplewo = consolidatewomapping.Where(x => x.CombinedWoId == item.WoId).ToList();
-                        //        List<ProductionPlan_WoVM> bomwofreeze = new List<ProductionPlan_WoVM>();
-                        //        List<ProcPlanVM> childproc = new List<ProcPlanVM>();
-                        //        List<TempWO_Wait_ListVM> simwo = new List<TempWO_Wait_ListVM>();
-                        //        foreach (var childwo in multiplewo)
-                        //        {
-                        //            var production = productions.Where(x => x.WoId == childwo.WoId).FirstOrDefault();
-
-                        //            var childbomlist = bomlist.Where(x => x.ProcPlanId == production.ProductionPlanId).ToList();
-                        //            foreach (var data in childbomlist.Where(x => x.Child_Part_No_Type == "ManufacturedPart" || x.Child_Part_No_Type == "Assembly"))
-                        //            {
-                        //                ProductionPlan_WoVM childproduction = productions.FirstOrDefault(x => x.PartId == data.Child_Part_No_ID && x.ParentWoId == data.ParentWoId);
-
-                        //                if (childproduction.For_Ref == 'N' && childproduction.Freeze == 1)
-                        //                {
-                        //                    bomwofreeze.Add(childproduction);
-                        //                }
-                        //                else if (childproduction.For_Ref == 'Y')
-                        //                {
-                        //                    var combinedproduction = consolidatewomapping.Where(x => x.WoId == childproduction.WoId).FirstOrDefault();
-                        //                    var combinedwo = productions.FirstOrDefault(x => x.WoId == combinedproduction.CombinedWoId && x.Freeze == 1);
-                        //                    if (combinedwo != null)
-                        //                    {
-                        //                        bomwofreeze.Add(combinedwo);
-                        //                    }
-
-
-                        //                }
-                        //            }
-                        //            var procplans = getprocplan
-                        //           .Where(x => x.WorkOrderId == production.WoId)
-                        //           .ToList();
-                        //            childproc.AddRange(procplans);
-
-                        //        }
-                        //        foreach (var child in bomwofreeze)
-                        //        {
-                        //            var temp = gettempwobomlist
-                        //                .FirstOrDefault(x => x.Wo_Id == child.WoId);
-
-                        //            if (temp != null)
-                        //                simwo.Add(temp);
-                        //        }
-                        //        DateTime maxPlanEndDate =
-                        //            simwo.Any()
-                        //                ? simwo.Max(x => x.Plan_End_Date)
-                        //                : DateTime.MinValue;
-
-                        //        // Maximum procurement receipt date
-                        //        DateTime procplanmaxDate =
-                        //            childproc.Any()
-                        //                ? childproc.Max(x => x.CalcReceiptDate)
-                        //                : DateTime.MinValue;
-
-                        //        // Parent can start only after both are complete
-                        //        DateTime nextDate =
-                        //            maxPlanEndDate > procplanmaxDate
-                        //                ? maxPlanEndDate
-                        //                : procplanmaxDate;
-
-                        //        nextWorkingDate =
-                        //            await GetNextWorkingDate(wd, nextDate, holidayList);
-
-                        //    }
+                       
                     
 
                     #region Routing and Caculations
@@ -30968,7 +31319,7 @@ namespace CWB.App.Controllers
                     await _woService.PostTempWo_Wait_List(wo);
                 }
             }
-            ////subcon addition Remaining
+            
 
             try
             {

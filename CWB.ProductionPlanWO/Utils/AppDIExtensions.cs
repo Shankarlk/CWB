@@ -87,6 +87,7 @@ namespace CWB.ProductionPlanWO.Utils
             services.AddTransient<IConsolidatedWoMappingRepository, ConsolidatedWoMappingRepository>();
             services.AddTransient<IInv_Trans_ListRepository, Inv_Trans_ListRepository>();
             services.AddTransient<IInput_Resrv_ListRepository,Input_Resrv_ListRepository>();
+            services.AddTransient<IProcPlanConsolidationMappingRepository,ProcPlanConsolidationMappingRepository>();
            
             services.AddTransient<IWOService, WOService>();
         }

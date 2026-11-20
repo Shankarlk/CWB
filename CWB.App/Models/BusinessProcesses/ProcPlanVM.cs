@@ -72,6 +72,8 @@ namespace CWB.App.Models.BusinessProcesses
         public long ParentProcplanId { get; set; }
 
         public string ProcPriceQnty { get; set; }
+        public char Combined { get; set; }
+        public int Consolidation_Flag { get; set; }
 
     }
 }

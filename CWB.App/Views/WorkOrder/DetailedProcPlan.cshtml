@@ -2299,7 +2299,7 @@
     <div class="modal-dialog modal-full-width">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="standard-modalLabel">WO List of parts which use Raw Material  <span id="P9PartNoSpan"></span> / <span id="P9PartDescSpan"></span></h4>
+                <h4 class="modal-title" id="standard-modalLabel">WO List of parts which use Raw Material/BOF  <span id="P9PartNoSpan"></span> / <span id="P9PartDescSpan"></span></h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -2909,7 +2909,7 @@
     <tr>
         <td>{partNo} / {partDesc}</td>
         <td>{woNumber}</td>
-        <td>{calcWOQty}</td>
+        <td>{planWOQnty}</td>
         <td>{planCompletionDateStr}</td>
         <td></td>
         <td></td>
@@ -2952,11 +2952,11 @@
                     <!-- item-->
                     <a href="javascript:void(0);"
                        class="dropdown-item" data-partid="{partId}" data-customername="{company}" data-partno="{partNo}"
-                       data-partdesc="{partDesc}" data-qnty="{calc_Proc_Qnty}" data-calcdate="{calcReceiptDateStr}" data-woids="{woIds}"
+                       data-partdesc="{partDesc}" data-qnty="{calc_Proc_Qnty}" data-calcdate="{calcReceiptDateStr}" data-woids="{woIds}" data-procplanid="{procPlanId}"
                        data-bs-toggle="modal" data-bs-target="#popup9">Show WO details</a>
                     <!-- item-->
                     <a href="javascript:void(0);"
-                       class="dropdown-item" data-partid="{partId}" data-partno="{partNo}" data-moq="{minimumOrderQuantity}" data-uom="{uomName}"
+                       class="dropdown-item editProcPlan" data-partid="{partId}" data-partno="{partNo}" data-moq="{minimumOrderQuantity}" data-uom="{uomName}"
                        data-partdesc="{partDesc}" data-suppid="{supplierId}" data-qnty="{calc_Proc_Qnty}" data-calcdate="{calcReceiptDateStr}"
                        data-price="{price}" data-woid="{procPlanId}" data-supplierid="{supplierId}"
                        data-bs-toggle="modal" data-bs-target="#popup10">Edit</a>

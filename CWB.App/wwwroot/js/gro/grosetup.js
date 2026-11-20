@@ -135,13 +135,63 @@ function isDuplicateGroPartNo() {
     return duplicate;
 }
 function saveGroPart() {
+    var groPartNo = $("#txtGroPartNo").val().trim();
+    var mrp = parseFloat($("#txtMrp").val());
+    var ourPrice = parseFloat($("#txtOurPrice").val());
+    var ourPartDescription = $("#txtourdescription").val().trim();
+    var hsnCode = $("#txtHSNCode").val().trim();
+    var gstRate = parseInt($("#txtGSTRate").val(), 10);
+
+    // Reset borders
+    $("#txtGroPartNo, #txtMrp, #txtOurPrice, #txtourdescription, #txtHSNCode, #txtGSTRate").css("border", "");
+
+    // 1. Gro Part No (string)
+    if (groPartNo.length === 0) {
+        document.getElementById("txtGroPartNo").style.border = "2px solid red";
+        alert("Please enter Gro Part No");
+        return false;
+    }
+
     if (isDuplicateGroPartNo()) {
-
+        document.getElementById("txtGroPartNo").style.border = "2px solid red";
         alert("Gro Part No already exists.");
-
         $("#txtGroPartNo").focus();
+        return false;
+    }
 
-        return;
+    // 2. Gro MRP (decimal)
+    if (isNaN(mrp)) {
+        document.getElementById("txtMrp").style.border = "2px solid red";
+        alert("Please enter a valid Gro MRP");
+        return false;
+    }
+
+    // 3. Our Price (decimal)
+    if (isNaN(ourPrice)) {
+        document.getElementById("txtOurPrice").style.border = "2px solid red";
+        alert("Please enter a valid Our Price");
+        return false;
+    }
+
+    // 4. Our Part Description (string)
+    if (ourPartDescription.length === 0) {
+        document.getElementById("txtourdescription").style.border = "2px solid red";
+        alert("Please enter Our Part Description");
+        return false;
+    }
+
+    // 5. HSN Code (string)
+    if (hsnCode.length === 0) {
+        document.getElementById("txtHSNCode").style.border = "2px solid red";
+        alert("Please enter HSN Code");
+        return false;
+    }
+
+    // 6. GST Rate % (int)
+    if (isNaN(gstRate)) {
+        document.getElementById("txtGSTRate").style.border = "2px solid red";
+        alert("Please enter a valid GST Rate %");
+        return false;
     }
     var model = {
 
@@ -267,14 +317,39 @@ function isDuplicateCourier() {
 }
 function saveCourier() {
 
+    var courierName = $("#txtCourierName").val().trim();
+    var contactPerson = $("#txtCourierContactPerson").val().trim();
+    var contactPhone = $("#txtCourierContactNo").val().trim();
+
+    // Reset borders
+    $("#txtCourierName, #txtCourierContactPerson, #txtCourierContactNo").css("border", "");
+
+    // 1. Courier Name (string)
+    if (courierName.length === 0) {
+        document.getElementById("txtCourierName").style.border = "2px solid red";
+        alert("Please enter Courier Name");
+        return false;
+    }
+
     if (isDuplicateCourier()) {
-
+        document.getElementById("txtCourierName").style.border = "2px solid red";
         alert("Courier already exists. Please check and re-enter.");
-
         $("#txtCourierName").focus();
+        return false;
+    }
 
-        return;
+    // 2. Contact Person (string)
+    if (contactPerson.length === 0) {
+        document.getElementById("txtCourierContactPerson").style.border = "2px solid red";
+        alert("Please enter Contact Person");
+        return false;
+    }
 
+    // 3. Contact Phone (numeric/string check)
+    if (contactPhone.length === 0 || isNaN(Number(contactPhone))) {
+        document.getElementById("txtCourierContactNo").style.border = "2px solid red";
+        alert("Please enter a valid Contact Phone");
+        return false;
     }
 
     var model = {

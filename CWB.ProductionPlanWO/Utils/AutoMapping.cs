@@ -144,6 +144,8 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(m => m.MinimumOrderQuantity, m => m.MapFrom(src => src.MinimumOrderQuantity))
             .ForMember(m => m.Price, m => m.MapFrom(src => src.Price))
             .ForMember(m => m.ParentProcplanId, m => m.MapFrom(src => src.ParentProcplanId))
+            .ForMember(m => m.Combined, m => m.MapFrom(src => src.Combined))
+            .ForMember(m => m.Consolidation_Flag, m => m.MapFrom(src => src.Consolidation_Flag))
             .ForMember(m => m.Changed, m => m.MapFrom(src => src.Changed))
             .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
@@ -170,6 +172,8 @@ namespace CWB.ProductionPlanWO.Utils
             .ForMember(m => m.MinimumOrderQuantity, m => m.MapFrom(src => src.MinimumOrderQuantity))
             .ForMember(m => m.Price, m => m.MapFrom(src => src.Price))
              .ForMember(m => m.ParentProcplanId, m => m.MapFrom(src => src.ParentProcplanId))
+             .ForMember(m => m.Combined, m => m.MapFrom(src => src.Combined))
+            .ForMember(m => m.Consolidation_Flag, m => m.MapFrom(src => src.Consolidation_Flag))
             .ForMember(m => m.Changed, m => m.MapFrom(src => src.Changed))
             .ForMember(m => m.TenantId, m => m.MapFrom(src => src.TenantId));
 
@@ -1608,6 +1612,20 @@ namespace CWB.ProductionPlanWO.Utils
                 .ForMember(s => s.WoId, s => s.MapFrom(src => src.WoId))
                 .ForMember(s => s.ParentWoId, s => s.MapFrom(src => src.ParentWoId))
                 .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
+            CreateMap<ProcPlanConsolidationMappingVM, ProcPlanConsolidationMapping>()
+               .ForMember(s => s.Id, s => s.MapFrom(src => src.ConsolidationId))
+               .ForMember(s => s.ConsolidatedProcPlanId, s => s.MapFrom(src => src.ConsolidatedProcPlanId))
+               .ForMember(s => s.ProcPlanId, s => s.MapFrom(src => src.ProcPlanId))
+               .ForMember(s => s.WorkOrderId, s => s.MapFrom(src => src.WorkOrderId))
+               .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
+            CreateMap<ProcPlanConsolidationMapping, ProcPlanConsolidationMappingVM>()
+                .ForMember(s => s.ConsolidationId, s => s.MapFrom(src => src.Id))
+                .ForMember(s => s.ConsolidatedProcPlanId, s => s.MapFrom(src => src.ConsolidatedProcPlanId))
+                .ForMember(s => s.ProcPlanId, s => s.MapFrom(src => src.ProcPlanId))
+                .ForMember(s => s.WorkOrderId, s => s.MapFrom(src => src.WorkOrderId))
+                .ForMember(s => s.TenantId, s => s.MapFrom(src => src.TenantId));
+
+
             CreateMap<Input_Resrv_ListVM, Input_Resrv_List>()
                .ForMember(s => s.Id, s => s.MapFrom(src => src.Input_Resrv_List_ID))
                .ForMember(s => s.PO_NO_ID, s => s.MapFrom(src => src.PO_NO_ID))

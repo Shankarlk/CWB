@@ -32,5 +32,8 @@ namespace CWB.ProductionPlanWO.Domain
 
         public long ParentProcplanId { get; set; }
 
+        public char Combined { get; set; }
+        public int Consolidation_Flag { get; set; }
+
     }
 }

@@ -107,7 +107,16 @@ namespace CWB.ProductionPlanWO.Configurations
              .HasColumnName("ParentProcplanId")
              .HasDefaultValue(0).
              IsRequired();
-
+            builder
+             .Property(p => p.Combined)
+             .HasColumnName("Combined")
+             .HasDefaultValue('N').
+             IsRequired();
+            builder
+             .Property(p => p.Consolidation_Flag)
+             .HasColumnName("Consolidation_Flag")
+             .HasDefaultValue(0).
+             IsRequired();
             builder
                 .Property(p => p.PlanReceiptDate)
                 .HasColumnName("PlanReceiptDate")

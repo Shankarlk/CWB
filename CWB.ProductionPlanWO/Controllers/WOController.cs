@@ -272,6 +272,31 @@ namespace CWB.ProductionPlanWO.Controllers
             var allwo = await _woSerivce.Getallconsolidationwo(tenantId);
             return Ok(allwo);
         }
+
+        [HttpPost]
+        [Route(ApiRoutes.WO.PostConsolidationProcplan)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(ProcPlanConsolidationMappingVM))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> PostConsolidationProcplan([FromBody] List<ProcPlanConsolidationMappingVM> productions)
+        {
+            var productionPlan = await _woSerivce.PostConsolidationProcplan(productions);
+            return Ok(productionPlan);
+        }
+        [HttpGet]
+        [Route(ApiRoutes.WO.GetallconsolidationProcplan)]
+        [Produces(AppContentTypes.ContentType, Type = typeof(List<ProcPlanConsolidationMappingVM>))]
+        [Authorize(Roles = Roles.ADMIN)]
+        public async Task<IActionResult> GetallconsolidationProcplan(long tenantId)
+        {
+            var allwo = await _woSerivce.GetallconsolidationProcplan(tenantId);
+            return Ok(allwo);
+        }
+
+
+
+
+
+
         [HttpPost]
         [Route(ApiRoutes.WO.UpdateProductionPlan_Wo)]
         [Produces(AppContentTypes.ContentType, Type =typeof(ProductionPlan_WOVM))]

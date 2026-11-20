@@ -231,6 +231,11 @@ namespace CWB.ProductionPlanWO.Services
         Task<IEnumerable<Matl_Issue_ListVM>> GetAllMatlIssueListForShop(long tenantId);
         Task<List<ConsolidatedWoMappingVM>> PostConsolidationWo(List<ConsolidatedWoMappingVM> productions);
         Task<IEnumerable<ConsolidatedWoMappingVM>> Getallconsolidationwo(long tenantId);
+
+
+        Task<IEnumerable<ProcPlanConsolidationMappingVM>> GetallconsolidationProcplan(long tenantId);
+        Task<List<ProcPlanConsolidationMappingVM>> PostConsolidationProcplan(List<ProcPlanConsolidationMappingVM> productions);
+
         string HelloWorld();
     }
 }

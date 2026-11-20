@@ -89,7 +89,7 @@ namespace CWB.ProductionPlanWO.Services
         private readonly IConsolidatedWoMappingRepository _COnsolidatedWomappingRepository;
         private readonly IInv_Trans_ListRepository _Inv_Trans_ListRepository;
         private readonly IInput_Resrv_ListRepository _Input_Resrv_ListRepository;
-
+        private readonly IProcPlanConsolidationMappingRepository _ProcplanConsolidationRepository;
         public WOService(
             ILoggerManager logger, IMapper mapper, IUnitOfWork unitOfWork
             , IWorkOrderRepository workOrderRepository , IPOLogRepository pOLogRepository
@@ -110,7 +110,7 @@ namespace CWB.ProductionPlanWO.Services
             IMc_Timeslot_ListRepository Mc_Timeslot_ListRepository,ITempMc_Timeslot_ListRepository TempMc_Timeslot_ListRepository,
             INon_Plan_Wk_ListRepository Non_Plan_Wk_ListRepository,IWO_Wait_ListRepository WO_Wait_ListRepository,ITempWO_Wait_ListRepository TempWO_Wait_ListRepository,IWO_Bookout_LogRepository WO_Bookout_LogRepository,ITimeslot_SettingRepository Timeslot_SettingRepository,ITimeslot_ListRepository Timeslot_ListRepository,IRwk_ListRepository Rwk_ListRepository,IOpr_ListRepository Opr_ListRepository,ITempOpr_ListRepository TempOpr_ListRepository,IShop_Insp_LogRepository Shop_Insp_LogRepository,ISubCon_ListRepository SubCon_ListRepository,ITempSubCon_ListRepository TempSubCon_ListRepository, IMc_Wait_ListRepository Mc_Wait_ListRepository,IMatl_Issue_SettingsRepository Matl_Issue_SettingsRepository,IMatl_Issue_ListRepository Matl_Issue_ListRepository,
             ITempMc_Wait_ListRepository TempMc_Wait_ListRepository, INon_Plan_Wk_type_ListRepository Non_Plan_Wk_type_ListRepository, ITime_Slot_AllocationRepository Time_Slot_AllocationRepository,IConsolidatedWoMappingRepository consolidatedWoMappingRepository, IInv_Trans_ListRepository Inv_Trans_ListRepository,
-            IInput_Resrv_ListRepository Input_Resrv_ListRepository)
+            IInput_Resrv_ListRepository Input_Resrv_ListRepository,IProcPlanConsolidationMappingRepository ProcplanConsolidationRepository)
         {
             _logger = logger;
             _mapper = mapper;
@@ -188,6 +188,7 @@ namespace CWB.ProductionPlanWO.Services
             _COnsolidatedWomappingRepository = consolidatedWoMappingRepository;
             _Inv_Trans_ListRepository = Inv_Trans_ListRepository;
             _Input_Resrv_ListRepository = Input_Resrv_ListRepository;
+            _ProcplanConsolidationRepository = ProcplanConsolidationRepository;
         }
 
         public string HelloWorld()
@@ -570,7 +571,7 @@ namespace CWB.ProductionPlanWO.Services
                     DateTime dt = DateTime.Now;
                     pp.Reference = "PP_" + dt.ToString("yyyyMMddHHmmssffff");
                     pp.TestData = 'Y';
-                    pp.Plan_Proc_Qnty = item.Calc_Proc_Qnty - item.OtyOnHand;
+                    pp.Plan_Proc_Qnty = item.Plan_Proc_Qnty;
                     try
                     {
                         await _procPlanRepository.AddAsync(pp);
@@ -597,7 +598,7 @@ namespace CWB.ProductionPlanWO.Services
                     wkord.For_Ref = pp.For_Ref;
                     wkord.Calc_Proc_Qnty = pp.Plan_Proc_Qnty;
                     wkord.SupplierId = pp.SupplierId;
-
+                    wkord.Consolidation_Flag = pp.Consolidation_Flag;
 
                     pp = await _procPlanRepository.UpdateAsync(wkord.Id, wkord);
                 }
@@ -1248,6 +1249,50 @@ namespace CWB.ProductionPlanWO.Services
             var allpp = _COnsolidatedWomappingRepository.GetRangeAsync(d => d.TenantId == tenantId);
             return _mapper.Map<IEnumerable<ConsolidatedWoMappingVM>>(allpp);
         }
+
+
+
+        public async Task<List<ProcPlanConsolidationMappingVM>> PostConsolidationProcplan(List<ProcPlanConsolidationMappingVM> productions)
+        {
+            foreach (ProcPlanConsolidationMappingVM item in productions)
+            {
+                var pp = _mapper.Map<ProcPlanConsolidationMapping>(item);
+
+                if (pp.Id == 0)
+                {
+
+                    try
+                    {
+                        await _ProcplanConsolidationRepository.AddAsync(pp);
+                    }
+                    catch (Exception ex)
+                    {
+                        Exception exa = ex.InnerException;
+                        string msg = ex.Message;
+                    }
+                }
+                try
+                {
+                    await _unitOfWork.CommitAsync();
+                }
+                catch (Exception ex)
+                {
+                    Exception exa = ex.InnerException;
+                    string msg = ex.Message;
+                }
+            }
+
+
+            return productions;
+        }
+        public async Task<IEnumerable<ProcPlanConsolidationMappingVM>> GetallconsolidationProcplan(long tenantId)
+        {
+            var allpp = _ProcplanConsolidationRepository.GetRangeAsync(d => d.TenantId == tenantId);
+            return _mapper.Map<IEnumerable<ProcPlanConsolidationMappingVM>>(allpp);
+        }
+
+
+
         public async Task<ProductionPlan_WOVM> UpdateProductionPlan_Wo(ProductionPlan_WOVM productions)
         {
             var pp = _mapper.Map<ProductionPlan_WO>(productions);

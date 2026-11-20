@@ -32,5 +32,7 @@ namespace CWB.ProductionPlanWO.ViewModels
         public int MinimumOrderQuantity { get; set; }
         public decimal Price { get; set; }
         public long ParentProcplanId { get; set; }
+        public char Combined { get; set; }
+        public int Consolidation_Flag { get; set; }
     }
 }

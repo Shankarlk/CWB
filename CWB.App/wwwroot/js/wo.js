@@ -572,6 +572,7 @@ $(document).ready(function () {
                     dataType: "json",
                     success: function (result) {
                         window.locationre = result.url;
+                        loadSO();
 
                     }
                 });
