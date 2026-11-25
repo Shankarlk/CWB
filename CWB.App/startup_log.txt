@@ -14443,3 +14443,7 @@
 2026-11-25 04:38:51 | ConfigureServices started
 2026-11-25 04:38:58 | ConfigureServices completed successfully
 2026-11-25 04:39:01 | Configure pipeline started
+2026-11-25 05:00:01 | Program.Main started
+2026-11-25 05:00:01 | Building host
+2026-11-25 05:00:05 | Configuring WebHost
+2026-11-25 05:00:23 | Startup constructor started
