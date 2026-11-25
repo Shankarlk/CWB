@@ -47,117 +47,228 @@
 
 
     </style>
-<div class="container-fluid">
+    <div class="container-fluid">
 
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <h3>Unit Pack Update</h3>
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h3>Unit Pack Update</h3>
+            </div>
         </div>
-    </div>
-    @{
-        List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM> permissionResult = null;
-        var permissionsJson = HttpContextAccessor.HttpContext.Session.GetString("Permissions");
-        if (permissionsJson != null)
-        {
-            permissionResult = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM>>(permissionsJson);
+        @{
+            List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM> permissionResult = null;
+            var permissionsJson = HttpContextAccessor.HttpContext.Session.GetString("Permissions");
+            if (permissionsJson != null)
+            {
+                permissionResult = Newtonsoft.Json.JsonConvert.DeserializeObject<List<CWB.App.Models.EmployeeMaster.Role_UI_ListVM>>(permissionsJson);
 
+            }
         }
-    }
-    <div class="row">
 
-        <!-- Parts with Stock -->
-        <div class="col-lg-6">
+        @if (permissionResult != null)
+        {
+            @if (permissionResult.Any(r => r.Menu3 == "Update Stock"))
+            {
+                <div class="row">
 
-            <div class="card">
+                    <!-- Parts with Stock -->
+                    <div class="col-lg-6">
 
-                <div class="card-header text-center">
-                    <h5>Part Nos with Stock</h5>
+                        <div class="card">
+
+                            <div class="card-header text-center">
+                                <h5>Part Nos with Stock</h5>
+                            </div>
+
+                            <div class="card-body">
+
+                                <label>Gro Part No</label>
+
+                                <input type="text"
+                                       id="txtWithStockSearch"
+                                       class="form-control"
+                                       placeholder="Search Part No / Description" />
+
+                                <div class="table-responsive  mt-3">
+
+                                    <table class="table table-bordered table-hover"
+                                           id="tblWithStock">
+
+                                        <thead class="table-info">
+
+                                            <tr>
+                                                <th>Gro Part No / Description</th>
+                                                <th width="80">QOH</th>
+                                                <th width="40"></th>
+                                            </tr>
+
+                                        </thead>
+
+                                        <tbody></tbody>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Parts with Zero Stock -->
+
+                    <div class="col-lg-6">
+
+                        <div class="card">
+
+                            <div class="card-header text-center">
+                                <h5>Part Nos with Zero Stock</h5>
+                            </div>
+
+                            <div class="card-body">
+
+                                <label>Gro Part No</label>
+
+                                <input type="text"
+                                       id="txtZeroStockSearch"
+                                       class="form-control"
+                                       placeholder="Search Part No / Description" />
+
+                                <div class="table-responsive   mt-3">
+
+                                    <table class="table table-bordered table-hover"
+                                           id="tblZeroStock">
+
+                                        <thead class="table-info">
+
+                                            <tr>
+                                                <th>Gro Part No / Description</th>
+                                                <th width="40"></th>
+                                            </tr>
+
+                                        </thead>
+
+                                        <tbody></tbody>
+
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <div class="row">
+
+                <!-- Parts with Stock -->
+                <div class="col-lg-6">
+
+                    <div class="card">
+
+                        <div class="card-header text-center">
+                            <h5>Part Nos with Stock</h5>
+                        </div>
+
+                        <div class="card-body">
+
+                            <label>Gro Part No</label>
+
+                            <input type="text"
+                                   id="txtWithStockSearch"
+                                   class="form-control"
+                                   placeholder="Search Part No / Description" />
+
+                            <div class="table-responsive  mt-3">
+
+                                <table class="table table-bordered table-hover"
+                                       id="tblWithStock">
+
+                                    <thead class="table-info">
+
+                                        <tr>
+                                            <th>Gro Part No / Description</th>
+                                            <th width="80">QOH</th>
+                                            <th width="40"></th>
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody></tbody>
+
+                                </table>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <div class="card-body">
+                <!-- Parts with Zero Stock -->
 
-                    <label>Gro Part No</label>
+                <div class="col-lg-6">
 
-                    <input type="text"
-                           id="txtWithStockSearch"
-                           class="form-control"
-                           placeholder="Search Part No / Description" />
+                    <div class="card">
 
-                    <div class="table-responsive  mt-3">
+                        <div class="card-header text-center">
+                            <h5>Part Nos with Zero Stock</h5>
+                        </div>
 
-                        <table class="table table-bordered table-hover"
-                               id="tblWithStock">
+                        <div class="card-body">
 
-                            <thead class="table-info">
+                            <label>Gro Part No</label>
 
-                                <tr>
-                                    <th>Gro Part No / Description</th>
-                                    <th width="80">QOH</th>
-                                    <th width="40"></th>
-                                </tr>
+                            <input type="text"
+                                   id="txtZeroStockSearch"
+                                   class="form-control"
+                                   placeholder="Search Part No / Description" />
 
-                            </thead>
+                            <div class="table-responsive   mt-3">
 
-                            <tbody></tbody>
+                                <table class="table table-bordered table-hover"
+                                       id="tblZeroStock">
 
-                        </table>
+                                    <thead class="table-info">
+
+                                        <tr>
+                                            <th>Gro Part No / Description</th>
+                                            <th width="40"></th>
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody></tbody>
+
+                                </table>
+
+                            </div>
+
+                        </div>
 
                     </div>
 
                 </div>
 
             </div>
+        }
 
-        </div>
 
-        <!-- Parts with Zero Stock -->
 
-        <div class="col-lg-6">
 
-            <div class="card">
 
-                <div class="card-header text-center">
-                    <h5>Part Nos with Zero Stock</h5>
-                </div>
 
-                <div class="card-body">
 
-                    <label>Gro Part No</label>
-
-                    <input type="text"
-                           id="txtZeroStockSearch"
-                           class="form-control"
-                           placeholder="Search Part No / Description" />
-
-                    <div class="table-responsive   mt-3">
-
-                        <table class="table table-bordered table-hover"
-                               id="tblZeroStock">
-
-                            <thead class="table-info">
-
-                                <tr>
-                                    <th>Gro Part No / Description</th>
-                                    <th width="40"></th>
-                                </tr>
-
-                            </thead>
-
-                            <tbody></tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
+ 
 
     </div>
-
-</div>
 
 <div class="modal fade" id="updateStockModal" tabindex="-1" data-bs-backdrop="static"
      data-bs-keyboard="false">

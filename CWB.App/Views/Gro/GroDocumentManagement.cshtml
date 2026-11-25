@@ -23,38 +23,72 @@
                 }
 
             </div>
+            @if (permissionResult != null)
+            {
+                @if (permissionResult.Any(r => r.Menu3 == "Inv/DC Delete"))
+                {
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <h5>Gro Invoice/DC Delete</h5>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-primary"
+                                    onclick="OpenInvoiceDeletePopup()">
+                                Inv / DC Delete
+                            </button>
+                        </div>
+                    </div>
+                    <hr />
+                }
 
+                @if (permissionResult.Any(r => r.Menu3 == "Stock Correction"))
+                {
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <h5>Stock Correction</h5>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button id="btnStockCorrection" class="btn btn-primary">
+                                Stock Correction
+                            </button>
+                        </div>
+                    </div>
+
+                    <hr />
+                }
+            }
+            else
+            {
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <h5>Gro Invoice/DC Delete</h5>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-primary"
+                                onclick="OpenInvoiceDeletePopup()">
+                            Inv / DC Delete
+                        </button>
+                    </div>
+                </div>
+                <hr />
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <h5>Stock Correction</h5>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button id="btnStockCorrection" class="btn btn-primary">
+                            Stock Correction
+                        </button>
+                    </div>
+                </div>
+
+                <hr />
+            }
             <!-- Upload Section -->
             <!-- Gro Part List Update -->
 
 
-            <div class="row align-items-center">
-                <div class="col-md-4">
-                    <h5>Gro Invoice/DC Delete</h5>
-                </div>
-                <div class="col-md-3 text-end">
-                    <button class="btn btn-primary"
-                            onclick="OpenInvoiceDeletePopup()">
-                        Inv / DC Delete
-                    </button>
-                </div>
-            </div>
-            <hr />
-
-            <!-- Courier List Update -->
-
-            <div class="row align-items-center">
-                <div class="col-md-4">
-                    <h5>Stock Correction</h5>
-                </div>
-                <div class="col-md-3 text-end">
-                    <button id="btnStockCorrection" class="btn btn-primary">
-                        Stock Correction
-                    </button>
-                </div>
-            </div>
-
-            <hr />
+           
 
 
 
@@ -497,14 +531,34 @@
                 </a>
 
                 <div class="dropdown-menu dropdown-menu-end">
+                    @if (permissionResult != null)
+                    {
+                        var pr = permissionResult
+                            .FirstOrDefault(r => r.Menu3 == "Inv / DC Delete");
 
-                    <a href="javascript:void(0)"
-                       class="dropdown-item"
-                       onclick="DeleteDispatchHeader('{gro_Disp_HeaderId}')">
+                        if (pr != null && pr.PermissionId >= 4)
+                        {
+                            <a href="javascript:void(0)"
+                               class="dropdown-item"
+                               onclick="DeleteDispatchHeader('{gro_Disp_HeaderId}')">
 
-                        Delete
+                                Delete
 
-                    </a>
+                            </a>
+                        }
+
+                    }
+                    else
+                    {
+                        <a href="javascript:void(0)"
+                           class="dropdown-item"
+                           onclick="DeleteDispatchHeader('{gro_Disp_HeaderId}')">
+
+                            Delete
+
+                        </a>
+                    }
+                   
 
                 </div>
 

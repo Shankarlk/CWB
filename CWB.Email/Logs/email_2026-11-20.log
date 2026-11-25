@@ -8,3 +8,23 @@
 2026-11-20 08:47:07.7529 INFO Hosting environment: Production
 2026-11-20 08:47:08.2103 INFO Content root path: /app
 2026-11-20 08:47:26.2152 ERROR Consume exception
+2026-11-20 09:42:04.8233 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-11-20 09:42:05.3364 INFO Application started. Press Ctrl+C to shut down.
+2026-11-20 09:42:05.4382 INFO Hosting environment: Production
+2026-11-20 09:42:05.6888 INFO Content root path: /app
+2026-11-20 09:42:08.4109 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3764ms in state CONNECT)
+2026-11-20 09:42:08.4592 ERROR Kafka error: 1/1 brokers are down
+2026-11-20 09:42:12.8567 ERROR Kafka error: kafka:9092/bootstrap: Failed to resolve 'kafka:9092': Name or service not known (after 3322ms in state CONNECT, 1 identical error(s) suppressed)
+2026-11-20 09:42:24.6051 ERROR Kafka error: kafka:9092/bootstrap: Connect to ipv4#172.18.0.15:9092 failed: Connection refused (after 118ms in state CONNECT)
+2026-11-20 09:42:43.3710 ERROR Kafka error: kafka:9092/bootstrap: Connect to ipv4#172.18.0.15:9092 failed: Connection refused (after 1ms in state CONNECT, 21 identical error(s) suppressed)
+2026-11-20 09:43:11.8531 ERROR Consume exception
+2026-11-20 10:00:37.2492 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-11-20 10:00:37.8900 INFO Application started. Press Ctrl+C to shut down.
+2026-11-20 10:00:38.7851 INFO Hosting environment: Production
+2026-11-20 10:00:39.0149 INFO Content root path: /app
+2026-11-20 10:00:39.2850 ERROR Consume exception
+2026-11-20 10:49:18.2636 INFO Kafka Consumer started. Bootstrap=kafka:9092 GroupId=email-consumer-group Topic=email-events
+2026-11-20 10:49:18.6519 INFO Application started. Press Ctrl+C to shut down.
+2026-11-20 10:49:19.4040 INFO Hosting environment: Production
+2026-11-20 10:49:19.4576 INFO Content root path: /app
+2026-11-20 10:49:19.7194 ERROR Consume exception

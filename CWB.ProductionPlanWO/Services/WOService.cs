@@ -282,6 +282,7 @@ namespace CWB.ProductionPlanWO.Services
                     wkord.EndingOpNo = wo.EndingOpNo;
                     wkord.ReloadOption = wo.ReloadOption;
                     wkord.Active = wo.Active;
+                    wkord.AddnOtyUser = wo.AddnOtyUser;
                     wo = await _workOrderRepository.UpdateAsync(wo.Id, wkord);
                     var poLogvm = _mapper.Map<POLog>(poLog);
                     await _pOLogRepository.AddAsync(poLogvm);

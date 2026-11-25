@@ -43,224 +43,230 @@
             }
             <!-- Upload Section -->
 
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h5>
-                        Upload Gro Data from Excel File
-                        <small>(Last Updated on  <span id="LastUpdatedDate">--</span>)</small>
-                    </h5>
-                </div>
-                <div class="col-md-4 text-end">
-                    <button class="btn btn-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#groUploadModal">
-                        Upload
-                    </button>
-                </div>
-            </div>
 
-
-            <!-- Dispatch Qty -->
-
-            <div class="row">
-                <div class="col-md-9">
-                    <h5>Number of Indent Line Items to be Dispatched</h5>
-
-                    <div class="table-responsive">
-                        <table class="table table-bordered text-center">
-                            <thead>
-                                <tr>
-                                    <th>Ageing</th>
-                                    <th>0</th>
-                                    <th>1</th>
-                                    <th>2</th>
-                                    <th>3</th>
-                                    <th>> 3</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                                <tr>
-                                    <td>Full Qty to be Dispatched</td>
-
-                                    <td id="full0"></td>
-                                    <td id="full1"></td>
-                                    <td id="full2"></td>
-                                    <td id="full3"></td>
-                                    <td id="fullgt3"></td>
-                                    <td id="fulltotal"></td>
-                                </tr>
-
-                                <tr>
-                                    <td>Partial Qty to be Dispatched</td>
-
-                                    <td id="partial0"></td>
-                                    <td id="partial1"></td>
-                                    <td id="partial2"></td>
-                                    <td id="partial3"></td>
-                                    <td id="partialgt3"></td>
-                                    <td id="partialtotal"></td>
-                                </tr>
-
-                                <tr hidden>
-                                    <td>Qty not Dispatched</td>
-
-                                    <td id="none0"></td>
-                                    <td id="none1"></td>
-                                    <td id="none2"></td>
-                                    <td id="none3"></td>
-                                    <td id="nonegt3"></td>
-                                    <td id="nonetotal"></td>
-                                </tr>
-
-                                <tr>
-
-                                    <td><b>Total</b></td>
-
-                                    <td id="total0"></td>
-                                    <td id="total1"></td>
-                                    <td id="total2"></td>
-                                    <td id="total3"></td>
-                                    <td id="totalgt3"></td>
-                                    <td id="grandtotal"></td>
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="col-md-3 text-end align-self-center">
-
-                    <button class="btn btn-primary gro-btn"
-                            data-bs-toggle="modal"
-                            data-bs-target="#dispatchPopup">
-                        Dispatch Qnty
-                    </button>
-                </div>
-            </div>
-
-
-            <!-- Dispatch Details -->
-
-            <div class="row align-items-center">
-                <div class="col-md-9">
-                    <h5>
-                        Number of Dispatches waiting for Courier Dispatch Details
-                        Update :  <span id="pendingCourierCount">0</span>
-                    </h5>
-                </div>
-
-                <div class="col-md-3 text-end">
-                    <button class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#dispatchDetailsDataUpdatePopup">
-                        Dispatch Details
-                    </button>
-                </div>
-            </div>
-            <hr class="my-1" />
-            <div class="row align-items-center">
-                <div class="col-md-9">
-                    <h5>
-                        Number of Invoices waiting for Upload to Tally
-                        : xx
-                    </h5>
-                </div>
-
-                <div class="col-md-3 text-end">
-                    <button class="btn btn-primary" id="btnUploadInvoice">
-                        Upload Invoice
-                    </button>
-                </div>
-            </div>
-
-
-            <hr class="my-1" />
-            <!-- Delivery Details -->
-
-            <div class="row">
-                <div class="col-md-9">
-
-                    <h5>
-                        Number of Indent waiting for Delivery Date Update :  <span id="pendingDeliveryCount">0</span>
-                    </h5>
-
-                    <div class="table-responsive">
-                        <table class="table table-bordered text-center">
-                            <thead>
-                                <tr>
-                                    <th>Ageing</th>
-                                    <th>0-2</th>
-                                    <th>3-5</th>
-                                    <th>5-7</th>
-                                    <th>8-10</th>
-                                    <th>>11</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <tr>
-                                    <td>Full Qty to be Dispatched</td>
-                                    <td id="delivery0to2"></td>
-                                    <td id="delivery3to5"></td>
-                                    <td id="delivery6to7"></td>
-                                    <td id="delivery8to10"></td>
-                                    <td id="deliverygt10"></td>
-                                    <td id="deliveryTotal"></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-
-
-                </div>
-
-                <div class="col-md-3 text-end align-self-center">
-                    <button class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#deliverydataupdatemodal">
-                        Delivery Details
-                    </button>
-                </div>
-            </div>
-
-
-            <!-- Delivery Complete -->
-
-            <div class="row align-items-center">
-                <div class="col-md-9">
-                    <h5>View Dispatched / Delivered Indent Data</h5>
-                </div>
-
-                <div class="col-md-3 text-end">
-                    <button class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#deliveryCompletePopup">
-                        Delivery Complete
-                    </button>
-                </div>
-            </div>
-            <hr class="my-1" />
-
-            <!-- MIS -->
-
-            <div class="row align-items-center">
-                <div class="col-md-9">
-                    <h5>View Reports / Analysis</h5>
-                </div>
-
-                <div class="col-md-3 text-end">
-                    <button class="btn btn-primary gro-btn">
-                        MIS
-                    </button>
-                </div>
-            </div>
-            <hr class="my-1" />
-
-            <!-- Setup -->
             @if (permissionResult != null)
             {
+                @if (permissionResult.Any(r => r.Menu3 == "Upload ExcelData"))
+                {
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5>
+                                Upload Gro Data from Excel File
+                                <small>(Last Updated on  <span id="LastUpdatedDate">--</span>)</small>
+                            </h5>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-primary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#groUploadModal">
+                                Upload
+                            </button>
+                        </div>
+                    </div>
+                }
+                @if (permissionResult.Any(r => r.Menu3 == "Dispatch Qnty"))
+                {
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h5>Number of Indent Line Items to be Dispatched</h5>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>Ageing</th>
+                                            <th>0</th>
+                                            <th>1</th>
+                                            <th>2</th>
+                                            <th>3</th>
+                                            <th>> 3</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr>
+                                            <td>Full Qty to be Dispatched</td>
+
+                                            <td id="full0"></td>
+                                            <td id="full1"></td>
+                                            <td id="full2"></td>
+                                            <td id="full3"></td>
+                                            <td id="fullgt3"></td>
+                                            <td id="fulltotal"></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Partial Qty to be Dispatched</td>
+
+                                            <td id="partial0"></td>
+                                            <td id="partial1"></td>
+                                            <td id="partial2"></td>
+                                            <td id="partial3"></td>
+                                            <td id="partialgt3"></td>
+                                            <td id="partialtotal"></td>
+                                        </tr>
+
+                                        <tr hidden>
+                                            <td>Qty not Dispatched</td>
+
+                                            <td id="none0"></td>
+                                            <td id="none1"></td>
+                                            <td id="none2"></td>
+                                            <td id="none3"></td>
+                                            <td id="nonegt3"></td>
+                                            <td id="nonetotal"></td>
+                                        </tr>
+
+                                        <tr>
+
+                                            <td><b>Total</b></td>
+
+                                            <td id="total0"></td>
+                                            <td id="total1"></td>
+                                            <td id="total2"></td>
+                                            <td id="total3"></td>
+                                            <td id="totalgt3"></td>
+                                            <td id="grandtotal"></td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 text-end align-self-center">
+                            <button class="btn btn-primary gro-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#dispatchPopup">
+                                Dispatch Qnty
+                            </button>
+
+                        </div>
+                    </div>
+
+                }
+                @if (permissionResult.Any(r => r.Menu3 == "Dispatch Details"))
+                {
+                    <div class="row align-items-center">
+                        <div class="col-md-9">
+                            <h5>
+                                Number of Dispatches waiting for Courier Dispatch Details
+                                Update :  <span id="pendingCourierCount">0</span>
+                            </h5>
+                        </div>
+
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#dispatchDetailsDataUpdatePopup">
+                                Dispatch Details
+                            </button>
+                        </div>
+                    </div>
+                    <hr class="my-1" />
+                }
+                @if (permissionResult.Any(r => r.Menu3 == "Upload Invoice"))
+                {
+                    <div class="row align-items-center">
+                        <div class="col-md-9">
+                            <h5>
+                                Number of Invoices waiting for Upload to Tally
+                                : xx
+                            </h5>
+                        </div>
+
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-primary" id="btnUploadInvoice">
+                                Upload Invoice
+                            </button>
+
+                        </div>
+                    </div>
+                    <hr class="my-1" />
+                }
+                @if (permissionResult.Any(r => r.Menu3 == "Delivery Details"))
+                {
+                    <div class="row">
+                        <div class="col-md-9">
+
+                            <h5>
+                                Number of Indent waiting for Delivery Date Update :  <span id="pendingDeliveryCount">0</span>
+                            </h5>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                        <tr>
+                                            <th>Ageing</th>
+                                            <th>0-2</th>
+                                            <th>3-5</th>
+                                            <th>5-7</th>
+                                            <th>8-10</th>
+                                            <th>>11</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr>
+                                            <td>Full Qty to be Dispatched</td>
+                                            <td id="delivery0to2"></td>
+                                            <td id="delivery3to5"></td>
+                                            <td id="delivery6to7"></td>
+                                            <td id="delivery8to10"></td>
+                                            <td id="deliverygt10"></td>
+                                            <td id="deliveryTotal"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+
+                        </div>
+
+                        <div class="col-md-3 text-end align-self-center">
+                            <button class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#deliverydataupdatemodal">
+                                Delivery Details
+                            </button>
+                            }
+
+                        </div>
+                    </div>
+                    <hr class="my-1" />
+                }
+                @if (permissionResult.Any(r => r.Menu3 == "Delivery Complete"))
+                {
+                    <div class="row align-items-center">
+                        <div class="col-md-9">
+                            <h5>View Dispatched / Delivered Indent Data</h5>
+                        </div>
+
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#deliveryCompletePopup">
+                                Delivery Complete
+                            </button>
+                        </div>
+                    </div>
+                    <hr class="my-1" />
+                }
+                @if (permissionResult.Any(r => r.Menu3 == "MIS"))
+                {
+                    <div class="row align-items-center">
+                        <div class="col-md-9">
+                            <h5>View Reports / Analysis</h5>
+                        </div>
+
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-primary gro-btn">
+                                MIS
+                            </button>
+                        </div>
+                    </div>
+                    <hr class="my-1" />
+                }
                 @if (permissionResult.Any(r => r.Menu3 == "Gro Sales Setup"))
                 {
                     <div class="row align-items-center">
@@ -276,9 +282,221 @@
                         </div>
                     </div>
                 }
+
+
             }
             else
             {
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5>
+                            Upload Gro Data from Excel File
+                            <small>(Last Updated on  <span id="LastUpdatedDate">--</span>)</small>
+                        </h5>
+                    </div>
+                    <div class="col-md-4 text-end">
+
+                        <button class="btn btn-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#groUploadModal">
+                            Upload
+                        </button>
+                    </div>
+                </div>
+                <hr class="my-1" />
+                <div class="row">
+                    <div class="col-md-9">
+                        <h5>Number of Indent Line Items to be Dispatched</h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <th>Ageing</th>
+                                        <th>0</th>
+                                        <th>1</th>
+                                        <th>2</th>
+                                        <th>3</th>
+                                        <th>> 3</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td>Full Qty to be Dispatched</td>
+
+                                        <td id="full0"></td>
+                                        <td id="full1"></td>
+                                        <td id="full2"></td>
+                                        <td id="full3"></td>
+                                        <td id="fullgt3"></td>
+                                        <td id="fulltotal"></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Partial Qty to be Dispatched</td>
+
+                                        <td id="partial0"></td>
+                                        <td id="partial1"></td>
+                                        <td id="partial2"></td>
+                                        <td id="partial3"></td>
+                                        <td id="partialgt3"></td>
+                                        <td id="partialtotal"></td>
+                                    </tr>
+
+                                    <tr hidden>
+                                        <td>Qty not Dispatched</td>
+
+                                        <td id="none0"></td>
+                                        <td id="none1"></td>
+                                        <td id="none2"></td>
+                                        <td id="none3"></td>
+                                        <td id="nonegt3"></td>
+                                        <td id="nonetotal"></td>
+                                    </tr>
+
+                                    <tr>
+
+                                        <td><b>Total</b></td>
+
+                                        <td id="total0"></td>
+                                        <td id="total1"></td>
+                                        <td id="total2"></td>
+                                        <td id="total3"></td>
+                                        <td id="totalgt3"></td>
+                                        <td id="grandtotal"></td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 text-end align-self-center">
+
+                        <button class="btn btn-primary gro-btn"
+                                data-bs-toggle="modal"
+                                data-bs-target="#dispatchPopup">
+                            Dispatch Qnty
+                        </button>
+
+                    </div>
+                </div>
+                <hr class="my-1" />
+
+                <div class="row align-items-center">
+                    <div class="col-md-9">
+                        <h5>
+                            Number of Dispatches waiting for Courier Dispatch Details
+                            Update :  <span id="pendingCourierCount">0</span>
+                        </h5>
+                    </div>
+
+                    <div class="col-md-3 text-end">
+
+                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#dispatchDetailsDataUpdatePopup">
+                            Dispatch Details
+                        </button>
+
+                    </div>
+                </div>
+                <hr class="my-1" />
+                <div class="row align-items-center">
+                    <div class="col-md-9">
+                        <h5>
+                            Number of Invoices waiting for Upload to Tally
+                            : xx
+                        </h5>
+                    </div>
+
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-primary" id="btnUploadInvoice">
+                            Upload Invoice
+                        </button>
+
+                    </div>
+                </div>
+
+                <hr class="my-1" />
+                <div class="row">
+                    <div class="col-md-9">
+
+                        <h5>
+                            Number of Indent waiting for Delivery Date Update :  <span id="pendingDeliveryCount">0</span>
+                        </h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <th>Ageing</th>
+                                        <th>0-2</th>
+                                        <th>3-5</th>
+                                        <th>5-7</th>
+                                        <th>8-10</th>
+                                        <th>>11</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <td>Full Qty to be Dispatched</td>
+                                        <td id="delivery0to2"></td>
+                                        <td id="delivery3to5"></td>
+                                        <td id="delivery6to7"></td>
+                                        <td id="delivery8to10"></td>
+                                        <td id="deliverygt10"></td>
+                                        <td id="deliveryTotal"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+
+
+                    </div>
+
+                    <div class="col-md-3 text-end align-self-center">
+
+                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#deliverydataupdatemodal">
+                            Delivery Details
+                        </button>
+
+                    </div>
+                </div>
+                <hr class="my-1" />
+                <div class="row align-items-center">
+                    <div class="col-md-9">
+                        <h5>View Dispatched / Delivered Indent Data</h5>
+                    </div>
+
+                    <div class="col-md-3 text-end">
+
+
+                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#deliveryCompletePopup">
+                            Delivery Complete
+                        </button>
+                    </div>
+                </div>
+                <hr class="my-1" />
+                <div class="row align-items-center">
+                    <div class="col-md-9">
+                        <h5>View Reports / Analysis</h5>
+                    </div>
+
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-primary gro-btn">
+                            MIS
+                        </button>
+                    </div>
+                </div>
+                <hr class="my-1" />
+
                 <div class="row align-items-center">
                     <div class="col-md-9">
                         <h5>Setup</h5>
@@ -291,10 +509,7 @@
                         </button>
                     </div>
                 </div>
-
             }
-
-
 
 
         </div>
@@ -3363,12 +3578,45 @@
 
                         Show Details
                     </a>
-                    <a href="javascript:void(0);"
-                       class="dropdown-item"
-                       onclick="UpdateDispheader(this)">
+                    @if (permissionResult != null)
+                    {
+                        var pr = permissionResult.FirstOrDefault(
+                                r => r.Menu3 == "Dispatch Details");
+                        if (pr != null)
+                        {
+                            if (pr.PermissionId == 2)
+                            {
 
-                        Update Dispatch Details
-                    </a>
+                            }
+                            if (pr.PermissionId > 2)
+                            {
+                                <a href="javascript:void(0);"
+                                   class="dropdown-item"
+                                   onclick="UpdateDispheader(this)">
+
+                                    Update Dispatch Details
+                                </a>
+                            }
+
+                        }
+
+                    }
+                    else
+                    {
+                        <a href="javascript:void(0);"
+                           class="dropdown-item"
+                           onclick="UpdateDispheader(this)">
+
+                            Update Dispatch Details
+                        </a>
+                    }
+
+
+
+
+
+
+                  
                 </div>
 
             </div>
@@ -3422,11 +3670,42 @@
 
                         Show Details
                     </a>
-                    <a href="javascript:void(0);"
-                       class="dropdown-item"
-                       onclick="LoadDeliveryDetails(this,'edit')">
-                        Update Delivery Details
-                    </a>
+
+                    @if (permissionResult != null)
+                    {
+                        var pr = permissionResult.FirstOrDefault(
+                                r => r.Menu3 == "Delivery Details");
+                        if (pr != null)
+                        {
+                            if (pr.PermissionId == 2)
+                            {
+
+                            }
+                            if (pr.PermissionId > 2)
+                            {
+                                <a href="javascript:void(0);"
+                                   class="dropdown-item"
+                                   onclick="LoadDeliveryDetails(this,'edit')">
+                                    Update Delivery Details
+                                </a>
+                            }
+
+                        }
+
+                    }
+                    else
+                    {
+                        <a href="javascript:void(0);"
+                           class="dropdown-item"
+                           onclick="LoadDeliveryDetails(this,'edit')">
+                            Update Delivery Details
+                        </a>
+                    }
+
+
+
+
+                  
                 </div>
 
             </div>

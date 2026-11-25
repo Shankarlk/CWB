@@ -43,108 +43,195 @@
             }
             <!-- Upload Section -->
 
-             
 
+            @if (permissionResult != null)
+            {
+                @if (permissionResult.Any(r => r.Menu3 == "Dispatch QntyFinal"))
+                {
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5> Indents to be Packed</h5>
+                            <h5 class="text-center"> Ageing</h5>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>0</th>
+                                            <th>1</th>
+                                            <th>2</th>
+                                            <th>3</th>
+                                            <th>> 3</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr>
+                                            <td>Full Qty to be Dispatched</td>
+
+                                            <td id="full0"></td>
+                                            <td id="full1"></td>
+                                            <td id="full2"></td>
+                                            <td id="full3"></td>
+                                            <td id="fullgt3"></td>
+                                            <td id="fulltotal"></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Partial Qty to be Dispatched</td>
+
+                                            <td id="partial0"></td>
+                                            <td id="partial1"></td>
+                                            <td id="partial2"></td>
+                                            <td id="partial3"></td>
+                                            <td id="partialgt3"></td>
+                                            <td id="partialtotal"></td>
+                                        </tr>
+
+                                        <tr hidden>
+                                            <td>Qty not Dispatched</td>
+
+                                            <td id="none0"></td>
+                                            <td id="none1"></td>
+                                            <td id="none2"></td>
+                                            <td id="none3"></td>
+                                            <td id="nonegt3"></td>
+                                            <td id="nonetotal"></td>
+                                        </tr>
+
+                                        <tr>
+
+                                            <td><b>Total</b></td>
+
+                                            <td id="total0"></td>
+                                            <td id="total1"></td>
+                                            <td id="total2"></td>
+                                            <td id="total3"></td>
+                                            <td id="totalgt3"></td>
+                                            <td id="grandtotal"></td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                     
+
+                    <div class="row justify-content-center">
+                        <div class="col-md-6 text-center">
+                            <button class="btn btn-primary gro-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#dispatchPopup">
+                                Update Dispatch Qnty
+                            </button>
+                        </div>
+
+
+                    </div>
+                }
+            }
+            else
+            {
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5> Indents to be Packed</h5>
+                        <h5 class="text-center"> Ageing</h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>0</th>
+                                        <th>1</th>
+                                        <th>2</th>
+                                        <th>3</th>
+                                        <th>> 3</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    <tr>
+                                        <td>Full Qty to be Dispatched</td>
+
+                                        <td id="full0"></td>
+                                        <td id="full1"></td>
+                                        <td id="full2"></td>
+                                        <td id="full3"></td>
+                                        <td id="fullgt3"></td>
+                                        <td id="fulltotal"></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>Partial Qty to be Dispatched</td>
+
+                                        <td id="partial0"></td>
+                                        <td id="partial1"></td>
+                                        <td id="partial2"></td>
+                                        <td id="partial3"></td>
+                                        <td id="partialgt3"></td>
+                                        <td id="partialtotal"></td>
+                                    </tr>
+
+                                    <tr hidden>
+                                        <td>Qty not Dispatched</td>
+
+                                        <td id="none0"></td>
+                                        <td id="none1"></td>
+                                        <td id="none2"></td>
+                                        <td id="none3"></td>
+                                        <td id="nonegt3"></td>
+                                        <td id="nonetotal"></td>
+                                    </tr>
+
+                                    <tr>
+
+                                        <td><b>Total</b></td>
+
+                                        <td id="total0"></td>
+                                        <td id="total1"></td>
+                                        <td id="total2"></td>
+                                        <td id="total3"></td>
+                                        <td id="totalgt3"></td>
+                                        <td id="grandtotal"></td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+                </div>
+   
+                <div class="row justify-content-center">
+                    <div class="col-md-6 text-center">
+                        <button class="btn btn-primary gro-btn"
+                                data-bs-toggle="modal"
+                                data-bs-target="#dispatchPopup">
+                            Update Dispatch Qnty
+                        </button>
+                    </div>
+
+
+                </div>
+            }
 
             <!-- Dispatch Qty -->
 
-            <div class="row">
-                <div class="col-md-12">
-                    <h5> Indents to be Packed</h5>
-                    <h5 class="text-center"> Ageing</h5>
-
-                    <div class="table-responsive">
-                        <table class="table table-bordered text-center">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>0</th>
-                                    <th>1</th>
-                                    <th>2</th>
-                                    <th>3</th>
-                                    <th>> 3</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-
-                                <tr>
-                                    <td>Full Qty to be Dispatched</td>
-
-                                    <td id="full0"></td>
-                                    <td id="full1"></td>
-                                    <td id="full2"></td>
-                                    <td id="full3"></td>
-                                    <td id="fullgt3"></td>
-                                    <td id="fulltotal"></td>
-                                </tr>
-
-                                <tr>
-                                    <td>Partial Qty to be Dispatched</td>
-
-                                    <td id="partial0"></td>
-                                    <td id="partial1"></td>
-                                    <td id="partial2"></td>
-                                    <td id="partial3"></td>
-                                    <td id="partialgt3"></td>
-                                    <td id="partialtotal"></td>
-                                </tr>
-
-                                <tr hidden>
-                                    <td>Qty not Dispatched</td>
-
-                                    <td id="none0"></td>
-                                    <td id="none1"></td>
-                                    <td id="none2"></td>
-                                    <td id="none3"></td>
-                                    <td id="nonegt3"></td>
-                                    <td id="nonetotal"></td>
-                                </tr>
-
-                                <tr>
-
-                                    <td><b>Total</b></td>
-
-                                    <td id="total0"></td>
-                                    <td id="total1"></td>
-                                    <td id="total2"></td>
-                                    <td id="total3"></td>
-                                    <td id="totalgt3"></td>
-                                    <td id="grandtotal"></td>
-
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                 
-            </div>
+         
 
 
-            
-            
 
-
-            
-
-
-          
-
-            <div class="row justify-content-center">
-                <div class="col-md-6 text-center">
-                    <button class="btn btn-primary gro-btn"
-                            data-bs-toggle="modal"
-                            data-bs-target="#dispatchPopup">
-                       Update Dispatch Qnty
-                    </button>
-                </div>
-
-                
-            </div>
-            
-
-           
 
 
 
@@ -258,11 +345,38 @@
             </div>
 
             <div class="modal-footer">
-                <button id="updatedispatchqnty" class="btn btn-primary" disabled
-                        data-bs-toggle="modal"
-                        data-bs-target="#dispatchQtyModal">
-                    Update Dispatch Qty
-                </button>
+
+                @if (permissionResult != null)
+                {
+                    var pr = permissionResult.FirstOrDefault(
+                            r => r.Menu3 == "Dispatch QntyFinal");
+                    if (pr != null)
+                    {
+                        if (pr.PermissionId == 2)
+                        {
+
+                        }
+                        if (pr.PermissionId > 2)
+                        {
+                            <button id="updatedispatchqnty" class="btn btn-primary" disabled
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#dispatchQtyModal">
+                                Update Dispatch Qty
+                            </button>
+                        }
+
+                    }
+
+                }
+                else
+                {
+                    <button id="updatedispatchqnty" class="btn btn-primary" disabled
+                            data-bs-toggle="modal"
+                            data-bs-target="#dispatchQtyModal">
+                        Update Dispatch Qty
+                    </button>
+                }
+                
 
 
             </div>

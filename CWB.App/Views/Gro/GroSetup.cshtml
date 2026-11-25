@@ -28,84 +28,142 @@
                     X
                 </a>
             </div>
+            @if (permissionResult != null)
+            {
+                @if (permissionResult.Any(r => r.Menu4 == "Part List"))
+                {
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <h5>Gro Part List Update</h5>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-primary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#groPartListModal">
+                                Part List
+                            </button>
+                        </div>
+                    </div>
+                    <hr />
+                }
+                @if (permissionResult.Any(r => r.Menu4 == "Courier List"))
+                {
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <h5>Courier List Update</h5>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-primary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#courierListModal"
+                                    onclick="loadCourierList()">
+                                Courier List
+                            </button>
+                        </div>
+                    </div>
 
-            <!-- Upload Section -->
-            <!-- Gro Part List Update -->
-
-
-            <div class="row align-items-center">
-                <div class="col-md-4">
-                    <h5>Gro Part List Update</h5>
+                    <hr />
+                }
+                @if (permissionResult.Any(r => r.Menu4 == "Inv /  DC"))
+                {
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <h5>Invoice/ DC Control</h5>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-primary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#groInvDcControlModal"
+                                    onclick="loadInvDcControl()">
+                                Inv / DC
+                            </button>
+                        </div>
+                    </div>
+                    <hr />
+                }
+            }
+            else
+            {
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <h5>Gro Part List Update</h5>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#groPartListModal">
+                            Part List
+                        </button>
+                    </div>
                 </div>
-                <div class="col-md-3 text-end">
-                    <button class="btn btn-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#groPartListModal">
-                        Part List
-                    </button>
+                <hr />
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <h5>Courier List Update</h5>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#courierListModal"
+                                onclick="loadCourierList()">
+                            Courier List
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <hr />
 
-            <!-- Courier List Update -->
+                <hr />
 
-            <div class="row align-items-center">
-                <div class="col-md-4">
-                    <h5>Courier List Update</h5>
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <h5>Invoice/ DC Control</h5>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <button class="btn btn-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#groInvDcControlModal"
+                                onclick="loadInvDcControl()">
+                            Inv / DC
+                        </button>
+                    </div>
                 </div>
-                <div class="col-md-3 text-end">
-                    <button class="btn btn-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#courierListModal"
-                             onclick="loadCourierList()">
-                        Courier List
-                    </button>
-                </div>
-            </div>
+                <hr />
+            }
 
-            <hr />
+           
+
+
+            
+
+             
             <!-- Gro Field List Update -->
             <!--<div class="row align-items-center">
-                <div class="col-md-4">
-                    <h5>Gro Field List Update</h5>
-                </div>
-                <div class="col-md-3 text-end">
-                    <button class="btn btn-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#groFieldListModal">
-                        Field List
-                    </button>
-                </div>
-            </div>
-            <hr />-->
+        <div class="col-md-4">
+            <h5>Gro Field List Update</h5>
+        </div>
+        <div class="col-md-3 text-end">
+            <button class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#groFieldListModal">
+                Field List
+            </button>
+        </div>
+    </div>
+    <hr />-->
             <!-- Gro Upload File Details -->
             <!--<div class="row align-items-center">
-                <div class="col-md-4">
-                    <h5>Gro Upload File Details</h5>
-                </div>
-                <div class="col-md-3 text-end">
-                    <button class="btn btn-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#groUploadDetailsModal">
-                        Upload Details
-                    </button>
-                </div>
-            </div>
-            <hr />-->
-            <div class="row align-items-center">
-                <div class="col-md-4">
-                    <h5>Invoice/ DC Control</h5>
-                </div>
-                <div class="col-md-3 text-end">
-                    <button class="btn btn-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#groInvDcControlModal"
-                             onclick="loadInvDcControl()">
-                        Inv / DC
-                    </button>
-                </div>
-            </div>
-            <hr />
+        <div class="col-md-4">
+            <h5>Gro Upload File Details</h5>
+        </div>
+        <div class="col-md-3 text-end">
+            <button class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#groUploadDetailsModal">
+                Upload Details
+            </button>
+        </div>
+    </div>
+    <hr />-->
+            
 
 
         </div>
@@ -226,14 +284,41 @@
 
             </div>
             <div class="modal-footer justify-content-end">
+                @if (permissionResult != null)
+                {
+                    var pr = permissionResult.FirstOrDefault(
+                            r => r.Menu4 == "Part List");
+                    if (pr != null)
+                    {
+                        if (pr.PermissionId == 2)
+                        {
 
-                <button type="button"
-                        class="btn btn-primary"
-                        data-bs-toggle="modal"
-                        data-bs-target="#editGroPartPopup"
-                        onclick="newGroPart()">
-                    New Part
-                </button>
+                        }
+                        if (pr.PermissionId > 2)
+                        {
+                            <button type="button"
+                                    class="btn btn-primary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#editGroPartPopup"
+                                    onclick="newGroPart()">
+                                New Part
+                            </button>
+                        }
+
+                    }
+
+                }
+                else
+                {
+                    <button type="button"
+                            class="btn btn-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editGroPartPopup"
+                            onclick="newGroPart()">
+                        New Part
+                    </button>
+                }
+                
 
 
 
@@ -453,13 +538,39 @@
 
             </div>
             <div class="modal-footer justify-content-end">
+                @if (permissionResult != null)
+                {
+                    var pr = permissionResult.FirstOrDefault(
+                            r => r.Menu4 == "Courier List");
+                    if (pr != null)
+                    {
+                        if (pr.PermissionId == 2)
+                        {
 
-                <button class="btn btn-primary"
-                        data-bs-toggle="modal"
-                        data-bs-target="#editCourierPopup"
-                        onclick="newCourier()">
-                    New Courier
-                </button>
+                        }
+                        if (pr.PermissionId > 2)
+                        {
+                        <button class="btn btn-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editCourierPopup"
+                                onclick="newCourier()">
+                            New Courier
+                        </button>
+                        }
+
+                    }
+
+                }
+                else
+                {
+                    <button class="btn btn-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editCourierPopup"
+                            onclick="newCourier()">
+                        New Courier
+                    </button>
+                }
+                
 
             </div>
         </div>
@@ -666,11 +777,35 @@
             </div>
 
             <div class="modal-footer">
+                @if (permissionResult != null)
+                {
+                    var pr = permissionResult.FirstOrDefault(
+                            r => r.Menu4 == "Courier List");
+                    if (pr != null)
+                    {
+                        if (pr.PermissionId == 2)
+                        {
 
-                <button class="btn btn-primary"
-                        onclick="saveInvDcControl()">
-                    Save
-                </button>
+                        }
+                        if (pr.PermissionId > 2)
+                        {
+                            <button class="btn btn-primary"
+                                    onclick="saveInvDcControl()">
+                                Save
+                            </button>
+                        }
+
+                    }
+
+                }
+                else
+                {
+                    <button class="btn btn-primary"
+                            onclick="saveInvDcControl()">
+                        Save
+                    </button>
+                }
+                
 
             </div>
 
@@ -706,25 +841,61 @@
                     <i class="mdi mdi-dots-vertical"></i>
 
                 </a>
-
+               
                 <div class="dropdown-menu dropdown-menu-end">
+                    @if (permissionResult != null)
+                    {
+                        var pr = permissionResult.FirstOrDefault(
+                                r => r.Menu4 == "Part List");
+                        if (pr != null)
+                        {
+                            if (pr.PermissionId == 2)
+                            {
 
-                    <a href="javascript:void(0);"
-                       class="dropdown-item"
-                       data-bs-toggle="modal"
-                       data-bs-target="#editGroPartPopup"
-                       onclick="editGroPart(this)"
-                       data-id="{gro_Part_ListId}"
-                       data-gropart="{gro_Part_No}"
-                       data-ourpart="{our_Part_No}"
-                       data-description="{ourPartDescription}"
-                       data-mrp="{mrp}"
-                       data-ourprice="{ourPrice}"
-                       data-gstrate="{gstRate}"
-                       data-hsn="{hsnCode}"
-                       data-status="{part_Status}">
-                        Edit
-                    </a>
+                            }
+                            if (pr.PermissionId > 2)
+                            {
+                                <a href="javascript:void(0);"
+                                   class="dropdown-item"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#editGroPartPopup"
+                                   onclick="editGroPart(this)"
+                                   data-id="{gro_Part_ListId}"
+                                   data-gropart="{gro_Part_No}"
+                                   data-ourpart="{our_Part_No}"
+                                   data-description="{ourPartDescription}"
+                                   data-mrp="{mrp}"
+                                   data-ourprice="{ourPrice}"
+                                   data-gstrate="{gstRate}"
+                                   data-hsn="{hsnCode}"
+                                   data-status="{part_Status}">
+                                    Edit
+                                </a>
+                            }
+
+                        }
+
+                    }
+                    else
+                    {
+                        <a href="javascript:void(0);"
+                           class="dropdown-item"
+                           data-bs-toggle="modal"
+                           data-bs-target="#editGroPartPopup"
+                           onclick="editGroPart(this)"
+                           data-id="{gro_Part_ListId}"
+                           data-gropart="{gro_Part_No}"
+                           data-ourpart="{our_Part_No}"
+                           data-description="{ourPartDescription}"
+                           data-mrp="{mrp}"
+                           data-ourprice="{ourPrice}"
+                           data-gstrate="{gstRate}"
+                           data-hsn="{hsnCode}"
+                           data-status="{part_Status}">
+                            Edit
+                        </a>
+                    }
+
 
                 </div>
 
@@ -754,18 +925,49 @@
                 </a>
 
                 <div class="dropdown-menu dropdown-menu-end">
+                    @if (permissionResult != null)
+                    {
+                        var pr = permissionResult.FirstOrDefault(
+                                r => r.Menu4 == "Courier List");
+                        if (pr != null)
+                        {
+                            if (pr.PermissionId == 2)
+                            {
 
-                    <a href="javascript:void(0);"
-                       class="dropdown-item"
-                       data-bs-toggle="modal"
-                       data-bs-target="#editCourierPopup"
-                       onclick="editCourier(this)"
-                       data-id="{courier_List_ID}"
-                       data-name="{courier_Name}"
-                       data-contactperson="{contact_Person}"
-                       data-contactno="{contact_Phone}">
-                        Edit
-                    </a>
+                            }
+                            if (pr.PermissionId > 2)
+                            {
+                                <a href="javascript:void(0);"
+                                   class="dropdown-item"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#editCourierPopup"
+                                   onclick="editCourier(this)"
+                                   data-id="{courier_List_ID}"
+                                   data-name="{courier_Name}"
+                                   data-contactperson="{contact_Person}"
+                                   data-contactno="{contact_Phone}">
+                                    Edit
+                                </a>
+                            }
+
+                        }
+
+                    }
+                    else
+                    {
+                        <a href="javascript:void(0);"
+                           class="dropdown-item"
+                           data-bs-toggle="modal"
+                           data-bs-target="#editCourierPopup"
+                           onclick="editCourier(this)"
+                           data-id="{courier_List_ID}"
+                           data-name="{courier_Name}"
+                           data-contactperson="{contact_Person}"
+                           data-contactno="{contact_Phone}">
+                            Edit
+                        </a>
+                    }
+                    
 
                 </div>
 

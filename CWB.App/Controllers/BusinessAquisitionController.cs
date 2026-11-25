@@ -299,12 +299,15 @@ namespace CWB.App.Controllers
                 }
                 if (quantitynotallocated == 0)
                 {
+                    workOrdersVM.PlanWOQnty = workOrdersVM.CalcWOQty;
                     postWO = await _baService.PostWO(workOrdersVM);
                 }
                 else if (quantitynotallocated < workOrdersVM.CalcWOQty)
                 {
 
-                    workOrdersVM.CalcWOQty = workOrdersVM.CalcWOQty - Convert.ToInt32(quantitynotallocated);
+                   // workOrdersVM.CalcWOQty = workOrdersVM.CalcWOQty - Convert.ToInt32(quantitynotallocated);
+                    workOrdersVM.PlanWOQnty = workOrdersVM.CalcWOQty - Convert.ToInt32(quantitynotallocated);
+                    
                     postWO = await _baService.PostWO(workOrdersVM);
                 }
                 else if (quantitynotallocated >= workOrdersVM.CalcWOQty)
@@ -879,12 +882,13 @@ namespace CWB.App.Controllers
                 if (quantitynotallocated == 0)
                 {
                     // postWO = await _baService.PostWO(workOrdersVM);
+                    item.PlanWOQnty = item.CalcWOQty;
                     finalWOList.Add(item);
                 }
                 else if (quantitynotallocated < item.CalcWOQty)
                 {
 
-                    item.CalcWOQty = item.CalcWOQty - Convert.ToInt32(quantitynotallocated);
+                    item.PlanWOQnty = item.CalcWOQty - Convert.ToInt32(quantitynotallocated);
                     finalWOList.Add(item);
                     //postWO = await _baService.PostWO(workOrdersVM);
                 }
@@ -967,6 +971,52 @@ namespace CWB.App.Controllers
             var postwoso = await _baService.PostWoSoRel(wOSOVMs);
             return Ok(postwoso);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> WOupdate(WorkOrdersVM workOrdersVM)
+        {
+
+            var workOrders = await _baService.AllWorkOrders();
+            var getrecord = workOrders.Where(x => x.WOID == workOrdersVM.WOID).FirstOrDefault();
+
+            if(getrecord!=null)
+            {
+                if(getrecord.PartType==2)
+                {
+                    getrecord.PlanCompletionDate = workOrdersVM.PlanCompletionDate;
+                    if (getrecord.PlanWOQnty < workOrdersVM.PlanWOQnty)
+                    {
+                        getrecord.AddnOtyUser = workOrdersVM.PlanWOQnty - getrecord.PlanWOQnty;
+                    }
+                    else if(getrecord.PlanWOQnty==workOrdersVM.PlanWOQnty)
+                    {
+                        getrecord.AddnOtyUser = 0;
+                    }
+                    var result = await _baService.PostWO(getrecord);
+                }
+                else if(getrecord.PartType==1)
+                {
+                    getrecord.PlanCompletionDate = workOrdersVM.PlanCompletionDate;
+                    if (getrecord.PlanWOQnty < workOrdersVM.PlanWOQnty)
+                    {
+                        getrecord.AddnOtyUser = workOrdersVM.PlanWOQnty - getrecord.PlanWOQnty;
+                    }
+                    else if (getrecord.PlanWOQnty == workOrdersVM.PlanWOQnty)
+                    {
+                        getrecord.AddnOtyUser = 0;
+                    }
+                    getrecord.RoutingId=workOrdersVM.RoutingId;
+                    getrecord.Input_Part_No = workOrdersVM.Input_Part_No;
+
+                    var result = await _baService.PostWO(getrecord);
+                }
+              
+            }
+            return Ok();
+
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> GetSOWorkOrderDetails([FromBody] List<long> salesOrderIds)
         {
@@ -1131,7 +1181,7 @@ namespace CWB.App.Controllers
                 }
                 if (workOrdersVM.PartType == 1)
                 {
-                    workOrdersVM.Parentlevel = 'N';
+                    workOrdersVM.Parentlevel = 'Y';
 
                 }
                 else
@@ -1148,7 +1198,7 @@ namespace CWB.App.Controllers
                             }
                             else
                             {
-                                workOrdersVM.Parentlevel = 'N';
+                                workOrdersVM.Parentlevel = 'Y';
                             }
                         }
                     }

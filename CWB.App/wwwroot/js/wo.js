@@ -767,6 +767,7 @@ $(document).ready(function () {
     
     $("#updateWO").on("click", function () {
         var planwoqty = $('#PlanWoQty').val();
+        var balqtytomanufacture = $('#BalQty').val();
         var wonumber = $('#woNumber').text();
         var woid= $('#WOID').val();
         var soid = $('#SalesOrderId').val();
@@ -784,12 +785,56 @@ $(document).ready(function () {
         const restrictDt = new Date(rstDt); // Get today's date
         var makeFromId = $("#ddlmakefrompopup1").val();
         // Check if WoComplDate is after today's date
-        if (WoComplDate < restrictDt) {
-            alert("Please Don't enter the previous completion date.");
-            $('#WoComplDate').val(""); // Clear the invalid date
-            return false; // Prevent further processing if date is invalid
+        //if (WoComplDate < restrictDt) {
+        //    alert("Please Don't enter the previous completion date.");
+        //    $('#WoComplDate').val(""); // Clear the invalid date
+        //    return false; // Prevent further processing if date is invalid
+        //}
+        var leastReqDate = null;
+
+        $("#multipleSO tbody tr").each(function () {
+            var reqDateStr = $(this).find("td:eq(6)").text().trim();
+
+            if (reqDateStr) {
+                var reqDate = new Date(reqDateStr);
+
+                if (!leastReqDate || reqDate < leastReqDate) {
+                    leastReqDate = reqDate;
+                }
+            }
+        });
+
+        if (leastReqDate) {
+            var maxDate = leastReqDate.getFullYear() + '-' +
+                String(leastReqDate.getMonth() + 1).padStart(2, '0') + '-' +
+                String(leastReqDate.getDate()).padStart(2, '0');
+
+            $('#WoComplDate').attr('max', maxDate);
+
+            var selectedDate = $('#WoComplDate').val();
+
+            if (selectedDate) {
+                var selectedWODate = new Date(selectedDate);
+
+                // Compare dates without time
+                selectedWODate.setHours(0, 0, 0, 0);
+                leastReqDate.setHours(0, 0, 0, 0);
+
+                if (selectedWODate > leastReqDate) {
+                    alert("WO Completion Date cannot be later than the earliest SO Required Date.");
+                    $('#WoComplDate').val(maxDate);
+                    return false;
+                }
+            }
         }
-        
+
+
+
+        if (planwoqty < balqtytomanufacture) {
+            alert("Plan WO Qnty should be Greater than Or Equal To Bal Qty to Manufacture");
+            $('#PlanWoQty').val(balqtytomanufacture);
+            return false;
+        }
 
         if (planwoqty < soqty) {
             alert("Plan WO Qnty should be Greater than Or Equal To Sales Order Qnty");
@@ -798,13 +843,14 @@ $(document).ready(function () {
         else {
             if (planwoqty > 0) {
                 var rowData = {
-                    parentWoId: parseInt(woid),
+                    woid: parseInt(woid),
                     salesOrderId: parseInt(soid),
                     wonumber: " ",
                     partId: parseInt(partid),
                     partType: 0,
                     parentlevel: '',
                     calcWOQty: parseInt(planwoqty),
+                    planWOQnty: parseInt(planwoqty),
                     planCompletionDate: formattedDate,
                     routingId: parseInt(routingid),
                     startingOpNo: parseInt(startingOpNo),
@@ -815,77 +861,83 @@ $(document).ready(function () {
 
                 selectedData = rowData;
                 var resultData = [];
-                
-                api.post("/businessaquisition/WOpost", selectedData).then((data) => {
-                    resultData.push(data);
-                    var wosorel = [];
-                    var wosomethod = {};
-                    resultData.forEach(function (a, i) {
-                        wosorel.push({
-                            workOrderId: a.woid,
-                            salesOrderId: a.salesOrderId,
-                            active : 0
-                        });
-                    });
-                    //requestInProgress = false;
-                    api.getbulk("/WorkOrder/GetSoWo?workOrderId=" + woid).then((data) => {
-                        var checkboxes = $('#multipleSO .rowMCheckbox:checked');
-                        var salesOrderIds = [];
-                        checkboxes.each(function () {
-                            var row = $(this).closest('tr');
-                            var salesOrderId = row.find('td:eq(0)').text(); // or row.find('td:eq(0)').text() if salesOrderId is in the first column
-                            salesOrderIds.push(parseInt(salesOrderId));
-                        });
-                        const filteredData = data.filter((item) => salesOrderIds.includes(item.salesOrderId));
-                        filteredData.forEach(function (a, i) {
-                            wosorel.push({
-                                wosoId: a.wosoId,
-                                workOrderId: a.workOrderId,
-                                salesOrderId: a.salesOrderId,
-                                active: 2
-                            });
-                        });
-                        wosomethod = Object.values(wosorel);
-                        $.ajax({
-                            type: "POST",
-                            url: '/BusinessAquisition/PostWoSoRel',
-                            contentType: "application/json; charset=utf-8",
-                            headers: { 'Content-Type': 'application/json' },
-                            data: JSON.stringify(wosomethod),
-                            dataType: "json",
-                            success: function (result) {
-                            }
-                        });
-
-                        var bal = $('#BalQty').val();
-                        var woinactive = {
-                            woid: parseInt(woid),
-                            salesOrderId: parseInt(soid),
-                            wonumber: wonumber,
-                            partId: parseInt(partid),
-                            partType: 0,
-                            parentlevel: '',
-                            calcWOQty: parseInt(bal),
-                            planCompletionDate: formattedDate,
-                            routingId: parseInt(routingid),
-                            startingOpNo: parseInt(startingOpNo),
-                            endingOpNo: parseInt(endingOpNo),
-                            status: parseInt(status),
-                            active: 2
-                        };
-                        api.post("/businessaquisition/WOpost", woinactive).then((data) => {
-                            loadWO();
-                            loadWoSubCon();
-                        }).catch((error) => {
-                        });
-                    });
-                    //--
-                   
-                    //$("#btnPop1Close").click();
+                api.post("/businessaquisition/WOupdate", selectedData).then((data) => {
+                    loadWO();
+                    
                 }).catch((error) => {
                     AppUtil.HandleError("WOForm", error);
-                    //console.log(error);
                 });
+                $("#btnPop1Close").click();
+                //api.post("/businessaquisition/WOpost", selectedData).then((data) => {
+                //    resultData.push(data);
+                //    var wosorel = [];
+                //    var wosomethod = {};
+                //    resultData.forEach(function (a, i) {
+                //        wosorel.push({
+                //            workOrderId: a.woid,
+                //            salesOrderId: a.salesOrderId,
+                //            active : 0
+                //        });
+                //    });
+                //    //requestInProgress = false;
+                //    api.getbulk("/WorkOrder/GetSoWo?workOrderId=" + woid).then((data) => {
+                //        var checkboxes = $('#multipleSO .rowMCheckbox:checked');
+                //        var salesOrderIds = [];
+                //        checkboxes.each(function () {
+                //            var row = $(this).closest('tr');
+                //            var salesOrderId = row.find('td:eq(0)').text(); // or row.find('td:eq(0)').text() if salesOrderId is in the first column
+                //            salesOrderIds.push(parseInt(salesOrderId));
+                //        });
+                //        const filteredData = data.filter((item) => salesOrderIds.includes(item.salesOrderId));
+                //        filteredData.forEach(function (a, i) {
+                //            wosorel.push({
+                //                wosoId: a.wosoId,
+                //                workOrderId: a.workOrderId,
+                //                salesOrderId: a.salesOrderId,
+                //                active: 2
+                //            });
+                //        });
+                //        wosomethod = Object.values(wosorel);
+                //        $.ajax({
+                //            type: "POST",
+                //            url: '/BusinessAquisition/PostWoSoRel',
+                //            contentType: "application/json; charset=utf-8",
+                //            headers: { 'Content-Type': 'application/json' },
+                //            data: JSON.stringify(wosomethod),
+                //            dataType: "json",
+                //            success: function (result) {
+                //            }
+                //        });
+
+                //        var bal = $('#BalQty').val();
+                //        var woinactive = {
+                //            woid: parseInt(woid),
+                //            salesOrderId: parseInt(soid),
+                //            wonumber: wonumber,
+                //            partId: parseInt(partid),
+                //            partType: 0,
+                //            parentlevel: '',
+                //            calcWOQty: parseInt(bal),
+                //            planCompletionDate: formattedDate,
+                //            routingId: parseInt(routingid),
+                //            startingOpNo: parseInt(startingOpNo),
+                //            endingOpNo: parseInt(endingOpNo),
+                //            status: parseInt(status),
+                //            active: 2
+                //        };
+                //        api.post("/businessaquisition/WOpost", woinactive).then((data) => {
+                //            loadWO();
+                //            loadWoSubCon();
+                //        }).catch((error) => {
+                //        });
+                //    });
+                //    //--
+                   
+                //    //$("#btnPop1Close").click();
+                //}).catch((error) => {
+                //    AppUtil.HandleError("WOForm", error);
+                //    //console.log(error);
+                //});
             } else {
                 alert("Please Select atleast one!");
             }
@@ -909,10 +961,10 @@ $(document).ready(function () {
 
     $('#woc-partno').on('shown.bs.modal', function (event) {
         // Select all checkboxes in the table with the class 'rowMCheckbox'
-        var soqty = $('#SoQty').val();
-        var qntyonhand = $('#QtyOnHand').val();
-        var balqnty = soqty - qntyonhand;
-        $('#BalQty').val(balqnty);
+        //var soqty = $('#SoQty').val();
+        //var qntyonhand = $('#QtyOnHand').val();
+        //var balqnty = soqty - qntyonhand;
+        //$('#BalQty').val(balqnty);
         const checkboxes = document.querySelectorAll('#multipleSO .rowMCheckbox');
        
         // Define the function to update the total quantity
@@ -3467,7 +3519,9 @@ function GetWOData(element) {
         startingOpNo: relatedTarget.data("startopno"),
         endingOpNo: relatedTarget.data("endopno"),
         reloadOption: relatedTarget.data("reloadoption"),
-        woStatus: relatedTarget.data("wostatus")
+        woStatus: relatedTarget.data("wostatus"),
+        planWOQnty: relatedTarget.data("planwoqty"),
+        qtyOnHand: relatedTarget.data("qtyonhand")
     };
 }
 function EditSoCombination(element) {
@@ -3567,9 +3621,15 @@ function OpenSOCombinationPopup(
     $("#woNumber").text(wo.woNumber);
     $("#partNo").text(wo.partNo);
     $("#P1partdesc").text(wo.partDesc);
-
+    console.log("calcWOQty:", wo.calcWOQty);
+    console.log("planWOQnty:", wo.planWOQnty);
+    console.log("qtyOnHand:", wo.qtyOnHand);
+    
     $("#SoQty").val(wo.calcWOQty);
-    $("#PlanWoQty").val(wo.calcWOQty);
+    $("#PlanWoQty").val(wo.planWOQnty);
+    $("#wocQtyOnHand").val(wo.qtyOnHand);
+    $("#BalQty").val(wo.planWOQnty);
+    console.log("BalQty value:", $("#BalQty").val());
 
     $("#woStatus").val(wo.woStatus);
 
@@ -4943,6 +5003,7 @@ function DeleteWo(element) {
                         alert(data);
                     }
                     loadWO();
+                    loadSO();
                 });
             }
            else if (data.length > 0) {
@@ -4954,6 +5015,7 @@ function DeleteWo(element) {
                         alert(data);
                     }
                     loadWO();
+                    loadSO();
                 });
             }
         });

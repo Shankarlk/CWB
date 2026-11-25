@@ -1851,6 +1851,52 @@ namespace CWB.App.Controllers
             var masterparts = await _masterService.MasterPartList();
             foreach (WorkOrdersVM item in workOrders)
             {
+
+
+                long quantitynotallocated = 0;
+                var departmentstores = await _departmentService.GetAllStoresIDs();
+                var invpart = await _woService.GetAllInventory_MasterBypartidWithFlag("Internal", departmentstores.Stores_DirMatl_ID, 0, 0, item.PartId);
+                if (invpart.Any())
+                {
+                    var inventorypart = invpart.First();
+                    if (inventorypart != null)
+                    {
+                        var invcount = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                        var varsoallocationbypartid = await _baService.GetSOAllocationlistbyPartid(item.PartId);
+                        if (varsoallocationbypartid.Any())
+                        {
+                            var totalAllocatedQty = varsoallocationbypartid.Where(x => x.Dispatch_Complete == 'N').Sum(x => x.Allocated_Qnty);
+                            if (totalAllocatedQty > 0)
+                            {
+                                quantitynotallocated = Convert.ToInt64(inventorypart.Current_QntOnHand) - totalAllocatedQty;
+                            }
+                            else
+                            {
+                                quantitynotallocated = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                            }
+                        }
+                        else
+                        {
+                            quantitynotallocated = Convert.ToInt64(inventorypart.Current_QntOnHand);
+                        }
+
+                    }
+                    else
+                    {
+                        quantitynotallocated = 0;
+                    }
+
+                    if (quantitynotallocated < 0)
+                        quantitynotallocated = 0;
+                }
+                else
+                {
+                    quantitynotallocated = 0;
+                }
+                item.QtyOnHand = (int)quantitynotallocated;
+
+
+
                 foreach (ItemMasterPartVM imp in masterparts)
                 {
                     if (item.PartId == imp.PartId)

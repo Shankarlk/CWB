@@ -42,8 +42,9 @@ namespace CWB.App.Models.BusinessProcesses
         public char BuildToStock { get; set; }
         public char TestData { get; set; }
         public int CalcWOQty { get; set; }
-        //public int QtyOnHand { get; set; }
-        //public int AddnOtyUser { get; set; }
+        public int PlanWOQnty { get; set; }
+        public int QtyOnHand { get; set; }
+        public int AddnOtyUser { get; set; }
         public int Status { get; set; }
         //public int Plan { get; set; }
         public DateTime? PlanCompletionDate {

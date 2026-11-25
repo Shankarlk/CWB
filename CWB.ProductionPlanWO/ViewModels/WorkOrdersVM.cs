@@ -20,7 +20,7 @@ namespace CWB.ProductionPlanWO.ViewModels
         public char TestData { get; set; }
         public int CalcWOQty { get; set; }
         //public int QtyOnHand { get; set; }
-        //public int AddnOtyUser { get; set; }
+        public int AddnOtyUser { get; set; }
         public int Status { get; set; }
         public int PlanWOQnty { get; set; }
         public DateTime PlanCompletionDate { get; set; }
